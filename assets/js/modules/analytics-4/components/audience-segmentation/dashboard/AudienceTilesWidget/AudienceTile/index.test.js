@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+import { getByText as domGetByText } from '@testing-library/dom';
+
+/**
  * Internal dependencies
  */
 import AudienceTile from '.';
@@ -31,20 +37,37 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../../../../../tests/js/utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../util/errors';
+import * as tracking from '../../../../../../../util/tracking';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../../../../datastore/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../../../tests/js/viewport-width-utils';
+import { getPreviousDate } from '../../../../../../../util';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceTile', () => {
-	let registry;
+	let registry, originalViewportWidth;
 
 	const WidgetWithComponentProps =
 		withWidgetComponentProps( 'audienceTile' )( AudienceTile );
@@ -52,8 +75,9 @@ describe( 'AudienceTile', () => {
 	const audienceResourceName = 'properties/12345/audiences/12345';
 	const props = {
 		audienceResourceName,
+		audienceSlug: 'new-visitors',
 		title: 'New visitors',
-		toolTip: 'This is a tooltip',
+		infoTooltip: 'This is a tooltip',
 		loaded: true,
 		visitors: {
 			metricValue: 24200,
@@ -134,6 +158,16 @@ describe( 'AudienceTile', () => {
 	};
 
 	beforeEach( () => {
+		originalViewportWidth = getViewportWidth();
+
+		// Ensure the viewport is wide enough to render the tooltips.
+		setViewportWidth( 1024 );
+
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -176,6 +210,10 @@ describe( 'AudienceTile', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -183,8 +221,15 @@ describe( 'AudienceTile', () => {
 					[ audienceResourceName ]: 20201220,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render the AudienceTile component', () => {
@@ -198,127 +243,587 @@ describe( 'AudienceTile', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( 'should track an event when the tooltip is viewed', async () => {
+		const { container } = render(
+			<WidgetWithComponentProps { ...props } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.mouseOver(
+			container.querySelector( '.googlesitekit-info-tooltip' )
+		);
+
+		// Wait for the tooltip to appear, its delay is 100ms.
+		await act( () => waitForTimeouts( 100 ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_audiences-tile',
+			'view_tile_tooltip',
+			'new-visitors'
+		);
+	} );
+
+	describe( 'Top content metric', () => {
+		it( 'should track an event when the create custom dimension CTA is viewed', () => {
+			const { getByRole, rerender } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect(
+				getByRole( 'button', { name: /update/i } )
+			).toBeInTheDocument();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <WidgetWithComponentProps { ...props } /> );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-top-content-cta',
+				'view_cta'
+			);
+		} );
+
+		it( 'should track an event when the create custom dimension CTA is clicked', async () => {
+			const { getByRole } = render(
+				<WidgetWithComponentProps { ...props } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-top-content-cta',
+				'create_custom_dimension'
+			);
+		} );
+	} );
+
+	describe( 'Partial data badge', () => {
+		beforeEach( () => {
+			const referenceDate = registry
+				.select( CORE_USER )
+				.getReferenceDate();
+
+			const dataAvailabilityDate = Number(
+				getPreviousDate( referenceDate, 1 ).replace( /-/g, '' )
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					dataAvailabilityDate
+				);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					'googlesitekit_post_type',
+					'customDimension',
+					dataAvailabilityDate
+				);
+		} );
+
+		it( 'should render a partial data badge for the audience when the audience is in the partial data state', () => {
+			const { container, getByText } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+				}
+			);
+
+			expect( getByText( 'Partial data' ) ).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should render a partial data badge for the "Top content" metric area when the custom dimension is in the partial data state and the audience is not', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				domGetByText(
+					container.querySelector(
+						'.googlesitekit-audience-segmentation-tile-metric--top-content'
+					),
+					'Partial data'
+				)
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( "should track an event when the partial data badge for the audience's tooltip is viewed", async () => {
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-partial-data-badge .googlesitekit-info-tooltip'
+				)
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_partial_data_tooltip',
+				'new-visitors'
+			);
+		} );
+
+		it( "should track an event when the partial data badge for the 'Top content' metric area's tooltip is viewed", async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-tile-metric--top-content .googlesitekit-info-tooltip'
+				)
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_top_content_partial_data_tooltip',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should not display partial data badge for tile or top content metrics when property is in partial state', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{
+					registry,
+				}
+			);
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-partial-data-badge'
+				)
+			).toBeNull();
+		} );
+	} );
+
+	describe( 'with zero data, in the partial data state', () => {
+		let container, getByRole, getByText, rerender;
+
+		beforeEach( () => {
+			( { container, getByRole, getByText, rerender } = render(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			) );
+		} );
+
+		it( 'should render the zero data tile', () => {
+			expect(
+				getByText( 'Site Kit is collecting data for this group.' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should track an event when the tile is viewed', () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			// Simulate the CTA becoming visible.
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender(
+				<WidgetWithComponentProps
+					{ ...props }
+					isPartialData
+					isZeroData
+					isTileHideable
+				/>
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_collecting_data',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should track an event when the "Temporarily hide" button is clicked', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /temporarily hide/i } )
+				);
+
+				// Allow the `trackEvent()` promise to resolve.
+				await waitForDefaultTimeouts();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'temporarily_hide',
+				'new-visitors'
+			);
+		} );
+
+		it( 'should track an event when the tooltip is viewed', async () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.mouseOver(
+				container.querySelector( '.googlesitekit-info-tooltip' )
+			);
+
+			// Wait for the tooltip to appear, its delay is 100ms.
+			await act( () => waitForTimeouts( 100 ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-tile',
+				'view_tile_tooltip',
+				'new-visitors'
+			);
+		} );
+	} );
+
 	describe( 'AudienceErrorModal', () => {
-		it( 'should show the OAuth error modal when the required scopes are not granted', () => {
-			provideSiteInfo( registry, {
-				setupErrorCode: 'access_denied',
+		let getByRole, getByText;
+
+		describe( 'OAuth error modal', () => {
+			beforeEach( async () => {
+				provideSiteInfo( registry, {
+					setupErrorCode: 'access_denied',
+				} );
+
+				provideUserAuthentication( registry, {
+					grantedScopes: [],
+				} );
+
+				( { getByRole, getByText } = render(
+					<WidgetWithComponentProps { ...props } />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /update/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					await waitForDefaultTimeouts();
+				} );
 			} );
 
-			provideUserAuthentication( registry, {
-				grantedScopes: [],
+			it( 'should show the modal when the required scopes are not granted', () => {
+				// Verify the error is an OAuth error variant.
+				expect(
+					getByText( /Analytics update failed/i )
+				).toBeInTheDocument();
+
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
+
+				expect(
+					getByRole( 'link', { name: /get help/i } )
+				).toHaveAttribute(
+					'href',
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL( {
+							code: 'access_denied',
+						} )
+				);
+
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
+
+				// Verify the "Cancel" button is displayed.
+				expect(
+					getByRole( 'button', { name: /cancel/i } )
+				).toBeInTheDocument();
 			} );
 
-			const { getByRole, getByText } = render(
-				<WidgetWithComponentProps { ...props } />,
-				{
-					registry,
-				}
-			);
+			it( 'should track an event when the Retry button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
 
-			expect(
-				getByRole( 'button', { name: /update/i } )
-			).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
 
-			act( () => {
-				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'auth_error_retry'
+				);
 			} );
 
-			// Verify the error is an OAuth error variant.
-			expect(
-				getByText( /Analytics update failed/i )
-			).toBeInTheDocument();
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
 
-			// Verify the "Get help" link is displayed.
-			expect( getByText( /get help/i ) ).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
 
-			expect(
-				getByRole( 'link', { name: /get help/i } )
-			).toHaveAttribute(
-				'href',
-				registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
-					code: 'access_denied',
-				} )
-			);
-
-			// Verify the "Retry" button is displayed.
-			expect( getByText( /retry/i ) ).toBeInTheDocument();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'auth_error_cancel'
+				);
+			} );
 		} );
 
-		it( 'should show the insufficient permission error modal when the user does not have the required permissions', () => {
-			const error = {
-				code: 'test_error',
-				message: 'Error message.',
-				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-			};
+		describe( 'insufficient permissions modal', () => {
+			beforeEach( async () => {
+				const error = {
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				};
 
-			provideCustomDimensionError( registry, {
-				customDimension: 'googlesitekit_post_type',
-				error,
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_type',
+					error,
+				} );
+
+				( { getByRole, getByText } = render(
+					<WidgetWithComponentProps { ...props } />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /update/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					await waitForDefaultTimeouts();
+				} );
 			} );
 
-			const { getByRole, getByText } = render(
-				<WidgetWithComponentProps { ...props } />,
-				{
-					registry,
-				}
-			);
+			it( 'should show the insufficient permission error modal when the user does not have the required permissions', () => {
+				// Verify the error is "Insufficient permissions" variant.
+				expect(
+					getByText( /Insufficient permissions/i )
+				).toBeInTheDocument();
 
-			expect(
-				getByRole( 'button', { name: /update/i } )
-			).toBeInTheDocument();
+				// Verify the "Get help" link is displayed.
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
 
-			act( () => {
-				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+				// Verify the "Request access" button is displayed.
+				expect(
+					getByRole( 'button', { name: /request access/i } )
+				).toBeInTheDocument();
+
+				// Verify the "Cancel" button is displayed.
+				expect(
+					getByRole( 'button', { name: /cancel/i } )
+				).toBeInTheDocument();
 			} );
 
-			// Verify the error is "Insufficient permissions" variant.
-			expect(
-				getByText( /Insufficient permissions/i )
-			).toBeInTheDocument();
+			it( 'should track an event when the "Request access" button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /request access/i } )
+					);
 
-			// Verify the "Get help" link is displayed.
-			expect( getByText( /get help/i ) ).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
 
-			// Verify the "Request access" button is displayed.
-			expect( getByText( /request access/i ) ).toBeInTheDocument();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'insufficient_permissions_error_request_access'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'insufficient_permissions_error_cancel'
+				);
+			} );
 		} );
 
-		it( 'should show the generic error modal when an internal server error occurs', () => {
-			const error = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			};
+		describe( 'generic error modal', () => {
+			beforeEach( async () => {
+				const error = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
 
-			provideCustomDimensionError( registry, {
-				customDimension: 'googlesitekit_post_type',
-				error,
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_type',
+					error,
+				} );
+
+				( { getByRole, getByText } = render(
+					<WidgetWithComponentProps { ...props } />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /update/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					await waitForDefaultTimeouts();
+				} );
 			} );
 
-			const { getByRole, getByText } = render(
-				<WidgetWithComponentProps { ...props } />,
-				{
-					registry,
-				}
-			);
+			it( 'should show the generic error modal when an internal server error occurs', () => {
+				// Verify the error is a generic error variant.
+				expect(
+					getByText( /Failed to enable metric/i )
+				).toBeInTheDocument();
 
-			expect(
-				getByRole( 'button', { name: /update/i } )
-			).toBeInTheDocument();
-
-			act( () => {
-				fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+				// Verify the "Retry" button is displayed.
+				expect(
+					getByRole( 'button', { name: /retry/i } )
+				).toBeInTheDocument();
 			} );
 
-			// Verify the error is a generic error variant.
-			expect(
-				getByText( /Failed to enable metric/i )
-			).toBeInTheDocument();
+			it( 'should track an event when the Retry button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /retry/i } )
+					);
 
-			// Verify the "Retry" button is displayed.
-			expect(
-				getByRole( 'button', { name: /retry/i } )
-			).toBeInTheDocument();
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'setup_error_retry'
+				);
+			} );
+
+			it( 'should track an event when the Cancel button is clicked', async () => {
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /cancel/i } )
+					);
+
+					// Allow the `trackEvent()` promise to resolve.
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'mainDashboard_audiences-top-content-cta',
+					'setup_error_cancel'
+				);
+			} );
 		} );
 	} );
 } );

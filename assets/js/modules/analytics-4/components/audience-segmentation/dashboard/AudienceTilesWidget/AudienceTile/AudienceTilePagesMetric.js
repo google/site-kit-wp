@@ -51,8 +51,15 @@ import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 import AudienceErrorModal from '../../AudienceErrorModal';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
+import useViewContext from '../../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../../util';
 
 export default function AudienceTilePagesMetric( {
+	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+	audienceTileNumber,
+	audienceSlug,
 	TileIcon,
 	title,
 	topContent,
@@ -60,6 +67,7 @@ export default function AudienceTilePagesMetric( {
 	isTopContentPartialData,
 } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 
 	const postTypeDimension =
 		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
@@ -77,6 +85,7 @@ export default function AudienceTilePagesMetric( {
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 	const errorRedirectURL = addQueryArgs( global.location.href, {
 		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
@@ -208,6 +217,13 @@ export default function AudienceTilePagesMetric( {
 						<BadgeWithTooltip
 							className="googlesitekit-audience-segmentation-partial-data-badge"
 							label={ __( 'Partial data', 'google-site-kit' ) }
+							onTooltipOpen={ () => {
+								trackEvent(
+									`${ viewContext }_audiences-tile`,
+									'view_top_content_partial_data_tooltip',
+									audienceSlug
+								);
+							} }
 							tooltipTitle={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',
 								'google-site-kit'
@@ -223,34 +239,43 @@ export default function AudienceTilePagesMetric( {
 					onCreateCustomDimension={ onCreateCustomDimension }
 					isSaving={ isSaving }
 				/>
-				{ ( ( customDimensionError && ! isSaving ) ||
-					( isRetryingCustomDimensionCreate &&
-						! isAutoCreatingCustomDimensionsForAudience ) ||
-					hasOAuthError ) && (
-					<AudienceErrorModal
-						apiErrors={ [ customDimensionError ] }
-						title={ __(
-							'Failed to enable metric',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Oops! Something went wrong. Retry enabling the metric.',
-							'google-site-kit'
-						) }
-						onRetry={ () =>
-							onCreateCustomDimension( { isRetrying: true } )
-						}
-						onCancel={ onCancel }
-						inProgress={ isSaving }
-						hasOAuthError={ hasOAuthError }
-					/>
-				) }
+				{ /*
+						TODO: The `audienceTileNumber` check is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+						within `AudienceTilesWidget`. This should be removed, and the `AudienceErrorModal` render extracted
+						from here to be rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+					*/ }
+				{ audienceTileNumber === 0 &&
+					( ( customDimensionError && ! isSaving ) ||
+						( isRetryingCustomDimensionCreate &&
+							! isAutoCreatingCustomDimensionsForAudience ) ||
+						hasOAuthError ) && (
+						<AudienceErrorModal
+							apiErrors={ [ customDimensionError ] }
+							title={ __(
+								'Failed to enable metric',
+								'google-site-kit'
+							) }
+							description={ __(
+								'Oops! Something went wrong. Retry enabling the metric.',
+								'google-site-kit'
+							) }
+							onRetry={ () =>
+								onCreateCustomDimension( { isRetrying: true } )
+							}
+							onCancel={ onCancel }
+							inProgress={ isSaving }
+							hasOAuthError={ hasOAuthError }
+							trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
+						/>
+					) }
 			</div>
 		</div>
 	);
 }
 
 AudienceTilePagesMetric.propTypes = {
+	audienceTileNumber: PropTypes.number,
+	audienceSlug: PropTypes.string.isRequired,
 	TileIcon: PropTypes.elementType.isRequired,
 	title: PropTypes.string.isRequired,
 	topContent: PropTypes.object,

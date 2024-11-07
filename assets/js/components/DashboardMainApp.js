@@ -78,6 +78,8 @@ import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './KeyMetrics/constants';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -107,6 +109,12 @@ export default function DashboardMainApp() {
 		temporaryPersistedPermissionsError?.data?.scopes?.some( ( scope ) =>
 			grantedScopes.includes( scope )
 		);
+
+	const configuredAudiences = useSelect(
+		( select ) =>
+			audienceSegmentationEnabled &&
+			select( CORE_USER ).getConfiguredAudiences()
+	);
 
 	useMount( () => {
 		// Render the current survey portal in 5 seconds after the initial rendering.
@@ -193,6 +201,19 @@ export default function DashboardMainApp() {
 
 	const isKeyMetricsWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
+	const showKeyMetricsSelectionPanel = useSelect(
+		( select ) =>
+			// Show the selection panel if the Key Metrics feature is set up and is not hidden...
+			( select( CORE_SITE ).isKeyMetricsSetupCompleted() === true &&
+				isKeyMetricsWidgetHidden === false ) ||
+			// ...or if the setup CTA is visible.
+			( select( CORE_USER ).isAuthenticated() &&
+				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false &&
+				select( CORE_USER ).isItemDismissed(
+					KEY_METRICS_SETUP_CTA_WIDGET_SLUG
+				) === false )
 	);
 
 	useMonitorInternetConnection();
@@ -292,9 +313,11 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			<MetricsSelectionPanel />
+			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ audienceSegmentationEnabled && <AudienceSelectionPanel /> }
+			{ audienceSegmentationEnabled && configuredAudiences && (
+				<AudienceSelectionPanel />
+			) }
 
 			<OfflineNotification />
 		</Fragment>

@@ -37,9 +37,9 @@ describe( 'modules/sign-in-with-google settings', () => {
 	const validSettings = {
 		clientID:
 			'40021282855-d4ea9t80ph5m5pjjob24qdaj1suqg065.apps.googleusercontent.com',
-		shape: SIGN_IN_WITH_GOOGLE_SHAPE_RECTANGULAR,
-		text: SIGN_IN_WITH_GOOGLE_TEXT_CONTINUE_WITH_GOOGLE,
-		theme: SIGN_IN_WITH_GOOGLE_THEME_LIGHT,
+		shape: SIGN_IN_WITH_GOOGLE_SHAPE_RECTANGULAR.value,
+		text: SIGN_IN_WITH_GOOGLE_TEXT_CONTINUE_WITH_GOOGLE.value,
+		theme: SIGN_IN_WITH_GOOGLE_THEME_LIGHT.value,
 	};
 
 	beforeAll( () => {
@@ -96,9 +96,9 @@ describe( 'modules/sign-in-with-google settings', () => {
 				.setSettings( { shape: 'hexagon' } );
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				`shape must be one of: ${ SIGN_IN_WITH_GOOGLE_SHAPES.join(
-					', '
-				) }`
+				`shape must be one of: ${ SIGN_IN_WITH_GOOGLE_SHAPES.map(
+					( option ) => option.value
+				).join( ', ' ) }`
 			);
 		} );
 
@@ -108,9 +108,9 @@ describe( 'modules/sign-in-with-google settings', () => {
 				.setSettings( { text: 'Authenticate with Googlebot' } );
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				`text must be one of: ${ SIGN_IN_WITH_GOOGLE_TEXTS.join(
-					', '
-				) }`
+				`text must be one of: ${ SIGN_IN_WITH_GOOGLE_TEXTS.map(
+					( option ) => option.value
+				).join( ', ' ) }`
 			);
 		} );
 
@@ -120,9 +120,9 @@ describe( 'modules/sign-in-with-google settings', () => {
 				.setSettings( { theme: 'purple-and-green' } );
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				`theme must be one of: ${ SIGN_IN_WITH_GOOGLE_THEMES.join(
-					', '
-				) }`
+				`theme must be one of: ${ SIGN_IN_WITH_GOOGLE_THEMES.map(
+					( option ) => option.value
+				).join( ', ' ) }`
 			);
 		} );
 	} );
