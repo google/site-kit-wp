@@ -67,6 +67,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
 
 		add_action( 'login_form_google_auth', $this->get_method_proxy( 'handle_auth_callback' ) );
+		add_action( 'login_form_google_auth_redirect', $this->get_method_proxy( 'handle_auth_redirect' ) );
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
@@ -152,12 +153,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			} elseif ( ! $user->has_cap( 'edit_posts' ) ) {
 				$redirect_to = $user->has_cap( 'read' ) ? admin_url( 'profile.php' ) : home_url();
 			}
-
-			wp_safe_redirect( $redirect_to );
-			exit;
 		}
 
-		wp_safe_redirect( $redirect_to );
+		$redirect_url = add_query_arg(
+			array(
+				'action'      => 'google_auth_redirect',
+				'redirect_to' => $redirect_to,
+			),
+			wp_login_url()
+		);
+
+		wp_safe_redirect( $redirect_url );
 		exit;
 	}
 
@@ -250,6 +256,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		wp_send_new_user_notifications( $user_id );
 
 		return get_user_by( 'id', $user_id );
+	}
+
+	/**
+	 * Handles the redirect request after the user signs in with Google.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function handle_auth_redirect() {
+		exit;
 	}
 
 	/**
@@ -374,10 +389,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$redirect_url = add_query_arg( 'action', 'google_auth', wp_login_url() );
-		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
+		$login_url = wp_login_url();
+		$login_uri = add_query_arg( 'action', 'google_auth', $login_url );
+		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
 			return;
 		}
+
+		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
+		$redirect_to = trim( $redirect_to );
+
+		$redirect_cookie_path = dirname( wp_parse_url( $login_url, PHP_URL_PATH ) );
 
 		// Render the Sign in with Google button and related inline styles.
 		?>
@@ -386,18 +407,25 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
 ( () => {
-	google.accounts.id.initialize({
-		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
-		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
-		ux_mode: 'redirect',
-	});
 	const parent = document.createElement( 'div' );
-	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
-	google.accounts.id.renderButton(parent, {
+	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+
+	google.accounts.id.initialize( {
+		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		login_uri: '<?php echo esc_js( $login_uri ); ?>',
+		ux_mode: 'redirect',
+	} );
+	google.accounts.id.renderButton( parent, {
 		theme: '<?php echo esc_js( $settings['theme'] ); ?>',
 		text: '<?php echo esc_js( $settings['text'] ); ?>',
 		shape: '<?php echo esc_js( $settings['shape'] ); ?>'
-	});
+	} );
+<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+	const expires = new Date();
+	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
+	document.cookie = "google_auth_redirect_to=<?php echo esc_js( $redirect_to ); ?>;"  + expires.toUTCString() + ";path=<?php echo esc_js( $redirect_cookie_path ); ?>";
+<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
 <!-- End Sign in with Google button added by Site Kit -->
