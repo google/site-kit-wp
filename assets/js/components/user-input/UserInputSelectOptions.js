@@ -36,7 +36,10 @@ import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
-import { USER_INPUT_QUESTION_POST_FREQUENCY } from './util/constants';
+import {
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -145,7 +148,12 @@ export default function UserInputSelectOptions( {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
 			description: descriptions?.[ optionSlug ],
-			checked: values.includes( optionSlug ),
+			checked:
+				USER_INPUT_QUESTIONS_PURPOSE === slug &&
+				values.includes( 'sell_products_or_service' ) &&
+				'sell_products' === optionSlug
+					? true
+					: values.includes( optionSlug ),
 			onKeyDown,
 			alignLeft: alignLeftOptions,
 			...onClickProps,
@@ -164,14 +172,16 @@ export default function UserInputSelectOptions( {
 		}
 
 		return (
-			<div
-				key={ optionSlug }
-				className="googlesitekit-user-input__select-option"
-			>
-				<ListComponent { ...props }>
-					{ options[ optionSlug ] }
-				</ListComponent>
-			</div>
+			'sell_products_or_service' !== optionSlug && (
+				<div
+					key={ optionSlug }
+					className="googlesitekit-user-input__select-option"
+				>
+					<ListComponent { ...props }>
+						{ options[ optionSlug ] }
+					</ListComponent>
+				</div>
+			)
 		);
 	} );
 
