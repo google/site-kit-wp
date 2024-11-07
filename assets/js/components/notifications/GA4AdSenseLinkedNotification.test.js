@@ -41,7 +41,6 @@ import Notifications from './Notifications';
 const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'top-earning-pages-success-notification';
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe( 'GA4AdSenseLinkedNotification', () => {
 	let registry;
 
