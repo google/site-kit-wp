@@ -77,6 +77,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const haveConversionReportingEventsForTailoredMetrics =
 		useConversionReportingEventsForTailoredMetrics( purpose );
 
+	// Initial callout is surfaced to the users with tailored metrics, if detectedEvents setting
+	// has a conversion event associated with the ACR key metrics matching the current site purpose answer.
+	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
+	// and have not been already included, which is determined by includeConversionTailoredMetrics setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
 		isUserInputCompleted &&
 		haveConversionReportingEventsForTailoredMetrics &&
