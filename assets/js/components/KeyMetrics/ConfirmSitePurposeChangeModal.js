@@ -41,6 +41,7 @@ import {
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+import { useConversionReportingEventsForTailoredMetrics } from './hooks/useConversionReportingEventsForTailoredMetrics';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -57,9 +58,14 @@ function ConfirmSitePurposeChangeModal( {
 	} );
 
 	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+	const haveConversionReportingEventsForTailoredMetrics =
+		useConversionReportingEventsForTailoredMetrics( purpose );
 
 	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getAnswerBasedMetrics( purpose );
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			purpose,
+			haveConversionReportingEventsForTailoredMetrics
+		);
 	} );
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
