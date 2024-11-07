@@ -28,9 +28,9 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { ACR_SUBTLE_NOTIFICATION_SLUG } from '../KeyMetrics/constants';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import { useInView } from '../../hooks/useInView';
+import ACRSubtleNotification from '../KeyMetrics/ACRSubtleNotification';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
 import UserInputPreview from '../user-input/UserInputPreview';
 import Layout from '../layout/Layout';
@@ -39,10 +39,14 @@ import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 import PreviewBlock from '../PreviewBlock';
+import { useInView } from '../../hooks/useInView';
+import { useFeature } from '../../hooks/useFeature';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
 	const inView = useInView();
+	const conversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
@@ -61,6 +65,12 @@ export default function SettingsCardKeyMetrics() {
 	const hasUserPickedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
 	);
+	const isACRNotificationDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( ACR_SUBTLE_NOTIFICATION_SLUG )
+	);
+	const showACRNotification =
+		conversionReportingEnabled && isACRNotificationDismissed === false;
+
 	const isUserInputCompletedLoading = useSelect(
 		( select ) =>
 			! select( CORE_USER ).hasFinishedResolution(
@@ -115,53 +125,65 @@ export default function SettingsCardKeyMetrics() {
 				{ isUserInputCompleted === false && (
 					<Fragment>
 						<SettingsKeyMetrics />
-
-						<Grid>
-							<Row>
-								<Cell
-									className="googlesitekit-user-input__notification googlesitekit-overflow-hidden"
-									size={ 12 }
-								>
-									<LoadingWrapper
-										loading={
-											isGetUserInputSettingsLoading
-										}
-										className="googlesitekit-user-input__notification-text-loading"
-										width="500px"
-										height="20.5px"
-										smallWidth="500px"
-										smallHeight="41px"
-									>
-										<p>
-											<span>
-												{ __(
-													'Answer 3 quick questions to help us show the most relevant data for your site',
-													'google-site-kit'
-												) }
-											</span>
-										</p>
-									</LoadingWrapper>
-
-									<LoadingWrapper
-										loading={
-											isGetUserInputSettingsLoading
-										}
-										width="200px"
-										height="20.5px"
-									>
-										<Link href={ userInputURL }>
-											{ ctaLabel }
-										</Link>
-									</LoadingWrapper>
-								</Cell>
+						{ showACRNotification && (
+							<Fragment>
+								<ACRSubtleNotification />
 								{ inView && (
 									<SurveyViewTrigger
 										triggerID="view_kmw_setup_cta"
 										ttl={ WEEK_IN_SECONDS }
 									/>
 								) }
-							</Row>
-						</Grid>
+							</Fragment>
+						) }
+						{ ! showACRNotification && (
+							<Grid>
+								<Row>
+									<Cell
+										className="googlesitekit-user-input__notification googlesitekit-overflow-hidden"
+										size={ 12 }
+									>
+										<LoadingWrapper
+											loading={
+												isGetUserInputSettingsLoading
+											}
+											className="googlesitekit-user-input__notification-text-loading"
+											width="500px"
+											height="20.5px"
+											smallWidth="500px"
+											smallHeight="41px"
+										>
+											<p>
+												<span>
+													{ __(
+														'Answer 3 quick questions to help us show the most relevant data for your site',
+														'google-site-kit'
+													) }
+												</span>
+											</p>
+										</LoadingWrapper>
+
+										<LoadingWrapper
+											loading={
+												isGetUserInputSettingsLoading
+											}
+											width="200px"
+											height="20.5px"
+										>
+											<Link href={ userInputURL }>
+												{ ctaLabel }
+											</Link>
+										</LoadingWrapper>
+									</Cell>
+									{ inView && (
+										<SurveyViewTrigger
+											triggerID="view_kmw_setup_cta"
+											ttl={ WEEK_IN_SECONDS }
+										/>
+									) }
+								</Row>
+							</Grid>
+						) }
 					</Fragment>
 				) }
 			</div>

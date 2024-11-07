@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Module Button Theme component.
+ * Sign in with Google Module Button Theme component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

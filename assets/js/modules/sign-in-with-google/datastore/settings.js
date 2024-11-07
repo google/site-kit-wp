@@ -60,14 +60,13 @@ export function validateCanSubmitChanges( select ) {
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
-	invariant( isValidClientID( getClientID() ), INVARIANT_INVALID_CLIENT_ID );
-
 	const clientID = getClientID();
 	const shape = getShape();
 	const text = getText();
 	const theme = getTheme();
 
 	invariant( clientID?.length, 'clientID is required' );
+	invariant( isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
 	invariant(
 		!! SIGN_IN_WITH_GOOGLE_SHAPES.find(
 			( option ) => option.value === shape

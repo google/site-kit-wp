@@ -19,7 +19,7 @@
 /**
  * Checks if the given client ID is valid.
  *
- * @since n.e.x.t
+ * @since 1.139.0
  *
  * @param {*} value Sign in with Google Client ID to test.
  * @return {boolean} Whether or not the given ID is valid.
