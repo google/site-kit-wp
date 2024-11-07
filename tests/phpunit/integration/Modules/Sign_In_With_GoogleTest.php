@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
+use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 
 /**
