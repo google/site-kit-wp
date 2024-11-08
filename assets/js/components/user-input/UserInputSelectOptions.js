@@ -158,6 +158,10 @@ export default function UserInputSelectOptions( {
 	const ListComponent = max === 1 ? Radio : Checkbox;
 
 	const items = Object.keys( options ).map( ( optionSlug ) => {
+		if ( 'sell_products_or_service' === optionSlug ) {
+			return null;
+		}
+
 		const props = {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
@@ -186,16 +190,14 @@ export default function UserInputSelectOptions( {
 		}
 
 		return (
-			'sell_products_or_service' !== optionSlug && (
-				<div
-					key={ optionSlug }
-					className="googlesitekit-user-input__select-option"
-				>
-					<ListComponent { ...props }>
-						{ options[ optionSlug ] }
-					</ListComponent>
-				</div>
-			)
+			<div
+				key={ optionSlug }
+				className="googlesitekit-user-input__select-option"
+			>
+				<ListComponent { ...props }>
+					{ options[ optionSlug ] }
+				</ListComponent>
+			</div>
 		);
 	} );
 
@@ -230,6 +232,7 @@ export default function UserInputSelectOptions( {
 		currentlyEditingSlug,
 		setUserInputSetting,
 		previousValues,
+		setValues,
 	] );
 
 	return (
