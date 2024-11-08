@@ -165,6 +165,37 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
+		it( 'does not render when detected events do not have ACR KMW matching the currently saved site purpose', async () => {
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			const inputSettings = registry
+				.select( CORE_USER )
+				.getUserInputSettings();
+
+			expect( inputSettings.purpose.values[ 0 ] ).toBe( 'publish_blog' );
+
+			// Current saved purpose is 'publish_blog', ACR metrics included for that answer
+			// are associated with either `contact`, `generate_lead` or `submit_lead_form` events
+			// other events will not add any ACR KMW, hence callout should not surface.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ 'purchase' ] );
+
+			const { container, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
+
 		it( 'does render when includeConversionTailoredMetrics is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
