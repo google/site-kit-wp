@@ -159,7 +159,7 @@ export default function UserInputSelectOptions( {
 
 	const items = Object.keys( options ).map( ( optionSlug ) => {
 		if ( 'sell_products_or_service' === optionSlug ) {
-			return null;
+			return false;
 		}
 
 		const props = {
