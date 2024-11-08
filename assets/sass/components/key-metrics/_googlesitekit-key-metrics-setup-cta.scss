@@ -264,3 +264,34 @@
 		}
 	}
 }
+
+html[dir="rtl"] {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-setup__wrapper--key-metrics-setup-cta {
+
+			.googlesitekit-preview-block {
+				@media (min-width: 800px) {
+					left: 0;
+					right: unset;
+				}
+			}
+
+			.googlesitekit-widget-key-metrics-svg__wrapper {
+
+				svg {
+					@media (min-width: $bp-desktop) {
+						left: 0;
+						right: unset;
+						transform: scaleX(-1);
+					}
+
+					@media (min-width: $bp-wpdb4) {
+						left: -15px;
+					}
+				}
+			}
+		}
+	}
+}
