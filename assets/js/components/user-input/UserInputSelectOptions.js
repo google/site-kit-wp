@@ -216,6 +216,9 @@ export default function UserInputSelectOptions( {
 				previousValues.includes( 'sell_products_or_service' )
 			) {
 				setUserInputSetting( slug, [ 'sell_products' ] );
+				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+					[ slug ]: [ 'sell_products' ],
+				} );
 			} else {
 				setUserInputSetting( slug, values );
 			}
