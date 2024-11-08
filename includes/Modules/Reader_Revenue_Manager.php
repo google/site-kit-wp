@@ -67,13 +67,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	public function register() {
 		$this->register_scopes_hook();
-		// Create instance of Synchronize_OnboardingState class and store it in $synchronize_onboarding_state.
-		$synchronize_onboarding_state = new Synchronize_OnboardingState( $this, $this->user_options );
+
+		$synchronize_onboarding_state = new Synchronize_OnboardingState(
+			$this,
+			$this->user_options
+		);
+		$synchronize_onboarding_state->register();
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
 		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
 
-		$synchronize_onboarding_state->register();
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 	}
