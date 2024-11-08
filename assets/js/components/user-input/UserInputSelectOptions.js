@@ -20,11 +20,11 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { usePrevious } from '@wordpress/compose';
 import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { sprintf, _n } from '@wordpress/i18n';
@@ -36,6 +36,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
 import {
@@ -46,7 +47,6 @@ import {
 } from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 
 export default function UserInputSelectOptions( {
 	slug,
@@ -205,35 +205,17 @@ export default function UserInputSelectOptions( {
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
 
-	const previousValues = usePrevious( values );
-
-	useEffect( () => {
+	useMount( () => {
 		if (
 			currentlyEditingSlug === USER_INPUT_QUESTIONS_PURPOSE &&
-			values.includes( 'sell_products_or_service' ) &&
-			'sell_products' in options
+			values.includes( 'sell_products_or_service' )
 		) {
-			if (
-				undefined !== previousValues &&
-				previousValues.includes( 'sell_products_or_service' )
-			) {
-				setUserInputSetting( slug, [ 'sell_products' ] );
-				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
-					[ slug ]: [ 'sell_products' ],
-				} );
-			} else {
-				setUserInputSetting( slug, values );
-			}
+			setUserInputSetting( slug, [ 'sell_products' ] );
+			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+				[ slug ]: [ 'sell_products_or_service' ],
+			} );
 		}
-	}, [
-		options,
-		slug,
-		values,
-		currentlyEditingSlug,
-		setUserInputSetting,
-		previousValues,
-		setValues,
-	] );
+	} );
 
 	return (
 		<Cell
