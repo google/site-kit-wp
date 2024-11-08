@@ -45,7 +45,7 @@ export default function KeyMetricsCTAFooter( {
 				{ ! showDismiss && (
 					<p>
 						{ __(
-							'Intereseted in specific metrics?',
+							'Interested in specific metrics?',
 							'google-site-kit'
 						) }
 					</p>
