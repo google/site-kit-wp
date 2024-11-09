@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
@@ -365,5 +366,31 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			);
 		}
 		return $wp_login_url;
+	}
+
+	/**
+	 * Checks if the Sign in with Google button, specifically inserted by Site Kit,
+	 * is found in the provided content.
+	 *
+	 * This method overrides the `Module_With_Tag_Trait` implementation since the HTML
+	 * comment inserted for SiwG's button is different to the standard comment inserted
+	 * for other modules' script snippets. This should be improved as speicified in the
+	 * TODO within the trait method.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Content to search for the button.
+	 * @return bool TRUE if tag is found, FALSE if not.
+	 */
+	public function has_placed_tag_in_content( $content ) {
+		$search_string              = 'Sign in with Google button added by Site Kit';
+		$search_translatable_string =
+			__( 'Sign in with Google button added by Site Kit', 'google-site-kit' );
+
+		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
+			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
+		}
+
+		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
 }
