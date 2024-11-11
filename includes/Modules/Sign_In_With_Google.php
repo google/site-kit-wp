@@ -52,6 +52,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const GOOGLE_USER_HID_OPTION = 'googlesitekitpersistent_siwg_google_user_hid';
 
 	/**
+	 * The name for the Sign in with Google callback action.
+	 */
+	const LOGIN_ACTION_NAME = 'googlesitekit_auth';
+
+	/**
 	 * Cookie name to store the redirect URL before the user signs in with Google.
 	 */
 	const REDIRECT_COOKIE_NAME = 'googlesitekit_auth_redirect_to';
@@ -59,9 +64,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Error codes.
 	 */
-	const ERROR_INVALID_REQUEST    = 'google_auth_invalid_request';
-	const ERROR_INVALID_CSRF_TOKEN = 'google_auth_invalid_g_csrf_token';
-	const ERROR_SIGNIN_FAILED      = 'google_auth_failed';
+	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
+	const ERROR_INVALID_CSRF_TOKEN = 'googlesitekit_auth_invalid_g_csrf_token';
+	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -69,9 +74,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
-		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
+		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
-		add_action( 'login_form_google_auth', $this->get_method_proxy( 'handle_auth_callback' ) );
+		add_action( 'login_form_' . self::LOGIN_ACTION_NAME, $this->get_method_proxy( 'handle_auth_callback' ) );
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
@@ -301,7 +306,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.
 	 */
-	public function handle_google_auth_errors( $error ) {
+	public function handle_login_errors( $error ) {
 		$error_code = $this->context->input()->filter( INPUT_GET, 'error' );
 		if ( ! $error_code ) {
 			return $error;
@@ -415,7 +420,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$login_uri = add_query_arg( 'action', 'google_auth', wp_login_url() );
+		$login_uri = add_query_arg( 'action', self::LOGIN_ACTION_NAME, wp_login_url() );
 		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
 			return;
 		}
