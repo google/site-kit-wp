@@ -23,9 +23,13 @@ import PropTypes from 'prop-types';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import { Cell, Row } from '../../../material-components';
 import WidgetNewBadge from './WidgetNewBadge';
 
 export default function WidgetAreaHeader( {
@@ -42,36 +46,34 @@ export default function WidgetAreaHeader( {
 	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
 
 	return (
-		<Row>
-			<Cell className="googlesitekit-widget-area-header" size={ 12 }>
-				{ Icon && <Icon width={ 33 } height={ 33 } /> }
+		<Fragment>
+			{ Icon && <Icon width={ 33 } height={ 33 } /> }
 
-				{ title && (
-					<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-						{ title }
-						<WidgetNewBadge slug={ slug } />
-					</h3>
-				) }
+			{ title && (
+				<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+					{ title }
+					<WidgetNewBadge slug={ slug } />
+				</h3>
+			) }
 
-				{ ( subtitle || CTA ) && (
-					<div className="googlesitekit-widget-area-header__details">
-						{ subtitle && (
-							<h4 className="googlesitekit-widget-area-header__subtitle">
-								{ Subtitle && <Subtitle /> }
-								{ ! Subtitle && subtitle }
-								{ ! title && <WidgetNewBadge slug={ slug } /> }
-							</h4>
-						) }
+			{ ( subtitle || CTA ) && (
+				<div className="googlesitekit-widget-area-header__details">
+					{ subtitle && (
+						<h4 className="googlesitekit-widget-area-header__subtitle">
+							{ Subtitle && <Subtitle /> }
+							{ ! Subtitle && subtitle }
+							{ ! title && <WidgetNewBadge slug={ slug } /> }
+						</h4>
+					) }
 
-						{ ctaWithLargeWindow && (
-							<div className="googlesitekit-widget-area-header__cta">
-								<CTA />
-							</div>
-						) }
-					</div>
-				) }
-			</Cell>
-		</Row>
+					{ ctaWithLargeWindow && (
+						<div className="googlesitekit-widget-area-header__cta">
+							<CTA />
+						</div>
+					) }
+				</div>
+			) }
+		</Fragment>
 	);
 }
 
