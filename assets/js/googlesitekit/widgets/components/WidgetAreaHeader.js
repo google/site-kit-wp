@@ -80,7 +80,15 @@ export default function WidgetAreaHeader( {
 WidgetAreaHeader.propTypes = {
 	slug: PropTypes.string.isRequired,
 	Icon: PropTypes.bool,
-	title: PropTypes.string,
-	subtitle: PropTypes.oneOf( PropTypes.string, PropTypes.elementType ),
-	CTA: PropTypes.object,
+	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
+	subtitle: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.elementType,
+		PropTypes.object,
+	] ),
+	CTA: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.elementType,
+		PropTypes.object,
+	] ),
 };
