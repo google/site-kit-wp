@@ -206,11 +206,18 @@ export default function DashboardMainApp() {
 	const displayCTAWidget = useDisplayCTAWidget();
 
 	const showKeyMetricsSelectionPanel = useSelect( ( select ) => {
-		const KMVisibleandSetupCompleted =
+		if (
 			select( CORE_SITE ).isKeyMetricsSetupCompleted() === true &&
-			isKeyMetricsWidgetHidden === false;
+			isKeyMetricsWidgetHidden === false
+		) {
+			return true;
+		}
 
-		return KMVisibleandSetupCompleted || displayCTAWidget;
+		return (
+			select( CORE_USER ).isAuthenticated() &&
+			select( CORE_SITE ).isKeyMetricsSetupCompleted() === false &&
+			displayCTAWidget
+		);
 	} );
 
 	useMonitorInternetConnection();

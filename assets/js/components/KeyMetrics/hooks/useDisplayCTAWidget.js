@@ -32,12 +32,12 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
  *
  * @return {boolean} Whether the CTA widget should be displayed.
  */
-const useDisplayCTAWidget = () => {
+export default function useDisplayCTAWidget() {
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( KEY_METRICS_SETUP_CTA_WIDGET_SLUG )
 	);
 
-	// We should call isGatheringData() within this component for completeness as we do not want to rely
+	// We should call isGatheringData() within this hook for completeness as we do not want to rely
 	// on it being called in other components. This selector makes report requests which, if they return
 	// data, then the `data-available` transients are set. These transients are prefetched as a global on
 	// the next page load.
@@ -55,6 +55,4 @@ const useDisplayCTAWidget = () => {
 		analyticsIsDataAvailableOnLoad &&
 		searchConsoleIsDataAvailableOnLoad
 	);
-};
-
-export default useDisplayCTAWidget;
+}
