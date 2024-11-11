@@ -334,7 +334,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since 1.132.0
+	 * @since n.e.x.t
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
