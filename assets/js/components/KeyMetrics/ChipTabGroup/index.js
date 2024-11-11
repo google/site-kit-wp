@@ -199,7 +199,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		}
 
 		if ( isSelectionPanelOpenPrevious && ! isSelectionPanelOpen ) {
-			// Reset the unstaged selection when selection panel is opened/re-opened.
+			// Reset the unstaged selection when selection panel is closed.
 			resetUnstagedSelection();
 		}
 	}, [
