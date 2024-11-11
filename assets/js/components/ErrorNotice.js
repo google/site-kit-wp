@@ -72,9 +72,10 @@ export default function ErrorNotice( {
 	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton && ! skipRetryMessage ) {
 		message = sprintf(
-			/* translators: %s: Error message from Google API. */
-			__( '%s. Please try again.', 'google-site-kit' ),
-			message
+			/* translators: %1$s: Error message from Google API. */
+			__( '%1$s%2$s Please try again.', 'google-site-kit' ),
+			message,
+			message.endsWith( '.' ) ? '' : '.'
 		);
 	}
 
