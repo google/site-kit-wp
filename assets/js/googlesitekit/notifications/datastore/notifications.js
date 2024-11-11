@@ -41,7 +41,7 @@ const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 
 export const initialState = {
 	notifications: {},
-	queuedNotifications: undefined,
+	queuedNotifications: {},
 };
 
 export const actions = {
