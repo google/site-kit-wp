@@ -222,7 +222,7 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 } );
 
 export const resolvers = {
-	*getQueuedNotifications( viewContext ) {
+	*getQueuedNotifications( viewContext, groupID ) {
 		const registry = yield commonActions.getRegistry();
 
 		const notifications = registry
@@ -236,6 +236,10 @@ export const resolvers = {
 
 		const filteredNotifications = Object.values( notifications ).filter(
 			( notification ) => {
+				if ( notification.groupID !== groupID ) {
+					return false;
+				}
+
 				if ( ! notification.viewContexts.includes( viewContext ) ) {
 					return false;
 				}
@@ -280,7 +284,10 @@ export const resolvers = {
 			return a.priority - b.priority;
 		} );
 
-		yield actions.receiveQueuedNotifications( queuedNotifications );
+		yield actions.receiveQueuedNotifications(
+			queuedNotifications,
+			groupID
+		);
 	},
 };
 
