@@ -39,18 +39,14 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import ErrorNotice from '../ErrorNotice';
 import { safelySort } from '../../util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import PreviewBlock from '../PreviewBlock';
-import ErrorText from '../ErrorText';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
 	selectedItemSlugs = [],
 	saveSettings = () => {},
-	saveError,
-	itemLimitError,
 	minSelectedItemCount = 0,
 	maxSelectedItemCount = 0,
 	isBusy,
@@ -151,13 +147,8 @@ export default function SelectionPanelFooter( {
 
 	return (
 		<footer className="googlesitekit-selection-panel-footer">
-			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-selection-panel-footer__content">
-				{ haveSettingsChanged && itemLimitError ? (
-					<ErrorText noPrefix message={ itemLimitError } />
-				) : (
-					itemCountElement
-				) }
+				{ itemCountElement }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
 						tertiary
