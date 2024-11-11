@@ -143,7 +143,6 @@ export default function UserInputPreview( props ) {
 		if ( 0 !== differenceInMetrics.length ) {
 			toggleIsModalOpen( true );
 		} else {
-			// Save the settings.
 			await saveUserInputSettings();
 
 			if ( savedPurpose?.length ) {
