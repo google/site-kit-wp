@@ -32,7 +32,10 @@ import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
@@ -99,6 +102,7 @@ export const registerNotifications = ( notifications ) => {
 			Component: SignInWithGoogleSetupCTABanner,
 			priority: 320,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			checkRequirements: async ( { select, resolveSelect } ) => {
 				await Promise.all( [
