@@ -30,11 +30,18 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
+
+const settingsReducerCallback = createReducer(
+	( state, firstPartyModeSettings ) => {
+		state.firstPartyModeSettings = firstPartyModeSettings;
+	}
+);
 
 const fetchGetFirstPartyModeSettings = createFetchStore( {
 	baseName: 'getFirstPartyModeSettings',
@@ -42,15 +49,7 @@ const fetchGetFirstPartyModeSettings = createFetchStore( {
 		API.get( 'core', 'site', 'fpm-settings', undefined, {
 			useCache: false,
 		} ),
-	reducerCallback: ( state, firstPartyModeSettings ) => {
-		return {
-			...state,
-			firstPartyModeSettings: {
-				...( state.firstPartyModeSettings || {} ),
-				...firstPartyModeSettings,
-			},
-		};
-	},
+	reducerCallback: settingsReducerCallback,
 } );
 
 const fetchSaveFirstPartyModeSettings = createFetchStore( {
@@ -58,15 +57,7 @@ const fetchSaveFirstPartyModeSettings = createFetchStore( {
 	controlCallback: ( { settings } ) => {
 		return API.set( 'core', 'site', 'fpm-settings', { settings } );
 	},
-	reducerCallback: ( state, firstPartyModeSettings ) => {
-		return {
-			...state,
-			firstPartyModeSettings: {
-				...( state.firstPartyModeSettings || {} ),
-				...firstPartyModeSettings,
-			},
-		};
-	},
+	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
 		return { settings };
 	},
@@ -83,6 +74,13 @@ const baseInitialState = {
 };
 
 const baseActions = {
+	/**
+	 * Sets the first-party mode enabled status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
 	setFirstPartyModeEnabled() {
 		return {
 			type: SET_FIRST_PARTY_MODE_ENABLED,
@@ -92,29 +90,25 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
 		case SET_FIRST_PARTY_MODE_ENABLED: {
-			return {
-				...state,
-				firstPartyModeSettings: {
-					...( state.firstPartyModeSettings || {} ),
-					enabled: true,
-				},
-			};
+			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
+			state.firstPartyModeSettings.isEnabled = true;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getFirstPartyModeSettings() {
 		const { select } = yield commonActions.getRegistry();
 
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
+
 		if ( settings === undefined ) {
 			yield fetchGetFirstPartyModeSettings.actions.fetchGetFirstPartyModeSettings();
 		}
@@ -128,7 +122,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} First-party mode settings, or `undefined` if not loaded.
+	 * @return {Object|undefined} First-party mode settings, or undefined if not loaded.
 	 */
 	getFirstPartyModeSettings: ( state ) => {
 		return state.firstPartyModeSettings;
@@ -140,24 +134,55 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} True if first-party mode is enabled, otherwise false.
+	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returned undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { firstPartyModeSettings } =
 			select( CORE_SITE ).getFirstPartyModeSettings();
-		return !! firstPartyModeSettings?.enabled;
+
+		if ( firstPartyModeSettings === undefined ) {
+			return undefined;
+		}
+
+		return firstPartyModeSettings.enabled;
 	} ),
 
+	/**
+	 * Checks if the FPFE service is determined to be healthy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the FPFE service is healthy, otherwise false. Returned undefined if the state is not loaded.
+	 */
 	isFPMHealthy: createRegistrySelector( ( select ) => () => {
 		const { firstPartyModeSettings } =
 			select( CORE_SITE ).getFirstPartyModeSettings();
-		return !! firstPartyModeSettings?.healthy;
+
+		if ( firstPartyModeSettings === undefined ) {
+			return undefined;
+		}
+
+		return firstPartyModeSettings.healthy;
 	} ),
 
+	/**
+	 * Checks if the GTag proxy script is accessible.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the GTag proxy script is accessible, otherwise false. Returned undefined if the state is not loaded.
+	 */
 	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
 		const { firstPartyModeSettings } =
 			select( CORE_SITE ).getFirstPartyModeSettings();
-		return !! firstPartyModeSettings?.scriptAccess;
+
+		if ( firstPartyModeSettings === undefined ) {
+			return undefined;
+		}
+
+		return firstPartyModeSettings.scriptAccess;
 	} ),
 };
 
