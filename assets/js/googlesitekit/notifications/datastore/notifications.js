@@ -317,12 +317,13 @@ export const selectors = {
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} viewContext The viewContext to fetch notifications for.
+	 * @param {string} groupID     The groupID of the notification queue to fetch notifications for.
 	 * @return {(Array|undefined)} Array of notification objects.
 	 */
-	getQueuedNotifications: ( state, viewContext ) => {
+	getQueuedNotifications: ( state, viewContext, groupID ) => {
 		invariant( viewContext, 'viewContext is required.' );
 
-		return state.queuedNotifications;
+		return state.queuedNotifications[ groupID ];
 	},
 	/**
 	 * Determines whether a notification is dismissed or not.
