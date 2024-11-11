@@ -39,6 +39,8 @@ export default function WidgetAreaHeader( {
 
 	const ctaWithLargeWindow = CTA && windowWidth >= 783;
 
+	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
+
 	return (
 		<Row>
 			<Cell className="googlesitekit-widget-area-header" size={ 12 }>
@@ -55,11 +57,8 @@ export default function WidgetAreaHeader( {
 					<div className="googlesitekit-widget-area-header__details">
 						{ subtitle && (
 							<h4 className="googlesitekit-widget-area-header__subtitle">
-								{ typeof subtitle === 'function' ? (
-									<subtitle />
-								) : (
-									subtitle
-								) }
+								{ Subtitle && <Subtitle /> }
+								{ ! Subtitle && subtitle }
 								{ ! title && <WidgetNewBadge slug={ slug } /> }
 							</h4>
 						) }
