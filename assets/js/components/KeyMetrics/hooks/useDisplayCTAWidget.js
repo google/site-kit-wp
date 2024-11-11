@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { useInViewSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
@@ -34,7 +34,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
  * @return {boolean} Whether the CTA widget should be displayed.
  */
 export default function useDisplayCTAWidget() {
-	return useInViewSelect( ( select ) => {
+	return useSelect( ( select ) => {
 		const isDismissed = select( CORE_USER ).isItemDismissed(
 			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 		);
@@ -44,18 +44,21 @@ export default function useDisplayCTAWidget() {
 		// data, then the `data-available` transients are set. These transients are prefetched as a global on
 		// the next page load.
 
+		const searchConsoleDataAvailableOnLoad = isModuleDataAvailableOnLoad(
+			select,
+			'search-console',
+			MODULES_SEARCH_CONSOLE
+		);
+		const analyticsDataAvailableOnLoad = isModuleDataAvailableOnLoad(
+			select,
+			'analytics-4',
+			MODULES_ANALYTICS_4
+		);
+
 		return (
 			isDismissed === false &&
-			isModuleDataAvailableOnLoad(
-				select,
-				'search-console',
-				MODULES_SEARCH_CONSOLE
-			) &&
-			isModuleDataAvailableOnLoad(
-				select,
-				'analytics-4',
-				MODULES_ANALYTICS_4
-			)
+			searchConsoleDataAvailableOnLoad &&
+			analyticsDataAvailableOnLoad
 		);
 	}, [] );
 }
