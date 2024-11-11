@@ -30,6 +30,7 @@ import InfoTooltip from './InfoTooltip';
 export default function BadgeWithTooltip( {
 	className = '',
 	label,
+	onTooltipOpen,
 	tooltipTitle,
 } ) {
 	return (
@@ -41,12 +42,15 @@ export default function BadgeWithTooltip( {
 			) }
 		>
 			{ label }
-			{ tooltipTitle && <InfoTooltip title={ tooltipTitle } /> }
+			{ tooltipTitle && (
+				<InfoTooltip onOpen={ onTooltipOpen } title={ tooltipTitle } />
+			) }
 		</span>
 	);
 }
 
 BadgeWithTooltip.propTypes = {
+	onTooltipOpen: PropTypes.func,
 	tooltipTitle: PropTypes.node,
 	className: PropTypes.string,
 	label: PropTypes.node.isRequired,
