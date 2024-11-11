@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
@@ -46,6 +47,10 @@ export default function useDisplayCTAWidget() {
 		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
 	} );
 	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
+		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			return false;
+		}
+
 		select( MODULES_ANALYTICS_4 ).isGatheringData();
 		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 	} );
