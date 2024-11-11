@@ -1282,6 +1282,50 @@ describe( 'modules/analytics-4 audiences', () => {
 				);
 			} );
 
+			it( 'should trigger a survey when the setup is completed', async () => {
+				const configuredAudiences = [
+					availableNewVisitorsAudienceFixture.name,
+					availableReturningVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						availableNewVisitorsAudienceFixture,
+						availableReturningVisitorsAudienceFixture,
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				muteFetch( expirableItemEndpoint );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect(
+					registry.select( CORE_USER ).getConfiguredAudiences()
+				).toEqual( configuredAudiences );
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+						body: {
+							data: {
+								triggerID:
+									'audience_segmentation_setup_completed',
+							},
+						},
+					} )
+				);
+			} );
+
 			describe( 'custom dimension handling', () => {
 				const createCustomDimensionEndpoint = new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
