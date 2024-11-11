@@ -184,6 +184,47 @@ class REST_Key_Metrics_Controller {
 					),
 				)
 			),
+			new REST_Route(
+				'core/user/data/reset-key-metrics-selection',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => function () {
+						// Only reset the widgetSlugs if they are present.
+						if ( ! empty( $settings['widgetSlugs'] ) ) {
+							$this->settings->merge( array( 'widgetSlugs' => array() ) );
+						}
+
+						return new WP_REST_Response( $this->settings->get() );
+					},
+					'permission_callback' => $has_capabilities,
+					'args'                => array(
+						'data' => array(
+							'type'       => 'object',
+							'required'   => true,
+							'properties' => array(
+								'settings' => array(
+									'type'       => 'object',
+									'required'   => true,
+									'properties' => array(
+										'isWidgetHidden' => array(
+											'type'     => 'boolean',
+											'required' => true,
+										),
+										'widgetSlugs'    => array(
+											'type'     => 'array',
+											'required' => false,
+											'maxItems' => Feature_Flags::enabled( 'conversionReporting' ) ? 8 : 4,
+											'items'    => array(
+												'type' => 'string',
+											),
+										),
+									),
+								),
+							),
+						),
+					),
+				)
+			),
 		);
 	}
 }
