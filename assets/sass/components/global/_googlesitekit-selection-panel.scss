@@ -35,11 +35,21 @@
 		}
 
 		p {
-			color: $c-surfaces-on-surface-variant;
+			color: $c-surfaces-on-surface;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
-			margin: $grid-gap-desktop / 2 0 0;
+			margin: 8px 0 0;
+
+			@media (min-width: $bp-tablet) {
+				font-size: $fs-title-sm;
+			}
+		}
+
+		.googlesitekit-cta-link__contents {
+			strong {
+				font-weight: $fw-normal;
+			}
 		}
 	}
 
@@ -96,11 +106,12 @@
 	}
 
 	.googlesitekit-selection-panel-item {
-		border-bottom: 2px solid $c-neutral-n-66;
+		border-bottom: 2px solid $c-neutral-n-100;
 		display: flex;
 		margin: 0 $grid-gap-desktop;
 		outline: 1px solid $c-white;
 		outline-offset: -1px;
+		padding: 0;
 
 		&:last-child {
 			border: none;
@@ -115,10 +126,14 @@
 			border: none;
 			flex: 1;
 			outline: none;
+			padding: 0 4px 10px;
+
+			.mdc-checkbox__description {
+				padding: 0;
+			}
 		}
 
 		.googlesitekit-selection-panel-item__subtitle {
-			color: $c-surfaces-on-surface;
 			display: block;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
@@ -133,9 +148,14 @@
 			line-height: $lh-label-md;
 			padding: 15px 10px;
 		}
+
+		.mdc-checkbox {
+			margin-top: 6px;
+		}
 	}
 
-	.googlesitekit-selection-panel-notice {
+	.googlesitekit-selection-panel-notice,
+	.googlesitekit-selection-panel-error {
 		background-color: $c-utility-warning-container;
 		padding: $grid-gap-phone $grid-gap-desktop;
 
@@ -147,6 +167,19 @@
 		}
 	}
 
+	.googlesitekit-selection-panel-error {
+		align-items: center;
+		background-color: $c-utility-error-container;
+		display: flex;
+		gap: 10px;
+		padding: $grid-gap-phone - 2px $grid-gap-desktop;
+
+		svg {
+			color: $c-utility-on-error-container;
+			display: block;
+		}
+	}
+
 	.googlesitekit-selection-panel-footer {
 		background-color: $c-surfaces-background;
 		margin-top: auto;
@@ -154,9 +187,13 @@
 		width: 100%;
 
 		p {
-			font-size: $fs-label-sm;
+			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-label-sm;
+
+			@media (min-width: $bp-tablet) {
+				font-size: $fs-title-sm;
+			}
 		}
 
 		.googlesitekit-error-text {
@@ -179,6 +216,7 @@
 	}
 
 	.googlesitekit-selection-panel-footer__item-count {
+		font-size: $fs-title-sm;
 		font-weight: $fw-medium;
 
 		.googlesitekit-selection-panel-footer__item-count--max-count {
