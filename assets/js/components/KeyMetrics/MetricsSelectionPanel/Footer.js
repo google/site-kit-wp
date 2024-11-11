@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -70,9 +70,7 @@ export default function Footer( {
 			KEY_METRICS_SELECTED
 		)
 	);
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
-	);
+
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
@@ -101,15 +99,6 @@ export default function Footer( {
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const saveError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveKeyMetricsSettings', [
-			{
-				...keyMetricsSettings,
-				widgetSlugs: selectedMetrics,
-			},
-		] )
 	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
@@ -197,41 +186,15 @@ export default function Footer( {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ trackingCategory ] );
 
-	const selectedMetricsCount = selectedMetrics?.length || 0;
 	const maxSelectedMetricsLimit = isConversionReportingEnabled
 		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
 		: MAX_SELECTED_METRICS_COUNT;
-	let metricsLimitError;
-	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Minimum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select at least %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-			MIN_SELECTED_METRICS_COUNT,
-			selectedMetricsCount
-		);
-	} else if ( selectedMetricsCount > maxSelectedMetricsLimit ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select up to %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-
-			maxSelectedMetricsLimit,
-			selectedMetricsCount
-		);
-	}
 
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedMetrics }
 			selectedItemSlugs={ selectedMetrics }
 			saveSettings={ saveSettings }
-			saveError={ saveError }
-			itemLimitError={ metricsLimitError }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ maxSelectedMetricsLimit }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
