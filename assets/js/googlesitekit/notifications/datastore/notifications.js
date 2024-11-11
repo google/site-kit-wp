@@ -29,6 +29,7 @@ import { createReducer } from '../../../../js/googlesitekit/data/create-reducer'
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
 	NOTIFICATION_VIEW_CONTEXTS,
 } from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
@@ -54,6 +55,7 @@ export const actions = {
 	 * @param {WPComponent}    [settings.Component]         React component used to display the contents of this notification.
 	 * @param {number}         [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks). Ideally in increments of 10. Default 10.
 	 * @param {string}         [settings.areaSlug]          The slug of the area where the notification should be rendered, e.g. notification-area-banners-above-nav.
+	 * @param {string}         [settings.groupID]           The ID of the group of notifications that should be rendered in their own individual queue.
 	 * @param {Array.<string>} [settings.viewContexts]      Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
 	 * @param {boolean}        [settings.isDismissible]     Flag to check if the notification should be queued and is not dismissed.
@@ -65,6 +67,7 @@ export const actions = {
 			Component,
 			priority = 10,
 			areaSlug,
+			groupID = NOTIFICATION_GROUPS.DEFAULT,
 			viewContexts,
 			checkRequirements,
 			isDismissible,
@@ -101,6 +104,7 @@ export const actions = {
 					Component,
 					priority,
 					areaSlug,
+					groupID,
 					viewContexts,
 					checkRequirements,
 					isDismissible,
