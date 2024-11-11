@@ -84,7 +84,6 @@ WidgetAreaHeader.propTypes = {
 	subtitle: PropTypes.oneOfType( [
 		PropTypes.string,
 		PropTypes.elementType,
-		PropTypes.object,
 	] ),
 	CTA: PropTypes.elementType,
 };
