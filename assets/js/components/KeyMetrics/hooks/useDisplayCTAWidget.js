@@ -39,23 +39,31 @@ export default function useDisplayCTAWidget() {
 			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 		);
 
-		// We should call isGatheringData() within this hook for completeness as we do not want to rely
+		// We call isGatheringData() within this hook for completeness as we do not want to rely
 		// on it being called in other components. This selector makes report requests which, if they return
 		// data, then the `data-available` transients are set. These transients are prefetched as a global on
 		// the next page load.
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
-
-		let analyticsIsDataAvailableOnLoad = false;
-		if ( select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
-			select( MODULES_ANALYTICS_4 ).isGatheringData();
-			analyticsIsDataAvailableOnLoad =
-				select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
-		}
 
 		return (
 			isDismissed === false &&
-			analyticsIsDataAvailableOnLoad &&
-			select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad()
+			isModuleDataAvailableOnLoad(
+				select,
+				'search-console',
+				MODULES_SEARCH_CONSOLE
+			) &&
+			isModuleDataAvailableOnLoad(
+				select,
+				'analytics-4',
+				MODULES_ANALYTICS_4
+			)
 		);
 	}, [] );
+}
+
+function isModuleDataAvailableOnLoad( select, slug, storeName ) {
+	if ( select( CORE_MODULES ).isModuleConnected( slug ) ) {
+		const { isGatheringData, isDataAvailableOnLoad } = select( storeName );
+		isGatheringData();
+		return isDataAvailableOnLoad();
+	}
 }
