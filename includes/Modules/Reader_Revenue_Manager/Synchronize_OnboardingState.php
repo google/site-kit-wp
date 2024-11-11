@@ -115,19 +115,20 @@ class Synchronize_OnboardingState {
 				return;
 			}
 
-			$publication = array_filter(
+			$filtered_publications = array_filter(
 				$publications,
 				function ( $pub ) use ( $publication_id ) {
 					return $pub->getPublicationId() === $publication_id;
 				}
 			);
 
-			// If publication is empty, return early.
-			if ( empty( $publication ) ) {
+			// If there are no filtered publications, return early.
+			if ( empty( $filtered_publications ) ) {
 				return;
 			}
 
-			$publication = reset( $publication );
+			$publication = $filtered_publications[0];
+
 			if ( $publication->getOnboardingState() !== $onboarding_state ) {
 				$this->reader_revenue_manager->get_settings()->merge(
 					array(
@@ -148,11 +149,9 @@ class Synchronize_OnboardingState {
 	 */
 	public function maybe_schedule_synchronize_onboarding_state() {
 		$connected              = $this->reader_revenue_manager->is_connected();
-		$settings               = $this->reader_revenue_manager->get_settings()->get();
-		$onboarding_state       = $settings['publicationOnboardingState'] ?? '';
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_ONBOARDING_STATE );
 
-		if ( $connected && 'ONBOARDING_COMPLETE' !== $onboarding_state && ! $cron_already_scheduled ) {
+		if ( $connected && ! $cron_already_scheduled ) {
 			wp_schedule_single_event(
 				time() + HOUR_IN_SECONDS,
 				self::CRON_SYNCHRONIZE_ONBOARDING_STATE
