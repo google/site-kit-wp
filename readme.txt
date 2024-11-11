@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.6
+Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.138.0
+Stable tag:        1.139.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,34 +109,32 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.138.0 =
+= 1.139.0 =
 
 **Added**
 
-* Add datastore infrastructure for Sign in With Google settings. See [#9480](https://github.com/google/site-kit-wp/issues/9480).
-* Add Sign in with Google module settings. See [#9333](https://github.com/google/site-kit-wp/issues/9333).
+* Add the Google sign-in button to the login screen. See [#9337](https://github.com/google/site-kit-wp/issues/9337).
+* Add Top Device Driving Purchases Key Metric Widget. See [#9162](https://github.com/google/site-kit-wp/issues/9162).
 
 **Enhanced**
 
-* Update the RRM setup CTA copy to explicitly mention that subscriptions aren't available yet as part of the integration. See [#9524](https://github.com/google/site-kit-wp/issues/9524).
-* Update the Audience Segmentation support documentation "learn more" link in the tooltip for an Audience Tile. See [#9455](https://github.com/google/site-kit-wp/issues/9455).
-* Update tailored metrics to also include new ACR metrics. See [#9437](https://github.com/google/site-kit-wp/issues/9437).
-* Disallow manual Ads Conversion ID entry when using the Partner Ads Experience. See [#9426](https://github.com/google/site-kit-wp/issues/9426).
-* Update copy text in Google Ads module when Partner Ads Experience is enabled. See [#9425](https://github.com/google/site-kit-wp/issues/9425).
-* Fix OAuth error handling when attempting to create a custom dimension from the "Top content" metric area in an Audience Tile. See [#9350](https://github.com/google/site-kit-wp/issues/9350).
-* Update Analytics setup to support any number of accounts. See [#9348](https://github.com/google/site-kit-wp/issues/9348).
-* Implement the ability to dismiss detected and lost events information in the Analytics module. See [#9343](https://github.com/google/site-kit-wp/issues/9343).
-* Refactor the setup success subtle notification for Audience Segmentation. See [#9281](https://github.com/google/site-kit-wp/issues/9281).
-* Increase maximum Key Metric Widget selection count to 8. See [#9135](https://github.com/google/site-kit-wp/issues/9135).
-* Update the Reader Revenue Manager setup success notification to use the new notifications datastore. See [#8981](https://github.com/google/site-kit-wp/issues/8981).
-* Update the design of the Key Metrics setup CTA banner. See [#8895](https://github.com/google/site-kit-wp/issues/8895).
-* Improve UI/UX on AdSense alerts. See [#7642](https://github.com/google/site-kit-wp/issues/7642).
+* Add GA event tracking for user interactions with the No Audiences Banner and Info Notice. See [#9496](https://github.com/google/site-kit-wp/issues/9496).
+* Add opt-in event tracking for an audience tile's "Top content" metric area. See [#9495](https://github.com/google/site-kit-wp/issues/9495).
+* Add Dashboard Sharing support to Analytics Conversion Reporting tiles. See [#9377](https://github.com/google/site-kit-wp/issues/9377).
+* Improved the design of the User Input Questionnaire. See [#9374](https://github.com/google/site-kit-wp/issues/9374).
+* Update requirement checks for notifications to have all selectors resolved correctly and efficiently. See [#9351](https://github.com/google/site-kit-wp/issues/9351).
+* Update conversion reporting events synchronization to save detected and lost events. See [#9342](https://github.com/google/site-kit-wp/issues/9342).
+* Add the setup form for the Sign in With Google module. See [#9336](https://github.com/google/site-kit-wp/issues/9336).
+* Implement the ability to edit Sign in With Google settings. See [#9334](https://github.com/google/site-kit-wp/issues/9334).
 
 **Fixed**
 
-* Prevent audience settings from being deleted when changing or disconnecting the Analytics property. Reset `configuredAudiences` and `didSetAudiences` to default values while keeping `isAudienceSegmentationWidgetHidden` unchanged. See [#9432](https://github.com/google/site-kit-wp/issues/9432).
-* Improve the availability of the audience widget for secondary administrators. See [#9411](https://github.com/google/site-kit-wp/issues/9411).
-* Fix VRT test failures in CI when launching Chromium, ensuring tests run to completion without errors. See [#9406](https://github.com/google/site-kit-wp/issues/9406).
-* Ensure the error style for the Settings edit screen is cleared when settings are saved successfully. See [#8481](https://github.com/google/site-kit-wp/issues/8481).
+* Fix an issue that caused the visitor groups overlay notification to appear unexpectedly. See [#9481](https://github.com/google/site-kit-wp/issues/9481).
+* Ensure the "Purchasers" default audience can be added to the audience selection when initially setting up the Audience Segmentation feature under the right conditions. See [#9478](https://github.com/google/site-kit-wp/issues/9478).
+* Prevent rendering of the Audience Selection Panel before the feature is set up, ensuring it only renders after setup is complete. See [#9475](https://github.com/google/site-kit-wp/issues/9475).
+* Ensure partial data badges display correctly when the connected Analytics property is in the partial data state. See [#9474](https://github.com/google/site-kit-wp/issues/9474).
+* Fix an issue that caused the visitor groups visibility toggle to appear when the feature wasn't yet set up. See [#9473](https://github.com/google/site-kit-wp/issues/9473).
+* Handle insufficient permission errors correctly when attempting to create audiences via the Audience Segmentation Setup CTA Banner. See [#9471](https://github.com/google/site-kit-wp/issues/9471).
+* Prevent console errors appearing when visiting the dashboard as a secondary admin or view-only user after the Audience Segmentation feature has been set up. See [#9445](https://github.com/google/site-kit-wp/issues/9445).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

@@ -25,7 +25,11 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
@@ -42,7 +46,10 @@ describe( 'ConnectGA4CTATileWidget', () => {
 				provideModules( registry );
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [ 'widget1', 'widget2' ],
+					widgetSlugs: [
+						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					],
 					isWidgetHidden: false,
 				} );
 			},

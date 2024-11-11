@@ -56,7 +56,7 @@ class Conversion_Reporting_Provider {
 	 * Constructor.
 	 *
 	 * @since 1.135.0
-	 * @since n.e.x.t Added Context to constructor.
+	 * @since 1.139.0 Added Context to constructor.
 	 *
 	 * @param Context      $context      Plugin context.
 	 * @param Settings     $settings     Settings instance.

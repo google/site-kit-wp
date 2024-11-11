@@ -27,6 +27,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 	AUDIENCE_CREATION_FORM,
@@ -55,6 +57,8 @@ import SubtleNotification, {
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 
 export default function AudienceCreationNotice() {
+	const viewContext = useViewContext();
+
 	const [ isCreatingAudience, setIsCreatingAudience ] = useState( false );
 
 	const siteKitConfigurableAudiences = useSelect( ( select ) => {
@@ -88,6 +92,9 @@ export default function AudienceCreationNotice() {
 	);
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 
 	const onCloseClick = () => {
@@ -179,7 +186,12 @@ export default function AudienceCreationNotice() {
 	);
 
 	const handleDismissEditScopeNotice = () => {
-		dismissItem( AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG );
+		trackEvent(
+			`${ viewContext }_audiences-sidebar-create-audiences`,
+			'dismiss_oauth_notice'
+		).finally( () => {
+			dismissItem( AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG );
+		} );
 	};
 
 	const setupErrorCode = useSelect( ( select ) =>
@@ -210,6 +222,35 @@ export default function AudienceCreationNotice() {
 	// created one, and the user has not dismissed it.
 	const shouldShowNotice =
 		! isItemDismissed && siteKitConfigurableAudiences?.length < 2;
+
+	// Track an event when the notice is viewed.
+	useEffect( () => {
+		if ( isOpen && shouldShowNotice ) {
+			trackEvent(
+				`${ viewContext }_audiences-sidebar-create-audiences`,
+				'view_notice'
+			);
+		}
+	}, [ isOpen, shouldShowNotice, viewContext ] );
+
+	// Track an event when the OAuth notice is viewed.
+	useEffect( () => {
+		if (
+			isOpen &&
+			! hasAnalytics4EditScope &&
+			! isEditScopeNoticeDismissed
+		) {
+			trackEvent(
+				`${ viewContext }_audiences-sidebar-create-audiences`,
+				'view_oauth_notice'
+			);
+		}
+	}, [
+		hasAnalytics4EditScope,
+		isEditScopeNoticeDismissed,
+		isOpen,
+		viewContext,
+	] );
 
 	if ( ! shouldShowNotice ) {
 		return null;
@@ -270,7 +311,15 @@ export default function AudienceCreationNotice() {
 								<SpinnerButton
 									spinnerPosition={ SPINNER_POSITION.BEFORE }
 									onClick={ () => {
-										handleCreateAudience( audienceSlug );
+										trackEvent(
+											`${ viewContext }_audiences-sidebar-create-audiences`,
+											'create_audience',
+											audienceSlug
+										).finally( () => {
+											handleCreateAudience(
+												audienceSlug
+											);
+										} );
 									} }
 									isSaving={
 										isCreatingAudience === audienceSlug

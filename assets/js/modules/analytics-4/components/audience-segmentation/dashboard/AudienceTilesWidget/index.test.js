@@ -22,12 +22,14 @@
 import AudienceTilesWidget from '.';
 import {
 	act,
+	fireEvent,
 	render,
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
@@ -35,6 +37,7 @@ import {
 	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { getPreviousDate } from '../../../../../../util';
 import {
@@ -46,7 +49,11 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import * as tracking from '../../../../../../util/tracking';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 /**
  * Generates mock response for audience tiles component.
@@ -69,6 +76,27 @@ function provideAudienceTilesMockReport(
 	} );
 
 	const { startDate, endDate } = dates;
+
+	const userCountReportOptions = {
+		startDate,
+		endDate,
+		dimensions: [ 'date' ],
+		metrics: [ { name: 'totalUsers' } ],
+	};
+
+	const userCountReportData = getAnalytics4MockResponse(
+		userCountReportOptions
+	);
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( userCountReportData, {
+			options: userCountReportOptions,
+		} );
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ userCountReportOptions ] );
 
 	const reportOptions = {
 		dimensions: isSiteKitAudiencePartialData
@@ -244,6 +272,12 @@ describe( 'AudienceTilesWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: '12345',
 		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				createTime: '2014-10-02T15:01:23Z',
+			},
+			{ propertyID: '12345' }
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveResourceDataAvailabilityDates( {
@@ -251,11 +285,19 @@ describe( 'AudienceTilesWidget', () => {
 					acc[ name ] = 20201220;
 					return acc;
 				}, {} ),
-				customDimension: {},
+				customDimension: {
+					googlesitekit_post_type: 20201220,
+				},
 				property: {
-					12345: 20201218,
+					12345: 20201220,
 				},
 			} );
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+			)
+		);
 	} );
 
 	afterEach( () => {
@@ -420,14 +462,19 @@ describe( 'AudienceTilesWidget', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
-				audience: {
-					'properties/12345/audiences/3': dataAvailabilityDate,
-					'properties/12345/audiences/4': dataAvailabilityDate,
-				},
-				customDimension: {},
-				property: {},
-			} );
+			.setResourceDataAvailabilityDate(
+				'properties/12345/audiences/3',
+				'audience',
+				dataAvailabilityDate
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setResourceDataAvailabilityDate(
+				'properties/12345/audiences/4',
+				'audience',
+				dataAvailabilityDate
+			);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -496,7 +543,51 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 100 ) );
+		await act( () => waitForTimeouts( 150 ) );
+	} );
+
+	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
+		const configuredAudiences = [ 'properties/12345/audiences/1' ];
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences );
+
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		fireEvent.mouseOver(
+			container.querySelector( '.googlesitekit-info-tooltip' )
+		);
+
+		// Wait for the tooltip to appear, its delay is 100ms.
+		await waitForTimeouts( 100 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_audiences-tile',
+			'view_tile_tooltip',
+			'all-users'
+		);
 	} );
 
 	it( 'should show the "no audiences" banner when there is no matching audience', async () => {

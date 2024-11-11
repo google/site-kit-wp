@@ -34,7 +34,10 @@ import {
 } from '../../../../tests/js/mock-survey-endpoints';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { KM_ANALYTICS_LEAST_ENGAGING_PAGES } from '../../googlesitekit/datastore/user/constants';
+import {
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+} from '../../googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
 describe( 'ChangeMetricsLink', () => {
@@ -76,7 +79,10 @@ describe( 'ChangeMetricsLink', () => {
 
 	it( 'should render a button to change metrics', () => {
 		provideKeyMetrics( registry, {
-			widgetSlugs: [ KM_ANALYTICS_LEAST_ENGAGING_PAGES ],
+			widgetSlugs: [
+				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
 		} );
 
 		const { queryByRole } = render( <ChangeMetricsLink />, {
@@ -90,7 +96,10 @@ describe( 'ChangeMetricsLink', () => {
 
 	it( 'should set UI store key correctly when button is clicked', () => {
 		provideKeyMetrics( registry, {
-			widgetSlugs: [ KM_ANALYTICS_LEAST_ENGAGING_PAGES ],
+			widgetSlugs: [
+				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
 		} );
 
 		registry
@@ -112,7 +121,10 @@ describe( 'ChangeMetricsLink', () => {
 
 	it( 'should trigger a survey when viewed', async () => {
 		provideKeyMetrics( registry, {
-			widgetSlugs: [ KM_ANALYTICS_LEAST_ENGAGING_PAGES ],
+			widgetSlugs: [
+				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
 		} );
 		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
 		mockSurveyEndpoints();
@@ -130,7 +142,10 @@ describe( 'ChangeMetricsLink', () => {
 
 	it( 'should trigger two surveys when the key metrics setup is completed by current user', async () => {
 		provideKeyMetrics( registry, {
-			widgetSlugs: [ KM_ANALYTICS_LEAST_ENGAGING_PAGES ],
+			widgetSlugs: [
+				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
 		} );
 		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
 		provideUserInfo( registry, { id: 1 } );

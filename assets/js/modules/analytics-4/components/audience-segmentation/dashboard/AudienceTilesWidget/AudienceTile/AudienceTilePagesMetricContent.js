@@ -40,12 +40,17 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../../datastore/constants';
-import { SpinnerButton } from 'googlesitekit-components';
 import AudienceTileNoData from './AudienceTileNoData';
 import Link from '../../../../../../../components/Link';
 import PartialDataNotice from './PartialDataNotice';
-import { numFmt } from '../../../../../../../util';
+import { numFmt, trackEvent } from '../../../../../../../util';
+import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
+import useViewContext from '../../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../../hooks/useViewOnly';
+import CreateCustomDimensionCTA from './CreateCustomDimensionCTA';
+
+const CreateCustomDimensionCTAWithIntersectionObserver =
+	withIntersectionObserver( CreateCustomDimensionCTA );
 
 export default function AudienceTilePagesMetricContent( {
 	topContentTitles,
@@ -55,6 +60,7 @@ export default function AudienceTilePagesMetricContent( {
 	onCreateCustomDimension,
 	isSaving,
 } ) {
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	const breakpoint = useBreakpoint();
 
@@ -71,6 +77,13 @@ export default function AudienceTilePagesMetricContent( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	function handleCreateCustomDimension() {
+		trackEvent(
+			`${ viewContext }_audiences-top-content-cta`,
+			'create_custom_dimension'
+		).finally( onCreateCustomDimension );
+	}
 
 	function ContentLinkComponent( { content } ) {
 		const pageTitle = topContentTitles[ content?.value ];
@@ -112,23 +125,16 @@ export default function AudienceTilePagesMetricContent( {
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric__content">
 			{ ! hasCustomDimension && (
-				<div className="googlesitekit-audience-segmentation-tile-metric__no-data">
-					{ __( 'No data to show', 'google-site-kit' ) }
-					<p>
-						{ __(
-							'Update Analytics to track metric',
-							'google-site-kit'
-						) }
-					</p>
-					<SpinnerButton
-						danger
-						onClick={ onCreateCustomDimension }
-						isSaving={ isSaving }
-						disabled={ isSaving }
-					>
-						{ __( 'Update', 'google-site-kit' ) }
-					</SpinnerButton>
-				</div>
+				<CreateCustomDimensionCTAWithIntersectionObserver
+					onClick={ handleCreateCustomDimension }
+					isSaving={ isSaving }
+					onInView={ () => {
+						trackEvent(
+							`${ viewContext }_audiences-top-content-cta`,
+							'view_cta'
+						);
+					} }
+				/>
 			) }
 			{ hasCustomDimension && ! hasDimensionValues && (
 				<AudienceTileNoData />

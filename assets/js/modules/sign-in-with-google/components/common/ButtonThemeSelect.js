@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Module Button Theme component.
+ * Sign in with Google Module Button Theme component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -15,11 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * External dependencies
- */
-import { capitalize } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -64,9 +59,9 @@ export default function ButtonThemeSelect() {
 				enhanced
 				outlined
 			>
-				{ SIGN_IN_WITH_GOOGLE_THEMES.map( ( value, i ) => (
-					<Option key={ i } value={ value }>
-						{ capitalize( value ) }
+				{ SIGN_IN_WITH_GOOGLE_THEMES.map( ( option ) => (
+					<Option key={ option.value } value={ option.value }>
+						{ option.label }
 					</Option>
 				) ) }
 			</Select>
