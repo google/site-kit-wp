@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
@@ -34,30 +34,28 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
  * @return {boolean} Whether the CTA widget should be displayed.
  */
 export default function useDisplayCTAWidget() {
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( KEY_METRICS_SETUP_CTA_WIDGET_SLUG )
-	);
+	return useInViewSelect( ( select ) => {
+		const isDismissed = select( CORE_USER ).isItemDismissed(
+			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
+		);
 
-	// We should call isGatheringData() within this hook for completeness as we do not want to rely
-	// on it being called in other components. This selector makes report requests which, if they return
-	// data, then the `data-available` transients are set. These transients are prefetched as a global on
-	// the next page load.
-	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
+		// We should call isGatheringData() within this hook for completeness as we do not want to rely
+		// on it being called in other components. This selector makes report requests which, if they return
+		// data, then the `data-available` transients are set. These transients are prefetched as a global on
+		// the next page load.
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
-		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
-	} );
-	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
-		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
-			return false;
+
+		let analyticsIsDataAvailableOnLoad = false;
+		if ( select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			select( MODULES_ANALYTICS_4 ).isGatheringData();
+			analyticsIsDataAvailableOnLoad =
+				select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
 		}
 
-		select( MODULES_ANALYTICS_4 ).isGatheringData();
-		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
-	} );
-
-	return (
-		isDismissed === false &&
-		analyticsIsDataAvailableOnLoad &&
-		searchConsoleIsDataAvailableOnLoad
-	);
+		return (
+			isDismissed === false &&
+			analyticsIsDataAvailableOnLoad &&
+			select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad()
+		);
+	}, [] );
 }
