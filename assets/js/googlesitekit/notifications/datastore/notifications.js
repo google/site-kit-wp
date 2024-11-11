@@ -113,10 +113,11 @@ export const actions = {
 			type: REGISTER_NOTIFICATION,
 		};
 	},
-	receiveQueuedNotifications( queuedNotifications ) {
+	receiveQueuedNotifications( queuedNotifications, groupID ) {
 		return {
 			payload: {
 				queuedNotifications,
+				groupID,
 			},
 			type: RECEIVE_QUEUED_NOTIFICATIONS,
 		};
