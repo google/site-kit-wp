@@ -30,12 +30,17 @@
 		}
 
 		.googlesitekit-chip-tab-group__tab-items {
+			background: #fff;
 			display: flex;
 			flex-wrap: nowrap;
 			gap: 12px;
+			left: 0;
 			margin: 0 16px 15px;
 			overflow: auto;
+			position: sticky;
+			top: 0;
 			white-space: nowrap;
+			z-index: 1;
 
 			@media (min-width: $bp-tablet) {
 				flex-wrap: wrap;
