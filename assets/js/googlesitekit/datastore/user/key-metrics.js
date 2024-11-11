@@ -112,10 +112,6 @@ const fetchResetKeyMetricsSelectionStore = createFetchStore( {
 		...state,
 		keyMetricsSettings,
 	} ),
-	argsToParams: ( settings ) => settings,
-	validateParams: ( settings ) => {
-		invariant( isPlainObject( settings ), 'Settings should be an object.' );
-	},
 } );
 
 const baseActions = {
@@ -200,18 +196,8 @@ const baseActions = {
 
 		yield clearError( 'resetKeyMetricsSelection', [] );
 
-		const registry = yield commonActions.getRegistry();
-		const keyMetricsSettings = registry
-			.select( CORE_USER )
-			.getKeyMetricsSettings();
-
 		const { response, error } =
-			yield fetchResetKeyMetricsSelectionStore.actions.fetchResetKeyMetricsSelection(
-				{
-					...keyMetricsSettings,
-					...settings,
-				}
-			);
+			yield fetchResetKeyMetricsSelectionStore.actions.resetKeyMetricsSelectionStore();
 
 		if ( error ) {
 			// Store error manually since resetKeyMetricsSelection signature differs from fetchResetKeyMetricsSelectionStore.
