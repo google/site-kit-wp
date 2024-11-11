@@ -239,7 +239,9 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 						{ allGroups.map( ( group, index ) => (
 							<Tab key={ index } aria-label={ group.LABEL }>
 								{ index === 0 && (
-									<CheckMark width={ 12 } height={ 12 } />
+									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg">
+										<CheckMark width={ 12 } height={ 12 } />
+									</span>
 								) }
 								{ group.LABEL }
 								{ selectedCounts[ group.SLUG ] > 0 && (
