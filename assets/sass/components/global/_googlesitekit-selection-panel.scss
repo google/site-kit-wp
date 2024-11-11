@@ -106,12 +106,17 @@
 	}
 
 	.googlesitekit-selection-panel-item {
-		border-bottom: 2px solid $c-neutral-n-100;
+		border-bottom: 2px solid $c-surfaces-surface-1;
 		display: flex;
-		margin: 0 $grid-gap-desktop;
+		margin: 0 16px;
 		outline: 1px solid $c-white;
 		outline-offset: -1px;
 		padding: 0;
+
+		@media (min-width: $bp-desktop) {
+			border-color: $c-surfaces-surface-2;
+			margin: 0 $grid-gap-desktop;
+		}
 
 		&:last-child {
 			border: none;
@@ -127,6 +132,11 @@
 			flex: 1;
 			outline: none;
 			padding: 0 4px 10px;
+
+			.mdc-form-field {
+				align-items: center;
+				gap: 5px;
+			}
 
 			.mdc-checkbox__description {
 				padding: 0;

@@ -31,12 +31,13 @@
 			display: flex;
 			flex-wrap: nowrap;
 			gap: 12px;
-			margin: 0 25px 25px;
+			margin: 0 16px 15px;
 			overflow: auto;
 			white-space: nowrap;
 
 			@media (min-width: $bp-tablet) {
 				flex-wrap: wrap;
+				margin: 0 25px 25px;
 				overflow: unset;
 				white-space: unset;
 			}
@@ -106,6 +107,14 @@
 
 			.googlesitekit-selection-box {
 				padding: 0 4px 10px;
+			}
+		}
+
+		.googlesitekit-chip-tab-group__tab-item-mobile-svg {
+			margin-right: 7px;
+
+			svg {
+				display: block;
 			}
 		}
 
