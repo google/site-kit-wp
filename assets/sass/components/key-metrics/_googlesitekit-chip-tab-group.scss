@@ -25,6 +25,8 @@
 			font-weight: $fw-medium;
 			min-height: 28px;
 			padding: 6px 14px;
+
+			--mdc-ripple-fg-opacity: 0;
 		}
 
 		.googlesitekit-chip-tab-group__tab-items {
