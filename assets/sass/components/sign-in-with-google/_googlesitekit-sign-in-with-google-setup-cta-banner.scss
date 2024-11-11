@@ -26,6 +26,7 @@
 			justify-content: center;
 
 			svg {
+				flex: 1;
 				max-height: 136px;
 
 				@media (min-width: $width-desktop + 1 + px) {
