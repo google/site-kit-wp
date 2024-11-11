@@ -195,7 +195,8 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_QUEUED_NOTIFICATIONS: {
-			state.queuedNotifications = payload.queuedNotifications;
+			state.queuedNotifications[ payload.groupID ] =
+				payload.queuedNotifications;
 			break;
 		}
 
