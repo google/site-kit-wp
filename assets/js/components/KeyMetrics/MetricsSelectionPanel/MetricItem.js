@@ -86,9 +86,9 @@ export default function MetricItem( {
 
 			setValues( KEY_METRICS_SELECTION_FORM, {
 				[ KEY_METRICS_SELECTED ]: currentlySelectedMetrics,
-				// Unstaged list uses the same logic as selected list, but
-				// unstaged is stored only temporary to collect the final selection
-				// from the currently active metrics group, and then it is reset.
+				// Unstaged list creates a copy of KM selected list, but unstaged
+				// is stored only temporary to collect the final selection that will
+				// be transfered over to effective selection on tab change and then it is reset.
 				[ UNSTAGED_SELECTION ]: currentlySelectedMetrics,
 			} );
 		},
