@@ -52,7 +52,7 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import { SelectionPanelFooter } from '../../SelectionPanel';
+import SelectionPanelFooter from './SelectionPanelFooter';
 import { useFeature } from '../../../hooks/useFeature';
 
 export default function Footer( {
