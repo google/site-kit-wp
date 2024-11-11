@@ -79,7 +79,7 @@ import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnect
 import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './KeyMetrics/constants';
+import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -203,18 +203,15 @@ export default function DashboardMainApp() {
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
-	const showKeyMetricsSelectionPanel = useSelect(
-		( select ) =>
-			// Show the selection panel if the Key Metrics feature is set up and is not hidden...
-			( select( CORE_SITE ).isKeyMetricsSetupCompleted() === true &&
-				isKeyMetricsWidgetHidden === false ) ||
-			// ...or if the setup CTA is visible.
-			( select( CORE_USER ).isAuthenticated() &&
-				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false &&
-				select( CORE_USER ).isItemDismissed(
-					KEY_METRICS_SETUP_CTA_WIDGET_SLUG
-				) === false )
-	);
+	const displayCTAWidget = useDisplayCTAWidget();
+
+	const showKeyMetricsSelectionPanel = useSelect( ( select ) => {
+		const KMVisibleandSetupCompleted =
+			select( CORE_SITE ).isKeyMetricsSetupCompleted() === true &&
+			isKeyMetricsWidgetHidden === false;
+
+		return KMVisibleandSetupCompleted || displayCTAWidget;
+	} );
 
 	useMonitorInternetConnection();
 
