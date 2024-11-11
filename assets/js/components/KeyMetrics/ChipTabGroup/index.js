@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useState, useEffect, useMemo } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -156,9 +157,21 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const resetUnstagedSelection = useCallback( () => {
+		setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: selectedMetrics,
+			[ EFFECTIVE_SELECTION ]: [
+				...effectiveSelection,
+				...unstagedSelection,
+			],
+			[ UNSTAGED_SELECTION ]: [],
+		} );
+	}, [ selectedMetrics, effectiveSelection, unstagedSelection, setValues ] );
+
 	const onChipChange = useCallback(
 		( slug, index ) => {
 			if ( ! slug ) {
+				// Set active group for mobile tabs.
 				const activeGroup = allGroups[ index ];
 				setActiveGroupIndex( index );
 				setIsActive( activeGroup.SLUG );
@@ -167,37 +180,34 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			}
 
 			if ( unstagedSelection.length ) {
-				setValues( KEY_METRICS_SELECTION_FORM, {
-					[ KEY_METRICS_SELECTED ]: selectedMetrics,
-					[ EFFECTIVE_SELECTION ]: [
-						...effectiveSelection,
-						...unstagedSelection,
-					],
-					[ UNSTAGED_SELECTION ]: [],
-				} );
+				resetUnstagedSelection();
 			}
 		},
-		[
-			setIsActive,
-			setValues,
-			allGroups,
-			selectedMetrics,
-			effectiveSelection,
-			unstagedSelection,
-		]
+		[ allGroups, unstagedSelection, setIsActive, resetUnstagedSelection ]
 	);
 
 	const isSelectionPanelOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
+	const isSelectionPanelOpenPrevious = usePrevious( isSelectionPanelOpen );
 
 	useEffect( () => {
 		// Ensure that current selection group is always active when selection panel re-opens.
-		if ( isSelectionPanelOpen ) {
+		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
 			setIsActive( KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG );
 			setActiveGroupIndex( 0 );
 		}
-	}, [ isSelectionPanelOpen ] );
+
+		if ( isSelectionPanelOpenPrevious && ! isSelectionPanelOpen ) {
+			// Reset the unstaged selection when selection panel is opened/re-opened.
+			resetUnstagedSelection();
+		}
+	}, [
+		isSelectionPanelOpen,
+		isSelectionPanelOpenPrevious,
+		unstagedSelection,
+		resetUnstagedSelection,
+	] );
 
 	const chipItemRows = [
 		[ currentSelectionGroup, ...keyMetricsGroups.slice( 0, 2 ) ],
