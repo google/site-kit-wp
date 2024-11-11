@@ -196,13 +196,20 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 					) }
 					ref={ widgetAreaRef }
 				>
-					<WidgetAreaHeader
-						slug={ slug }
-						Icon={ Icon }
-						title={ title }
-						subtitle={ subtitle }
-						CTA={ CTA }
-					/>
+					<Row>
+						<Cell
+							className="googlesitekit-widget-area-header"
+							size={ 12 }
+						>
+							<WidgetAreaHeader
+								slug={ slug }
+								Icon={ Icon }
+								title={ title }
+								subtitle={ subtitle }
+								CTA={ CTA }
+							/>
+						</Cell>
+					</Row>
 
 					<div className="googlesitekit-widget-area-widgets">
 						<Row>
