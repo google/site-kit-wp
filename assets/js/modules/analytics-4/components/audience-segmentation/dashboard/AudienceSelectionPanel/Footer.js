@@ -77,12 +77,11 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const availableAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
 	);
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
-	);
 
 	const { saveAudienceSettings, removeDismissedItems } =
 		useDispatch( CORE_USER );
+
+	const { getConfiguredAudiences } = useSelect( CORE_USER );
 
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;
@@ -167,6 +166,10 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			DEFAULT_AUDIENCE: 'default',
 		};
 
+		// Call to the selector within the callback ensures that the latest
+		// value is used.
+		const configuredAudiences = getConfiguredAudiences();
+
 		const eventLabel = Object.keys( audienceTypeLabels )
 			.map( ( type ) => {
 				const audiencesOfType = configuredAudiences.filter(
@@ -188,7 +191,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			'audiences_sidebar_save',
 			eventLabel
 		);
-	}, [ availableAudiences, configuredAudiences, viewContext ] );
+	}, [ availableAudiences, getConfiguredAudiences, viewContext ] );
 
 	const onCancel = useCallback( () => {
 		trackEvent(
