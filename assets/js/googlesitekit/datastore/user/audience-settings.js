@@ -92,6 +92,7 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 } );
 
 // Actions
+const RESET_AUDIENCE_SETTINGS = 'RESET_AUDIENCE_SETTINGS';
 const SET_CONFIGURED_AUDIENCES = 'SET_CONFIGURED_AUDIENCES';
 const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
 	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
@@ -167,6 +168,28 @@ const baseActions = {
 	),
 
 	/**
+	 * Resets the audience settings.
+	 *
+	 * @since 1.139.0
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetAudienceSettings() {
+		const { dispatch } = yield commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_AUDIENCE_SETTINGS,
+		};
+
+		yield errorStoreActions.clearErrors( 'getAudienceSettings' );
+
+		return dispatch( CORE_USER ).invalidateResolutionForStoreSelector(
+			'getAudienceSettings'
+		);
+	},
+
+	/**
 	 * Sets the configured audiences.
 	 *
 	 * @since 1.124.0
@@ -211,6 +234,11 @@ const baseControls = {};
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
+		case RESET_AUDIENCE_SETTINGS: {
+			state.audienceSettings = baseInitialState.audienceSettings;
+			break;
+		}
+
 		case SET_CONFIGURED_AUDIENCES: {
 			const { audienceResourceNames } = payload;
 

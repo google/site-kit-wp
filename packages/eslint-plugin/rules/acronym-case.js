@@ -78,6 +78,12 @@ module.exports = {
 					return;
 				}
 
+				// Ignore identifiers that are a function call or argument, we can assume the identifier will be validated at the point of declaration,
+				// but want to allow those which are exceptions to the rule to be invoked or passed into functions without raising a linting error.
+				if ( node.parent?.type === 'CallExpression' ) {
+					return;
+				}
+
 				// Ignore known, JS globals like `document` and `window`.
 				// `document.getElementById` should not set off this rule.
 				if (

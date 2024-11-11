@@ -41,15 +41,8 @@ import GatheringDataNotification from '../../components/notifications/GatheringD
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 
-/**
- * Registers notifications not specific to any one particular module.
- *
- * @since 1.132.0
- *
- * @param {Object} notificationsAPI Notifications API.
- */
-export function registerDefaults( notificationsAPI ) {
-	notificationsAPI.registerNotification( 'authentication-error', {
+export const DEFAULT_NOTIFICATIONS = {
+	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
 		priority: 150,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
@@ -60,7 +53,19 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
@@ -73,11 +78,13 @@ export function registerDefaults( notificationsAPI ) {
 				TAGMANAGER_READ_SCOPE
 			);
 
-			const showUnsatisfiedScopesAlertGTE =
-				ga4ModuleConnected && ! hasTagManagerReadScope;
-
 			const unsatisfiedScopes =
 				select( CORE_USER ).getUnsatisfiedScopes();
+
+			const showUnsatisfiedScopesAlertGTE =
+				ga4ModuleConnected &&
+				! hasTagManagerReadScope &&
+				unsatisfiedScopes?.length === 1;
 
 			return (
 				unsatisfiedScopes?.length &&
@@ -87,9 +94,8 @@ export function registerDefaults( notificationsAPI ) {
 			);
 		},
 		isDismissible: false,
-	} );
-
-	notificationsAPI.registerNotification( 'authentication-error-gte', {
+	},
+	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
 		priority: 150,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
@@ -100,7 +106,19 @@ export function registerDefaults( notificationsAPI ) {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getSetupErrorMessage selector relies on the resolution
+				// of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// The isAuthenticated() and hasScope() selectors
+				// rely on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
 			const setupErrorMessage =
 				select( CORE_SITE ).getSetupErrorMessage();
 
@@ -123,91 +141,91 @@ export function registerDefaults( notificationsAPI ) {
 			);
 		},
 		isDismissible: false,
-	} );
+	},
+	'top-earning-pages-success-notification': {
+		Component: GA4AdSenseLinkedNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+		],
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			await Promise.all( [
+				// The getAdSenseLinked selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
 
-	notificationsAPI.registerNotification(
-		'top-earning-pages-success-notification',
-		{
-			Component: GA4AdSenseLinkedNotification,
-			priority: 10,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-			viewContexts: [
-				VIEW_CONTEXT_MAIN_DASHBOARD,
-				VIEW_CONTEXT_ENTITY_DASHBOARD,
-			],
-			checkRequirements: async ( {
-				select,
-				resolveSelect,
-				dispatch,
-			} ) => {
-				const adSenseModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'adsense' );
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'adsense' );
 
-				const analyticsModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const analyticsModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-				const isAdSenseLinked =
-					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
-				const analyticsAndAdsenseConnectedAndLinked =
-					adSenseModuleConnected &&
-					analyticsModuleConnected &&
-					isAdSenseLinked;
+			const analyticsAndAdsenseConnectedAndLinked =
+				adSenseModuleConnected &&
+				analyticsModuleConnected &&
+				isAdSenseLinked;
 
-				if ( ! analyticsAndAdsenseConnectedAndLinked ) {
-					return false;
-				}
+			if ( ! analyticsAndAdsenseConnectedAndLinked ) {
+				return false;
+			}
 
-				const { startDate, endDate } = select(
-					CORE_USER
-				).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} );
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
 
-				const reportOptions = {
-					startDate,
-					endDate,
-					dimensions: [ 'pagePath' ],
-					metrics: [ { name: 'totalAdRevenue' } ],
-					orderby: [
-						{
-							metric: { metricName: 'totalAdRevenue' },
-							desc: true,
-						},
-					],
-					limit: 3,
-				};
+			const reportOptions = {
+				startDate,
+				endDate,
+				dimensions: [ 'pagePath' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				orderby: [
+					{
+						metric: { metricName: 'totalAdRevenue' },
+						desc: true,
+					},
+				],
+				limit: 3,
+			};
 
-				// Ensure resolution of the report has completed before showing this
-				// notification, since it should only appear when the user has no data in
-				// the report.
-				const report = await resolveSelect(
-					MODULES_ANALYTICS_4
-				).getReport( reportOptions );
+			// Ensure resolution of the report has completed before showing this
+			// notification, since it should only appear when the user has no data in
+			// the report.
+			const report = await resolveSelect( MODULES_ANALYTICS_4 ).getReport(
+				reportOptions
+			);
 
-				// This notification should only appear when the user has connected their
-				// AdSense and Google Analytics accounts, but has not yet received any data
-				// from linking the accounts. If they have any data from the "linked" report,
-				// we show them a different notification and should not show this one. Check
-				// to see if the user already has data and dismiss this notification without
-				// showing it.
-				if (
-					isZeroReport( report ) === false &&
-					analyticsAndAdsenseConnectedAndLinked
-				) {
-					await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
-						'top-earning-pages-success-notification'
-					);
-					return false;
-				}
+			// This notification should only appear when the user has connected their
+			// AdSense and Google Analytics accounts, but has not yet received any data
+			// from linking the accounts. If they have any data from the "linked" report,
+			// we show them a different notification and should not show this one. Check
+			// to see if the user already has data and dismiss this notification without
+			// showing it.
+			if (
+				isZeroReport( report ) === false &&
+				analyticsAndAdsenseConnectedAndLinked
+			) {
+				await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					'top-earning-pages-success-notification'
+				);
+				return false;
+			}
 
-				return true;
-			},
-			isDismissible: true,
-		}
-	);
-
-	notificationsAPI.registerNotification( 'gathering-data-notification', {
+			return true;
+		},
+		isDismissible: true,
+	},
+	'gathering-data-notification': {
 		Component: GatheringDataNotification,
 		priority: 300,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -221,6 +239,15 @@ export function registerDefaults( notificationsAPI ) {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
+			await Promise.all( [
+				// The isModuleConnected() and canViewSharedModule() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				viewOnly
+					? resolveSelect( CORE_MODULES ).getRecoverableModules()
+					: Promise.resolve( [] ),
+			] );
+
 			const isAnalyticsConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
@@ -232,27 +259,25 @@ export function registerDefaults( notificationsAPI ) {
 				? true
 				: select( CORE_USER ).canViewSharedModule( 'search-console' );
 
-			const showRecoverableAnalytics = await ( async () => {
+			const showRecoverableAnalytics = await ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'analytics-4'
 				);
 			} )();
-			const showRecoverableSearchConsole = await ( async () => {
+			const showRecoverableSearchConsole = await ( () => {
 				if ( ! viewOnly ) {
 					return false;
 				}
 
-				const recoverableModules = await resolveSelect(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
 					'search-console'
@@ -277,9 +302,8 @@ export function registerDefaults( notificationsAPI ) {
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
 		isDismissible: true,
-	} );
-
-	notificationsAPI.registerNotification( 'zero-data-notification', {
+	},
+	'zero-data-notification': {
 		Component: ZeroDataNotification,
 		priority: 310,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -292,6 +316,15 @@ export function registerDefaults( notificationsAPI ) {
 		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
 			const viewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			await Promise.all( [
+				// The isModuleConnected() and canViewSharedModule() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				viewOnly
+					? resolveSelect( CORE_MODULES ).getRecoverableModules()
+					: Promise.resolve( [] ),
+			] );
 
 			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
 				// Check if the module connected and return early if not.
@@ -310,9 +343,8 @@ export function registerDefaults( notificationsAPI ) {
 						return 'cant-view';
 					}
 
-					const modules = await resolveSelect(
-						CORE_MODULES
-					).getRecoverableModules();
+					const modules =
+						select( CORE_MODULES ).getRecoverableModules();
 					if ( !! modules[ moduleSlug ] ) {
 						return 'recovering';
 					}
@@ -365,5 +397,21 @@ export function registerDefaults( notificationsAPI ) {
 			);
 		},
 		isDismissible: true,
-	} );
+	},
+};
+
+/**
+ * Registers notifications not specific to any one particular module.
+ *
+ * @since 1.132.0
+ *
+ * @param {Object} notificationsAPI Notifications API.
+ */
+export function registerDefaults( notificationsAPI ) {
+	for ( const notificationID in DEFAULT_NOTIFICATIONS ) {
+		notificationsAPI.registerNotification(
+			notificationID,
+			DEFAULT_NOTIFICATIONS[ notificationID ]
+		);
+	}
 }

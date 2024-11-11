@@ -104,6 +104,7 @@
 			font-size: $fs-title-lg;
 			font-weight: 500;
 			margin-top: 4px;
+			text-transform: capitalize;
 
 			@media (min-width: $bp-nonMobile) {
 				margin: 5px 0 0;
@@ -289,7 +290,7 @@
 			}
 
 			@media (min-width: $bp-desktop) {
-				grid-row: 1 / -1;
+				grid-row: span 2;
 			}
 		}
 

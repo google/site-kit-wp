@@ -69,15 +69,12 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 		return { pageToken };
 	},
 	reducerCallback( state, response ) {
-		const { accountSummaries: newAccountSummaries } = response;
-		const mergedAccountSummaries = [
-			...( state.accountSummaries || [] ),
-			...newAccountSummaries,
-		];
-
 		return {
 			...state,
-			accountSummaries: mergedAccountSummaries,
+			accountSummaries: [
+				...( state.accountSummaries || [] ),
+				...( response.accountSummaries || [] ),
+			],
 		};
 	},
 } );
@@ -111,6 +108,7 @@ const fetchCreateAccountStore = createFetchStore( {
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
+const RESET_ACCOUNT_SETTINGS = 'RESET_ACCOUNT_SETTINGS';
 const TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES =
 	'TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES';
 
@@ -139,6 +137,20 @@ const baseActions = {
 		return dispatch(
 			MODULES_ANALYTICS_4
 		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
+	},
+
+	/**
+	 * Resets the account settings.
+	 *
+	 * @since 1.138.0
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetAccountSettings() {
+		return {
+			payload: {},
+			type: RESET_ACCOUNT_SETTINGS,
+		};
 	},
 
 	/**
@@ -262,7 +274,7 @@ const baseActions = {
 	 * transformed (e.g., extracting and populating relevant account and property
 	 * IDs) and then sorted in a case-insensitive manner by display name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.138.0
 	 *
 	 * @return {Object} The action object with the type `TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES`.
 	 */
@@ -290,6 +302,9 @@ const baseReducer = createReducer( ( state, { type } ) => {
 
 		case RESET_ACCOUNT_SUMMARIES:
 			state.accountSummaries = undefined;
+			break;
+
+		case RESET_ACCOUNT_SETTINGS:
 			state.settings.accountID = undefined;
 			state.settings.propertyID = undefined;
 			state.settings.measurementID = undefined;

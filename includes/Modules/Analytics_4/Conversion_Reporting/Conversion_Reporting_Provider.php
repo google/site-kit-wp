@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -55,12 +56,15 @@ class Conversion_Reporting_Provider {
 	 * Constructor.
 	 *
 	 * @since 1.135.0
+	 * @since 1.139.0 Added Context to constructor.
 	 *
+	 * @param Context      $context      Plugin context.
 	 * @param Settings     $settings     Settings instance.
 	 * @param User_Options $user_options User_Options instance.
 	 * @param Analytics_4  $analytics    analytics_4 instance.
 	 */
 	public function __construct(
+		Context $context,
 		Settings $settings,
 		User_Options $user_options,
 		Analytics_4 $analytics
@@ -68,7 +72,7 @@ class Conversion_Reporting_Provider {
 		$this->user_options = $user_options;
 		$this->analytics    = $analytics;
 
-		$this->events_sync = new Conversion_Reporting_Events_Sync( $settings, $this->analytics );
+		$this->events_sync = new Conversion_Reporting_Events_Sync( $context, $settings, $this->analytics );
 		$this->cron        = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
 	}
 

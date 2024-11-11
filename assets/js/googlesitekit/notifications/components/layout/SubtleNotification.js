@@ -20,18 +20,23 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
+import WarningSVG from '../../../../../svg/icons/warning.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function SubtleNotification( {
+	className,
 	title,
 	description,
 	dismissCTA,
 	additionalCTA,
+	type = 'success',
+	icon,
 } ) {
 	return (
 		<Grid>
@@ -39,19 +44,38 @@ export default function SubtleNotification( {
 				<Cell
 					alignMiddle
 					size={ 12 }
-					className="googlesitekit-subtle-notification"
+					className={ classnames(
+						'googlesitekit-subtle-notification',
+						className,
+						{
+							'googlesitekit-subtle-notification--success':
+								type === 'success',
+							'googlesitekit-subtle-notification--warning':
+								type === 'warning',
+						}
+					) }
 				>
 					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
+						{ icon }
+						{ type === 'success' && ! icon && (
+							<CheckFill width={ 24 } height={ 24 } />
+						) }
+						{ type === 'warning' && ! icon && (
+							<WarningSVG width={ 24 } height={ 24 } />
+						) }
 					</div>
+
 					<div className="googlesitekit-subtle-notification__content">
 						<p>{ title }</p>
 						<p className="googlesitekit-subtle-notification__secondary_description">
 							{ description }
 						</p>
 					</div>
-					{ dismissCTA }
-					{ additionalCTA }
+					<div className="googlesitekit-subtle-notification__action">
+						{ dismissCTA }
+
+						{ additionalCTA }
+					</div>
 				</Cell>
 			</Row>
 		</Grid>
@@ -59,8 +83,11 @@ export default function SubtleNotification( {
 }
 
 SubtleNotification.propTypes = {
+	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
+	type: PropTypes.string,
+	icon: PropTypes.object,
 };

@@ -21,10 +21,13 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
+import Notifications from 'googlesitekit-notifications';
 import {
 	registerStore,
 	registerModule,
+	registerNotifications,
 } from './modules/reader-revenue-manager';
 
 registerStore( Data );
 registerModule( Modules );
+registerNotifications( Notifications );

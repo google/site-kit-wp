@@ -58,6 +58,7 @@ class Audience_Settings extends User_Setting {
 	 * Merges an array of settings to update.
 	 *
 	 * @since 1.124.0
+	 * @since 1.138.0 Allow setting `null` for `configuredAudiences`.
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -66,14 +67,17 @@ class Audience_Settings extends User_Setting {
 		$settings = $this->get();
 		$partial  = array_filter(
 			$partial,
-			function ( $value ) {
-				return null !== $value;
-			}
+			function ( $value, $key ) {
+				// Allow setting `null` for `configuredAudiences`.
+				return 'configuredAudiences' === $key ? true : null !== $value;
+			},
+			ARRAY_FILTER_USE_BOTH
 		);
 
 		$allowed_settings = array(
 			'configuredAudiences'                => true,
 			'isAudienceSegmentationWidgetHidden' => true,
+			'didSetAudiences'                    => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
@@ -93,6 +97,7 @@ class Audience_Settings extends User_Setting {
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.124.0
+	 * @since 1.138.0 Allow setting `null` for `configuredAudiences`.
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -104,8 +109,11 @@ class Audience_Settings extends User_Setting {
 
 			$sanitized_settings = array();
 
-			if ( isset( $settings['configuredAudiences'] ) ) {
-				$sanitized_settings['configuredAudiences'] = Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
+			// Allow setting `null` for `configuredAudiences`.
+			if ( array_key_exists( 'configuredAudiences', $settings ) ) {
+				$sanitized_settings['configuredAudiences'] = is_null( $settings['configuredAudiences'] )
+					? null
+					: Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
 			}
 
 			if ( isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {

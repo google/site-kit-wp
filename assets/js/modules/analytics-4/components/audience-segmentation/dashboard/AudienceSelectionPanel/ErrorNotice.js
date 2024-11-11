@@ -19,14 +19,22 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import Link from '../../../../../../components/Link';
@@ -35,6 +43,8 @@ import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
 
 export default function ErrorNotice() {
+	const viewContext = useViewContext();
+
 	const syncAvailableAudiencesError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForAction(
 			'syncAvailableAudiences'
@@ -49,6 +59,9 @@ export default function ErrorNotice() {
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
 			code: 'analytics-4_insufficient_permissions',
 		} )
+	);
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 
 	const { clearError, syncAvailableAudiences } =
@@ -73,6 +86,26 @@ export default function ErrorNotice() {
 		errors.push( siteKitUserCountReportError );
 	}
 
+	const hasErrors = errors.length > 0;
+
+	const hasInsufficientPermissionsError = errors.some( ( error ) =>
+		isInsufficientPermissionsError( error )
+	);
+
+	// Track an event when the error notice is displayed.
+	useEffect( () => {
+		if ( ! isOpen || ! hasErrors ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_audiences-sidebar`,
+			hasInsufficientPermissionsError
+				? 'insufficient_permissions_error'
+				: 'data_loading_error'
+		);
+	}, [ hasErrors, hasInsufficientPermissionsError, isOpen, viewContext ] );
+
 	if ( ! errors.length ) {
 		return null;
 	}
@@ -81,10 +114,6 @@ export default function ErrorNotice() {
 		otherUserCountReportError,
 		siteKitUserCountReportError,
 	].some( ( error ) => !! error );
-
-	const hasInsufficientPermissionsError = errors.some( ( error ) =>
-		isInsufficientPermissionsError( error )
-	);
 
 	return (
 		<div className="googlesitekit-audience-selection-panel__error-notice">

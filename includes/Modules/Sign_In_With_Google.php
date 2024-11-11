@@ -10,14 +10,22 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
+use Google\Site_Kit_Dependencies\Google_Client;
+use WP_Error;
 
 /**
  * Class representing the Sign in With Google module.
@@ -28,6 +36,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
  */
 final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation {
 
+	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 
@@ -42,6 +51,80 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.137.0
 	 */
 	public function register() {
+		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
+
+		add_action( 'login_form_google_auth', array( $this, 'handle_google_auth' ) );
+		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
+	}
+
+	/**
+	 * Intercept the page request to process token ID
+	 * and complete Sign in with Google flow.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function handle_google_auth() {
+		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+
+		if ( 'POST' !== $request_method ) {
+			return;
+		}
+
+		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
+		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
+
+		if (
+			! $csrf_cookie ||
+			! $csrf_post ||
+			$csrf_cookie !== $csrf_post
+		) {
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_g_csrf_token', wp_login_url() ) );
+			exit;
+		}
+
+		$client_id = $this->get_settings()->get()['clientID'];
+		$id_token  = $this->context->input()->filter( INPUT_POST, 'credential' );
+		try {
+			$client  = new Google_Client( array( 'client_id' => $client_id ) );
+			$payload = $client->verifyIdToken( $id_token );
+
+			if ( empty( $payload ) ) {
+				wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
+				exit;
+			}
+
+			// @TODO implement further flow using $payload in #9339.
+
+		} catch ( \Exception $e ) {
+			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
+			exit;
+		}
+	}
+
+	/**
+	 * Adds custom errors if Google auth flow failed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Error $error WP_Error instance.
+	 * @return WP_Error $error WP_Error instance.
+	 */
+	public function handle_google_auth_errors( $error ) {
+		$error_code = $this->context->input()->filter( INPUT_GET, 'error' );
+		if ( ! $error_code ) {
+			return $error;
+		}
+
+		switch ( $error_code ) {
+			case 'google_auth_invalid_request':
+			case 'google_auth_invalid_g_csrf_token':
+				$error->add( 'google_auth', __( 'Sign in with Google failed.', 'google-site-kit' ) );
+				break;
+			default:
+				break;
+		}
+
+		return $error;
 	}
 
 	/**
@@ -106,5 +189,65 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Checks whether the module is connected.
+	 *
+	 * A module being connected means that all steps required as part of its activation are completed.
+	 *
+	 * @since 1.139.0
+	 *
+	 * @return bool True if module is connected, false otherwise.
+	 */
+	public function is_connected() {
+		$options = $this->get_settings()->get();
+
+		if ( empty( $options['clientID'] ) ) {
+			return false;
+		}
+
+		return parent::is_connected();
+	}
+
+	/**
+	 * Renders the sign in button.
+	 *
+	 * @since 1.139.0
+	 */
+	private function render_signin_button() {
+		$settings = $this->get_settings()->get();
+		if ( ! $settings['clientID'] ) {
+			return;
+		}
+
+		$redirect_url = add_query_arg( 'action', 'google_auth', wp_login_url() );
+		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
+			return;
+		}
+
+		// Render the Sign in with Google button and related inline styles.
+		?>
+<!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+<?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
+<script src="https://accounts.google.com/gsi/client"></script>
+<script>
+( () => {
+	google.accounts.id.initialize({
+		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
+		ux_mode: 'redirect',
+	});
+	const parent = document.createElement( 'div' );
+	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
+	google.accounts.id.renderButton(parent, {
+		theme: '<?php echo esc_js( $settings['theme'] ); ?>',
+		text: '<?php echo esc_js( $settings['text'] ); ?>',
+		shape: '<?php echo esc_js( $settings['shape'] ); ?>'
+	});
+} )();
+</script>
+<!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
+		<?php
 	}
 }
