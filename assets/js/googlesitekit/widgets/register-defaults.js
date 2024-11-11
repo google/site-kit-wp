@@ -110,7 +110,7 @@ export function registerDefaults( widgetsAPI ) {
 					<KeyMetricsNewBadge />
 				</Fragment>
 			),
-			subtitle: <MetricsWidgetSubtitle />,
+			subtitle: MetricsWidgetSubtitle,
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 			CTA: ChangeMetricsLink,
