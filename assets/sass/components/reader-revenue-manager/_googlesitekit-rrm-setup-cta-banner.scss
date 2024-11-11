@@ -69,6 +69,7 @@
 		.googlesitekit-setup-cta-banner__svg-wrapper {
 
 			svg {
+				flex: 1;
 				max-height: 143px;
 
 				// Increase the SVG size via scale in order to achieve the desired clipping effect
