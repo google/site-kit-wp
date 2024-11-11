@@ -80,6 +80,6 @@ WidgetAreaHeader.propTypes = {
 	slug: PropTypes.string.isRequired,
 	Icon: PropTypes.bool,
 	title: PropTypes.string,
-	subtitle: PropTypes.oneOf( PropTypes.string, PropTypes.object ),
+	subtitle: PropTypes.oneOf( PropTypes.string, PropTypes.elementType ),
 	CTA: PropTypes.object,
 };
