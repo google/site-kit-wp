@@ -32,7 +32,6 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
-use WP_User;
 
 /**
  * Class representing the Sign in With Google module.
