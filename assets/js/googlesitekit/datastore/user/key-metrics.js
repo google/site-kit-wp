@@ -105,7 +105,7 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 } );
 
 const fetchResetKeyMetricsSelectionStore = createFetchStore( {
-	baseName: 'resetKeyMetricsSelectionStore',
+	baseName: 'resetKeyMetricsSelection',
 	controlCallback: () =>
 		API.set( 'core', 'user', 'reset-key-metrics-selection' ),
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
@@ -197,7 +197,7 @@ const baseActions = {
 		yield clearError( 'resetKeyMetricsSelection', [] );
 
 		const { response, error } =
-			yield fetchResetKeyMetricsSelectionStore.actions.resetKeyMetricsSelectionStore();
+			yield fetchResetKeyMetricsSelectionStore.actions.fetchResetKeyMetricsSelection();
 
 		if ( error ) {
 			// Store error manually since resetKeyMetricsSelection signature differs from fetchResetKeyMetricsSelectionStore.
