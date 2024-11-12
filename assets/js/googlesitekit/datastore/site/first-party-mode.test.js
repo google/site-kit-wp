@@ -18,7 +18,10 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	untilResolved,
+} from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site First-Party Mode', () => {
@@ -148,6 +151,75 @@ describe( 'core/site First-Party Mode', () => {
 				expect(
 					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
 				).toBe( true );
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getFirstPartyModeSettings', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				const firstPartyModeSettings = {
+					isEnabled: false,
+					isFPMHealthy: false,
+					isScriptAccessEnabled: false,
+				};
+
+				fetchMock.getOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: firstPartyModeSettings,
+					status: 200,
+				} );
+
+				const initialSettings = registry
+					.select( CORE_SITE )
+					.getFirstPartyModeSettings();
+
+				expect( initialSettings ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getFirstPartyModeSettings();
+
+				const settings = registry
+					.select( CORE_SITE )
+					.getFirstPartyModeSettings();
+
+				expect( settings ).toEqual( firstPartyModeSettings );
+
+				expect( fetchMock ).toHaveFetched(
+					firstPartyModeSettingsEndpointRegExp
+				);
+			} );
+
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
+				} );
+
+				const initialSettings = registry
+					.select( CORE_SITE )
+					.getFirstPartyModeSettings();
+
+				expect( initialSettings ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getFirstPartyModeSettings();
+
+				const settings = registry
+					.select( CORE_SITE )
+					.getFirstPartyModeSettings();
+
+				// Verify the settings are still undefined after the selector is resolved.
+				expect( settings ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetched(
+					firstPartyModeSettingsEndpointRegExp
+				);
+
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );
