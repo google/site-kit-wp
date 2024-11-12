@@ -20,6 +20,7 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
@@ -221,6 +222,102 @@ describe( 'core/site First-Party Mode', () => {
 
 				expect( console ).toHaveErrored();
 			} );
+		} );
+
+		describe( 'isFirstPartyModeEnabled', () => {
+			it( 'returns undefined if the state is not loaded', async () => {
+				muteFetch( firstPartyModeSettingsEndpointRegExp );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getFirstPartyModeSettings();
+			} );
+
+			it.each( [ true, false ] )(
+				'returns the enabled status: %s',
+				( isEnabled ) => {
+					registry
+						.dispatch( CORE_SITE )
+						.receiveGetFirstPartyModeSettings( {
+							isEnabled,
+							isFPMHealthy: false,
+							isScriptAccessEnabled: false,
+						} );
+
+					expect(
+						registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					).toBe( isEnabled );
+				}
+			);
+		} );
+
+		describe( 'isFPMHealthy', () => {
+			it( 'returns undefined if the state is not loaded', async () => {
+				muteFetch( firstPartyModeSettingsEndpointRegExp );
+
+				expect(
+					registry.select( CORE_SITE ).isFPMHealthy()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getFirstPartyModeSettings();
+			} );
+
+			it.each( [ true, false ] )(
+				'returns the FPM healthy status: %s',
+				( isFPMHealthy ) => {
+					registry
+						.dispatch( CORE_SITE )
+						.receiveGetFirstPartyModeSettings( {
+							isEnabled: false,
+							isFPMHealthy,
+							isScriptAccessEnabled: false,
+						} );
+
+					expect( registry.select( CORE_SITE ).isFPMHealthy() ).toBe(
+						isFPMHealthy
+					);
+				}
+			);
+		} );
+
+		describe( 'isScriptAccessEnabled', () => {
+			it( 'returns undefined if the state is not loaded', async () => {
+				muteFetch( firstPartyModeSettingsEndpointRegExp );
+
+				expect(
+					registry.select( CORE_SITE ).isScriptAccessEnabled()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getFirstPartyModeSettings();
+			} );
+
+			it.each( [ true, false ] )(
+				'returns the script access status: %s',
+				( isScriptAccessEnabled ) => {
+					registry
+						.dispatch( CORE_SITE )
+						.receiveGetFirstPartyModeSettings( {
+							isEnabled: false,
+							isFPMHealthy: false,
+							isScriptAccessEnabled,
+						} );
+
+					expect(
+						registry.select( CORE_SITE ).isScriptAccessEnabled()
+					).toBe( isScriptAccessEnabled );
+				}
+			);
 		} );
 	} );
 } );
