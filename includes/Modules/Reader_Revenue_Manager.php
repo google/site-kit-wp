@@ -279,6 +279,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 							'publicationOnboardingState' => $new_onboarding_state,
 						)
 					);
+					$saved_settings = true;
 				}
 
 				$return_data = array(

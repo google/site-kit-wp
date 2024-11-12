@@ -232,6 +232,139 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( $expected_filter, urldecode( $filter ) );
 	}
 
+	public function test_sync_publication_onboarding_state_returns_empty_object() {
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) use ( &$filter ) {
+				$url    = parse_url( $request->getUri() );
+				$filter = $url['query'];
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
+						);
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$result = $this->reader_revenue_manager->set_data(
+			'sync-publication-onboarding-state',
+			array(
+				'publicationID'              => 'ABCDEFGH',
+				'publicationOnboardingState' => 'PENDING_VERIFICATION',
+			)
+		);
+
+		$this->assertNotWPError( $result );
+		$this->assertEquals( (object) array(), $result );
+	}
+
+	public function test_sync_publication_onboarding_state_returns_new_state() {
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) use ( &$filter ) {
+				$url    = parse_url( $request->getUri() );
+				$filter = $url['query'];
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
+						);
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'              => 'ABCDEFGH',
+				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
+			)
+		);
+
+		$result = $this->reader_revenue_manager->set_data(
+			'sync-publication-onboarding-state',
+			array(
+				'publicationID'              => 'ABCDEFGH',
+				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
+			)
+		);
+
+		$this->assertNotWPError( $result );
+		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState );
+		$this->assertEquals( true, $result->isSavedSetting );
+	}
+
+	public function test_sync_publication_onboarding_state_should_not_return_isSavedSetting_property() {
+		// Set the Search Console option.
+		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
+		FakeHttp::fake_google_http_handler(
+			$this->reader_revenue_manager->get_client(),
+			function ( Request $request ) use ( &$filter ) {
+				$url    = parse_url( $request->getUri() );
+				$filter = $url['query'];
+
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
+						);
+				}
+			}
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->authentication->get_oauth_client()->get_required_scopes()
+		);
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'              => 'PQRSTUVWX',
+				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
+			)
+		);
+
+		$result = $this->reader_revenue_manager->set_data(
+			'sync-publication-onboarding-state',
+			array(
+				'publicationID'              => 'ABCDEFGH',
+				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
+			)
+		);
+
+		$this->assertNotWPError( $result );
+		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState );
+		$this->assertFalse( property_exists( $result, 'isSavedSetting' ) );
+	}
+
 	public function test_is_connected() {
 		$options                = new Options( $this->context );
 		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
@@ -376,12 +509,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	protected function get_publications_list_response() {
+	protected function get_publications_list_response( $publication_id = 'ABCDEFGH', $onboarding_state = 'PENDING_VERIFICATION' ) {
 		$publication = new Publication();
 
-		$publication->setPublicationId( 'ABCDEFGH' );
+		$publication->setPublicationId( $publication_id );
 		$publication->setDisplayName( 'Test Property' );
-		$publication->setOnboardingState( 'PENDING_VERIFICATION' );
+		$publication->setOnboardingState( $onboarding_state );
 
 		$response = new ListPublicationsResponse();
 		$response->setPublications( array( $publication ) );
