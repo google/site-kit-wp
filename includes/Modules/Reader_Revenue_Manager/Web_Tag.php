@@ -86,7 +86,19 @@ class Web_Tag extends Module_Web_Tag {
 		wp_script_add_data( 'google_swgjs', 'strategy', 'async' );
 		wp_add_inline_script( 'google_swgjs', $swg_inline_script, 'before' );
 
-		if ( is_singular( 'post' ) ) {
+		/**
+		 * Filters the post types where Reader Revenue Manager CTAs should appear.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $cta_post_types The array of post types.
+		 */
+		$cta_post_types = apply_filters(
+			'googlesitekit_reader_revenue_manager_cta_post_types',
+			array( 'post' )
+		);
+
+		if ( is_singular( $cta_post_types ) ) {
 			wp_enqueue_script( 'google_swgjs' );
 		}
 	}
