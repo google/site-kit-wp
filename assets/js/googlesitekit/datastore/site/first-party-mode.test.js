@@ -128,5 +128,27 @@ describe( 'core/site First-Party Mode', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'setFirstPartyModeEnabled', () => {
+			it( 'sets the enabled status', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: false,
+						isScriptAccessEnabled: false,
+					} );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( false );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( true );
+			} );
+		} );
 	} );
 } );
