@@ -120,6 +120,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'publications',
+				'sync-publication-onboarding-state',
 			),
 			$this->reader_revenue_manager->get_datapoints()
 		);
