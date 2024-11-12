@@ -34,10 +34,12 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -84,6 +86,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValue } = useDispatch( CORE_UI );
 	const { syncPublicationOnboardingState } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
@@ -108,13 +111,38 @@ export default function RRMSetupSuccessSubtleNotification( {
 		global.open( serviceURL, '_blank' );
 	};
 
-	const syncPublication = useCallback( () => {
+	const currentOnboardingState = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
+	);
+
+	const syncPublication = useCallback( async () => {
 		if ( ! shouldSyncPublication ) {
 			return;
 		}
 
-		syncPublicationOnboardingState();
-	}, [ shouldSyncPublication, syncPublicationOnboardingState ] );
+		const { response } = await syncPublicationOnboardingState();
+
+		if ( !! response?.publicationOnboardingState ) {
+			const newOnboardingState = response.publicationOnboardingState;
+
+			if (
+				!! currentOnboardingState &&
+				newOnboardingState !== currentOnboardingState &&
+				newOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			) {
+				setValue(
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+					true
+				);
+			}
+		}
+	}, [
+		currentOnboardingState,
+		setValue,
+		shouldSyncPublication,
+		syncPublicationOnboardingState,
+	] );
 
 	// Sync publication data when user re-focuses window.
 	useRefocus( syncPublication, 15000 );
