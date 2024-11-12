@@ -85,7 +85,9 @@ class Web_Tag extends Module_Web_Tag {
 		wp_script_add_data( 'google_swgjs', 'strategy', 'async' );
 		wp_add_inline_script( 'google_swgjs', $swg_inline_script, 'before' );
 
-		wp_enqueue_script( 'google_swgjs' );
+		if ( is_singular( 'post' ) ) {
+			wp_enqueue_script( 'google_swgjs' );
+		}
 	}
 
 	/**
