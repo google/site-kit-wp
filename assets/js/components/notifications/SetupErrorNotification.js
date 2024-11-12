@@ -25,12 +25,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
 
-export default function SetupErrorNotification() {
+export default function SetupErrorNotification( { id, Notification } ) {
 	// These will be `null` if no errors exist.
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
@@ -39,34 +39,27 @@ export default function SetupErrorNotification() {
 		select( CORE_SITE ).getSetupErrorRedoURL()
 	);
 
-	const { data: permissionsErrorData } = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-				'permissionsError'
-			) || {}
-	);
-
-	// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return null.
-	if (
-		! setupErrorMessage ||
-		permissionsErrorData?.skipDefaultErrorNotifications
-	) {
-		return null;
-	}
-
 	return (
-		<BannerNotification
-			id="setup_error"
-			type="win-error"
-			title={ __(
-				'Oops! There was a problem during set up. Please try again.',
-				'google-site-kit'
-			) }
-			description={ setupErrorMessage }
-			isDismissible={ false }
-			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }
-			ctaLink={ setupErrorRedoURL }
-		/>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ __(
+					'Oops! There was a problem during set up. Please try again.',
+					'google-site-kit'
+				) }
+				description={ <Description text={ setupErrorMessage } /> }
+				actions={
+					setupErrorRedoURL && (
+						<CTALink
+							id={ id }
+							ctaLabel={ __(
+								'Redo the plugin setup',
+								'google-site-kit'
+							) }
+							ctaLink={ setupErrorRedoURL }
+						/>
+					)
+				}
+			/>
+		</Notification>
 	);
 }
