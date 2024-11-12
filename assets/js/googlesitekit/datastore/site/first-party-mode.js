@@ -75,6 +75,22 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
+	 * Saves the first-party mode settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*saveFirstPartyModeSettings() {
+		const { select } = yield commonActions.getRegistry();
+		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
+
+		return yield fetchSaveFirstPartyModeSettings.actions.fetchSaveFirstPartyModeSettings(
+			settings
+		);
+	},
+
+	/**
 	 * Sets the first-party mode enabled status.
 	 *
 	 * @since n.e.x.t
