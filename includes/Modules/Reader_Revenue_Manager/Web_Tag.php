@@ -55,6 +55,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * Enqueues the Reader Revenue Manager (SWG) script.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Updated to enqueue the script only on singular posts.
 	 */
 	protected function enqueue_swg_script() {
 		$locale = str_replace( '_', '-', get_locale() );
