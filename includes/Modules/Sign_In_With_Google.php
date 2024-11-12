@@ -92,14 +92,29 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
+		$redirect_to = $this->process_auth_callback();
+		if ( ! empty( $redirect_to ) ) {
+			wp_safe_redirect( $redirect_to );
+			exit;
+		}
+	}
+
+	/**
+	 * Processes the callback request after the user signs in with Google and returns
+	 * the URL where to redirect the user to.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string URL to redirect the user to.
+	 */
+	private function process_auth_callback() {
 		$login_url = wp_login_url();
 
 		// Check if the CSRF token is valid, if not redirect to the login page with an error.
 		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
 		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
 		if ( ! $csrf_cookie || $csrf_cookie !== $csrf_post ) {
-			wp_safe_redirect( add_query_arg( 'error', self::ERROR_INVALID_CSRF_TOKEN, $login_url ) );
-			exit;
+			return add_query_arg( 'error', self::ERROR_INVALID_CSRF_TOKEN, $login_url );
 		}
 
 		$user = null;
@@ -115,17 +130,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				$user = $this->find_or_create_user( $payload );
 			}
 		} catch ( \Exception $e ) {
-			wp_safe_redirect( add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url ) );
-			exit;
+			return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
 		}
 
 		// Redirect to the error page if the user is not found.
 		if ( is_wp_error( $user ) ) {
-			wp_safe_redirect( add_query_arg( 'error', $user->get_error_code(), $login_url ) );
-			exit;
+			return add_query_arg( 'error', $user->get_error_code(), $login_url );
 		} elseif ( ! $user instanceof WP_User ) {
-			wp_safe_redirect( add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url ) );
-			exit;
+			return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
 		}
 
 		// Redirect to the error page if the user is not a member of the current blog in multisite.
@@ -135,8 +147,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				if ( get_option( 'users_can_register' ) ) {
 					add_user_to_blog( $blog_id, $user->ID, $this->get_default_role() );
 				} else {
-					wp_safe_redirect( add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url ) );
-					exit;
+					return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
 				}
 			}
 		}
@@ -179,8 +190,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			}
 		}
 
-		wp_safe_redirect( $redirect_to );
-		exit;
+		return $redirect_to;
 	}
 
 	/**
