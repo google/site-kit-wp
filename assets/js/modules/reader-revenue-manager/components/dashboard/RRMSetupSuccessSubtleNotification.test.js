@@ -83,8 +83,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const publicationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+
+	const syncOnboardingStateEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
 	const setValueMock = jest.fn();
@@ -235,11 +236,13 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
-			const { data } = JSON.parse( opts.body );
-
-			// Return the same settings passed to the API.
-			return { body: data, status: 200 };
+		fetchMock.postOnce( syncOnboardingStateEndpoint, () => {
+			return {
+				body: {
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+				},
+				status: 200,
+			};
 		} );
 
 		const { getByText, queryByText } = render(
@@ -283,16 +286,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
-			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
-				body: {
-					data: {
-						publicationID: 'QRSTUVWX',
-						publicationOnboardingState: ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
-					},
-				},
-			} );
+			expect( fetchMock ).toHaveFetched( syncOnboardingStateEndpoint );
 		} );
 
 		// Verify that the onboarding state has been synced.
