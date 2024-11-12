@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
@@ -33,26 +34,39 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
  * @return {boolean} Whether the CTA widget should be displayed.
  */
 export default function useDisplayCTAWidget() {
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( KEY_METRICS_SETUP_CTA_WIDGET_SLUG )
-	);
+	return useSelect( ( select ) => {
+		const isDismissed = select( CORE_USER ).isItemDismissed(
+			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
+		);
 
-	// We should call isGatheringData() within this hook for completeness as we do not want to rely
-	// on it being called in other components. This selector makes report requests which, if they return
-	// data, then the `data-available` transients are set. These transients are prefetched as a global on
-	// the next page load.
-	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
-		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
-	} );
-	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
-		select( MODULES_ANALYTICS_4 ).isGatheringData();
-		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
-	} );
+		// We call isGatheringData() within this hook for completeness as we do not want to rely
+		// on it being called in other components. This selector makes report requests which, if they return
+		// data, then the `data-available` transients are set. These transients are prefetched as a global on
+		// the next page load.
 
-	return (
-		isDismissed === false &&
-		analyticsIsDataAvailableOnLoad &&
-		searchConsoleIsDataAvailableOnLoad
-	);
+		const searchConsoleDataAvailableOnLoad = isModuleDataAvailableOnLoad(
+			select,
+			'search-console',
+			MODULES_SEARCH_CONSOLE
+		);
+		const analyticsDataAvailableOnLoad = isModuleDataAvailableOnLoad(
+			select,
+			'analytics-4',
+			MODULES_ANALYTICS_4
+		);
+
+		return (
+			isDismissed === false &&
+			searchConsoleDataAvailableOnLoad &&
+			analyticsDataAvailableOnLoad
+		);
+	}, [] );
+}
+
+function isModuleDataAvailableOnLoad( select, slug, storeName ) {
+	if ( select( CORE_MODULES ).isModuleConnected( slug ) ) {
+		const { isGatheringData, isDataAvailableOnLoad } = select( storeName );
+		isGatheringData();
+		return isDataAvailableOnLoad();
+	}
 }
