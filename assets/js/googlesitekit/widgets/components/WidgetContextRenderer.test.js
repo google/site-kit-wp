@@ -116,7 +116,7 @@ describe( 'WidgetContextRenderer', () => {
 		// Register a second widget area.
 		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea3', {
 			title: 'Dashboard Body',
-			subtitle: <SubTitleComponent />,
+			subtitle: SubTitleComponent,
 			style: 'composite',
 		} );
 		registry
