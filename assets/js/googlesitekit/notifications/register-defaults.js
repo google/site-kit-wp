@@ -23,10 +23,14 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
+	VIEW_CONTEXT_SPLASH,
 } from '../constants';
 import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './datastore/constants';
 import { CORE_SITE } from '../datastore/site/constants';
-import { CORE_USER } from '../datastore/user/constants';
+import {
+	CORE_USER,
+	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+} from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -40,6 +44,8 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
+import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
+import { CORE_FORMS } from '../datastore/forms/constants';
 
 /**
  * Registers notifications not specific to any one particular module.
@@ -145,6 +151,38 @@ export function registerDefaults( notificationsAPI ) {
 				isAuthenticated &&
 				showUnsatisfiedScopesAlertGTE
 			);
+		},
+		isDismissible: false,
+	} );
+
+	notificationsAPI.registerNotification( 'setup_error', {
+		Component: SetupErrorNotification,
+		priority: 150,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [ VIEW_CONTEXT_SPLASH ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The getSetupErrorMessage selector relies on the resolution
+			// of the getSiteInfo() resolver.
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			const { data: permissionsErrorData } =
+				select( CORE_FORMS ).getValue(
+					FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+					'permissionsError'
+				) || {};
+
+			// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return null.
+			if (
+				! setupErrorMessage ||
+				permissionsErrorData?.skipDefaultErrorNotifications
+			) {
+				return false;
+			}
+
+			return true;
 		},
 		isDismissible: false,
 	} );
