@@ -153,14 +153,10 @@ const baseSelectors = {
 	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returned undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
-		const { firstPartyModeSettings } =
-			select( CORE_SITE ).getFirstPartyModeSettings();
+		const { isEnabled } =
+			select( CORE_SITE ).getFirstPartyModeSettings() || {};
 
-		if ( firstPartyModeSettings === undefined ) {
-			return undefined;
-		}
-
-		return firstPartyModeSettings.enabled;
+		return isEnabled;
 	} ),
 
 	/**
@@ -172,14 +168,10 @@ const baseSelectors = {
 	 * @return {boolean|undefined} True if the FPFE service is healthy, otherwise false. Returned undefined if the state is not loaded.
 	 */
 	isFPMHealthy: createRegistrySelector( ( select ) => () => {
-		const { firstPartyModeSettings } =
-			select( CORE_SITE ).getFirstPartyModeSettings();
+		const { isFPMHealthy } =
+			select( CORE_SITE ).getFirstPartyModeSettings() || {};
 
-		if ( firstPartyModeSettings === undefined ) {
-			return undefined;
-		}
-
-		return firstPartyModeSettings.healthy;
+		return isFPMHealthy;
 	} ),
 
 	/**
@@ -191,14 +183,10 @@ const baseSelectors = {
 	 * @return {boolean|undefined} True if the GTag proxy script is accessible, otherwise false. Returned undefined if the state is not loaded.
 	 */
 	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
-		const { firstPartyModeSettings } =
-			select( CORE_SITE ).getFirstPartyModeSettings();
+		const { isScriptAccessEnabled } =
+			select( CORE_SITE ).getFirstPartyModeSettings() || {};
 
-		if ( firstPartyModeSettings === undefined ) {
-			return undefined;
-		}
-
-		return firstPartyModeSettings.scriptAccess;
+		return isScriptAccessEnabled;
 	} ),
 };
 
