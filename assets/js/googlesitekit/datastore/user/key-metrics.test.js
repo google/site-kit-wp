@@ -71,7 +71,10 @@ describe( 'core/user key metrics', () => {
 		'^/google-site-kit/v1/core/user/data/key-metrics'
 	);
 	const coreKeyMetricsExpectedResponse = {
-		widgetSlugs: [ 'widget1', 'widget2' ],
+		widgetSlugs: [
+			KM_ANALYTICS_NEW_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
+		],
 		isWidgetHidden: false,
 	};
 
@@ -170,7 +173,10 @@ describe( 'core/user key metrics', () => {
 			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
-						widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
+						widgetSlugs: [
+							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_NEW_VISITORS,
+						],
 						isWidgetHidden: false,
 					},
 					status: 200,
@@ -185,7 +191,10 @@ describe( 'core/user key metrics', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+				).toMatchObject( [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -195,6 +204,7 @@ describe( 'core/user key metrics', () => {
 					body: {
 						widgetSlugs: [
 							KM_ANALYTICS_RETURNING_VISITORS,
+							KM_ANALYTICS_NEW_VISITORS,
 							KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 						],
 						isWidgetHidden: false,
@@ -211,7 +221,10 @@ describe( 'core/user key metrics', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+				).toMatchObject( [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_NEW_VISITORS,
+				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -487,6 +500,51 @@ describe( 'core/user key metrics', () => {
 				}
 			);
 
+			it.each( [
+				[
+					'publish_news',
+					'publish_blog',
+					[
+						KM_ANALYTICS_RETURNING_VISITORS,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					],
+				],
+				[
+					'publish_blog',
+					'publish_news',
+					[
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_VISIT_LENGTH,
+						KM_ANALYTICS_VISITS_PER_VISITOR,
+						KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					],
+				],
+			] )(
+				'should return the correct metrics when getAnswerBasedMetrics() is overridden',
+				async ( currentPurpose, purposeOverride, expectedMetrics ) => {
+					enabledFeatures.add( 'conversionReporting' );
+
+					provideUserAuthentication( registry );
+					await registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted( false );
+
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetUserInputSettings( {
+							purpose: { values: [ currentPurpose ] },
+						} );
+
+					expect(
+						registry
+							.select( CORE_USER )
+							.getAnswerBasedMetrics( purposeOverride )
+					).toEqual( expectedMetrics );
+				}
+			);
+
 			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'product', label: 'Product' } ],
@@ -749,54 +807,6 @@ describe( 'core/user key metrics', () => {
 					coreKeyMetricsEndpointRegExp
 				);
 			} );
-
-			it( 'should return the filtered widget slugs that do not require custom dimensions when the user is in a view-only dashboard', () => {
-				// Set up state to simulate view-only mode.
-				provideUserAuthentication( registry, { authenticated: false } );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableCustomDimensions: null,
-				} );
-
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [
-						KM_ANALYTICS_NEW_VISITORS,
-						KM_ANALYTICS_PAGES_PER_VISIT,
-						KM_ANALYTICS_TOP_CATEGORIES,
-					],
-					isWidgetHidden: false,
-				} );
-
-				const keyMetricsSettings = registry
-					.select( CORE_USER )
-					.getKeyMetricsSettings();
-				expect( keyMetricsSettings.widgetSlugs ).toEqual( [
-					KM_ANALYTICS_NEW_VISITORS,
-					KM_ANALYTICS_PAGES_PER_VISIT,
-				] );
-			} );
-
-			it( 'should return an empty array if only one widget slug is present when the user is in a view-only dashboard', () => {
-				// Set up state to simulate view-only mode.
-				provideUserAuthentication( registry, { authenticated: false } );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableCustomDimensions: null,
-				} );
-
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [
-						KM_ANALYTICS_NEW_VISITORS,
-						KM_ANALYTICS_TOP_CATEGORIES,
-					],
-					isWidgetHidden: false,
-				} );
-
-				const keyMetricsSettings = registry
-					.select( CORE_USER )
-					.getKeyMetricsSettings();
-				expect( keyMetricsSettings.widgetSlugs ).toEqual( [] );
-			} );
 		} );
 
 		describe( 'getUserPickedMetrics', () => {
@@ -846,6 +856,52 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getUserPickedMetrics()
 				).toEqual( coreKeyMetricsExpectedResponse.widgetSlugs );
+			} );
+
+			it( 'should return the filtered widget slugs that do not require custom dimensions when the user is in a view-only dashboard', () => {
+				// Set up state to simulate view-only mode.
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_PAGES_PER_VISIT,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					isWidgetHidden: false,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getUserPickedMetrics()
+				).toEqual( [
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_PAGES_PER_VISIT,
+				] );
+			} );
+
+			it( 'should return an empty array if only one widget slug is present when the user is in a view-only dashboard', () => {
+				// Set up state to simulate view-only mode.
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: null,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_CATEGORIES,
+					],
+					isWidgetHidden: false,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getUserPickedMetrics()
+				).toEqual( [] );
 			} );
 		} );
 

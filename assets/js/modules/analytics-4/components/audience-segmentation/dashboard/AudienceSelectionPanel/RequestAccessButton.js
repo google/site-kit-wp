@@ -30,14 +30,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
+import { trackEvent } from '../../../../../../util';
+import useViewContext from '../../../../../../hooks/useViewContext';
 
 export default function RequestAccessButton( { requestAccessURL } ) {
+	const viewContext = useViewContext();
+
 	return (
 		<Button
 			className="googlesitekit-audience-selection-panel__error-notice-action"
 			tertiary
 			href={ requestAccessURL }
 			target="_blank"
+			onClick={ () => {
+				trackEvent(
+					`${ viewContext }_audiences-sidebar`,
+					'insufficient_permissions_error_request_access'
+				);
+			} }
 		>
 			{ __( 'Request access', 'google-site-kit' ) }
 		</Button>

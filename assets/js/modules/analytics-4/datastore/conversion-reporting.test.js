@@ -24,19 +24,50 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
+	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
 		provideModules( registry );
+
+		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+	} );
+
+	afterEach( () => {
+		global._googlesitekitModulesData = undefined;
 	} );
 
 	describe( 'actions', () => {
+		describe( 'receiveConversionReportingInlineData', () => {
+			it( 'requires the data param', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveConversionReportingInlineData();
+				} ).toThrow( 'data is required.' );
+			} );
+
+			it( 'receives and sets inline data', async () => {
+				const data = {
+					newEvents: [ 'purchase' ],
+					lostEvents: [],
+				};
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( data );
+				expect( store.getState().detectedEventsChange ).toMatchObject(
+					data
+				);
+			} );
+		} );
 		describe( 'dismissNewConversionReportingEvents', () => {
 			it( 'fetches clear new events endpoint', async () => {
 				fetchMock.postOnce(
@@ -127,6 +158,94 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					] );
 
 				expect( hasConversionReportingEvents ).toBe( true );
+			} );
+		} );
+
+		describe( 'getConversionReportingEventsChange', () => {
+			it( 'uses a resolver to load conversion reporting inline data from a global variable by default', async () => {
+				const inlineData = {
+					newEvents: [ 'contact' ],
+					lostEvents: [],
+				};
+
+				global._googlesitekitModulesData = {
+					'analytics-4': inlineData,
+				};
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange();
+
+				const data = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+
+				expect( data ).toEqual( inlineData );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				expect( global._googlesitekitModulesData ).toEqual( undefined );
+
+				const data = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getConversionReportingEventsChange();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange();
+
+				expect( data ).toBe( undefined );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe.each( [
+			[
+				'hasNewConversionReportingEvents',
+				'newEvents',
+				[ 'submit_lead_form' ],
+				true,
+			],
+			[ 'hasNewConversionReportingEvents', 'newEvents', [], false ],
+			[
+				'hasNewConversionReportingEvents',
+				'newEvents',
+				undefined,
+				undefined,
+			],
+			[
+				'hasLostConversionReportingEvents',
+				'lostEvents',
+				[ 'contact' ],
+				true,
+			],
+			[ 'hasLostConversionReportingEvents', 'lostEvents', [], false ],
+			[
+				'hasLostConversionReportingEvents',
+				'lostEvents',
+				undefined,
+				undefined,
+			],
+		] )( '%s', ( selector, dataKey, events, expectedReturn ) => {
+			it( 'uses a resolver to load conversion reporting data then returns the data when this specific selector is used', () => {
+				const inlineData = {
+					[ dataKey ]: events,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( inlineData );
+
+				const data = registry
+					.select( MODULES_ANALYTICS_4 )
+					[ selector ]();
+
+				expect( data ).toEqual( expectedReturn );
 			} );
 		} );
 	} );

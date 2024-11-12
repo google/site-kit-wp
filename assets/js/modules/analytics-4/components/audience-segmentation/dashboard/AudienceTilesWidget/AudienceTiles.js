@@ -53,7 +53,9 @@ import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 import MaybePlaceholderTile from './MaybePlaceholderTile';
 import useAudienceTilesReports from '../../../../hooks/useAudienceTilesReports';
 import { isInvalidCustomDimensionError } from '../../../../utils/custom-dimensions';
+import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
+import { trackEvent } from '../../../../../../util';
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -64,6 +66,7 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 };
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -513,6 +516,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 										<InfoTooltip
 											title={ tooltipMessage }
 											tooltipClassName="googlesitekit-info-tooltip__content--audience"
+											onOpen={ () => {
+												trackEvent(
+													`${ viewContext }_audiences-tile`,
+													'view_tile_tooltip',
+													audienceSlug
+												);
+											} }
 										/>
 									</Tab>
 								);
@@ -577,6 +587,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							return (
 								<AudienceTileError
 									key={ audienceResourceName }
+									audienceSlug={ audienceSlug }
 									errors={
 										individualTileErrors[
 											audienceResourceName
@@ -590,6 +601,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							<AudienceTile
 								key={ audienceResourceName }
 								audienceTileNumber={ audienceTileNumber++ }
+								audienceSlug={ audienceSlug }
 								title={ audienceName }
 								infoTooltip={
 									<AudienceTooltipMessage

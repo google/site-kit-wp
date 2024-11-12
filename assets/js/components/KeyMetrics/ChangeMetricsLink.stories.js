@@ -24,7 +24,10 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { KM_ANALYTICS_NEW_VISITORS } from '../../googlesitekit/datastore/user/constants';
+import {
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
+} from '../../googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
 function Template() {
@@ -45,7 +48,10 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
 				provideKeyMetrics( registry, {
-					widgetSlugs: [ KM_ANALYTICS_NEW_VISITORS ],
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_RETURNING_VISITORS,
+					],
 				} );
 			};
 
