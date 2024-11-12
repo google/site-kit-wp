@@ -24,6 +24,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit_Dependencies\Google_Client;
@@ -50,26 +54,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * Option name to store the hashed version of the user ID received from Google.
-	 */
-	const GOOGLE_USER_HID_OPTION = 'googlesitekitpersistent_siwg_google_user_hid';
-
-	/**
 	 * The name for the Sign in with Google callback action.
 	 */
 	const LOGIN_ACTION_NAME = 'googlesitekit_auth';
-
-	/**
-	 * Cookie name to store the redirect URL before the user signs in with Google.
-	 */
-	const REDIRECT_COOKIE_NAME = 'googlesitekit_auth_redirect_to';
-
-	/**
-	 * Error codes.
-	 */
-	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
-	const ERROR_INVALID_CSRF_TOKEN = 'googlesitekit_auth_invalid_g_csrf_token';
-	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -79,7 +66,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
-		add_action( 'login_form_' . self::LOGIN_ACTION_NAME, $this->get_method_proxy( 'handle_auth_callback' ) );
+		add_action(
+			'login_form_' . self::LOGIN_ACTION_NAME,
+			function() {
+				$settings = $this->get_settings();
+
+				$profile_reader = new Profile_Reader( $settings );
+				$authenticator  = new Authenticator( $this->user_options, $profile_reader );
+
+				$this->handle_auth_callback( $authenticator );
+			}
+		);
+
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
@@ -88,227 +86,20 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @since n.e.x.t
 	 */
-	private function handle_auth_callback() {
+	private function handle_auth_callback( Authenticator_Interface $authenticator ) {
+		$input = $this->context->input();
+
 		// Ignore the request if the request method is not POST.
-		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+		$request_method = $input->filter( INPUT_SERVER, 'REQUEST_METHOD' );
 		if ( 'POST' !== $request_method ) {
 			return;
 		}
 
-		$redirect_to = $this->process_auth_callback();
+		$redirect_to = $authenticator->authenticate_user( $input );
 		if ( ! empty( $redirect_to ) ) {
 			wp_safe_redirect( $redirect_to );
 			exit;
 		}
-	}
-
-	/**
-	 * Processes the callback request after the user signs in with Google and returns
-	 * the URL where to redirect the user to.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string URL to redirect the user to.
-	 */
-	private function process_auth_callback() {
-		$login_url = wp_login_url();
-
-		// Check if the CSRF token is valid, if not redirect to the login page with an error.
-		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
-		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
-		if ( ! $csrf_cookie || $csrf_cookie !== $csrf_post ) {
-			return add_query_arg( 'error', self::ERROR_INVALID_CSRF_TOKEN, $login_url );
-		}
-
-		$user = null;
-
-		try {
-			$settings = $this->get_settings()->get();
-			$payload  = $this->get_google_auth_payload(
-				$settings['clientID'],
-				$this->context->input()->filter( INPUT_POST, 'credential' )
-			);
-
-			if ( ! is_wp_error( $payload ) ) {
-				$user = $this->find_or_create_user( $payload );
-			}
-		} catch ( \Exception $e ) {
-			return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
-		}
-
-		// Redirect to the error page if the user is not found.
-		if ( is_wp_error( $user ) ) {
-			return add_query_arg( 'error', $user->get_error_code(), $login_url );
-		} elseif ( ! $user instanceof WP_User ) {
-			return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
-		}
-
-		// Redirect to the error page if the user is not a member of the current blog in multisite.
-		if ( is_multisite() ) {
-			$blog_id = get_current_blog_id();
-			if ( ! is_user_member_of_blog( $user->ID, $blog_id ) ) {
-				if ( get_option( 'users_can_register' ) ) {
-					add_user_to_blog( $blog_id, $user->ID, $this->get_default_role() );
-				} else {
-					return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
-				}
-			}
-		}
-
-		// Set the user to be the current user.
-		wp_set_current_user( $user->ID, $user->user_login );
-
-		// Set the authentication cookies and trigger the wp_login action.
-		wp_set_auth_cookie( $user->ID );
-		/** This filter is documented in wp-login.php */
-		do_action( 'wp_login', $user->user_login, $user );
-
-		// Use the admin dashboard URL as the redirect URL by default.
-		$redirect_to = admin_url();
-
-		// If we have the redirect URL in the cookie, use it as the main redirect_to URL.
-		$cookie_redirect_to = $this->context->input()->filter( INPUT_COOKIE, self::REDIRECT_COOKIE_NAME );
-		if ( ! empty( $cookie_redirect_to ) ) {
-			$redirect_to = $cookie_redirect_to;
-			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-			setcookie( self::REDIRECT_COOKIE_NAME, '', time() - 3600, $this->get_cookie_path(), COOKIE_DOMAIN );
-		}
-
-		// Redirect to HTTPS if user wants SSL.
-		if ( get_user_option( 'use_ssl', $user->ID ) && str_contains( $redirect_to, 'wp-admin' ) ) {
-			$redirect_to = preg_replace( '|^http://|', 'https://', $redirect_to );
-		}
-
-		/** This filter is documented in wp-login.php */
-		$redirect_to = apply_filters( 'login_redirect', $redirect_to, $redirect_to, $user );
-
-		if ( ( empty( $redirect_to ) || 'wp-admin/' === $redirect_to || admin_url() === $redirect_to ) ) {
-			// If the user doesn't belong to a blog, send them to user admin. If the user can't edit posts, send them to their profile.
-			if ( is_multisite() && ! get_active_blog_for_user( $user->ID ) && ! is_super_admin( $user->ID ) ) {
-				$redirect_to = user_admin_url();
-			} elseif ( is_multisite() && ! $user->has_cap( 'read' ) ) {
-				$redirect_to = get_dashboard_url( $user->ID );
-			} elseif ( ! $user->has_cap( 'edit_posts' ) ) {
-				$redirect_to = $user->has_cap( 'read' ) ? admin_url( 'profile.php' ) : home_url();
-			}
-		}
-
-		return $redirect_to;
-	}
-
-	/**
-	 * Verifies the Google auth token and returns the payload if the token is valid.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $client_id Google client ID.
-	 * @param string $id_token Google ID token.
-	 * @return array|WP_Error Google auth payload if the token is valid, WP_Error otherwise.
-	 */
-	private function get_google_auth_payload( $client_id, $id_token ) {
-		$google_client = new Google_Client( array( 'client_id' => $client_id ) );
-		$payload       = $google_client->verifyIdToken( $id_token );
-		if ( empty( $payload['sub'] ) || empty( $payload['email'] ) ) {
-			return new WP_Error( self::ERROR_INVALID_REQUEST );
-		}
-
-		return $payload;
-	}
-
-	/**
-	 * Tries to find a user using user ID or email recieved from Google. If the user is not found,
-	 * attempts to create a new one.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $payload Google auth payload.
-	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
-	 */
-	private function find_or_create_user( $payload ) {
-		// Check if there are any existing WordPress users connected to this Google account.
-		// The user ID is used as the unique identifier because users can change the email on their Google account.
-		$g_user_hid = md5( $payload['sub'] );
-		$users      = get_users(
-			array(
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_key'   => $this->user_options->get_meta_key( self::GOOGLE_USER_HID_OPTION ),
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => $g_user_hid,
-				'number'     => 1,
-			)
-		);
-
-		if ( ! empty( $users ) ) {
-			return $users[0];
-		}
-
-		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
-		$user = get_user_by( 'email', $payload['email'] );
-		if ( $user ) {
-			$this->user_options->switch_user( $user->ID );
-			$this->user_options->set( self::GOOGLE_USER_HID_OPTION, $g_user_hid );
-
-			return $user;
-		}
-
-		// We haven't found the user using their google user id and email. Thus we need to create
-		// a new user. But if the registration is closed, we need to return an error to identify
-		// that the sign in process failed.
-		//
-		// No need to check the multisite settings because it is already incorporated in the following
-		// users_can_register check. See: https://github.com/WordPress/WordPress/blob/505b7c55f5363d51e7e28d512ce7dcb2d5f45894/wp-includes/ms-default-filters.php#L20.
-		if ( ! get_option( 'users_can_register' ) ) {
-			return new WP_Error( self::ERROR_SIGNIN_FAILED );
-		}
-
-		// Get the default role for new users.
-		$default_role = $this->get_default_role();
-
-		// Create a new user.
-		$user_id = wp_insert_user(
-			array(
-				'user_pass'    => wp_generate_password( 64 ),
-				'user_login'   => $payload['email'],
-				'user_email'   => $payload['email'],
-				'display_name' => $payload['name'],
-				'first_name'   => $payload['given_name'],
-				'last_name'    => $payload['family_name'],
-				'role'         => $default_role,
-				'meta_input'   => array(
-					$this->user_options->get_meta_key( self::GOOGLE_USER_HID_OPTION ) => $g_user_hid,
-				),
-			)
-		);
-
-		if ( is_wp_error( $user_id ) ) {
-			return new WP_Error( self::ERROR_SIGNIN_FAILED );
-		}
-
-		// Add the user to the current site if it is a multisite.
-		if ( is_multisite() ) {
-			add_user_to_blog( get_current_blog_id(), $user_id, $default_role );
-		}
-
-		// Send the new user notification.
-		wp_send_new_user_notifications( $user_id );
-
-		return get_user_by( 'id', $user_id );
-	}
-
-	/**
-	 * Gets the default role for new users.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Default role.
-	 */
-	private function get_default_role() {
-		$default_role = get_option( 'default_role' );
-		if ( empty( $default_role ) ) {
-			$default_role = 'subscriber';
-		}
-
-		return $default_role;
 	}
 
 	/**
@@ -326,11 +117,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		switch ( $error_code ) {
-			case self::ERROR_INVALID_REQUEST:
-			case self::ERROR_INVALID_CSRF_TOKEN:
+			case Authenticator::ERROR_INVALID_REQUEST:
+			case Authenticator::ERROR_INVALID_CSRF_TOKEN:
 				$error->add( self::MODULE_SLUG, __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
-			case self::ERROR_SIGNIN_FAILED:
+			case Authenticator::ERROR_SIGNIN_FAILED:
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
 				break;
 			default:
@@ -469,23 +260,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "<?php echo esc_js( self::REDIRECT_COOKIE_NAME ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( $this->get_cookie_path() ); ?>";
+	document.cookie = "<?php echo esc_js( Authenticator::REDIRECT_COOKIE_NAME ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
 <?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
 <!-- End Sign in with Google button added by Site Kit -->
 		<?php
-	}
-
-	/**
-	 * Gets the path for the redirect cookie.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Cookie path.
-	 */
-	protected function get_cookie_path() {
-		return dirname( wp_parse_url( wp_login_url(), PHP_URL_PATH ) );
 	}
 
 	/**
@@ -498,10 +278,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_authenticated_users_count() {
 		global $wpdb;
 
-		$settings = $this->get_settings();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return $wpdb->query(
-			$wpdb->prepare( "SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s", self::GOOGLE_USER_ID_OPTION )
+			$wpdb->prepare( "SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s", Hashed_User_ID::OPTION )
 		);
 	}
 
