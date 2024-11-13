@@ -127,7 +127,9 @@ class Synchronize_OnboardingState {
 				return;
 			}
 
-			$publication = $filtered_publications[0];
+			// Re-index the filtered array to ensure sequential keys.
+			$filtered_publications = array_values( $filtered_publications );
+			$publication           = $filtered_publications[0];
 
 			if ( $publication->getOnboardingState() !== $onboarding_state ) {
 				$this->reader_revenue_manager->get_settings()->merge(
