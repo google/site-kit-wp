@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
- * Class representing the hased Google user ID.
+ * Class representing the hashed Google user ID.
  *
  * @since n.e.x.t
  * @access private

@@ -21,6 +21,13 @@ use Google\Site_Kit\Core\Util\Input;
  */
 interface Authenticator_Interface {
 
+	/**
+	 * Authenticates the user using the provided input data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Redirect URL.
+	 */
 	public function authenticate_user( Input $input );
-
 }

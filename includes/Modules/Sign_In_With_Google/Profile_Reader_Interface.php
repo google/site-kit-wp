@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
+use WP_Error;
+
 /**
  * Defines methods that must be implemented by a profile reader class.
  *
@@ -28,5 +30,4 @@ interface Profile_Reader_Interface {
 	 * @return array|WP_Error User profile data or WP_Error on failure.
 	 */
 	public function get_profile_data( $id_token );
-
 }

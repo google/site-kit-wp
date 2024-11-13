@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
+use Exception;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 
@@ -60,9 +61,8 @@ class Profile_Reader implements Profile_Reader_Interface {
 			}
 
 			return $payload;
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			return new WP_Error( 'googlesitekit_siwg_failed_to_get_payload', $e->getMessage() );
 		}
 	}
-
 }

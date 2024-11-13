@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
@@ -54,7 +55,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * The name for the Sign in with Google callback action.
 	 */
-	const LOGIN_ACTION_NAME = 'googlesitekit_auth';
+	const ACTION_AUTH = 'googlesitekit_auth';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -65,8 +66,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
 		add_action(
-			'login_form_' . self::LOGIN_ACTION_NAME,
-			function() {
+			'login_form_' . self::ACTION_AUTH,
+			function () {
 				$settings = $this->get_settings();
 
 				$profile_reader = new Profile_Reader( $settings );
@@ -83,6 +84,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Handles the callback request after the user signs in with Google.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param Authenticator_Interface $authenticator Authenticator instance.
 	 */
 	private function handle_auth_callback( Authenticator_Interface $authenticator ) {
 		$input = $this->context->input();
@@ -222,13 +225,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$login_uri = add_query_arg( 'action', self::LOGIN_ACTION_NAME, wp_login_url() );
+		$login_uri = add_query_arg( 'action', self::ACTION_AUTH, wp_login_url() );
 		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
 			return;
 		}
 
 		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
-		$redirect_to = trim( $redirect_to );
+		if ( ! empty( $redirect_to ) ) {
+			$redirect_to = trim( $redirect_to );
+		}
 
 		$btn_args = array(
 			'theme' => $settings['theme'],

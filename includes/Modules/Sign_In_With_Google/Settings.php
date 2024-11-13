@@ -66,7 +66,7 @@ class Settings extends Module_Settings {
 
 	const SHAPE_RECTANGULAR = array(
 		'value' => 'rectangular',
-		'label' => 'Rectagular',
+		'label' => 'Rectangular',
 	);
 	const SHAPE_PILL        = array(
 		'value' => 'pill',

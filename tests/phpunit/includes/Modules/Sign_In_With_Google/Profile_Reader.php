@@ -23,5 +23,4 @@ class Profile_Reader implements Profile_Reader_Interface {
 	public function get_profile_data( $id_token ) {
 		return $this->data;
 	}
-
 }
