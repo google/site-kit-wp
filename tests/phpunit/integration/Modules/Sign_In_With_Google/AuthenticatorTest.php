@@ -147,7 +147,7 @@ class AuthenticatorTest extends TestCase {
 			'email' => 'existing-user@example.com',
 		);
 
-		$want                                           = home_url( '/uncategorized/hello-world' );
+		$want = home_url( '/uncategorized/hello-world' );
 		$_COOKIE[ Authenticator::REDIRECT_COOKIE_NAME ] = $want;
 
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
@@ -157,7 +157,7 @@ class AuthenticatorTest extends TestCase {
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( $payload['sub'] ) );
 
-		$got  = $this->get_authenticator( $payload )->authenticate_user( new MutableInput() );
+		$got = $this->get_authenticator( $payload )->authenticate_user( new MutableInput() );
 
 		$this->assertEquals( $want, $got );
 		$this->assertEquals( $user->ID, get_current_user_id() );
@@ -166,7 +166,7 @@ class AuthenticatorTest extends TestCase {
 	public function test_authenticate_user_creates_new_user_when_registration_is_allowed() {
 		$payload = array(
 			'sub'         => 'non-existing-user',
-			'email'       => 'non-existing-user@example.com',#
+			'email'       => 'non-existing-user@example.com',
 			'name'        => 'First Last',
 			'given_name'  => 'First',
 			'family_name' => 'Last',

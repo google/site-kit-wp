@@ -16,12 +16,11 @@ class Profile_Reader implements Profile_Reader_Interface {
 
 	private $data;
 
-	public function __construct( $data) {
+	public function __construct( $data ) {
 		$this->data = $data;
 	}
 
 	public function get_profile_data( $id_token ) {
 		return $this->data;
 	}
-
 }

@@ -230,7 +230,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
-		$redirect_to = trim( $redirect_to );
+		if ( ! empty( $redirect_to ) ) {
+			$redirect_to = trim( $redirect_to );
+		}
 
 		$config = array(
 			'client_id' => $settings['clientID'],

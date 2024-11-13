@@ -24,5 +24,4 @@ class Authenticator implements Authenticator_Interface {
 	public function authenticate_user( Input $input ) {
 		return $this->data;
 	}
-
 }
