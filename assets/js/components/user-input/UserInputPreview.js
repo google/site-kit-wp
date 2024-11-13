@@ -235,7 +235,7 @@ export default function UserInputPreview( props ) {
 					options={ USER_INPUT_ANSWERS_PURPOSE }
 					loading={ loading }
 					settingsView={ settingsView }
-					onChange={ () => openModalIfMetricsChanged() }
+					onChange={ openModalIfMetricsChanged }
 				/>
 
 				<UserInputPreviewGroup
