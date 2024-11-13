@@ -163,12 +163,7 @@ export default function UserInputSelectOptions( {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
 			description: descriptions?.[ optionSlug ],
-			checked:
-				USER_INPUT_QUESTIONS_PURPOSE === slug &&
-				values.includes( 'sell_products_or_service' ) &&
-				'sell_products' === optionSlug
-					? true
-					: values.includes( optionSlug ),
+			checked: values.includes( optionSlug ),
 			onKeyDown,
 			alignLeft: alignLeftOptions,
 			...onClickProps,
