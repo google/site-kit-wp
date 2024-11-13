@@ -24,7 +24,11 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
-import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from './constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -184,9 +188,10 @@ describe( 'core/notifications Notifications', () => {
 				} );
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications( [
-						{ id: 'test-notification' },
-					] );
+					.receiveQueuedNotifications(
+						[ { id: 'test-notification' } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -216,9 +221,10 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications( [
-						{ id: 'test-notification' },
-					] );
+					.receiveQueuedNotifications(
+						[ { id: 'test-notification' } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -256,9 +262,10 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications( [
-						{ id: 'not-dismissible-notification' },
-					] );
+					.receiveQueuedNotifications(
+						[ { id: 'not-dismissible-notification' } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -291,9 +298,10 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications( [
-						{ id: 'dismissible-notification' },
-					] );
+					.receiveQueuedNotifications(
+						[ { id: 'dismissible-notification' } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -317,9 +325,10 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications( [
-						{ id: 'test-notification' },
-					] );
+					.receiveQueuedNotifications(
+						[ { id: 'test-notification' } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -329,7 +338,10 @@ describe( 'core/notifications Notifications', () => {
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+					.getQueuedNotifications(
+						[ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				expect( queuedNotifications ).toEqual( [] );
 
@@ -342,9 +354,10 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications( [
-						{ id: 'test-notification' },
-					] );
+					.receiveQueuedNotifications(
+						[ { id: 'test-notification' } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
