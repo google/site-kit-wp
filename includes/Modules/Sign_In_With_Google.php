@@ -248,8 +248,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		);
 
 		// Render the Sign in with Google button and related inline styles.
+		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 		?>
-<!-- Sign in with Google button added by Site Kit -->
 <?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
@@ -267,8 +267,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
-<!-- End Sign in with Google button added by Site Kit -->
 		<?php
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
