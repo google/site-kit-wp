@@ -368,7 +368,10 @@ describe( 'core/notifications Notifications', () => {
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+					.getQueuedNotifications(
+						[ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				expect( queuedNotifications ).toEqual( [
 					{ id: 'test-notification' },
@@ -404,7 +407,10 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return undefined when no notifications have been registered', () => {
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+					.getQueuedNotifications(
+						[ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				expect( queuedNotifications ).toBeUndefined();
 			} );
@@ -438,17 +444,26 @@ describe( 'core/notifications Notifications', () => {
 				expect(
 					registry
 						.select( CORE_NOTIFICATIONS )
-						.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD )
+						.getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				expect( queuedNotifications ).toHaveLength( 2 );
 			} );
@@ -512,16 +527,25 @@ describe( 'core/notifications Notifications', () => {
 
 				registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 				expect( queuedNotifications ).toHaveLength( 2 );
 				expect( queuedNotifications[ 0 ].id ).toBe(
 					'check-requirements-true'
@@ -581,16 +605,25 @@ describe( 'core/notifications Notifications', () => {
 
 				registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 				expect( queuedNotifications ).toHaveLength( 3 );
 				expect( queuedNotifications[ 0 ].id ).toBe(
 					'is-dismissible-true-but-not-dismissed'
@@ -638,16 +671,25 @@ describe( 'core/notifications Notifications', () => {
 
 				registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					);
 
 				expect( queuedNotifications ).toHaveLength( 4 );
 				expect( queuedNotifications[ 0 ].id ).toBe(
