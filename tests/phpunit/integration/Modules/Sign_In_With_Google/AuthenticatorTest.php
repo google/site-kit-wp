@@ -144,6 +144,7 @@ class AuthenticatorTest extends TestCase {
 
 	public function test_authenticate_user_redirects_to_url_set_in_cookie() {
 		$expected = home_url( '/uncategorized/hello-world' );
+
 		$_COOKIE[ Authenticator::REDIRECT_COOKIE_NAME ] = $expected;
 
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
@@ -200,7 +201,7 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$expected = admin_url();
+		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$new_user_payload );
 
 		$this->assertEquals( $expected, $actual );
@@ -225,9 +226,10 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$user    = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$blog_id = $this->factory()->blog->create_and_get();
 
-		$blog_id = get_current_blog_id();
+		switch_to_blog( $blog_id );
 		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
 
 		$expected = admin_url( '/profile.php' );
@@ -250,9 +252,10 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$user    = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$blog_id = $this->factory()->blog->create_and_get();
 
-		$blog_id = get_current_blog_id();
+		switch_to_blog( $blog_id );
 		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
 
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
