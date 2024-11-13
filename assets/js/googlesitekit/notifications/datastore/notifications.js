@@ -202,13 +202,15 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 		case DISMISS_NOTIFICATION: {
 			const { id } = payload;
-			const dismissedNotificationIndex =
-				state.queuedNotifications.findIndex(
-					( notification ) => notification.id === id
-				);
+
+			const groupID = state.notifications?.[ id ]?.groupID;
+
+			const dismissedNotificationIndex = state.queuedNotifications[
+				groupID
+			]?.findIndex( ( notification ) => notification.id === id );
 
 			if ( dismissedNotificationIndex >= 0 ) {
-				state.queuedNotifications.splice(
+				state.queuedNotifications[ groupID ].splice(
 					dismissedNotificationIndex,
 					1
 				);
