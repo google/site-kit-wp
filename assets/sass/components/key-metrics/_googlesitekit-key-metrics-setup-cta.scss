@@ -264,6 +264,14 @@
 			color: $c-utility-error;
 			font-family: $f-primary;
 		}
+
+		.googlesitekit-widget-key-metrics-actions__wrapper {
+			justify-content: center;
+
+			@media (min-width: $bp-tablet) {
+				justify-content: flex-start;
+			}
+		}
 	}
 }
 
