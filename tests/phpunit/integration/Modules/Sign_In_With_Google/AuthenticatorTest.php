@@ -166,12 +166,7 @@ class AuthenticatorTest extends TestCase {
 
 	public function test_authenticate_user_creates_new_user_when_registration_is_allowed() {
 		add_filter( 'option_users_can_register', '__return_true' );
-		add_filter(
-			'option_default_role',
-			function () {
-				return 'editor';
-			}
-		);
+		add_filter( 'option_default_role', fn () => 'editor' );
 
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
