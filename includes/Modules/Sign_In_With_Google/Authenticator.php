@@ -27,7 +27,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Cookie name to store the redirect URL before the user signs in with Google.
 	 */
-	const REDIRECT_COOKIE_NAME = 'googlesitekit_auth_redirect_to';
+	const COOKIE_REDIRECT_TO = 'googlesitekit_auth_redirect_to';
 
 	/**
 	 * Error codes.
@@ -122,13 +122,13 @@ class Authenticator implements Authenticator_Interface {
 		$redirect_to = admin_url();
 
 		// If we have the redirect URL in the cookie, use it as the main redirect_to URL.
-		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::REDIRECT_COOKIE_NAME );
+		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::COOKIE_REDIRECT_TO );
 		if ( ! empty( $cookie_redirect_to ) ) {
 			$redirect_to = $cookie_redirect_to;
 
 			if ( ! headers_sent() ) {
 				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-				setcookie( self::REDIRECT_COOKIE_NAME, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+				setcookie( self::COOKIE_REDIRECT_TO, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
 			}
 		}
 

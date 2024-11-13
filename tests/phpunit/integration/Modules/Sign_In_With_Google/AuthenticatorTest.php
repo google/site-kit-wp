@@ -146,7 +146,7 @@ class AuthenticatorTest extends TestCase {
 	public function test_authenticate_user_redirects_to_url_set_in_cookie() {
 		$expected = home_url( '/uncategorized/hello-world' );
 
-		$_COOKIE[ Authenticator::REDIRECT_COOKIE_NAME ] = $expected;
+		$_COOKIE[ Authenticator::COOKIE_REDIRECT_TO ] = $expected;
 
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';

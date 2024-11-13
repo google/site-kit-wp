@@ -263,7 +263,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "<?php echo esc_js( Authenticator::REDIRECT_COOKIE_NAME ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
 <?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
