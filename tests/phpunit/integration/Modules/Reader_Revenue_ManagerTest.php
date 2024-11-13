@@ -276,6 +276,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
+		// Navigate to a singular post.
+		$post_ID = $this->factory()->post->create();
+		$this->go_to( get_permalink( $post_ID ) );
+
 		do_action( 'template_redirect' );
 		do_action( 'wp_enqueue_scripts' );
 

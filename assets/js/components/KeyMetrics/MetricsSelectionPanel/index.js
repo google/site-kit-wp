@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useState } from '@wordpress/element';
@@ -40,9 +45,11 @@ import MetricItems from './MetricItems';
 import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
+import { useFeature } from '../../../hooks/useFeature';
 
 export default function MetricsSelectionPanel() {
 	const viewContext = useViewContext();
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
@@ -82,7 +89,10 @@ export default function MetricsSelectionPanel() {
 			isOpen={ isOpen || isNavigatingToOAuthURL }
 			onOpen={ onSideSheetOpen }
 			closePanel={ closePanel }
-			className="googlesitekit-km-selection-panel"
+			className={ classnames( 'googlesitekit-km-selection-panel', {
+				'googlesitekit-acr-km-selection-panel':
+					isConversionReportingEnabled,
+			} ) }
 		>
 			<Header closePanel={ closePanel } />
 			<MetricItems savedMetrics={ savedViewableMetrics } />

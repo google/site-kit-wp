@@ -27,6 +27,10 @@
 		}
 
 		.googlesitekit-setup-cta-banner__title {
+			@media (min-width: $width-tablet + 1 + px) {
+				font-weight: $fw-medium;
+			}
+
 			@media (min-width: $bp-nonMobile) {
 				font-size: $fs-headline-sm;
 				line-height: $lh-headline-sm;
@@ -65,6 +69,7 @@
 		.googlesitekit-setup-cta-banner__svg-wrapper {
 
 			svg {
+				flex: 1;
 				max-height: 143px;
 
 				// Increase the SVG size via scale in order to achieve the desired clipping effect
