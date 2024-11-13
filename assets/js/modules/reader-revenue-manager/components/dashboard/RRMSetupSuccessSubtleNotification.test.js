@@ -217,12 +217,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		const originalDateNow = Date.now;
-
-		// Mock the date to be an arbitrary time.
-		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
-		Date.now = jest.fn( () => mockNow );
-
 		jest.useFakeTimers();
 
 		registry
@@ -230,7 +224,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			.receiveGetSettings( {
 				publicationID: 'QRSTUVWX',
 				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
-				publicationOnboardingStateLastSyncedAtMs: 0,
+				publicationOnboardingStateChanged: false,
 			} );
 
 		fetchMock.getOnce( publicationsEndpoint, {
@@ -331,8 +325,5 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
 			)
 		).not.toBeInTheDocument();
-
-		// Restore Date.now method.
-		Date.now = originalDateNow;
 	} );
 } );
