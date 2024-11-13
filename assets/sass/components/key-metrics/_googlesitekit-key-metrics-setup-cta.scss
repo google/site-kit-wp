@@ -165,7 +165,6 @@
 			flex-wrap: wrap;
 			gap: 4px;
 			margin-top: $grid-gap-desktop - 4px;
-			place-content: center;
 
 			a,
 			button {
@@ -176,7 +175,6 @@
 
 			@media (min-width: $bp-nonMobile) {
 				margin-top: $grid-gap-desktop;
-				place-content: start;
 
 				a,
 				button {
@@ -204,8 +202,12 @@
 				gap: 6px;
 				grid-template-columns: 1fr 1fr;
 
-				p {
-					margin: 0;
+				span {
+					display: block;
+
+					@media (min-width: $bp-tablet) {
+						display: inline;
+					}
 				}
 
 				.googlesitekit-cta-link {
