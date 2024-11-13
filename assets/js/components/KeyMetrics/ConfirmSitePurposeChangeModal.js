@@ -173,10 +173,15 @@ function ConfirmSitePurposeChangeModal( {
 					className="mdc-dialog__cancel-button"
 					tertiary
 					onClick={ onClose }
+					tabIndex="-1"
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>
-				<SpinnerButton isSaving={ isSaving } onClick={ saveChanges }>
+				<SpinnerButton
+					isSaving={ isSaving }
+					onClick={ saveChanges }
+					tabIndex="-1"
+				>
 					{ __( 'Update metrics selection', 'google-site-kit' ) }
 				</SpinnerButton>
 			</DialogFooter>
