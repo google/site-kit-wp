@@ -283,7 +283,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return $wpdb->query(
-			$wpdb->prepare( "SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s", Hashed_User_ID::OPTION )
+			$wpdb->prepare(
+				"SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s",
+				$this->user_options->get_meta_key( Hashed_User_ID::OPTION )
+			)
 		);
 	}
 

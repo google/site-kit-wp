@@ -60,12 +60,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 10, $this->module->order );
 	}
 
-	private function render_signin_button_by_action() {
-		ob_start();
-		do_action( 'login_form' );
-		return ob_get_clean();
-	}
-
 	public function test_render_signin_button() {
 		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
@@ -75,7 +69,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->render_signin_button_by_action();
+		$output = $this->capture_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		// Update site URL to https.
@@ -85,7 +79,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->render_signin_button_by_action();
+		$output = $this->capture_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
@@ -99,7 +93,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 
 		// Render the button.
-		$output = $this->render_signin_button_by_action();
+		$output = $this->capture_action( 'login_form' );
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );

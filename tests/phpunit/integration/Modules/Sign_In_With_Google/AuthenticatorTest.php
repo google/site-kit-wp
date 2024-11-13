@@ -85,20 +85,20 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'invalid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$want = add_query_arg( 'error', Authenticator::ERROR_INVALID_CSRF_TOKEN, wp_login_url() );
-		$got  = $this->do_authenticate_user();
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_CSRF_TOKEN, wp_login_url() );
+		$actual   = $this->do_authenticate_user();
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 	}
 
 	public function test_authenticate_user_fails_when_profile_reader_returns_error() {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$want = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
-		$got  = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 	}
 
 	public function test_authenticate_user_fails_when_find_user_returns_error() {
@@ -108,10 +108,10 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$want = add_query_arg( 'error', Authenticator::ERROR_SIGNIN_FAILED, wp_login_url() );
-		$got  = $this->do_authenticate_user( self::$nonexisting_user_payload );
+		$expected = add_query_arg( 'error', Authenticator::ERROR_SIGNIN_FAILED, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$nonexisting_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 	}
 
 	public function test_authenticate_user_redirects_when_user_is_found_by_sub() {
@@ -122,10 +122,10 @@ class AuthenticatorTest extends TestCase {
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
 
-		$want = admin_url( '/profile.php' );
-		$got  = $this->do_authenticate_user( self::$existing_user_payload );
+		$expected = admin_url( '/profile.php' );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 		$this->assertEquals( $user->ID, get_current_user_id() );
 	}
 
@@ -135,16 +135,16 @@ class AuthenticatorTest extends TestCase {
 
 		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
 
-		$want = admin_url( '/profile.php' );
-		$got  = $this->do_authenticate_user( self::$existing_user_payload );
+		$expected = admin_url( '/profile.php' );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 		$this->assertEquals( $user->ID, get_current_user_id() );
 	}
 
 	public function test_authenticate_user_redirects_to_url_set_in_cookie() {
-		$want = home_url( '/uncategorized/hello-world' );
-		$_COOKIE[ Authenticator::REDIRECT_COOKIE_NAME ] = $want;
+		$expected = home_url( '/uncategorized/hello-world' );
+		$_COOKIE[ Authenticator::REDIRECT_COOKIE_NAME ] = $expected;
 
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
@@ -153,9 +153,9 @@ class AuthenticatorTest extends TestCase {
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
 
-		$got = $this->do_authenticate_user( self::$existing_user_payload );
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 		$this->assertEquals( $user->ID, get_current_user_id() );
 	}
 
@@ -171,10 +171,10 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$want = admin_url();
-		$got  = $this->do_authenticate_user( self::$new_user_payload );
+		$expected = admin_url();
+		$actual   = $this->do_authenticate_user( self::$new_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 
 		$user = wp_get_current_user();
 		$this->assertNotEmpty( $user );
@@ -200,10 +200,10 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$want = admin_url();
-		$got  = $this->do_authenticate_user( self::$new_user_payload );
+		$expected = admin_url();
+		$actual   = $this->do_authenticate_user( self::$new_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 
 		$user = wp_get_current_user();
 		$this->assertNotEmpty( $user );
@@ -230,10 +230,10 @@ class AuthenticatorTest extends TestCase {
 		$blog_id = get_current_blog_id();
 		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
 
-		$want = admin_url( '/profile.php' );
-		$got  = $this->do_authenticate_user( self::$existing_user_payload );
+		$expected = admin_url( '/profile.php' );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ) );
 	}
 
@@ -255,10 +255,10 @@ class AuthenticatorTest extends TestCase {
 		$blog_id = get_current_blog_id();
 		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
 
-		$want = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
-		$got  = $this->do_authenticate_user( self::$existing_user_payload );
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 	}
 
 	/**
@@ -279,9 +279,9 @@ class AuthenticatorTest extends TestCase {
 		$blog_id = get_current_blog_id();
 		add_user_to_blog( $blog_id, $user->ID, 'subscriber' );
 
-		$want = admin_url( '/profile.php' );
-		$got  = $this->do_authenticate_user( self::$existing_user_payload );
+		$expected = admin_url( '/profile.php' );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $want, $got );
+		$this->assertEquals( $expected, $actual );
 	}
 }
