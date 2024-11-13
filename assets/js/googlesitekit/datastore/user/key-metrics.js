@@ -414,7 +414,6 @@ const baseSelectors = {
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
 	 */
-	/* eslint-disable complexity */
 	getAnswerBasedMetrics: createRegistrySelector(
 		( select ) => ( state, purposeOverride ) => {
 			const userInputSettings =
