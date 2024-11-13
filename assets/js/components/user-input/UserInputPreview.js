@@ -76,7 +76,7 @@ export default function UserInputPreview( props ) {
 		toggleIsModalOpen( false );
 	}, [ toggleIsModalOpen ] );
 	const settings = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettings()
+		select( CORE_USER ).getSavedUserInputSettings()
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( settings )
@@ -173,6 +173,28 @@ export default function UserInputPreview( props ) {
 			}, 50 );
 		}
 	}, [ page ] );
+
+	const { setUserInputSetting } = useDispatch( CORE_USER );
+	const currentlyEditingSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+
+	useEffect( () => {
+		const purposeValues = [ ...( settings?.purpose?.values || [] ) ];
+		if (
+			USER_INPUT_QUESTIONS_PURPOSE === currentlyEditingSlug &&
+			purposeValues.includes( 'sell_products_or_service' )
+		) {
+			setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, [
+				'sell_products',
+			] );
+			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+				[ USER_INPUT_QUESTIONS_PURPOSE ]: [
+					'sell_products_or_service',
+				],
+			} );
+		}
+	}, [ settings, setUserInputSetting, currentlyEditingSlug, setValues ] );
 
 	return (
 		<div
