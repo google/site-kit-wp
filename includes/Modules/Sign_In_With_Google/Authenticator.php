@@ -57,6 +57,7 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param User_Options             $user_options User options instance.
 	 * @param Profile_Reader_Interface $profile_reader Profile reader instance.
 	 */
 	public function __construct( User_Options $user_options, Profile_Reader_Interface $profile_reader ) {
@@ -64,6 +65,14 @@ class Authenticator implements Authenticator_Interface {
 		$this->profile_reader = $profile_reader;
 	}
 
+	/**
+	 * Authenticates the user using the provided input data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Redirect URL.
+	 */
 	public function authenticate_user( Input $input ) {
 		$login_url = wp_login_url();
 
@@ -116,8 +125,11 @@ class Authenticator implements Authenticator_Interface {
 		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::REDIRECT_COOKIE_NAME );
 		if ( ! empty( $cookie_redirect_to ) ) {
 			$redirect_to = $cookie_redirect_to;
-			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-			setcookie( self::REDIRECT_COOKIE_NAME, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+
+			if ( ! headers_sent() ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+				setcookie( self::REDIRECT_COOKIE_NAME, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+			}
 		}
 
 		// Redirect to HTTPS if user wants SSL.
@@ -248,5 +260,4 @@ class Authenticator implements Authenticator_Interface {
 	public static function get_cookie_path() {
 		return dirname( wp_parse_url( wp_login_url(), PHP_URL_PATH ) );
 	}
-
 }

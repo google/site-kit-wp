@@ -28,5 +28,4 @@ interface Profile_Reader_Interface {
 	 * @return array|WP_Error User profile data or WP_Error on failure.
 	 */
 	public function get_profile_data( $id_token );
-
 }

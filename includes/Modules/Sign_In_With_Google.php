@@ -66,7 +66,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		add_action(
 			'login_form_' . self::LOGIN_ACTION_NAME,
-			function() {
+			function () {
 				$settings = $this->get_settings();
 
 				$profile_reader = new Profile_Reader( $settings );
@@ -83,6 +83,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Handles the callback request after the user signs in with Google.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param Authenticator_Interface $authenticator Authenticator instance.
 	 */
 	private function handle_auth_callback( Authenticator_Interface $authenticator ) {
 		$input = $this->context->input();

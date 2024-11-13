@@ -63,5 +63,4 @@ class Profile_Reader implements Profile_Reader_Interface {
 			return new WP_Error( 'googlesitekit_siwg_failed_to_get_payload', $e->getMessage() );
 		}
 	}
-
 }

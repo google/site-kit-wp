@@ -16,7 +16,7 @@ class Profile_Reader implements Profile_Reader_Interface {
 
 	private $data;
 
-	public function __construct( $data ) {
+	public function __construct( $data) {
 		$this->data = $data;
 	}
 
