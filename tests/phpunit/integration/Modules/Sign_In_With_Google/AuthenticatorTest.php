@@ -198,4 +198,125 @@ class AuthenticatorTest extends TestCase {
 
 		$this->assertTrue( in_array( 'editor', $user->roles, true ) );
 	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_authenticate_user_add_new_user_to_blog() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		$payload = array(
+			'sub'         => 'non-existing-user',
+			'email'       => 'non-existing-user@example.com',
+			'name'        => 'First Last',
+			'given_name'  => 'First',
+			'family_name' => 'Last',
+		);
+
+		add_filter( 'option_users_can_register', '__return_true' );
+
+		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
+		$_POST['g_csrf_token']   = 'valid-csrf-token';
+
+		$want = admin_url();
+		$got  = $this->get_authenticator( $payload )->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $want, $got );
+
+		$user = wp_get_current_user();
+		$this->assertNotEmpty( $user );
+
+		$blog_id = get_current_blog_id();
+		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ) );
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_authenticate_user_add_existing_user_to_blog() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		$payload = array(
+			'sub'   => 'existing-user',
+			'email' => 'existing-user@example.com',
+		);
+
+		add_filter( 'option_users_can_register', '__return_true' );
+
+		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
+		$_POST['g_csrf_token']   = 'valid-csrf-token';
+
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => $payload['email'] ) );
+
+		$blog_id = get_current_blog_id();
+		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
+
+		$want = admin_url( '/profile.php' );
+		$got  = $this->get_authenticator( $payload )->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $want, $got );
+		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ) );
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_authenticate_fails_when_user_not_added_to_blog() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		$payload = array(
+			'sub'   => 'existing-user',
+			'email' => 'existing-user@example.com',
+		);
+
+		add_filter( 'option_users_can_register', '__return_false' );
+
+		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
+		$_POST['g_csrf_token']   = 'valid-csrf-token';
+
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => $payload['email'] ) );
+
+		$blog_id = get_current_blog_id();
+		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
+
+		$want = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$got  = $this->get_authenticator( $payload )->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $want, $got );
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_authenticate_redirects_when_user_added_to_blog() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		$payload = array(
+			'sub'   => 'existing-user',
+			'email' => 'existing-user@example.com',
+		);
+
+		add_filter( 'option_users_can_register', '__return_false' );
+
+		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
+		$_POST['g_csrf_token']   = 'valid-csrf-token';
+
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => $payload['email'] ) );
+
+		$blog_id = get_current_blog_id();
+		add_user_to_blog( $blog_id, $user->ID, 'subscriber' );
+
+		$want = admin_url( '/profile.php' );
+		$got  = $this->get_authenticator( $payload )->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $want, $got );
+	}
 }
