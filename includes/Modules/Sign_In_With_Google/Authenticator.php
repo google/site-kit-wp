@@ -184,8 +184,9 @@ class Authenticator implements Authenticator_Interface {
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
 		$user = get_user_by( 'email', $payload['email'] );
 		if ( $user ) {
-			$this->user_options->switch_user( $user->ID );
-			$this->user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+			$user_options = clone $this->user_options;
+			$user_options->switch_user( $user->ID );
+			$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
 
 			return $user;
 		}
