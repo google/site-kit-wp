@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -36,11 +35,9 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
 import {
-	USER_INPUT_CURRENTLY_EDITING_KEY,
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_PURPOSE,
@@ -199,22 +196,6 @@ export default function UserInputSelectOptions( {
 				</ListComponent>
 			</div>
 		);
-	} );
-
-	const currentlyEditingSlug = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
-	);
-
-	useMount( () => {
-		if (
-			currentlyEditingSlug === USER_INPUT_QUESTIONS_PURPOSE &&
-			values.includes( 'sell_products_or_service' )
-		) {
-			setUserInputSetting( slug, [ 'sell_products' ] );
-			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
-				[ slug ]: [ 'sell_products_or_service' ],
-			} );
-		}
 	} );
 
 	return (
