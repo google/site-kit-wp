@@ -18,6 +18,7 @@ use Google\Site_Kit\Tests\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
+use WP_Site;
 
 /**
  * @group Modules
@@ -226,17 +227,20 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$user    = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
-		$blog_id = $this->factory()->blog->create_and_get();
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$blog = $this->factory()->blog->create_and_get();
+		if ( $blog instanceof WP_Site ) {
+			$blog = $blog->blog_id;
+		}
 
-		switch_to_blog( $blog_id );
-		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
+		switch_to_blog( $blog );
+		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ) );
 
 		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
 		$this->assertEquals( $expected, $actual );
-		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ) );
+		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog ) );
 	}
 
 	/**
@@ -252,11 +256,14 @@ class AuthenticatorTest extends TestCase {
 		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
 		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
-		$user    = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
-		$blog_id = $this->factory()->blog->create_and_get();
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$blog = $this->factory()->blog->create_and_get();
+		if ( $blog instanceof WP_Site ) {
+			$blog = $blog->blog_id;
+		}
 
-		switch_to_blog( $blog_id );
-		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog_id ) );
+		switch_to_blog( $blog );
+		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ) );
 
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
