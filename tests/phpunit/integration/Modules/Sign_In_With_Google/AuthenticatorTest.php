@@ -236,7 +236,7 @@ class AuthenticatorTest extends TestCase {
 		switch_to_blog( $blog );
 		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ) );
 
-		$expected = admin_url( '/profile.php' );
+		$expected = admin_url();
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
 		$this->assertEquals( $expected, $actual );
