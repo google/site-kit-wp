@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Input;
+use WP_Error;
+use WP_User;
 
 /**
  * The authenticator class that processes SiwG callback requests to authenticate users.

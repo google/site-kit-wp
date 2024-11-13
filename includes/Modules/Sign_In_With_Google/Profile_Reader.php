@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
+use Google\Site_Kit_Dependencies\Google_Client;
+
 /**
  * Reads Google user profile data.
  *
@@ -52,7 +54,7 @@ class Profile_Reader implements Profile_Reader_Interface {
 			$google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
 
 			$payload = $google_client->verifyIdToken( $id_token );
-			if ( empty( $payload['sub'] ) || empty( $payload['email'] ) ) {
+			if ( empty( $payload['sub'] ) || empty( $payload['email'] ) || empty( $payload['email_verified'] ) ) {
 				return new WP_Error( 'googlesitekit_siwg_bad_payload' );
 			}
 
