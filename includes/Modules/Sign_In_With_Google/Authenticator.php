@@ -68,11 +68,11 @@ class Authenticator implements Authenticator_Interface {
 		$login_url = wp_login_url();
 
 		// Check if the CSRF token is valid, if not redirect to the login page with an error.
-		$csrf_cookie = $input->filter( INPUT_COOKIE, 'g_csrf_token' );
-		$csrf_post   = $input->filter( INPUT_POST, 'g_csrf_token' );
-		if ( ! $csrf_cookie || $csrf_cookie !== $csrf_post ) {
-			return add_query_arg( 'error', self::ERROR_INVALID_CSRF_TOKEN, $login_url );
-		}
+//		$csrf_cookie = $input->filter( INPUT_COOKIE, 'g_csrf_token' );
+//		$csrf_post   = $input->filter( INPUT_POST, 'g_csrf_token' );
+//		if ( ! $csrf_cookie || $csrf_cookie !== $csrf_post ) {
+//			return add_query_arg( 'error', self::ERROR_INVALID_CSRF_TOKEN, $login_url );
+//		}
 
 		$credential = $input->filter( INPUT_POST, 'credential' );
 

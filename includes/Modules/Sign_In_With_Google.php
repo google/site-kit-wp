@@ -230,12 +230,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
 		$redirect_to = trim( $redirect_to );
 
-		$config = array(
-			'client_id' => $settings['clientID'],
-			'login_uri' => $login_uri,
-			'ux_mode'   => 'redirect',
-		);
-
 		$btn_args = array(
 			'theme' => $settings['theme'],
 			'text'  => $settings['text'],
@@ -252,10 +246,26 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const parent = document.createElement( 'div' );
 	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 
-	google.accounts.id.initialize( <?php echo wp_json_encode( $config ); ?> );
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
-<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	async function handleCredentialResponse(response) {
+		const res = await fetch('<?php echo esc_js( $login_uri ) ?>', {
+			method: 'POST',
+			body: new URLSearchParams(response)
+		});
+		if (res.ok && res.redirected) {
+			location.assign(res.url);
+		}
+	}
 
+	google.accounts.id.initialize( {
+		client_id: '<?php echo esc_js( $settings['clientID'] ) ?>',
+		callback: handleCredentialResponse,
+	} );
+	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php if ( $settings['oneTapEnabled'] ) : ?>
+	google.accounts.id.prompt();
+	<?php endif ?>
+
+<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
 	document.cookie = "<?php echo esc_js( Authenticator::REDIRECT_COOKIE_NAME ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";

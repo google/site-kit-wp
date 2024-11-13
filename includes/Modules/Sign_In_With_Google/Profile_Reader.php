@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit_Dependencies\Google_Client;
+use WP_Error;
 
 /**
  * Reads Google user profile data.
