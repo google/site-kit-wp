@@ -77,7 +77,10 @@ describe( 'core/site First-Party Mode', () => {
 					{
 						body: {
 							data: {
-								settings: updatedSettings,
+								settings: {
+									// Only the `isEnabled` property is settable, other properties are filtered out of the request payload.
+									isEnabled: true,
+								},
 							},
 						},
 					}
@@ -118,9 +121,8 @@ describe( 'core/site First-Party Mode', () => {
 						body: {
 							data: {
 								settings: {
+									// Only the `isEnabled` property is settable, other properties are filtered out of the request payload.
 									isEnabled: true,
-									isFPMHealthy: false,
-									isScriptAccessEnabled: false,
 								},
 							},
 						},

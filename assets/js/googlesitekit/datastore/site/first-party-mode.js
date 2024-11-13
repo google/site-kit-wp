@@ -59,12 +59,23 @@ const fetchSaveFirstPartyModeSettings = createFetchStore( {
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
-		return { settings };
+		const { isEnabled } = settings || {};
+		return { settings: { isEnabled } };
 	},
 	validateParams: ( { settings } ) => {
 		invariant(
 			isPlainObject( settings ),
 			'settings must be a plain object.'
+		);
+
+		invariant(
+			typeof settings.isEnabled === 'boolean',
+			'isEnabled must be a boolean.'
+		);
+
+		invariant(
+			Object.keys( settings ).length === 1,
+			'settings must have only the `isEnabled` property.'
 		);
 	},
 } );
