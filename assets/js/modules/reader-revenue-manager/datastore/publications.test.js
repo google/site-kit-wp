@@ -119,9 +119,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				fetchMock.postOnce( syncOnboardingStateEndpoint, {
 					body: {
+						publicationID: publication.publicationId,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED,
-						publicationOnboardingStateLastSyncedAtMs: mockNow,
 					},
 					status: 200,
 				} );
@@ -345,9 +345,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				fetchMock.postOnce( syncOnboardingStateEndpoint, {
 					body: {
+						publicationID: publication.publicationId,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
 					},
 					status: 200,
 				} );
@@ -384,9 +384,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				fetchMock.postOnce( syncOnboardingStateEndpoint, {
 					body: {
+						publicationID: publication.publicationId,
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.UNSPECIFIED,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
 					},
 					status: 200,
 				} );

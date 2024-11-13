@@ -27,7 +27,11 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
@@ -78,34 +82,39 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			'publicationOnboardingState is required and must be string.'
 		);
 	},
-	reducerCallback: (
-		state,
-		{ publicationOnboardingState, isSavedSetting }
-	) => {
-		if ( ! publicationOnboardingState ) {
-			return state;
-		}
+	reducerCallback: createReducer(
+		( state, { publicationID, publicationOnboardingState } ) => {
+			if ( ! publicationID ) {
+				return;
+			}
 
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				publicationOnboardingState,
-				// eslint-disable-next-line sitekit/no-direct-date
-				publicationOnboardingStateLastSyncedAtMs: Date.now(),
-			},
-			savedSettings: {
-				publicationOnboardingState: isSavedSetting
-					? publicationOnboardingState
-					: state.savedSettings?.publicationOnboardingState,
-				publicationOnboardingStateLastSyncedAtMs: isSavedSetting
-					? // eslint-disable-next-line sitekit/no-direct-date
-					  Date.now()
-					: state.savedSettings
-							?.publicationOnboardingStateLastSyncedAtMs,
-			},
-		};
-	},
+			// eslint-disable-next-line sitekit/no-direct-date
+			const publicationOnboardingStateLastSyncedAtMs = Date.now();
+
+			if ( state.settings.publicationID === publicationID ) {
+				state.settings.publicationOnboardingState =
+					publicationOnboardingState;
+				state.settings.publicationOnboardingStateLastSyncedAtMs =
+					publicationOnboardingStateLastSyncedAtMs;
+			}
+
+			if ( state.savedSettings.publicationID === publicationID ) {
+				state.savedSettings.publicationOnboardingState =
+					publicationOnboardingState;
+				state.savedSettings.publicationOnboardingStateLastSyncedAtMs =
+					publicationOnboardingStateLastSyncedAtMs;
+			}
+
+			const publication = state.publications?.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) => id === publicationID
+			);
+
+			if ( publication ) {
+				publication.onboardingState = publicationOnboardingState;
+			}
+		}
+	),
 } );
 
 const baseInitialState = {

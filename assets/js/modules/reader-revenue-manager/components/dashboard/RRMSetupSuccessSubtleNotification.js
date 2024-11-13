@@ -121,21 +121,18 @@ export default function RRMSetupSuccessSubtleNotification( {
 		}
 
 		const { response } = await syncPublicationOnboardingState();
+		const newOnboardingState = response?.publicationOnboardingState;
 
-		if ( !! response?.publicationOnboardingState ) {
-			const newOnboardingState = response.publicationOnboardingState;
-
-			if (
-				!! currentOnboardingState &&
-				newOnboardingState !== currentOnboardingState &&
-				newOnboardingState ===
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
-			) {
-				setValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-					true
-				);
-			}
+		if (
+			currentOnboardingState &&
+			newOnboardingState !== currentOnboardingState &&
+			newOnboardingState ===
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		) {
+			setValue(
+				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+				true
+			);
 		}
 	}, [
 		currentOnboardingState,

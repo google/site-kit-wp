@@ -315,7 +315,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertNotWPError( $result );
 		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState );
-		$this->assertEquals( true, $result->isSavedSetting );
+		$this->assertEquals( 'ABCDEFGH', $result->publicationID );
 	}
 
 	public function test_sync_publication_onboarding_state_should_not_return_isSavedSetting_property() {

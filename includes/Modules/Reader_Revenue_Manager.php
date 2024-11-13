@@ -270,8 +270,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					};
 				}
 
-				$saved_settings = false;
-				$settings       = $this->get_settings();
+				$settings = $this->get_settings();
 
 				if ( $data['publicationID'] === $settings->get()['publicationID'] ) {
 					$settings->merge(
@@ -279,16 +278,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 							'publicationOnboardingState' => $new_onboarding_state,
 						)
 					);
-					$saved_settings = true;
 				}
 
 				$return_data = array(
+					'publicationID'              => $data['publicationID'],
 					'publicationOnboardingState' => $new_onboarding_state,
 				);
-
-				if ( $saved_settings ) {
-					$return_data['isSavedSetting'] = true;
-				}
 
 				return function () use ( $return_data ) {
 					return (object) $return_data;

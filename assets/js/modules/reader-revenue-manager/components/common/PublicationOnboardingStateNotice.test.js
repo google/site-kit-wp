@@ -170,6 +170,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		fetchMock.postOnce( syncOnboardingStateEndpoint, () => {
 			return {
 				body: {
+					publicationID: 'QRSTUVWX',
 					publicationOnboardingState: ONBOARDING_COMPLETE,
 				},
 				status: 200,
