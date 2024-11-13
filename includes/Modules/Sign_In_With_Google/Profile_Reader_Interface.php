@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
+use WP_Error;
+
 /**
  * Defines methods that must be implemented by a profile reader class.
  *
