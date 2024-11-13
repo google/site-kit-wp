@@ -12,8 +12,8 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
-use Google\Site_Kit\Tests\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
@@ -122,7 +122,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 	public function test_handle_auth_callback_should_not_redirect_for_non_post_method() {
 		try {
 			$_SERVER['REQUEST_METHOD'] = 'GET';
-			$this->call_handle_auth_callback( new Authenticator( 'https://example.com' ) );
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( 'https://example.com' ) );
+			$this->expectNotToPerformAssertions();
 		} catch ( RedirectException $e ) {
 			$this->fail( 'Expected no redirection' );
 		}
@@ -133,10 +134,23 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 
 		try {
-			$this->call_handle_auth_callback( new Authenticator( $redirect_uri ) );
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
 			$this->fail( 'Expected to redirect' );
 		} catch ( RedirectException $e ) {
 			$this->assertEquals( $redirect_uri, $e->get_location() );
 		}
+	}
+
+	/**
+	 * @param $redirect_to string
+	 * @return Authenticator_Interface
+	 */
+	protected function get_mock_authenticator( $redirect_to ) {
+		$mock = $this->getMockBuilder( Authenticator_Interface::class )
+					->onlyMethods( array( 'authenticate_user' ) )
+					->getMock();
+		$mock->method( 'authenticate_user' )->willReturn( $redirect_to );
+
+		return $mock;
 	}
 }
