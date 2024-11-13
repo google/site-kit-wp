@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,8 +30,9 @@ import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import Dismiss from '../../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-audiences';
@@ -41,6 +43,17 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 } ) {
 	const breakpoint = useBreakpoint();
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const isAudienceSegmentationWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isAudienceSegmentationWidgetHidden()
+	);
+
+	useEffect( () => {
+		if ( isAudienceSegmentationWidgetHidden ) {
+			dismissNotification(
+				AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
+			);
+		}
+	}, [ dismissNotification, isAudienceSegmentationWidgetHidden ] );
 
 	const scrollToWidgetArea = ( event ) => {
 		event.preventDefault();
@@ -57,6 +70,10 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 			} );
 		}, 50 );
 	};
+
+	if ( isAudienceSegmentationWidgetHidden === undefined ) {
+		return null;
+	}
 
 	return (
 		<Notification>

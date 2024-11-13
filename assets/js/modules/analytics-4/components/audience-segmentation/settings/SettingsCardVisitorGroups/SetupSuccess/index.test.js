@@ -30,6 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
@@ -79,6 +80,11 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		);
 
 		dismissItemSpy.mockImplementation( () => Promise.resolve() );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			isAudienceSegmentationWidgetHidden: false,
+			configuredAudiences: null,
+		} );
 	} );
 
 	afterEach( () => {
@@ -250,5 +256,31 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 			'settings_audiences-setup-cta-settings-success',
 			'confirm_notification'
 		);
+	} );
+
+	it( 'should dismiss the notification if "Visitor groups" toggle is turned off', async () => {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			isAudienceSegmentationWidgetHidden: true,
+			configuredAudiences: null,
+		} );
+
+		const { container } = render( <SetupSuccess />, {
+			registry,
+		} );
+
+		await act( async () => {
+			await registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
+				] );
+		} );
+
+		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
+		expect( dismissItemSpy ).toHaveBeenCalledWith(
+			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
+		);
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
