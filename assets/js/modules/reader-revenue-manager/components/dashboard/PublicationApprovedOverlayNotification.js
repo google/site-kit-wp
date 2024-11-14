@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,7 +41,10 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
+
+const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
@@ -49,6 +53,22 @@ export default function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
+	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+	const { publicationOnboardingState, publicationOnboardingStateChanged } =
+		useSelect(
+			( select ) =>
+				select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
+		);
+
+	const hasResolvedSettings = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+			'getSettings'
+		)
+	);
+
+	const initialPublicationOnboardingStateChanged = useRef();
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -73,12 +93,16 @@ export default function PublicationApprovedOverlayNotification() {
 	 * - The notification UI is enabled.
 	 * - The user is not in view-only mode.
 	 * - The user is on the main dashboard.
+	 * - The publication onboarding state has changed.
+	 * - The publication onboarding state is complete.
 	 */
 	const shouldShowNotification =
 		isDismissed === false &&
-		showApprovedNotificationUI === true &&
 		! isViewOnly &&
-		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD;
+		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
+		( showApprovedNotificationUI === true ||
+			( initialPublicationOnboardingStateChanged.current === true &&
+				publicationOnboardingState === ONBOARDING_COMPLETE ) );
 
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
@@ -102,6 +126,27 @@ export default function PublicationApprovedOverlayNotification() {
 			dismissNotice();
 		} );
 	};
+
+	// In useEffect, set publicationOnboardingStateChanged to false using setPublicationOnboardingStateChanged method and save the setting using saveSettings action. This effect should be run only once when component is mounted.
+	useEffect( () => {
+		if (
+			hasResolvedSettings &&
+			initialPublicationOnboardingStateChanged.current === undefined
+		) {
+			initialPublicationOnboardingStateChanged.current =
+				publicationOnboardingStateChanged;
+
+			if ( publicationOnboardingStateChanged === true ) {
+				setPublicationOnboardingStateChanged( false );
+				saveSettings();
+			}
+		}
+	}, [
+		publicationOnboardingStateChanged,
+		saveSettings,
+		setPublicationOnboardingStateChanged,
+		hasResolvedSettings,
+	] );
 
 	return (
 		<OverlayNotification

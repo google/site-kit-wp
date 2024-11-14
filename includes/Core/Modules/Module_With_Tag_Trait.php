@@ -51,4 +51,19 @@ trait Module_With_Tag_Trait {
 
 		return Module_Tag_Matchers::NO_TAG_FOUND;
 	}
+
+	/**
+	 * Gets the URL of the page where a tag for the module would be placed.
+	 *
+	 * For all modules like Analytics, Tag Manager, AdSense, Ads, etc. except for
+	 * Sign in with Google, tags can be detected on the home page. SiwG places its
+	 * snippet on the login page and thus, overrides this method.
+	 *
+	 * @since 1.140.0
+	 *
+	 * @return string The home page URL string where tags are placed for most modules.
+	 */
+	public function get_content_url() {
+		return home_url();
+	}
 }

@@ -31,7 +31,6 @@ import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from './datastore/constants';
-import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
@@ -48,7 +47,6 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
-		DashboardMainEffectComponent,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
