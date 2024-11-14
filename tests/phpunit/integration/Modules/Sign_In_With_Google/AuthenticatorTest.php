@@ -85,20 +85,7 @@ class AuthenticatorTest extends TestCase {
 		return $authenticator->authenticate_user( new MutableInput() );
 	}
 
-	public function test_authenticate_user_fails_when_csrf_tokens_dont_match() {
-		$_COOKIE['g_csrf_token'] = 'invalid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
-		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_CSRF_TOKEN, wp_login_url() );
-		$actual   = $this->do_authenticate_user();
-
-		$this->assertEquals( $expected, $actual );
-	}
-
 	public function test_authenticate_user_fails_when_profile_reader_returns_error() {
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
 		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
 
@@ -109,9 +96,6 @@ class AuthenticatorTest extends TestCase {
 		// We don't have this user and user registration is disabled.
 		add_filter( 'option_users_can_register', '__return_false' );
 
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$expected = add_query_arg( 'error', Authenticator::ERROR_SIGNIN_FAILED, wp_login_url() );
 		$actual   = $this->do_authenticate_user( self::$nonexisting_user_payload );
 
@@ -119,9 +103,6 @@ class AuthenticatorTest extends TestCase {
 	}
 
 	public function test_authenticate_user_redirects_when_user_is_found_by_sub() {
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$user         = $this->factory()->user->create_and_get( array() );
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
@@ -134,9 +115,6 @@ class AuthenticatorTest extends TestCase {
 	}
 
 	public function test_authenticate_user_redirects_when_user_is_found_by_email() {
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
 
 		$expected = admin_url( '/profile.php' );
@@ -151,9 +129,6 @@ class AuthenticatorTest extends TestCase {
 
 		$_COOKIE[ Authenticator::COOKIE_REDIRECT_TO ] = $expected;
 
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$user         = $this->factory()->user->create_and_get( array() );
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
@@ -167,9 +142,6 @@ class AuthenticatorTest extends TestCase {
 	public function test_authenticate_user_creates_new_user_when_registration_is_allowed() {
 		add_filter( 'option_users_can_register', '__return_true' );
 		add_filter( 'option_default_role', fn () => 'editor' );
-
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
 		$expected = admin_url();
 		$actual   = $this->do_authenticate_user( self::$new_user_payload );
@@ -197,9 +169,6 @@ class AuthenticatorTest extends TestCase {
 
 		add_filter( 'option_users_can_register', '__return_true' );
 
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$new_user_payload );
 
@@ -221,9 +190,6 @@ class AuthenticatorTest extends TestCase {
 		}
 
 		add_filter( 'option_users_can_register', '__return_true' );
-
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
 		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
 		$blog = $this->factory()->blog->create_and_get();
@@ -251,9 +217,6 @@ class AuthenticatorTest extends TestCase {
 
 		add_filter( 'option_users_can_register', '__return_false' );
 
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
-
 		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
 		$blog = $this->factory()->blog->create_and_get();
 		if ( $blog instanceof WP_Site ) {
@@ -278,9 +241,6 @@ class AuthenticatorTest extends TestCase {
 		}
 
 		add_filter( 'option_users_can_register', '__return_false' );
-
-		$_COOKIE['g_csrf_token'] = 'valid-csrf-token';
-		$_POST['g_csrf_token']   = 'valid-csrf-token';
 
 		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
 
