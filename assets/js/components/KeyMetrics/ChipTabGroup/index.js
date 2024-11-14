@@ -59,8 +59,8 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const [ isActive, setIsActive ] = useState(
 		KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG
 	);
-	// Used for mobile chip tabs, which leverage TabBar component for seemless horizontal scroll
-	// but it accepts numerical index for active tab.
+	// Used for mobile chip tabs, which leverages the TabBar component for seemless horizontal scroll
+	// but it accepts a numerical index for the active tab.
 	const [ activeGroupIndex, setActiveGroupIndex ] = useState( 0 );
 
 	const breakpoint = useBreakpoint();

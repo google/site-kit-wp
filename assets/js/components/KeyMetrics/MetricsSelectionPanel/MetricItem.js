@@ -87,7 +87,7 @@ export default function MetricItem( {
 			setValues( KEY_METRICS_SELECTION_FORM, {
 				[ KEY_METRICS_SELECTED ]: currentlySelectedMetrics,
 				// Unstaged list creates a copy of KM selected list, but unstaged
-				// is stored only temporary to collect the final selection that will
+				// is stored temporary to collect the final selection that will
 				// be transfered over to effective selection on tab change and then it is reset.
 				[ UNSTAGED_SELECTION ]: currentlySelectedMetrics,
 			} );
