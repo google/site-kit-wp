@@ -26,6 +26,9 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import { untrailingslashit } from '../../../util';
 
 export const selectors = {
 	/**
@@ -64,6 +67,28 @@ export const selectors = {
 				return accountChooserBaseURI;
 			}
 	),
+	/**
+	 * Gets a URL to fetch the client ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The URL to the clientID, or `undefined` if not loaded.
+	 */
+	getClientIDURL: createRegistrySelector( ( select ) => () => {
+		const siteName = select( CORE_SITE ).getSiteName();
+		const homeURL = untrailingslashit( select( CORE_SITE ).getHomeURL() );
+		const supportEmail = select( CORE_USER ).getEmail();
+
+		const query = {
+			appname: siteName,
+			sitename: siteName,
+			siteurl: homeURL,
+			supportemail: supportEmail,
+		};
+
+		return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( { query } );
+	} ),
 };
 
 const store = {
