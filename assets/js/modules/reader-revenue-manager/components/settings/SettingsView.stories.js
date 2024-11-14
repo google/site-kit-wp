@@ -122,7 +122,6 @@ export default {
 					ownerID: 1,
 					publicationID: 'ABCDEFGH',
 					publicationOnboardingState: '',
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				};
 
 				registry

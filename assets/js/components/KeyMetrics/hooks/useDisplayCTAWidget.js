@@ -29,7 +29,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
 /**
  * Determines whether the CTA widget should be displayed.
  *
- * @since n.e.x.t
+ * @since 1.140.0
  *
  * @return {boolean} Whether the CTA widget should be displayed.
  */
