@@ -63,8 +63,12 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			return;
 		}
 
-		syncAvailableAudiences();
+		const syncAudiences = async () => {
+			await syncAvailableAudiences();
+		};
+
 		setFirstView( false );
+		syncAudiences();
 	}, [ firstView, isOpen, syncAvailableAudiences ] );
 
 	useEffect( () => {

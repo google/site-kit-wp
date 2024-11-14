@@ -34,7 +34,7 @@ export default function AudienceSelectionPanel() {
 		<InViewProvider
 			value={ {
 				key: 'AudienceSelectionPanel',
-				value: isOpen,
+				value: !! isOpen,
 			} }
 		>
 			<Panel />

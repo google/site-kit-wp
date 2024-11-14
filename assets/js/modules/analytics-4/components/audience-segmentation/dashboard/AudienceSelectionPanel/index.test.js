@@ -1752,6 +1752,10 @@ describe( 'AudienceSelectionPanel', () => {
 					measurementID: '56789',
 					webDataStreamID: '78901',
 				} );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 			} );
 
 			afterEach( async () => {
@@ -1774,16 +1778,14 @@ describe( 'AudienceSelectionPanel', () => {
 			} );
 
 			it( 'while resyncing available audiences', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, 'syncAvailableAudiences', [] );
+				// sync-audiences endpoint must return an error.
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: error,
+					status: 403,
+				} );
 			} );
 
 			it( 'while retrieving user count', () => {
-				registry
-					.dispatch( CORE_UI )
-					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
-
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,

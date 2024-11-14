@@ -33,7 +33,7 @@ export default function MetricsSelectionPanel() {
 	return (
 		<InViewProvider
 			value={ {
-				key: 'WPDashboardApp',
+				key: 'MetricsSelectionPanel',
 				value: !! isOpen,
 			} }
 		>
