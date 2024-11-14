@@ -173,7 +173,7 @@ export default function SettingsView() {
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(
-							'Users can create an account',
+							'Users can create new accounts',
 							'google-site-kit'
 						) }
 					</h5>
