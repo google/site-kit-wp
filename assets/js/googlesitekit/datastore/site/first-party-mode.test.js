@@ -154,6 +154,14 @@ describe( 'core/site First-Party Mode', () => {
 				expect(
 					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
 				).toBe( true );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( false );
 			} );
 		} );
 	} );
