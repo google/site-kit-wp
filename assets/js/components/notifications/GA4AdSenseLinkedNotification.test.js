@@ -140,25 +140,28 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 	} );
 
 	it( 'does not render and dismisses notification if report has data, and it is not already dismissed', async () => {
-		fetchMock.postOnce( fetchDismissItem, {
-			body: [ GA4_ADSENSE_LINKED_NOTIFICATION ],
-		} );
+		act( () => {
+			fetchMock.postOnce( fetchDismissItem, {
+				body: [ GA4_ADSENSE_LINKED_NOTIFICATION ],
+			} );
 
-		const reportOptions = {
-			startDate: '2020-08-11',
-			endDate: '2020-09-07',
-			dimensions: [ 'pagePath' ],
-			metrics: [ { name: 'totalAdRevenue' } ],
-			orderby: [
-				{
-					metric: { metricName: 'totalAdRevenue' },
-					desc: true,
-				},
-			],
-			limit: 3,
-		};
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		provideAnalytics4MockReport( registry, reportOptions );
+			const reportOptions = {
+				startDate: '2020-08-11',
+				endDate: '2020-09-07',
+				dimensions: [ 'pagePath' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				orderby: [
+					{
+						metric: { metricName: 'totalAdRevenue' },
+						desc: true,
+					},
+				],
+				limit: 3,
+			};
+
+			registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+			provideAnalytics4MockReport( registry, reportOptions );
+		} );
 
 		const { container, waitForRegistry } = render(
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
