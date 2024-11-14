@@ -276,6 +276,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
+		// Navigate to a singular post.
+		$post_ID = $this->factory()->post->create();
+		$this->go_to( get_permalink( $post_ID ) );
+
 		do_action( 'template_redirect' );
 		do_action( 'wp_enqueue_scripts' );
 
@@ -293,7 +297,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'reader_revenue_manager_publication_id',
 				'reader_revenue_manager_publication_onboarding_state',
-				'reader_revenue_manager_publication_onboarding_state_last_synced_at',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);

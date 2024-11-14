@@ -47,6 +47,11 @@ import {
 	availableAudiences as availableAudiencesFixture,
 } from './__fixtures__';
 import fetchMock from 'fetch-mock';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../tests/js/mock-survey-endpoints';
+import { waitFor } from '@testing-library/react';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
@@ -620,6 +625,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
+
+				mockSurveyEndpoints();
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
@@ -676,6 +685,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.isSettingUpAudiences()
 				).toBe( false );
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+				);
 			} );
 
 			it( 'syncs `availableAudiences`', async () => {
@@ -723,6 +736,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+				);
 			} );
 
 			it.each( [
@@ -831,6 +848,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					expect(
 						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
+
+					await waitFor( () =>
+						expect( fetchMock ).toHaveFetched(
+							surveyTriggerEndpoint
+						)
+					);
 				}
 			);
 
@@ -930,6 +953,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					expect(
 						registry.select( CORE_USER ).getConfiguredAudiences()
 					).toEqual( expectedConfiguredAudiences );
+
+					await waitFor( () =>
+						expect( fetchMock ).toHaveFetched(
+							surveyTriggerEndpoint
+						)
+					);
 				}
 			);
 
@@ -1167,6 +1196,10 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( getConfiguredAudiences ).toEqual(
 					expectedConfiguredAudiences
 				);
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+				);
 			} );
 
 			it( 'should make a request to expire new badges for configured audiences', async () => {
@@ -1242,6 +1275,54 @@ describe( 'modules/analytics-4 audiences', () => {
 							} ) ),
 						},
 					}
+				);
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+				);
+			} );
+
+			it( 'should trigger a survey when the setup is completed', async () => {
+				const configuredAudiences = [
+					availableNewVisitorsAudienceFixture.name,
+					availableReturningVisitorsAudienceFixture.name,
+				];
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: [
+						availableNewVisitorsAudienceFixture,
+						availableReturningVisitorsAudienceFixture,
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences,
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				muteFetch( expirableItemEndpoint );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect(
+					registry.select( CORE_USER ).getConfiguredAudiences()
+				).toEqual( configuredAudiences );
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+						body: {
+							data: {
+								triggerID:
+									'audience_segmentation_setup_completed',
+							},
+						},
+					} )
 				);
 			} );
 
