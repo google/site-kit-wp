@@ -78,6 +78,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		);
 
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
+		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
