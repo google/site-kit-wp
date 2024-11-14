@@ -30,95 +30,51 @@ import {
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { Cell, Grid, Row } from '../../../../material-components';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
 
 export default function SettingsForm() {
-	const breakpoint = useBreakpoint();
-	const isSmallScreen =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
 	return (
 		<div className="googlesitekit-sign-in-with-google-settings-fields">
 			<StoreErrorNotices
 				moduleSlug="sign-in-with-google"
 				storeName={ MODULES_SIGN_IN_WITH_GOOGLE }
 			/>
-			{ isSmallScreen ? (
-				<Grid>
-					<Row>
-						<Cell size={ 8 }>
-							<Grid>
-								<Row>
-									<Cell size={ 12 }>
-										<ClientIDTextField />
-									</Cell>
-								</Row>
-								<Row>
-									<Cell size={ 4 }>
-										<ButtonTextSelect />
-									</Cell>
-									<Cell size={ 4 }>
-										<ButtonThemeSelect />
-									</Cell>
-									<Cell size={ 4 }>
-										<ButtonShapeSelect />
-									</Cell>
-								</Row>
-								<Row>
-									<Cell size={ 12 }>
-										<OneTapToggle />
-									</Cell>
-								</Row>
-							</Grid>
-						</Cell>
-						<Cell size={ 4 }>
-							<Preview />
-						</Cell>
-					</Row>
-				</Grid>
-			) : (
-				<Grid>
-					<Row>
-						<Cell size={ 8 }>
-							<Grid className="googlesitekit-sign-in-with-google-settings-fields__stretch-form">
-								<Row>
-									<Cell size={ 12 }>
-										<ClientIDTextField />
-									</Cell>
-								</Row>
-								<Row>
-									<Cell size={ 4 }>
-										<ButtonTextSelect />
-									</Cell>
-									<Cell size={ 4 }>
-										<ButtonThemeSelect />
-									</Cell>
-									<Cell size={ 4 }>
-										<ButtonShapeSelect />
-									</Cell>
-								</Row>
-							</Grid>
-						</Cell>
-						<Cell
-							size={ 4 }
-							className="googlesitekit-sign-in-with-google-settings-fields__button-preview"
-						>
+			<Grid>
+				<Row>
+					<Cell size={ 8 }>
+						<Grid className="googlesitekit-sign-in-with-google-settings-fields__stretch-form">
 							<Row>
 								<Cell size={ 12 }>
-									<Preview />
+									<ClientIDTextField />
 								</Cell>
 							</Row>
-						</Cell>
-						<Cell size={ 12 }>
-							<OneTapToggle />
-						</Cell>
-					</Row>
-				</Grid>
-			) }
+							<Row>
+								<Cell size={ 4 }>
+									<ButtonTextSelect />
+								</Cell>
+								<Cell size={ 4 }>
+									<ButtonThemeSelect />
+								</Cell>
+								<Cell size={ 4 }>
+									<ButtonShapeSelect />
+								</Cell>
+							</Row>
+						</Grid>
+					</Cell>
+					<Cell
+						size={ 4 }
+						className="googlesitekit-sign-in-with-google-settings-fields__button-preview"
+					>
+						<Row>
+							<Cell size={ 12 }>
+								<Preview />
+							</Cell>
+						</Row>
+					</Cell>
+					<Cell size={ 12 }>
+						<OneTapToggle />
+					</Cell>
+				</Row>
+			</Grid>
 		</div>
 	);
 }
