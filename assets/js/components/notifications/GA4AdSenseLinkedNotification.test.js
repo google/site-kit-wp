@@ -48,6 +48,10 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	const fetchDismissItem = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// All the below conditions will trigger a successful notification.
@@ -135,7 +139,11 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'does not render if report has data, and it is not already dismissed', async () => {
+	it( 'does not render and dismisses notification if report has data, and it is not already dismissed', async () => {
+		fetchMock.postOnce( fetchDismissItem, {
+			body: [ GA4_ADSENSE_LINKED_NOTIFICATION ],
+		} );
+
 		const reportOptions = {
 			startDate: '2020-08-11',
 			endDate: '2020-09-07',
@@ -166,6 +174,10 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
 		);
+
+		// If report has data, the notification should be permanently dismissed.
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
