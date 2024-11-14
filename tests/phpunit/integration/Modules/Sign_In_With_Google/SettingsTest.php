@@ -71,7 +71,7 @@ class SettingsTest extends SettingsTestCase {
 			array( 'theme', 'outline', 'Light' ),
 			array( 'theme', 'filled_blue', 'Neutral' ),
 			array( 'theme', 'filled_black', 'Dark' ),
-			array( 'shape', 'rectangular', 'Rectagular' ),
+			array( 'shape', 'rectangular', 'Rectangular' ),
 			array( 'shape', 'pill', 'Pill' ),
 		);
 	}
