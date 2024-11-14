@@ -71,6 +71,13 @@ describe( 'modules/analytics-4 audiences', () => {
 	const expirableItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
+	const createCustomDimensionEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+	);
+
+	const syncAvailableCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+	);
 
 	const audience = {
 		displayName: 'Recently active users',
@@ -742,6 +749,116 @@ describe( 'modules/analytics-4 audiences', () => {
 				);
 			} );
 
+			it( 'should create the custom dimension if it does not exist while enabling groups', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableAudiences: availableUserAudiences,
+					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
+					availableCustomDimensions: [],
+					propertyID: testPropertyID,
+				} );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( audienceSettingsEndpoint, {
+					body: {
+						configuredAudiences: [],
+						isAudienceSegmentationWidgetHidden,
+					},
+					status: 200,
+				} );
+
+				fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+					body: [
+						CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( createCustomDimensionEndpoint, {
+					body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+					status: 200,
+				} );
+
+				muteFetch( expirableItemEndpoint );
+
+				const userAudience = availableAudiencesFixture[ 4 ];
+
+				const options = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudiencesUserCountReportOptions( [ userAudience ], {
+						startDate,
+						endDate: referenceDate,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( {}, { options } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ options ] );
+
+				const availableDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableCustomDimensions();
+
+				// Ensure the custom dimension is not available.
+				expect( availableDimensions ).not.toContain(
+					'googlesitekit_post_type'
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.enableAudienceGroup();
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					syncAvailableAudiencesEndpoint
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					createCustomDimensionEndpoint,
+					{
+						body: {
+							data: {
+								propertyID: testPropertyID,
+								customDimension:
+									CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					syncAvailableCustomDimensionsEndpoint
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toEqual( [
+					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+				] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionGatheringData(
+							'googlesitekit_post_type'
+						)
+				).toBe( true );
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
+				);
+			} );
+
 			it.each( [
 				[
 					'the top 1 from 1 of 3 candidate user audiences with data over the past 90 days', // Test description differentiator.
@@ -1327,13 +1444,6 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			describe( 'custom dimension handling', () => {
-				const createCustomDimensionEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-				);
-				const syncAvailableCustomDimensionsEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-				);
-
 				beforeEach( () => {
 					provideUserAuthentication( registry );
 					provideUserCapabilities( registry );
