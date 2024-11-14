@@ -69,7 +69,6 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			.receiveGetSettings( {
 				publicationID: 'ABCDEFGH',
 				publicationOnboardingState: ONBOARDING_COMPLETE,
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			} );
 
 		const { container } = render( <PublicationOnboardingStateNotice />, {
@@ -99,7 +98,6 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				.receiveGetSettings( {
 					publicationID: 'ABCDEFGH',
 					publicationOnboardingState: publicationState,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				} );
 
 			const { container, getByText, waitForRegistry } = render(
@@ -168,7 +166,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			.receiveGetSettings( {
 				publicationID: 'QRSTUVWX',
 				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
-				publicationOnboardingStateLastSyncedAtMs: 0,
+				publicationOnboardingStateChanged: false,
 			} );
 
 		fetchMock.getOnce( publicationsEndpoint, {
@@ -214,7 +212,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 					data: {
 						publicationID: 'QRSTUVWX',
 						publicationOnboardingState: ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
+						publicationOnboardingStateChanged: false,
 					},
 				},
 			} );
