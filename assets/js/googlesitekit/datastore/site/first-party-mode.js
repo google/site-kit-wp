@@ -106,13 +106,13 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {boolean} enabled First-party mode enabled status.
+	 * @param {boolean} isEnabled First-party mode enabled status.
 	 * @return {Object} Redux-style action.
 	 */
-	setFirstPartyModeEnabled( enabled ) {
+	setFirstPartyModeEnabled( isEnabled ) {
 		return {
 			type: SET_FIRST_PARTY_MODE_ENABLED,
-			payload: { enabled },
+			payload: { isEnabled },
 		};
 	},
 };
@@ -123,7 +123,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_FIRST_PARTY_MODE_ENABLED: {
 			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
-			state.firstPartyModeSettings.isEnabled = !! payload.enabled;
+			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
 			break;
 		}
 
