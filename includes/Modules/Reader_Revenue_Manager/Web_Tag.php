@@ -55,6 +55,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * Enqueues the Reader Revenue Manager (SWG) script.
 	 *
 	 * @since 1.132.0
+	 * @since 1.140.0 Updated to enqueue the script only on singular posts.
 	 */
 	protected function enqueue_swg_script() {
 		$locale = str_replace( '_', '-', get_locale() );
@@ -85,7 +86,21 @@ class Web_Tag extends Module_Web_Tag {
 		wp_script_add_data( 'google_swgjs', 'strategy', 'async' );
 		wp_add_inline_script( 'google_swgjs', $swg_inline_script, 'before' );
 
-		wp_enqueue_script( 'google_swgjs' );
+		/**
+		 * Filters the post types where Reader Revenue Manager CTAs should appear.
+		 *
+		 * @since 1.140.0
+		 *
+		 * @param array $cta_post_types The array of post types.
+		 */
+		$cta_post_types = apply_filters(
+			'googlesitekit_reader_revenue_manager_cta_post_types',
+			array( 'post' )
+		);
+
+		if ( is_singular( $cta_post_types ) ) {
+			wp_enqueue_script( 'google_swgjs' );
+		}
 	}
 
 	/**

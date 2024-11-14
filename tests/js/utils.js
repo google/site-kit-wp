@@ -436,7 +436,7 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 /**
  * Provides key metrics user input settings data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.140.0
  *
  * @param {Object} registry    The registry to set up.
  * @param {Object} [extraData] Extra data to merge with the default settings.
@@ -460,7 +460,7 @@ export const provideKeyMetricsUserInputSettings = (
 /**
  * Provides notifications data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.140.0
  *
  * @param {Object}  registry    The registry to set up.
  * @param {Object}  [extraData] Extra data to merge with the default settings.
