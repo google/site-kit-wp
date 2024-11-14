@@ -21,7 +21,7 @@
  */
 import { combineStores } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
-import anyoneCanRegisterStore from './anyone-can-register';
+import anyoneCanRegisterStore from './anyoneCanRegister';
 import baseModuleStore from './base';
 
 const store = combineStores( anyoneCanRegisterStore, baseModuleStore );
