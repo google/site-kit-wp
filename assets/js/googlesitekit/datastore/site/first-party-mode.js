@@ -43,7 +43,7 @@ const settingsReducerCallback = createReducer(
 	}
 );
 
-const fetchGetFirstPartyModeSettings = createFetchStore( {
+const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'getFirstPartyModeSettings',
 	controlCallback: () =>
 		API.get( 'core', 'site', 'fpm-settings', undefined, {
@@ -52,7 +52,7 @@ const fetchGetFirstPartyModeSettings = createFetchStore( {
 	reducerCallback: settingsReducerCallback,
 } );
 
-const fetchSaveFirstPartyModeSettings = createFetchStore( {
+const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'saveFirstPartyModeSettings',
 	controlCallback: ( { settings } ) => {
 		return API.set( 'core', 'site', 'fpm-settings', { settings } );
@@ -96,7 +96,7 @@ const baseActions = {
 		const { select } = yield commonActions.getRegistry();
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
-		return yield fetchSaveFirstPartyModeSettings.actions.fetchSaveFirstPartyModeSettings(
+		return yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
 			settings
 		);
 	},
@@ -137,7 +137,7 @@ const baseResolvers = {
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
 		if ( settings === undefined ) {
-			yield fetchGetFirstPartyModeSettings.actions.fetchGetFirstPartyModeSettings();
+			yield fetchGetFirstPartyModeSettingsStore.actions.fetchGetFirstPartyModeSettings();
 		}
 	},
 };
@@ -202,8 +202,8 @@ const baseSelectors = {
 };
 
 const store = combineStores(
-	fetchGetFirstPartyModeSettings,
-	fetchSaveFirstPartyModeSettings,
+	fetchGetFirstPartyModeSettingsStore,
+	fetchSaveFirstPartyModeSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
