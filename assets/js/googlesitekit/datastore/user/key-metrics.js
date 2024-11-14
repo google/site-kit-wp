@@ -559,7 +559,7 @@ const baseSelectors = {
 	 * Gets whether the new Analytics Conversion Reporting metric tiles
 	 * should be made available or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return {boolean|undefined} True if ACR tiles should be shown, false if not.
 	 */

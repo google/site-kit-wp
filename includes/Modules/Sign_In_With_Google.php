@@ -83,7 +83,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Handles the callback request after the user signs in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param Authenticator_Interface $authenticator Authenticator instance.
 	 */
@@ -106,7 +106,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Adds custom errors if Google auth flow failed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.
@@ -274,7 +274,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Gets the absolute number of users who have authenticated using Sign in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return array
 	 */
@@ -293,7 +293,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return array
 	 */
@@ -353,7 +353,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
@@ -368,7 +368,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Sign in with Google, tags can be detected on the home page. SiwG places its
 	 * snippet on the login page and thus, overrides this method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return string TRUE if tag is found, FALSE if not.
 	 */
@@ -396,7 +396,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * for other modules' script snippets. This should be improved as speicified in the
 	 * TODO within the trait method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param string $content Content to search for the button.
 	 * @return bool TRUE if tag is found, FALSE if not.

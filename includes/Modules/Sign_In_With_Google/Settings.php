@@ -158,7 +158,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the label for a given Sign in with Google setting value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param string $setting_name The slug for the Sign in with Google setting.
 	 * @param string $value The setting value to look up the label for.
