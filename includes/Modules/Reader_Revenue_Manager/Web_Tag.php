@@ -55,7 +55,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * Enqueues the Reader Revenue Manager (SWG) script.
 	 *
 	 * @since 1.132.0
-	 * @since n.e.x.t Updated to enqueue the script only on singular posts.
+	 * @since 1.140.0 Updated to enqueue the script only on singular posts.
 	 */
 	protected function enqueue_swg_script() {
 		$locale = str_replace( '_', '-', get_locale() );
@@ -89,7 +89,7 @@ class Web_Tag extends Module_Web_Tag {
 		/**
 		 * Filters the post types where Reader Revenue Manager CTAs should appear.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.140.0
 		 *
 		 * @param array $cta_post_types The array of post types.
 		 */

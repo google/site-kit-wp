@@ -59,7 +59,7 @@ trait Module_With_Tag_Trait {
 	 * Sign in with Google, tags can be detected on the home page. SiwG places its
 	 * snippet on the login page and thus, overrides this method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return string The home page URL string where tags are placed for most modules.
 	 */
