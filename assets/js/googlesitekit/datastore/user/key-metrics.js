@@ -104,6 +104,16 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchResetKeyMetricsSelectionStore = createFetchStore( {
+	baseName: 'resetKeyMetricsSelection',
+	controlCallback: () =>
+		API.set( 'core', 'user', 'reset-key-metrics-selection' ),
+	reducerCallback: ( state, keyMetricsSettings ) => ( {
+		...state,
+		keyMetricsSettings,
+	} ),
+} );
+
 const baseActions = {
 	/**
 	 * Sets key metrics setting.
@@ -165,6 +175,33 @@ const baseActions = {
 				.setKeyMetricsSetupCompletedBy(
 					registry.select( CORE_USER ).getID()
 				);
+		}
+
+		return { response, error };
+	},
+
+	/**
+	 * Resets key metrics selecton.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*resetKeyMetricsSelection( settings = {} ) {
+		invariant(
+			isPlainObject( settings ),
+			'key metric settings should be an object to save.'
+		);
+
+		yield clearError( 'resetKeyMetricsSelection', [] );
+
+		const { response, error } =
+			yield fetchResetKeyMetricsSelectionStore.actions.fetchResetKeyMetricsSelection();
+
+		if ( error ) {
+			// Store error manually since resetKeyMetricsSelection signature differs from fetchResetKeyMetricsSelectionStore.
+			yield receiveError( error, 'resetKeyMetricsSelection', [] );
 		}
 
 		return { response, error };
@@ -559,7 +596,7 @@ const baseSelectors = {
 	 * Gets whether the new Analytics Conversion Reporting metric tiles
 	 * should be made available or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return {boolean|undefined} True if ACR tiles should be shown, false if not.
 	 */
@@ -580,6 +617,7 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetKeyMetricsSettingsStore,
 	fetchSaveKeyMetricsSettingsStore,
+	fetchResetKeyMetricsSelectionStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

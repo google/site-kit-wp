@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
@@ -24,9 +25,12 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
-use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 
 /**
@@ -49,57 +53,52 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
+	 * The name for the Sign in with Google callback action.
+	 */
+	const ACTION_AUTH = 'googlesitekit_auth';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
 	 */
 	public function register() {
-		add_filter( 'wp_login_errors', array( $this, 'handle_google_auth_errors' ) );
+		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
-		add_action( 'login_form_google_auth', array( $this, 'handle_google_auth' ) );
+		add_action(
+			'login_form_' . self::ACTION_AUTH,
+			function () {
+				$settings = $this->get_settings();
+
+				$profile_reader = new Profile_Reader( $settings );
+				$authenticator  = new Authenticator( $this->user_options, $profile_reader );
+
+				$this->handle_auth_callback( $authenticator );
+			}
+		);
+
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
-	 * Intercept the page request to process token ID
-	 * and complete Sign in with Google flow.
+	 * Handles the callback request after the user signs in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
+	 *
+	 * @param Authenticator_Interface $authenticator Authenticator instance.
 	 */
-	public function handle_google_auth() {
-		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+	private function handle_auth_callback( Authenticator_Interface $authenticator ) {
+		$input = $this->context->input();
 
+		// Ignore the request if the request method is not POST.
+		$request_method = $input->filter( INPUT_SERVER, 'REQUEST_METHOD' );
 		if ( 'POST' !== $request_method ) {
 			return;
 		}
 
-		$csrf_cookie = $this->context->input()->filter( INPUT_COOKIE, 'g_csrf_token' );
-		$csrf_post   = $this->context->input()->filter( INPUT_POST, 'g_csrf_token' );
-
-		if (
-			! $csrf_cookie ||
-			! $csrf_post ||
-			$csrf_cookie !== $csrf_post
-		) {
-			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_g_csrf_token', wp_login_url() ) );
-			exit;
-		}
-
-		$client_id = $this->get_settings()->get()['clientID'];
-		$id_token  = $this->context->input()->filter( INPUT_POST, 'credential' );
-		try {
-			$client  = new Google_Client( array( 'client_id' => $client_id ) );
-			$payload = $client->verifyIdToken( $id_token );
-
-			if ( empty( $payload ) ) {
-				wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
-				exit;
-			}
-
-			// @TODO implement further flow using $payload in #9339.
-
-		} catch ( \Exception $e ) {
-			wp_safe_redirect( add_query_arg( 'error', 'google_auth_invalid_request', wp_login_url() ) );
+		$redirect_to = $authenticator->authenticate_user( $input );
+		if ( ! empty( $redirect_to ) ) {
+			wp_safe_redirect( $redirect_to );
 			exit;
 		}
 	}
@@ -107,21 +106,23 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Adds custom errors if Google auth flow failed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.
 	 */
-	public function handle_google_auth_errors( $error ) {
+	public function handle_login_errors( $error ) {
 		$error_code = $this->context->input()->filter( INPUT_GET, 'error' );
 		if ( ! $error_code ) {
 			return $error;
 		}
 
 		switch ( $error_code ) {
-			case 'google_auth_invalid_request':
-			case 'google_auth_invalid_g_csrf_token':
-				$error->add( 'google_auth', __( 'Sign in with Google failed.', 'google-site-kit' ) );
+			case Authenticator::ERROR_INVALID_REQUEST:
+				$error->add( self::MODULE_SLUG, __( 'Sign in with Google failed.', 'google-site-kit' ) );
+				break;
+			case Authenticator::ERROR_SIGNIN_FAILED:
+				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
 				break;
 			default:
 				break;
@@ -205,7 +206,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	public function is_connected() {
 		$options = $this->get_settings()->get();
-
 		if ( empty( $options['clientID'] ) ) {
 			return false;
 		}
@@ -224,57 +224,92 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		$redirect_url = add_query_arg( 'action', 'google_auth', wp_login_url() );
-		if ( substr( $redirect_url, 0, 5 ) !== 'https' ) {
+		$login_uri = add_query_arg( 'action', self::ACTION_AUTH, wp_login_url() );
+		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
 			return;
 		}
 
+		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
+		if ( ! empty( $redirect_to ) ) {
+			$redirect_to = trim( $redirect_to );
+		}
+
+		$btn_args = array(
+			'theme' => $settings['theme'],
+			'text'  => $settings['text'],
+			'shape' => $settings['shape'],
+		);
+
 		// Render the Sign in with Google button and related inline styles.
+		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 		?>
-<!-- <?php echo esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 <?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
 ( () => {
-	google.accounts.id.initialize({
-		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
-		login_uri: '<?php echo esc_js( $redirect_url ); ?>',
-		ux_mode: 'redirect',
-	});
 	const parent = document.createElement( 'div' );
-	document.getElementById( 'login').insertBefore( parent, document.getElementById( 'loginform' ) );
-	google.accounts.id.renderButton(parent, {
-		theme: '<?php echo esc_js( $settings['theme'] ); ?>',
-		text: '<?php echo esc_js( $settings['text'] ); ?>',
-		shape: '<?php echo esc_js( $settings['shape'] ); ?>'
-	});
+	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+
+	async function handleCredentialResponse( response ) {
+		try {
+			const res = await fetch( '<?php echo esc_js( $login_uri ); ?>', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams( response )
+			});
+			if ( res.ok && res.redirected ) {
+				location.assign( res.url );
+			}
+		} catch( error ) {
+			console.error( error );
+		}
+	}
+
+	google.accounts.id.initialize( {
+		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		callback: handleCredentialResponse,
+	} );
+
+	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+
+<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	google.accounts.id.prompt();
+<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	const expires = new Date();
+	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
+	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
-<!-- <?php echo esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
 	 * Gets the absolute number of users who have authenticated using Sign in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return array
 	 */
 	public function get_authenticated_users_count() {
 		global $wpdb;
 
-		$settings = $this->get_settings();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return $wpdb->query(
-			$wpdb->prepare( "SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s", self::GOOGLE_USER_ID_OPTION )
+			$wpdb->prepare(
+				"SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s",
+				$this->user_options->get_meta_key( Hashed_User_ID::OPTION )
+			)
 		);
 	}
 
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return array
 	 */
@@ -334,7 +369,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Returns the Module_Tag_Matchers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return Module_Tag_Matchers Module_Tag_Matchers instance.
 	 */
@@ -349,7 +384,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Sign in with Google, tags can be detected on the home page. SiwG places its
 	 * snippet on the login page and thus, overrides this method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @return string TRUE if tag is found, FALSE if not.
 	 */
@@ -377,7 +412,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * for other modules' script snippets. This should be improved as speicified in the
 	 * TODO within the trait method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param string $content Content to search for the button.
 	 * @return bool TRUE if tag is found, FALSE if not.
