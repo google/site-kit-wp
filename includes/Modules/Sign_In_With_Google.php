@@ -35,6 +35,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use WP_Error;
+use WP_User;
 
 /**
  * Class representing the Sign in With Google module.
