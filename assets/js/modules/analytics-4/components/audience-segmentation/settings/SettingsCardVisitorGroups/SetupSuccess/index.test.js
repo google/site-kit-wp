@@ -30,7 +30,6 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import {
-	act,
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
@@ -258,7 +257,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		);
 	} );
 
-	it( 'should dismiss the notification if "Visitor groups" toggle is turned off', async () => {
+	it( 'should dismiss the notification if "Visitor groups" toggle is turned off', () => {
 		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 			isAudienceSegmentationWidgetHidden: true,
 			configuredAudiences: null,
@@ -266,14 +265,6 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		const { container } = render( <SetupSuccess />, {
 			registry,
-		} );
-
-		await act( async () => {
-			await registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [
-					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-				] );
 		} );
 
 		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
