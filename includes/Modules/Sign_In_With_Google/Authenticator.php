@@ -32,9 +32,8 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Error codes.
 	 */
-	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
-	const ERROR_INVALID_CSRF_TOKEN = 'googlesitekit_auth_invalid_g_csrf_token';
-	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
+	const ERROR_INVALID_REQUEST = 'googlesitekit_auth_invalid_request';
+	const ERROR_SIGNIN_FAILED   = 'googlesitekit_auth_failed';
 
 	/**
 	 * User options instance.
@@ -75,13 +74,6 @@ class Authenticator implements Authenticator_Interface {
 	 */
 	public function authenticate_user( Input $input ) {
 		$login_url = wp_login_url();
-
-		// Check if the CSRF token is valid, if not redirect to the login page with an error.
-		$csrf_cookie = $input->filter( INPUT_COOKIE, 'g_csrf_token' );
-		$csrf_post   = $input->filter( INPUT_POST, 'g_csrf_token' );
-		if ( ! $csrf_cookie || $csrf_cookie !== $csrf_post ) {
-			return add_query_arg( 'error', self::ERROR_INVALID_CSRF_TOKEN, $login_url );
-		}
 
 		$credential = $input->filter( INPUT_POST, 'credential' );
 
