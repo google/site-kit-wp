@@ -83,7 +83,7 @@ export const selectors = {
 		const query = {
 			appname: siteName,
 			sitename: siteName,
-			siteurl: homeURL,
+			siteorigin: new URL( homeURL ).origin,
 			supportemail: supportEmail,
 		};
 
