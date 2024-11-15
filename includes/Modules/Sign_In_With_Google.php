@@ -253,13 +253,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 ( () => {
 	const parent = document.createElement( 'div' );
 <?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	if ( document.getElementsByClassName( 'woocommerce-form-row' )[0] ) {
-		document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
-	}
+	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
 <?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	if ( document.getElementById( 'loginform' ) ) {
-		document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
-	}
+	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 <?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
