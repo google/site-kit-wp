@@ -83,7 +83,8 @@ export default function SettingsView() {
 
 	const generalSettingsURL = useSelect(
 		( select ) =>
-			`${ select( CORE_SITE ).getAdminURL() }options-general.php`
+			new URL( 'options-general.php', select( CORE_SITE ).getAdminURL() )
+				.href
 	);
 
 	const anyoneCanRegisterNoticeDismissed = useSelect( ( select ) => {
@@ -148,7 +149,7 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'One tap sign in', 'google-site-kit' ) }
+						{ __( 'One Tap sign in', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
