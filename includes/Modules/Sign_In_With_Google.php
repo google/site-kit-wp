@@ -497,8 +497,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	public function handle_disconnect_user( $nonce ) {
 		if ( ! wp_verify_nonce( $nonce, self::DISCONNECT_ACTION ) ) {
-			$authentication = new Authentication( $this->context );
-			$authentication->invalid_nonce_error( self::DISCONNECT_ACTION );
+			$this->authentication->invalid_nonce_error( self::DISCONNECT_ACTION );
 		}
 
 		if ( ! isset( $_REQUEST['user_id'] ) ) {
