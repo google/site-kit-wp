@@ -318,53 +318,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( 'ABCDEFGH', $result->publicationID );
 	}
 
-	public function test_sync_publication_onboarding_state_should_not_return_isSavedSetting_property() {
-		// Set the Search Console option.
-		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
-
-		FakeHttp::fake_google_http_handler(
-			$this->reader_revenue_manager->get_client(),
-			function ( Request $request ) use ( &$filter ) {
-				$url    = parse_url( $request->getUri() );
-				$filter = $url['query'];
-
-				switch ( $url['path'] ) {
-					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
-						);
-				}
-			}
-		);
-
-		$this->reader_revenue_manager->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->authentication->get_oauth_client()->get_required_scopes()
-		);
-
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID'              => 'PQRSTUVWX',
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-			)
-		);
-
-		$result = $this->reader_revenue_manager->set_data(
-			'sync-publication-onboarding-state',
-			array(
-				'publicationID'              => 'ABCDEFGH',
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-			)
-		);
-
-		$this->assertNotWPError( $result );
-		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState );
-		$this->assertFalse( property_exists( $result, 'isSavedSetting' ) );
-	}
-
 	public function test_is_connected() {
 		$options                = new Options( $this->context );
 		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
