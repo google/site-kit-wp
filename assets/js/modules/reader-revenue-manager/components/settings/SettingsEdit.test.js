@@ -60,7 +60,6 @@ describe( 'SettingsEdit', () => {
 			.receiveGetSettings( {
 				publicationID,
 				publicationOnboardingState,
-				publicationOnboardingStateLastSyncedAtMs: 0,
 				ownerID: 1,
 			} );
 	} );
