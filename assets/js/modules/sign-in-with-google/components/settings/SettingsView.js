@@ -115,38 +115,32 @@ export default function SettingsView() {
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
-				{ !! buttonTextLabel && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Button text', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ buttonTextLabel } />
-						</p>
-					</div>
-				) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Button text', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ buttonTextLabel } />
+					</p>
+				</div>
 
-				{ !! buttonThemeLabel && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Button theme', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ buttonThemeLabel } />
-						</p>
-					</div>
-				) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Button theme', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ buttonThemeLabel } />
+					</p>
+				</div>
 
-				{ !! buttonShapeLabel && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Button shape', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ buttonShapeLabel } />
-						</p>
-					</div>
-				) }
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Button shape', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ buttonShapeLabel } />
+					</p>
+				</div>
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
