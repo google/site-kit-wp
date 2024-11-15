@@ -53,6 +53,7 @@ export default function ReportErrorActions( props ) {
 		hideGetHelpLink,
 		buttonVariant,
 		onRetry,
+		onRequestAccess,
 		getHelpClassName,
 		RequestAccessButton,
 		RetryButton,
@@ -132,6 +133,7 @@ export default function ReportErrorActions( props ) {
 					/>
 				) : (
 					<Button
+						onClick={ onRequestAccess }
 						href={ requestAccessURL }
 						target="_blank"
 						danger={ buttonVariant === 'danger' }
@@ -208,6 +210,7 @@ ReportErrorActions.propTypes = {
 	hideGetHelpLink: PropTypes.bool,
 	buttonVariant: PropTypes.string,
 	onRetry: PropTypes.func,
+	onRequestAccess: PropTypes.func,
 	getHelpClassName: PropTypes.string,
 	RequestAccessButton: PropTypes.elementType,
 	RetryButton: PropTypes.elementType,

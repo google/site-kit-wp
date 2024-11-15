@@ -17,14 +17,16 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Switch } from 'googlesitekit-components';
+import { Switch, HelperText } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import Link from '../../../../components/Link';
 
 export default function OneTapToggle() {
 	const oneTapEnabled = useSelect( ( select ) =>
@@ -33,13 +35,30 @@ export default function OneTapToggle() {
 	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	return (
-		<div className="googlesitekit-settings-module__fields-group">
+		<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__one-tap">
 			<Switch
 				label={ __( 'Enable One Tap sign in', 'google-site-kit' ) }
 				checked={ oneTapEnabled }
 				onClick={ () => setOneTapEnabled( ! oneTapEnabled ) }
 				hideLabel={ false }
 			/>
+			<HelperText persistent>
+				{ createInterpolateElement(
+					__(
+						'One Tap allows users to sign in or sign up with one click offering smooth user entry points without redirecting to a dedicated sign in and sign up page. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								key="link"
+								href="https://developers.google.com/identity/gsi/web/guides/offerings#one_tap"
+								external
+							/>
+						),
+					}
+				) }
+			</HelperText>
 		</div>
 	);
 }

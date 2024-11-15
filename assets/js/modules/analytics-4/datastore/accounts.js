@@ -69,15 +69,12 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 		return { pageToken };
 	},
 	reducerCallback( state, response ) {
-		const { accountSummaries: newAccountSummaries } = response;
-		const mergedAccountSummaries = [
-			...( state.accountSummaries || [] ),
-			...newAccountSummaries,
-		];
-
 		return {
 			...state,
-			accountSummaries: mergedAccountSummaries,
+			accountSummaries: [
+				...( state.accountSummaries || [] ),
+				...( response.accountSummaries || [] ),
+			],
 		};
 	},
 } );

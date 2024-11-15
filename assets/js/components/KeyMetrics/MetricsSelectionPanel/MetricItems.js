@@ -45,9 +45,9 @@ export default function MetricItems( { savedMetrics } ) {
 		select( CORE_USER )
 	);
 
-	const displayInList = useSelect(
+	const displayInSelectionPanel = useSelect(
 		( select ) => ( metric ) =>
-			KEY_METRICS_WIDGETS[ metric ].displayInList(
+			KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel(
 				select,
 				isViewOnlyDashboard,
 				metric
@@ -60,9 +60,9 @@ export default function MetricItems( { savedMetrics } ) {
 		}
 
 		if (
-			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInList ===
+			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInSelectionPanel ===
 				'function' &&
-			! displayInList( metricSlug )
+			! displayInSelectionPanel( metricSlug )
 		) {
 			return acc;
 		}

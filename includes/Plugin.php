@@ -226,6 +226,9 @@ final class Plugin {
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $options ) )->register();
 				( new Core\Tags\GTag() )->register();
 				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
+				if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
+					( new Core\Tags\First_Party_Mode\First_Party_Mode( $this->context, $options ) )->register();
+				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

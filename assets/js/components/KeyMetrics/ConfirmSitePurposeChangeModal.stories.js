@@ -33,6 +33,11 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import {
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from '../user-input/util/constants';
 
 function Template( args ) {
 	const handleDialog = () => {};
@@ -57,6 +62,11 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+						[ USER_INPUT_QUESTIONS_PURPOSE ]: [ 'publish_news' ],
+					} );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',

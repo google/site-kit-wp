@@ -43,12 +43,12 @@ export default function KeyMetricsCTAFooter( {
 				className="googlesitekit-widget-key-metrics-footer__cta-wrapper"
 			>
 				{ ! showDismiss && (
-					<p>
+					<span>
 						{ __(
-							'Intereseted in specific metrics?',
+							'Interested in specific metrics?',
 							'google-site-kit'
 						) }
-					</p>
+					</span>
 				) }
 				<Link onClick={ onActionClick }>
 					{ showDismiss

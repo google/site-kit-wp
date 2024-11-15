@@ -25,6 +25,9 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
+import { trackEvent } from '../../../../../../util';
 import {
 	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
@@ -46,9 +49,9 @@ import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
 import AudienceCreationNotice from './AudienceCreationNotice';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
 
 export default function AudienceSelectionPanel() {
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 
 	const isOpen = useSelect( ( select ) =>
@@ -82,7 +85,12 @@ export default function AudienceSelectionPanel() {
 			[ AUDIENCE_SELECTED ]: savedItemSlugs,
 			[ AUDIENCE_SELECTION_CHANGED ]: false,
 		} );
-	}, [ savedItemSlugs, setValues ] );
+
+		trackEvent(
+			`${ viewContext }_audiences-sidebar`,
+			'audiences_sidebar_view'
+		);
+	}, [ savedItemSlugs, setValues, viewContext ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {

@@ -1,45 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GA4AdSenseLinkedNotification renders when both Analytics and AdSense modules are active and linked 1`] = `
+exports[`GA4AdSenseLinkedNotification renders when both Analytics & AdSense modules are active & linked, when report has no data and when it was not previously dismissed 1`] = `
 <div>
-  <div
-    class="mdc-layout-grid"
+  <section
+    id="top-earning-pages-success-notification"
   >
     <div
-      class="mdc-layout-grid__inner"
+      class="mdc-layout-grid"
     >
       <div
-        class="googlesitekit-subtle-notification mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-subtle-notification__icon"
+          class="googlesitekit-subtle-notification googlesitekit-subtle-notification--success mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
         >
-          <svg />
-        </div>
-        <div
-          class="googlesitekit-subtle-notification__content"
-        >
-          <p>
-            Your AdSense and Analytics accounts are linked
-          </p>
-          <p
-            class="googlesitekit-subtle-notification__secondary_description"
+          <div
+            class="googlesitekit-subtle-notification__icon"
           >
-            We’ll let you know as soon as there’s enough data available
-          </p>
-        </div>
-        <button
-          class="mdc-button mdc-button--tertiary"
-          target="_self"
-        >
-          <span
-            class="mdc-button__label"
+            <svg />
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__content"
           >
-            Got it
-          </span>
-        </button>
+            <p>
+              Your AdSense and Analytics accounts are linked
+            </p>
+            <p
+              class="googlesitekit-subtle-notification__secondary_description"
+            >
+              We’ll let you know as soon as there’s enough data available
+            </p>
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__action"
+          >
+            <button
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Got it
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 `;

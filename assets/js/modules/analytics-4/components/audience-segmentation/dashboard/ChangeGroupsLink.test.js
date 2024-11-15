@@ -19,6 +19,7 @@
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { availableAudiences } from '../../../datastore/__fixtures__';
 import {
 	createTestRegistry,
@@ -26,7 +27,11 @@ import {
 	freezeFetch,
 	render,
 } from '../../../../../../../tests/js/test-utils';
+import * as tracking from '../../../../../util/tracking';
 import ChangeGroupsLink from './ChangeGroupsLink';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ChangeGroupsLink', () => {
 	let registry;
@@ -37,6 +42,10 @@ describe( 'ChangeGroupsLink', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should not render if available audiences are undefined', () => {
@@ -102,7 +111,10 @@ describe( 'ChangeGroupsLink', () => {
 			.dispatch( CORE_UI )
 			.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, false );
 
-		const { getByRole } = render( <ChangeGroupsLink />, { registry } );
+		const { getByRole } = render( <ChangeGroupsLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
 
 		const button = getByRole( 'button', { name: /change groups/i } );
 
@@ -113,5 +125,10 @@ describe( 'ChangeGroupsLink', () => {
 				.select( CORE_UI )
 				.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 		).toBe( true );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+			'change_groups'
+		);
 	} );
 } );

@@ -36,7 +36,10 @@ import {
 } from '../../../../googlesitekit/constants';
 import * as tracking from '../../../../util/tracking';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION } from '../../datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -49,6 +52,10 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
+
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
@@ -58,6 +65,20 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 				true
 			);
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationOnboardingState: 'ONBOARDING_COMPLETE',
+				publicationOnboardingStateChanged: true,
+			} );
+
+		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			// Return the same settings passed to the API.
+			return { body: data, status: 200 };
+		} );
 	} );
 
 	it( 'should render the component with correct title and description', async () => {

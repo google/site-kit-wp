@@ -38,6 +38,7 @@ import {
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'useEnableAudienceGroup', () => {
 	let registry;
@@ -185,6 +186,8 @@ describe( 'useEnableAudienceGroup', () => {
 		muteFetch( reportEndpoint );
 		muteFetch( expirableItemEndpoint );
 
+		mockSurveyEndpoints();
+
 		// Set autoSubmit to true.
 		registry
 			.dispatch( CORE_FORMS )
@@ -223,6 +226,8 @@ describe( 'useEnableAudienceGroup', () => {
 
 		muteFetch( reportEndpoint );
 		muteFetch( expirableItemEndpoint );
+
+		mockSurveyEndpoints();
 
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,

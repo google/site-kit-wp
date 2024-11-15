@@ -10,17 +10,17 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
-use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
-use Google\Site_Kit\Modules\Sign_In_With_Google\User_Connection_Setting;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Validate_Auth_Request;
 use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Modules\User_Connection_Setting;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 use WP_Query;
@@ -38,9 +38,26 @@ class Sign_In_With_GoogleTest extends TestCase {
 	 */
 	private $module;
 
+	/**
+	 * The original $_SERVER data.
+	 *
+	 * @var array
+	 */
+	private $server_data;
+
 	public function set_up() {
 		parent::set_up();
-		$this->module = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Store the original $_SERVER data.
+		$this->server_data = $_SERVER;
+		$this->module      = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+
+		// Restore the original $_SERVER data.
+		$_SERVER = $this->server_data;
 	}
 
 	public function test_magic_methods() {
@@ -353,6 +370,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		update_option( 'siteurl', 'http://example.com/' );
 
 		$this->module->register();
+		$this->module->get_settings()->register();
 
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
@@ -377,9 +395,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->get_settings()->set(
 			array(
 				'clientID' => '1234567890.googleusercontent.com',
-				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE,
-				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT,
-				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR,
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
 			)
 		);
 
@@ -390,11 +408,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
-		$this->assertStringContainsString( "login_uri: 'https://example.com/wp-login.php?action=google_auth'", $output );
+		$this->assertStringContainsString( "fetch( 'https://example.com/wp-login.php?action=googlesitekit_auth'", $output );
 
-		$this->assertStringContainsString( "text: '" . Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE . "'", $output );
-		$this->assertStringContainsString( "theme: '" . Sign_In_With_Google_Settings::THEME_LIGHT . "'", $output );
-		$this->assertStringContainsString( "shape: '" . Sign_In_With_Google_Settings::SHAPE_RECTANGULAR . "'", $output );
+		$this->assertStringContainsString( sprintf( '"text":"%s"', Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output );
+		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
+		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
 
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
@@ -488,5 +506,48 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_set_current_user( $user_id_admin );
 		$output = $this->render_by_action( 'edit_user_profile', get_user_by( 'id', $user_id ) );
 		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
+	}
+
+	private function call_handle_auth_callback( $authenticator ) {
+		$class  = new \ReflectionClass( Sign_In_With_Google::class );
+		$method = $class->getMethod( 'handle_auth_callback' );
+		$method->setAccessible( true );
+
+		return $method->invokeArgs( $this->module, array( $authenticator ) );
+	}
+
+	public function test_handle_auth_callback_should_not_redirect_for_non_post_method() {
+		try {
+			$_SERVER['REQUEST_METHOD'] = 'GET';
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( 'https://example.com' ) );
+			$this->expectNotToPerformAssertions();
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_redirect_for_post_method() {
+		$redirect_uri              = home_url( '/test-page/' );
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location() );
+		}
+	}
+
+	/**
+	 * @param $redirect_to string
+	 * @return Authenticator_Interface
+	 */
+	protected function get_mock_authenticator( $redirect_to ) {
+		$mock = $this->getMockBuilder( Authenticator_Interface::class )
+					->onlyMethods( array( 'authenticate_user' ) )
+					->getMock();
+		$mock->method( 'authenticate_user' )->willReturn( $redirect_to );
+
+		return $mock;
 	}
 }
