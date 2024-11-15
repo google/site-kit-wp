@@ -20,6 +20,11 @@
 
 	.googlesitekit-settings-module--sign-in-with-google {
 
+		.googlesitekit-settings-notice__icon {
+			align-items: center;
+			display: flex;
+		}
+
 		.googlesitekit-settings-module__footer {
 			margin-top: 30px;
 		}

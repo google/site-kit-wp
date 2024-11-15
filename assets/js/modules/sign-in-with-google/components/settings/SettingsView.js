@@ -40,6 +40,7 @@ import SettingsNotice, {
 } from '../../../../components/SettingsNotice';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import WarningIcon from '../../../../../svg/icons/warning.svg';
 
 export default function SettingsView() {
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -191,13 +192,19 @@ export default function SettingsView() {
 										'sign-in-with-google-anyone-can-register-notice'
 									);
 								} }
+								dismissLabel={ __(
+									'Got it',
+									'google-site-kit'
+								) }
+								Icon={ WarningIcon }
 								notice={ createInterpolateElement(
 									__(
-										'Enable the <a>“Anyone can register” setting in WordPress</a> to allow your visitors to create an account using the Sign in with Google button.',
+										'Enable the “Anyone can register” setting to allow your visitors to create an account using the Sign in with Google button. <br/>Visit <a>WordPress Settings</a> to manage this setting.',
 										'google-site-kit'
 									),
 									{
 										a: <Link href={ generalSettingsURL } />,
+										br: <br />,
 									}
 								) }
 							/>
