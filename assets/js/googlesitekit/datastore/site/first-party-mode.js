@@ -163,7 +163,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returned undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =
@@ -178,7 +178,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if the FPFE service is healthy, otherwise false. Returned undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if the FPFE service is healthy, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFPMHealthy: createRegistrySelector( ( select ) => () => {
 		const { isFPMHealthy } =
@@ -193,7 +193,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if the `fpm/measurement.php` proxy script is accessible, otherwise false. Returned undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if the `fpm/measurement.php` proxy script is accessible, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
 		const { isScriptAccessEnabled } =
