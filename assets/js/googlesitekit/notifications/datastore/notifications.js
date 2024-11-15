@@ -113,7 +113,10 @@ export const actions = {
 			type: REGISTER_NOTIFICATION,
 		};
 	},
-	receiveQueuedNotifications( queuedNotifications, groupID ) {
+	receiveQueuedNotifications(
+		queuedNotifications,
+		groupID = NOTIFICATION_GROUPS.DEFAULT
+	) {
 		return {
 			payload: {
 				queuedNotifications,
@@ -226,7 +229,10 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 } );
 
 export const resolvers = {
-	*getQueuedNotifications( viewContext, groupID ) {
+	*getQueuedNotifications(
+		viewContext,
+		groupID = NOTIFICATION_GROUPS.DEFAULT
+	) {
 		const registry = yield commonActions.getRegistry();
 
 		const notifications = registry
@@ -333,7 +339,11 @@ export const selectors = {
 	 * @param {string} groupID     The groupID of the notification queue to fetch notifications for.
 	 * @return {(Array|undefined)} Array of notification objects.
 	 */
-	getQueuedNotifications: ( state, viewContext, groupID ) => {
+	getQueuedNotifications: (
+		state,
+		viewContext,
+		groupID = NOTIFICATION_GROUPS.DEFAULT
+	) => {
 		invariant( viewContext, 'viewContext is required.' );
 
 		return state.queuedNotifications[ groupID ];
