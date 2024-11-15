@@ -24,12 +24,13 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideNotifications,
-	act,
-	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import { provideAnalytics4MockReport } from '../../modules/analytics-4/utils/data-mock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_SETTINGS,
@@ -57,52 +58,46 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		// All the below conditions will trigger a successful notification.
 		// So each individual failing test case further below will overwrite one
 		// of the success criteria.
-		act( () => {
-			provideModules( registry, [
-				{
-					active: true,
-					connected: true,
-					slug: 'analytics-4',
-				},
-				{
-					active: true,
-					connected: true,
-					slug: 'adsense',
-				},
-			] );
-			provideNotifications(
-				registry,
-				{
-					[ GA4_ADSENSE_LINKED_NOTIFICATION ]:
-						DEFAULT_NOTIFICATIONS[
-							GA4_ADSENSE_LINKED_NOTIFICATION
-						],
-				},
-				true
-			);
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				adSenseLinked: true,
-			} );
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-			fetchMock.getOnce( analyticsReport, {
-				body: {
-					rowCount: null,
-				},
-				status: 200,
-			} );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics-4',
+			},
+			{
+				active: true,
+				connected: true,
+				slug: 'adsense',
+			},
+		] );
+		provideNotifications(
+			registry,
+			{
+				[ GA4_ADSENSE_LINKED_NOTIFICATION ]:
+					DEFAULT_NOTIFICATIONS[ GA4_ADSENSE_LINKED_NOTIFICATION ],
+			},
+			true
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			adSenseLinked: true,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		fetchMock.getOnce( analyticsReport, {
+			body: {
+				rowCount: null,
+			},
+			status: 200,
 		} );
 	} );
 
 	it( 'does not render if AdSense module is not active', async () => {
-		act( () => {
-			provideModules( registry, [
-				{
-					active: false,
-					connected: false,
-					slug: 'adsense',
-				},
-			] );
-		} );
+		provideModules( registry, [
+			{
+				active: false,
+				connected: false,
+				slug: 'adsense',
+			},
+		] );
 
 		const { container, waitForRegistry } = render(
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
@@ -112,17 +107,14 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			}
 		);
 
-		await act( waitForRegistry );
-		await act( waitForDefaultTimeouts );
+		await waitForRegistry();
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
 	it( 'does not render if AdSense and Analytics are not linked', async () => {
-		act( () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				adSenseLinked: false,
-			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			adSenseLinked: false,
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -133,35 +125,32 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			}
 		);
 
-		await act( waitForRegistry );
-		await act( waitForDefaultTimeouts );
+		await waitForRegistry();
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
 	it( 'does not render and dismisses notification if report has data, and it is not already dismissed', async () => {
-		act( () => {
-			fetchMock.postOnce( fetchDismissItem, {
-				body: [ GA4_ADSENSE_LINKED_NOTIFICATION ],
-			} );
-
-			const reportOptions = {
-				startDate: '2020-08-11',
-				endDate: '2020-09-07',
-				dimensions: [ 'pagePath' ],
-				metrics: [ { name: 'totalAdRevenue' } ],
-				orderby: [
-					{
-						metric: { metricName: 'totalAdRevenue' },
-						desc: true,
-					},
-				],
-				limit: 3,
-			};
-
-			registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-			provideAnalytics4MockReport( registry, reportOptions );
+		fetchMock.postOnce( fetchDismissItem, {
+			body: [ GA4_ADSENSE_LINKED_NOTIFICATION ],
 		} );
+
+		const { getDateRangeDates } = registry.select( CORE_USER );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		const reportOptions = {
+			...getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
+			dimensions: [ 'pagePath' ],
+			metrics: [ { name: 'totalAdRevenue' } ],
+			orderby: [
+				{
+					metric: { metricName: 'totalAdRevenue' },
+					desc: true,
+				},
+			],
+			limit: 3,
+		};
+
+		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />,
@@ -171,15 +160,14 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			}
 		);
 
-		await act( waitForRegistry );
-		await act( waitForDefaultTimeouts );
+		await waitForRegistry();
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
 		);
 
 		// If report has data, the notification should be permanently dismissed.
-		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( fetchMock ).toHaveFetchedTimes( 1, fetchDismissItem );
 
 		expect( container.childElementCount ).toBe( 0 );
 	} );
@@ -197,8 +185,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			}
 		);
 
-		await act( waitForRegistry );
-		await act( waitForDefaultTimeouts );
+		await waitForRegistry();
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -216,8 +203,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			}
 		);
 
-		await act( waitForRegistry );
-		await act( waitForDefaultTimeouts );
+		await waitForRegistry();
 
 		expect( fetchMock ).not.toHaveFetched(
 			'/google-site-kit/v1/modules/analytics-4/data'
@@ -235,8 +221,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 			}
 		);
 
-		await act( waitForRegistry );
-		await act( waitForDefaultTimeouts );
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			'Your AdSense and Analytics accounts are linked'
