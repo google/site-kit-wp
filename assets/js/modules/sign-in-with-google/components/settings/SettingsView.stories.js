@@ -54,7 +54,7 @@ Default.decorators = [
 				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 				.receiveGetSettings( {
 					clientID:
-						'example-client-id-123123123.apps.usercontent.com',
+						'example-client-id-123123123.apps.googleusercontent.com',
 					text: 'continue_with',
 					theme: 'outline',
 					shape: 'rectangular',
