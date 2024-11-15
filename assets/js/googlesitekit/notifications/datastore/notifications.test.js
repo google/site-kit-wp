@@ -24,11 +24,7 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from './constants';
+import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -188,10 +184,9 @@ describe( 'core/notifications Notifications', () => {
 				} );
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications(
-						[ { id: 'test-notification' } ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -221,10 +216,9 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications(
-						[ { id: 'test-notification' } ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -262,10 +256,9 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications(
-						[ { id: 'not-dismissible-notification' } ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.receiveQueuedNotifications( [
+						{ id: 'not-dismissible-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -298,10 +291,9 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications(
-						[ { id: 'dismissible-notification' } ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.receiveQueuedNotifications( [
+						{ id: 'dismissible-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -325,10 +317,9 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications(
-						[ { id: 'test-notification' } ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -338,10 +329,7 @@ describe( 'core/notifications Notifications', () => {
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						[ VIEW_CONTEXT_MAIN_DASHBOARD ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
 
 				expect( queuedNotifications ).toEqual( [] );
 
@@ -354,10 +342,9 @@ describe( 'core/notifications Notifications', () => {
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.receiveQueuedNotifications(
-						[ { id: 'test-notification' } ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
 
 				await registry
 					.dispatch( CORE_NOTIFICATIONS )
@@ -368,10 +355,7 @@ describe( 'core/notifications Notifications', () => {
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						[ VIEW_CONTEXT_MAIN_DASHBOARD ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
 
 				expect( queuedNotifications ).toEqual( [
 					{ id: 'test-notification' },
@@ -407,10 +391,7 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return undefined when no notifications have been registered', () => {
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						[ VIEW_CONTEXT_MAIN_DASHBOARD ],
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
 
 				expect( queuedNotifications ).toBeUndefined();
 			} );
@@ -444,26 +425,17 @@ describe( 'core/notifications Notifications', () => {
 				expect(
 					registry
 						.select( CORE_NOTIFICATIONS )
-						.getQueuedNotifications(
-							VIEW_CONTEXT_MAIN_DASHBOARD,
-							NOTIFICATION_GROUPS.DEFAULT
-						)
+						.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications(
-					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT
-				);
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				expect( queuedNotifications ).toHaveLength( 2 );
 			} );
@@ -527,25 +499,16 @@ describe( 'core/notifications Notifications', () => {
 
 				registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications(
-					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT
-				);
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 				expect( queuedNotifications ).toHaveLength( 2 );
 				expect( queuedNotifications[ 0 ].id ).toBe(
 					'check-requirements-true'
@@ -605,25 +568,16 @@ describe( 'core/notifications Notifications', () => {
 
 				registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications(
-					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT
-				);
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 				expect( queuedNotifications ).toHaveLength( 3 );
 				expect( queuedNotifications[ 0 ].id ).toBe(
 					'is-dismissible-true-but-not-dismissed'
@@ -671,25 +625,16 @@ describe( 'core/notifications Notifications', () => {
 
 				registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				await untilResolved(
 					registry,
 					CORE_NOTIFICATIONS
-				).getQueuedNotifications(
-					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT
-				);
+				).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				const queuedNotifications = registry
 					.select( CORE_NOTIFICATIONS )
-					.getQueuedNotifications(
-						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.DEFAULT
-					);
+					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				expect( queuedNotifications ).toHaveLength( 4 );
 				expect( queuedNotifications[ 0 ].id ).toBe(
