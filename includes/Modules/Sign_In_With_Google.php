@@ -65,14 +65,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	protected $google_client;
 
 	/**
-	 * User_Connection_Setting instance.
-	 *
-	 * @since n.e.x.t
-	 * @var User_Connection_Setting
-	 */
-	protected $user_connection_setting;
-
-	/**
 	 * Authentication action name.
 	 */
 	const ACTION_AUTH = 'googlesitekit_auth';
@@ -516,7 +508,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Only allow this action for admins or users own setting.
 		if ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user_id ) {
-			delete_user_meta( $user_id, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ) );
+			delete_user_meta( $user_id, $this->user_options->get_meta_key( Hashed_User_ID::OPTION ) );
 		}
 		wp_safe_redirect( get_edit_user_link( $user_id ) );
 		exit;
@@ -530,7 +522,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param WP_User $user WordPress user object.
 	 */
 	private function render_disconnect_profile( WP_User $user ) {
-		$current_user_google_id = get_user_meta( $user->ID, $this->user_options->get_meta_key( User_Connection_Setting::OPTION ), true );
+		$current_user_google_id = get_user_meta( $user->ID, $this->user_options->get_meta_key( Hashed_User_ID::OPTION ), true );
 
 		// Don't show if the user does not have a Google ID save in user meta.
 		if ( empty( $current_user_google_id ) ) {
