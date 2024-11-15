@@ -16,11 +16,11 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\Modules\User_Connection_Setting;
 use Google\Site_Kit_Dependencies\Google_Client;
 use WP_Error;
 use WP_Query;
@@ -73,7 +73,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$user_options             = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$user_connection_meta_key = $user_options->get_meta_key( User_Connection_Setting::OPTION );
+		$user_connection_meta_key = $user_options->get_meta_key( Hashed_User_ID::OPTION );
 
 		$wp_query = new WP_Query();
 		$wp_query->query( array( 'google_auth' => 123 ) );
