@@ -424,7 +424,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$user_options             = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$user_connection_meta_key = $user_options->get_meta_key( User_Connection_Setting::OPTION );
+		$user_connection_meta_key = $user_options->get_meta_key( Hashed_User_ID::OPTION );
 
 		// Invalid nonce should return error.
 		$_GET['nonce'] = 'bad-nonce';
@@ -482,7 +482,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$user_options             = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$user_connection_meta_key = $user_options->get_meta_key( User_Connection_Setting::OPTION );
+		$user_connection_meta_key = $user_options->get_meta_key( Hashed_User_ID::OPTION );
 
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
