@@ -44,9 +44,6 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsView/Default',
-};
 Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -76,9 +73,6 @@ Default.decorators = [
 
 export const NewUserAccountsDisabled = Template.bind( null );
 NewUserAccountsDisabled.storyName = 'New Accounts Disabled';
-NewUserAccountsDisabled.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsView/NewUserAccountsDisabled',
-};
 NewUserAccountsDisabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
