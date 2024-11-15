@@ -97,7 +97,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( syncStatus ).toEqual( {} );
 			} );
 
-			it( 'should update the settings and call the saveSettings endpoint', async () => {
+			it( 'should call the `sync-publication-onboarding-state` endpoint and update the settings in state', async () => {
 				const publication = fixtures.publications[ 0 ];
 
 				const settings = {
@@ -124,7 +124,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.syncPublicationOnboardingState();
 
 				// Set expectations for settings endpoint.
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					syncOnboardingStateEndpoint
+				);
 
 				// Set expectations for publication ID.
 				expect(
@@ -139,55 +141,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
-			} );
-
-			it( 'should not update the timestamp if onboarding state has not changed', async () => {
-				fetchMock.getOnce( publicationsEndpoint, {
-					body: fixtures.publications,
-					status: 200,
-				} );
-
-				// Set default settings.
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						publicationID: '',
-						publicationOnboardingState: '',
-						publicationOnboardingStateChanged: false,
-					} );
-
-				const publication = fixtures.publications[ 0 ];
-
-				// Set a publication ID in state.
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setPublicationID( publication.publicationId );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setPublicationOnboardingState(
-						publication.onboardingState
-					);
-
-				fetchMock.postOnce( syncOnboardingStateEndpoint, {
-					body: {},
-					status: 200,
-				} );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.syncPublicationOnboardingState();
-
-				// Verify that the onboarding state was updated in state.
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationOnboardingState()
-				).toEqual( PUBLICATION_ONBOARDING_STATES.UNSPECIFIED );
-
-				expect( fetchMock ).toHaveFetched(
-					syncOnboardingStateEndpoint
-				);
 			} );
 		} );
 

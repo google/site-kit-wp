@@ -241,7 +241,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					throw new Missing_Required_Param_Exception( 'publicationOnboardingState' );
 				}
 
-				$return_data  = array();
 				$publications = $this->get_data( 'publications' );
 
 				if ( is_wp_error( $publications ) ) {
@@ -275,8 +274,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				$new_onboarding_state = $publication->getOnboardingState();
 
 				if ( $new_onboarding_state === $data['publicationOnboardingState'] ) {
-					return function () use ( $return_data ) {
-						return (object) $return_data;
+					return function () {
+						return (object) array();
 					};
 				}
 
@@ -290,13 +289,11 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					);
 				}
 
-				$return_data = array(
-					'publicationID'              => $data['publicationID'],
-					'publicationOnboardingState' => $new_onboarding_state,
-				);
-
-				return function () use ( $return_data ) {
-					return (object) $return_data;
+				return function () use ( $data, $new_onboarding_state ) {
+					return (object) array(
+						'publicationID'              => $data['publicationID'],
+						'publicationOnboardingState' => $new_onboarding_state,
+					);
 				};
 		}
 
