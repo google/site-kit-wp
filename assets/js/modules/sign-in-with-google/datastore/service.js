@@ -75,20 +75,26 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The URL to the clientID, or `undefined` if not loaded.
 	 */
-	getClientIDURL: createRegistrySelector( ( select ) => () => {
-		const siteName = select( CORE_SITE ).getSiteName();
-		const homeURL = untrailingslashit( select( CORE_SITE ).getHomeURL() );
-		const supportEmail = select( CORE_USER ).getEmail();
+	getServiceClientIDProvisioningURL: createRegistrySelector(
+		( select ) => () => {
+			const siteName = select( CORE_SITE ).getSiteName();
+			const homeURL = untrailingslashit(
+				select( CORE_SITE ).getHomeURL()
+			);
+			const supportEmail = select( CORE_USER ).getEmail();
 
-		const query = {
-			appname: siteName,
-			sitename: siteName,
-			siteorigin: new URL( homeURL ).origin,
-			supportemail: supportEmail,
-		};
+			const query = {
+				appname: siteName,
+				sitename: siteName,
+				siteorigin: new URL( homeURL ).origin,
+				supportemail: supportEmail,
+			};
 
-		return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( { query } );
-	} ),
+			return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( {
+				query,
+			} );
+		}
+	),
 };
 
 const store = {
