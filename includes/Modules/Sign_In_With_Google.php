@@ -534,7 +534,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 		?>
 <div id="googlesitekit-sign-in-with-google-disconnect">
-	<h2><?php esc_html_e( 'Sign in with Google', 'google-site-kit' ); ?></h2>
+	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
 	<p>
 		<?php
 		esc_html_e(
