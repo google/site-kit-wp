@@ -85,11 +85,8 @@ export default function SettingsView() {
 	);
 
 	const anyoneCanRegisterNoticeDismissed = useSelect( ( select ) => {
-		const dismissedItems = select( CORE_USER ).getDismissedItems();
-
-		return dismissedItems?.some(
-			( item ) =>
-				item === 'sign-in-with-google-anyone-can-register-notice'
+		return select( CORE_USER ).isItemDismissed(
+			'sign-in-with-google-anyone-can-register-notice'
 		);
 	} );
 
