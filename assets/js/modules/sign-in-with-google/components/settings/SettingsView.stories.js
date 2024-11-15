@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	provideModules,
@@ -24,7 +23,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsView from './SettingsView';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 
 function Template() {
 	return (
@@ -47,67 +46,27 @@ function Template() {
 }
 
 export const Default = Template.bind( null );
-Default.storyName = 'Default';
-Default.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-				.receiveGetSettings( {
-					clientID:
-						'example-client-id-123123123.apps.googleusercontent.com',
-					text: 'continue_with',
-					theme: 'outline',
-					shape: 'rectangular',
-					OneTapEnabled: true,
-				} );
-
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				anyoneCanRegister: true,
-			} );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
 
 export const NewUserAccountsDisabled = Template.bind( null );
 NewUserAccountsDisabled.storyName = 'New Accounts Disabled';
-NewUserAccountsDisabled.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-				.receiveGetSettings( {
-					clientID:
-						'example-client-id-123123123.apps.usercontent.com',
-					text: 'continue_with',
-					theme: 'outline',
-					shape: 'rectangular',
-					OneTapEnabled: true,
-				} );
-
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				anyoneCanRegister: false,
-			} );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+NewUserAccountsDisabled.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, { anyoneCanRegister: false } );
 	},
-];
+};
+
+export const NewUserAccountsEnabled = Template.bind( null );
+NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
+NewUserAccountsEnabled.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, { anyoneCanRegister: true } );
+	},
+};
 
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
 				provideModules( registry, [
@@ -117,6 +76,22 @@ export default {
 						connected: true,
 					},
 				] );
+
+				registry
+					.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
+					.receiveGetSettings( {
+						clientID:
+							'example-client-id-123123123.apps.googleusercontent.com',
+						text: 'continue_with',
+						theme: 'outline',
+						shape: 'rectangular',
+						oneTapEnabled: false,
+					} );
+
+				// Story-specific setup.
+				if ( args.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (
