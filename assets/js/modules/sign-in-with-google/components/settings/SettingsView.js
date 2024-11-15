@@ -64,7 +64,7 @@ export default function SettingsView() {
 	const buttonTextLabel = useSelect( ( select ) => {
 		const text = select( MODULES_SIGN_IN_WITH_GOOGLE ).getText();
 
-		SIGN_IN_WITH_GOOGLE_TEXTS.find( ( { value } ) => {
+		return SIGN_IN_WITH_GOOGLE_TEXTS.find( ( { value } ) => {
 			return value === text;
 		} )?.label;
 	} );
