@@ -95,11 +95,11 @@ describe( 'module/sign-in-with-google service store', () => {
 				expect( decodedServiceURL ).toMatchQueryParameters( query );
 			} );
 		} );
-		describe( 'getClientIDURL', () => {
+		describe( 'getServiceClientIDProvisioningURL', () => {
 			it( 'retrieves the correct Client ID URL', () => {
 				const clientIDURL = registry
 					.select( MODULES_SIGN_IN_WITH_GOOGLE )
-					.getClientIDURL();
+					.getServiceClientIDProvisioningURL();
 
 				expect( clientIDURL ).toMatchInlineSnapshot(
 					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Fappname%3DMy%2520Site%2520Name%26sitename%3DMy%2520Site%2520Name%26siteurl%3Dhttp%253A%252F%252Fexample.com%26supportemail%3Dadmin%2540example.com&Email=admin%40example.com"'
