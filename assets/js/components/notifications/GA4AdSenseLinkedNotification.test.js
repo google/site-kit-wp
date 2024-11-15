@@ -92,7 +92,6 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 				},
 			] );
 
-			// const queued = await registry.resolveSelect( CORE_NOTIFICATIONS ).getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD, 'default')
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD
