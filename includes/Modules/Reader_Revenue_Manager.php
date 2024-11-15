@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
@@ -201,7 +202,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:publications' => array( 'service' => 'subscribewithgoogle' ),
+			'GET:publications'                       => array(
+				'service' => 'subscribewithgoogle',
+			),
+			'POST:sync-publication-onboarding-state' => array(
+				'service' => 'subscribewithgoogle',
+			),
 		);
 	}
 
@@ -213,7 +219,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
-	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 * @throws Invalid_Datapoint_Exception|Missing_Required_Param_Exception Thrown if the datapoint does not exist or parameters are missing.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -225,6 +231,70 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				 */
 				$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
 				return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
+
+			case 'POST:sync-publication-onboarding-state':
+				if ( empty( $data['publicationID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'publicationID' );
+				}
+
+				if ( empty( $data['publicationOnboardingState'] ) ) {
+					throw new Missing_Required_Param_Exception( 'publicationOnboardingState' );
+				}
+
+				$publications = $this->get_data( 'publications' );
+
+				if ( is_wp_error( $publications ) ) {
+					return $publications;
+				}
+
+				if ( empty( $publications ) ) {
+					return new WP_Error(
+						'publication_not_found',
+						__( 'Publication not found.', 'google-site-kit' ),
+						array( 'status' => 404 )
+					);
+				}
+
+				$publication = array_filter(
+					$publications,
+					function ( $publication ) use ( $data ) {
+						return $publication->getPublicationId() === $data['publicationID'];
+					}
+				);
+
+				if ( empty( $publication ) ) {
+					return new WP_Error(
+						'publication_not_found',
+						__( 'Publication not found.', 'google-site-kit' ),
+						array( 'status' => 404 )
+					);
+				}
+
+				$publication          = reset( $publication );
+				$new_onboarding_state = $publication->getOnboardingState();
+
+				if ( $new_onboarding_state === $data['publicationOnboardingState'] ) {
+					return function () {
+						return (object) array();
+					};
+				}
+
+				$settings = $this->get_settings();
+
+				if ( $data['publicationID'] === $settings->get()['publicationID'] ) {
+					$settings->merge(
+						array(
+							'publicationOnboardingState' => $new_onboarding_state,
+						)
+					);
+				}
+
+				return function () use ( $data, $new_onboarding_state ) {
+					return (object) array(
+						'publicationID'              => $data['publicationID'],
+						'publicationOnboardingState' => $new_onboarding_state,
+					);
+				};
 		}
 
 		return parent::create_data_request( $data );
