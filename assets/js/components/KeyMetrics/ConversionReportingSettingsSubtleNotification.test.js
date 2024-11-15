@@ -1,5 +1,5 @@
 /**
- * Key Metrics ACRSubtleNotification component tests.
+ * Key Metrics ConversionReportingSettingsSubtleNotification component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,10 +24,10 @@ import {
 	render,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import ACRSubtleNotification from './ACRSubtleNotification';
+import ConversionReportingSettingsSubtleNotification from './ConversionReportingSettingsSubtleNotification';
 import { ACR_SUBTLE_NOTIFICATION_SLUG } from './constants';
 
-describe( 'ACRSubtleNotification', () => {
+describe( 'ConversionReportingSettingsSubtleNotification', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -38,7 +38,7 @@ describe( 'ACRSubtleNotification', () => {
 
 	it( 'should render "Get tailored metrics" CTA', async () => {
 		const { queryByText, getByRole, waitForRegistry } = render(
-			<ACRSubtleNotification />,
+			<ConversionReportingSettingsSubtleNotification />,
 			{
 				registry,
 			}
@@ -56,9 +56,12 @@ describe( 'ACRSubtleNotification', () => {
 	} );
 
 	it( 'should render "Maybe later" CTA', () => {
-		const { queryByText } = render( <ACRSubtleNotification />, {
-			registry,
-		} );
+		const { queryByText } = render(
+			<ConversionReportingSettingsSubtleNotification />,
+			{
+				registry,
+			}
+		);
 
 		expect( queryByText( /maybe later/i ) ).toBeInTheDocument();
 	} );
@@ -72,9 +75,12 @@ describe( 'ACRSubtleNotification', () => {
 			}
 		);
 
-		const { getByRole } = render( <ACRSubtleNotification />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<ConversionReportingSettingsSubtleNotification />,
+			{
+				registry,
+			}
+		);
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
