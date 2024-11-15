@@ -17,10 +17,7 @@
  */
 
 import { Cell, Grid, Row } from '../../../../material-components';
-import {
-	provideModules,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
+import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsView from './SettingsView';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
@@ -50,17 +47,13 @@ export const Default = Template.bind( null );
 export const NewUserAccountsDisabled = Template.bind( null );
 NewUserAccountsDisabled.storyName = 'New Accounts Disabled';
 NewUserAccountsDisabled.args = {
-	setupRegistry: ( registry ) => {
-		provideSiteInfo( registry, { anyoneCanRegister: false } );
-	},
+	anyoneCanRegister: false,
 };
 
 export const NewUserAccountsEnabled = Template.bind( null );
 NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
 NewUserAccountsEnabled.args = {
-	setupRegistry: ( registry ) => {
-		provideSiteInfo( registry, { anyoneCanRegister: true } );
-	},
+	anyoneCanRegister: true,
 };
 
 export default {
@@ -68,14 +61,8 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				provideSiteInfo( registry );
-				provideModules( registry, [
-					{
-						slug: 'sign-in-with-google',
-						active: true,
-						connected: true,
-					},
-				] );
+				const { anyoneCanRegister = false } = args;
+				provideSiteInfo( registry, { anyoneCanRegister } );
 
 				registry
 					.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
