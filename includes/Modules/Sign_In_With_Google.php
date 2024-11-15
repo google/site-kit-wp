@@ -119,6 +119,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				);
 			}
 		);
+
+		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
@@ -260,6 +262,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.139.0
 	 */
 	private function render_signin_button() {
+		global $wp;
+		$is_woo_commerce_login = 'my-account' === $wp->request;
+
 		$settings = $this->get_settings()->get();
 		if ( ! $settings['clientID'] ) {
 			return;
@@ -289,7 +294,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <script>
 ( () => {
 	const parent = document.createElement( 'div' );
+<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
+<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
 		try {
