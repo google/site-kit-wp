@@ -28,7 +28,6 @@ import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
-import { untrailingslashit } from '../../../util';
 
 export const selectors = {
 	/**
@@ -78,9 +77,7 @@ export const selectors = {
 	getServiceClientIDProvisioningURL: createRegistrySelector(
 		( select ) => () => {
 			const siteName = select( CORE_SITE ).getSiteName();
-			const homeURL = untrailingslashit(
-				select( CORE_SITE ).getHomeURL()
-			);
+			const homeURL = select( CORE_SITE ).getHomeURL();
 			const supportEmail = select( CORE_USER ).getEmail();
 
 			const query = {
