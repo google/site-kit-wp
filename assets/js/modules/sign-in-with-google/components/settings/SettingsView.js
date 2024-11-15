@@ -180,8 +180,7 @@ export default function SettingsView() {
 						</p>
 					) }
 
-					{ anyoneCanRegisterNoticeDismissed !== undefined &&
-						anyoneCanRegisterNoticeDismissed !== true &&
+					{ anyoneCanRegisterNoticeDismissed === false &&
 						anyoneCanRegister === false && (
 							<SettingsNotice
 								type={ TYPE_WARNING }
