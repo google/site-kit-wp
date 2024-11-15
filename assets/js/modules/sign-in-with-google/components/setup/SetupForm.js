@@ -40,7 +40,9 @@ const LazyGraphicSVG = lazy( () =>
 
 export default function SetupForm() {
 	const clientIDURL = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientIDURL()
+		select(
+			MODULES_SIGN_IN_WITH_GOOGLE
+		).getServiceClientIDProvisioningURL()
 	);
 
 	return (
