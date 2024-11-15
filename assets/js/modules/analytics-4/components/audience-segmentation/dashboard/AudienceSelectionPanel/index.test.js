@@ -1719,6 +1719,35 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'ErrorNotice', () => {
+		const commonSetup = ( error, additionalSetup = () => {} ) => {
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+
+			if ( error.data?.reason ) {
+				provideUserInfo( registry );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+				} );
+			}
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			additionalSetup();
+		};
+
+		const assertTextsInDocument = ( getByText, expectedTexts ) => {
+			expectedTexts.forEach( ( text ) => {
+				expect(
+					getByText( new RegExp( text, 'i' ) )
+				).toBeInTheDocument();
+			} );
+		};
+
 		it( 'should not display an error notice when there are no errors', async () => {
 			const { container, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -1735,34 +1764,39 @@ describe( 'AudienceSelectionPanel', () => {
 			);
 		} );
 
-		describe( 'should display an insufficient permissions error', () => {
-			const error = {
-				code: 'test_error',
-				message: 'Error message.',
-				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-			};
+		it.each( [
+			[
+				'error message for insufficient permission',
+				{
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				},
+				403,
+				[
+					'Insufficient permissions, contact your administrator',
+					'get help',
+					'request access',
+				],
+			],
+			[
+				'error message',
+				{
+					code: 'test_error',
+					message: 'Error message.',
+					data: {},
+				},
+				500,
+				[ 'Data loading failed', 'retry' ],
+			],
+		] )(
+			'should display an %s while resyncing available audiences',
+			async ( _, error, errorCode, expectedTexts ) => {
+				commonSetup( error );
 
-			beforeEach( () => {
-				provideUserInfo( registry );
-				provideModules( registry );
-				provideModuleRegistrations( registry );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					accountID: '12345',
-					propertyID: '34567',
-					measurementID: '56789',
-					webDataStreamID: '78901',
-				} );
-
-				registry
-					.dispatch( CORE_UI )
-					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
-			} );
-
-			it( 'while resyncing available audiences', async () => {
-				// sync-audiences endpoint must return an error.
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: error,
-					status: 403,
+					status: errorCode,
 				} );
 
 				const { getByText, waitForRegistry } = render(
@@ -1774,27 +1808,47 @@ describe( 'AudienceSelectionPanel', () => {
 
 				await waitForRegistry();
 
-				// Error because of sync-audiences endpoint returning 403.
 				expect( console ).toHaveErrored();
+				assertTextsInDocument( getByText, expectedTexts );
+			}
+		);
 
-				expect(
-					getByText(
-						/Insufficient permissions, contact your administrator/i
-					)
-				).toBeInTheDocument();
-				expect( getByText( /get help/i ) ).toBeInTheDocument();
-				expect( getByText( /request access/i ) ).toBeInTheDocument();
-			} );
+		it.each( [
+			[
+				'error message for insufficient permission',
+				{
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				},
+				[
+					'Insufficient permissions, contact your administrator',
+					'get help',
+					'request access',
+				],
+			],
+			[
+				'error message',
+				{
+					code: 'test_error',
+					message: 'Error message.',
+					data: {},
+				},
+				[ 'Data loading failed', 'retry' ],
+			],
+		] )(
+			'should display an %s while retrieving user count',
+			async ( _, error, expectedTexts ) => {
+				commonSetup( error, () => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableAudiences,
+						status: 200,
+					} );
 
-			it( 'while retrieving user count', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveError( error, 'getReport', [ reportOptions ] );
 				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, 'getReport', [ reportOptions ] );
 
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
@@ -1804,66 +1858,9 @@ describe( 'AudienceSelectionPanel', () => {
 				);
 
 				await waitForRegistry();
-
-				expect(
-					getByText(
-						/Insufficient permissions, contact your administrator/i
-					)
-				).toBeInTheDocument();
-				expect( getByText( /get help/i ) ).toBeInTheDocument();
-				expect( getByText( /request access/i ) ).toBeInTheDocument();
-			} );
-		} );
-
-		describe( 'should display an error message', () => {
-			const error = {
-				code: 'test_error',
-				message: 'Error message.',
-				data: {},
-			};
-
-			beforeEach( () => {
-				provideModules( registry );
-				provideModuleRegistrations( registry );
-			} );
-
-			afterEach( async () => {
-				const { getByText, waitForRegistry } = render(
-					<AudienceSelectionPanel />,
-					{
-						registry,
-					}
-				);
-
-				await waitForRegistry();
-
-				expect(
-					getByText( /Data loading failed/i )
-				).toBeInTheDocument();
-				expect( getByText( /retry/i ) ).toBeInTheDocument();
-			} );
-
-			it( 'while resyncing available audiences', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, 'syncAvailableAudiences', [] );
-			} );
-
-			it( 'while retrieving user count', () => {
-				registry
-					.dispatch( CORE_UI )
-					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
-
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, 'getReport', [ reportOptions ] );
-			} );
-		} );
+				assertTextsInDocument( getByText, expectedTexts );
+			}
+		);
 	} );
 
 	describe( 'Footer', () => {
