@@ -259,6 +259,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		productPostType: 'product',
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
+		anyoneCanRegister: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
