@@ -165,13 +165,15 @@ export const actions = {
 				.getNotification( id );
 
 			// Skip persisting notification dismissal in database if the notification is not dismissible.
-			if ( notification?.isDismissible === false ) {
+			if ( notification.isDismissible !== true ) {
 				return;
 			}
 
-			return registry
-				.dispatch( CORE_USER )
-				.dismissItem( id, { expiresInSeconds } );
+			return yield commonActions.await(
+				registry
+					.dispatch( CORE_USER )
+					.dismissItem( id, { expiresInSeconds } )
+			);
 		}
 	),
 };
