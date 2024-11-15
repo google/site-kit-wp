@@ -39,7 +39,7 @@ const LazyGraphicSVG = lazy( () =>
 );
 
 export default function SetupForm() {
-	const clientIDURL = useSelect( ( select ) =>
+	const serviceClientIDProvisioningURL = useSelect( ( select ) =>
 		select(
 			MODULES_SIGN_IN_WITH_GOOGLE
 		).getServiceClientIDProvisioningURL()
@@ -74,7 +74,7 @@ export default function SetupForm() {
 				</div>
 				<Button
 					className="googlesitekit-sign-in-with-google-client-id-cta"
-					href={ clientIDURL }
+					href={ serviceClientIDProvisioningURL }
 					target="_blank"
 					trailingIcon={ <ExternalIcon width="15" height="15" /> }
 					inverse
