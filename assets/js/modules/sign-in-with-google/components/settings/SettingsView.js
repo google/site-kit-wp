@@ -92,7 +92,7 @@ export default function SettingsView() {
 
 	// If Sign in with Google does not have a client ID, do not display the
 	// settings view.
-	if ( ! clientID?.length ) {
+	if ( ! clientID ) {
 		return null;
 	}
 
