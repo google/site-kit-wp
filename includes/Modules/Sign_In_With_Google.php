@@ -296,9 +296,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const parent = document.createElement( 'div' );
 <?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
-<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
-<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
 		try {
@@ -324,13 +324,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 <?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	google.accounts.id.prompt();
-<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 <?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
 	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
 		<?php
@@ -509,10 +509,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$this->authentication->invalid_nonce_error( self::DISCONNECT_ACTION );
 		}
 
-		if ( ! isset( $_REQUEST['user_id'] ) ) {
+		if ( ! $this->context->input( 'user_id' ) ) {
 			return;
 		}
-		$user_id = (int) $_REQUEST['user_id'];
+		$user_id = (int) $this->context->input( 'user_id' );
 
 		// Only allow this action for admins or users own setting.
 		if ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user_id ) {
@@ -530,28 +530,45 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param WP_User $user WordPress user object.
 	 */
 	private function render_disconnect_profile( WP_User $user ) {
-		$current_user_google_id = get_user_meta( $user->ID, $this->user_options->get_meta_key( Hashed_User_ID::OPTION ), true );
+		// Clone the user options to avoid changing the current user,
+		// so we can then get the user meta key for the user we're
+		// operating on.
+		$user_options_to_modify = clone $this->user_options;
+		$user_options_to_modify->switch_user( $user->ID );
+
+		$current_user_google_id = $user_options_to_modify->get( Hashed_User_ID::OPTION );
 
 		// Don't show if the user does not have a Google ID save in user meta.
 		if ( empty( $current_user_google_id ) ) {
 			return;
 		}
 
-		// Only show to admins or users own settings.
+		// Only show to admins or in the user's own settings.
 		if ( ! ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user->ID ) ) {
 			return;
 		}
 		?>
 <div id="googlesitekit-sign-in-with-google-disconnect">
-	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
-	<p>
-		<?php
-		esc_html_e(
-			'This user can sign in with their Google account.',
-			'google-site-kit'
-		);
-		?>
-	</p>
+	<h2><?php esc_html_e( 'Sign in with Google (Site Kit by Google)', 'google-site-kit' ); ?></h2>
+		<?php if ( IS_PROFILE_PAGE ) : ?>
+		<p>
+			<?php
+			esc_html_e(
+				'You can sign in to this site with your Google account.',
+				'google-site-kit'
+			);
+			?>
+		</p>
+	<?php else : ?>
+		<p>
+			<?php
+			esc_html_e(
+				'This user can sign in with their Google account.',
+				'google-site-kit'
+			);
+			?>
+		</p>
+	<?php endif; ?>
 	<p>
 		<a
 			class="button button-secondary"
