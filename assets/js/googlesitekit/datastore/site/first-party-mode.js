@@ -193,7 +193,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if the GTag proxy script is accessible, otherwise false. Returned undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if the `fpm/measurement.php` proxy script is accessible, otherwise false. Returned undefined if the state is not loaded.
 	 */
 	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
 		const { isScriptAccessEnabled } =
