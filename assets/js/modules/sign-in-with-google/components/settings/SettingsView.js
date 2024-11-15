@@ -49,39 +49,40 @@ export default function SettingsView() {
 	);
 
 	const anyoneCanRegister = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getAnyoneCanRegister()
+		select( CORE_SITE ).getAnyoneCanRegister()
 	);
 
-	const buttonShape = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShape()
-	);
+	const buttonShapeLabel = useSelect( ( select ) => {
+		const shape = select( MODULES_SIGN_IN_WITH_GOOGLE ).getShape();
 
-	const buttonShapeLabel = SIGN_IN_WITH_GOOGLE_SHAPES.find( ( { value } ) => {
-		return value === buttonShape;
-	} )?.label;
+		return SIGN_IN_WITH_GOOGLE_SHAPES.find( ( { value } ) => {
+			return value === shape;
+		} )?.label;
+	} );
 
-	const buttonText = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getText()
-	);
+	const buttonTextLabel = useSelect( ( select ) => {
+		const text = select( MODULES_SIGN_IN_WITH_GOOGLE ).getText();
 
-	const buttonTextLabel = SIGN_IN_WITH_GOOGLE_TEXTS.find( ( { value } ) => {
-		return value === buttonText;
-	} )?.label;
+		SIGN_IN_WITH_GOOGLE_TEXTS.find( ( { value } ) => {
+			return value === text;
+		} )?.label;
+	} );
 
-	const buttonTheme = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getTheme()
-	);
+	const buttonThemeLabel = useSelect( ( select ) => {
+		const theme = select( MODULES_SIGN_IN_WITH_GOOGLE ).getTheme();
 
-	const buttonThemeLabel = SIGN_IN_WITH_GOOGLE_THEMES.find( ( { value } ) => {
-		return value === buttonTheme;
-	} )?.label;
+		return SIGN_IN_WITH_GOOGLE_THEMES.find( ( { value } ) => {
+			return value === theme;
+		} )?.label;
+	} );
 
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
 
-	const generalSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'options-general.php' )
+	const generalSettingsURL = useSelect(
+		( select ) =>
+			`${ select( CORE_SITE ).getAdminURL() }options-general.php`
 	);
 
 	const anyoneCanRegisterNoticeDismissed = useSelect( ( select ) => {

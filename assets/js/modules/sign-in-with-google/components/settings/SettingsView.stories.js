@@ -18,9 +18,13 @@
 
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsView from './SettingsView';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 function Template() {
 	return (
@@ -58,9 +62,9 @@ Default.decorators = [
 					OneTapEnabled: true,
 				} );
 
-			registry
-				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-				.setAnyoneCanRegister( true );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				anyoneCanRegister: true,
+			} );
 		};
 
 		return (
@@ -87,9 +91,9 @@ NewUserAccountsDisabled.decorators = [
 					OneTapEnabled: true,
 				} );
 
-			registry
-				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-				.setAnyoneCanRegister( false );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				anyoneCanRegister: false,
+			} );
 		};
 
 		return (
@@ -105,6 +109,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
 				provideModules( registry, [
 					{
 						slug: 'sign-in-with-google',

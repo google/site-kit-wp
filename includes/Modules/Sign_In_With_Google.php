@@ -23,7 +23,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
@@ -355,42 +354,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		);
 
 		return $debug_fields;
-	}
-
-	/**
-	 * Gets map of datapoint to definition data for each endpoint.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Map of datapoints to their definitions.
-	 */
-	protected function get_datapoint_definitions() {
-		return array(
-			'GET:anyone-can-register' => array( 'service' => 'sign-in-with-google' ),
-		);
-	}
-
-	/**
-	 * Creates a request object for the given datapoint.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
-	 *
-	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
-	 */
-	protected function create_data_request( Data_Request $data ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:anyone-can-register':
-				return function () {
-					$open_user_registration = (bool) get_option( 'users_can_register' );
-
-					return array( 'value' => $open_user_registration );
-				};
-		}
-
-		return parent::create_data_request( $data );
 	}
 
 	/**
