@@ -1758,7 +1758,44 @@ describe( 'AudienceSelectionPanel', () => {
 					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 			} );
 
-			afterEach( async () => {
+			it( 'while resyncing available audiences', async () => {
+				// sync-audiences endpoint must return an error.
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: error,
+					status: 403,
+				} );
+
+				const { getByText, waitForRegistry } = render(
+					<AudienceSelectionPanel />,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				// Error because of sync-audiences endpoint returning 403.
+				expect( console ).toHaveErrored();
+
+				expect(
+					getByText(
+						/Insufficient permissions, contact your administrator/i
+					)
+				).toBeInTheDocument();
+				expect( getByText( /get help/i ) ).toBeInTheDocument();
+				expect( getByText( /request access/i ) ).toBeInTheDocument();
+			} );
+
+			it( 'while retrieving user count', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error, 'getReport', [ reportOptions ] );
+
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
 					{
@@ -1775,25 +1812,6 @@ describe( 'AudienceSelectionPanel', () => {
 				).toBeInTheDocument();
 				expect( getByText( /get help/i ) ).toBeInTheDocument();
 				expect( getByText( /request access/i ) ).toBeInTheDocument();
-			} );
-
-			it( 'while resyncing available audiences', () => {
-				// sync-audiences endpoint must return an error.
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: error,
-					status: 403,
-				} );
-			} );
-
-			it( 'while retrieving user count', () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, 'getReport', [ reportOptions ] );
 			} );
 		} );
 
