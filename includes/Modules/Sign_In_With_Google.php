@@ -120,7 +120,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		switch ( $error_code ) {
 			case Authenticator::ERROR_INVALID_REQUEST:
-			case Authenticator::ERROR_INVALID_CSRF_TOKEN:
 				$error->add( self::MODULE_SLUG, __( 'Sign in with Google failed.', 'google-site-kit' ) );
 				break;
 			case Authenticator::ERROR_SIGNIN_FAILED:
@@ -236,12 +235,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$redirect_to = trim( $redirect_to );
 		}
 
-		$config = array(
-			'client_id' => $settings['clientID'],
-			'login_uri' => $login_uri,
-			'ux_mode'   => 'redirect',
-		);
-
 		$btn_args = array(
 			'theme' => $settings['theme'],
 			'text'  => $settings['text'],
@@ -258,10 +251,33 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const parent = document.createElement( 'div' );
 	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 
-	google.accounts.id.initialize( <?php echo wp_json_encode( $config ); ?> );
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
-<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	async function handleCredentialResponse( response ) {
+		try {
+			const res = await fetch( '<?php echo esc_js( $login_uri ); ?>', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams( response )
+			});
+			if ( res.ok && res.redirected ) {
+				location.assign( res.url );
+			}
+		} catch( error ) {
+			console.error( error );
+		}
+	}
 
+	google.accounts.id.initialize( {
+		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		callback: handleCredentialResponse,
+	} );
+
+	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+
+<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	google.accounts.id.prompt();
+<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
 	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";

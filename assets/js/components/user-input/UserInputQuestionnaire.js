@@ -66,8 +66,11 @@ export default function UserInputQuestionnaire() {
 				'questionNumber'
 			)
 		) || 1;
-
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const userPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const { saveUserInputSettings, resetKeyMetricsSelection } =
+		useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const dashboardURL = useSelect( ( select ) =>
@@ -159,10 +162,20 @@ export default function UserInputQuestionnaire() {
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
+			if ( !! userPickedMetrics ) {
+				await resetKeyMetricsSelection();
+			}
 			const url = new URL( dashboardURL );
 			navigateTo( url.toString() );
 		}
-	}, [ gaEventCategory, saveUserInputSettings, dashboardURL, navigateTo ] );
+	}, [
+		gaEventCategory,
+		saveUserInputSettings,
+		dashboardURL,
+		navigateTo,
+		userPickedMetrics,
+		resetKeyMetricsSelection,
+	] );
 
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
