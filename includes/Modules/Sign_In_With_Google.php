@@ -87,18 +87,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			}
 		);
 
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, fn () => $this->handle_disconnect_user() );
+
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
 
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
-		add_action(
-			'admin_action_' . self::ACTION_DISCONNECT,
-			function () {
-				$this->handle_disconnect_user(
-					$this->context->input()->filter( INPUT_GET, 'nonce' )
-				);
-			}
-		);
 
 		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
 	}
@@ -464,11 +458,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @param int $user_id WordPress User ID.
 	 */
-	public static function disconnect_url( $user_id = null ) {
+	public static function disconnect_url( $user_id ) {
 		return add_query_arg(
 			array(
 				'action'  => self::ACTION_DISCONNECT,
-				'nonce'   => wp_create_nonce( self::ACTION_DISCONNECT ),
+				'nonce'   => wp_create_nonce( self::ACTION_DISCONNECT . '-' . $user_id ),
 				'user_id' => $user_id,
 			),
 			admin_url( 'index.php' )
@@ -479,15 +473,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Handles the disconnect action.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @param string $nonce Nonce.
 	 */
-	public function handle_disconnect_user( $nonce ) {
-		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			$this->authentication->invalid_nonce_error( self::ACTION_DISCONNECT );
-		}
+	public function handle_disconnect_user() {
+		$input   = $this->context->input();
+		$nonce   = $input->filter( INPUT_GET, 'nonce' );
+		$user_id = (int) $input->filter( INPUT_GET, 'user_id' );
+		$action  = self::ACTION_DISCONNECT . '-' . $user_id;
 
-		$user_id = (int) $this->context->input()->filter( INPUT_GET, 'user_id' );
+		if ( ! wp_verify_nonce( $nonce, $action ) ) {
+			$this->authentication->invalid_nonce_error( $action );
+		}
 
 		// Only allow this action for admins or users own setting.
 		if ( current_user_can( 'edit_user', $user_id ) ) {

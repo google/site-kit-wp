@@ -136,9 +136,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_set_current_user( $user_id );
 		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
 		$_GET['user_id'] = $user_id_admin; // A user ID that is not the current user.
-
+		$_GET['nonce']   = $this->create_disconnect_nonce( $user_id_admin );
 		try {
-			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
+			$this->module->handle_disconnect_user();
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -148,8 +148,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Deletes user meta if a non admin is updating their own user.
 		$_GET['user_id'] = $user_id;
+		$_GET['nonce']   = $this->create_disconnect_nonce( $user_id );
 		try {
-			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
+			$this->module->handle_disconnect_user();
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -164,8 +165,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Deletes user meta if user is an admin.
 		update_user_option( $user_id, Hashed_User_ID::OPTION, '222222' );
 		wp_set_current_user( $user_id_admin );
+		$_GET['nonce'] = $this->create_disconnect_nonce( $user_id );
 		try {
-			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
+			$this->module->handle_disconnect_user();
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -233,6 +235,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 		} catch ( RedirectException $e ) {
 			$this->assertEquals( $redirect_uri, $e->get_location() );
 		}
+	}
+
+	protected function create_disconnect_nonce( $user_id ) {
+		return wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT . '-' . $user_id );
 	}
 
 	/**
