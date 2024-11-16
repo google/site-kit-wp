@@ -64,7 +64,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Disconnect action name.
 	 */
-	const DISCONNECT_ACTION = 'googlesitekit_sign_in_with_google_disconnect_user';
+	const ACTION_DISCONNECT = 'googlesitekit_auth_disconnect';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -92,7 +92,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 		add_action(
-			'admin_action_' . self::DISCONNECT_ACTION,
+			'admin_action_' . self::ACTION_DISCONNECT,
 			function () {
 				$this->handle_disconnect_user(
 					$this->context->input()->filter( INPUT_GET, 'nonce' )
@@ -467,8 +467,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public static function disconnect_url( $user_id = null ) {
 		return add_query_arg(
 			array(
-				'action'  => self::DISCONNECT_ACTION,
-				'nonce'   => wp_create_nonce( self::DISCONNECT_ACTION ),
+				'action'  => self::ACTION_DISCONNECT,
+				'nonce'   => wp_create_nonce( self::ACTION_DISCONNECT ),
 				'user_id' => $user_id,
 			),
 			admin_url( 'index.php' )
@@ -483,8 +483,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param string $nonce Nonce.
 	 */
 	public function handle_disconnect_user( $nonce ) {
-		if ( ! wp_verify_nonce( $nonce, self::DISCONNECT_ACTION ) ) {
-			$this->authentication->invalid_nonce_error( self::DISCONNECT_ACTION );
+		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
+			$this->authentication->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! isset( $_REQUEST['user_id'] ) ) {

@@ -141,14 +141,14 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Invalid nonce should return error.
 		$_GET['nonce'] = 'bad-nonce';
 		try {
-			do_action( 'admin_action_' . Sign_In_With_Google::DISCONNECT_ACTION );
+			do_action( 'admin_action_' . Sign_In_With_Google::ACTION_DISCONNECT );
 			$this->fail( 'Expected invalid nonce exception' );
 		} catch ( WPDieException $die_exception ) {
 			$this->assertEquals( $die_exception->getMessage(), 'The link you followed has expired.' );
 		}
 
 		// Returns null if no user ID is passed.
-		$this->assertEmpty( $this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) ) );
+		$this->assertEmpty( $this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) ) );
 
 		// Does not delete user meta if the user is not an admin and is not updating their own user.
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
@@ -158,7 +158,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$_REQUEST['user_id'] = $user_id_admin; // A user ID that is not the current user.
 
 		try {
-			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) );
+			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -169,7 +169,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Deletes user meta if a non admin is updating their own user.
 		$_REQUEST['user_id'] = $user_id;
 		try {
-			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) );
+			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
@@ -181,7 +181,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		add_user_meta( $user_id, $user_connection_meta_key, '222222' );
 		wp_set_current_user( $user_id_admin );
 		try {
-			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::DISCONNECT_ACTION ) );
+			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
