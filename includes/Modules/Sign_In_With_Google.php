@@ -57,14 +57,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * The name for the Sign in with Google callback action.
-	 *
-	 * @since n.e.x.t
-	 * @var Google_Client
-	 */
-	protected $google_client;
-
-	/**
 	 * Authentication action name.
 	 */
 	const ACTION_AUTH = 'googlesitekit_auth';
@@ -73,18 +65,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Disconnect action name.
 	 */
 	const DISCONNECT_ACTION = 'googlesitekit_sign_in_with_google_disconnect_user';
-
-	/**
-	 * Get Sign in with Google client.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function get_sign_in_with_google_client() {
-		$settings = $this->get_settings()->get();
-		if ( ! empty( $settings['clientID'] ) ) {
-			$this->google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
-		}
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
