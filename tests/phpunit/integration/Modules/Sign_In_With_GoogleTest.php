@@ -122,10 +122,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 	public function test_handle_disconnect_user() {
 		$this->module->register();
 
-		$user_options             = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$user_connection_meta_key = $user_options->get_meta_key( Hashed_User_ID::OPTION );
-
-		// Invalid nonce should return error.
 		$_GET['nonce'] = 'bad-nonce';
 		try {
 			do_action( 'admin_action_' . Sign_In_With_Google::ACTION_DISCONNECT );
@@ -138,7 +134,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		add_user_meta( $user_id, $user_connection_meta_key, '111111' );
+		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
 		$_GET['user_id'] = $user_id_admin; // A user ID that is not the current user.
 
 		try {
@@ -148,7 +144,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$redirect_url = $e->get_location();
 			$this->assertEquals( get_edit_user_link( $user_id_admin ), $redirect_url );
 		}
-		$this->assertEquals( '111111', get_user_meta( $user_id, $user_connection_meta_key, true ) );
+		$this->assertEquals( '111111', get_user_option( Hashed_User_ID::OPTION, $user_id ) );
 
 		// Deletes user meta if a non admin is updating their own user.
 		$_GET['user_id'] = $user_id;
@@ -159,10 +155,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$redirect_url = $e->get_location();
 			$this->assertStringStartsWith( get_edit_user_link( $user_id ), $redirect_url );
 		}
-		$this->assertEmpty( get_user_meta( $user_id, $user_connection_meta_key, true ) );
+		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $user_id ) );
 
 		// Deletes user meta if user is an admin.
-		add_user_meta( $user_id, $user_connection_meta_key, '222222' );
+		update_user_option( $user_id, Hashed_User_ID::OPTION, '222222' );
 		wp_set_current_user( $user_id_admin );
 		try {
 			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
@@ -171,14 +167,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$redirect_url = $e->get_location();
 			$this->assertStringStartsWith( get_edit_user_link( $user_id ), $redirect_url );
 		}
-		$this->assertEmpty( get_user_meta( $user_id, $user_connection_meta_key, true ) );
+		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $user_id ) );
 	}
 
 	public function test_render_disconnect_profile() {
 		$this->module->register();
-
-		$user_options             = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$user_connection_meta_key = $user_options->get_meta_key( Hashed_User_ID::OPTION );
 
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -189,11 +182,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEmpty( $output );
 
 		// Should render the disconnect settings on the users own profile for editors and admins.
-		add_user_meta( $user_id, $user_connection_meta_key, '111111' );
+		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertStringContainsString( 'You can sign in with your Google account.', $output );
 
-		add_user_meta( $user_id_admin, $user_connection_meta_key, '222222' );
+		update_user_option( $user_id_admin, Hashed_User_ID::OPTION, '222222' );
 		wp_set_current_user( $user_id_admin );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertStringContainsString( 'You can sign in with your Google account.', $output );
