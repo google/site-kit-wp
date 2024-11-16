@@ -526,10 +526,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
 	<p>
 		<?php
-		esc_html_e(
-			'This user can sign in with their Google account.',
-			'google-site-kit'
-		);
+		if ( get_current_user_id() === $user->ID ) {
+			esc_html_e(
+				'You can sign in with your Google account.',
+				'google-site-kit'
+			);
+		} else {
+			esc_html_e(
+				'This user can sign in with their Google account.',
+				'google-site-kit'
+			);
+		}
 		?>
 	</p>
 	<p>
