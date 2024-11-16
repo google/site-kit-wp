@@ -322,13 +322,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @since 1.140.0
 	 *
-	 * @return array
+	 * @return int
 	 */
 	public function get_authenticated_users_count() {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		return $wpdb->query(
+		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s",
 				$this->user_options->get_meta_key( Hashed_User_ID::OPTION )
