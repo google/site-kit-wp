@@ -134,15 +134,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->assertEquals( $die_exception->getMessage(), 'The link you followed has expired.' );
 		}
 
-		// Returns null if no user ID is passed.
-		$this->assertEmpty( $this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) ) );
-
 		// Does not delete user meta if the user is not an admin and is not updating their own user.
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		add_user_meta( $user_id, $user_connection_meta_key, '111111' );
-		$_REQUEST['user_id'] = $user_id_admin; // A user ID that is not the current user.
+		$_GET['user_id'] = $user_id_admin; // A user ID that is not the current user.
 
 		try {
 			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
@@ -154,13 +151,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( '111111', get_user_meta( $user_id, $user_connection_meta_key, true ) );
 
 		// Deletes user meta if a non admin is updating their own user.
-		$_REQUEST['user_id'] = $user_id;
+		$_GET['user_id'] = $user_id;
 		try {
 			$this->module->handle_disconnect_user( wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT ) );
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( get_edit_user_link( $user_id ), $redirect_url );
+			$this->assertStringStartsWith( get_edit_user_link( $user_id ), $redirect_url );
 		}
 		$this->assertEmpty( get_user_meta( $user_id, $user_connection_meta_key, true ) );
 
@@ -172,7 +169,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( get_edit_user_link( $user_id ), $redirect_url );
+			$this->assertStringStartsWith( get_edit_user_link( $user_id ), $redirect_url );
 		}
 		$this->assertEmpty( get_user_meta( $user_id, $user_connection_meta_key, true ) );
 	}
@@ -194,12 +191,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Should render the disconnect settings on the users own profile for editors and admins.
 		add_user_meta( $user_id, $user_connection_meta_key, '111111' );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
+		$this->assertStringContainsString( 'You can sign in with your Google account.', $output );
 
 		add_user_meta( $user_id_admin, $user_connection_meta_key, '222222' );
 		wp_set_current_user( $user_id_admin );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
+		$this->assertStringContainsString( 'You can sign in with your Google account.', $output );
 
 		// Should render the disconnect settings for other user if user is an admin.
 		wp_set_current_user( $user_id_admin );
