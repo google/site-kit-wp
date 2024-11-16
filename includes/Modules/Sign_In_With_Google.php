@@ -346,9 +346,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		// TODO Uncomment and remove fixed value after #9339 is merged.
-		// $authenticated_user_count = $this->get_authenticated_users_count();.
-		$authenticated_user_count = 1;
+		$authenticated_user_count = $this->get_authenticated_users_count();
 
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
