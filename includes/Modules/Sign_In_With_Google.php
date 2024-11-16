@@ -487,15 +487,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$this->authentication->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
-		if ( ! isset( $_REQUEST['user_id'] ) ) {
-			return;
-		}
-		$user_id = (int) $_REQUEST['user_id'];
+		$user_id = (int) $this->context->input()->filter( INPUT_GET, 'user_id' );
 
 		// Only allow this action for admins or users own setting.
-		if ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user_id ) {
-			delete_user_meta( $user_id, $this->user_options->get_meta_key( Hashed_User_ID::OPTION ) );
+		if ( current_user_can( 'edit_user', $user_id ) ) {
+			$hashed_user_id = new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
+			$hashed_user_id->delete();
+			wp_safe_redirect( add_query_arg( 'updated', true, get_edit_user_link( $user_id ) ) );
+			exit;
 		}
+
 		wp_safe_redirect( get_edit_user_link( $user_id ) );
 		exit;
 	}
@@ -508,17 +509,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param WP_User $user WordPress user object.
 	 */
 	private function render_disconnect_profile( WP_User $user ) {
-		$current_user_google_id = get_user_meta( $user->ID, $this->user_options->get_meta_key( Hashed_User_ID::OPTION ), true );
+		if ( ! current_user_can( 'edit_user', $user->ID ) ) {
+			return;
+		}
 
-		// Don't show if the user does not have a Google ID save in user meta.
+		$hashed_user_id         = new Hashed_User_ID( new User_Options( $this->context, $user->ID ) );
+		$current_user_google_id = $hashed_user_id->get();
+
+		// Don't show if the user does not have a Google ID saved in user meta.
 		if ( empty( $current_user_google_id ) ) {
 			return;
 		}
 
-		// Only show to admins or users own settings.
-		if ( ! ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user->ID ) ) {
-			return;
-		}
 		?>
 <div id="googlesitekit-sign-in-with-google-disconnect">
 	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
