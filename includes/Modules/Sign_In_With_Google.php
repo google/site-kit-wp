@@ -57,14 +57,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * The name for the Sign in with Google callback action.
-	 *
-	 * @since n.e.x.t
-	 * @var Google_Client
-	 */
-	protected $google_client;
-
-	/**
 	 * Authentication action name.
 	 */
 	const ACTION_AUTH = 'googlesitekit_auth';
@@ -72,19 +64,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Disconnect action name.
 	 */
-	const DISCONNECT_ACTION = 'googlesitekit_sign_in_with_google_disconnect_user';
-
-	/**
-	 * Get Sign in with Google client.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function get_sign_in_with_google_client() {
-		$settings = $this->get_settings()->get();
-		if ( ! empty( $settings['clientID'] ) ) {
-			$this->google_client = new Google_Client( array( 'client_id' => $settings['clientID'] ) );
-		}
-	}
+	const ACTION_DISCONNECT = 'googlesitekit_auth_disconnect';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -112,7 +92,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 		add_action(
-			'admin_action_' . self::DISCONNECT_ACTION,
+			'admin_action_' . self::ACTION_DISCONNECT,
 			function () {
 				$this->handle_disconnect_user(
 					$this->context->input()->filter( INPUT_GET, 'nonce' )
@@ -342,15 +322,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @since 1.140.0
 	 *
-	 * @return array
+	 * @return int
 	 */
 	public function get_authenticated_users_count() {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		return $wpdb->query(
+		return (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s",
+				"SELECT COUNT( user_id ) FROM $wpdb->usermeta WHERE meta_key = %s",
 				$this->user_options->get_meta_key( Hashed_User_ID::OPTION )
 			)
 		);
@@ -366,9 +346,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		// TODO Uncomment and remove fixed value after #9339 is merged.
-		// $authenticated_user_count = $this->get_authenticated_users_count();.
-		$authenticated_user_count = 1;
+		$authenticated_user_count = $this->get_authenticated_users_count();
 
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
@@ -489,8 +467,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public static function disconnect_url( $user_id = null ) {
 		return add_query_arg(
 			array(
-				'action'  => self::DISCONNECT_ACTION,
-				'nonce'   => wp_create_nonce( self::DISCONNECT_ACTION ),
+				'action'  => self::ACTION_DISCONNECT,
+				'nonce'   => wp_create_nonce( self::ACTION_DISCONNECT ),
 				'user_id' => $user_id,
 			),
 			admin_url( 'index.php' )
@@ -505,19 +483,20 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param string $nonce Nonce.
 	 */
 	public function handle_disconnect_user( $nonce ) {
-		if ( ! wp_verify_nonce( $nonce, self::DISCONNECT_ACTION ) ) {
-			$this->authentication->invalid_nonce_error( self::DISCONNECT_ACTION );
+		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
+			$this->authentication->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
-		if ( ! $this->context->input( 'user_id' ) ) {
-			return;
-		}
-		$user_id = (int) $this->context->input( 'user_id' );
+		$user_id = (int) $this->context->input()->filter( INPUT_GET, 'user_id' );
 
 		// Only allow this action for admins or users own setting.
-		if ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user_id ) {
-			delete_user_meta( $user_id, $this->user_options->get_meta_key( Hashed_User_ID::OPTION ) );
+		if ( current_user_can( 'edit_user', $user_id ) ) {
+			$hashed_user_id = new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
+			$hashed_user_id->delete();
+			wp_safe_redirect( add_query_arg( 'updated', true, get_edit_user_link( $user_id ) ) );
+			exit;
 		}
+
 		wp_safe_redirect( get_edit_user_link( $user_id ) );
 		exit;
 	}
@@ -530,45 +509,36 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param WP_User $user WordPress user object.
 	 */
 	private function render_disconnect_profile( WP_User $user ) {
-		// Clone the user options to avoid changing the current user,
-		// so we can then get the user meta key for the user we're
-		// operating on.
-		$user_options_to_modify = clone $this->user_options;
-		$user_options_to_modify->switch_user( $user->ID );
+		if ( ! current_user_can( 'edit_user', $user->ID ) ) {
+			return;
+		}
 
-		$current_user_google_id = $user_options_to_modify->get( Hashed_User_ID::OPTION );
+		$hashed_user_id         = new Hashed_User_ID( new User_Options( $this->context, $user->ID ) );
+		$current_user_google_id = $hashed_user_id->get();
 
-		// Don't show if the user does not have a Google ID save in user meta.
+		// Don't show if the user does not have a Google ID saved in user meta.
 		if ( empty( $current_user_google_id ) ) {
 			return;
 		}
 
-		// Only show to admins or in the user's own settings.
-		if ( ! ( current_user_can( Permissions::SETUP ) || get_current_user_id() === $user->ID ) ) {
-			return;
-		}
 		?>
 <div id="googlesitekit-sign-in-with-google-disconnect">
-	<h2><?php esc_html_e( 'Sign in with Google (Site Kit by Google)', 'google-site-kit' ); ?></h2>
-		<?php if ( IS_PROFILE_PAGE ) : ?>
-		<p>
-			<?php
+	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
+	<p>
+		<?php
+		if ( get_current_user_id() === $user->ID ) {
 			esc_html_e(
-				'You can sign in to this site with your Google account.',
+				'You can sign in with your Google account.',
 				'google-site-kit'
 			);
-			?>
-		</p>
-	<?php else : ?>
-		<p>
-			<?php
+		} else {
 			esc_html_e(
 				'This user can sign in with their Google account.',
 				'google-site-kit'
 			);
-			?>
-		</p>
-	<?php endif; ?>
+		}
+		?>
+	</p>
 	<p>
 		<a
 			class="button button-secondary"
