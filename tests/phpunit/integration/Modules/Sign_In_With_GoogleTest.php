@@ -63,14 +63,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 10, $this->module->order );
 	}
 
-	private function render_by_action( $action, $arg = null ) {
-		ob_start();
-		do_action( $action, $arg );
-		$output = ob_get_contents();
-		ob_end_clean();
-		return $output;
-	}
-
 	public function test_render_signin_button() {
 		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
@@ -81,7 +73,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->render_by_action( 'login_form' );
+		$output = $this->capture_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		// Update site URL to https.
@@ -91,11 +83,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->render_by_action( 'login_form' );
+		$output = $this->capture_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$output = $this->render_by_action( 'login_form' );
+		$output = $this->capture_action( 'login_form' );
 		$this->assertEmpty( $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
@@ -109,7 +101,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 
 		// Render the button.
-		$output = $this->render_by_action( 'login_form' );
+		$output = $this->capture_action( 'login_form' );
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
@@ -196,22 +188,22 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Does not render the disconnect settings if the user meta is not set.
 		wp_set_current_user( $user_id );
-		$output = $this->render_by_action( 'show_user_profile', wp_get_current_user() );
+		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertEmpty( $output );
 
 		// Should render the disconnect settings on the users own profile for editors and admins.
 		add_user_meta( $user_id, $user_connection_meta_key, '111111' );
-		$output = $this->render_by_action( 'show_user_profile', wp_get_current_user() );
+		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
 
 		add_user_meta( $user_id_admin, $user_connection_meta_key, '222222' );
 		wp_set_current_user( $user_id_admin );
-		$output = $this->render_by_action( 'show_user_profile', wp_get_current_user() );
+		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
 
 		// Should render the disconnect settings for other user if user is an admin.
 		wp_set_current_user( $user_id_admin );
-		$output = $this->render_by_action( 'edit_user_profile', get_user_by( 'id', $user_id ) );
+		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $user_id ) );
 		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
 	}
 
