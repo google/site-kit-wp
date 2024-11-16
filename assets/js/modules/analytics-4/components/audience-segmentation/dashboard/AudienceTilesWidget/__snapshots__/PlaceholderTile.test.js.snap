@@ -36,6 +36,12 @@ exports[`PlaceholderTile should render correctly when there are no configurable 
               >
                 Analytics
               </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
             </a>
           </p>
         </div>
@@ -89,6 +95,12 @@ exports[`PlaceholderTile when there are configurable non default audiences avail
                 class="googlesitekit-cta-link__contents"
               >
                 Analytics
+              </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
               </span>
             </a>
           </p>
