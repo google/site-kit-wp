@@ -19,6 +19,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_User;
 use WPDieException;
 
 /**
@@ -119,7 +120,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		unset( $_SERVER['HTTPS'] );
 	}
 
-	public function test_handle_disconnect_user() {
+	public function test_handle_disconnect_user__bad_nonce() {
 		$this->module->register();
 
 		$_GET['nonce'] = 'bad-nonce';
@@ -129,51 +130,68 @@ class Sign_In_With_GoogleTest extends TestCase {
 		} catch ( WPDieException $die_exception ) {
 			$this->assertEquals( $die_exception->getMessage(), 'The link you followed has expired.' );
 		}
+	}
 
-		// Does not delete user meta if the user is not an admin and is not updating their own user.
-		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
-		$_GET['user_id'] = $user_id_admin; // A user ID that is not the current user.
-		$_GET['nonce']   = $this->create_disconnect_nonce( $user_id_admin );
+	public function test_handle_disconnect_user__without_capability() {
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		update_user_option( $admin_id, Hashed_User_ID::OPTION, '111111' );
+		wp_set_current_user( $editor_id );
+		$_GET['user_id'] = $admin_id; // A user ID that is not the current user.
+		$_GET['nonce']   = $this->create_disconnect_nonce( $admin_id );
 		try {
 			$this->module->handle_disconnect_user();
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( get_edit_user_link( $user_id_admin ), $redirect_url );
+			$this->assertEquals( get_edit_user_link( $admin_id ), $redirect_url );
 		}
-		$this->assertEquals( '111111', get_user_option( Hashed_User_ID::OPTION, $user_id ) );
+		// Assert user was not disconnected.
+		$this->assertEquals( '111111', get_user_option( Hashed_User_ID::OPTION, $admin_id ) );
+	}
 
-		// Deletes user meta if a non admin is updating their own user.
-		$_GET['user_id'] = $user_id;
-		$_GET['nonce']   = $this->create_disconnect_nonce( $user_id );
+	public function test_handle_disconnect_user__can_disconnect_self() {
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+
+		$_GET['user_id'] = $editor_id;
+		$_GET['nonce']   = $this->create_disconnect_nonce( $editor_id );
 		try {
 			$this->module->handle_disconnect_user();
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( get_edit_user_link( $user_id ), $redirect_url );
+			$this->assertStringStartsWith( get_edit_user_link( $editor_id ), $redirect_url );
+			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $redirect_params );
+			$this->assertArrayHasKey( 'updated', $redirect_params );
 		}
-		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $user_id ) );
+		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ) );
+	}
 
+	public function test_handle_disconnect_user__admin_can_disconnect_other() {
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		// Multisite is more restrictive about editing other users, so we'll add the necessary cap.
+		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68
 		if ( is_multisite() ) {
-			return; // TODO: The below case results in an empty redirect on multisite.
+			( new WP_User( $admin_id ) )->add_cap( 'manage_network_users' );
 		}
 
-		// Deletes user meta if user is an admin.
-		update_user_option( $user_id, Hashed_User_ID::OPTION, '222222' );
-		wp_set_current_user( $user_id_admin );
-		$_GET['nonce'] = $this->create_disconnect_nonce( $user_id );
+		update_user_option( $editor_id, Hashed_User_ID::OPTION, '222222' );
+		wp_set_current_user( $admin_id );
+		$_GET['user_id'] = $editor_id;
+		$_GET['nonce']   = $this->create_disconnect_nonce( $editor_id );
 		try {
 			$this->module->handle_disconnect_user();
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( get_edit_user_link( $user_id ), $redirect_url );
+			$this->assertStringStartsWith( get_edit_user_link( $editor_id ), $redirect_url );
+			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $redirect_params );
+			$this->assertArrayHasKey( 'updated', $redirect_params );
 		}
-		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $user_id ) );
+		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ) );
 	}
 
 	public function test_render_disconnect_profile() {
