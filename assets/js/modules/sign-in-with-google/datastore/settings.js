@@ -60,24 +60,35 @@ export function validateCanSubmitChanges( select ) {
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
-	invariant( isValidClientID( getClientID() ), INVARIANT_INVALID_CLIENT_ID );
-
 	const clientID = getClientID();
 	const shape = getShape();
 	const text = getText();
 	const theme = getTheme();
 
 	invariant( clientID?.length, 'clientID is required' );
+	invariant( isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
 	invariant(
-		SIGN_IN_WITH_GOOGLE_SHAPES.includes( shape ),
-		`shape must be one of: ${ SIGN_IN_WITH_GOOGLE_SHAPES.join( ', ' ) }`
+		!! SIGN_IN_WITH_GOOGLE_SHAPES.find(
+			( option ) => option.value === shape
+		),
+		`shape must be one of: ${ SIGN_IN_WITH_GOOGLE_SHAPES.map(
+			( option ) => option.value
+		).join( ', ' ) }`
 	);
 	invariant(
-		SIGN_IN_WITH_GOOGLE_TEXTS.includes( text ),
-		`text must be one of: ${ SIGN_IN_WITH_GOOGLE_TEXTS.join( ', ' ) }`
+		!! SIGN_IN_WITH_GOOGLE_TEXTS.find(
+			( option ) => option.value === text
+		),
+		`text must be one of: ${ SIGN_IN_WITH_GOOGLE_TEXTS.map(
+			( option ) => option.value
+		).join( ', ' ) }`
 	);
 	invariant(
-		SIGN_IN_WITH_GOOGLE_THEMES.includes( theme ),
-		`theme must be one of: ${ SIGN_IN_WITH_GOOGLE_THEMES.join( ', ' ) }`
+		!! SIGN_IN_WITH_GOOGLE_THEMES.find(
+			( option ) => option.value === theme
+		),
+		`theme must be one of: ${ SIGN_IN_WITH_GOOGLE_THEMES.map(
+			( option ) => option.value
+		).join( ', ' ) }`
 	);
 }

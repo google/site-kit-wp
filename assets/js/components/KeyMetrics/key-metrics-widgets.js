@@ -39,6 +39,7 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
@@ -56,8 +57,15 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
+import { isFeatureEnabled } from '../../features';
+import {
+	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
+	KEY_METRICS_GROUP_GENERATING_LEADS,
+	KEY_METRICS_GROUP_SELLING_PRODUCTS,
+	KEY_METRICS_GROUP_VISITORS,
+} from './constants';
 
 /**
  * Determines whether to show a widget the requires Analytics 4 and AdSense to be linked.
@@ -77,13 +85,6 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
 	select,
 	isViewOnlyDashboard
 ) {
-	if (
-		! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ||
-		! select( CORE_MODULES ).isModuleConnected( 'adsense' )
-	) {
-		return false;
-	}
-
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -141,7 +142,10 @@ const KEY_METRICS_WIDGETS = {
 			'Pages that generated the most AdSense revenue',
 			'google-site-kit'
 		),
+		displayInSelectionPanel:
+			shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
 		displayInList: shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
 		title: __( 'Top recent trending pages', 'google-site-kit' ),
@@ -154,7 +158,10 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
 		title: __( 'Most popular authors by pageviews', 'google-site-kit' ),
@@ -167,7 +174,10 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
 		title: __( 'Top categories by pageviews', 'google-site-kit' ),
@@ -180,7 +190,10 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
 		displayInList: shouldDisplayWidgetWithCustomDimensions,
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
 		title: __( 'Most popular content by pageviews', 'google-site-kit' ),
@@ -192,6 +205,7 @@ const KEY_METRICS_WIDGETS = {
 			'Pages your visitors read the most',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_POPULAR_PRODUCTS ]: {
 		title: __( 'Most popular products by pageviews', 'google-site-kit' ),
@@ -200,10 +214,12 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_type' ],
-		displayInList: ( select ) =>
+		displayInSelectionPanel: ( select ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductPostType(),
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_PAGES_PER_VISIT ]: {
 		title: __( 'Pages per visit', 'google-site-kit' ),
@@ -215,6 +231,7 @@ const KEY_METRICS_WIDGETS = {
 			'Number of pages visitors viewed per session on average',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
 	},
 	[ KM_ANALYTICS_VISIT_LENGTH ]: {
 		title: __( 'Visit length', 'google-site-kit' ),
@@ -226,6 +243,7 @@ const KEY_METRICS_WIDGETS = {
 			'Average duration of engaged visits',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
 	},
 	[ KM_ANALYTICS_VISITS_PER_VISITOR ]: {
 		title: __( 'Visits per visitor', 'google-site-kit' ),
@@ -237,6 +255,7 @@ const KEY_METRICS_WIDGETS = {
 			'Average number of sessions per site visitor',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
 	},
 	[ KM_ANALYTICS_MOST_ENGAGING_PAGES ]: {
 		title: __( 'Most engaging pages', 'google-site-kit' ),
@@ -248,6 +267,7 @@ const KEY_METRICS_WIDGETS = {
 			'Pages with the highest engagement rate',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 		title: __( 'Least engaging pages', 'google-site-kit' ),
@@ -259,6 +279,7 @@ const KEY_METRICS_WIDGETS = {
 			'Percentage of visitors that left without engagement with your site',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ]: {
 		title: __( 'Top pages by returning visitors', 'google-site-kit' ),
@@ -270,6 +291,7 @@ const KEY_METRICS_WIDGETS = {
 			'Pages that attracted the most returning visitors',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
 	},
 	[ KM_ANALYTICS_NEW_VISITORS ]: {
 		title: __( 'New visitors', 'google-site-kit' ),
@@ -281,6 +303,7 @@ const KEY_METRICS_WIDGETS = {
 			'Portion of visitors who visited your site for the first time in this timeframe',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
 	},
 	[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 		title: __( 'Returning visitors', 'google-site-kit' ),
@@ -292,6 +315,7 @@ const KEY_METRICS_WIDGETS = {
 			'Portion of your site’s visitors that returned at least once in this timeframe',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
 	},
 
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE ]: {
@@ -304,6 +328,7 @@ const KEY_METRICS_WIDGETS = {
 			'Channel (e.g. social, paid, search) that brought in the most visitors to your site',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART ]: {
 		title: __(
@@ -319,7 +344,10 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
 		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
@@ -336,7 +364,10 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
 		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
@@ -349,7 +380,10 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
 		title: __( 'Most engaged traffic source', 'google-site-kit' ),
@@ -361,6 +395,7 @@ const KEY_METRICS_WIDGETS = {
 			'Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
 		title: __( 'Top converting traffic source', 'google-site-kit' ),
@@ -372,6 +407,7 @@ const KEY_METRICS_WIDGETS = {
 			'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES ]: {
 		title: __( 'Top cities driving traffic', 'google-site-kit' ),
@@ -383,6 +419,7 @@ const KEY_METRICS_WIDGETS = {
 			'The cities where most of your visitors came from',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS ]: {
 		title: __( 'Top cities driving leads', 'google-site-kit' ),
@@ -399,7 +436,10 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
 		title: __( 'Top cities driving add to cart', 'google-site-kit' ),
@@ -412,7 +452,10 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'add_to_cart' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
 		title: __( 'Top cities driving purchases', 'google-site-kit' ),
@@ -425,7 +468,26 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ 'purchase' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
+		title: __( 'Top device driving purchases', 'google-site-kit' ),
+		description: __(
+			'Top device driving the most purchases',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Top device driving the most purchases',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ 'purchase' ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
 		title: __( 'Top countries driving traffic', 'google-site-kit' ),
@@ -437,6 +499,7 @@ const KEY_METRICS_WIDGETS = {
 			'The countries where most of your visitors came from',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 		title: __( 'Top performing keywords', 'google-site-kit' ),
@@ -448,6 +511,7 @@ const KEY_METRICS_WIDGETS = {
 			'The top search queries for your site by highest clickthrough rate',
 			'google-site-kit'
 		),
+		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS ]: {
 		title: __( 'Top pages driving leads', 'google-site-kit' ),
@@ -460,7 +524,10 @@ const KEY_METRICS_WIDGETS = {
 			'contact',
 			'generate_lead',
 		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 };
 

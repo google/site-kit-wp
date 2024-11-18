@@ -78,6 +78,8 @@ import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -201,6 +203,23 @@ export default function DashboardMainApp() {
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
+	const displayCTAWidget = useDisplayCTAWidget();
+
+	const showKeyMetricsSelectionPanel = useSelect( ( select ) => {
+		if (
+			select( CORE_SITE ).isKeyMetricsSetupCompleted() === true &&
+			isKeyMetricsWidgetHidden === false
+		) {
+			return true;
+		}
+
+		return (
+			select( CORE_USER ).isAuthenticated() &&
+			select( CORE_SITE ).isKeyMetricsSetupCompleted() === false &&
+			displayCTAWidget
+		);
+	} );
+
 	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
@@ -298,7 +317,7 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			<MetricsSelectionPanel />
+			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
 			{ audienceSegmentationEnabled && configuredAudiences && (
 				<AudienceSelectionPanel />

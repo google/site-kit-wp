@@ -24,24 +24,30 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { isInsufficientPermissionsError } from '../../../../../../util/errors';
+import { trackEvent } from '../../../../../../util';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { Button } from 'googlesitekit-components';
 import Link from '../../../../../../components/Link';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import WarningSVG from '../../../../../../../svg/icons/warning.svg';
 
 export default function AudienceCreationErrorNotice( {
 	apiErrors,
 	hasOAuthError,
 } ) {
+	const viewContext = useViewContext();
+
 	const errors = Array.isArray( apiErrors ) ? apiErrors : [ apiErrors ];
 
 	const helpLink = useSelect( ( select ) =>
@@ -60,13 +66,45 @@ export default function AudienceCreationErrorNotice( {
 		} )
 	);
 
-	if ( ! errors.length && ! hasOAuthError ) {
-		return null;
-	}
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+	);
+
+	const hasErrors = errors.length > 0;
 
 	const hasInsufficientPermissionsError = errors.some( ( error ) =>
 		isInsufficientPermissionsError( error )
 	);
+
+	// Track an event when the notice is viewed.
+	useEffect( () => {
+		if ( ! isOpen || ( ! hasErrors && ! hasOAuthError ) ) {
+			return;
+		}
+
+		let event = 'setup_error';
+
+		if ( hasOAuthError ) {
+			event = 'auth_error';
+		} else if ( hasInsufficientPermissionsError ) {
+			event = 'insufficient_permissions_error';
+		}
+
+		trackEvent(
+			`${ viewContext }_audiences-sidebar-create-audiences`,
+			event
+		);
+	}, [
+		hasErrors,
+		hasInsufficientPermissionsError,
+		hasOAuthError,
+		isOpen,
+		viewContext,
+	] );
+
+	if ( ! errors.length && ! hasOAuthError ) {
+		return null;
+	}
 
 	let errorTitle, errorDescription;
 
@@ -126,7 +164,17 @@ export default function AudienceCreationErrorNotice( {
 			</div>
 			{ hasInsufficientPermissionsError && (
 				<div className="googlesitekit-audience-creation-error-notice__actions">
-					<Button href={ requestAccessURL } target="_blank" danger>
+					<Button
+						href={ requestAccessURL }
+						target="_blank"
+						danger
+						onClick={ () => {
+							trackEvent(
+								`${ viewContext }_audiences-sidebar-create-audiences`,
+								'insufficient_permissions_error_request_access'
+							);
+						} }
+					>
 						{ __( 'Request access', 'google-site-kit' ) }
 					</Button>
 				</div>

@@ -45,7 +45,7 @@ function Template() {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/Sign in with Google/Settings/SettingsForm/Default',
+	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Default',
 };
 Default.decorators = [
 	( Story ) => {
@@ -55,8 +55,8 @@ Default.decorators = [
 				.receiveGetSettings( {
 					clientID:
 						'example-client-id-123123123.apps.usercontent.com',
-					text: 'Continue with Google',
-					theme: 'light',
+					text: 'continue_with',
+					theme: 'outline',
 					shape: 'rectangular',
 					OneTapEnabled: true,
 				} );
@@ -98,7 +98,7 @@ InvalidClientID.decorators = [
 ];
 
 export default {
-	title: 'Modules/Sign in with Google/Settings/SettingsEdit',
+	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -123,5 +123,5 @@ export default {
 export const Empty = Template.bind( null );
 Empty.storyName = 'Empty';
 Empty.scenario = {
-	label: 'Modules/Sign in with Google/Settings/SettingsForm/Empty',
+	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Empty',
 };

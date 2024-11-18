@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
@@ -45,13 +45,16 @@ export default function MetricItems( { savedMetrics } ) {
 		select( CORE_USER )
 	);
 
-	const displayInList = useSelect(
-		( select ) => ( metric ) =>
-			KEY_METRICS_WIDGETS[ metric ].displayInList(
-				select,
-				isViewOnlyDashboard,
-				metric
-			)
+	const displayInSelectionPanel = useInViewSelect(
+		( select ) => {
+			return ( metric ) =>
+				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel(
+					select,
+					isViewOnlyDashboard,
+					metric
+				);
+		},
+		[ isViewOnlyDashboard ]
 	);
 
 	const metricsListReducer = ( acc, metricSlug ) => {
@@ -60,20 +63,26 @@ export default function MetricItems( { savedMetrics } ) {
 		}
 
 		if (
-			typeof KEY_METRICS_WIDGETS[ metricSlug ].displayInList ===
-				'function' &&
-			! displayInList( metricSlug )
+			displayInSelectionPanel === undefined ||
+			( typeof KEY_METRICS_WIDGETS[ metricSlug ]
+				.displayInSelectionPanel === 'function' &&
+				! displayInSelectionPanel( metricSlug ) )
 		) {
 			return acc;
 		}
 
-		const { title, description } = KEY_METRICS_WIDGETS[ metricSlug ];
+		const {
+			title,
+			description,
+			metadata: { group },
+		} = KEY_METRICS_WIDGETS[ metricSlug ];
 
 		return {
 			...acc,
 			[ metricSlug ]: {
 				title,
 				description,
+				group,
 			},
 		};
 	};
@@ -86,7 +95,7 @@ export default function MetricItems( { savedMetrics } ) {
 	);
 
 	const savedMetricSlugs = widgets
-		.filter( ( { slug } ) => savedMetrics.includes( slug ) )
+		.filter( ( { slug } ) => savedMetrics?.includes( slug ) )
 		.map( ( { slug } ) => slug );
 
 	const availableSavedMetrics = Object.keys( KEY_METRICS_WIDGETS )

@@ -1,0 +1,68 @@
+/**
+ * Key Metrics site purpose change modal styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.mdc-dialog.googlesitekit-dialog-confirm-site-purpose-change {
+
+		h2 {
+			font-size: $fs-headline-md;
+		}
+
+		.mdc-dialog__content {
+			margin-top: 15px;
+
+			h3 {
+				font-size: $fs-body-md;
+				font-weight: $fw-medium;
+				margin: 0;
+			}
+		}
+
+		ul.mdc-list.mdc-list--underlined {
+
+			li.mdc-list-item {
+				font-size: $fs-body-sm;
+				min-height: auto;
+				padding: 4px 0;
+
+				&::before {
+					display: none;
+				}
+
+				&:last-child {
+					border: none;
+				}
+			}
+		}
+
+		.mdc-dialog__actions {
+			border-top: none;
+
+			button {
+				@media (max-width: $bp-tablet) {
+					width: 100%;
+
+					&:last-child {
+						margin-top: 5px;
+					}
+				}
+			}
+		}
+	}
+}

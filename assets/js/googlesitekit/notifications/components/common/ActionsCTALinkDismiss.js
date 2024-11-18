@@ -29,21 +29,26 @@ import CTALink from './CTALink';
 
 export default function ActionsCTALinkDismiss( {
 	id,
+	className = 'googlesitekit-publisher-win__actions',
 	ctaLink,
 	ctaLabel,
+	onCTAClick,
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 } ) {
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink )
-	);
+	const isNavigatingToCTALink = useSelect( ( select ) => {
+		return ctaLink
+			? select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+			: false;
+	} );
 
 	return (
-		<div className="googlesitekit-publisher-win__actions">
+		<div className={ className }>
 			<CTALink
 				id={ id }
 				ctaLink={ ctaLink }
 				ctaLabel={ ctaLabel }
+				onCTAClick={ onCTAClick }
 				dismissExpires={ dismissExpires }
 			/>
 

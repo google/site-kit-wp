@@ -1,5 +1,5 @@
 /**
- * Sign In With Google Settings styles.
+ * Sign in with Google Settings styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -20,20 +20,117 @@
 
 	.googlesitekit-settings-module--sign-in-with-google {
 
+		.googlesitekit-settings-notice__icon {
+			align-items: center;
+			display: flex;
+		}
+
+		.googlesitekit-settings-module__footer {
+			margin-top: 30px;
+		}
+
 		& > .mdc-layout-grid {
 			margin-bottom: 0;
 		}
 
-		.googlesitekit-sign-in-with-google-settings-fields .mdc-layout-grid {
-			padding: 0;
-		}
+		.googlesitekit-sign-in-with-google-settings-fields {
 
-		.googlesitekit-sign-in-with-google-settings-fields .mdc-layout-grid .mdc-layout-grid .mdc-layout-grid__inner {
-			margin-bottom: $grid-gap-desktop;
-		}
+			.googlesitekit-text-field-client-id,
+			.mdc-select,
+			.mdc-select__selected-text {
+				height: 52px;
+			}
 
-		.mdc-select {
-			width: 100%;
+			.mdc-select {
+				width: 100%;
+
+				.mdc-select__selected-text {
+					min-width: 100%;
+					padding-top: 12px;
+
+					@media (min-width: $bp-desktop) and (max-width: $bp-xlarge) {
+						padding-right: 28px;
+					}
+				}
+
+				.mdc-select__dropdown-icon {
+					bottom: 14px;
+				}
+
+				&.mdc-select--focused {
+					.mdc-select__dropdown-icon {
+						transform: rotate(180deg);
+					}
+				}
+			}
+
+			.googlesitekit-settings-module__one-tap {
+				@media (min-width: $bp-xlarge) {
+					margin-top: 10px;
+				}
+
+				.mdc-switch {
+					margin-left: 3px;
+				}
+
+				p {
+					color: $c-surfaces-on-background-variant;
+					letter-spacing: $ls-xs;
+					margin: 4px 0 0;
+				}
+			}
+
+			.googlesitekit-sign-in-with-google-settings-fields__button-preview {
+
+				@media (min-width: $bp-xlarge) {
+					margin-left: 30px;
+				}
+
+				.mdc-layout-grid__inner {
+					@media (min-width: $bp-desktop) {
+						display: block;
+					}
+				}
+			}
+
+			.mdc-layout-grid {
+				padding: 0;
+
+				.mdc-layout-grid {
+					.mdc-layout-grid__inner {
+						margin-bottom: $grid-gap-desktop;
+					}
+				}
+
+				&.googlesitekit-sign-in-with-google-settings-fields__stretch-form {
+					@media (min-width: $bp-xlarge) {
+						display: flex;
+						flex-direction: column;
+						height: 100%;
+						justify-content: space-between;
+						margin-right: 52px;
+						width: 100%;
+					}
+
+					> .mdc-layout-grid__inner:last-child {
+						@media (min-width: $bp-desktop) {
+							margin-bottom: 0;
+						}
+
+						.mdc-layout-grid__cell {
+							@media (min-width: $bp-xlarge) {
+								margin-right: 14px;
+							}
+
+							&:last-child {
+								@media (min-width: $bp-xlarge) {
+									margin: 0;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
