@@ -57,6 +57,10 @@ describe( 'ErrorNotice', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
+	const syncAvailableCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+	);
+
 	const baseReportOptions = {
 		startDate: '2024-02-29',
 		endDate: '2024-03-27',
@@ -120,6 +124,11 @@ describe( 'ErrorNotice', () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'invalidateResolution'
 		);
+
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
+		} );
 	} );
 
 	afterEach( () => {

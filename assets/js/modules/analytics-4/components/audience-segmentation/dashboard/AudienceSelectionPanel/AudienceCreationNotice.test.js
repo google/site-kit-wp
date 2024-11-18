@@ -231,6 +231,10 @@ describe( 'AudienceCreationNotice', () => {
 	] )(
 		'should track an event with label %s when creating the "%s" audience',
 		async ( label, audienceDisplayName ) => {
+			const syncAvailableCustomDimensionsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			);
+
 			const filteredAudiences = availableAudiences.filter(
 				( { displayName } ) => displayName !== audienceDisplayName
 			);
@@ -238,6 +242,11 @@ describe( 'AudienceCreationNotice', () => {
 			fetchMock.post( syncAvailableAudiencesEndpoint, {
 				status: 200,
 				body: filteredAudiences,
+			} );
+
+			fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+				status: 200,
+				body: [],
 			} );
 
 			muteFetch( createAudienceEndpoint );
