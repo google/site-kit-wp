@@ -23,6 +23,7 @@ import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import {
@@ -101,6 +102,10 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
+				} );
 			};
 
 			return (
