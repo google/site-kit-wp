@@ -30,7 +30,7 @@ import { useMemo } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
@@ -55,7 +55,7 @@ function KeyMetricsError( { savedMetrics } ) {
 		)
 	);
 
-	const keyMetricsSettings = useSelect( ( select ) =>
+	const keyMetricsSettings = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
 
