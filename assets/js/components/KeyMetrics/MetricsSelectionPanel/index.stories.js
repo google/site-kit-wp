@@ -23,6 +23,7 @@ import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import {
@@ -65,6 +66,9 @@ export default {
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'post', label: 'Post' } ],
+				} );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
