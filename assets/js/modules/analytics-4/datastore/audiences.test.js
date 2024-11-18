@@ -223,10 +223,16 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					availableAudiences: [],
+					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 				} );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
@@ -244,6 +250,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
@@ -302,6 +313,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				fetchMock.get( audienceSettingsEndpoint, {
 					body: {
 						data: {
@@ -337,6 +353,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				const settings = {
 					configuredAudiences: availableAudiencesFixture.reduce(
 						( acc, { name } ) => [ ...acc, name ],
@@ -353,7 +374,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -399,6 +420,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				fetchMock.getOnce( audienceSettingsEndpoint, {
 					body: {
 						data: {
@@ -417,7 +443,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -447,6 +473,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				fetchMock.getOnce( audienceSettingsEndpoint, {
 					body: {
 						data: {
@@ -466,7 +497,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -1099,6 +1130,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					],
 				];
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				fetchMock.post(
 					{
 						url: syncAvailableAudiencesEndpoint,
@@ -1727,6 +1763,11 @@ describe( 'modules/analytics-4 audiences', () => {
 						],
 					];
 
+					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+						body: [ 'googlesitekit_post_type' ],
+						status: 200,
+					} );
+
 					fetchMock.post(
 						{
 							url: syncAvailableAudiencesEndpoint,
@@ -2030,6 +2071,11 @@ describe( 'modules/analytics-4 audiences', () => {
 				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
+				} );
+
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
 				} );
 			} );
 
@@ -2507,6 +2553,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
