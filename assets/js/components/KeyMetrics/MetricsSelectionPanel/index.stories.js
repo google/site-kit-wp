@@ -67,7 +67,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry, {
-					postTypes: [ { slug: 'product', label: 'Product' } ],
+					postTypes: [ { slug: 'post', label: 'Post' } ],
 				} );
 				provideModules( registry, [
 					{
