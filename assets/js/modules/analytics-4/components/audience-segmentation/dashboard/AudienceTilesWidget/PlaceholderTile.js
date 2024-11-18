@@ -63,12 +63,7 @@ export default function PlaceholderTile( { Widget } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const AnalyticsLink = (
-		<Link
-			secondary
-			href={ audienceLearnMoreURL }
-			external
-			hideExternalIndicator
-		/>
+		<Link secondary href={ audienceLearnMoreURL } external />
 	);
 
 	return (

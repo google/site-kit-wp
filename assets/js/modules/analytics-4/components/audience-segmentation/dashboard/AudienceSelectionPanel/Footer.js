@@ -30,7 +30,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 import {
@@ -53,7 +53,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			AUDIENCE_SELECTED
 		)
 	);
-	const audienceSettings = useSelect( ( select ) =>
+	const audienceSettings = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getAudienceSettings()
 	);
 	const saveError = useSelect( ( select ) =>
@@ -67,7 +67,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingAudienceSettings()
 	);
-	const hiddenTileDismissedItems = useSelect( ( select ) => {
+	const hiddenTileDismissedItems = useInViewSelect( ( select ) => {
 		const dismissedItems = select( CORE_USER ).getDismissedItems();
 
 		return dismissedItems?.filter( ( item ) =>
@@ -77,12 +77,11 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const availableAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
 	);
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
-	);
 
 	const { saveAudienceSettings, removeDismissedItems } =
 		useDispatch( CORE_USER );
+
+	const { getConfiguredAudiences } = useSelect( CORE_USER );
 
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;
@@ -167,6 +166,10 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			DEFAULT_AUDIENCE: 'default',
 		};
 
+		// Call to the selector within the callback ensures that the latest
+		// value is used.
+		const configuredAudiences = getConfiguredAudiences();
+
 		const eventLabel = Object.keys( audienceTypeLabels )
 			.map( ( type ) => {
 				const audiencesOfType = configuredAudiences.filter(
@@ -188,7 +191,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			'audiences_sidebar_save',
 			eventLabel
 		);
-	}, [ availableAudiences, configuredAudiences, viewContext ] );
+	}, [ availableAudiences, getConfiguredAudiences, viewContext ] );
 
 	const onCancel = useCallback( () => {
 		trackEvent(

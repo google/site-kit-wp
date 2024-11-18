@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager - DashboardMainEffectComponent component.
+ * MetricsWidgetSubtitle component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,29 +17,32 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import { useMount } from 'react-use';
+import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
-import { MODULES_READER_REVENUE_MANAGER } from '../datastore/constants';
-import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { useSelect } from 'googlesitekit-data';
 
-export default function DashboardMainEffectComponent() {
-	const viewOnlyDashboard = useViewOnly();
-
-	const { maybeSyncPublicationOnboardingState } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
+export default function MetricsWidgetSubtitle() {
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
-	useMount( () => {
-		if ( ! viewOnlyDashboard ) {
-			maybeSyncPublicationOnboardingState();
-		}
-	} );
+	if ( ! isKeyMetricsSetupCompleted ) {
+		return null;
+	}
 
-	return null;
+	return (
+		<Fragment>
+			{ __(
+				'Track progress towards your goals with tailored metrics and important user interaction metrics',
+				'google-site-kit'
+			) }
+		</Fragment>
+	);
 }

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
@@ -70,7 +70,6 @@ export default function Footer( {
 			KEY_METRICS_SELECTED
 		)
 	);
-
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
@@ -81,19 +80,22 @@ export default function Footer( {
 		return tile?.requiredCustomDimensions || [];
 	} );
 
-	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! requiredCustomDimensions?.length ) {
-			return false;
-		}
+	const hasMissingCustomDimensions = useInViewSelect(
+		( select ) => {
+			if ( ! requiredCustomDimensions?.length ) {
+				return false;
+			}
 
-		const hasCustomDimensions = select(
-			MODULES_ANALYTICS_4
-		).hasCustomDimensions( requiredCustomDimensions );
+			const hasCustomDimensions = select(
+				MODULES_ANALYTICS_4
+			).hasCustomDimensions( requiredCustomDimensions );
 
-		return ! hasCustomDimensions;
-	} );
+			return ! hasCustomDimensions;
+		},
+		[ requiredCustomDimensions ]
+	);
 
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
+	const hasAnalytics4EditScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
