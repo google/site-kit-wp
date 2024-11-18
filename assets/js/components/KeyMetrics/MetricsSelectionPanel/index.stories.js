@@ -104,7 +104,7 @@ export default {
 					.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 
 				provideSiteInfo( registry, {
-					postTypes: [ { slug: 'product', label: 'Product' } ],
+					postTypes: [ { slug: 'post', label: 'Post' } ],
 				} );
 			};
 
