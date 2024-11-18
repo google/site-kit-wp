@@ -2019,7 +2019,6 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
-					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
 				} );
