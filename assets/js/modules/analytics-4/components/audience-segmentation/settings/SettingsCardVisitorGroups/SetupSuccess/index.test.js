@@ -79,6 +79,11 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		);
 
 		dismissItemSpy.mockImplementation( () => Promise.resolve() );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			isAudienceSegmentationWidgetHidden: false,
+			configuredAudiences: null,
+		} );
 	} );
 
 	afterEach( () => {
@@ -250,5 +255,23 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 			'settings_audiences-setup-cta-settings-success',
 			'confirm_notification'
 		);
+	} );
+
+	it( 'should dismiss the notification if "Visitor groups" toggle is turned off', () => {
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			isAudienceSegmentationWidgetHidden: true,
+			configuredAudiences: null,
+		} );
+
+		const { container } = render( <SetupSuccess />, {
+			registry,
+		} );
+
+		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
+		expect( dismissItemSpy ).toHaveBeenCalledWith(
+			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
+		);
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

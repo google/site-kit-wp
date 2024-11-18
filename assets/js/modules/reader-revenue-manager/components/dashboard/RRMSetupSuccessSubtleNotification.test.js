@@ -34,10 +34,12 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
 
@@ -83,8 +85,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const publicationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+
+	const syncOnboardingStateEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
 	const setValueMock = jest.fn();
@@ -229,11 +232,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
-			const { data } = JSON.parse( opts.body );
-
-			// Return the same settings passed to the API.
-			return { body: data, status: 200 };
+		fetchMock.postOnce( syncOnboardingStateEndpoint, () => {
+			return {
+				body: {
+					publicationID: 'QRSTUVWX',
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+				},
+				status: 200,
+			};
 		} );
 
 		const { getByText, queryByText } = render(
@@ -261,6 +267,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		).not.toBeInTheDocument();
 
 		act( () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue(
+						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+					)
+			).toBeUndefined();
+
 			fireEvent.click( getByText( 'Complete publication setup' ) );
 		} );
 
@@ -277,16 +291,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
-			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
-				body: {
-					data: {
-						publicationID: 'QRSTUVWX',
-						publicationOnboardingState: ONBOARDING_COMPLETE,
-						publicationOnboardingStateChanged: false,
-					},
-				},
-			} );
+			expect( fetchMock ).toHaveFetched( syncOnboardingStateEndpoint );
 		} );
 
 		// Verify that the onboarding state has been synced.
@@ -295,6 +300,15 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationOnboardingState()
 		).toBe( ONBOARDING_COMPLETE );
+
+		// Ensure that the UI key is set to true.
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue(
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+				)
+		).toBe( true );
 
 		// Verify that the message relevant to the ONBOARDING_COMPLETE
 		// state is displayed.
