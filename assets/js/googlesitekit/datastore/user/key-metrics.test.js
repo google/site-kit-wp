@@ -91,6 +91,14 @@ describe( 'core/user key metrics', () => {
 		},
 	};
 
+	const coreKeyMetricsResetMetricSelectionEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/reset-key-metrics-selection'
+	);
+	const coreKeyMetricsResetMetricSelectionExpectedResponse = {
+		widgetSlugs: [],
+		isWidgetHidden: false,
+	};
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -722,6 +730,53 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
 				).toBe( false );
+
+				expect( console ).not.toHaveErrored();
+			} );
+		} );
+
+		describe( 'resetKeyMetricsSelection', () => {
+			it( 'should clear widgetSlugs on resetKeyMetricsSelection', async () => {
+				const userID = 123;
+				provideUserInfo( registry, { id: userID } );
+				provideUserAuthentication( registry );
+
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				fetchMock.postOnce(
+					coreKeyMetricsResetMetricSelectionEndpointRegExp,
+					{
+						body: coreKeyMetricsResetMetricSelectionExpectedResponse,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( {
+						widgetSlugs: [
+							KM_ANALYTICS_NEW_VISITORS,
+							KM_ANALYTICS_PAGES_PER_VISIT,
+						],
+						isWidgetHidden: false,
+					} );
+
+				expect( store.getState().keyMetricsSettings ).toMatchObject( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_PAGES_PER_VISIT,
+					],
+					isWidgetHidden: false,
+				} );
+
+				await registry.dispatch( CORE_USER ).resetKeyMetricsSelection();
+
+				expect( store.getState().keyMetricsSettings ).toMatchObject( {
+					widgetSlugs: [],
+				} );
 
 				expect( console ).not.toHaveErrored();
 			} );

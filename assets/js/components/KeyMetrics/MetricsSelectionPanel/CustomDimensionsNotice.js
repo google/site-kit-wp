@@ -26,7 +26,7 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
@@ -51,22 +51,26 @@ function CustomDimensionsNotice() {
 		return tile?.requiredCustomDimensions || [];
 	} );
 
-	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! requiredCustomDimensions?.length ) {
-			return false;
-		}
+	const hasMissingCustomDimensions = useInViewSelect(
+		( select ) => {
+			if ( ! requiredCustomDimensions?.length ) {
+				return false;
+			}
 
-		return ! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-			requiredCustomDimensions
-		);
-	} );
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
+			return ! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				requiredCustomDimensions
+			);
+		},
+		[ requiredCustomDimensions ]
+	);
+
+	const hasAnalytics4EditScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	// This is called here to ensure that the list of available custom dimensions is
 	// synced and loaded, preventing flickers of the notice.
-	useSelect( ( select ) =>
+	useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
 	);
 

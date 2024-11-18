@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
@@ -51,7 +51,7 @@ export default function ErrorNotice() {
 		)
 	);
 	const [ siteKitUserCountReportError, otherUserCountReportError ] =
-		useSelect( ( select ) =>
+		useInViewSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAudienceUserCountReportErrors()
 		) || [];
 

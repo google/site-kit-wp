@@ -156,7 +156,7 @@ export const actions = {
 	/**
 	 * Stores conversion reporting inline data in the datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 * @private
 	 *
 	 * @param {Object} data Inline data, usually supplied via a global variable from PHP.
@@ -221,7 +221,7 @@ export const selectors = {
 	 * Not intended to be used publicly; this is largely here so other selectors can
 	 * request data using the selector/resolver pattern.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -234,7 +234,7 @@ export const selectors = {
 	/**
 	 * Checks if newEvents are present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} TRUE if `newEvents` are present, FALSE otherwise.
@@ -245,7 +245,7 @@ export const selectors = {
 	/**
 	 * Checks if lostEvents are present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.140.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} TRUE if `lostEvents` are present, FALSE otherwise.
