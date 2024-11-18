@@ -66,9 +66,7 @@ export default {
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
-				provideSiteInfo( registry, {
-					postTypes: [ { slug: 'post', label: 'Post' } ],
-				} );
+				provideSiteInfo( registry );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
