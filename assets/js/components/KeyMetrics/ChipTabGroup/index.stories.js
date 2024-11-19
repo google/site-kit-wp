@@ -29,6 +29,7 @@ import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
@@ -145,6 +146,8 @@ export default {
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
+
+				provideSiteInfo( registry );
 
 				provideModules( registry, [
 					{
