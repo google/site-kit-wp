@@ -113,10 +113,6 @@ describe( 'AudienceSelectionPanel', () => {
 		'^/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 
-	const syncAvailableCustomDimensionsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -154,11 +150,6 @@ describe( 'AudienceSelectionPanel', () => {
 				customDimension: {},
 				property: {},
 			} );
-
-		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
-			status: 200,
-			body: [],
-		} );
 
 		provideAnalytics4MockReport( registry, reportOptions );
 
