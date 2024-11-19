@@ -236,9 +236,9 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		// mock `file_get_contents()`, it's not possible to mock the `$http_response_header` variable used within the scope
 		// of the `is_endpoint_healthy()` method. The rest of the controller's behaviour remains unmocked.
 		$mock_controller = $this->getMockBuilder( REST_First_Party_Mode_Controller::class )
-		->setConstructorArgs( array( $this->settings ) )
-		->onlyMethods( array( 'is_endpoint_healthy' ) )
-		->getMock();
+			->setConstructorArgs( array( $this->settings ) )
+			->onlyMethods( array( 'is_endpoint_healthy' ) )
+			->getMock();
 
 		$expected_calls = array_map(
 			function ( $url ) use ( $endpoint_responses ) {
@@ -250,19 +250,19 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$call_count = 0;
 
 		$mock_controller->expects( $this->exactly( 2 ) )
-		->method( 'is_endpoint_healthy' )
-		->willReturnCallback(
-			function ( $url ) use ( &$call_count, $expected_calls ) {
-				// Verify the argument matches what we expect.
-				$expected_url = array_keys( $expected_calls[ $call_count ] )[0];
-				$this->assertEquals( $expected_url, $url, 'Call #' . ( $call_count + 1 ) . ' received unexpected URL' );
+			->method( 'is_endpoint_healthy' )
+			->willReturnCallback(
+				function ( $url ) use ( &$call_count, $expected_calls ) {
+					// Verify the argument matches what we expect.
+					$expected_url = array_keys( $expected_calls[ $call_count ] )[0];
+					$this->assertEquals( $expected_url, $url, 'Call #' . ( $call_count + 1 ) . ' received unexpected URL' );
 
-				// Return the corresponding response.
-				$result = array_values( $expected_calls[ $call_count ] )[0];
-				$call_count++;
-				return $result;
-			}
-		);
+					// Return the corresponding response.
+					$result = array_values( $expected_calls[ $call_count ] )[0];
+					$call_count++;
+					return $result;
+				}
+			);
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		/**
