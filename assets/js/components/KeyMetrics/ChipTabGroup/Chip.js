@@ -34,7 +34,7 @@ export default function Chip( {
 	label,
 	isActive,
 	onClick,
-	selectedCount,
+	selectedCount = 0,
 } ) {
 	return (
 		<Button
@@ -64,6 +64,6 @@ Chip.propTypes = {
 	slug: propTypes.string.isRequired,
 	label: propTypes.string.isRequired,
 	isActive: propTypes.bool,
-	selectedCount: propTypes.number.isRequired,
+	selectedCount: propTypes.number,
 	onClick: propTypes.func.isRequired,
 };
