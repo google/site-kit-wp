@@ -49,6 +49,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const keyMetricSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
 
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
@@ -82,6 +85,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
 	// and have not been already included, which is determined by includeConversionTailoredMetrics setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
+		! hasUserPickedMetrics?.length &&
 		isUserInputCompleted &&
 		haveConversionReportingEventsForTailoredMetrics &&
 		! keyMetricSettings?.includeConversionTailoredMetrics;
