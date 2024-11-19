@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
+use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
@@ -398,6 +399,21 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
 					),
+				)
+			),
+			new Script(
+				'googlesitekit-reader-revenue-manager-block-editor.js',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-reader-revenue-manager-block-editor.js',
+					'dependencies'  => array(
+						'googlesitekit-i18n',
+						'wp-data',
+						'wp-api-fetch',
+						'wp-polyfill',
+						'wp-url',
+						'googlesitekit-components',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
 		);
