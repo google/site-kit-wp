@@ -192,7 +192,9 @@ const baseActions = {
 		}
 
 		const { response: availableAudiences, error } =
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
 
 		if ( error ) {
 			return { response: availableAudiences, error };
