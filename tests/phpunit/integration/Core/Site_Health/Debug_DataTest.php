@@ -142,4 +142,14 @@ class Debug_DataTest extends TestCase {
 			"Failed to assert that dashboard sharing fields were present for $module_slug"
 		);
 	}
+
+	public function test_key_metrics_fields__not_setup() {
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Not setup', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+	}
 }
