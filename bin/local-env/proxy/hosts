@@ -1,0 +1,12 @@
+127.0.0.1       localhost
+::1     localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+# These addresses are liable to change when the containers or network are recreated,
+# so we can't actually provide a hardcoded value here. This is for illustration only.
+172.18.0.4      d9308e3a7e28
+# Point the FPFE hostname to the proxy container.
+172.18.0.6 g-1234.fps.goog
