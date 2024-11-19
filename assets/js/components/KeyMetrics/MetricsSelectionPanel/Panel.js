@@ -43,6 +43,7 @@ import Header from './Header';
 import Footer from './Footer';
 import MetricItems from './MetricItems';
 import SelectionPanel from '../../SelectionPanel';
+import KeyMetricsError from './KeyMetricsError';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 import { useFeature } from '../../../hooks/useFeature';
@@ -97,6 +98,7 @@ export default function Panel() {
 			<Header closePanel={ closePanel } />
 			<MetricItems savedMetrics={ savedViewableMetrics } />
 			<CustomDimensionsNotice />
+			<KeyMetricsError savedMetrics={ savedViewableMetrics } />
 			<Footer
 				isOpen={ isOpen }
 				closePanel={ closePanel }

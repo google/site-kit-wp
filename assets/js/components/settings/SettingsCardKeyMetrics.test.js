@@ -72,7 +72,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		);
 	} );
 
-	it( 'should show ACRSubtleNotification when Key metrics are not setup', async () => {
+	it( 'should show ConversionReportingSettingsSubtleNotification when Key metrics are not setup', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -92,7 +92,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show ACRSubtleNotification when Key metrics are setup manually', async () => {
+	it( 'should show ConversionReportingSettingsSubtleNotification when Key metrics are setup manually', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -113,14 +113,14 @@ describe( 'SettingsCardKeyMetrics', () => {
 			container.querySelector( '.googlesitekit-acr-subtle-notification' )
 		).toBeInTheDocument();
 
-		// Default content should be replaced with ACRSubtleNotification, so it should
-		// not be shown at the same time as ACR notification.
+		// Default content should be replaced with ConversionReportingSettingsSubtleNotification,
+		// so it should not be shown at the same time as ACR notification.
 		expect(
 			container.querySelector( '.googlesitekit-user-input__notification' )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not show ACRSubtleNotification when Key metrics are setup using tailored metrics', async () => {
+	it( 'should not show ConversionReportingSettingsSubtleNotification when Key metrics are setup using tailored metrics', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
@@ -140,7 +140,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not show ACRSubtleNotification if it was previously dismissed', async () => {
+	it( 'should not show ConversionReportingSettingsSubtleNotification if it was previously dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ ACR_SUBTLE_NOTIFICATION_SLUG ] );
@@ -164,7 +164,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not show ACRSubtleNotification if conversionReporting feature flag is not enabled', async () => {
+	it( 'should not show ConversionReportingSettingsSubtleNotification if conversionReporting feature flag is not enabled', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );

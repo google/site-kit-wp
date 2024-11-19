@@ -1,5 +1,5 @@
 /**
- * ACRSubtleNotification component.
+ * ConversionReportingSettingsSubtleNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -33,7 +33,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { ACR_SUBTLE_NOTIFICATION_SLUG } from './constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
-export default function ACRSubtleNotification() {
+export default function ConversionReportingSettingsSubtleNotification() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
 	const { dismissItem } = useDispatch( CORE_USER );
