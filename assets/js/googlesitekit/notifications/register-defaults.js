@@ -167,7 +167,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					'permissionsError'
 				) || {};
 
-			// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return null.
+			// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return false.
 			if (
 				! setupErrorMessage ||
 				permissionsErrorData?.skipDefaultErrorNotifications
