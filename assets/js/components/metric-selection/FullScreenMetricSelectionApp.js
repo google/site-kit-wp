@@ -19,13 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { isFeatureEnabled } from '../../features';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -36,7 +36,12 @@ import Header from '../Header';
 import HelpMenu from '../help/HelpMenu';
 import Layout from '../layout/Layout';
 import PageHeader from '../PageHeader';
-import UserInputQuestionnaire from '../user-input/UserInputQuestionnaire';
+import PanelContent from '../KeyMetrics/MetricsSelectionPanel/PanelContent';
+import {
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+} from '../KeyMetrics/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function FullScreenMetricSelectionApp() {
 	const conversionReportingEnabled = isFeatureEnabled(
@@ -44,6 +49,7 @@ export default function FullScreenMetricSelectionApp() {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const mainDashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -57,6 +63,22 @@ export default function FullScreenMetricSelectionApp() {
 		);
 	} );
 
+	const closePanel = useCallback( () => {
+		navigateTo( mainDashboardURL );
+	}, [ navigateTo, mainDashboardURL ] );
+
+	const savedViewableMetrics = useInViewSelect( ( select ) => {
+		const metrics = select( CORE_USER ).getKeyMetrics();
+
+		if ( ! Array.isArray( metrics ) ) {
+			return [];
+		}
+
+		const { isKeyMetricAvailable } = select( CORE_USER );
+
+		return metrics.filter( isKeyMetricAvailable );
+	} );
+
 	let renderPage = false;
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
@@ -64,6 +86,10 @@ export default function FullScreenMetricSelectionApp() {
 	);
 
 	useEffect( () => {
+		setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
+		} );
+
 		if (
 			( ! conversionReportingEnabled || isKeyMetricsSetupCompleted ) &&
 			mainDashboardURL
@@ -72,7 +98,7 @@ export default function FullScreenMetricSelectionApp() {
 		}
 
 		renderPage = true;
-	}, [ isKeyMetricsSetupCompleted, renderPage ] );
+	}, [ isKeyMetricsSetupCompleted, renderPage, savedViewableMetrics ] );
 
 	return (
 		renderPage && (
@@ -101,27 +127,27 @@ export default function FullScreenMetricSelectionApp() {
 									<Grid className="googlesitekit-user-input__header">
 										<Row>
 											<Cell
-												lgSize={ 6 }
-												mdSize={ 8 }
-												smSize={ 4 }
+												lgSize={ 12 }
+												mdSize={ 12 }
+												smSize={ 12 }
 											>
 												<PageHeader
 													className="googlesitekit-heading-3 googlesitekit-user-input__heading"
 													title={ __(
-														'Customize Site Kit to match your goals',
+														'Select up to 8 metrics that are most important for your business goals',
 														'google-site-kit'
 													) }
 													fullWidth
 												/>
 											</Cell>
 											<Cell
-												lgSize={ 6 }
-												mdSize={ 8 }
-												smSize={ 4 }
+												lgSize={ 12 }
+												mdSize={ 12 }
+												smSize={ 12 }
 											>
 												<span className="googlesitekit-user-input__subtitle">
 													{ __(
-														'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site',
+														"Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit's main dashboard.",
 														'google-site-kit'
 													) }
 												</span>
@@ -133,10 +159,16 @@ export default function FullScreenMetricSelectionApp() {
 										<Row>
 											<Cell
 												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 4 }
+												mdSize={ 12 }
+												smSize={ 12 }
 											>
-												<UserInputQuestionnaire />
+												<PanelContent
+													closePanel={ closePanel }
+													savedViewableMetrics={
+														savedViewableMetrics
+													}
+													showHeader={ false }
+												/>
 											</Cell>
 										</Row>
 									</Grid>
