@@ -294,7 +294,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => true,
-						'http://example.org/wp-content/plugins/google-site-kit/fpm/measurement.php?healthCheck=1' => true,
+						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => true,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => true,
@@ -306,7 +306,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => true,
-						'http://example.org/wp-content/plugins/google-site-kit/fpm/measurement.php?healthCheck=1' => false,
+						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => false,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => true,
@@ -318,7 +318,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => false,
-						'http://example.org/wp-content/plugins/google-site-kit/fpm/measurement.php?healthCheck=1' => true,
+						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => true,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => false,
@@ -330,7 +330,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => false,
-						'http://example.org/wp-content/plugins/google-site-kit/fpm/measurement.php?healthCheck=1' => false,
+						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => false,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => false,
