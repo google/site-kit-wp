@@ -168,6 +168,26 @@ class Debug_DataTest extends TestCase {
 		$this->assertEquals( 'Tailored Metrics', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
 	}
 
+	public function test_key_metrics_fields__setup_and_enabled_manual() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context );
+
+		update_option( Key_Metrics_Setup_Completed_By::OPTION, true );
+		$user_options->set( Key_Metrics_Settings::OPTION, array( 'widgetSlugs' => array( 'widget1', 'widget2' ) ) );
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data( $context, $user_options );
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+		$this->assertEquals( 'Manual Selection', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
+	}
+
 	public function test_key_metrics_fields__setup_and_disabled() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
