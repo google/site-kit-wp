@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
@@ -151,5 +152,17 @@ class Debug_DataTest extends TestCase {
 		$info = apply_filters( 'debug_information', array() );
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 		$this->assertEquals( 'Not setup', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+	}
+
+	public function test_key_metrics_fields__setup_and_enabled() {
+		update_option( Key_Metrics_Setup_Completed_By::OPTION, true );
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
 	}
 }
