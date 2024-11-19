@@ -42,7 +42,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-// import { useConversionReportingEventsForTailoredMetrics } from './hooks/useConversionReportingEventsForTailoredMetrics';
+import { useConversionReportingEventsForTailoredMetrics } from './hooks/useConversionReportingEventsForTailoredMetrics';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
@@ -56,20 +56,18 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	// @TODO here during #9371 - re-check the logic after latest update, and fix where needed using haveConversionReportingEventsForTailoredMetrics.
-	// const purpose = userInputSettings?.purpose?.values?.[ 0 ];
-	// const haveConversionReportingEventsForTailoredMetrics =
-	// 	useConversionReportingEventsForTailoredMetrics( purpose );
-
-	// const newMetrics = useSelect( ( select ) => {
-	// 	return select( CORE_USER ).getAnswerBasedMetrics(
-	// 		purpose,
-	// 		haveConversionReportingEventsForTailoredMetrics
-	// 	);
-	// } );
+	const userInputSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettings()
+	);
+	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+	const haveConversionReportingEventsForTailoredMetrics =
+		useConversionReportingEventsForTailoredMetrics( purpose );
 
 	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getKeyMetrics();
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			purpose,
+			haveConversionReportingEventsForTailoredMetrics
+		);
 	} );
 
 	const savedPurpose = useSelect( ( select ) =>
