@@ -25,6 +25,7 @@ import {
 	provideKeyMetricsUserInputSettings,
 	provideModules,
 	provideUserAuthentication,
+	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
@@ -88,6 +89,9 @@ export default {
 						values: [ 'publish_news' ],
 						scope: 'site',
 					},
+				} );
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
 				} );
 			};
 

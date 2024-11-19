@@ -21,6 +21,8 @@
  */
 import AudienceSegmentationSetupSuccessSubtleNotification from './AudienceSegmentationSetupSuccessSubtleNotification';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-audiences'
@@ -37,4 +39,20 @@ Default.scenario = {
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupSuccessSubtleNotification',
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+					isAudienceSegmentationWidgetHidden: false,
+					configuredAudiences: null,
+				} );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
