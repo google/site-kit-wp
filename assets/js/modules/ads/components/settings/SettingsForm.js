@@ -66,31 +66,6 @@ export default function SettingsForm() {
 			<div className="googlesitekit-ads-settings-fields">
 				<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
-				<div className="googlesitekit-settings-module__meta-item">
-					<ConversionTrackingToggle>
-						{ createInterpolateElement(
-							__(
-								'Conversion tracking allows you to measure additional events on your site from other plugins that Site Kit integrates with to optimize your campaign performance. <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									<Link
-										href={
-											conversionTrackingDocumentationURL
-										}
-										external
-										aria-label={ __(
-											'Learn more about conversion tracking',
-											'google-site-kit'
-										) }
-									/>
-								),
-							}
-						) }
-					</ConversionTrackingToggle>
-				</div>
-
 				{ ! isPaxView && (
 					<div className="googlesitekit-setup-module__inputs">
 						<ConversionIDTextField
@@ -140,6 +115,39 @@ export default function SettingsForm() {
 						</div>
 					</div>
 				) }
+
+				<div className="googlesitekit-settings-module__meta-item">
+					<div className="googlesitekit-settings-module__measurement_toggles">
+						<h4>
+							{ __(
+								'Improve your measurement',
+								'google-site-kit'
+							) }
+						</h4>
+						<ConversionTrackingToggle>
+							{ createInterpolateElement(
+								__(
+									'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<Link
+											href={
+												conversionTrackingDocumentationURL
+											}
+											external
+											aria-label={ __(
+												'Learn more about conversion tracking',
+												'google-site-kit'
+											) }
+										/>
+									),
+								}
+							) }
+						</ConversionTrackingToggle>
+					</div>
+				</div>
 			</div>
 		</Fragment>
 	);

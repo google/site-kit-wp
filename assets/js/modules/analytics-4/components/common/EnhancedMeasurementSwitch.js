@@ -43,6 +43,7 @@ import {
 import SupportLink from '../../../../components/SupportLink';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import Tick from '../../../../../svg/icons/tick.svg';
 
 export default function EnhancedMeasurementSwitch( {
 	className,
@@ -109,6 +110,9 @@ export default function EnhancedMeasurementSwitch( {
 			) }
 			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
 				<p className="googlesitekit-margin-top-0">
+					<span className="googlesitekit-settings-enhanced-measurement-enabled-icon">
+						<Tick />
+					</span>
 					Enhanced measurement is enabled for this web data stream
 				</p>
 			) }

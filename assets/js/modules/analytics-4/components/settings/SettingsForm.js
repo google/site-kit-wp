@@ -40,6 +40,7 @@ import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
+import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
@@ -62,26 +63,32 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
 			) }
 
-			<ConversionTrackingToggle>
-				{ createInterpolateElement(
-					__(
-						'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<Link
-								href={ conversionTrackingDocumentationURL }
-								external
-								aria-label={ __(
-									'Learn more about conversion tracking',
-									'google-site-kit'
-								) }
-							/>
+			<div className="googlesitekit-settings-module__measurement_toggles">
+				<h4>{ __( 'Improve your measurement', 'google-site-kit' ) }</h4>
+				<SettingsEnhancedMeasurementSwitch
+					hasModuleAccess={ hasModuleAccess }
+				/>
+				<ConversionTrackingToggle>
+					{ createInterpolateElement(
+						__(
+							'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
+							'google-site-kit'
 						),
-					}
-				) }
-			</ConversionTrackingToggle>
+						{
+							a: (
+								<Link
+									href={ conversionTrackingDocumentationURL }
+									external
+									aria-label={ __(
+										'Learn more about conversion tracking',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
+					) }
+				</ConversionTrackingToggle>
+			</div>
 
 			{ isValidAccountID( accountID ) && (
 				<AdsConversionIDSettingsNotice />
