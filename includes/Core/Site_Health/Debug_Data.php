@@ -662,13 +662,13 @@ class Debug_Data {
 			);
 		}
 
-		$key_metrics_status = $key_metrics_settings['isWidgetHidden'] ?
+		$key_metrics_status = isset( $key_metrics_settings['isWidgetHidden'] ) && $key_metrics_settings['isWidgetHidden'] ?
 			__( 'Setup and Disabled', 'google-site-kit' ) :
 			__( 'Setup and Enabled', 'google-site-kit' );
 
-		$key_metrics_source = empty( $key_metrics_settings['widgetSlugs'] ) ?
-			__( 'Tailored Metrics', 'google-site-kit' ) :
-			__( 'Manual Selection', 'google-site-kit' );
+		$key_metrics_source = isset( $key_metrics_settings['widgetSlugs'] ) && count( $key_metrics_settings['widgetSlugs'] ) > 1 ?
+			__( 'Manual Selection', 'google-site-kit' ) :
+			__( 'Tailored Metrics', 'google-site-kit' );
 
 		return array(
 			'key_metrics_status' => array(
