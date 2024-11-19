@@ -155,6 +155,10 @@ export default function UserInputSelectOptions( {
 	const ListComponent = max === 1 ? Radio : Checkbox;
 
 	const items = Object.keys( options ).map( ( optionSlug ) => {
+		if ( 'sell_products_or_service' === optionSlug ) {
+			return false;
+		}
+
 		const props = {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,

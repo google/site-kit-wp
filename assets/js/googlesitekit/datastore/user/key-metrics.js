@@ -289,6 +289,212 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets the Key Metric widget slugs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
+	 */
+	getRegularKeyMetricsWidgetIDs: createRegistrySelector( ( select ) => () => {
+		const postTypes = select( CORE_SITE ).getPostTypes();
+		const hasProductPostType = postTypes.some(
+			( { slug } ) => slug === 'product'
+		);
+
+		return {
+			publish_blog: [
+				KM_ANALYTICS_RETURNING_VISITORS,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+			],
+			publish_news: [
+				KM_ANALYTICS_PAGES_PER_VISIT,
+				KM_ANALYTICS_VISIT_LENGTH,
+				KM_ANALYTICS_VISITS_PER_VISITOR,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
+			monetize_content: [
+				KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			sell_products_or_service: [
+				hasProductPostType
+					? KM_ANALYTICS_POPULAR_PRODUCTS
+					: KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			sell_products: [
+				hasProductPostType
+					? KM_ANALYTICS_POPULAR_PRODUCTS
+					: KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			provide_services: [
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+			],
+			share_portfolio: [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			],
+		};
+	} ),
+
+	/**
+	 * Gets the Conversion Key Reporting Metric widget slugs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
+	 */
+	getConversionTailoredKeyMetricsWidgetIDs: createRegistrySelector(
+		( select ) => ( showConversionTailoredMetricsOverride ) => {
+			const postTypes = select( CORE_SITE ).getPostTypes();
+			const hasProductPostType = postTypes.some(
+				( { slug } ) => slug === 'product'
+			);
+			const keyMetricSettings =
+				select( CORE_USER ).getKeyMetricsSettings();
+
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			const showConversionTailoredMetrics =
+				keyMetricSettings?.includeConversionTailoredMetrics ||
+				showConversionTailoredMetricsOverride;
+
+			return {
+				publish_blog: [
+					KM_ANALYTICS_TOP_CATEGORIES,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					...( showConversionTailoredMetrics
+						? [
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+				],
+				publish_news: [
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					KM_ANALYTICS_TOP_CITIES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					...( showConversionTailoredMetrics
+						? [
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+				],
+				monetize_content: [
+					KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_VISITS_PER_VISITOR,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				sell_products_or_service: [
+					hasProductPostType
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					...( showConversionTailoredMetrics
+						? [
+								...( detectedEvents?.includes( 'purchase' )
+									? [
+											KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+											KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+									  ]
+									: [] ),
+								...( detectedEvents?.includes( 'add_to_cart' )
+									? [
+											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+									  ]
+									: [] ),
+						  ]
+						: [] ),
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				sell_products: [
+					hasProductPostType
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					...( showConversionTailoredMetrics
+						? [
+								...( detectedEvents?.includes( 'purchase' )
+									? [
+											KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+											KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+									  ]
+									: [] ),
+								...( detectedEvents?.includes( 'add_to_cart' )
+									? [
+											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+									  ]
+									: [] ),
+						  ]
+						: [] ),
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				provide_services: [
+					...( showConversionTailoredMetrics
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+				],
+				share_portfolio: [
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					...( showConversionTailoredMetrics
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+			};
+		}
+	),
+
+	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
 	 * @since 1.103.0
@@ -310,161 +516,22 @@ const baseSelectors = {
 					return undefined;
 				}
 
+				const isConversionReportingEnabled = isFeatureEnabled(
+					'conversionReporting'
+				);
 				const purpose =
 					purposeOverride ??
 					userInputSettings?.purpose?.values?.[ 0 ];
 
-				const hasProductPostType = () => {
-					const postTypes = select( CORE_SITE ).getPostTypes();
-					return postTypes.some( ( { slug } ) => slug === 'product' );
-				};
+				const widgetIDs = isConversionReportingEnabled
+					? select(
+							CORE_USER
+					  ).getConversionTailoredKeyMetricsWidgetIDs(
+							showConversionTailoredMetricsOverride
+					  )
+					: select( CORE_USER ).getRegularKeyMetricsWidgetIDs();
 
-				const keyMetricSettings =
-					select( CORE_USER ).getKeyMetricsSettings();
-				const isConversionReportingEnabled = isFeatureEnabled(
-					'conversionReporting'
-				);
-
-				const showConversionTailoredMetrics =
-					keyMetricSettings?.includeConversionTailoredMetrics ||
-					showConversionTailoredMetricsOverride;
-
-				switch ( purpose ) {
-					case 'publish_blog':
-						return isConversionReportingEnabled
-							? [
-									KM_ANALYTICS_TOP_CATEGORIES,
-									KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-									KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-									KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-									KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-									...( showConversionTailoredMetrics
-										? [
-												KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-												KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-										  ]
-										: [] ),
-							  ]
-							: [
-									KM_ANALYTICS_RETURNING_VISITORS,
-									KM_ANALYTICS_NEW_VISITORS,
-									KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-									KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-							  ];
-
-					case 'publish_news':
-						return isConversionReportingEnabled
-							? [
-									KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-									KM_ANALYTICS_POPULAR_AUTHORS,
-									KM_ANALYTICS_TOP_CITIES,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-									KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-									KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-									...( showConversionTailoredMetrics
-										? [
-												KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-												KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-										  ]
-										: [] ),
-							  ]
-							: [
-									KM_ANALYTICS_PAGES_PER_VISIT,
-									KM_ANALYTICS_VISIT_LENGTH,
-									KM_ANALYTICS_VISITS_PER_VISITOR,
-									KM_ANALYTICS_MOST_ENGAGING_PAGES,
-							  ];
-					case 'monetize_content':
-						return isConversionReportingEnabled
-							? [
-									KM_ANALYTICS_MOST_ENGAGING_PAGES,
-									KM_ANALYTICS_POPULAR_CONTENT,
-									KM_ANALYTICS_NEW_VISITORS,
-									KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-									KM_ANALYTICS_VISIT_LENGTH,
-									KM_ANALYTICS_VISITS_PER_VISITOR,
-									KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-							  ]
-							: [
-									KM_ANALYTICS_POPULAR_CONTENT,
-									KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-									KM_ANALYTICS_NEW_VISITORS,
-									KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-							  ];
-
-					case 'sell_products_or_service':
-						const detectedEvents =
-							select( MODULES_ANALYTICS_4 ).getDetectedEvents();
-
-						return isConversionReportingEnabled
-							? [
-									hasProductPostType()
-										? KM_ANALYTICS_POPULAR_PRODUCTS
-										: KM_ANALYTICS_POPULAR_CONTENT,
-									...( showConversionTailoredMetrics
-										? [
-												...( detectedEvents?.includes(
-													'purchase'
-												)
-													? [
-															KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-															KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-															KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-													  ]
-													: [] ),
-												...( detectedEvents?.includes(
-													'add_to_cart'
-												)
-													? [
-															KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-													  ]
-													: [] ),
-										  ]
-										: [] ),
-									KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-									KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-							  ]
-							: [
-									hasProductPostType()
-										? KM_ANALYTICS_POPULAR_PRODUCTS
-										: KM_ANALYTICS_POPULAR_CONTENT,
-									KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-									KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-							  ];
-
-					case 'share_portfolio':
-						return isConversionReportingEnabled
-							? [
-									...( showConversionTailoredMetrics
-										? [
-												KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-										  ]
-										: [] ),
-									KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-									KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-									KM_ANALYTICS_POPULAR_AUTHORS,
-									...( showConversionTailoredMetrics
-										? [
-												KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-												KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-										  ]
-										: [] ),
-									KM_ANALYTICS_POPULAR_CONTENT,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-							  ]
-							: [
-									KM_ANALYTICS_NEW_VISITORS,
-									KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-									KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-									KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-							  ];
-					default:
-						return [];
-				}
+				return widgetIDs[ purpose ] || [];
 			}
 	),
 	/* eslint-enable complexity */
