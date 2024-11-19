@@ -28,6 +28,7 @@ import CustomDimensionsNotice from './CustomDimensionsNotice';
 import Header from './Header';
 import Footer from './Footer';
 import MetricItems from './MetricItems';
+import KeyMetricsError from './KeyMetricsError';
 
 export default function PanelContent( {
 	isOpen = false,
@@ -44,6 +45,7 @@ export default function PanelContent( {
 			{ showHeader && <Header closePanel={ closePanel } /> }
 			<MetricItems savedMetrics={ savedViewableMetrics } />
 			<CustomDimensionsNotice />
+			<KeyMetricsError savedMetrics={ savedViewableMetrics } />
 			<Footer
 				isOpen={ isOpen }
 				closePanel={ closePanel }
