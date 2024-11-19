@@ -360,8 +360,8 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */
 	getConversionTailoredKeyMetricsWidgetIDs: createRegistrySelector(
-		( select ) => ( showConversionTailoredMetricsOverride ) => {
-			const postTypes = select( CORE_SITE ).getPostTypes();
+		( select ) => ( state, showConversionTailoredMetricsOverride ) => {
+			const postTypes = select( CORE_SITE ).getPostTypes() ?? [];
 			const hasProductPostType = postTypes.some(
 				( { slug } ) => slug === 'product'
 			);
