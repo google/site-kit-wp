@@ -35,7 +35,9 @@ export default function PanelContent( {
 	savedViewableMetrics,
 	showHeader = true,
 } ) {
-	const [ setIsNavigatingToOAuthURL ] = useState( false );
+	// eslint-disable-next-line
+	const [ isNavigatingToOAuthURL, setIsNavigatingToOAuthURL ] =
+		useState( false ); //eslint:ignore
 
 	return (
 		<Fragment>
