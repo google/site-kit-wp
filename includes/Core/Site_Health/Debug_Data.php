@@ -197,6 +197,7 @@ class Debug_Data {
 		$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
 		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
+		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
 
 		$fields = array_filter(
 			array_merge(
