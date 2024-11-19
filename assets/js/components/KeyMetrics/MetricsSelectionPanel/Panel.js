@@ -38,10 +38,7 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '../constants';
-import CustomDimensionsNotice from './CustomDimensionsNotice';
-import Header from './Header';
-import Footer from './Footer';
-import MetricItems from './MetricItems';
+import PanelContent from './PanelContent';
 import SelectionPanel from '../../SelectionPanel';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
@@ -81,8 +78,9 @@ export default function Panel() {
 		}
 	}, [ setValue, isOpen ] );
 
+	// eslint-disable-next-line
 	const [ isNavigatingToOAuthURL, setIsNavigatingToOAuthURL ] =
-		useState( false );
+		useState( false ); //eslint:ignore
 
 	return (
 		<SelectionPanel
@@ -94,16 +92,10 @@ export default function Panel() {
 					isConversionReportingEnabled,
 			} ) }
 		>
-			<Header closePanel={ closePanel } />
-			<MetricItems savedMetrics={ savedViewableMetrics } />
-			<CustomDimensionsNotice />
-			<Footer
+			<PanelContent
 				isOpen={ isOpen }
 				closePanel={ closePanel }
-				savedMetrics={ savedViewableMetrics }
-				onNavigationToOAuthURL={ () => {
-					setIsNavigatingToOAuthURL( true );
-				} }
+				savedViewableMetrics={ savedViewableMetrics }
 			/>
 		</SelectionPanel>
 	);
