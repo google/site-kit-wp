@@ -289,12 +289,14 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 	}
 
 	public function provider_fpm_server_requirement_status_data() {
+		$measurement_health_check_url = plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1';
+
 		return array(
 			'FPS service healthy, proxy script healthy'   => array(
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => true,
-						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => true,
+						$measurement_health_check_url => true,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => true,
@@ -306,7 +308,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => true,
-						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => false,
+						$measurement_health_check_url => false,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => true,
@@ -318,7 +320,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => false,
-						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => true,
+						$measurement_health_check_url => true,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => false,
@@ -330,7 +332,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 				array(
 					'endpoint_responses' => array(
 						'https://g-1234.fps.goog/mpath/healthy' => false,
-						plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1' => false,
+						$measurement_health_check_url => false,
 					),
 					'expected_settings'  => array(
 						'isFPMHealthy'          => false,
