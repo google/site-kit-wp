@@ -29,17 +29,26 @@ import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
+import {
+	EFFECTIVE_SELECTION,
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+} from '../constants';
 import {
 	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
 
 function Template() {
 	const savedViewableMetrics = useSelect( ( select ) => {
@@ -86,6 +95,7 @@ function Template() {
 				allMetricItems={ allMetricItems }
 			/>
 			<CustomDimensionsNotice />
+			<KeyMetricsError savedMetrics={ savedViewableMetrics } />
 			<Footer
 				isOpen
 				closePanel={ () => null }
@@ -98,20 +108,46 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.parameters = {
+Default.args = {
 	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
 	label: 'Components/KeyMetrics/ChipTabGroup/default',
 };
 
+export const WithError = Template.bind( {} );
+WithError.storyName = 'With Error';
+WithError.args = {
+	setupRegistry: ( registry ) => {
+		const savedKeyMetrics = [ KM_ANALYTICS_VISITS_PER_VISITOR ];
+		const selectedMetrics = [
+			KM_ANALYTICS_VISITS_PER_VISITOR,
+			KM_ANALYTICS_VISIT_LENGTH,
+			KM_ANALYTICS_NEW_VISITORS,
+		];
+
+		provideKeyMetrics( registry, { widgetSlugs: savedKeyMetrics } );
+
+		registry.dispatch( CORE_FORMS ).setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: savedKeyMetrics,
+			[ EFFECTIVE_SELECTION ]: selectedMetrics,
+		} );
+	},
+	features: [ 'conversionReporting' ],
+};
+WithError.scenario = {
+	label: 'Components/KeyMetrics/ChipTabGroup/WithError',
+};
+
 export default {
 	title: 'Key Metrics/ChipTabGroup',
 	component: SelectionPanel,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserAuthentication( registry );
+
+				provideSiteInfo( registry );
 
 				provideModules( registry, [
 					{
@@ -137,6 +173,8 @@ export default {
 				const savedKeyMetrics = [
 					KM_ANALYTICS_VISITS_PER_VISITOR,
 					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				];
 
 				provideKeyMetrics( registry, { widgetSlugs: savedKeyMetrics } );
@@ -145,13 +183,23 @@ export default {
 					.dispatch( CORE_FORMS )
 					.setValues( KEY_METRICS_SELECTION_FORM, {
 						[ KEY_METRICS_SELECTED ]: savedKeyMetrics,
+						[ EFFECTIVE_SELECTION ]: savedKeyMetrics,
 					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'contact', 'purchase' ] );
+
+				// Call story-specific setup.
+				if ( args && args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (
 				<WithRegistrySetup
 					func={ setupRegistry }
-					features={ parameters.features || [] }
+					features={ args.features || [] }
 				>
 					<Story />
 				</WithRegistrySetup>
