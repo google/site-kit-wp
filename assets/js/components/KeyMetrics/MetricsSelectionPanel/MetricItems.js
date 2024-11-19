@@ -35,11 +35,14 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import MetricItem from './MetricItem';
-import { SelectionPanelItems } from '../../SelectionPanel';
 import useViewOnly from '../../../hooks/useViewOnly';
+import { useFeature } from '../../../hooks/useFeature';
+import KeyMetricsSelectionPanelItems from './SelectionPanelItems';
+import { SelectionPanelItems } from '../../SelectionPanel';
 
 export default function MetricItems( { savedMetrics } ) {
 	const isViewOnlyDashboard = useViewOnly();
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const { isKeyMetricAvailable } = useSelect( ( select ) =>
 		select( CORE_USER )
@@ -109,6 +112,20 @@ export default function MetricItems( { savedMetrics } ) {
 			return ! savedMetricSlugs.includes( metricSlug );
 		} )
 		.reduce( metricsListReducer, {} );
+
+	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
+		metricsListReducer,
+		{}
+	);
+
+	if ( isConversionReportingEnabled ) {
+		return (
+			<KeyMetricsSelectionPanelItems
+				savedItemSlugs={ savedMetrics }
+				allMetricItems={ allMetricItems }
+			/>
+		);
+	}
 
 	return (
 		<SelectionPanelItems
