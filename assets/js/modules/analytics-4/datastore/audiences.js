@@ -198,17 +198,6 @@ const baseActions = {
 			return { response: availableAudiences, error };
 		}
 
-		const {
-			response: availableCustomDimensions,
-			error: syncDimensionsError,
-		} = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableCustomDimensions()
-		);
-
-		if ( syncDimensionsError ) {
-			return { response: availableCustomDimensions, error };
-		}
-
 		// Remove any configuredAudiences that are no longer available in availableAudiences.
 		const configuredAudiences =
 			select( CORE_USER ).getConfiguredAudiences();
@@ -398,6 +387,14 @@ const baseActions = {
 
 		if ( syncError ) {
 			return { error: syncError };
+		}
+
+		const { error: syncDimensionsError } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableCustomDimensions()
+		);
+
+		if ( syncDimensionsError ) {
+			return { error: syncDimensionsError };
 		}
 
 		const configuredAudiences = [];

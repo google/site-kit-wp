@@ -71,9 +71,6 @@ describe( 'modules/analytics-4 audiences', () => {
 	const expirableItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
-	const createCustomDimensionEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-	);
 
 	const syncAvailableCustomDimensionsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
@@ -223,16 +220,10 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					availableAudiences: [],
-					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 				} );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
@@ -250,11 +241,6 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
@@ -313,11 +299,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
 				fetchMock.get( audienceSettingsEndpoint, {
 					body: {
 						data: {
@@ -353,11 +334,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
 				const settings = {
 					configuredAudiences: availableAudiencesFixture.reduce(
 						( acc, { name } ) => [ ...acc, name ],
@@ -374,7 +350,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncAvailableAudiences();
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -420,11 +396,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
 				fetchMock.getOnce( audienceSettingsEndpoint, {
 					body: {
 						data: {
@@ -443,7 +414,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -473,11 +444,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
 				fetchMock.getOnce( audienceSettingsEndpoint, {
 					body: {
 						data: {
@@ -497,7 +463,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched(
 					syncAvailableAudiencesEndpoint
 				);
@@ -650,7 +616,6 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
-					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
 				} );
@@ -672,6 +637,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
@@ -735,6 +705,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
@@ -774,116 +749,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
-
-				await waitFor( () =>
-					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
-				);
-			} );
-
-			it( 'should create the custom dimension if it does not exist while enabling groups', async () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: availableUserAudiences,
-					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
-					availableCustomDimensions: [],
-					propertyID: testPropertyID,
-				} );
-
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( audienceSettingsEndpoint, {
-					body: {
-						configuredAudiences: [],
-						isAudienceSegmentationWidgetHidden,
-					},
-					status: 200,
-				} );
-
-				fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
-					body: [
-						CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-					],
-					status: 200,
-				} );
-
-				fetchMock.postOnce( createCustomDimensionEndpoint, {
-					body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-					status: 200,
-				} );
-
-				muteFetch( expirableItemEndpoint );
-
-				const userAudience = availableAudiencesFixture[ 4 ];
-
-				const options = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiencesUserCountReportOptions( [ userAudience ], {
-						startDate,
-						endDate: referenceDate,
-					} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetReport( {}, { options } );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getReport', [ options ] );
-
-				const availableDimensions = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAvailableCustomDimensions();
-
-				// Ensure the custom dimension is not available.
-				expect( availableDimensions ).not.toContain(
-					'googlesitekit_post_type'
-				);
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.enableAudienceGroup();
-
-				expect( fetchMock ).toHaveFetchedTimes(
-					1,
-					syncAvailableAudiencesEndpoint
-				);
-
-				expect( fetchMock ).toHaveFetchedTimes(
-					1,
-					createCustomDimensionEndpoint,
-					{
-						body: {
-							data: {
-								propertyID: testPropertyID,
-								customDimension:
-									CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-							},
-						},
-					}
-				);
-
-				expect( fetchMock ).toHaveFetchedTimes(
-					1,
-					syncAvailableCustomDimensionsEndpoint
-				);
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAvailableCustomDimensions()
-				).toEqual( [
-					CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-				] );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isCustomDimensionGatheringData(
-							'googlesitekit_post_type'
-						)
-				).toBe( true );
 
 				await waitFor( () =>
 					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
@@ -940,6 +805,11 @@ describe( 'modules/analytics-4 audiences', () => {
 				) => {
 					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 						body: availableUserAudiences,
+						status: 200,
+					} );
+
+					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+						body: [ 'googlesitekit_post_type' ],
 						status: 200,
 					} );
 
@@ -1045,6 +915,11 @@ describe( 'modules/analytics-4 audiences', () => {
 							...availableAudiencesFixture,
 							...availableUserAudiences.slice( 1 ),
 						],
+						status: 200,
+					} );
+
+					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+						body: [ 'googlesitekit_post_type' ],
 						status: 200,
 					} );
 
@@ -1306,6 +1181,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions( [ userAudience ], {
@@ -1372,6 +1252,11 @@ describe( 'modules/analytics-4 audiences', () => {
 						...availableAudiencesFixture,
 						...availableUserAudiences.slice( 1 ),
 					],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 
@@ -1449,6 +1334,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				} );
+
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
 						configuredAudiences,
@@ -1480,6 +1370,10 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			describe( 'custom dimension handling', () => {
+				const createCustomDimensionEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				);
+
 				beforeEach( () => {
 					provideUserAuthentication( registry );
 					provideUserCapabilities( registry );
@@ -1587,6 +1481,12 @@ describe( 'modules/analytics-4 audiences', () => {
 								'googlesitekit_post_type'
 							)
 					).toBe( true );
+
+					await waitFor( () =>
+						expect( fetchMock ).toHaveFetched(
+							surveyTriggerEndpoint
+						)
+					);
 				} );
 			} );
 
@@ -1596,6 +1496,13 @@ describe( 'modules/analytics-4 audiences', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
+
+				beforeEach( () => {
+					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+						body: [ 'googlesitekit_post_type' ],
+						status: 200,
+					} );
+				} );
 
 				it( 'should return and dispatch an error if syncing available audiences request fails', async () => {
 					fetchMock.post( syncAvailableAudiencesEndpoint, {
@@ -1762,11 +1669,6 @@ describe( 'modules/analytics-4 audiences', () => {
 							},
 						],
 					];
-
-					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-						body: [ 'googlesitekit_post_type' ],
-						status: 200,
-					} );
 
 					fetchMock.post(
 						{
@@ -2060,6 +1962,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableAudiences: null,
+					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
 				} );
@@ -2071,11 +1974,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
 				} );
 			} );
 
@@ -2553,11 +2451,6 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
 					status: 200,
 				} );
 

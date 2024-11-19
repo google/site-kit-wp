@@ -661,6 +661,16 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				body: audiencesFixture,
 			} );
 
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				),
+				{
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				}
+			);
+
 			const settingsBody = {
 				configuredAudiences: [
 					audiencesFixture[ 2 ].name,
@@ -836,6 +846,16 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				status: 200,
 				body: audiencesFixture,
 			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				),
+				{
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				}
+			);
 
 			const settingsBody = {
 				configuredAudiences: [
