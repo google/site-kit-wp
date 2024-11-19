@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -635,6 +637,46 @@ class Debug_Data {
 			'active_conversion_event_providers' => array(
 				'label' => __( 'Active conversion event providers', 'google-site-kit' ),
 				'value' => $value,
+			),
+		);
+	}
+
+	/**
+	 * Gets the key metrics status fields.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_key_metrics_fields() {
+		$is_setup_complete    = ( new Key_Metrics_Setup_Completed_By( $this->options ) )->get();
+		$key_metrics_settings = ( new Key_Metrics_Settings( $this->user_options ) )->get();
+
+		if ( ! $is_setup_complete ) {
+			return array(
+				'key_metrics_status' => array(
+					'label' => __( 'Key Metrics Status', 'google-site-kit' ),
+					'value' => __( 'Not setup', 'google-site-kit' ),
+				),
+			);
+		}
+
+		$key_metrics_status = $key_metrics_settings['isWidgetHidden'] ?
+			__( 'Setup and Disabled', 'google-site-kit' ) :
+			__( 'Setup and Enabled', 'google-site-kit' );
+
+		$key_metrics_source = empty( $key_metrics_settings['widgetSlugs'] ) ?
+			__( 'Tailored Metrics', 'google-site-kit' ) :
+			__( 'Manual Selection', 'google-site-kit' );
+
+		return array(
+			'key_metrics_status' => array(
+				'label' => __( 'Key Metrics Status', 'google-site-kit' ),
+				'value' => $key_metrics_status,
+			),
+			'key_metrics_source' => array(
+				'label' => __( 'Key Metrics Source', 'google-site-kit' ),
+				'value' => $key_metrics_source,
 			),
 		);
 	}
