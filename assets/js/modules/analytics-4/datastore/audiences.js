@@ -192,9 +192,7 @@ const baseActions = {
 		}
 
 		const { response: availableAudiences, error } =
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 
 		if ( error ) {
 			return { response: availableAudiences, error };
@@ -385,7 +383,9 @@ const baseActions = {
 		const { dispatch, select, resolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
+			);
 
 		if ( syncError ) {
 			return { error: syncError };
