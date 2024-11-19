@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -47,6 +47,8 @@ export default function FullScreenMetricSelectionApp() {
 	const conversionReportingEnabled = isFeatureEnabled(
 		'conversionReporting'
 	);
+
+	const [ canRender, setCanRender ] = useState( true );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -79,29 +81,35 @@ export default function FullScreenMetricSelectionApp() {
 		return metrics.filter( isKeyMetricAvailable );
 	} );
 
-	let renderPage = false;
-
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
 	useEffect( () => {
-		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
-		} );
-
 		if (
 			( ! conversionReportingEnabled || isKeyMetricsSetupCompleted ) &&
 			mainDashboardURL
 		) {
 			navigateTo( mainDashboardURL );
+			setCanRender( false );
 		}
+	}, [
+		conversionReportingEnabled,
+		mainDashboardURL,
+		navigateTo,
+		isKeyMetricsSetupCompleted,
+		setCanRender,
+	] );
 
-		renderPage = true;
-	}, [ isKeyMetricsSetupCompleted, renderPage, savedViewableMetrics ] );
+	useEffect( () => {
+		setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
+		} );
+	}, [ savedViewableMetrics, setValues ] );
 
 	return (
-		renderPage && (
+		undefined !== isKeyMetricsSetupCompleted &&
+		canRender && (
 			<Fragment>
 				<Header>
 					<HelpMenu />
