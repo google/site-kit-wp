@@ -666,6 +666,7 @@ class Debug_Data {
 			__( 'Setup and Disabled', 'google-site-kit' ) :
 			__( 'Setup and Enabled', 'google-site-kit' );
 
+		// A minimum of 2 key metrics need to be saved to prevent "default" tailored metrics to render.
 		$key_metrics_source = isset( $key_metrics_settings['widgetSlugs'] ) && count( $key_metrics_settings['widgetSlugs'] ) > 1 ?
 			__( 'Manual Selection', 'google-site-kit' ) :
 			__( 'Tailored Metrics', 'google-site-kit' );
