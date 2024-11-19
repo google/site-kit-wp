@@ -155,7 +155,7 @@ class Debug_DataTest extends TestCase {
 		$this->assertEquals( 'Not setup', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
 	}
 
-	public function test_key_metrics_fields__setup_and_enabled() {
+	public function test_key_metrics_fields__setup_and_enabled_tailored() {
 		update_option( Key_Metrics_Setup_Completed_By::OPTION, true );
 
 		remove_all_filters( 'debug_information' );
@@ -165,6 +165,7 @@ class Debug_DataTest extends TestCase {
 		$info = apply_filters( 'debug_information', array() );
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+		$this->assertEquals( 'Tailored Metrics', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
 	}
 
 	public function test_key_metrics_fields__setup_and_disabled() {
