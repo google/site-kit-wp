@@ -123,7 +123,7 @@ function optOutOfEventTracking() {
 function removePageEvents() {
 	while ( pageEvents.length ) {
 		const [ eventName, handler ] = pageEvents.pop();
-		page.removeListener( eventName, handler );
+		page.off( eventName, handler );
 	}
 }
 
