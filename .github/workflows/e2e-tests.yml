@@ -134,6 +134,9 @@ jobs:
           node-version-file: './tests/e2e/.nvmrc'
           cache: 'npm'
 
+      - name: npm install
+        run: npm ci
+
       - name: Run the tests
         run: cd ./tests/e2e && npm run test:e2e
 
