@@ -133,4 +133,58 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 		$this->settings->set( $input );
 		$this->assertEqualSetsWithIndex( $expected, $this->settings->get() );
 	}
+
+	public function test_merge() {
+		$original_settings = array(
+			'isEnabled'             => false,
+			'isFPMHealthy'          => false,
+			'isScriptAccessEnabled' => false,
+		);
+
+		$changed_settings = array(
+			'isEnabled'             => true,
+			'isFPMHealthy'          => true,
+			'isScriptAccessEnabled' => true,
+		);
+
+		// Make sure settings can be updated even without having them set initially.
+		$this->settings->merge( $original_settings );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+
+		// Make sure invalid keys aren't set.
+		$this->settings->merge( array( 'test_key' => 'test_value' ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+
+		// Make sure that we can update settings partially.
+		$this->settings->set( $original_settings );
+		$this->settings->merge( array( 'isFPMHealthy' => true ) );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'isEnabled'             => false,
+				'isFPMHealthy'          => true,
+				'isScriptAccessEnabled' => false,
+			),
+			$this->settings->get()
+		);
+
+		// Make sure that we can update all settings at once.
+		$this->settings->set( $original_settings );
+		$this->settings->merge( $changed_settings );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->settings->get() );
+
+		// Make sure that we can't set null for the isFPMHealthy property.
+		$this->settings->set( $original_settings );
+		$this->settings->merge( array( 'isFPMHealthy' => null ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+
+		// Make sure that we can't set null for the isScriptAccessEnabled property.
+		$this->settings->set( $original_settings );
+		$this->settings->merge( array( 'isScriptAccessEnabled' => null ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+
+		// Make sure that we can't set null for the isEnabled property.
+		$this->settings->set( $original_settings );
+		$this->settings->merge( array( 'isEnabled' => null ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+	}
 }

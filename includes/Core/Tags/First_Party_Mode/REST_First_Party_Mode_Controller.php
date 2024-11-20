@@ -127,6 +127,52 @@ class REST_First_Party_Mode_Controller {
 					),
 				)
 			),
+
+			new REST_Route(
+				'core/site/data/fpm-server-requirement-status',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$is_fpm_healthy = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
+							$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+
+							$this->first_party_mode_settings->merge(
+								array(
+									'isFPMHealthy' => $is_fpm_healthy,
+									'isScriptAccessEnabled' => $is_script_access_enabled,
+								)
+							);
+
+							return new WP_REST_Response( $this->first_party_mode_settings->get() );
+						},
+						'permission_callback' => $can_manage_options,
+					),
+				)
+			),
 		);
+	}
+
+	/**
+	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $endpoint The endpoint to check.
+	 * @return bool True if the endpoint is healthy, false otherwise.
+	 */
+	protected function is_endpoint_healthy( $endpoint ) {
+		try {
+			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$response = file_get_contents( $endpoint );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+
+		if ( 'ok' !== $response ) {
+			return false;
+		}
+
+		return strpos( $http_response_header[0], '200 OK' ) !== false;
 	}
 }
