@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
-import ACRSubtleNotification from '../KeyMetrics/ACRSubtleNotification';
+import ConversionReportingSettingsSubtleNotification from '../KeyMetrics/ConversionReportingSettingsSubtleNotification';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
 import UserInputPreview from '../user-input/UserInputPreview';
 import Layout from '../layout/Layout';
@@ -121,7 +121,7 @@ export default function SettingsCardKeyMetrics() {
 						<SettingsKeyMetrics />
 						{ conversionReportingEnabled && (
 							<Fragment>
-								<ACRSubtleNotification />
+								<ConversionReportingSettingsSubtleNotification />
 								{ inView && (
 									<SurveyViewTrigger
 										triggerID="view_kmw_setup_cta"

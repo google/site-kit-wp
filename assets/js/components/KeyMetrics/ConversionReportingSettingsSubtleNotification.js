@@ -1,5 +1,5 @@
 /**
- * ACRSubtleNotification component.
+ * ConversionReportingSettingsSubtleNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -31,7 +31,7 @@ import StarFill from '../../../svg/icons/star-fill.svg';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
-export default function ACRSubtleNotification() {
+export default function ConversionReportingSettingsSubtleNotification() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
 	const userInputURL = useSelect( ( select ) =>

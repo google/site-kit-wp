@@ -23,7 +23,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
@@ -32,6 +35,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use WP_Error;
+use WP_User;
 
 /**
  * Class representing the Sign in With Google module.
@@ -53,14 +57,20 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const MODULE_SLUG = 'sign-in-with-google';
 
 	/**
-	 * The name for the Sign in with Google callback action.
+	 * Authentication action name.
 	 */
 	const ACTION_AUTH = 'googlesitekit_auth';
+
+	/**
+	 * Disconnect action name.
+	 */
+	const ACTION_DISCONNECT = 'googlesitekit_auth_disconnect';
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
+	 * @since n.e.x.t Add functionality to allow users to disconnect their own account and admins to disconnect any user.
 	 */
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
@@ -77,7 +87,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			}
 		);
 
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, fn () => $this->handle_disconnect_user() );
+
 		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
+
+		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
+		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
+
+		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
 	}
 
 	/**
@@ -219,6 +236,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.139.0
 	 */
 	private function render_signin_button() {
+		global $wp;
+		$is_woo_commerce_login = 'my-account' === $wp->request;
+
 		$settings = $this->get_settings()->get();
 		if ( ! $settings['clientID'] ) {
 			return;
@@ -248,7 +268,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <script>
 ( () => {
 	const parent = document.createElement( 'div' );
+<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
+		<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
 		try {
@@ -274,13 +298,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 <?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	google.accounts.id.prompt();
-<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 <?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	const expires = new Date();
 	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
 	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 </script>
 		<?php
@@ -292,15 +316,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @since 1.140.0
 	 *
-	 * @return array
+	 * @return int
 	 */
 	public function get_authenticated_users_count() {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		return $wpdb->query(
+		return (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT count(id) FROM $wpdb->usermeta WHERE meta_key = %s",
+				"SELECT COUNT( user_id ) FROM $wpdb->usermeta WHERE meta_key = %s",
 				$this->user_options->get_meta_key( Hashed_User_ID::OPTION )
 			)
 		);
@@ -316,9 +340,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		// TODO Uncomment and remove fixed value after #9339 is merged.
-		// $authenticated_user_count = $this->get_authenticated_users_count();.
-		$authenticated_user_count = 1;
+		$authenticated_user_count = $this->get_authenticated_users_count();
 
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
@@ -427,5 +449,100 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		return Module_Tag_Matchers::NO_TAG_FOUND;
+	}
+
+	/**
+	 * Returns the disconnect URL for the specified user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id WordPress User ID.
+	 */
+	public static function disconnect_url( $user_id ) {
+		return add_query_arg(
+			array(
+				'action'  => self::ACTION_DISCONNECT,
+				'nonce'   => wp_create_nonce( self::ACTION_DISCONNECT . '-' . $user_id ),
+				'user_id' => $user_id,
+			),
+			admin_url( 'index.php' )
+		);
+	}
+
+	/**
+	 * Handles the disconnect action.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function handle_disconnect_user() {
+		$input   = $this->context->input();
+		$nonce   = $input->filter( INPUT_GET, 'nonce' );
+		$user_id = (int) $input->filter( INPUT_GET, 'user_id' );
+		$action  = self::ACTION_DISCONNECT . '-' . $user_id;
+
+		if ( ! wp_verify_nonce( $nonce, $action ) ) {
+			$this->authentication->invalid_nonce_error( $action );
+		}
+
+		// Only allow this action for admins or users own setting.
+		if ( current_user_can( 'edit_user', $user_id ) ) {
+			$hashed_user_id = new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
+			$hashed_user_id->delete();
+			wp_safe_redirect( add_query_arg( 'updated', true, get_edit_user_link( $user_id ) ) );
+			exit;
+		}
+
+		wp_safe_redirect( get_edit_user_link( $user_id ) );
+		exit;
+	}
+
+	/**
+	 * Displays a disconnect button on user profile pages.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user WordPress user object.
+	 */
+	private function render_disconnect_profile( WP_User $user ) {
+		if ( ! current_user_can( 'edit_user', $user->ID ) ) {
+			return;
+		}
+
+		$hashed_user_id         = new Hashed_User_ID( new User_Options( $this->context, $user->ID ) );
+		$current_user_google_id = $hashed_user_id->get();
+
+		// Don't show if the user does not have a Google ID saved in user meta.
+		if ( empty( $current_user_google_id ) ) {
+			return;
+		}
+
+		?>
+<div id="googlesitekit-sign-in-with-google-disconnect">
+	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
+	<p>
+		<?php
+		if ( get_current_user_id() === $user->ID ) {
+			esc_html_e(
+				'You can sign in with your Google account.',
+				'google-site-kit'
+			);
+		} else {
+			esc_html_e(
+				'This user can sign in with their Google account.',
+				'google-site-kit'
+			);
+		}
+		?>
+	</p>
+	<p>
+		<a
+			class="button button-secondary"
+			href="<?php echo esc_url( self::disconnect_url( $user->ID ) ); ?>"
+		>
+			<?php esc_html_e( 'Disconnect Google Account', 'google-site-kit' ); ?>
+		</a>
+	</p>
+</div>
+		<?php
 	}
 }

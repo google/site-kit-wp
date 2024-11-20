@@ -86,6 +86,11 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 			'https://search.google.com/search-console/foo-path',
 			'https://search.google.com/search-console/foo-path?bar=baz',
 		],
+		'modules/sign-in-with-google': [
+			'https://developers.google.com/identity/site-kit',
+			'https://developers.google.com/identity/site-kit#/foo-path',
+			'https://developers.google.com/identity/site-kit?bar=baz#/foo-path',
+		],
 		'modules/tagmanager': [
 			'https://tagmanager.google.com/',
 			'https://tagmanager.google.com/#/foo-path',
