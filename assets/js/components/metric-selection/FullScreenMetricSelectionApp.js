@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -47,8 +47,6 @@ export default function FullScreenMetricSelectionApp() {
 	const conversionReportingEnabled = isFeatureEnabled(
 		'conversionReporting'
 	);
-
-	const [ canRender, setCanRender ] = useState( true );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -91,14 +89,12 @@ export default function FullScreenMetricSelectionApp() {
 			mainDashboardURL
 		) {
 			navigateTo( mainDashboardURL );
-			setCanRender( false );
 		}
 	}, [
 		conversionReportingEnabled,
 		mainDashboardURL,
 		navigateTo,
 		isKeyMetricsSetupCompleted,
-		setCanRender,
 	] );
 
 	useEffect( () => {
@@ -108,28 +104,25 @@ export default function FullScreenMetricSelectionApp() {
 	}, [ savedViewableMetrics, setValues ] );
 
 	return (
-		undefined !== isKeyMetricsSetupCompleted &&
-		canRender && (
-			<Fragment>
-				<Header>
-					<HelpMenu />
-				</Header>
-				<div className="googlesitekit-user-input">
-					<div className="googlesitekit-module-page">
-						{ ! hasFinishedGettingInputSettings && (
-							<Grid>
-								<Row>
-									<Cell
-										lgSize={ 12 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<ProgressBar />
-									</Cell>
-								</Row>
-							</Grid>
-						) }
-						{ hasFinishedGettingInputSettings && (
+		<Fragment>
+			<Header>
+				<HelpMenu />
+			</Header>
+			<div className="googlesitekit-user-input">
+				<div className="googlesitekit-module-page">
+					{ ( isKeyMetricsSetupCompleted === undefined ||
+						isKeyMetricsSetupCompleted === true ||
+						! hasFinishedGettingInputSettings ) && (
+						<Grid>
+							<Row>
+								<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
+									<ProgressBar />
+								</Cell>
+							</Row>
+						</Grid>
+					) }
+					{ hasFinishedGettingInputSettings &&
+						isKeyMetricsSetupCompleted === false && (
 							<Grid>
 								<Layout rounded>
 									<Grid className="googlesitekit-user-input__header">
@@ -183,9 +176,8 @@ export default function FullScreenMetricSelectionApp() {
 								</Layout>
 							</Grid>
 						) }
-					</div>
 				</div>
-			</Fragment>
-		)
+			</div>
+		</Fragment>
 	);
 }
