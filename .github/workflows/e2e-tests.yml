@@ -131,8 +131,14 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
+      - name: Switch to Node.js 18 (/tests/e2e/.nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: './tests/e2e/.nvmrc'
+          cache: 'npm'
+
       - name: Run the tests
-        run: npm run test:e2e
+        run: cd /tests/e2e && npm run test:e2e
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

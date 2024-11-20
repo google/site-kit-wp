@@ -1,0 +1,24 @@
+{
+	"name": "googlesitekit-e2e",
+	"version": "1.0.0",
+	"private": true,
+	"main": "script.js",
+	"scripts": {
+		"test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./script.js",
+		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
+		"test:e2e:watch": "npm run test:e2e -- --watch",
+		"test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive"
+	},
+	"config": {
+		"puppeteer": {
+			"skip": {
+				"download": true
+			}
+		}
+	},
+	"devDependencies": {
+		"jest": "^29.7.0",
+		"jest-puppeteer": "^10.1.4",
+		"puppeteer": "^23.8.0"
+	}
+}
