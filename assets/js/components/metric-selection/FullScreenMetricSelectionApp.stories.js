@@ -19,24 +19,19 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
-	provideKeyMetrics,
-	provideModules,
+	createTestRegistry,
+	provideKeyMetricsUserInputSettings,
 	provideSiteInfo,
-	provideUserAuthentication,
+	WithTestRegistry,
 } from '../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../KeyMetrics/constants';
-import { provideKeyMetricsWidgetRegistrations } from '../KeyMetrics/test-utils';
+import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import FullScreenMetricsSelectionApp from './FullScreenMetricSelectionApp';
-import fetchMock from 'fetch-mock';
 
 function Template() {
 	return (
-		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+		<ViewContextProvider value={ VIEW_CONTEXT_METRIC_SELECTION }>
 			<FullScreenMetricsSelectionApp />
 		</ViewContextProvider>
 	);
@@ -44,6 +39,9 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	features: [ 'conversionReporting' ],
+};
 Default.scenario = {
 	label: 'KeyMetrics/FullScreenMetricsSelectionPanel',
 };
@@ -52,54 +50,19 @@ export default {
 	title: 'Key Metrics/FullScreenMetricsSelectionApp',
 	component: FullScreenMetricsSelectionApp,
 	decorators: [
-		( Story ) => {
-			global._googlesitekitUserData.isUserInputCompleted = false;
-			fetchMock.getOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/user-input-settings'
-				),
-				{
-					body: {
-						purpose: {
-							values: [],
-						},
-						postFrequency: {
-							scope: 'user',
-							values: [],
-						},
-						goals: {
-							scope: 'user',
-							values: [],
-						},
-					},
-					status: 200,
-				}
-			);
-			const setupRegistry = ( registry ) => {
-				provideUserAuthentication( registry );
-				provideSiteInfo( registry, {
-					postTypes: [ { slug: 'post', label: 'Post' } ],
-				} );
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
+		( Story, { args } ) => {
+			const registry = createTestRegistry();
 
-				provideKeyMetricsWidgetRegistrations( registry, [] );
-				provideKeyMetrics( registry, { widgetSlugs: [] } );
-
-				registry
-					.dispatch( CORE_UI )
-					.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-			};
+			provideKeyMetricsUserInputSettings( registry );
+			provideSiteInfo( registry );
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ args.features || [] }
+				>
 					<Story />
-				</WithRegistrySetup>
+				</WithTestRegistry>
 			);
 		},
 	],
