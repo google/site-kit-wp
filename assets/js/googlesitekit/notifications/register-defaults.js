@@ -150,7 +150,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_error: {
 		Component: SetupErrorNotification,
-		priority: 150,
+		priority: 140,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
