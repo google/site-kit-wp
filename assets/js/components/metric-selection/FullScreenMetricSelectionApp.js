@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { isFeatureEnabled } from '../../features';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -42,11 +41,10 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 } from '../KeyMetrics/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function FullScreenMetricSelectionApp() {
-	const conversionReportingEnabled = isFeatureEnabled(
-		'conversionReporting'
-	);
+	const conversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -56,6 +54,11 @@ export default function FullScreenMetricSelectionApp() {
 	);
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
+		// This needs to be called here to check on its resolution,
+		// as it's called/used by child components of this component,
+		// but we need to call it here to know if it's resolving.
+		//
+		// This is sort of a select side-effect, but it's necessary here.
 		select( CORE_USER ).getUserInputSettings();
 
 		return select( CORE_USER ).hasFinishedResolution(
