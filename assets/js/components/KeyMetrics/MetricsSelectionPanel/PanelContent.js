@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,11 +35,8 @@ export default function PanelContent( {
 	closePanel,
 	savedViewableMetrics,
 	showHeader = true,
+	setIsNavigatingToOAuthURL,
 } ) {
-	// eslint-disable-next-line
-	const [ isNavigatingToOAuthURL, setIsNavigatingToOAuthURL ] =
-		useState( false ); //eslint:ignore
-
 	return (
 		<Fragment>
 			{ showHeader && <Header closePanel={ closePanel } /> }
