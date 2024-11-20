@@ -296,7 +296,7 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */
 	getRegularKeyMetricsWidgetIDs: createRegistrySelector( ( select ) => () => {
-		const postTypes = select( CORE_SITE ).getPostTypes();
+		const postTypes = select( CORE_SITE ).getPostTypes() || [];
 		const hasProductPostType = postTypes.some(
 			( { slug } ) => slug === 'product'
 		);
