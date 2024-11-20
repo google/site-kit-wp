@@ -29,6 +29,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { ACR_SUBTLE_NOTIFICATION_SLUG } from '../KeyMetrics/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
@@ -43,6 +44,8 @@ describe( 'SettingsCardKeyMetrics', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		mockSurveyEndpoints();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
 		muteFetch(
 			new RegExp(

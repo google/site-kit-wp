@@ -91,6 +91,14 @@ describe( 'core/user key metrics', () => {
 		},
 	};
 
+	const coreKeyMetricsResetMetricSelectionEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/reset-key-metrics-selection'
+	);
+	const coreKeyMetricsResetMetricSelectionExpectedResponse = {
+		widgetSlugs: [],
+		isWidgetHidden: false,
+	};
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -404,6 +412,45 @@ describe( 'core/user key metrics', () => {
 					],
 				],
 				[
+					'sell_products',
+					[
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					],
+					[
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+						KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					],
+				],
+				[
+					'provide_services',
+					[
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					],
+					[
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+						KM_ANALYTICS_POPULAR_CONTENT,
+						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					],
+				],
+				[
 					'share_portfolio',
 					[
 						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
@@ -413,10 +460,10 @@ describe( 'core/user key metrics', () => {
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
 					[
-						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 						KM_ANALYTICS_POPULAR_AUTHORS,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 						KM_ANALYTICS_POPULAR_CONTENT,
@@ -431,12 +478,9 @@ describe( 'core/user key metrics', () => {
 					expectedMetricsIncludingConversionTailored
 				) => {
 					enabledFeatures.add( 'conversionReporting' );
-
-					if ( purpose === 'sell_products_or_service' ) {
-						registry
-							.dispatch( MODULES_ANALYTICS_4 )
-							.setDetectedEvents( [ 'add_to_cart', 'purchase' ] );
-					}
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setDetectedEvents( [] );
 
 					registry
 						.dispatch( CORE_USER )
@@ -447,6 +491,21 @@ describe( 'core/user key metrics', () => {
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
 					).toEqual( expectedMetrics );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setDetectedEvents( [ 'contact' ] );
+
+					if (
+						[
+							'sell_products',
+							'sell_products_or_service',
+						].includes( purpose )
+					) {
+						registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.setDetectedEvents( [ 'add_to_cart', 'purchase' ] );
+					}
 
 					// Conversion Tailored Metrics should be included in the list if the
 					// includeConversionTailoredMetrics setting is true.
@@ -507,6 +566,9 @@ describe( 'core/user key metrics', () => {
 				'should return the correct metrics when getAnswerBasedMetrics() is overridden',
 				async ( currentPurpose, purposeOverride, expectedMetrics ) => {
 					enabledFeatures.add( 'conversionReporting' );
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setDetectedEvents( [] );
 
 					provideUserAuthentication( registry );
 					await registry
@@ -722,6 +784,53 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
 				).toBe( false );
+
+				expect( console ).not.toHaveErrored();
+			} );
+		} );
+
+		describe( 'resetKeyMetricsSelection', () => {
+			it( 'should clear widgetSlugs on resetKeyMetricsSelection', async () => {
+				const userID = 123;
+				provideUserInfo( registry, { id: userID } );
+				provideUserAuthentication( registry );
+
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				fetchMock.postOnce(
+					coreKeyMetricsResetMetricSelectionEndpointRegExp,
+					{
+						body: coreKeyMetricsResetMetricSelectionExpectedResponse,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( {
+						widgetSlugs: [
+							KM_ANALYTICS_NEW_VISITORS,
+							KM_ANALYTICS_PAGES_PER_VISIT,
+						],
+						isWidgetHidden: false,
+					} );
+
+				expect( store.getState().keyMetricsSettings ).toMatchObject( {
+					widgetSlugs: [
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_PAGES_PER_VISIT,
+					],
+					isWidgetHidden: false,
+				} );
+
+				await registry.dispatch( CORE_USER ).resetKeyMetricsSelection();
+
+				expect( store.getState().keyMetricsSettings ).toMatchObject( {
+					widgetSlugs: [],
+				} );
 
 				expect( console ).not.toHaveErrored();
 			} );

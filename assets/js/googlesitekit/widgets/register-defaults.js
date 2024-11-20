@@ -41,6 +41,7 @@ import {
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
+import MetricsWidgetSubtitle from '../../components/KeyMetrics/MetricsWidgetSubtitle';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import {
 	AudienceAreaFooter,
@@ -110,10 +111,7 @@ export function registerDefaults( widgetsAPI ) {
 					<KeyMetricsNewBadge />
 				</Fragment>
 			),
-			subtitle: __(
-				'Track progress towards your goals with tailored metrics',
-				'google-site-kit'
-			),
+			subtitle: MetricsWidgetSubtitle,
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 			CTA: ChangeMetricsLink,
@@ -362,7 +360,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
@@ -383,7 +380,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
@@ -405,7 +401,6 @@ export function registerDefaults( widgetsAPI ) {
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
-				modules: [ 'search-console' ],
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
@@ -429,7 +424,6 @@ export function registerDefaults( widgetsAPI ) {
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
-				modules: [ 'search-console' ],
 				hideOnBreakpoints: [ BREAKPOINT_SMALL ],
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();
@@ -454,7 +448,6 @@ export function registerDefaults( widgetsAPI ) {
 				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 				wrapWidget: false,
-				modules: [ 'search-console' ],
 				hideOnBreakpoints: [ BREAKPOINT_SMALL ],
 				isActive: ( select ) => {
 					const keyMetrics = select( CORE_USER ).getKeyMetrics();

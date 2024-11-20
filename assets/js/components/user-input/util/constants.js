@@ -41,6 +41,7 @@ export const USER_INPUT_CURRENTLY_EDITING_KEY =
 	'googlesitekit-user-input-currently-editing';
 
 export const FORM_USER_INPUT_QUESTION_NUMBER = 'user_input_question_number';
+export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
 
 /**
  * Gets available questions for user input settings.
@@ -100,6 +101,8 @@ export function getUserInputAnswers() {
 				'Sell products or services',
 				'google-site-kit'
 			),
+			sell_products: __( 'Sell products', 'google-site-kit' ),
+			provide_services: __( 'Provide services', 'google-site-kit' ),
 			monetize_content: __(
 				'Monetize content (with ads or affiliate links)',
 				'google-site-kit'
@@ -171,6 +174,14 @@ export function getUserInputAnswersDescription() {
 		USER_INPUT_ANSWERS_PURPOSE: {
 			sell_products_or_service: __(
 				'E.g. selling products like devices, apparel, equipment, etc. or offering services like courses, consulting, tutoring, etc.',
+				'google-site-kit'
+			),
+			sell_products: __(
+				'E.g. selling devices, apparel, equipment, etc.',
+				'google-site-kit'
+			),
+			provide_services: __(
+				'E.g. offering courses, consulting, tutoring, etc.',
 				'google-site-kit'
 			),
 			monetize_content: __(

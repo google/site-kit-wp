@@ -49,29 +49,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const keyMetricSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
-
-	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
-		useDispatch( CORE_USER );
-	const { dismissNewConversionReportingEvents } =
-		useDispatch( MODULES_ANALYTICS_4 );
-
-	const handleCTAClick = useCallback( async () => {
-		setIsSaving( true );
-		await setKeyMetricsSetting( 'includeConversionTailoredMetrics', true );
-		await saveKeyMetricsSettings( {
-			widgetSlugs: undefined,
-		} );
-		dismissNewConversionReportingEvents();
-		setIsSaving( false );
-	}, [
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
-		dismissNewConversionReportingEvents,
-	] );
-
-	const onDismiss = useCallback( () => {
-		dismissNewConversionReportingEvents();
-	}, [ dismissNewConversionReportingEvents ] );
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
 
 	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
 	const haveConversionReportingEventsForTailoredMetrics =
@@ -82,9 +62,40 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
 	// and have not been already included, which is determined by includeConversionTailoredMetrics setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
+		! hasUserPickedMetrics?.length &&
 		isUserInputCompleted &&
 		haveConversionReportingEventsForTailoredMetrics &&
 		! keyMetricSettings?.includeConversionTailoredMetrics;
+
+	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
+		useDispatch( CORE_USER );
+	const { dismissNewConversionReportingEvents } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	const handleCTAClick = useCallback( async () => {
+		if ( shouldShowInitialCalloutForTailoredMetrics ) {
+			setIsSaving( true );
+			await setKeyMetricsSetting(
+				'includeConversionTailoredMetrics',
+				true
+			);
+			await saveKeyMetricsSettings( {
+				widgetSlugs: undefined,
+			} );
+			setIsSaving( false );
+		}
+
+		dismissNewConversionReportingEvents();
+	}, [
+		setKeyMetricsSetting,
+		saveKeyMetricsSettings,
+		dismissNewConversionReportingEvents,
+		shouldShowInitialCalloutForTailoredMetrics,
+	] );
+
+	const onDismiss = useCallback( () => {
+		dismissNewConversionReportingEvents();
+	}, [ dismissNewConversionReportingEvents ] );
 
 	if ( ! shouldShowInitialCalloutForTailoredMetrics ) {
 		return <WidgetNull />;
@@ -94,7 +105,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		<Widget noPadding fullWidth>
 			<ConversionReportingDashboardSubtleNotification
 				ctaLabel={ __( 'Add metrics', 'google-site-kit' ) }
-				handleCTAClick={ handleCTAClick }
+				handleCTAClick={ () =>
+					handleCTAClick( shouldShowInitialCalloutForTailoredMetrics )
+				}
 				isSaving={ isSaving }
 				onDismiss={ onDismiss }
 			/>

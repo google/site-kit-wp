@@ -26,13 +26,19 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useRef } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -43,6 +49,7 @@ import {
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_LIST,
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 } from './util/constants';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
@@ -51,6 +58,9 @@ import ErrorNotice from '../ErrorNotice';
 import LoadingWrapper from '../LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
+import Portal from '../Portal';
+import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChangeModal';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function UserInputPreview( props ) {
 	const {
@@ -61,8 +71,12 @@ export default function UserInputPreview( props ) {
 		settingsView = false,
 	} = props;
 	const previewContainer = useRef();
+	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
+	const handleModal = useCallback( () => {
+		toggleIsModalOpen( false );
+	}, [ toggleIsModalOpen ] );
 	const settings = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettings()
+		select( CORE_USER ).getSavedUserInputSettings()
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( settings )
@@ -96,6 +110,53 @@ export default function UserInputPreview( props ) {
 		submitChanges();
 	}, [ hasError, isScreenLoading, submitChanges ] );
 
+	const { saveUserInputSettings } = useDispatch( CORE_USER );
+
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_QUESTION_SNAPSHOT,
+			USER_INPUT_QUESTIONS_PURPOSE
+		)
+	);
+
+	const currentMetrics = useSelect( ( select ) => {
+		if ( savedPurpose === undefined ) {
+			return [];
+		}
+
+		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
+	} );
+
+	const newMetrics = useSelect( ( select ) => {
+		return select( CORE_USER ).getKeyMetrics();
+	} );
+
+	const { resetUserInputSettings } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues: setUIValues } = useDispatch( CORE_UI );
+
+	const openModalIfMetricsChanged = async () => {
+		const differenceInMetrics = newMetrics.filter(
+			( x ) => ! currentMetrics.includes( x )
+		);
+
+		if ( 0 !== differenceInMetrics.length ) {
+			toggleIsModalOpen( true );
+		} else {
+			await saveUserInputSettings();
+
+			if ( savedPurpose?.length ) {
+				await resetUserInputSettings();
+				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+					[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
+				} );
+			}
+			setUIValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
+			} );
+		}
+	};
+
 	useEffect( () => {
 		if (
 			! previewContainer?.current ||
@@ -112,6 +173,28 @@ export default function UserInputPreview( props ) {
 			}, 50 );
 		}
 	}, [ page ] );
+
+	const { setUserInputSetting } = useDispatch( CORE_USER );
+	const currentlyEditingSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+
+	useEffect( () => {
+		const purposeValues = [ ...( settings?.purpose?.values || [] ) ];
+		if (
+			USER_INPUT_QUESTIONS_PURPOSE === currentlyEditingSlug &&
+			purposeValues.includes( 'sell_products_or_service' )
+		) {
+			setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, [
+				'sell_products',
+			] );
+			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+				[ USER_INPUT_QUESTIONS_PURPOSE ]: [
+					'sell_products_or_service',
+				],
+			} );
+		}
+	}, [ settings, setUserInputSetting, currentlyEditingSlug, setValues ] );
 
 	return (
 		<div
@@ -152,6 +235,7 @@ export default function UserInputPreview( props ) {
 					options={ USER_INPUT_ANSWERS_PURPOSE }
 					loading={ loading }
 					settingsView={ settingsView }
+					onChange={ openModalIfMetricsChanged }
 				/>
 
 				<UserInputPreviewGroup
@@ -213,6 +297,12 @@ export default function UserInputPreview( props ) {
 					</div>
 				</Fragment>
 			) }
+			<Portal>
+				<ConfirmSitePurposeChangeModal
+					dialogActive={ isModalOpen }
+					handleDialog={ handleModal }
+				/>
+			</Portal>
 		</div>
 	);
 }

@@ -31,6 +31,7 @@ import {
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
+import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
@@ -43,9 +44,7 @@ export function registerModule( modules ) {
 	modules.registerModule( 'sign-in-with-google', {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
-		SettingsViewComponent() {
-			return null;
-		},
+		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
 		onCompleteSetup: async ( registry, finishSetup ) => {
 			const { submitChanges } = registry.dispatch(

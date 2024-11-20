@@ -184,6 +184,8 @@
 				letter-spacing: $ls-s;
 				line-height: $lh-body-md;
 				margin: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 
 			.googlesitekit-settings-module__meta-item-data--wrap {

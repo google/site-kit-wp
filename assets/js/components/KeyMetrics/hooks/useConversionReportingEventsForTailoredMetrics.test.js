@@ -38,6 +38,8 @@ describe( 'useConversionReportingEventsForTailoredMetrics', () => {
 		provideUserAuthentication( registry );
 		provideKeyMetricsUserInputSettings( registry );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 			purpose: {
 				values: [ 'publish_blog' ],
