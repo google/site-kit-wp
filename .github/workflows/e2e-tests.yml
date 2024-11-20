@@ -136,15 +136,14 @@ jobs:
         with:
           node-version-file: './tests/e2e/.nvmrc'
           cache: 'npm'
-      
-      - name: Switch to E2E directory
-        run: cd ./tests/e2e
 
       - name: npm install
         run: npm ci
+        working-directory: ./tests/e2e
 
       - name: Run the tests
         run: npm run test:e2e
+        working-directory: ./tests/e2e
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
