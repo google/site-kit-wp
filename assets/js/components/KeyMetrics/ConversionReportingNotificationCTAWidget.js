@@ -72,14 +72,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissNewConversionReportingEvents } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const handleCTAClick = useCallback( async () => {
+	const handleCTAClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
-			await setKeyMetricsSetting(
-				'includeConversionTailoredMetrics',
-				true
-			);
-			await saveKeyMetricsSettings( {
+			setKeyMetricsSetting( 'includeConversionTailoredMetrics', true );
+			saveKeyMetricsSettings( {
 				widgetSlugs: undefined,
 			} );
 			setIsSaving( false );
@@ -105,9 +102,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		<Widget noPadding fullWidth>
 			<ConversionReportingDashboardSubtleNotification
 				ctaLabel={ __( 'Add metrics', 'google-site-kit' ) }
-				handleCTAClick={ () =>
-					handleCTAClick( shouldShowInitialCalloutForTailoredMetrics )
-				}
+				handleCTAClick={ () => handleCTAClick() }
 				isSaving={ isSaving }
 				onDismiss={ onDismiss }
 			/>
