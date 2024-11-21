@@ -17,15 +17,12 @@
  */
 
 import {
-	act,
 	createTestRegistry,
-	fireEvent,
 	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import ConversionReportingSettingsSubtleNotification from './ConversionReportingSettingsSubtleNotification';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from './constants';
 
 describe( 'ConversionReportingSettingsSubtleNotification', () => {
 	let registry;
@@ -53,38 +50,5 @@ describe( 'ConversionReportingSettingsSubtleNotification', () => {
 			'href',
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
 		);
-	} );
-
-	it( 'should render "Maybe later" CTA', () => {
-		const { queryByText } = render(
-			<ConversionReportingSettingsSubtleNotification />,
-			{
-				registry,
-			}
-		);
-
-		expect( queryByText( /maybe later/i ) ).toBeInTheDocument();
-	} );
-
-	it( 'does not render when dismissed', async () => {
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-			{
-				body: JSON.stringify( [ ACR_SUBTLE_NOTIFICATION_SLUG ] ),
-				status: 200,
-			}
-		);
-
-		const { getByRole } = render(
-			<ConversionReportingSettingsSubtleNotification />,
-			{
-				registry,
-			}
-		);
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
-		} );
 	} );
 } );

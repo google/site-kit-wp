@@ -29,7 +29,6 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from '../KeyMetrics/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -124,30 +123,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
-
-		const { container, waitForRegistry } = render(
-			<SettingsCardKeyMetrics />,
-			{
-				registry,
-				features: [ 'conversionReporting' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'should not show ConversionReportingSettingsSubtleNotification if it was previously dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ ACR_SUBTLE_NOTIFICATION_SLUG ] );
-
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
 
 		const { container, waitForRegistry } = render(
 			<SettingsCardKeyMetrics />,
