@@ -118,7 +118,7 @@ export default function FullScreenMetricSelectionApp() {
 						! hasFinishedGettingInputSettings ) && (
 						<Grid>
 							<Row>
-								<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
+								<Cell lgSize={ 12 } mdSize={ 12 } smSize={ 12 }>
 									<ProgressBar />
 								</Cell>
 							</Row>
@@ -132,8 +132,8 @@ export default function FullScreenMetricSelectionApp() {
 										<Row>
 											<Cell
 												lgSize={ 12 }
-												mdSize={ 12 }
-												smSize={ 12 }
+												mdSize={ 8 }
+												smSize={ 6 }
 											>
 												<PageHeader
 													className="googlesitekit-heading-3 googlesitekit-user-input__heading"
@@ -146,8 +146,8 @@ export default function FullScreenMetricSelectionApp() {
 											</Cell>
 											<Cell
 												lgSize={ 12 }
-												mdSize={ 12 }
-												smSize={ 12 }
+												mdSize={ 8 }
+												smSize={ 6 }
 											>
 												<span className="googlesitekit-user-input__subtitle">
 													{ __(
@@ -163,8 +163,8 @@ export default function FullScreenMetricSelectionApp() {
 										<Row>
 											<Cell
 												lgSize={ 12 }
-												mdSize={ 12 }
-												smSize={ 12 }
+												mdSize={ 8 }
+												smSize={ 6 }
 											>
 												<PanelContent
 													closePanel={ closePanel }

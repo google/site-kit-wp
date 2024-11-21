@@ -26,7 +26,7 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import Root from './components/Root';
-import FullScreenMetricSelectionApp from './components/metric-selection/FullScreenMetricSelectionApp';
+import FullScreenMetricSelectionApp from './components/KeyMetrics/FullScreenMetricSelectionApp';
 import { VIEW_CONTEXT_METRIC_SELECTION } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
