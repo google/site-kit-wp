@@ -45,7 +45,7 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
-import { useConversionReportingEventsForTailoredMetrics } from '../KeyMetrics/hooks/useConversionReportingEventsForTailoredMetrics';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -158,12 +158,12 @@ export default function UserInputQuestionnaire() {
 		questionNumber,
 	] );
 
-	const userInputSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettings()
+	const haveConversionReportingEventsForTailoredMetrics = useSelect(
+		( select ) =>
+			select(
+				MODULES_ANALYTICS_4
+			).haveConversionEventsForTailoredMetrics()
 	);
-	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
-	const haveConversionReportingEventsForTailoredMetrics =
-		useConversionReportingEventsForTailoredMetrics( purpose );
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
 
@@ -176,11 +176,11 @@ export default function UserInputQuestionnaire() {
 			// mark 'includeConversionTailoredMetrics' key metrics setting to true
 			// so they can be included.
 			if ( haveConversionReportingEventsForTailoredMetrics ) {
-				await setKeyMetricsSetting(
+				setKeyMetricsSetting(
 					'includeConversionTailoredMetrics',
 					true
 				);
-				await saveKeyMetricsSettings( {
+				saveKeyMetricsSettings( {
 					widgetSlugs: undefined,
 				} );
 			}

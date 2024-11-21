@@ -124,34 +124,3 @@ export const allKeyMetricsTileWidgets = [
 	...keyMetricsGA4Widgets,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 ];
-
-/**
- * Gets conversion events related metrics.
- *
- * @since n.e.x.t
- * @private
- *
- * @return {Object} Metrics list object.
- */
-export function getKeyMetricsConversionEventWidgets() {
-	const leadRelatedMetrics = [
-		KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-		KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-	];
-
-	return {
-		purchase: [
-			KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-			KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-		],
-		add_to_cart: [
-			KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-		],
-		contact: leadRelatedMetrics,
-		submit_lead_form: leadRelatedMetrics,
-		generate_lead: leadRelatedMetrics,
-	};
-}

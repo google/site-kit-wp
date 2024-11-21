@@ -34,7 +34,6 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import whenActive from '../../util/when-active';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
-import { useConversionReportingEventsForTailoredMetrics } from './hooks/useConversionReportingEventsForTailoredMetrics';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
@@ -43,9 +42,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isUserInputCompleted()
 	);
 
-	const userInputSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettings()
-	);
 	const keyMetricSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
@@ -53,9 +49,12 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).getUserPickedMetrics()
 	);
 
-	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
-	const haveConversionReportingEventsForTailoredMetrics =
-		useConversionReportingEventsForTailoredMetrics( purpose );
+	const haveConversionReportingEventsForTailoredMetrics = useSelect(
+		( select ) =>
+			select(
+				MODULES_ANALYTICS_4
+			).haveConversionEventsForTailoredMetrics()
+	);
 
 	// Initial callout is surfaced to the users with tailored metrics, if detectedEvents setting
 	// has a conversion event associated with the ACR key metrics matching the current site purpose answer.
@@ -72,7 +71,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissNewConversionReportingEvents } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const handleCTAClick = useCallback( () => {
+	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
 			setKeyMetricsSetting( 'includeConversionTailoredMetrics', true );
@@ -90,10 +89,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		shouldShowInitialCalloutForTailoredMetrics,
 	] );
 
-	const onDismiss = useCallback( () => {
-		dismissNewConversionReportingEvents();
-	}, [ dismissNewConversionReportingEvents ] );
-
 	if ( ! shouldShowInitialCalloutForTailoredMetrics ) {
 		return <WidgetNull />;
 	}
@@ -102,9 +97,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		<Widget noPadding fullWidth>
 			<ConversionReportingDashboardSubtleNotification
 				ctaLabel={ __( 'Add metrics', 'google-site-kit' ) }
-				handleCTAClick={ () => handleCTAClick() }
+				handleCTAClick={ handleAddMetricsClick }
 				isSaving={ isSaving }
-				onDismiss={ onDismiss }
+				onDismiss={ dismissNewConversionReportingEvents }
 			/>
 		</Widget>
 	);

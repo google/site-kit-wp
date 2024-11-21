@@ -42,13 +42,13 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-import { useConversionReportingEventsForTailoredMetrics } from './hooks/useConversionReportingEventsForTailoredMetrics';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '../user-input/util/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -60,8 +60,12 @@ function ConfirmSitePurposeChangeModal( {
 		select( CORE_USER ).getUserInputSettings()
 	);
 	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
-	const haveConversionReportingEventsForTailoredMetrics =
-		useConversionReportingEventsForTailoredMetrics( purpose );
+	const haveConversionReportingEventsForTailoredMetrics = useSelect(
+		( select ) =>
+			select(
+				MODULES_ANALYTICS_4
+			).haveConversionEventsForTailoredMetrics()
+	);
 
 	const newMetrics = useSelect( ( select ) => {
 		return select( CORE_USER ).getAnswerBasedMetrics(

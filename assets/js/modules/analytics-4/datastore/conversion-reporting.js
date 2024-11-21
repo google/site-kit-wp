@@ -34,6 +34,8 @@ import {
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { negateDefined } from '../../../util/negate';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { getKeyMetricsConversionEventWidgets } from '../../../googlesitekit/datastore/util/conversion-reporting';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -252,6 +254,49 @@ export const selectors = {
 	 */
 	hasLostConversionReportingEvents:
 		hasConversionReportingEventsOfType( 'lostEvents' ),
+
+	/**
+	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}  purpose      Value of saved site purpose from user input settings.
+	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @return {boolean} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise.
+	 */
+	haveConversionEventsForTailoredMetrics: createRegistrySelector(
+		( select ) => ( state, purpose, useNewEvents ) => {
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
+			const purposeAnswerValue =
+				purpose ?? userInputSettings?.purpose?.values?.[ 0 ];
+
+			const purposeTailoredMetrics = select(
+				CORE_USER
+			).getAnswerBasedMetrics( purposeAnswerValue, true );
+
+			const conversionEventWidgets =
+				getKeyMetricsConversionEventWidgets();
+
+			const conversionReportingEventsChange = useNewEvents
+				? select(
+						MODULES_ANALYTICS_4
+				  ).getConversionReportingEventsChange()?.newEvents
+				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			return conversionReportingEventsChange?.reduce( ( acc, event ) => {
+				// If a match has already been found, no need to continue.
+				if ( acc ) {
+					return true;
+				}
+
+				// Check if any item in conversionEventWidgets exists in purposeTailoredMetrics.
+				return conversionEventWidgets[ event ].some( ( widget ) =>
+					purposeTailoredMetrics.includes( widget )
+				);
+			}, false );
+		}
+	),
 };
 
 export default combineStores(

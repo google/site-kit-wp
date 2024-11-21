@@ -40,7 +40,7 @@ import Link from '../Link';
 export default function ConversionReportingDashboardSubtleNotification( {
 	ctaLabel,
 	handleCTAClick,
-	isSaving,
+	isSaving = false,
 	onDismiss,
 	dismissCTALabel = __( 'Maybe later', 'google-site-kit' ),
 } ) {
