@@ -80,6 +80,11 @@ import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
+import Notifications from './notifications/Notifications';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../googlesitekit/notifications/datastore/constants';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -264,6 +269,11 @@ export default function DashboardMainApp() {
 					) }
 				</Fragment>
 			) }
+
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>
 
 			<OverlayNotificationsRenderer />
 

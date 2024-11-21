@@ -61,6 +61,7 @@ import { hasErrorForAnswer } from './util/validation';
 import Portal from '../Portal';
 import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChangeModal';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
 
 export default function UserInputPreview( props ) {
 	const {
@@ -231,6 +232,13 @@ export default function UserInputPreview( props ) {
 						'What is the main purpose of this site?',
 						'google-site-kit'
 					) }
+					subtitle={
+						settings?.purpose?.values.includes(
+							'sell_products_or_service'
+						)
+							? KeyMetricsSettingsSellProductsSubtleNotification
+							: null
+					}
 					values={ settings?.purpose?.values || [] }
 					options={ USER_INPUT_ANSWERS_PURPOSE }
 					loading={ loading }
