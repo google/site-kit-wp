@@ -59,7 +59,13 @@ export default function ReportTable( props ) {
 		'limit must be an integer, if provided.'
 	);
 
-	const mobileColumns = columns.filter( ( col ) => ! col.hideOnMobile );
+	function isHiddenOnMobile( hideOnMobile ) {
+		return ! tabbedLayout && hideOnMobile;
+	}
+
+	const mobileColumns = columns.filter(
+		( { hideOnMobile } ) => ! isHiddenOnMobile( hideOnMobile )
+	);
 	const hasBadges = columns.some( ( { badge } ) => !! badge );
 
 	const [ activeColumnIndex, setActiveColumnIndex ] = useState( 0 );
@@ -104,7 +110,10 @@ export default function ReportTable( props ) {
 										{
 											'hidden-on-mobile': ! columns.some(
 												( { badge, hideOnMobile } ) =>
-													!! badge && ! hideOnMobile
+													!! badge &&
+													! isHiddenOnMobile(
+														hideOnMobile
+													)
 											),
 										}
 									) }
@@ -127,7 +136,9 @@ export default function ReportTable( props ) {
 														'googlesitekit-table__head-item--primary':
 															primary,
 														'hidden-on-mobile':
-															hideOnMobile,
+															isHiddenOnMobile(
+																hideOnMobile
+															),
 													},
 													columnClassName
 												) }
@@ -158,7 +169,9 @@ export default function ReportTable( props ) {
 													'googlesitekit-table__head-item--primary':
 														primary,
 													'hidden-on-mobile':
-														hideOnMobile,
+														isHiddenOnMobile(
+															hideOnMobile
+														),
 												},
 												columnClassName
 											) }
@@ -222,7 +235,9 @@ export default function ReportTable( props ) {
 														'googlesitekit-table__body-item',
 														{
 															'hidden-on-mobile':
-																hideOnMobile,
+																isHiddenOnMobile(
+																	hideOnMobile
+																),
 														},
 														columnClassName
 													) }
