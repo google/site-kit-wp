@@ -360,7 +360,7 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */
 	getConversionTailoredKeyMetricsWidgetIDs: createRegistrySelector(
-		( select ) => ( state, showConversionTailoredMetricsOverride ) => {
+		( select ) => ( state, includeConversionTailoredMetrics ) => {
 			const postTypes = select( CORE_SITE ).getPostTypes() ?? [];
 			const hasProductPostType = postTypes.some(
 				( { slug } ) => slug === 'product'
@@ -368,12 +368,16 @@ const baseSelectors = {
 			const keyMetricSettings =
 				select( CORE_USER ).getKeyMetricsSettings();
 
-			const detectedEvents =
-				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+			const isGA4Connected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const detectedEvents = isGA4Connected
+				? select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+				: [];
 
 			const showConversionTailoredMetrics =
 				keyMetricSettings?.includeConversionTailoredMetrics ||
-				showConversionTailoredMetricsOverride;
+				includeConversionTailoredMetrics;
 
 			return {
 				publish_blog: [
@@ -503,11 +507,7 @@ const baseSelectors = {
 	 */
 	getAnswerBasedMetrics: createRegistrySelector(
 		( select ) =>
-			(
-				state,
-				purposeOverride,
-				showConversionTailoredMetricsOverride
-			) => {
+			( state, purposeOverride, includeConversionTailoredMetrics ) => {
 				const userInputSettings =
 					select( CORE_USER ).getUserInputSettings();
 
@@ -526,7 +526,7 @@ const baseSelectors = {
 					? select(
 							CORE_USER
 					  ).getConversionTailoredKeyMetricsWidgetIDs(
-							showConversionTailoredMetricsOverride
+							includeConversionTailoredMetrics
 					  )
 					: select( CORE_USER ).getRegularKeyMetricsWidgetIDs();
 

@@ -34,8 +34,17 @@ import {
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { negateDefined } from '../../../util/negate';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getKeyMetricsConversionEventWidgets } from '../../../googlesitekit/datastore/util/conversion-reporting';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+} from '../../../googlesitekit/datastore/user/constants';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -265,18 +274,19 @@ export const selectors = {
 	 * @return {boolean} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise.
 	 */
 	haveConversionEventsForTailoredMetrics: createRegistrySelector(
-		( select ) => ( state, purpose, useNewEvents ) => {
+		( select ) => ( state, useNewEvents ) => {
 			const userInputSettings =
 				select( CORE_USER ).getUserInputSettings();
-			const purposeAnswerValue =
-				purpose ?? userInputSettings?.purpose?.values?.[ 0 ];
+			const purpose = userInputSettings?.purpose?.values?.[ 0 ];
 
 			const purposeTailoredMetrics = select(
 				CORE_USER
-			).getAnswerBasedMetrics( purposeAnswerValue, true );
+			).getAnswerBasedMetrics( purpose, true );
 
 			const conversionEventWidgets =
-				getKeyMetricsConversionEventWidgets();
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
 
 			const conversionReportingEventsChange = useNewEvents
 				? select(
@@ -297,6 +307,37 @@ export const selectors = {
 			}, false );
 		}
 	),
+
+	/**
+	 * Gets conversion events related metrics.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Metrics list object.
+	 */
+	getKeyMetricsConversionEventWidgets() {
+		const leadRelatedMetrics = [
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		];
+
+		return {
+			purchase: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+			],
+			add_to_cart: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+			],
+			contact: leadRelatedMetrics,
+			submit_lead_form: leadRelatedMetrics,
+			generate_lead: leadRelatedMetrics,
+		};
+	},
 };
 
 export default combineStores(

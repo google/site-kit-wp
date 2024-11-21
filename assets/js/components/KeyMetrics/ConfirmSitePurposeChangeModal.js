@@ -56,21 +56,14 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const userInputSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettings()
-	);
-	const haveConversionReportingEventsForTailoredMetrics = useSelect(
-		( select ) =>
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics()
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsForTailoredMetrics()
 	);
 
-	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
 	const newMetrics = useSelect( ( select ) => {
 		return select( CORE_USER ).getAnswerBasedMetrics(
-			purpose,
-			haveConversionReportingEventsForTailoredMetrics
+			null,
+			includeConversionTailoredMetrics
 		);
 	} );
 
