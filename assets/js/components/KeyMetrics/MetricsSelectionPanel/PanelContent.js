@@ -24,6 +24,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import classnames from 'classnames';
 import CustomDimensionsNotice from './CustomDimensionsNotice';
 import Header from './Header';
 import Footer from './Footer';
@@ -36,21 +37,33 @@ export default function PanelContent( {
 	savedViewableMetrics,
 	showHeader = true,
 	setIsNavigatingToOAuthURL,
+	variation = 'default',
 } ) {
 	return (
 		<Fragment>
 			{ showHeader && <Header closePanel={ closePanel } /> }
 			<MetricItems savedMetrics={ savedViewableMetrics } />
 			<CustomDimensionsNotice />
-			<KeyMetricsError savedMetrics={ savedViewableMetrics } />
-			<Footer
-				isOpen={ isOpen }
-				closePanel={ closePanel }
-				savedMetrics={ savedViewableMetrics }
-				onNavigationToOAuthURL={ () => {
-					setIsNavigatingToOAuthURL( true );
-				} }
-			/>
+			<div
+				className={ classnames(
+					'googlesitekit-user-input__footer-container',
+					{
+						'googlesitekit-user-input__footer-container--fullscreen':
+							'fullscreen' === variation,
+					}
+				) }
+			>
+				<KeyMetricsError savedMetrics={ savedViewableMetrics } />
+				<Footer
+					isOpen={ isOpen }
+					closePanel={ closePanel }
+					savedMetrics={ savedViewableMetrics }
+					onNavigationToOAuthURL={ () => {
+						setIsNavigatingToOAuthURL( true );
+					} }
+					variation={ variation }
+				/>
+			</div>
 		</Fragment>
 	);
 }

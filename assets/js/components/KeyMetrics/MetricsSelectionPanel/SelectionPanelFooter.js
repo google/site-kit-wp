@@ -54,6 +54,7 @@ export default function SelectionPanelFooter( {
 	onCancel = () => {},
 	isOpen,
 	closePanel = () => {},
+	variation = 'default',
 } ) {
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
 	const [ wasSaved, setWasSaved ] = useState( false );
@@ -148,7 +149,7 @@ export default function SelectionPanelFooter( {
 	return (
 		<footer className="googlesitekit-selection-panel-footer">
 			<div className="googlesitekit-selection-panel-footer__content">
-				{ itemCountElement }
+				{ 'fullscreen' !== variation && itemCountElement }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
 						tertiary
@@ -157,6 +158,7 @@ export default function SelectionPanelFooter( {
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>
+					{ 'fullscreen' === variation && itemCountElement }
 					<SpinnerButton
 						onClick={ onSaveClick }
 						isSaving={ isBusy }
@@ -188,4 +190,5 @@ SelectionPanelFooter.propTypes = {
 	onCancel: PropTypes.func,
 	isOpen: PropTypes.bool,
 	closePanel: PropTypes.func,
+	variation: PropTypes.string,
 };

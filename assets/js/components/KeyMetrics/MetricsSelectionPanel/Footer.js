@@ -60,6 +60,7 @@ export default function Footer( {
 	closePanel,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
+	variation = 'default',
 } ) {
 	const viewContext = useViewContext();
 	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
@@ -204,6 +205,7 @@ export default function Footer( {
 			onCancel={ onCancel }
 			isOpen={ isOpen }
 			closePanel={ closePanel }
+			variation={ variation }
 		/>
 	);
 }
@@ -213,4 +215,5 @@ Footer.propTypes = {
 	closePanel: PropTypes.func.isRequired,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
+	variation: PropTypes.string,
 };
