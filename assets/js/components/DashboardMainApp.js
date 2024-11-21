@@ -127,10 +127,24 @@ export default function DashboardMainApp() {
 			const widgetClass = `.googlesitekit-widget-area--${ widgetArea }`;
 
 			setTimeout( () => {
-				global.scrollTo( {
-					top: getNavigationalScrollTop( widgetClass, breakpoint ),
-					behavior: 'smooth',
-				} );
+				function scrollToWidgetArea() {
+					global.scrollTo( {
+						top: getNavigationalScrollTop(
+							widgetClass,
+							breakpoint
+						),
+						behavior: 'smooth',
+					} );
+				}
+
+				function handleScrollEnd() {
+					scrollToWidgetArea();
+					global.removeEventListener( 'scroll', handleScrollEnd );
+				}
+
+				global.addEventListener( 'scrollend', handleScrollEnd );
+
+				scrollToWidgetArea();
 
 				setWidgetArea( undefined );
 			}, 100 );
