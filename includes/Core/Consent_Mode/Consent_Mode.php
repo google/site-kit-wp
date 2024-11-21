@@ -239,7 +239,7 @@ class Consent_Mode {
 					'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}',
 					sprintf( "gtag('consent', 'default', %s);", wp_json_encode( $consent_defaults ) ),
 					sprintf( 'window._googlesitekitConsentCategoryMap = %s;', wp_json_encode( $consent_category_map ) ),
-					sprintf( "window._googlesitekitConsents = %s;", wp_json_encode( $consent_defaults ) ),
+					sprintf( 'window._googlesitekitConsents = %s;', wp_json_encode( $consent_defaults ) ),
 				)
 			),
 			array( 'id' => 'google_gtagjs-js-consent-mode-data-layer' )
