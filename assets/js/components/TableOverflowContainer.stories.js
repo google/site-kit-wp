@@ -1,7 +1,7 @@
 /**
  * TableOverflowContainer stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,11 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import TableOverflowContainer from '../assets/js/components/TableOverflowContainer';
+import TableOverflowContainer from './/TableOverflowContainer';
 
-storiesOf( 'Global', module ).add( 'Table Overflow Container', () => {
+function Template() {
 	const columns = [];
 	const rows = [];
 
@@ -56,4 +51,11 @@ storiesOf( 'Global', module ).add( 'Table Overflow Container', () => {
 			</table>
 		</TableOverflowContainer>
 	);
-} );
+}
+
+export const Default = Template.bind( {} );
+
+export default {
+	title: 'Components/TableOverflowContainer',
+	component: TableOverflowContainer,
+};

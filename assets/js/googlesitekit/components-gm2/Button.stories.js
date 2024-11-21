@@ -171,6 +171,7 @@ export function VRTStory() {
 		</div>
 	);
 }
+
 VRTStory.scenario = {
 	label: 'Global/Buttons',
 	hoverSelector: '.googlesitekit-button--icon',

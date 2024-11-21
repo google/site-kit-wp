@@ -144,7 +144,7 @@ const withRegistry = ( Story ) => {
 	);
 };
 
-storiesOf( 'Global/Widgets', module )
+storiesOf( 'Legacy/Global/Widgets', module )
 	.add( 'Widgets in boxes layout', () => (
 		<BoxesWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (

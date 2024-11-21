@@ -366,7 +366,7 @@ export const DefaultToken = Template.bind( {} );
 DefaultToken.scenario = {};
 
 export default {
-	title: 'Global/Tokens',
+	title: 'Legacy/Global/Tokens',
 	decorators: [
 		( Story ) => {
 			return (

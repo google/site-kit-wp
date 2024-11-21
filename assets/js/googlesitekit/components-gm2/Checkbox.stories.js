@@ -1,7 +1,7 @@
 /**
  * Checkbox Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,10 @@
 import { useState } from '@wordpress/element';
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
-import NewBadge from '../assets/js/components/NewBadge';
+import NewBadge from '../../components/NewBadge';
 
 function InteractiveCheckbox( props ) {
 	const [ checked, setChecked ] = useState( false );
@@ -48,9 +43,8 @@ function InteractiveCheckbox( props ) {
 	);
 }
 
-storiesOf( 'Global', module ).add(
-	'Checkboxes',
-	() => (
+export function Checkboxes() {
+	return (
 		<div>
 			<div>
 				<Checkbox
@@ -161,10 +155,10 @@ storiesOf( 'Global', module ).add(
 				</Checkbox>
 			</div>
 		</div>
-	),
-	{
-		options: {
-			onReadyScript: 'mouse.js',
-		},
-	}
-);
+	);
+}
+
+export default {
+	title: 'Components/Material 2/Checkboxes',
+	component: Checkbox,
+};

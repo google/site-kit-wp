@@ -1,7 +1,7 @@
 /**
  * ProgressBar Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,31 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
 
-storiesOf( 'Global', module ).add( 'Progress Bars', () => (
-	<div>
-		<p>Default</p>
-		<ProgressBar />
-		<p>Small</p>
-		<ProgressBar small />
-		<p>Small Compress</p>
-		<ProgressBar small compress />
-	</div>
-) );
+function Template( args ) {
+	return <ProgressBar { ...args } />;
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.args = {};
+
+export const Small = Template.bind( {} );
+Small.storyName = 'Small';
+Small.args = {
+	small: true,
+};
+
+export const SmallCompress = Template.bind( {} );
+SmallCompress.storyName = 'Small Compress';
+SmallCompress.args = {
+	small: true,
+	compress: true,
+};
+
+export default {
+	title: 'Components/ProgressBar',
+};

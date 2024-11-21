@@ -17,40 +17,43 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import AnalyticsIcon from '../assets/svg/graphics/analytics.svg';
-import PageHeader from '../assets/js/components/PageHeader';
+import AnalyticsIcon from './../../svg/graphics/analytics.svg';
+import PageHeader from './PageHeader';
 
-storiesOf( 'Global', module ).add( 'Page Headers', () => {
+function Template( args ) {
 	return (
 		<div>
 			<p>
-				<PageHeader
-					title="Module Page Title"
-					status="connected"
-					statusText="Analytics is connected"
-				/>
-			</p>
-			<p>
-				<PageHeader
-					title="Module Page Title with Icon"
-					icon={
-						<AnalyticsIcon
-							className="googlesitekit-page-header__icon"
-							width={ 23 }
-							height={ 26 }
-						/>
-					}
-					status="not-connected"
-					statusText="Analytics is not connected"
-				/>
+				<PageHeader { ...args } />
 			</p>
 		</div>
 	);
-} );
+}
+
+export const Connected = Template.bind( {} );
+Connected.args = {
+	title: 'Module Page Title',
+	status: 'connected',
+	statusText: 'Analytics is connected',
+};
+
+export const NotConnectedWithIcon = Template.bind( {} );
+NotConnectedWithIcon.args = {
+	title: 'Module Page Title with Icon',
+	icon: (
+		<AnalyticsIcon
+			className="googlesitekit-page-header__icon"
+			width={ 23 }
+			height={ 26 }
+		/>
+	),
+	status: 'not-connected',
+	statusText: 'Analytics is not connected',
+};
+
+export default {
+	title: 'Global/PageHeader',
+	component: PageHeader,
+};
