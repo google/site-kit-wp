@@ -68,6 +68,7 @@ export default function ReportTable( props ) {
 		<Fragment>
 			{ tabbedLayout && (
 				<TabBar
+					className="googlesitekit-tab-bar--start-aligned-high-contrast"
 					activeIndex={ activeColumnIndex }
 					handleActiveIndexUpdate={ setActiveColumnIndex }
 				>
