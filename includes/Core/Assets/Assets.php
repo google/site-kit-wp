@@ -598,13 +598,6 @@ final class Assets {
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
-			new Script(
-				'googlesitekit-metric-selection',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
-					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
-				)
-			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-splash',
@@ -703,6 +696,16 @@ final class Assets {
 				)
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$assets[] = new Script(
+				'googlesitekit-metric-selection',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			);
+		}
 
 		/**
 		 * Filters the list of assets that Site Kit should register.

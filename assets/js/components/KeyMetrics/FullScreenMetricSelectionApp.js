@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -70,7 +70,7 @@ export default function FullScreenMetricSelectionApp() {
 		navigateTo( mainDashboardURL );
 	}, [ navigateTo, mainDashboardURL ] );
 
-	const savedViewableMetrics = useInViewSelect( ( select ) => {
+	const savedViewableMetrics = useSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
 
 		if ( ! Array.isArray( metrics ) ) {
@@ -111,7 +111,7 @@ export default function FullScreenMetricSelectionApp() {
 			<Header>
 				<HelpMenu />
 			</Header>
-			<div className="googlesitekit-user-input">
+			<div className="googlesitekit-metric-selection">
 				<div className="googlesitekit-module-page">
 					{ ( isKeyMetricsSetupCompleted === undefined ||
 						isKeyMetricsSetupCompleted === true ||
@@ -172,6 +172,7 @@ export default function FullScreenMetricSelectionApp() {
 														savedViewableMetrics
 													}
 													showHeader={ false }
+													variation="fullscreen"
 												/>
 											</Cell>
 										</Row>
