@@ -41,6 +41,7 @@ import ConversionTrackingToggle from '../../../../components/conversion-tracking
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
+import SettingsGroup from '../../../../components/settings/SettingsGroup';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
@@ -63,8 +64,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
 			) }
 
-			<div className="googlesitekit-settings-module__measurement_toggles">
-				<h4>{ __( 'Improve your measurement', 'google-site-kit' ) }</h4>
+			<SettingsGroup
+				title={ __( 'Improve your measurement', 'google-site-kit' ) }
+			>
 				<SettingsEnhancedMeasurementSwitch
 					hasModuleAccess={ hasModuleAccess }
 				/>
@@ -88,7 +90,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						}
 					) }
 				</ConversionTrackingToggle>
-			</div>
+			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (
 				<AdsConversionIDSettingsNotice />

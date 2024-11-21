@@ -34,6 +34,7 @@ import { useFeature } from '../../../../hooks/useFeature';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
+import SettingsGroup from '../../../../components/settings/SettingsGroup';
 
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );
@@ -116,38 +117,35 @@ export default function SettingsForm() {
 					</div>
 				) }
 
-				<div className="googlesitekit-settings-module__meta-item">
-					<div className="googlesitekit-settings-module__measurement_toggles">
-						<h4>
-							{ __(
-								'Improve your measurement',
+				<SettingsGroup
+					title={ __(
+						'Improve your measurement',
+						'google-site-kit'
+					) }
+				>
+					<ConversionTrackingToggle>
+						{ createInterpolateElement(
+							__(
+								'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
 								'google-site-kit'
-							) }
-						</h4>
-						<ConversionTrackingToggle>
-							{ createInterpolateElement(
-								__(
-									'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
-									'google-site-kit'
+							),
+							{
+								a: (
+									<Link
+										href={
+											conversionTrackingDocumentationURL
+										}
+										external
+										aria-label={ __(
+											'Learn more about conversion tracking',
+											'google-site-kit'
+										) }
+									/>
 								),
-								{
-									a: (
-										<Link
-											href={
-												conversionTrackingDocumentationURL
-											}
-											external
-											aria-label={ __(
-												'Learn more about conversion tracking',
-												'google-site-kit'
-											) }
-										/>
-									),
-								}
-							) }
-						</ConversionTrackingToggle>
-					</div>
-				</div>
+							}
+						) }
+					</ConversionTrackingToggle>
+				</SettingsGroup>
 			</div>
 		</Fragment>
 	);
