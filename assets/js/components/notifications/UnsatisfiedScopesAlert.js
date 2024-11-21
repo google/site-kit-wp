@@ -20,18 +20,20 @@
  * External dependencies
  */
 import { uniq } from 'lodash';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { listFormat } from '../../util';
+import { getItem } from '../../googlesitekit/api/cache';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
@@ -86,6 +88,10 @@ function mapScopesToModuleNames( scopes, modules ) {
 
 export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	const doingCTARef = useRef();
+
+	const [ inProgressModuleSetup, setInProgressModuleSetup ] =
+		useState( false );
+
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
@@ -120,6 +126,28 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
+
+	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	// Fetch the module setup in progress from cache.
+	useMount( async () => {
+		const { cacheHit, value } = await getItem( 'module_setup' );
+
+		if ( cacheHit ) {
+			setInProgressModuleSetup( value );
+		}
+	} );
+
+	const redoModuleSetup = useCallback( async () => {
+		const { error, response } = await activateModule(
+			inProgressModuleSetup
+		);
+
+		if ( ! error ) {
+			navigateTo( response.moduleReauthURL );
+		}
+	}, [ activateModule, inProgressModuleSetup, navigateTo ] );
 
 	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
 	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
@@ -202,14 +230,29 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 				title={ title }
 				description={ <Description text={ message } /> }
 				actions={
-					<CTALink
-						id={ id }
-						ctaLabel={ ctaLabel }
-						ctaLink={ connectURL }
-						onCTAClick={ () => {
-							doingCTARef.current = true;
-						} }
-					/>
+					inProgressModuleSetup ? (
+						<CTALink
+							id={ id }
+							ctaLabel={ sprintf(
+								/* translators: %s: Module name */
+								__( 'Redo %s setup', 'google-site-kit' ),
+								inProgressModuleSetup
+							) }
+							onCTAClick={ () => {
+								redoModuleSetup();
+								doingCTARef.current = true;
+							} }
+						/>
+					) : (
+						<CTALink
+							id={ id }
+							ctaLabel={ ctaLabel }
+							ctaLink={ connectURL }
+							onCTAClick={ () => {
+								doingCTARef.current = true;
+							} }
+						/>
+					)
 				}
 			/>
 		</Notification>

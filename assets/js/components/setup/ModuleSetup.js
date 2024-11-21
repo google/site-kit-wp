@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
+import { deleteItem } from '../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -61,6 +62,8 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 */
 	const finishSetup = useCallbackOne(
 		async ( redirectURL ) => {
+			await deleteItem( 'module_setup' );
+
 			await trackEvent(
 				'moduleSetup',
 				'complete_module_setup',
