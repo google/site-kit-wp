@@ -59,7 +59,6 @@ function ConfirmSitePurposeChangeModal( {
 	const userInputSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
-	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
 	const haveConversionReportingEventsForTailoredMetrics = useSelect(
 		( select ) =>
 			select(
@@ -67,6 +66,7 @@ function ConfirmSitePurposeChangeModal( {
 			).haveConversionEventsForTailoredMetrics()
 	);
 
+	const purpose = userInputSettings?.purpose?.values?.[ 0 ];
 	const newMetrics = useSelect( ( select ) => {
 		return select( CORE_USER ).getAnswerBasedMetrics(
 			purpose,
