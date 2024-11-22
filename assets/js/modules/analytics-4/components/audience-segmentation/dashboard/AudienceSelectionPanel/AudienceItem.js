@@ -150,7 +150,7 @@ export default function AudienceItem( {
 AudienceItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string,
+	description: PropTypes.string.isRequired,
 	subtitle: PropTypes.string,
 	userCount: PropTypes.number.isRequired,
 	audienceType: PropTypes.string.isRequired,
