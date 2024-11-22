@@ -165,6 +165,46 @@ describe( 'core/site First-Party Mode', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'resetFirstPartyModeSettings', () => {
+			it( 'resets the settings', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: true,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( true );
+
+				expect( registry.select( CORE_SITE ).isFPMHealthy() ).toBe(
+					true
+				);
+
+				expect(
+					registry.select( CORE_SITE ).isScriptAccessEnabled()
+				).toBe( true );
+
+				// Change the settings.
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( false );
+
+				registry.dispatch( CORE_SITE ).resetFirstPartyModeSettings();
+
+				// Reset to the original settings.
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( true );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
