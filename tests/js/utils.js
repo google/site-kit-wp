@@ -633,17 +633,19 @@ export const waitForTimeouts = ( timeout ) => {
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
- * @since n.e.x.t Reimplemented using debounced timer for reliability. Falls back to legacy impl when using fake timers.
+ * @since n.e.x.t Reimplemented using debounced timer for reliability. Not compatible with fake timers.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
 	if ( jest.isMockFunction( setTimeout ) ) {
-		global.console.debug(
-			'Using legacyCreateWaitForRegistry due to use of fake timers'
-		);
-		return legacyCreateWaitForRegistry( registry );
+		// Warn if attempted to use.
+		return () => {
+			throw new Error(
+				'waitForRegistry cannot be used with fake timers!'
+			);
+		};
 	}
 	let unsubscribe;
 
@@ -671,23 +673,6 @@ export const createWaitForRegistry = ( registry ) => {
 
 	return async () => {
 		await waitForRegistry;
-		unsubscribe();
-	};
-};
-
-const legacyCreateWaitForRegistry = ( registry ) => {
-	const updates = [];
-	const listener = () =>
-		updates.push( new Promise( ( resolve ) => resolve() ) );
-	const unsubscribe = registry.subscribe( listener );
-
-	// Return a function that:
-	// - Waits until the next tick for updates.
-	// - Waits for all pending resolvers to resolve.
-	// We unsubscribe afterwards to allow for potential additions while
-	// Promise.all is resolving.
-	return async () => {
-		await Promise.all( [ ...updates, waitForDefaultTimeouts() ] );
 		unsubscribe();
 	};
 };
