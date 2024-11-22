@@ -648,6 +648,20 @@ export const createWaitForRegistry = ( registry ) => {
 	let unsubscribe;
 
 	const waitForRegistry = new Promise( ( resolve ) => {
+		// We need a fallback in case no state updates are observed.
+		// Without this, tests will timeout.
+		const fallbackTimeout = setTimeout( () => {
+			global.console.debug(
+				'waitForRegistry',
+				'No state changes were observed. Maybe waitForRegistry is not needed?'
+			);
+			resolve();
+		}, 1000 );
+		// On the first state update, clear the fallback.
+		const unsubFallback = registry.subscribe( () => {
+			clearTimeout( fallbackTimeout );
+			unsubFallback();
+		} );
 		const listener = debounce( resolve, 50, {
 			leading: false,
 			trailing: true,
