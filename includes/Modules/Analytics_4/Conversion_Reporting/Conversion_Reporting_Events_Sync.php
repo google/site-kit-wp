@@ -12,15 +12,27 @@ namespace Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Context;
 
 /**
  * Class providing report implementation for available events for conversion reporting.
  *
- * @since n.e.x.t
+ * @since 1.135.0
  * @access private
  * @ignore
  */
 class Conversion_Reporting_Events_Sync {
+
+	/**
+	 * The detected events transient name.
+	 */
+	public const DETECTED_EVENTS_TRANSIENT = 'googlesitekit_conversion_reporting_detected_events';
+
+	/**
+	 * The lost events transient name.
+	 */
+	public const LOST_EVENTS_TRANSIENT = 'googlesitekit_conversion_reporting_lost_events';
 
 	const EVENT_NAMES = array(
 		'add_to_cart',
@@ -45,27 +57,39 @@ class Conversion_Reporting_Events_Sync {
 	private $analytics;
 
 	/**
+	 * Transients instance.
+	 *
+	 * @since 1.139.0
+	 * @var Transients
+	 */
+	protected $transients;
+
+	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
+	 * @since 1.139.0 Added $context param to constructor.
 	 *
+	 * @param Context     $context   Plugin context.
 	 * @param Settings    $settings  Settings module settings instance.
 	 * @param Analytics_4 $analytics Analytics 4 module instance.
 	 */
 	public function __construct(
+		Context $context,
 		Settings $settings,
 		Analytics_4 $analytics
 	) {
-		$this->settings  = $settings;
-		$this->analytics = $analytics;
+		$this->settings   = $settings;
+		$this->analytics  = $analytics;
+		$this->transients = new Transients( $context );
 	}
 
 	/**
-	 * Checks for available events and save them in settings.
+	 * Syncs detected events into settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
-	public function check_for_events() {
+	public function sync_detected_events() {
 		$report          = $this->get_report();
 		$detected_events = array();
 
@@ -73,9 +97,19 @@ class Conversion_Reporting_Events_Sync {
 			return;
 		}
 
+		// Get current stored detected events.
+		$settings              = $this->settings->get();
+		$saved_detected_events = isset( $settings['detectedEvents'] ) ? $settings['detectedEvents'] : array();
+
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( empty( $report->rowCount ) ) {
 			$this->settings->merge( array( 'detectedEvents' => array() ) );
+
+			$this->transients->delete( self::DETECTED_EVENTS_TRANSIENT );
+
+			if ( ! empty( $saved_detected_events ) ) {
+				$this->transients->set( self::LOST_EVENTS_TRANSIENT, $saved_detected_events );
+			}
 
 			return;
 		}
@@ -84,13 +118,28 @@ class Conversion_Reporting_Events_Sync {
 			$detected_events[] = $row['dimensionValues'][0]['value'];
 		}
 
+		$new_events  = array_diff( $detected_events, $saved_detected_events );
+		$lost_events = array_diff( $saved_detected_events, $detected_events );
+
+		if ( ! empty( $new_events ) ) {
+			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
+		}
+
+		if ( ! empty( $lost_events ) ) {
+			$this->transients->set( self::LOST_EVENTS_TRANSIENT, array_values( $lost_events ) );
+		}
+
+		if ( empty( $saved_detected_events ) ) {
+			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, $detected_events );
+		}
+
 		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
 	}
 
 	/**
 	 * Retrieves the GA4 report for filtered events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.135.0
 	 */
 	protected function get_report() {
 		$options = array(

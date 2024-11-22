@@ -246,6 +246,10 @@ AudiencePartialData.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -261,7 +265,9 @@ AudiencePartialData.args = {
 					[ audienceResourceName ]: dataAvailabilityDate,
 				},
 				customDimension: {},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	},
 };
@@ -280,6 +286,10 @@ TopContentPartialData.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '12345',
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -295,13 +305,31 @@ TopContentPartialData.args = {
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
 				},
-				property: {},
+				property: {
+					12345: 20201218,
+				},
 			} );
 	},
 };
 TopContentPartialData.scenario = {
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
 };
+
+export const ViewOnlyNoDimensions = Template.bind( {} );
+ViewOnlyNoDimensions.storyName =
+	"Top content hidden when dimension doesn't exist for view only user";
+ViewOnlyNoDimensions.args = {
+	...readyProps,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableAudiences: [],
+			availableCustomDimensions: [],
+			propertyID: '123456789',
+		} );
+	},
+};
+ViewOnlyNoDimensions.scenario = {};
 
 export const ZeroDataHideable = Template.bind( {} );
 ZeroDataHideable.storyName = 'ZeroDataHideable';

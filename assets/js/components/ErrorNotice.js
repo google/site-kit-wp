@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,9 +37,12 @@ import ErrorText from './ErrorText';
 
 export default function ErrorNotice( {
 	error,
+	hasButton = false,
 	storeName,
 	message = error.message,
 	noPrefix = false,
+	skipRetryMessage,
+	Icon,
 } ) {
 	const dispatch = useDispatch();
 
@@ -63,10 +66,26 @@ export default function ErrorNotice( {
 		return null;
 	}
 
-	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
+	const shouldDisplayRetry =
+		hasButton && isErrorRetryable( error, selectorData );
+
+	// Append "Try again" messaging if no retry button is present.
+	if ( ! hasButton && ! skipRetryMessage ) {
+		message = sprintf(
+			/* translators: %1$s: Error message from Google API. */
+			__( '%1$s%2$s Please try again.', 'google-site-kit' ),
+			message,
+			message.endsWith( '.' ) ? '' : '.'
+		);
+	}
 
 	return (
 		<Fragment>
+			{ Icon && (
+				<div className="googlesitekit-error-notice__icon">
+					<Icon width="24" height="24" />
+				</div>
+			) }
 			<ErrorText
 				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
@@ -88,7 +107,10 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
+	hasButton: PropTypes.bool,
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
+	skipRetryMessage: PropTypes.bool,
+	Icon: PropTypes.elementType,
 };

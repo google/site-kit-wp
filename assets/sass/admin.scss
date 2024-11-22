@@ -85,6 +85,7 @@
 @import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-autocomplete";
 @import "components/global/googlesitekit-badge";
+@import "components/global/googlesitekit-badge-with-tooltip";
 @import "components/global/googlesitekit-button-icon";
 @import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-change-badge";
@@ -127,6 +128,7 @@
 @import "components/global/googlesitekit-post-searcher";
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-preview-table";
+@import "components/global/googlesitekit-progress-segments";
 @import "components/global/googlesitekit-publisher-wins";
 @import "components/global/googlesitekit-selection-box";
 @import "components/global/googlesitekit-selection-panel";
@@ -169,6 +171,10 @@
 // Key Metrics
 @import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
 @import "components/key-metrics/googlesitekit-key-metrics-widgets";
+@import "components/key-metrics/googlesitekit-chip-tab-group";
+@import "components/key-metrics/googlesitekit-key-metrics-selection-panel";
+@import "components/key-metrics/googlesitekit-key-metrics-acr-subtle-notification";
+@import "components/key-metrics/googlesitekit-key-metrics-site-purpose-change-modal";
 
 // Setup
 @import "components/setup/googlesitekit-setup";
@@ -176,6 +182,7 @@
 @import "components/setup/googlesitekit-adsense-connect-cta";
 
 // Settings
+@import "components/settings/googlesitekit-settings-admin";
 @import "components/settings/googlesitekit-settings-connect-module";
 @import "components/settings/googlesitekit-settings-consent-mode";
 @import "components/settings/googlesitekit-settings-meta";
@@ -201,6 +208,7 @@
 @import "components/adsense";
 @import "components/analytics-4";
 @import "components/reader-revenue-manager";
+@import "components/sign-in-with-google";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -226,6 +234,7 @@
 // Utilities
 @import "utilities/alignment";
 @import "utilities/border-radius";
+@import "utilities/color";
 @import "utilities/display";
 @import "utilities/font-weight";
 @import "utilities/margin";

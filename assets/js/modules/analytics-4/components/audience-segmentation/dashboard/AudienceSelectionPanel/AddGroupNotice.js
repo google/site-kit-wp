@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
@@ -48,7 +48,7 @@ export default function AddGroupNotice() {
 	const [ twoOrMoreAudiencesSelected, setTwoOrMoreAudiencesSelected ] =
 		useState( false );
 
-	const isDismissed = useSelect( ( select ) =>
+	const isDismissed = useInViewSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( AUDIENCE_ADD_GROUP_NOTICE_SLUG )
 	);
 	const isSelectionPanelOpen = useSelect( ( select ) =>

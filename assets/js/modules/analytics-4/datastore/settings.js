@@ -158,8 +158,10 @@ export async function submitChanges( { select, dispatch } ) {
 	const { error } = await saveSettings( select, dispatch );
 
 	if ( error ) {
-		return error;
+		return { error };
 	}
+
+	dispatch( CORE_USER ).resetAudienceSettings();
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
 

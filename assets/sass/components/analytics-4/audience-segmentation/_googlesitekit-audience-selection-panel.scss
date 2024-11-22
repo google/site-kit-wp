@@ -20,8 +20,11 @@
 
 	.googlesitekit-audience-selection-panel {
 
-		.googlesitekit-selection-box .mdc-checkbox__description {
-			padding-top: 4px;
+		.googlesitekit-selection-box {
+
+			.googlesitekit-badge-with-tooltip {
+				padding: 4px 10px;
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__learn-more {
@@ -42,7 +45,7 @@
 			background-color: $c-utility-error-container;
 			display: flex;
 			justify-content: space-between;
-			padding: $grid-gap-phone - 2 $grid-gap-desktop;
+			padding: 10px $grid-gap-desktop;
 
 			p {
 				color: $c-utility-on-error-container;
@@ -60,11 +63,24 @@
 
 			.googlesitekit-audience-selection-panel__error-notice-actions {
 
-				.googlesitekit-cta-link {
-					color: $c-utility-on-error-container;
-					font-size: $fs-label-md;
-					font-weight: $fw-medium;
-					line-height: $lh-label-md;
+				.googlesitekit-audience-selection-panel__error-notice-action {
+					border-radius: $br-lg;
+					min-height: 32px;
+					padding: 6px $grid-gap-phone;
+					white-space: nowrap;
+
+					@include mdc-button-ink-color( $c-utility-on-error-container );
+
+					&:hover {
+						@include mdc-button-filled-accessible( rgba($c-red-r-100, 0.6) );
+						@include mdc-button-ink-color( $c-utility-on-error-container );
+					}
+
+					&:active,
+					&:focus {
+						@include mdc-button-filled-accessible( $c-red-r-100 );
+						@include mdc-button-ink-color( $c-utility-on-error-container );
+					}
 				}
 			}
 		}
@@ -205,6 +221,55 @@
 			.googlesitekit-subtle-notification__action {
 				justify-content: initial;
 				width: initial;
+			}
+		}
+
+		.googlesitekit-audience-creation-error-notice {
+			align-items: center;
+			background-color: $c-surfaces-surface;
+			border: 2px solid $c-utility-error;
+			border-radius: $br-xs;
+			display: flex;
+			gap: 16px;
+			margin-bottom: 12px;
+			padding: 14px $grid-gap-phone;
+
+			.googlesitekit-audience-creation-error-notice__content {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+			}
+
+			svg {
+				color: $c-utility-error;
+				flex-shrink: 0;
+			}
+
+			p.googlesitekit-audience-creation-error-notice__title {
+				color: $c-surfaces-on-surface;
+				font-size: $fs-label-md;
+				font-weight: $fw-medium;
+				line-height: $lh-label-md;
+				margin: 0;
+			}
+
+			p.googlesitekit-audience-creation-error-notice__description {
+				color: $c-surfaces-on-surface;
+				font-size: $fs-body-sm;
+				font-weight: $fw-normal;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				margin: 0;
+			}
+
+			.googlesitekit-audience-creation-error-notice__actions {
+
+				.mdc-button {
+					font-weight: $fw-medium;
+					min-height: 32px;
+					padding: 6px $grid-gap-phone;
+					white-space: nowrap;
+				}
 			}
 		}
 	}

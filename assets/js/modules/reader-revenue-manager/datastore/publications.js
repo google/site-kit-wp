@@ -26,19 +26,19 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies.
  */
 import API from 'googlesitekit-api';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from './constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { HOUR_IN_SECONDS } from '../../../util';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -51,6 +51,68 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{ useCache: false }
 		),
 	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
+} );
+
+const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
+	baseName: 'getSyncPublicationOnboardingState',
+	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
+		API.set(
+			'modules',
+			READER_REVENUE_MANAGER_MODULE_SLUG,
+			'sync-publication-onboarding-state',
+			{
+				publicationID,
+				publicationOnboardingState,
+			}
+		),
+	argsToParams: ( { publicationID, publicationOnboardingState } ) => {
+		return { publicationID, publicationOnboardingState };
+	},
+	validateParams: ( { publicationID, publicationOnboardingState } = {} ) => {
+		invariant(
+			typeof publicationID === 'string' && publicationID.length > 0,
+			'publicationID is required and must be string.'
+		);
+
+		invariant(
+			typeof publicationOnboardingState === 'string' &&
+				publicationOnboardingState.length > 0,
+			'publicationOnboardingState is required and must be string.'
+		);
+	},
+	reducerCallback: createReducer(
+		( state, { publicationID, publicationOnboardingState } ) => {
+			if ( ! publicationID ) {
+				return;
+			}
+
+			// eslint-disable-next-line sitekit/no-direct-date
+			const publicationOnboardingStateLastSyncedAtMs = Date.now();
+
+			if ( state.settings.publicationID === publicationID ) {
+				state.settings.publicationOnboardingState =
+					publicationOnboardingState;
+				state.settings.publicationOnboardingStateLastSyncedAtMs =
+					publicationOnboardingStateLastSyncedAtMs;
+			}
+
+			if ( state.savedSettings.publicationID === publicationID ) {
+				state.savedSettings.publicationOnboardingState =
+					publicationOnboardingState;
+				state.savedSettings.publicationOnboardingStateLastSyncedAtMs =
+					publicationOnboardingStateLastSyncedAtMs;
+			}
+
+			const publication = state.publications?.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) => id === publicationID
+			);
+
+			if ( publication ) {
+				publication.onboardingState = publicationOnboardingState;
+			}
+		}
+	),
 } );
 
 const baseInitialState = {
@@ -68,106 +130,6 @@ const baseActions = {
 	 */
 	*syncPublicationOnboardingState() {
 		const registry = yield commonActions.getRegistry();
-		const connected = yield commonActions.await(
-			registry
-				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
-		);
-
-		// If the module is not connected, do not attempt to sync the onboarding state.
-		if ( ! connected ) {
-			return;
-		}
-
-		// Ensure settings are loaded before checking for changed state below.
-		const settings = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getSettings()
-		);
-
-		const hasPublicationIDChanged = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.hasSettingChanged( 'publicationID' );
-
-		// Do not attempt to sync the onboarding state if the publication ID
-		// in state is not the "saved" publication ID.
-		if ( hasPublicationIDChanged ) {
-			return;
-		}
-
-		const {
-			publicationID,
-			publicationOnboardingState: currentOnboardingState,
-		} = settings;
-
-		// If there is no publication ID, do not attempt to sync the onboarding state.
-		if ( publicationID === undefined ) {
-			return;
-		}
-
-		const publications = yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-				.getPublications()
-		) || [];
-
-		const publication = publications.find(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId } ) => publicationId === publicationID
-		);
-
-		// If the publication is not found, do not attempt to sync the onboarding state.
-		if ( ! publication ) {
-			return;
-		}
-
-		const { onboardingState: newOnboardingState } = publication;
-
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
-			publicationOnboardingState: newOnboardingState,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			// eslint-disable-next-line sitekit/no-direct-date
-			publicationOnboardingStateLastSyncedAtMs: Date.now(),
-		} );
-
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).saveSettings();
-
-		// If the onboarding state changes to complete, set the key in CORE_UI to trigger the notification.
-		if (
-			newOnboardingState !== currentOnboardingState &&
-			newOnboardingState ===
-				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
-		) {
-			registry
-				.dispatch( CORE_UI )
-				.setValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-					true
-				);
-		}
-	},
-
-	/**
-	 * Synchronizes the onboarding state of the publication based on the last synced time.
-	 *
-	 * @since 1.133.0
-	 *
-	 * @return {void}
-	 */
-	*maybeSyncPublicationOnboardingState() {
-		const registry = yield commonActions.getRegistry();
-		const connected = yield commonActions.await(
-			registry
-				.resolveSelect( CORE_MODULES )
-				.isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG )
-		);
-
-		// If the module is not connected, do not attempt to sync the onboarding state.
-		if ( ! connected ) {
-			return;
-		}
 
 		yield commonActions.await(
 			registry
@@ -175,20 +137,29 @@ const baseActions = {
 				.getSettings()
 		);
 
-		const onboardingStateLastSyncedAtMs = registry
+		const publicationID = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublicationOnboardingStateLastSyncedAtMs();
+			.getPublicationID();
 
+		const publicationOnboardingState = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublicationOnboardingState();
+
+		// If there is no publication ID in state, do not attempt to sync
+		// the onboarding state.
 		if (
-			!! onboardingStateLastSyncedAtMs &&
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			Date.now() - onboardingStateLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
+			publicationID === undefined ||
+			publicationOnboardingState === undefined
 		) {
-			return;
+			return {};
 		}
 
-		yield baseActions.syncPublicationOnboardingState();
+		return yield fetchGetSyncPublicationOnboardingStateStore.actions.fetchGetSyncPublicationOnboardingState(
+			{
+				publicationID,
+				publicationOnboardingState,
+			}
+		);
 	},
 
 	/**
@@ -274,10 +245,6 @@ const baseActions = {
 				.setSettings( {
 					publicationID,
 					publicationOnboardingState: onboardingState,
-					// The "last synced" value should reflect the real time this action
-					// was performed, so we don't use the reference date here.
-					// eslint-disable-next-line sitekit/no-direct-date
-					publicationOnboardingStateLastSyncedAtMs: Date.now(),
 				} );
 		}
 	),
@@ -324,14 +291,18 @@ const baseSelectors = {
 	},
 };
 
-const store = combineStores( fetchGetPublicationsStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = combineStores(
+	fetchGetPublicationsStore,
+	fetchGetSyncPublicationOnboardingStateStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

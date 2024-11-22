@@ -26,38 +26,61 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { Switch } from 'googlesitekit-components';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../../../material-components';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 import Layout from '../../../../../../components/layout/Layout';
 import SetupCTA from './SetupCTA';
 import SetupSuccess from './SetupSuccess';
 
 export default function SettingsCardVisitorGroups() {
+	const viewContext = useViewContext();
+
 	const audienceSegmentationWidgetHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isAudienceSegmentationWidgetHidden()
 	);
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
+	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
+	);
 
 	const { setAudienceSegmentationWidgetHidden, saveAudienceSettings } =
 		useDispatch( CORE_USER );
 
-	const handleKeyMetricsToggle = useCallback( async () => {
-		await setAudienceSegmentationWidgetHidden(
-			! audienceSegmentationWidgetHidden
+	const handleKeyMetricsToggle = useCallback( () => {
+		const action = audienceSegmentationWidgetHidden
+			? 'audience_widgets_enable'
+			: 'audience_widgets_disable';
+
+		trackEvent( `${ viewContext }_audiences-settings`, action ).finally(
+			async () => {
+				await setAudienceSegmentationWidgetHidden(
+					! audienceSegmentationWidgetHidden
+				);
+				await saveAudienceSettings();
+			}
 		);
-		await saveAudienceSettings();
 	}, [
 		audienceSegmentationWidgetHidden,
 		saveAudienceSettings,
 		setAudienceSegmentationWidgetHidden,
+		viewContext,
 	] );
 
-	if ( configuredAudiences === undefined ) {
+	if (
+		configuredAudiences === undefined ||
+		audienceSegmentationSetupCompletedBy === undefined
+	) {
 		return null;
 	}
+
+	const showSetupCTA =
+		! configuredAudiences && audienceSegmentationSetupCompletedBy === null;
 
 	return (
 		<Layout
@@ -71,8 +94,8 @@ export default function SettingsCardVisitorGroups() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							{ ! configuredAudiences?.length && <SetupCTA /> }
-							{ !! configuredAudiences?.length && (
+							{ showSetupCTA && <SetupCTA /> }
+							{ ! showSetupCTA && (
 								<Fragment>
 									<SetupSuccess />
 									<Switch

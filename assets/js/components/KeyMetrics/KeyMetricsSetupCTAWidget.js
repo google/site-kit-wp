@@ -36,8 +36,6 @@ import { Button } from 'googlesitekit-components';
 import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
@@ -52,33 +50,19 @@ import {
 } from '../AdminMenuTooltip';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
+	const displayCTAWidget = useDisplayCTAWidget();
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 
-	// We should call isGatheringData() within this component for completeness as we do not want to rely
-	// on it being called in other components. This selector makes report requests which, if they return
-	// data, then the `data-available` transients are set. These transients are prefetched as a global on
-	// the next page load.
-	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
-		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
-	} );
-	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
-		select( MODULES_ANALYTICS_4 ).isGatheringData();
-		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
-	} );
-
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	const { isTooltipVisible } = useTooltipState(
 		KEY_METRICS_SETUP_CTA_WIDGET_SLUG
-	);
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( KEY_METRICS_SETUP_CTA_WIDGET_SLUG )
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -142,11 +126,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	if (
-		isDismissed !== false ||
-		! analyticsIsDataAvailableOnLoad ||
-		! searchConsoleIsDataAvailableOnLoad
-	) {
+	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;
 	}
 
@@ -154,16 +134,18 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => (
-				<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				<KeyMetricsCTAFooter
+					onActionClick={ openMetricsSelectionPanel }
+				/>
 			) }
 		>
 			<KeyMetricsCTAContent
 				title={ __(
-					'Get metrics and suggestions tailored to your specific site goals',
+					'Get personalized suggestions for user interaction metrics based on your goals',
 					'google-site-kit'
 				) }
 				description={ __(
-					'Answer 3 questions to show relevant stats for your site',
+					'Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site.',
 					'google-site-kit'
 				) }
 				actions={
@@ -176,11 +158,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						>
 							{ __( 'Get tailored metrics', 'google-site-kit' ) }
 						</Button>
-						<Button tertiary onClick={ openMetricsSelectionPanel }>
-							{ __(
-								'I’ll pick metrics myself',
-								'google-site-kit'
-							) }
+						<Button tertiary onClick={ dismissCallback }>
+							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 					</Fragment>
 				}

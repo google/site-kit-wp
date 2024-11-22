@@ -24,7 +24,11 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
-import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from './constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -155,6 +159,20 @@ describe( 'core/notifications Notifications', () => {
 			} );
 		} );
 		describe( 'dismissNotification', () => {
+			function TestNotificationComponent() {
+				return <div>Test notification!</div>;
+			}
+			beforeEach( () => {
+				// dismissNotification checks for a registered notification's isDismissible property.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'test-notification', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: true,
+					} );
+			} );
 			it( 'should require a valid id to be provided', () => {
 				expect( () =>
 					registry
@@ -226,6 +244,126 @@ describe( 'core/notifications Notifications', () => {
 					.select( CORE_NOTIFICATIONS )
 					.isNotificationDismissed( 'test-notification' );
 				expect( isNotificationDismissed ).toBe( true );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+			it( 'should not persist dismissal if notification is not dismissible', async () => {
+				// dismissNotification checks for a registered notification's isDismissible property.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'not-dismissible-notification', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: false,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'not-dismissible-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'not-dismissible-notification', {
+						expiresInSeconds: 3,
+					} );
+
+				expect( fetchMock ).not.toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'not-dismissible-notification',
+							expiration: 3,
+						},
+					},
+				} );
+			} );
+			it( 'should persist dismissal if notification is dismissible', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'dismissible-notification' ],
+				} );
+				// dismissNotification checks for a registered notification's isDismissible property.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'dismissible-notification', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: true,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'dismissible-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'dismissible-notification', {
+						expiresInSeconds: 3,
+					} );
+
+				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
+					body: {
+						data: {
+							slug: 'dismissible-notification',
+							expiration: 3,
+						},
+					},
+				} );
+			} );
+			it( 'should remove a notification from queue if skipHidingFromQueue option is not passed', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'test-notification' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'test-notification', {
+						expiresInSeconds: 3,
+					} );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+
+				expect( queuedNotifications ).toEqual( [] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+			it( 'should not remove a notification from queue if skipHidingFromQueue option is passed', async () => {
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'test-notification' ],
+				} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications( [
+						{ id: 'test-notification' },
+					] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification( 'test-notification', {
+						expiresInSeconds: 3,
+						skipHidingFromQueue: true,
+					} );
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications( [ VIEW_CONTEXT_MAIN_DASHBOARD ] );
+
+				expect( queuedNotifications ).toEqual( [
+					{ id: 'test-notification' },
+				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -304,6 +442,69 @@ describe( 'core/notifications Notifications', () => {
 					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				expect( queuedNotifications ).toHaveLength( 2 );
+			} );
+
+			it( 'should return registered and grouped notifications by their groupID', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'default-1', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 10,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'setup-cta-1', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+						priority: 20,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'default-2', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 10,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'setup-cta-2', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+						priority: 20,
+					} );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.SETUP_CTAS
+					);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.SETUP_CTAS
+				);
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.SETUP_CTAS
+					);
+
+				expect( queuedNotifications ).toHaveLength( 2 );
+				expect( queuedNotifications[ 0 ].id ).toBe( 'setup-cta-1' );
+				expect( queuedNotifications[ 1 ].id ).toBe( 'setup-cta-2' );
 			} );
 
 			it( 'should return notifications filtered by their checkRequirements callback when specified', async () => {

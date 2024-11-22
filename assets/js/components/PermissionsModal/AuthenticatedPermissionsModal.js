@@ -49,6 +49,7 @@ function AuthenticatedPermissionsModal() {
 			additionalScopes: permissionsError?.data?.scopes,
 			redirectURL:
 				permissionsError?.data?.redirectURL || global.location.href,
+			errorRedirectURL: permissionsError?.data?.errorRedirectURL,
 		} )
 	);
 

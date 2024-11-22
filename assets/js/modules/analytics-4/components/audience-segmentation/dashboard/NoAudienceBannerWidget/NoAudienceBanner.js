@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,32 +33,53 @@ import LeanCTABanner from '../../../../../../components/LeanCTABanner';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '.././../../../../../googlesitekit/datastore/user/constants';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
+import { trackEvent } from '../../../../../../util';
 
-export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
+const NoAudienceBanner = forwardRef( ( props, ref ) => {
+	const viewContext = useViewContext();
+	const isViewOnly = useViewOnly();
+
+	const didSetAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).didSetAudiences()
+	);
+
 	const Icon = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
 	);
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const audienceLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/12799087',
-		} )
-	);
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const eventLabel = didSetAudiences
+		? 'no-longer-available'
+		: 'none-selected';
+
+	function handleSelectGroups() {
+		trackEvent(
+			`${ viewContext }_audiences-no-audiences`,
+			'select_groups',
+			eventLabel
+		).finally( () => {
+			setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+	}
+
 	return (
 		<LeanCTABanner
+			ref={ ref }
 			className="googlesitekit-no-audience-banner"
 			Icon={ Icon }
 			SVGGraphic={ NoAudienceBannerGraphic }
 		>
 			<p>
-				{ hasConfigurableAudiences &&
+				{ didSetAudiences &&
 					createInterpolateElement(
 						__(
 							'It looks like your visitor groups aren’t available anymore. <a>Select other groups</a>.',
@@ -73,58 +89,57 @@ export default function NoAudienceBanner( { hasConfigurableAudiences } ) {
 							a: (
 								<Link
 									secondary
-									onClick={ () =>
-										setValue(
-											AUDIENCE_SELECTION_PANEL_OPENED_KEY,
-											true
-										)
-									}
+									onClick={ handleSelectGroups }
 								/>
 							),
 						}
 					) }
-				{ ! hasConfigurableAudiences &&
+				{ ! didSetAudiences &&
 					createInterpolateElement(
 						__(
-							'It looks like your visitor groups aren’t available anymore. Learn more about how to group site visitors in <a>Analytics</a>.',
+							'You don’t have any visitor groups selected. <a>Select groups</a>.',
 							'google-site-kit'
 						),
 						{
 							a: (
 								<Link
 									secondary
-									href={ audienceLearnMoreURL }
-									external
-									hideExternalIndicator
+									onClick={ handleSelectGroups }
 								/>
 							),
 						}
 					) }
 			</p>
-			<p>
-				{ createInterpolateElement(
-					__(
-						'You can deactivate this widget in <a>Settings</a>.',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<Link
-								secondary
-								onClick={ () =>
-									navigateTo(
-										`${ settingsURL }#/admin-settings`
-									)
-								}
-							/>
+			{ ! isViewOnly && (
+				<p>
+					{ createInterpolateElement(
+						__(
+							'You can deactivate this widget in <a>Settings</a>.',
+							'google-site-kit'
 						),
-					}
-				) }
-			</p>
+						{
+							a: (
+								<Link
+									secondary
+									onClick={ () => {
+										trackEvent(
+											`${ viewContext }_audiences-no-audiences`,
+											'change_settings',
+											eventLabel
+										).finally( () => {
+											navigateTo(
+												`${ settingsURL }#/admin-settings`
+											);
+										} );
+									} }
+								/>
+							),
+						}
+					) }
+				</p>
+			) }
 		</LeanCTABanner>
 	);
-}
+} );
 
-NoAudienceBanner.propTypes = {
-	hasConfigurableAudiences: PropTypes.bool.isRequired,
-};
+export default NoAudienceBanner;

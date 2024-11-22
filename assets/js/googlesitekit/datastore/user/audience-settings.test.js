@@ -39,32 +39,9 @@ describe( 'modules/analytics-4 audience settings', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
-	const audienceSettingsResponse = {
-		configuredAudiences: [ 'audienceA', 'audienceB' ],
-		isAudienceSegmentationWidgetHidden: false,
-	};
-
-	const audienceSettingsSortedResponse = {
-		configuredAudiences: [ 'audienceB', 'audienceA' ],
-		isAudienceSegmentationWidgetHidden: false,
-	};
-
-	const availableAudiences = [
-		{
-			name: 'audienceA',
-			description: 'Audience A',
-			displayName: 'Audience A',
-			audienceType: 'DEFAULT_AUDIENCE',
-			audienceSlug: 'audience-a',
-		},
-		{
-			name: 'audienceB',
-			description: 'Audience B',
-			displayName: 'Audience B',
-			audienceType: 'SITE_KIT_AUDIENCE',
-			audienceSlug: 'audience-b',
-		},
-	];
+	let audienceSettingsResponse;
+	let audienceSettingsSortedResponse;
+	let availableAudiences;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -74,6 +51,34 @@ describe( 'modules/analytics-4 audience settings', () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		store = registry.stores[ CORE_USER ].store;
+
+		audienceSettingsResponse = {
+			configuredAudiences: [ 'audienceA', 'audienceB' ],
+			isAudienceSegmentationWidgetHidden: false,
+			didSetAudiences: true,
+		};
+
+		audienceSettingsSortedResponse = {
+			configuredAudiences: [ 'audienceA', 'audienceB' ],
+			isAudienceSegmentationWidgetHidden: false,
+		};
+
+		availableAudiences = [
+			{
+				name: 'audienceA',
+				description: 'Audience A',
+				displayName: 'Audience A',
+				audienceType: 'DEFAULT_AUDIENCE',
+				audienceSlug: 'audience-a',
+			},
+			{
+				name: 'audienceB',
+				description: 'Audience B',
+				displayName: 'Audience B',
+				audienceType: 'SITE_KIT_AUDIENCE',
+				audienceSlug: 'audience-b',
+			},
+		];
 	} );
 
 	afterAll( () => {
@@ -134,9 +139,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					.setAvailableAudiences( availableAudiences );
 				registry
 					.dispatch( CORE_USER )
-					.setConfiguredAudiences(
-						audienceSettingsResponse.configuredAudiences
-					);
+					.setConfiguredAudiences( [ 'audienceB', 'audienceA' ] );
 				registry
 					.dispatch( CORE_USER )
 					.setAudienceSegmentationWidgetHidden(
@@ -222,6 +225,36 @@ describe( 'modules/analytics-4 audience settings', () => {
 				} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
+		describe( 'resetAudienceSettings', () => {
+			it( 'should reset the audience settings data in the store', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				await registry.dispatch( CORE_USER ).resetAudienceSettings();
+
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
+
+				expect(
+					registry.select( CORE_USER ).getAudienceSettings()
+				).toEqual( audienceSettingsResponse );
+
+				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint );
 			} );
 		} );
 	} );
@@ -378,6 +411,50 @@ describe( 'modules/analytics-4 audience settings', () => {
 						.isAudienceSegmentationWidgetHidden()
 				).toEqual(
 					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+			} );
+		} );
+
+		describe( 'didSetAudiences', () => {
+			it( 'should return undefined while audience settings are loading', async () => {
+				freezeFetch( audienceSettingsEndpoint );
+
+				expect(
+					registry.select( CORE_USER ).didSetAudiences()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).didSetAudiences()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
+
+				expect( registry.select( CORE_USER ).didSetAudiences() ).toBe(
+					true
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return the `didSetAudiences` flag from the audience settings', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAudienceSettings( audienceSettingsResponse );
+
+				expect( registry.select( CORE_USER ).didSetAudiences() ).toBe(
+					true
 				);
 			} );
 		} );

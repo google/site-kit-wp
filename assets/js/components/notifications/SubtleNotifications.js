@@ -17,42 +17,11 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { useFeature } from '../../hooks/useFeature';
-import {
-	PAXSetupSuccessSubtleNotification,
-	SetupSuccessSubtleNotification,
-} from '../../modules/ads/components/notifications/';
-import AudienceSegmentationSetupSuccessSubtleNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import { RRMSetupSuccessSubtleNotification } from '../../modules/reader-revenue-manager/components/dashboard';
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
+import Notifications from './Notifications';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function SubtleNotifications() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-	const rrmModuleEnabled = useFeature( 'rrmModule' );
-
-	// Each notification component rendered here has its own logic to determine
-	// whether it should be displayed; in most cases none of these components
-	// will be displayed, but it's also (currently) possible for multiple
-	// notifications to be displayed if they each meet their criteria and haven't
-	// been dismissed by the user.
-	//
-	// Because these notifications are subtle and small, this is acceptable UX.
-	return (
-		<Fragment>
-			{ audienceSegmentationEnabled && (
-				<AudienceSegmentationSetupSuccessSubtleNotification />
-			) }
-			<GA4AdSenseLinkedNotification />
-			<SetupSuccessSubtleNotification />
-			{ rrmModuleEnabled && <RRMSetupSuccessSubtleNotification /> }
-			<PAXSetupSuccessSubtleNotification />
-		</Fragment>
-	);
+	return <Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />;
 }

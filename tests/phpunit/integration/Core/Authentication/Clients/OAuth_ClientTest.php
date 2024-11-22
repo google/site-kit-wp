@@ -326,9 +326,10 @@ class OAuth_ClientTest extends TestCase {
 		$user_options = new User_Options( $context );
 		$client       = new OAuth_Client( $context, null, $user_options );
 
-		$base_scopes        = $client->get_required_scopes();
-		$post_auth_redirect = 'http://example.com/test/redirect/url';
-		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
+		$base_scopes              = $client->get_required_scopes();
+		$post_auth_redirect       = 'http://example.com/test/redirect/url';
+		$post_auth_error_redirect = 'http://example.com/test/redirect/error/url';
+		$authentication_url       = $client->get_authentication_url( $post_auth_redirect, $post_auth_error_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 
@@ -350,7 +351,7 @@ class OAuth_ClientTest extends TestCase {
 		// Does not include any saved additional scopes.
 		$saved_extra_scopes = array( 'http://example.com/saved/extra-scope' );
 		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $saved_extra_scopes );
-		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $post_auth_error_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
@@ -363,7 +364,7 @@ class OAuth_ClientTest extends TestCase {
 			'http://example.com/foo/bar',
 			'http://example.com/bar/baz',
 		);
-		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $extra_scopes );
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $post_auth_error_redirect, $extra_scopes );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
@@ -373,6 +374,9 @@ class OAuth_ClientTest extends TestCase {
 
 		// Verify the notification query parameter has been added to the redirect URL.
 		$this->assertEquals( add_query_arg( 'notification', 'authentication_success', $post_auth_redirect ), $user_options->get( OAuth_Client::OPTION_REDIRECT_URL ) );
+
+		// Verify the error redirect is saved.
+		$this->assertEquals( $post_auth_error_redirect, $user_options->get( OAuth_Client::OPTION_ERROR_REDIRECT_URL ) );
 	}
 
 	public function test_get_authentication_url__with_additional_scopes() {
@@ -387,7 +391,7 @@ class OAuth_ClientTest extends TestCase {
 			'https://example.com/test/scope/c',
 		);
 
-		$authentication_url = $client->get_authentication_url( '', $additional_scopes );
+		$authentication_url = $client->get_authentication_url( '', '', $additional_scopes );
 
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$requested_scopes = explode( ' ', $params['scope'] );

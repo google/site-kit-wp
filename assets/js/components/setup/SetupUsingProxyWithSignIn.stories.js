@@ -17,186 +17,217 @@
  */
 
 /**
+ * External dependencies
+ */
+import { withQuery } from '@storybook/addon-queryparams';
+
+/**
  * Internal dependencies
  */
 import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-	PERMISSION_VIEW_SHARED_DASHBOARD,
 	PERMISSION_READ_SHARED_MODULE_DATA,
+	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
 import {
 	provideSiteConnection,
 	provideUserAuthentication,
 	provideModules,
 	provideUserCapabilities,
+	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 function Template() {
-	return <SetupUsingProxyWithSignIn />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<SetupUsingProxyWithSignIn />
+		</ViewContextProvider>
+	);
 }
 
-export const Start = Template.bind( {} );
-Start.storyName = 'Start';
-
-export const StartWithError = Template.bind( {} );
-StartWithError.storyName = 'Start – with error';
-StartWithError.args = {
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
-			connected: false,
 			hasConnectedAdmins: false,
+			resettable: false,
 		} );
-	},
-};
 
-export const StartUserInput = Template.bind( {} );
-StartUserInput.storyName = 'Start [User Input]';
-StartUserInput.args = {
-	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
-				active: true,
-				connected: true,
+				active: false,
+				connected: false,
 			},
 		] );
 	},
 };
 
-export const StartUserInputError = Template.bind( {} );
-StartUserInputError.storyName = 'Start – with error [User Input]';
-StartUserInputError.args = {
+export const DefaultWithStagingEnvironmentWarning = Template.bind( {} );
+DefaultWithStagingEnvironmentWarning.storyName =
+	'Default - Staging environment warning';
+DefaultWithStagingEnvironmentWarning.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			connected: false,
-			hasConnectedAdmins: false,
-		} );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
-				active: true,
-				connected: true,
+				active: false,
+				connected: false,
 			},
 		] );
 	},
 };
 
-export const DisconnectedURLMismatch = Template.bind( {} );
-DisconnectedURLMismatch.storyName = 'Disconnected - URL Mismatch';
-DisconnectedURLMismatch.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry, {
-			authenticated: false,
-			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-		} );
-	},
-};
-
-export const DisconnectedURLMismatchUserInput = Template.bind( {} );
-DisconnectedURLMismatchUserInput.storyName =
-	'Disconnected - URL Mismatch [User Input]';
-DisconnectedURLMismatchUserInput.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry, {
-			authenticated: false,
-			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-		} );
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-	},
-};
-
-export const AnalyticsActive = Template.bind( {} );
-AnalyticsActive.storyName = 'Start - with Analytics Active';
-AnalyticsActive.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-	},
-};
-
-export const AnalyticsInactive = Template.bind( {} );
-AnalyticsInactive.storyName = 'Start - with Analytics Inactive';
-
-export const SharedDashboardAdminCanView = Template.bind( {} );
-SharedDashboardAdminCanView.storyName =
-	'Start - with Dashboard Sharing enabled and available';
-SharedDashboardAdminCanView.args = {
+export const DefaultWithDashboardSharing = Template.bind( {} );
+DefaultWithDashboardSharing.storyName =
+	'Default - with Dashboard Sharing enabled and available';
+DefaultWithDashboardSharing.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
 			hasMultipleAdmins: true,
 		} );
 
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideUserCapabilities( registry, {
-			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
+		const commonModuleCapabilities = {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				'search-console'
 			) ]: true,
+		};
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
 		} );
+
+		provideModules( registry, [
+			{ slug: 'search-console', active: true, connected: true },
+		] );
 	},
 };
 
-export const SharedDashboardSingleAdminCanView = Template.bind( {} );
-SharedDashboardSingleAdminCanView.storyName =
-	'Start - with Dashboard Sharing enabled and available but there is only one admin';
-SharedDashboardSingleAdminCanView.args = {
+export const DefaultWithDashboardSharingOneAdmin = Template.bind( {} );
+DefaultWithDashboardSharingOneAdmin.storyName =
+	'Default - with Dashboard Sharing enabled and available but there is only one admin';
+DefaultWithDashboardSharingOneAdmin.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
 			hasMultipleAdmins: false,
 		} );
 
+		const commonModuleCapabilities = {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'search-console'
+			) ]: true,
+		};
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+
+		provideModules( registry, [
+			{ slug: 'search-console', active: true, connected: true },
+		] );
+	},
+};
+
+export const Connected = Template.bind( {} );
+Connected.storyName = 'Connected';
+Connected.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: true,
+		} );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
-				active: true,
-				connected: true,
+				active: false,
+				connected: false,
 			},
 		] );
+	},
+};
 
-		provideUserCapabilities( registry, {
-			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
-			[ getMetaCapabilityPropertyName(
-				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
-			) ]: true,
+export const DisconnectedURLChanged = Template.bind( {} );
+DisconnectedURLChanged.storyName = 'Disconnected - URL changed';
+DisconnectedURLChanged.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
 		} );
+		provideUserAuthentication( registry, {
+			authenticated: false,
+			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			connectedProxyURL: 'https://example.org',
+		} );
+	},
+};
+
+export const RevokedAccess = Template.bind( {} );
+RevokedAccess.storyName = 'Revoked access';
+RevokedAccess.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+RevokedAccess.parameters = {
+	query: {
+		googlesitekit_context: 'revoked',
+	},
+};
+
+export const ResetSuccess = Template.bind( {} );
+ResetSuccess.storyName = 'Reset success';
+ResetSuccess.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+ResetSuccess.parameters = {
+	query: {
+		googlesitekit_context: '',
+		notification: 'reset_success',
 	},
 };
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in',
 	decorators: [
+		withQuery,
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				provideSiteConnection( registry, {
-					hasConnectedAdmins: false,
-				} );
-
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetTracking( { enabled: false } );
@@ -214,5 +245,8 @@ export default {
 			);
 		},
 	],
-	parameters: { padding: 0 },
+	parameters: {
+		padding: 0,
+		query: { googlesitekit_context: '', notification: '' },
+	},
 };

@@ -45,6 +45,7 @@ import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
+import * as modulesSignInWithGoogle from '../../assets/js/modules/sign-in-with-google';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
@@ -55,12 +56,15 @@ import {
 	PERMISSION_VIEW_MODULE_DETAILS,
 	PERMISSION_MANAGE_OPTIONS,
 	CORE_USER,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import InViewProvider from '../../assets/js/components/InViewProvider';
+import { DEFAULT_NOTIFICATIONS } from '../../assets/js/googlesitekit/notifications/register-defaults';
 
 const allCoreStores = [
 	coreForms,
@@ -79,6 +83,7 @@ const allCoreModules = [
 	modulesPageSpeedInsights,
 	modulesReaderRevenueManager,
 	modulesSearchConsole,
+	modulesSignInWithGoogle,
 	modulesTagManager,
 ];
 
@@ -254,6 +259,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		productPostType: 'product',
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
+		anyoneCanRegister: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -416,13 +422,71 @@ export function provideTracking( registry, enabled = true ) {
  */
 export const provideKeyMetrics = ( registry, extraData = {} ) => {
 	const defaults = {
-		widgetSlugs: [ 'test-slug' ],
+		widgetSlugs: [
+			KM_ANALYTICS_NEW_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
+		],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 		...defaults,
 		...extraData,
 	} );
+};
+
+/**
+ * Provides key metrics user input settings data to the given registry.
+ *
+ * @since 1.140.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetricsUserInputSettings = (
+	registry,
+	extraData = {}
+) => {
+	const defaults = {
+		purpose: {
+			values: [ 'publish_news' ],
+			scope: 'site',
+		},
+	};
+	registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides notifications data to the given registry.
+ *
+ * @since 1.140.0
+ *
+ * @param {Object}  registry    The registry to set up.
+ * @param {Object}  [extraData] Extra data to merge with the default settings.
+ * @param {boolean} overwrite   Merges extra data with default notifications when false, else overwrites default notifications.
+ */
+export const provideNotifications = (
+	registry,
+	extraData,
+	overwrite = false
+) => {
+	const notificationsAPI = coreNotifications.createNotifications( registry );
+
+	let notifications = {};
+	if ( overwrite === false ) {
+		notifications[ 'gathering-data-notification' ] =
+			DEFAULT_NOTIFICATIONS[ 'gathering-data-notification' ];
+	}
+	notifications = { ...notifications, ...extraData };
+
+	for ( const notificationID in notifications ) {
+		notificationsAPI.registerNotification(
+			notificationID,
+			notifications[ notificationID ]
+		);
+	}
 };
 
 /**

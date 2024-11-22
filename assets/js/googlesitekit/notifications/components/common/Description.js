@@ -19,12 +19,16 @@
  */
 import { sanitizeHTML } from '../../../../util';
 
-export default function Description( { description, learnMoreLink } ) {
+export default function Description( {
+	className = 'googlesitekit-publisher-win__desc',
+	text,
+	learnMoreLink,
+} ) {
 	return (
-		<div className="googlesitekit-publisher-win__desc">
+		<div className={ className }>
 			<p>
 				<span
-					dangerouslySetInnerHTML={ sanitizeHTML( description, {
+					dangerouslySetInnerHTML={ sanitizeHTML( text, {
 						ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
 						ALLOWED_ATTR: [ 'href' ],
 					} ) }

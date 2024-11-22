@@ -31,7 +31,7 @@ const {
 	webDataStreamsBatch,
 	defaultEnhancedMeasurementSettings,
 } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
@@ -184,11 +184,8 @@ IceEnabled.scenario = {
 	label: 'Modules/Analytics4/Settings/SettingsEdit/ICE',
 	delay: 250,
 };
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceEnabled.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			global._googlesitekitDashboardSharingData = {
 				settings: {},
@@ -238,10 +235,7 @@ IceEnabled.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);

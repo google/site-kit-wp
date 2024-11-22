@@ -23,13 +23,19 @@ import SetupUsingProxyViewOnly from './SetupUsingProxyViewOnly';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { provideSiteConnection } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 function Template() {
-	return <SetupUsingProxyViewOnly />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<SetupUsingProxyViewOnly />
+		</ViewContextProvider>
+	);
 }
 
-export const Start = Template.bind( {} );
-Start.storyName = 'Start';
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
 export default {
 	title: 'Setup / Using Proxy View-Only',

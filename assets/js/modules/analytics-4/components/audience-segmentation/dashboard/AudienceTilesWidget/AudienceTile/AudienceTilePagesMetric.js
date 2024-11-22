@@ -38,6 +38,7 @@ import {
 	useBreakpoint,
 } from '../../../../../../../hooks/useBreakpoint';
 import { CORE_FORMS } from '../../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -46,11 +47,19 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../../util/errors';
-import PartialDataBadge from './PartialDataBadge';
+import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 import AudienceErrorModal from '../../AudienceErrorModal';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
+import useViewContext from '../../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../../util';
 
 export default function AudienceTilePagesMetric( {
+	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+	audienceTileNumber,
+	audienceSlug,
 	TileIcon,
 	title,
 	topContent,
@@ -58,6 +67,7 @@ export default function AudienceTilePagesMetric( {
 	isTopContentPartialData,
 } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 
 	const postTypeDimension =
 		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
@@ -75,6 +85,10 @@ export default function AudienceTilePagesMetric( {
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	} );
+	const errorRedirectURL = addQueryArgs( global.location.href, {
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 
 	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
@@ -116,6 +130,20 @@ export default function AudienceTilePagesMetric( {
 		)
 	);
 
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'autoSubmit'
+		)
+	);
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
 	const onCreateCustomDimension = useCallback(
 		( { isRetrying } = {} ) => {
 			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
@@ -136,6 +164,7 @@ export default function AudienceTilePagesMetric( {
 						skipModal: true,
 						skipDefaultErrorNotifications: true,
 						redirectURL,
+						errorRedirectURL,
 					},
 				} );
 			}
@@ -143,6 +172,7 @@ export default function AudienceTilePagesMetric( {
 		[
 			hasAnalyticsEditScope,
 			redirectURL,
+			errorRedirectURL,
 			setPermissionScopeError,
 			setValues,
 		]
@@ -151,13 +181,21 @@ export default function AudienceTilePagesMetric( {
 	const onCancel = useCallback( () => {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 			autoSubmit: false,
+			isRetrying: false,
 		} );
+		setSetupErrorCode( null );
 		clearPermissionScopeError();
 		clearError( 'createCustomDimension', [
 			propertyID,
 			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 		] );
-	}, [ clearError, clearPermissionScopeError, propertyID, setValues ] );
+	}, [
+		clearError,
+		clearPermissionScopeError,
+		propertyID,
+		setSetupErrorCode,
+		setValues,
+	] );
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
@@ -177,7 +215,16 @@ export default function AudienceTilePagesMetric( {
 				<div className="googlesitekit-audience-segmentation-tile-metric__title">
 					{ title }
 					{ ! isMobileBreakpoint && isTopContentPartialData && (
-						<PartialDataBadge
+						<BadgeWithTooltip
+							className="googlesitekit-audience-segmentation-partial-data-badge"
+							label={ __( 'Partial data', 'google-site-kit' ) }
+							onTooltipOpen={ () => {
+								trackEvent(
+									`${ viewContext }_audiences-tile`,
+									'view_top_content_partial_data_tooltip',
+									audienceSlug
+								);
+							} }
 							tooltipTitle={ __(
 								'Still collecting full data for this timeframe, partial data is displayed for this metric',
 								'google-site-kit'
@@ -193,31 +240,43 @@ export default function AudienceTilePagesMetric( {
 					onCreateCustomDimension={ onCreateCustomDimension }
 					isSaving={ isSaving }
 				/>
-				{ ( ( customDimensionError && ! isSaving ) ||
-					isRetryingCustomDimensionCreate ) && (
-					<AudienceErrorModal
-						apiErrors={ [ customDimensionError ] }
-						title={ __(
-							'Failed to enable metric',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Oops! Something went wrong. Retry enabling the metric.',
-							'google-site-kit'
-						) }
-						onRetry={ () =>
-							onCreateCustomDimension( { isRetrying: true } )
-						}
-						onCancel={ onCancel }
-						inProgress={ isSaving }
-					/>
-				) }
+				{ /*
+						TODO: The `audienceTileNumber` check is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+						within `AudienceTilesWidget`. This should be removed, and the `AudienceErrorModal` render extracted
+						from here to be rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+					*/ }
+				{ audienceTileNumber === 0 &&
+					( ( customDimensionError && ! isSaving ) ||
+						( isRetryingCustomDimensionCreate &&
+							! isAutoCreatingCustomDimensionsForAudience ) ||
+						hasOAuthError ) && (
+						<AudienceErrorModal
+							apiErrors={ [ customDimensionError ] }
+							title={ __(
+								'Failed to enable metric',
+								'google-site-kit'
+							) }
+							description={ __(
+								'Oops! Something went wrong. Retry enabling the metric.',
+								'google-site-kit'
+							) }
+							onRetry={ () =>
+								onCreateCustomDimension( { isRetrying: true } )
+							}
+							onCancel={ onCancel }
+							inProgress={ isSaving }
+							hasOAuthError={ hasOAuthError }
+							trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
+						/>
+					) }
 			</div>
 		</div>
 	);
 }
 
 AudienceTilePagesMetric.propTypes = {
+	audienceTileNumber: PropTypes.number,
+	audienceSlug: PropTypes.string.isRequired,
 	TileIcon: PropTypes.elementType.isRequired,
 	title: PropTypes.string.isRequired,
 	topContent: PropTypes.object,

@@ -49,7 +49,6 @@ export default function LearnMoreLink() {
 							secondary
 							href={ audienceLearnMoreURL }
 							external
-							hideExternalIndicator
 						/>
 					),
 					strong: <strong />,

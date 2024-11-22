@@ -24,35 +24,39 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../../analytics-4/components/SubtleNotification';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
+import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import useQueryArg from '../../../../hooks/useQueryArg';
 
-export default function SetupSuccessSubtleNotification() {
-	const [ notification, setNotification ] = useQueryArg( 'notification' );
-	const [ slug, setSlug ] = useQueryArg( 'slug' );
+export default function SetupSuccessSubtleNotification( { id, Notification } ) {
+	const [ , setNotification ] = useQueryArg( 'notification' );
+	const [ , setSlug ] = useQueryArg( 'slug' );
 
 	const onDismiss = () => {
 		setNotification( undefined );
 		setSlug( undefined );
 	};
 
-	// The Ads module setup flow is the only module setup flow that uses this new style subtle
-	// notification, all others use the BannerNotification still.
-	if ( 'authentication_success' !== notification || slug !== 'ads' ) {
-		return null;
-	}
-
 	return (
-		<SubtleNotification
-			title={ __(
-				'Success! Your Conversion Tracking ID was added to your site',
-				'google-site-kit'
-			) }
-			description={ __(
-				'You can now track conversions for your Ads campaigns',
-				'google-site-kit'
-			) }
-			onDismiss={ onDismiss }
-		/>
+		<Notification>
+			<SubtleNotification
+				title={ __(
+					'Success! Your Conversion Tracking ID was added to your site',
+					'google-site-kit'
+				) }
+				description={ __(
+					'You can now track conversions for your Ads campaigns',
+					'google-site-kit'
+				) }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+						onDismiss={ onDismiss }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }

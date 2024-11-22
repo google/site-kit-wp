@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -28,12 +29,15 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from './datastore/constants';
-import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from './utils/validation';
+import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 export { registerStore } from './datastore';
 
@@ -43,7 +47,6 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
-		DashboardMainEffectComponent,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
@@ -69,5 +72,34 @@ export const registerModule = ( modules ) => {
 				data: null,
 			};
 		},
+	} );
+};
+
+export const registerNotifications = ( notifications ) => {
+	notifications.registerNotification( 'setup-success-notification-rrm', {
+		Component: RRMSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+			const publicationOnboardingState = await select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationOnboardingState();
+
+			if (
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+				publicationOnboardingState !== undefined
+			) {
+				return true;
+			}
+
+			return false;
+		},
+		isDismissible: false,
 	} );
 };

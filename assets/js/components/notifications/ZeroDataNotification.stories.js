@@ -37,7 +37,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'ZeroDataNotification';
 
 export default {
-	title: 'Components/Notifications/ZeroDataNotification',
+	title: 'Components/Notifications/Banners/ZeroDataNotification',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

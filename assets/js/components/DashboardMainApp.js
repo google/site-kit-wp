@@ -77,7 +77,14 @@ import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
-import { getContextScrollTop } from '../util/scroll';
+import { getNavigationalScrollTop } from '../util/scroll';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
+import Notifications from './notifications/Notifications';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../googlesitekit/notifications/datastore/constants';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -108,6 +115,12 @@ export default function DashboardMainApp() {
 			grantedScopes.includes( scope )
 		);
 
+	const configuredAudiences = useSelect(
+		( select ) =>
+			audienceSegmentationEnabled &&
+			select( CORE_USER ).getConfiguredAudiences()
+	);
+
 	useMount( () => {
 		// Render the current survey portal in 5 seconds after the initial rendering.
 		if ( ! viewOnlyDashboard ) {
@@ -120,7 +133,7 @@ export default function DashboardMainApp() {
 
 			setTimeout( () => {
 				global.scrollTo( {
-					top: getContextScrollTop( widgetClass, breakpoint ),
+					top: getNavigationalScrollTop( widgetClass, breakpoint ),
 					behavior: 'smooth',
 				} );
 
@@ -195,6 +208,23 @@ export default function DashboardMainApp() {
 		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
+	const displayCTAWidget = useDisplayCTAWidget();
+
+	const showKeyMetricsSelectionPanel = useSelect( ( select ) => {
+		if (
+			select( CORE_SITE ).isKeyMetricsSetupCompleted() === true &&
+			isKeyMetricsWidgetHidden === false
+		) {
+			return true;
+		}
+
+		return (
+			select( CORE_USER ).isAuthenticated() &&
+			select( CORE_SITE ).isKeyMetricsSetupCompleted() === false &&
+			displayCTAWidget
+		);
+	} );
+
 	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
@@ -239,6 +269,11 @@ export default function DashboardMainApp() {
 					) }
 				</Fragment>
 			) }
+
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>
 
 			<OverlayNotificationsRenderer />
 
@@ -292,9 +327,11 @@ export default function DashboardMainApp() {
 
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
-			<MetricsSelectionPanel />
+			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ audienceSegmentationEnabled && <AudienceSelectionPanel /> }
+			{ audienceSegmentationEnabled && configuredAudiences && (
+				<AudienceSelectionPanel />
+			) }
 
 			<OfflineNotification />
 		</Fragment>

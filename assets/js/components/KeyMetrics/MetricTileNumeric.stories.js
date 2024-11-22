@@ -71,6 +71,48 @@ ZeroChange.scenario = {
 	delay: 250,
 };
 
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	title: 'New Visitors',
+	metricValue: 0,
+	subText: 'of 0 total visitors',
+	currentValue: 0,
+	previousValue: 0,
+};
+// Since the "Zero" state is similar for all "numeric" KMW tiles, this should be
+// the sole scenario and should not be added to any other "numeric" type KMW components.
+ZeroData.scenario = {
+	label: 'KeyMetrics/MetricTileNumeric/ZeroData',
+	delay: 250,
+};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	title: 'New Visitors',
+	metricValue: 0,
+	subText: 'of 0 total visitors',
+	currentValue: 0,
+	previousValue: 0,
+	loading: true,
+};
+// Since the "Loading" state is the same for all KMW tiles, this is the sole scenario
+// and should not be added to any other generic `MetricTile___` or KMW component.
+Loading.scenario = {
+	label: 'KeyMetrics/MetricTileNumeric/Loading',
+};
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
+
 export default {
 	title: 'Key Metrics/WidgetTiles/MetricTileNumeric',
 	component: MetricTileNumeric,

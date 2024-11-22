@@ -24,19 +24,26 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import { getContextScrollTop } from '../../../../util/scroll';
-import SubtleNotification from '../../../analytics-4/components/SubtleNotification';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { getNavigationalScrollTop } from '../../../../util/scroll';
+import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
+import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 
-export default function PAXSetupSuccessSubtleNotification() {
+export default function PAXSetupSuccessSubtleNotification( {
+	id,
+	Notification,
+} ) {
 	const breakpoint = useBreakpoint();
 
-	const [ notification, setNotification ] = useQueryArg( 'notification' );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const onDismiss = () => {
+	const [ , setNotification ] = useQueryArg( 'notification' );
+
+	const dismissNotice = () => {
 		setNotification( undefined );
 	};
 
@@ -47,34 +54,42 @@ export default function PAXSetupSuccessSubtleNotification() {
 			const widgetClass = '.googlesitekit-widget--partnerAdsPAX';
 
 			global.scrollTo( {
-				top: getContextScrollTop( widgetClass, breakpoint ),
+				top: getNavigationalScrollTop( widgetClass, breakpoint ),
 				behavior: 'smooth',
 			} );
 
-			setNotification( undefined );
+			dismissNotice();
+			dismissNotification( id );
 		}, 50 );
 	};
 
-	if ( PAX_SETUP_SUCCESS_NOTIFICATION !== notification ) {
-		return null;
-	}
-
 	return (
-		<SubtleNotification
-			title={ __(
-				'Your Ads campaign was successfully set up!',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Track your conversions, measure your campaign results and make the most of your ad spend',
-				'google-site-kit'
-			) }
-			onDismiss={ onDismiss }
-			additionalCTA={
-				<Button onClick={ scrollToWidget }>
-					{ __( 'Show me', 'google-site-kit' ) }
-				</Button>
-			}
-		/>
+		<Notification>
+			<SubtleNotification
+				title={ __(
+					'Your Ads campaign was successfully set up!',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Track your conversions, measure your campaign results and make the most of your ad spend',
+					'google-site-kit'
+				) }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+						onDismiss={ dismissNotice }
+					/>
+				}
+				additionalCTA={
+					<CTALinkSubtle
+						id={ id }
+						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
+						onCTAClick={ scrollToWidget }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }

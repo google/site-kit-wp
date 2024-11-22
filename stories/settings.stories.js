@@ -100,6 +100,7 @@ storiesOf( 'Settings', module )
 						'analytics-4',
 						'pagespeed-insights',
 						'search-console',
+						'sign-in-with-google',
 					].map( ( slug ) => ( {
 						slug,
 						active: true,

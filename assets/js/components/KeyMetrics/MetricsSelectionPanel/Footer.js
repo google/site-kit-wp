@@ -26,12 +26,12 @@ import PropTypes from 'prop-types';
  */
 import { useCallback } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
@@ -41,6 +41,7 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
+	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
 } from '../constants';
 import {
 	EDIT_SCOPE,
@@ -51,7 +52,8 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import { SelectionPanelFooter } from '../../SelectionPanel';
+import SelectionPanelFooter from './SelectionPanelFooter';
+import { useFeature } from '../../../hooks/useFeature';
 
 export default function Footer( {
 	isOpen,
@@ -60,15 +62,13 @@ export default function Footer( {
 	onNavigationToOAuthURL = () => {},
 } ) {
 	const viewContext = useViewContext();
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
 			KEY_METRICS_SELECTED
 		)
-	);
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
@@ -80,33 +80,27 @@ export default function Footer( {
 		return tile?.requiredCustomDimensions || [];
 	} );
 
-	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! requiredCustomDimensions?.length ) {
-			return false;
-		}
+	const hasMissingCustomDimensions = useInViewSelect(
+		( select ) => {
+			if ( ! requiredCustomDimensions?.length ) {
+				return false;
+			}
 
-		const hasCustomDimensions = select(
-			MODULES_ANALYTICS_4
-		).hasCustomDimensions( requiredCustomDimensions );
+			const hasCustomDimensions = select(
+				MODULES_ANALYTICS_4
+			).hasCustomDimensions( requiredCustomDimensions );
 
-		return ! hasCustomDimensions;
-	} );
+			return ! hasCustomDimensions;
+		},
+		[ requiredCustomDimensions ]
+	);
 
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
+	const hasAnalytics4EditScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const saveError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveKeyMetricsSettings', [
-			{
-				...keyMetricsSettings,
-				widgetSlugs: selectedMetrics,
-			},
-		] )
 	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
@@ -194,40 +188,17 @@ export default function Footer( {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ trackingCategory ] );
 
-	const selectedMetricsCount = selectedMetrics?.length || 0;
-	let metricsLimitError;
-	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Minimum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select at least %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-			MIN_SELECTED_METRICS_COUNT,
-			selectedMetricsCount
-		);
-	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select up to %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-
-			MAX_SELECTED_METRICS_COUNT,
-			selectedMetricsCount
-		);
-	}
+	const maxSelectedMetricsLimit = isConversionReportingEnabled
+		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
+		: MAX_SELECTED_METRICS_COUNT;
 
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedMetrics }
 			selectedItemSlugs={ selectedMetrics }
 			saveSettings={ saveSettings }
-			saveError={ saveError }
-			itemLimitError={ metricsLimitError }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
-			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
+			maxSelectedItemCount={ maxSelectedMetricsLimit }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
 			onSaveSuccess={ onSaveSuccess }
 			onCancel={ onCancel }

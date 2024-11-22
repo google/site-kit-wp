@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,6 +43,7 @@ import {
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
+import SupportLink from '../../../../components/SupportLink';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
@@ -79,14 +84,28 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 				<Fragment>
 					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 						{ __(
-							'To complete your Reader Revenue Manager account setup you will need to create a publication.',
+							'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.',
 							'google-site-kit'
 						) }
 					</h3>
 					<p className="googlesitekit-setup-module__description">
-						{ __(
-							'Once you have created your publication, it is submitted for review.',
-							'google-site-kit'
+						{ createInterpolateElement(
+							__(
+								'Once you have created your publication, it is submitted for review. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<SupportLink
+										path="/news/publisher-center/answer/11449914"
+										external
+										aria-label={ __(
+											'Learn more about setting up Reader Revenue Manager',
+											'google-site-kit'
+										) }
+									/>
+								),
+							}
 						) }
 					</p>
 					<div className="googlesitekit-setup-module__action">

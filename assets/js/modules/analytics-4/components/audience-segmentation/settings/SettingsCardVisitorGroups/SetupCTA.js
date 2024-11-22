@@ -19,39 +19,79 @@
 /**
  * WordPress dependencies
  */
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupCTAWidget';
-import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import { ProgressBar } from 'googlesitekit-components';
+import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import Link from '../../../../../../components/Link';
+import { AudienceErrorModal } from '../../dashboard';
+import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
+import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../../util';
 
 export default function SetupCTA() {
-	const { dismissItem } = useDispatch( CORE_USER );
+	const viewContext = useViewContext();
 
-	const { isSaving, onEnableGroups } = useEnableAudienceGroup( {
-		redirectURL: global.location.href,
-		onSuccess: () => {
-			// Dismiss success notification in dashboard.
-			dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
-		},
-	} );
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isPromptDismissed(
-			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
+		useEnableAudienceGroup( {
+			redirectURL: global.location.href,
+			onSuccess: () => {
+				// Dismiss success notification in dashboard.
+				dismissNotification(
+					AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
+				);
+			},
+			onError: () => {
+				setShowErrorModal( true );
+			},
+		} );
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_SEGMENTATION_SETUP_FORM,
+			'autoSubmit'
 		)
 	);
 
-	if ( isDismissed === undefined || isDismissed ) {
-		return null;
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+
+	function handleEnableGroups() {
+		trackEvent(
+			`${ viewContext }_audiences-setup-cta-settings`,
+			'enable_groups'
+		).finally( onEnableGroups );
 	}
+
+	const onCancel = () => {
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+		clearPermissionScopeError();
+		setSetupErrorCode( null );
+		setShowErrorModal( false );
+	};
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">
@@ -68,9 +108,22 @@ export default function SetupCTA() {
 				</div>
 			) }
 			{ ! isSaving && (
-				<Link onClick={ onEnableGroups }>
+				<Link onClick={ handleEnableGroups }>
 					{ __( 'Enable groups', 'google-site-kit' ) }
 				</Link>
+			) }
+			{ ( showErrorModal || hasOAuthError ) && (
+				<AudienceErrorModal
+					hasOAuthError={ hasOAuthError }
+					apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
+					onRetry={ onEnableGroups }
+					inProgress={ isSaving }
+					onCancel={
+						hasOAuthError
+							? onCancel
+							: () => setShowErrorModal( false )
+					}
+				/>
 			) }
 		</div>
 	);

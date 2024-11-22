@@ -29,13 +29,28 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../components/Link';
+import { Button } from 'googlesitekit-components';
+import { trackEvent } from '../../../../../../util';
+import useViewContext from '../../../../../../hooks/useViewContext';
 
 export default function RetryButton( { handleRetry } ) {
+	const viewContext = useViewContext();
+
 	return (
-		<Link danger onClick={ handleRetry }>
+		<Button
+			className="googlesitekit-audience-selection-panel__error-notice-action"
+			onClick={ () => {
+				handleRetry();
+
+				trackEvent(
+					`${ viewContext }_audiences-sidebar`,
+					'data_loading_error_retry'
+				);
+			} }
+			tertiary
+		>
 			{ __( 'Retry', 'google-site-kit' ) }
-		</Link>
+		</Button>
 	);
 }
 

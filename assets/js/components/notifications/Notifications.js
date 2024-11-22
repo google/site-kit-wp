@@ -25,12 +25,23 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import useViewContext from '../../hooks/useViewContext';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
-export default function Notifications( { viewContext, areaSlug } ) {
+export default function Notifications( {
+	areaSlug,
+	groupID = NOTIFICATION_GROUPS.DEFAULT,
+} ) {
+	const viewContext = useViewContext();
 	const queuedNotifications = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).getQueuedNotifications( viewContext )
+		select( CORE_NOTIFICATIONS ).getQueuedNotifications(
+			viewContext,
+			groupID
+		)
 	);
 
 	if (
@@ -41,7 +52,7 @@ export default function Notifications( { viewContext, areaSlug } ) {
 	}
 
 	const { id, Component: ActiveNotification } = queuedNotifications[ 0 ];
-	const props = { id, ...getNotificationComponentProps( id ) };
+	const props = { ...getNotificationComponentProps( id ) };
 
 	return <ActiveNotification { ...props } />;
 }

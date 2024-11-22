@@ -26,6 +26,9 @@ import {
 	provideUserAuthentication,
 	provideModules,
 	provideSiteInfo,
+	provideNotifications,
+	act,
+	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import {
 	CORE_USER,
@@ -33,6 +36,9 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -41,6 +47,7 @@ describe( 'ErrorNotifications', () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
@@ -50,21 +57,60 @@ describe( 'ErrorNotifications', () => {
 				'https://www.googleapis.com/auth/analytics.readonly',
 			],
 		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideNotifications(
+			registry,
+			{
+				'authentication-error':
+					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+			},
+			true
+		);
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'renders UnsatisfiedScopesAlert when user is authenticated', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
+	it( 'renders UnsatisfiedScopesAlert when user is authenticated', async () => {
+		act( () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+			} );
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+				},
+				true
+			);
 		} );
-		const { container } = render( <ErrorNotifications />, {
+
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
@@ -85,6 +131,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		const { container, getByRole } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Get help' );
@@ -96,23 +143,39 @@ describe( 'ErrorNotifications', () => {
 		);
 	} );
 
-	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-			],
+	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', async () => {
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry, {
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				],
+			} );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
 		} );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Site Kit needs additional permissions to detect updates to tags on your site'
@@ -120,34 +183,40 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-				'https://www.googleapis.com/auth/analytics.readonly',
-			],
+	it( 'does not render the GTE message if there are multiple unsatisfied scopes', async () => {
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry, {
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+			} );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
 		} );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
-		provideUserAuthentication( registry, {
-			unsatisfiedScopes: [
-				'https://www.googleapis.com/auth/tagmanager.readonly',
-			],
-		} );
-
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-		} );
+		await act( waitForRegistry );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
@@ -156,18 +225,42 @@ describe( 'ErrorNotifications', () => {
 	} );
 
 	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', () => {
-		provideUserAuthentication( registry, {
-			authenticated: false,
-		} );
-		provideSiteInfo( registry, {
-			setupErrorRedoURL: '#',
-			setupErrorCode: 'access_denied',
-			setupErrorMessage:
-				'Setup was interrupted because you did not grant the necessary permissions',
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry, {
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+				authenticated: false,
+			} );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
+			provideSiteInfo( registry, {
+				setupErrorRedoURL: '#',
+				setupErrorCode: 'access_denied',
+				setupErrorMessage:
+					'Setup was interrupted because you did not grant the necessary permissions',
+			} );
 		} );
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
@@ -175,16 +268,36 @@ describe( 'ErrorNotifications', () => {
 	} );
 
 	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', () => {
-		provideUserAuthentication( registry );
-		provideSiteInfo( registry, {
-			setupErrorCode: 'access_denied',
-			setupErrorMessage:
-				'Setup was interrupted because you did not grant the necessary permissions',
-			setupErrorRedoURL: '#',
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			] );
+			provideUserAuthentication( registry );
+			provideNotifications(
+				registry,
+				{
+					'authentication-error':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
+					'authentication-error-gte':
+						DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				},
+				true
+			);
+			provideSiteInfo( registry, {
+				setupErrorCode: 'access_denied',
+				setupErrorMessage:
+					'Setup was interrupted because you did not grant the necessary permissions',
+				setupErrorRedoURL: '#',
+			} );
 		} );
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
@@ -215,6 +328,7 @@ describe( 'ErrorNotifications', () => {
 
 		const { container } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );

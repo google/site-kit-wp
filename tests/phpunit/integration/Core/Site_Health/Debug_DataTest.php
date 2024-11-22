@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Tests\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
@@ -26,10 +28,10 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Debug_DataTest extends TestCase {
 
-	public function new_debug_data() {
-		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+	public function new_debug_data( $context = null, $user_options = null ) {
+		$context         = $context ? $context : new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options         = new Options( $context );
-		$user_options    = new User_Options( $context );
+		$user_options    = $user_options ? $user_options : new User_Options( $context );
 		$authentication  = new Authentication( $context, $options, $user_options );
 		$modules         = new Modules( $context, $options, $user_options, $authentication );
 		$dismissed_items = new Dismissed_Items( $user_options );
@@ -51,8 +53,6 @@ class Debug_DataTest extends TestCase {
 	}
 
 	public function test_registered_debug_information() {
-		self::enable_feature( 'conversionInfra' );
-
 		remove_all_filters( 'debug_information' );
 		$debug_data = $this->new_debug_data();
 		$debug_data->register();
@@ -143,5 +143,67 @@ class Debug_DataTest extends TestCase {
 			array_intersect( $sharing_keys, $actual_keys ),
 			"Failed to assert that dashboard sharing fields were present for $module_slug"
 		);
+	}
+
+	public function test_key_metrics_fields__not_setup() {
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Not setup', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+	}
+
+	public function test_key_metrics_fields__setup_and_enabled_tailored() {
+		update_option( Key_Metrics_Setup_Completed_By::OPTION, true );
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+		$this->assertEquals( 'Tailored Metrics', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
+	}
+
+	public function test_key_metrics_fields__setup_and_enabled_manual() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context );
+
+		update_option( Key_Metrics_Setup_Completed_By::OPTION, true );
+		$user_options->set( Key_Metrics_Settings::OPTION, array( 'widgetSlugs' => array( 'widget1', 'widget2' ) ) );
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data( $context, $user_options );
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+		$this->assertEquals( 'Manual Selection', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
+	}
+
+	public function test_key_metrics_fields__setup_and_disabled() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context );
+
+		update_option( Key_Metrics_Setup_Completed_By::OPTION, true );
+		$user_options->set( Key_Metrics_Settings::OPTION, array( 'isWidgetHidden' => true ) );
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data( $context, $user_options );
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertEquals( 'Setup and Disabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
 	}
 }

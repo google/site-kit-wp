@@ -40,6 +40,54 @@ export const USER_INPUT_MAX_ANSWERS = {
 export const USER_INPUT_CURRENTLY_EDITING_KEY =
 	'googlesitekit-user-input-currently-editing';
 
+export const FORM_USER_INPUT_QUESTION_NUMBER = 'user_input_question_number';
+export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
+export const USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY =
+	'user-input-legacy-site-purpose-dismissed-item';
+
+/**
+ * Gets available questions for user input settings.
+ *
+ * @since 1.139.0
+ * @private
+ *
+ * @return {Object} Questions object.
+ */
+export function getUserInputQuestions() {
+	return [
+		{
+			title: __(
+				'What is the main purpose of this site?',
+				'google-site-kit'
+			),
+			description: __(
+				'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track progress towards your specific goals',
+				'google-site-kit'
+			),
+		},
+		{
+			title: __(
+				'How often do you create new content for this site?',
+				'google-site-kit'
+			),
+			description: __(
+				'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation',
+				'google-site-kit'
+			),
+		},
+		{
+			title: __(
+				'What are your top goals for this site?',
+				'google-site-kit'
+			),
+			description: __(
+				'Based on your answers, Site Kit will tailor the metrics and recommendations you see on your dashboard to help you make progress in these areas',
+				'google-site-kit'
+			),
+		},
+	];
+}
+
 /**
  * Gets available answers for user input settings.
  *
@@ -55,6 +103,8 @@ export function getUserInputAnswers() {
 				'Sell products or services',
 				'google-site-kit'
 			),
+			sell_products: __( 'Sell products', 'google-site-kit' ),
+			provide_services: __( 'Provide services', 'google-site-kit' ),
 			monetize_content: __(
 				'Monetize content (with ads or affiliate links)',
 				'google-site-kit'
@@ -109,6 +159,50 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 			other: __( 'Other', 'google-site-kit' ),
+		},
+	};
+}
+
+/**
+ * Gets available answer descriptions for user input settings.
+ *
+ * @since 1.139.0
+ * @private
+ *
+ * @return {Object} Answer descriptions object.
+ */
+export function getUserInputAnswersDescription() {
+	return {
+		USER_INPUT_ANSWERS_PURPOSE: {
+			sell_products_or_service: __(
+				'E.g. selling products like devices, apparel, equipment, etc. or offering services like courses, consulting, tutoring, etc.',
+				'google-site-kit'
+			),
+			sell_products: __(
+				'E.g. selling devices, apparel, equipment, etc.',
+				'google-site-kit'
+			),
+			provide_services: __(
+				'E.g. offering courses, consulting, tutoring, etc.',
+				'google-site-kit'
+			),
+			monetize_content: __(
+				'Using display ads, affiliate links, sponsored content, etc.',
+				'google-site-kit'
+			),
+			publish_blog: __(
+				'Writing on a topic you’re passionate about, no focus on monetizing content',
+				'google-site-kit'
+			),
+			publish_news: __(
+				'E.g. local news, investigative pieces, interviews, etc.',
+				'google-site-kit'
+			),
+			share_portfolio: __(
+				'My website represents me or my company',
+				'google-site-kit'
+			),
+			other: undefined,
 		},
 	};
 }

@@ -23,6 +23,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
@@ -59,6 +60,9 @@ export default {
 					},
 				] );
 				provideModuleRegistrations( registry );
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
+				} );
 			};
 
 			return (

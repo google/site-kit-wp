@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
@@ -26,7 +31,12 @@ import ViewedStateObserver from './ViewedStateObserver';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function Notification( { id, children } ) {
+export default function Notification( {
+	id,
+	className,
+	gaTrackingEventArgs,
+	children,
+} ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
 	const trackEvents = useNotificationEvents( id );
@@ -36,13 +46,16 @@ export default function Notification( { id, children } ) {
 	// Track view once.
 	useEffect( () => {
 		if ( ! isViewedOnce && viewed ) {
-			trackEvents.view();
+			trackEvents.view(
+				gaTrackingEventArgs?.label,
+				gaTrackingEventArgs?.value
+			);
 			setIsViewedOnce( true );
 		}
-	}, [ viewed, trackEvents, isViewedOnce ] );
+	}, [ viewed, trackEvents, isViewedOnce, gaTrackingEventArgs ] );
 
 	return (
-		<section id={ id } className="googlesitekit-publisher-win" ref={ ref }>
+		<section id={ id } ref={ ref } className={ className }>
 			{ children }
 
 			{ /* Encapsulate observer to dispose when no longer needed. */ }
@@ -56,3 +69,13 @@ export default function Notification( { id, children } ) {
 		</section>
 	);
 }
+
+Notification.propTypes = {
+	id: PropTypes.string,
+	className: PropTypes.string,
+	gaTrackingEventArgs: PropTypes.shape( {
+		label: PropTypes.string,
+		value: PropTypes.string,
+	} ),
+	children: PropTypes.node,
+};

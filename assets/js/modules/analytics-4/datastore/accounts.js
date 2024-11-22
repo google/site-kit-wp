@@ -30,6 +30,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -43,24 +44,38 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
+import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
+import {
+	populateAccountID,
+	populatePropertyAndAccountIds,
+} from '../utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
-	controlCallback() {
+	controlCallback( { pageToken } ) {
 		return API.get(
 			'modules',
 			'analytics-4',
 			'account-summaries',
-			{},
+			{ pageToken },
 			{
 				useCache: false,
 			}
 		);
 	},
-	reducerCallback( state, accountSummaries ) {
-		return { ...state, accountSummaries };
+	argsToParams: ( pageToken ) => {
+		return { pageToken };
+	},
+	reducerCallback( state, response ) {
+		return {
+			...state,
+			accountSummaries: [
+				...( state.accountSummaries || [] ),
+				...( response.accountSummaries || [] ),
+			],
+		};
 	},
 } );
 
@@ -93,6 +108,9 @@ const fetchCreateAccountStore = createFetchStore( {
 const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
+const RESET_ACCOUNT_SETTINGS = 'RESET_ACCOUNT_SETTINGS';
+const TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES =
+	'TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES';
 
 const baseInitialState = {
 	accountSummaries: undefined,
@@ -119,6 +137,20 @@ const baseActions = {
 		return dispatch(
 			MODULES_ANALYTICS_4
 		).invalidateResolutionForStoreSelector( 'getAccountSummaries' );
+	},
+
+	/**
+	 * Resets the account settings.
+	 *
+	 * @since 1.138.0
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetAccountSettings() {
+		return {
+			payload: {},
+			type: RESET_ACCOUNT_SETTINGS,
+		};
 	},
 
 	/**
@@ -222,9 +254,9 @@ const baseActions = {
 			return null;
 		}
 
-		const accountSummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAccountSummaries();
+		const accountSummaries = yield commonActions.await(
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
+		);
 
 		const matchedAccount = accountSummaries.find( ( account ) =>
 			account.propertySummaries.some(
@@ -234,55 +266,102 @@ const baseActions = {
 
 		return matchedAccount || null;
 	},
+
+	/**
+	 * Creates an action to transform and sort account summaries.
+	 *
+	 * This action is typically dispatched when account summaries need to be
+	 * transformed (e.g., extracting and populating relevant account and property
+	 * IDs) and then sorted in a case-insensitive manner by display name.
+	 *
+	 * @since 1.138.0
+	 *
+	 * @return {Object} The action object with the type `TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES`.
+	 */
+	transformAndSortAccountSummaries() {
+		return {
+			type: TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES,
+		};
+	},
 };
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+/**
+ * Creates immer reducer.
+ */
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case START_SELECTING_ACCOUNT: {
-			return {
-				...state,
-				finishedSelectingAccount: false,
-			};
-		}
+		case START_SELECTING_ACCOUNT:
+			state.finishedSelectingAccount = false;
+			break;
 
-		case FINISH_SELECTING_ACCOUNT: {
-			return {
-				...state,
-				finishedSelectingAccount: true,
-			};
-		}
+		case FINISH_SELECTING_ACCOUNT:
+			state.finishedSelectingAccount = true;
+			break;
 
-		case RESET_ACCOUNT_SUMMARIES: {
-			return {
-				...state,
-				accountSummaries: undefined,
-				settings: {
-					...state.settings,
-					accountID: undefined,
-					propertyID: undefined,
-					measurementID: undefined,
-					webDataStreamID: undefined,
-				},
-			};
-		}
+		case RESET_ACCOUNT_SUMMARIES:
+			state.accountSummaries = undefined;
+			break;
 
-		default: {
+		case RESET_ACCOUNT_SETTINGS:
+			state.settings.accountID = undefined;
+			state.settings.propertyID = undefined;
+			state.settings.measurementID = undefined;
+			state.settings.webDataStreamID = undefined;
+			break;
+
+		case TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES:
+			if ( ! state.accountSummaries?.length ) {
+				return state;
+			}
+
+			state.accountSummaries = state.accountSummaries.map(
+				( account ) => {
+					const accountObj = populateAccountID( account );
+					accountObj.propertySummaries = (
+						accountObj.propertySummaries || []
+					).map( ( property ) =>
+						populatePropertyAndAccountIds( property )
+					);
+
+					return accountObj;
+				}
+			);
+
+			state.accountSummaries = caseInsensitiveListSort(
+				state.accountSummaries,
+				'displayName'
+			);
+
 			return state;
-		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAccountSummaries() {
 		const registry = yield commonActions.getRegistry();
+		let nextPageToken = '';
 		const summaries = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAccountSummaries();
+
+		// Fetch initial account summaries if they are undefined.
 		if ( summaries === undefined ) {
-			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
+			do {
+				const { error, response } =
+					yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries(
+						nextPageToken
+					);
+				nextPageToken = response?.nextPageToken || '';
+
+				if ( error ) {
+					break;
+				}
+			} while ( nextPageToken );
 		}
+
+		yield baseActions.transformAndSortAccountSummaries();
 	},
 };
 

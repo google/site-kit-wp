@@ -19,10 +19,13 @@
 /**
  * Internal dependencies
  */
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import {
 	act,
@@ -31,11 +34,17 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 	render,
+	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
+import * as tracking from '../../../../../../util/tracking';
 import ErrorNotice from './ErrorNotice';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ErrorNotice', () => {
 	let registry;
@@ -77,6 +86,7 @@ describe( 'ErrorNotice', () => {
 		provideUserInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -102,6 +112,10 @@ describe( 'ErrorNotice', () => {
 			availableAudiences,
 		} );
 
+		registry
+			.dispatch( CORE_UI )
+			.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
 		invalidateResolutionSpy = jest.spyOn(
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'invalidateResolution'
@@ -110,6 +124,7 @@ describe( 'ErrorNotice', () => {
 
 	afterEach( () => {
 		invalidateResolutionSpy.mockReset();
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should not render if there are no errors', async () => {
@@ -137,6 +152,7 @@ describe( 'ErrorNotice', () => {
 
 			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} );
 
 			await waitForRegistry();
@@ -146,6 +162,11 @@ describe( 'ErrorNotice', () => {
 					/Insufficient permissions, contact your administrator/i
 				)
 			).toBeInTheDocument();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+				'insufficient_permissions_error'
+			);
 		}
 	);
 
@@ -200,6 +221,7 @@ describe( 'ErrorNotice', () => {
 				<ErrorNotice />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -207,12 +229,22 @@ describe( 'ErrorNotice', () => {
 
 			expect( getByText( /request access/i ) ).toBeInTheDocument();
 			expect(
-				getByRole( 'link', { name: /request access/i } )
+				getByRole( 'button', { name: /request access/i } )
 			).toHaveAttribute(
 				'href',
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getServiceEntityAccessURL()
+			);
+
+			// Verify that an event is tracked when the link is clicked.
+			fireEvent.click(
+				getByRole( 'button', { name: /request access/i } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+				'insufficient_permissions_error_request_access'
 			);
 		}
 	);
@@ -232,11 +264,17 @@ describe( 'ErrorNotice', () => {
 
 			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
 				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} );
 
 			await waitForRegistry();
 
 			expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+				'data_loading_error'
+			);
 		}
 	);
 
@@ -289,6 +327,11 @@ describe( 'ErrorNotice', () => {
 						},
 					},
 				} );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getAudienceSettings();
 
 				expect(
 					registry
@@ -352,6 +395,7 @@ describe( 'ErrorNotice', () => {
 				<ErrorNotice />,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -364,6 +408,11 @@ describe( 'ErrorNotice', () => {
 			fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
 			expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
+				'data_loading_error_retry'
+			);
 		} );
 	} );
 } );

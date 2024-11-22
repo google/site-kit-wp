@@ -75,7 +75,14 @@ export const decorators = [
 		}
 
 		return (
-			<WithTestRegistry features={ features } route={ route }>
+			<WithTestRegistry
+				features={ features }
+				route={ route }
+				// Expose registry as global for tinkering.
+				callback={ ( registry ) => {
+					global.registry = registry;
+				} }
+			>
 				<Story />
 			</WithTestRegistry>
 		);
@@ -110,6 +117,11 @@ export const decorators = [
 
 export const parameters = {
 	layout: 'fullscreen',
+	options: {
+		storySort: {
+			method: 'alphabetical',
+		},
+	},
 	async puppeteerTest( page ) {
 		await page.waitForTimeout( 50 );
 

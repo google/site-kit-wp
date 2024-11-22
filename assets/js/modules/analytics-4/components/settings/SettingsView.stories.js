@@ -28,7 +28,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const { accountSummaries, webDataStreamsBatch, googleTagSettings } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
@@ -60,18 +60,12 @@ Default.storyName = 'SettingsView';
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'SettingsView ICE Enabled';
-IceEnabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 
 export const IceDisabled = Template.bind( null );
 IceDisabled.storyName = 'SettingsView ICE Disabled';
-IceDisabled.parameters = {
-	features: [ 'conversionInfra' ],
-};
 IceDisabled.args = {
 	enhancedConversionTracking: false,
 };

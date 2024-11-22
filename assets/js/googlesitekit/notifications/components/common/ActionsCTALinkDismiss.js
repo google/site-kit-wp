@@ -22,53 +22,35 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../datastore/location/constants';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import { SpinnerButton } from 'googlesitekit-components';
 import Dismiss from './Dismiss';
+import CTALink from './CTALink';
 
 export default function ActionsCTALinkDismiss( {
 	id,
+	className = 'googlesitekit-publisher-win__actions',
 	ctaLink,
 	ctaLabel,
+	onCTAClick,
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 } ) {
-	const trackEvents = useNotificationEvents( id );
-
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink )
-	);
-
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const handleCTAClick = async ( event ) => {
-		event.persist();
-		if ( ! event.defaultPrevented ) {
-			event.preventDefault();
-		}
-
-		await Promise.all( [
-			trackEvents.confirm(),
-			dismissNotification( id, { expiresInSeconds: dismissExpires } ),
-		] );
-
-		navigateTo( ctaLink );
-	};
+	const isNavigatingToCTALink = useSelect( ( select ) => {
+		return ctaLink
+			? select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+			: false;
+	} );
 
 	return (
-		<div className="googlesitekit-publisher-win__actions">
-			<SpinnerButton
-				className="googlesitekit-notification__cta"
-				href={ ctaLink }
-				onClick={ handleCTAClick }
-				disabled={ isNavigatingToCTALink }
-			>
-				{ ctaLabel }
-			</SpinnerButton>
+		<div className={ className }>
+			<CTALink
+				id={ id }
+				ctaLink={ ctaLink }
+				ctaLabel={ ctaLabel }
+				onCTAClick={ onCTAClick }
+				dismissExpires={ dismissExpires }
+			/>
 
 			<Dismiss
 				id={ id }

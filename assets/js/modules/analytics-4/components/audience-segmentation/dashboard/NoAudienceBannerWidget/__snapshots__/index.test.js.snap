@@ -1,6 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`NoAudienceBannerWidget should render when there is no configured audience. 1`] = `
+exports[`NoAudienceBannerWidget with a view-only user who's never populated their audience selection should render correctly. 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-lean-cta-banner googlesitekit-no-audience-banner"
+      >
+        <div
+          class="googlesitekit-lean-cta-banner__body"
+        >
+          <div
+            class="googlesitekit-lean-cta-banner__body-icon"
+          >
+            <svg />
+          </div>
+          <div
+            class="googlesitekit-lean-cta-banner__body-content"
+          >
+            <p>
+              You don’t have any visitor groups selected. 
+              <button
+                class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Select groups
+                </span>
+              </button>
+              .
+            </p>
+          </div>
+        </div>
+        <div
+          class="googlesitekit-lean-cta-banner__graphic"
+        >
+          <svg />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NoAudienceBannerWidget with a view-only user who's previously populated their audience selection should render correctly. 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
@@ -35,6 +83,54 @@ exports[`NoAudienceBannerWidget should render when there is no configured audien
               </button>
               .
             </p>
+          </div>
+        </div>
+        <div
+          class="googlesitekit-lean-cta-banner__graphic"
+        >
+          <svg />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NoAudienceBannerWidget with an authenticated user who's never populated their audience selection should render correctly. 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-lean-cta-banner googlesitekit-no-audience-banner"
+      >
+        <div
+          class="googlesitekit-lean-cta-banner__body"
+        >
+          <div
+            class="googlesitekit-lean-cta-banner__body-icon"
+          >
+            <svg />
+          </div>
+          <div
+            class="googlesitekit-lean-cta-banner__body-content"
+          >
+            <p>
+              You don’t have any visitor groups selected. 
+              <button
+                class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Select groups
+                </span>
+              </button>
+              .
+            </p>
             <p>
               You can deactivate this widget in 
               <button
@@ -61,7 +157,7 @@ exports[`NoAudienceBannerWidget should render when there is no configured audien
 </div>
 `;
 
-exports[`NoAudienceBannerWidget should render with correct message when there are additional configurable audiences available 1`] = `
+exports[`NoAudienceBannerWidget with an authenticated user who's previously populated their audience selection should render correctly. 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
@@ -94,71 +190,6 @@ exports[`NoAudienceBannerWidget should render with correct message when there ar
                   Select other groups
                 </span>
               </button>
-              .
-            </p>
-            <p>
-              You can deactivate this widget in 
-              <button
-                class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
-              >
-                <span
-                  class="googlesitekit-cta-link__contents"
-                >
-                  Settings
-                </span>
-              </button>
-              .
-            </p>
-          </div>
-        </div>
-        <div
-          class="googlesitekit-lean-cta-banner__graphic"
-        >
-          <svg />
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`NoAudienceBannerWidget should render with correct message when there is no additional configurable audience available 1`] = `
-<div>
-  <div
-    class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
-  >
-    <div
-      class="googlesitekit-widget__body"
-    >
-      <div
-        class="googlesitekit-lean-cta-banner googlesitekit-no-audience-banner"
-      >
-        <div
-          class="googlesitekit-lean-cta-banner__body"
-        >
-          <div
-            class="googlesitekit-lean-cta-banner__body-icon"
-          >
-            <svg />
-          </div>
-          <div
-            class="googlesitekit-lean-cta-banner__body-content"
-          >
-            <p>
-              It looks like your visitor groups aren’t available anymore. Learn more about how to group site visitors in 
-              <a
-                aria-label="Analytics (opens in a new tab)"
-                class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
-                href="https://support.google.com/analytics/answer/12799087?hl=en-US"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <span
-                  class="googlesitekit-cta-link__contents"
-                >
-                  Analytics
-                </span>
-              </a>
               .
             </p>
             <p>
