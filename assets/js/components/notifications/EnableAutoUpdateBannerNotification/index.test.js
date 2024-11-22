@@ -27,6 +27,8 @@ import {
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
+	act,
 } from '../../../../../tests/js/test-utils';
 import EnableAutoUpdateBannerNotification from '.';
 import useQueryArg from '../../../hooks/useQueryArg';
@@ -112,13 +114,10 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ DISMISSED_ITEM_KEY ] );
 
-		const { container, waitForRegistry } = render(
-			<EnableAutoUpdateBannerNotification />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
+		const { container } = render( <EnableAutoUpdateBannerNotification />, {
+			registry,
+		} );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -222,13 +221,9 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			status: 200,
 		} );
 
-		const { waitForRegistry } = render(
-			<EnableAutoUpdateBannerNotification />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
+		render( <EnableAutoUpdateBannerNotification />, {
+			registry,
+		} );
 
 		expect(
 			await screen.findByText( 'Keep Site Kit up-to-date' )
@@ -250,13 +245,9 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			googlesitekit_update_plugins: true,
 		} );
 
-		const { container, waitForRegistry } = render(
-			<EnableAutoUpdateBannerNotification />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
+		const { container } = render( <EnableAutoUpdateBannerNotification />, {
+			registry,
+		} );
 
 		await waitFor( () =>
 			// When the component is rendered after the initial
