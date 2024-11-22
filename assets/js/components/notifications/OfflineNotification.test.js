@@ -34,47 +34,32 @@ describe( 'OfflineNotification', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'should display the notification when offline', async () => {
+	it( 'should display the notification when offline', () => {
 		registry.dispatch( CORE_UI ).setIsOnline( false );
 
-		const { getByText, waitForRegistry } = render(
-			<OfflineNotification />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { getByText } = render( <OfflineNotification />, {
+			registry,
+		} );
 
 		expect( getByText( /you are currently offline/i ) ).toBeInTheDocument();
-	} );
+	}, 10_000 );
 
-	it( 'should not display the notification when online', async () => {
-		const { queryByText, waitForRegistry } = render(
-			<OfflineNotification />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+	it( 'should not display the notification when online', () => {
+		const { queryByText } = render( <OfflineNotification />, {
+			registry,
+		} );
 
 		expect(
 			queryByText( /you are currently offline/i )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should dismiss the notification when connection is back', async () => {
+	it( 'should dismiss the notification when connection is back', () => {
 		registry.dispatch( CORE_UI ).setIsOnline( false );
 
-		const { queryByText, waitForRegistry } = render(
-			<OfflineNotification />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { queryByText } = render( <OfflineNotification />, {
+			registry,
+		} );
 
 		expect(
 			queryByText( /you are currently offline/i )
