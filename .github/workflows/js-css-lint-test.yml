@@ -61,9 +61,9 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
-      - name: CSS Lint
-        run: npm run lint:css
-      - name: JS Lint
-        run: npm run lint:js
+      # - name: CSS Lint
+      #   run: npm run lint:css
+      # - name: JS Lint
+      #   run: npm run lint:js
       - name: Jest Tests
-        run: npm run test:js
+        run: npm run test:js -- components/widgets

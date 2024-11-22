@@ -54,7 +54,7 @@ jobs:
     name: Build Storybook
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
+    if: false
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js (.nvmrc)

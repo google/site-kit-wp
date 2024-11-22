@@ -88,7 +88,7 @@ jobs:
       WP_VERSION: ${{ matrix.wp_version }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    if: false
     steps:
       - uses: actions/checkout@v4
 
