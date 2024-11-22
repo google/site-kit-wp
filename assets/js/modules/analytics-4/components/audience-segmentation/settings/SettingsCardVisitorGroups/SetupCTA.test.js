@@ -125,6 +125,16 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			body: audiencesFixture,
 		} );
 
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{
+				body: [ 'googlesitekit_post_type' ],
+				status: 200,
+			}
+		);
+
 		freezeFetch( audienceSettingsEndpoint );
 		muteFetch( reportEndpoint );
 
