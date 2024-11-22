@@ -66,4 +66,4 @@ jobs:
       # - name: JS Lint
       #   run: npm run lint:js
       - name: Jest Tests
-        run: npm run test:js -- components/widgets
+        run: npm run test:js -- components
