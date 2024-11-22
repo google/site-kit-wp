@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { mapValues } from 'lodash';
+import { debounce, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -633,11 +633,35 @@ export const waitForTimeouts = ( timeout ) => {
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
+ * @since n.e.x.t Reimplemented using debounced timer for reliability. Falls back to legacy impl when using fake timers.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
+	if ( jest.isMockFunction( setTimeout ) ) {
+		global.console.debug(
+			'Using legacyCreateWaitForRegistry due to use of fake timers'
+		);
+		return legacyCreateWaitForRegistry( registry );
+	}
+	let unsubscribe;
+
+	const waitForRegistry = new Promise( ( resolve ) => {
+		const listener = debounce( resolve, 50, {
+			leading: false,
+			trailing: true,
+		} );
+		unsubscribe = registry.subscribe( listener );
+	} );
+
+	return async () => {
+		await waitForRegistry;
+		unsubscribe();
+	};
+};
+
+const legacyCreateWaitForRegistry = ( registry ) => {
 	const updates = [];
 	const listener = () =>
 		updates.push( new Promise( ( resolve ) => resolve() ) );
