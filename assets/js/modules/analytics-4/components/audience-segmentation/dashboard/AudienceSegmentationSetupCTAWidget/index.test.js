@@ -632,7 +632,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				}
 			);
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 
 			expect(
 				getByRole( 'button', { name: /Don’t show again/i } )
