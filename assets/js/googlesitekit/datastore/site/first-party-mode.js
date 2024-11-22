@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isPlainObject } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 import invariant from 'invariant';
 
 /**
@@ -36,10 +36,12 @@ import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
+const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
 
 const settingsReducerCallback = createReducer(
 	( state, firstPartyModeSettings ) => {
 		state.firstPartyModeSettings = firstPartyModeSettings;
+		state.firstPartyModeSavedSettings = firstPartyModeSettings;
 	}
 );
 
@@ -91,6 +93,7 @@ const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
 
 const baseInitialState = {
 	firstPartyModeSettings: undefined,
+	firstPartyModeSavedSettings: undefined,
 };
 
 const baseActions = {
@@ -124,6 +127,13 @@ const baseActions = {
 			payload: { isEnabled },
 		};
 	},
+
+	resetFirstPartyModeSettings() {
+		return {
+			payload: {},
+			type: RESET_FIRST_PARTY_MODE_SETTINGS,
+		};
+	},
 };
 
 const baseControls = {};
@@ -133,6 +143,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_FIRST_PARTY_MODE_ENABLED: {
 			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
 			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
+			break;
+		}
+
+		case RESET_FIRST_PARTY_MODE_SETTINGS: {
+			state.firstPartyModeSettings = state.firstPartyModeSavedSettings;
 			break;
 		}
 
@@ -210,6 +225,12 @@ const baseSelectors = {
 
 		return isScriptAccessEnabled;
 	} ),
+
+	haveFirstPartyModeSettingsChanged( state ) {
+		const { firstPartyModeSettings, firstPartyModeSavedSettings } = state;
+
+		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
+	},
 };
 
 const store = combineStores(
