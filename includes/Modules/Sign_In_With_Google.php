@@ -38,7 +38,7 @@ use WP_Error;
 use WP_User;
 
 /**
- * Class representing the Sign in With Google module.
+ * Class representing the Sign in with Google module.
  *
  * @since 1.137.0
  * @access private
