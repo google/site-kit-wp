@@ -44,6 +44,9 @@ import {
 } from '../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { enabledFeatures } from '../../features';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'ConversionReportingNotificationCTAWidget', () => {
 	let registry;
@@ -332,6 +335,66 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 			] );
+		} );
+
+		it( 'Select metrics CTA should show if user input is not completed and should open key metrics panel', async () => {
+			enabledFeatures.add( 'conversionReporting' );
+
+			fetchMock.postOnce( fetchDismissNotification, {
+				body: true,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'search-console',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
+
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+				widgetSlugs: [],
+				isWidgetHidden: false,
+				isUserInputCompleted: false,
+				detectedEvents: [ 'add_to_cart' ],
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: 'Select metrics' } )
+			).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Select metrics' } )
+				);
+			} );
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
 		} );
 	} );
 } );
