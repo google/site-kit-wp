@@ -478,6 +478,15 @@ describe( 'core/user key metrics', () => {
 					expectedMetricsIncludingConversionTailored
 				) => {
 					enabledFeatures.add( 'conversionReporting' );
+
+					provideModules( registry, [
+						{
+							active: true,
+							connected: true,
+							slug: 'analytics-4',
+						},
+					] );
+
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setDetectedEvents( [] );
