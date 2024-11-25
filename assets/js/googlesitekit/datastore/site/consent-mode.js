@@ -382,7 +382,7 @@ const baseResolvers = {
 	*isAdsConnected() {
 		const { select } = yield getRegistry();
 
-		if ( select( CORE_SITE ).isAdsConnected() ) {
+		if ( select( CORE_SITE ).isAdsConnected() !== undefined ) {
 			return;
 		}
 
