@@ -7,11 +7,16 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
-    <p
-      class="googlesitekit-margin-top-0"
+    <div
+      class="googlesitekit-margin-top-0 googlesitekit-settings-enhanced-measurement-enabled"
     >
+      <div
+        class="googlesitekit-settings-enhanced-measurement-enabled-icon"
+      >
+        <svg />
+      </div>
       Enhanced measurement is enabled for this web data stream
-    </p>
+    </div>
     <p>
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
