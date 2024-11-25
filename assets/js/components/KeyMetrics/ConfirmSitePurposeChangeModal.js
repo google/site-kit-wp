@@ -49,6 +49,7 @@ import {
 } from '../user-input/util/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -56,9 +57,18 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const includeConversionTailoredMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsForTailoredMetrics()
-	);
+	const includeConversionTailoredMetrics = useSelect( ( select ) => {
+		const isGA4Connected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ! isGA4Connected ) {
+			return false;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).haveConversionEventsForTailoredMetrics();
+	} );
 
 	const newMetrics = useSelect( ( select ) => {
 		return select( CORE_USER ).getAnswerBasedMetrics(

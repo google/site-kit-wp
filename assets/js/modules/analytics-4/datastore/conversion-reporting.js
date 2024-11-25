@@ -275,18 +275,29 @@ export const selectors = {
 	 */
 	haveConversionEventsForTailoredMetrics: createRegistrySelector(
 		( select ) => ( state, useNewEvents ) => {
-			const userInputSettings =
-				select( CORE_USER ).getUserInputSettings();
-			const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+			const leadRelatedMetrics = [
+				KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+				KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+			];
+			const conversionEventWidgets = {
+				purchase: [
+					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+				],
+				add_to_cart: [
+					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+				],
+				contact: leadRelatedMetrics,
+				submit_lead_form: leadRelatedMetrics,
+				generate_lead: leadRelatedMetrics,
+			};
 
 			const purposeTailoredMetrics = select(
 				CORE_USER
-			).getAnswerBasedMetrics( purpose, true );
-
-			const conversionEventWidgets =
-				select(
-					MODULES_ANALYTICS_4
-				).getKeyMetricsConversionEventWidgets();
+			).getAnswerBasedMetrics( null, true );
 
 			const conversionReportingEventsChange = useNewEvents
 				? select(
@@ -294,50 +305,13 @@ export const selectors = {
 				  ).getConversionReportingEventsChange()?.newEvents
 				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
-			return conversionReportingEventsChange?.reduce( ( acc, event ) => {
-				// If a match has already been found, no need to continue.
-				if ( acc ) {
-					return true;
-				}
-
-				// Check if any item in conversionEventWidgets exists in purposeTailoredMetrics.
-				return conversionEventWidgets[ event ].some( ( widget ) =>
+			return conversionReportingEventsChange?.some( ( event ) =>
+				conversionEventWidgets[ event ].some( ( widget ) =>
 					purposeTailoredMetrics.includes( widget )
-				);
-			}, false );
+				)
+			);
 		}
 	),
-
-	/**
-	 * Gets conversion events related metrics.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @return {Object} Metrics list object.
-	 */
-	getKeyMetricsConversionEventWidgets() {
-		const leadRelatedMetrics = [
-			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-		];
-
-		return {
-			purchase: [
-				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-			],
-			add_to_cart: [
-				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-			],
-			contact: leadRelatedMetrics,
-			submit_lead_form: leadRelatedMetrics,
-			generate_lead: leadRelatedMetrics,
-		};
-	},
 };
 
 export default combineStores(
