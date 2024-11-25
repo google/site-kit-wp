@@ -185,7 +185,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
 			description: __( 'Sessions', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.1.value',
 			className: 'googlesitekit-table__head-item--sessions',
 			Component( { fieldValue } ) {
@@ -197,7 +196,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Engagement Rate', 'google-site-kit' ),
 			description: __( 'Engagement Rate', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			className: 'googlesitekit-table__head-item--engagement-rate',
 			Component( { fieldValue } ) {
@@ -207,7 +205,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.3.value',
 			Component( { fieldValue } ) {
 				return <span>{ numFmt( fieldValue, 's' ) }</span>;
@@ -236,6 +233,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
 				<ReportTable
+					className="googlesitekit-analytics-popular-pages-widget__report-table"
 					rows={ rows }
 					columns={ tableColumns }
 					zeroState={ ZeroState }

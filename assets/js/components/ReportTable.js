@@ -79,7 +79,7 @@ export default function ReportTable( props ) {
 	);
 
 	return (
-		<div>
+		<div className={ className }>
 			{ tabbedLayout && (
 				<TabBar
 					className="googlesitekit-tab-bar--start-aligned-high-contrast"
@@ -98,8 +98,7 @@ export default function ReportTable( props ) {
 				className={ classnames(
 					'googlesitekit-table',
 					'googlesitekit-table--with-list',
-					{ 'googlesitekit-table--gathering-data': gatheringData },
-					className
+					{ 'googlesitekit-table--gathering-data': gatheringData }
 				) }
 			>
 				<table
