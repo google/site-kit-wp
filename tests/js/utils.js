@@ -640,26 +640,15 @@ export const waitForTimeouts = ( timeout ) => {
  */
 export const createWaitForRegistry = ( registry ) => {
 	if ( jest.isMockFunction( setTimeout ) ) {
-		// Warn if attempted to use.
+		// Fail if attempted to use.
 		return () => {
 			throw new Error(
 				'waitForRegistry cannot be used with fake timers!'
 			);
 		};
 	}
+
 	let unsubscribe;
-
-	const state = {
-		didStateUpdate: false,
-		fallbackTimer: 0,
-	};
-	// On the first state update, clear the fallback.
-	const unsubFallback = registry.subscribe( () => {
-		state.didStateUpdate = true;
-		clearTimeout( state.fallbackTimer );
-		unsubFallback();
-	} );
-
 	const waitForRegistry = new Promise( ( resolve ) => {
 		const listener = debounce( resolve, 50, {
 			leading: false,
@@ -668,29 +657,35 @@ export const createWaitForRegistry = ( registry ) => {
 		unsubscribe = registry.subscribe( listener );
 	} );
 
+	let stateDidUpdate;
+	// On the first state update, clear the fallback.
+	const unsubStateUpdateListener = registry.subscribe( () => {
+		stateDidUpdate = true;
+		unsubStateUpdateListener();
+	} );
 	return async () => {
 		const promises = [ waitForRegistry ];
 
-		if ( ! state.didStateUpdate ) {
-			// If no state update was observed yet, allow 50ms for it to still happen or throw.
-			// If state updates during this time, the timer will be cleared in the listerner above.
+		if ( ! stateDidUpdate ) {
+			// If no state update was observed yet, allow 50ms for it to still happen or reject the promise.
 			promises.push(
 				new Promise( ( resolve, reject ) => {
-					state.fallbackTimer = setTimeout( () => {
+					setTimeout( () => {
+						if ( stateDidUpdate ) {
+							resolve();
+							return;
+						}
 						reject(
 							new Error(
 								'waitForRegistry: No state changes were observed! Replace waitForRegistry with waitFor.'
 							)
 						);
 					}, 50 );
-					// If the above isn't cleared, resolve afterwards to allow things to continue with the main promise below.
-					setTimeout( resolve, 51 );
 				} )
 			);
 		}
 
-		await Promise.all( promises );
-		unsubscribe();
+		await Promise.all( promises ).finally( unsubscribe );
 	};
 };
 
