@@ -250,7 +250,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 							ctaLabel={ sprintf(
 								/* translators: %s: Module name */
 								__( 'Redo %s setup', 'google-site-kit' ),
-								modules[ inProgressModuleSetup ]?.name
+								modules?.[ inProgressModuleSetup ]?.name
 							) }
 							onCTAClick={ redoModuleSetup }
 						/>
