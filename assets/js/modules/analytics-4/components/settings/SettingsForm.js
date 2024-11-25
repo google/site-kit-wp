@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,20 +38,13 @@ import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
+import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
+import SupportLink from '../../../../components/SupportLink';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
-	);
-
-	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL(
-			'enhanced-conversion-tracking'
-		)
 	);
 
 	return (
@@ -69,27 +62,27 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			>
 				<SettingsEnhancedMeasurementSwitch
 					hasModuleAccess={ hasModuleAccess }
-				/>
-				<ConversionTrackingToggle>
-					{ createInterpolateElement(
+					hideDescription
+					label={ createInterpolateElement(
 						__(
-							'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
+							'<div><span>Enhanced measurement is enabled for this web data stream</span><span>This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a></span></div>',
 							'google-site-kit'
 						),
 						{
 							a: (
-								<Link
-									href={ conversionTrackingDocumentationURL }
+								<SupportLink
+									path="/analytics/answer/9216061"
 									external
-									aria-label={ __(
-										'Learn more about conversion tracking',
-										'google-site-kit'
-									) }
 								/>
+							),
+							span: <span />,
+							div: (
+								<div className="googlesitekit-settings-enhanced-measurement-enabled-info" />
 							),
 						}
 					) }
-				</ConversionTrackingToggle>
+				/>
+				<ConversionTrackingToggle />
 			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (

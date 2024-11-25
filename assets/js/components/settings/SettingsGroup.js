@@ -16,12 +16,21 @@
  * limitations under the License.
  */
 
+import { Children } from '@wordpress/element';
+
 export default function SettingsGroup( { title, children } ) {
 	return (
 		<div className="googlesitekit-settings-module__group">
 			<h4>{ title }</h4>
 
-			{ children }
+			{ Children.map( children, ( child, index ) => (
+				<div
+					key={ index }
+					className="googlesitekit-settings-module__settings"
+				>
+					{ child }
+				</div>
+			) ) }
 		</div>
 	);
 }

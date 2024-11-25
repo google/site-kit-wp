@@ -73,9 +73,39 @@
 				font-size: $fs-title-md;
 				font-weight: $fw-medium;
 			}
+		}
+
+		.googlesitekit-analytics-enable-enhanced-measurement {
+			min-width: 150px;
+
+			.googlesitekit-settings-enhanced-measurement-enabled {
+				display: flex;
+				gap: 9px;
+
+				.googlesitekit-settings-enhanced-measurement-enabled-info {
+					display: flex;
+					flex-direction: column;
+					gap: 6px;
+
+					& span:nth-child(2) {
+						color: $c-neutral-n-500;
+						font-size: $fs-label-sm;
+					}
+				}
+			}
 
 			.googlesitekit-settings-enhanced-measurement-enabled-icon {
+				align-items: center;
 				background-color: $c-site-kit-sk-500;
+				background-color: $c-site-kit-sk-100;
+				border-radius: 11px;
+				display: flex;
+				height: 22px;
+				justify-content: center;
+				margin-left: 9px;
+				min-width: 22px;
+				width: 22px;
+
 				svg {
 					height: 10px;
 					width: 10px;
