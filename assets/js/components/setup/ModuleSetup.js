@@ -33,10 +33,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import { deleteItem } from '../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';

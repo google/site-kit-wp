@@ -34,13 +34,14 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { listFormat } from '../../util';
 import { getItem } from '../../googlesitekit/api/cache';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
@@ -129,6 +130,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	// Fetch the module setup in progress from cache.
 	useMount( async () => {
@@ -140,14 +142,26 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	} );
 
 	const redoModuleSetup = useCallback( async () => {
+		doingCTARef.current = true;
+
 		const { error, response } = await activateModule(
 			inProgressModuleSetup
 		);
 
 		if ( ! error ) {
 			navigateTo( response.moduleReauthURL );
+		} else {
+			setInternalServerError( {
+				id: 'activate-module-error',
+				description: error.message,
+			} );
 		}
-	}, [ activateModule, inProgressModuleSetup, navigateTo ] );
+	}, [
+		activateModule,
+		inProgressModuleSetup,
+		navigateTo,
+		setInternalServerError,
+	] );
 
 	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
 	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
@@ -236,12 +250,9 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 							ctaLabel={ sprintf(
 								/* translators: %s: Module name */
 								__( 'Redo %s setup', 'google-site-kit' ),
-								inProgressModuleSetup
+								modules[ inProgressModuleSetup ]?.name
 							) }
-							onCTAClick={ () => {
-								redoModuleSetup();
-								doingCTARef.current = true;
-							} }
+							onCTAClick={ redoModuleSetup }
 						/>
 					) : (
 						<CTALink
