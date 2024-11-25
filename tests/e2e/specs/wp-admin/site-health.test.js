@@ -45,7 +45,7 @@ describe( 'Site Health', () => {
 		} );
 
 		await expect( page ).toMatchElement( 'td', {
-			text: /Search Console Shared Roles/i,
+			text: /Search Console: Shared Roles/i,
 		} );
 	} );
 } );
