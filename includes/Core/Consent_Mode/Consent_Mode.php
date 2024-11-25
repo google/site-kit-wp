@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Plugin_Upgrader;
 use Plugin_Installer_Skin;
@@ -232,7 +233,7 @@ class Consent_Mode {
 		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
 		// Only code that passes data from PHP to JS should be in this file.
 		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
-		wp_print_inline_script_tag(
+		BC_Functions::wp_print_inline_script_tag(
 			join(
 				"\n",
 				array(
