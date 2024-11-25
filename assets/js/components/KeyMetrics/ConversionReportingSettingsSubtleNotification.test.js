@@ -1,5 +1,5 @@
 /**
- * Key Metrics ACRSubtleNotification component tests.
+ * Key Metrics ConversionReportingSettingsSubtleNotification component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,17 +17,14 @@
  */
 
 import {
-	act,
 	createTestRegistry,
-	fireEvent,
 	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import ACRSubtleNotification from './ACRSubtleNotification';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from './constants';
+import ConversionReportingSettingsSubtleNotification from './ConversionReportingSettingsSubtleNotification';
 
-describe( 'ACRSubtleNotification', () => {
+describe( 'ConversionReportingSettingsSubtleNotification', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -38,7 +35,7 @@ describe( 'ACRSubtleNotification', () => {
 
 	it( 'should render "Get tailored metrics" CTA', async () => {
 		const { queryByText, getByRole, waitForRegistry } = render(
-			<ACRSubtleNotification />,
+			<ConversionReportingSettingsSubtleNotification />,
 			{
 				registry,
 			}
@@ -53,32 +50,5 @@ describe( 'ACRSubtleNotification', () => {
 			'href',
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
 		);
-	} );
-
-	it( 'should render "Maybe later" CTA', () => {
-		const { queryByText } = render( <ACRSubtleNotification />, {
-			registry,
-		} );
-
-		expect( queryByText( /maybe later/i ) ).toBeInTheDocument();
-	} );
-
-	it( 'does not render when dismissed', async () => {
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-			{
-				body: JSON.stringify( [ ACR_SUBTLE_NOTIFICATION_SLUG ] ),
-				status: 200,
-			}
-		);
-
-		const { getByRole } = render( <ACRSubtleNotification />, {
-			registry,
-		} );
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
-		} );
 	} );
 } );
