@@ -27,7 +27,7 @@ import { get } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies.
@@ -63,22 +63,30 @@ export default function ReportTable( props ) {
 		return ! tabbedLayout && hideOnMobile;
 	}
 
-	const mobileColumns = columns.filter(
-		( { hideOnMobile } ) => ! isHiddenOnMobile( hideOnMobile )
-	);
 	const hasBadges = columns.some( ( { badge } ) => !! badge );
 
 	const [ activeColumnIndex, setActiveColumnIndex ] = useState( 0 );
 
+	// The first column is expected to be the row title or label, which will always be
+	// shown so we exclude it from the tab list.
+	const tabColumns = tabbedLayout && columns.slice( 1 );
+	const contentColumns = tabbedLayout
+		? [ columns[ 0 ], tabColumns[ activeColumnIndex ] ]
+		: columns;
+
+	const mobileColumns = contentColumns.filter(
+		( { hideOnMobile } ) => ! isHiddenOnMobile( hideOnMobile )
+	);
+
 	return (
-		<Fragment>
+		<div>
 			{ tabbedLayout && (
 				<TabBar
 					className="googlesitekit-tab-bar--start-aligned-high-contrast"
 					activeIndex={ activeColumnIndex }
 					handleActiveIndexUpdate={ setActiveColumnIndex }
 				>
-					{ columns.map( ( { title, badge } ) => (
+					{ tabColumns.map( ( { title, badge } ) => (
 						<Tab key={ title } aria-label={ title }>
 							{ title }
 							{ badge }
@@ -97,7 +105,7 @@ export default function ReportTable( props ) {
 				<table
 					className={ classnames(
 						'googlesitekit-table__wrapper',
-						`googlesitekit-table__wrapper--${ columns.length }-col`,
+						`googlesitekit-table__wrapper--${ contentColumns.length }-col`,
 						`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`
 					) }
 				>
@@ -191,7 +199,7 @@ export default function ReportTable( props ) {
 							<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
 								<td
 									className="googlesitekit-table__body-item"
-									colSpan={ columns.length }
+									colSpan={ contentColumns.length }
 								>
 									<GatheringDataNotice />
 								</td>
@@ -201,7 +209,7 @@ export default function ReportTable( props ) {
 							<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
 								<td
 									className="googlesitekit-table__body-item"
-									colSpan={ columns.length }
+									colSpan={ contentColumns.length }
 								>
 									<ZeroState />
 								</td>
@@ -214,7 +222,7 @@ export default function ReportTable( props ) {
 									className="googlesitekit-table__body-row"
 									key={ `googlesitekit-table__body-row-${ rowIndex }` }
 								>
-									{ columns.map(
+									{ contentColumns.map(
 										(
 											{
 												Component,
@@ -263,7 +271,7 @@ export default function ReportTable( props ) {
 					</tbody>
 				</table>
 			</div>
-		</Fragment>
+		</div>
 	);
 }
 
