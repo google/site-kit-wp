@@ -37,7 +37,7 @@ jobs:
     name: Run VR Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: false
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js (.nvmrc)

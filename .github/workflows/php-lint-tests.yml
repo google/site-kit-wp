@@ -43,7 +43,6 @@ jobs:
   php-lint:
     name: PHP Lint
     runs-on: ubuntu-latest
-    if: false
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +73,6 @@ jobs:
     name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: false
     strategy:
       fail-fast: false
       matrix:
