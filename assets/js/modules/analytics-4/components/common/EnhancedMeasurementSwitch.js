@@ -53,10 +53,7 @@ export default function EnhancedMeasurementSwitch( {
 	formName = ENHANCED_MEASUREMENT_FORM,
 	isEnhancedMeasurementAlreadyEnabled = false,
 	hideDescription = false,
-	label = __(
-		'Enhanced measurement is enabled for this web data stream',
-		'google-site-kit'
-	),
+	label,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
@@ -96,6 +93,16 @@ export default function EnhancedMeasurementSwitch( {
 		} );
 	} );
 
+	const alreadyEnabledLabel =
+		label ||
+		__(
+			'Enhanced measurement is enabled for this web data stream',
+			'google-site-kit'
+		);
+
+	const notEnabledLabel =
+		label || __( 'Enable enhanced measurement', 'google-site-kit' );
+
 	return (
 		<div
 			className={ classnames(
@@ -118,12 +125,12 @@ export default function EnhancedMeasurementSwitch( {
 					<div className="googlesitekit-settings-enhanced-measurement-enabled-icon">
 						<Tick />
 					</div>
-					{ label }
+					{ alreadyEnabledLabel }
 				</div>
 			) }
 			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
-					label={ label }
+					label={ notEnabledLabel }
 					checked={ isEnhancedMeasurementEnabled }
 					disabled={ disabled }
 					onClick={ handleClick }
