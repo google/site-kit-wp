@@ -42,7 +42,7 @@ describe( 'OfflineNotification', () => {
 		} );
 
 		expect( getByText( /you are currently offline/i ) ).toBeInTheDocument();
-	}, 10_000 );
+	} );
 
 	it( 'should not display the notification when online', () => {
 		const { queryByText } = render( <OfflineNotification />, {

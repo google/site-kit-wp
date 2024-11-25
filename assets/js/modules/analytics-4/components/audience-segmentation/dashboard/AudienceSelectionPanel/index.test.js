@@ -172,7 +172,6 @@ describe( 'AudienceSelectionPanel', () => {
 			body: availableAudiences,
 			status: 200,
 		} );
-		// muteFetch( analytics4ReportEndpoint );
 
 		registry
 			.dispatch( CORE_UI )
@@ -224,7 +223,6 @@ describe( 'AudienceSelectionPanel', () => {
 				body: availableAudiences,
 				status: 200,
 			} );
-			// muteFetch( analytics4ReportEndpoint );
 
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,
