@@ -26,7 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 import {
@@ -61,7 +61,7 @@ export default function AudienceCreationNotice() {
 
 	const [ isCreatingAudience, setIsCreatingAudience ] = useState( false );
 
-	const siteKitConfigurableAudiences = useSelect( ( select ) => {
+	const siteKitConfigurableAudiences = useInViewSelect( ( select ) => {
 		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
 
 		const audiences = getConfigurableAudiences();
@@ -82,15 +82,15 @@ export default function AudienceCreationNotice() {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
 
-	const isItemDismissed = useSelect( ( select ) =>
+	const isItemDismissed = useInViewSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( AUDIENCE_CREATION_NOTICE_SLUG )
 	);
-	const isEditScopeNoticeDismissed = useSelect( ( select ) =>
+	const isEditScopeNoticeDismissed = useInViewSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG
 		)
 	);
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
+	const hasAnalytics4EditScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 	const isOpen = useSelect( ( select ) =>

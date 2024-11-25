@@ -29,7 +29,6 @@ import {
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import * as fixtures from '../../datastore/__fixtures__';
 import * as tracking from '../../../../util/tracking';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -43,11 +42,8 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'PublicationOnboardingStateNotice', () => {
 	let registry;
 
-	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
-	);
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	const syncOnboardingStateEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
 	const {
@@ -69,7 +65,6 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			.receiveGetSettings( {
 				publicationID: 'ABCDEFGH',
 				publicationOnboardingState: ONBOARDING_COMPLETE,
-				publicationOnboardingStateLastSyncedAtMs: 0,
 			} );
 
 		const { container } = render( <PublicationOnboardingStateNotice />, {
@@ -99,7 +94,6 @@ describe( 'PublicationOnboardingStateNotice', () => {
 				.receiveGetSettings( {
 					publicationID: 'ABCDEFGH',
 					publicationOnboardingState: publicationState,
-					publicationOnboardingStateLastSyncedAtMs: 0,
 				} );
 
 			const { container, getByText, waitForRegistry } = render(
@@ -168,19 +162,17 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			.receiveGetSettings( {
 				publicationID: 'QRSTUVWX',
 				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
-				publicationOnboardingStateLastSyncedAtMs: 0,
+				publicationOnboardingStateChanged: false,
 			} );
 
-		fetchMock.getOnce( publicationsEndpoint, {
-			body: fixtures.publications,
-			status: 200,
-		} );
-
-		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
-			const { data } = JSON.parse( opts.body );
-
-			// Return the same settings passed to the API.
-			return { body: data, status: 200 };
+		fetchMock.postOnce( syncOnboardingStateEndpoint, () => {
+			return {
+				body: {
+					publicationID: 'QRSTUVWX',
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+				},
+				status: 200,
+			};
 		} );
 
 		const { container, getByText } = render(
@@ -208,16 +200,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		} );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
-			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
-				body: {
-					data: {
-						publicationID: 'QRSTUVWX',
-						publicationOnboardingState: ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
-					},
-				},
-			} );
+			expect( fetchMock ).toHaveFetched( syncOnboardingStateEndpoint );
 		} );
 
 		// Verify that the onboarding state has been synced.

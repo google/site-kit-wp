@@ -119,6 +119,15 @@ class Tag_Placement {
 			return $result;
 		}
 
+		if ( ! $this->environment_tag_guard->can_activate() ) {
+			$result['description'] = sprintf(
+				'<p>%s</p>',
+				__( 'Tags are not output in the current environment.', 'google-site-kit' )
+			);
+
+			return $result;
+		}
+
 		$active_modules = $this->get_active_modules_with_tags();
 		if ( empty( $active_modules ) ) {
 			$result['description'] = sprintf(
@@ -129,52 +138,50 @@ class Tag_Placement {
 			return $result;
 		}
 
-		$url      = add_query_arg( 'timestamp', time(), home_url() );
-		$response = wp_remote_get( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
-
-		if ( is_wp_error( $response ) ) {
-			$result['description'] = sprintf(
-				'<p>%s</p>',
-				__( 'There was an error while trying to get the status, please try again later.', 'google-site-kit' )
-			);
-
-			return $result;
-		}
-
-		if ( ! $this->environment_tag_guard->can_activate() ) {
-			$result['description'] = sprintf(
-				'<p>%s</p>',
-				__( 'Tags are not output in the current environment.', 'google-site-kit' )
-			);
-
-			return $result;
-		}
-
-		$response = wp_remote_retrieve_body( $response );
-
-		$description = array();
+		$descriptions = array();
 		foreach ( $active_modules as $module ) {
-			$settings = $module->get_settings()->get();
+			$settings    = $module->get_settings()->get();
+			$module_name = $module->name;
+
 			// If module has `canUseSnippet` setting, check if it is disabled.
 			if ( isset( $settings['canUseSnippet'] ) && empty( $settings['useSnippet'] ) ) {
-				$module_name   = $module->name;
-				$description[] = sprintf(
+				$descriptions[] = sprintf(
 					'<li><strong>%s</strong>: %s</li>',
 					$module_name,
 					__( 'Tag placement disabled in settings.', 'google-site-kit' )
 				);
-
 			} else {
-				$tag_found = $this->check_if_tag_exists( $module, $response );
+				$content_url = $module->get_content_url();
+				if ( is_string( $content_url ) ) {
+					$content_url = array( $content_url );
+				}
 
-				if ( $tag_found ) {
-					$description[] = $tag_found;
+				foreach ( $content_url as $label => $c_url ) {
+					$url          = add_query_arg( 'timestamp', time(), $c_url );
+					$response     = wp_remote_get( $url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+					$module_label = is_numeric( $label ) ? $module_name : $module_name . ' (' . $label . ')';
+
+					if ( is_wp_error( $response ) ) {
+						$descriptions[] = sprintf(
+							'<li><strong>%s</strong>: %s</li>',
+							$module_label,
+							__( 'There was an error while trying to get the status, please try again later.', 'google-site-kit' )
+						);
+						continue;
+					}
+
+					$response  = wp_remote_retrieve_body( $response );
+					$tag_found = $this->check_if_tag_exists( $module, $response, $module_label );
+
+					if ( $tag_found ) {
+						$descriptions[] = $tag_found;
+					}
 				}
 			}
 		}
 
-		if ( ! empty( $description ) ) {
-			$result['description'] = '<ul>' . join( "\n", $description ) . '</ul>';
+		if ( ! empty( $descriptions ) ) {
+			$result['description'] = '<ul>' . join( "\n", $descriptions ) . '</ul>';
 		}
 
 		return $result;
@@ -207,38 +214,40 @@ class Tag_Placement {
 	 *
 	 * @param Module_With_Tag $module  Module instance.
 	 * @param string          $content Content to search for the tags.
+	 * @param string          $module_label Content URL page name appended to the module name to identify multiple tags for a module.
+	 *
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */
-	protected function check_if_tag_exists( $module, $content ) {
-		$check_tag   = $module->has_placed_tag_in_content( $content );
-		$module_name = $module->name;
+	protected function check_if_tag_exists( $module, $content, $module_label = null ) {
+		$check_tag    = $module->has_placed_tag_in_content( $content );
+		$module_label = $module_label ? $module_label : $module->name;
 
 		switch ( $check_tag ) {
 			case Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS:
 				return sprintf(
 					'<li><strong>%s</strong>: %s</li>',
-					$module_name,
+					$module_label,
 					__( 'Tag detected and placed by Site Kit.', 'google-site-kit' )
 				);
 
 			case Module_Tag_Matchers::TAG_EXISTS:
 				return sprintf(
 					'<li><strong>%s</strong>: %s</li>',
-					$module_name,
+					$module_label,
 					__( 'Tag detected but could not verify that Site Kit placed the tag.', 'google-site-kit' )
 				);
 
 			case Module_Tag_Matchers::NO_TAG_FOUND:
 				return sprintf(
 					'<li><strong>%s</strong>: %s</li>',
-					$module_name,
+					$module_label,
 					__( 'No tag detected.', 'google-site-kit' )
 				);
 
 			default:
 				return sprintf(
 					'<li><strong>%s</strong>: %s</li>',
-					$module_name,
+					$module_label,
 					__( 'No tag detected.', 'google-site-kit' )
 				);
 		}

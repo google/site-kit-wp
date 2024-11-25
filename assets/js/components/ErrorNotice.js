@@ -41,6 +41,7 @@ export default function ErrorNotice( {
 	storeName,
 	message = error.message,
 	noPrefix = false,
+	skipRetryMessage,
 	Icon,
 } ) {
 	const dispatch = useDispatch();
@@ -69,11 +70,12 @@ export default function ErrorNotice( {
 		hasButton && isErrorRetryable( error, selectorData );
 
 	// Append "Try again" messaging if no retry button is present.
-	if ( ! hasButton ) {
+	if ( ! hasButton && ! skipRetryMessage ) {
 		message = sprintf(
-			/* translators: %s: Error message from Google API. */
-			__( '%s. Please try again.', 'google-site-kit' ),
-			message
+			/* translators: %1$s: Error message from Google API. */
+			__( '%1$s%2$s Please try again.', 'google-site-kit' ),
+			message,
+			message.endsWith( '.' ) ? '' : '.'
 		);
 	}
 
@@ -109,5 +111,6 @@ ErrorNotice.propTypes = {
 	storeName: PropTypes.string,
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
+	skipRetryMessage: PropTypes.bool,
 	Icon: PropTypes.elementType,
 };

@@ -18,25 +18,63 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-chip-tab-group {
-
-		.googlesitekit-chip-tab-group__tab-items {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-			margin: 0 25px 25px;
-
-			@media (min-width: $bp-desktop) {
-				flex-direction: column;
-			}
-		}
-
-		.googlesitekit-chip-tab-group__chip-item {
+		%chip-item {
 			background-color: $c-neutral-n-50;
 			color: $c-neutral-n-900;
 			font-size: $fs-label-sm;
 			font-weight: $fw-medium;
 			min-height: 28px;
 			padding: 6px 14px;
+
+			--mdc-ripple-fg-opacity: 0;
+		}
+
+		.googlesitekit-chip-tab-group__tab-items {
+			background: #fff;
+			display: flex;
+			flex-wrap: nowrap;
+			gap: 12px;
+			left: 0;
+			margin: 0 16px 15px;
+			overflow: auto;
+			position: sticky;
+			top: 0;
+			white-space: nowrap;
+			z-index: 1;
+
+			@media (min-width: $bp-tablet) {
+				flex-wrap: wrap;
+				margin: 0 25px 25px;
+				overflow: unset;
+				white-space: unset;
+			}
+
+			/** Mobile version style adaptation - start **/
+			.mdc-tab-scroller__scroll-content {
+				gap: 10px;
+			}
+
+			.mdc-tab {
+				@extend %chip-item;
+				height: unset;
+				line-height: unset;
+
+				&.mdc-tab--active {
+					background-color: $c-site-kit-sk-100;
+				}
+
+				.mdc-tab-indicator {
+					> .mdc-tab-indicator__content {
+						display: none;
+					}
+				}
+			}
+
+			/** Mobile version style adaptation - end **/
+		}
+
+		.googlesitekit-chip-tab-group__chip-item {
+			@extend %chip-item;
 
 			svg {
 				margin-right: 7px;
@@ -45,8 +83,12 @@
 
 		.googlesitekit-chip-tab-group__tab-items-row {
 			display: flex;
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
 			gap: 10px;
+
+			@media (min-width: $bp-tablet) {
+				flex-wrap: wrap;
+			}
 
 			&:last-child {
 				.googlesitekit-chip-tab-group__chip-item {
@@ -69,15 +111,17 @@
 		}
 
 		.googlesitekit-selection-panel-item {
-			border-color: $c-neutral-n-100;
-			padding: 0;
 
 			.googlesitekit-selection-box {
 				padding: 0 4px 10px;
+			}
+		}
 
-				.mdc-checkbox__description {
-					padding: 0;
-				}
+		.googlesitekit-chip-tab-group__tab-item-mobile-svg {
+			margin-right: 7px;
+
+			svg {
+				display: block;
 			}
 		}
 

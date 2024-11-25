@@ -28,9 +28,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from '../KeyMetrics/constants';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
-import ACRSubtleNotification from '../KeyMetrics/ACRSubtleNotification';
+import ConversionReportingSettingsSubtleNotification from '../KeyMetrics/ConversionReportingSettingsSubtleNotification';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
 import UserInputPreview from '../user-input/UserInputPreview';
 import Layout from '../layout/Layout';
@@ -65,11 +64,6 @@ export default function SettingsCardKeyMetrics() {
 	const hasUserPickedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
 	);
-	const isACRNotificationDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( ACR_SUBTLE_NOTIFICATION_SLUG )
-	);
-	const showACRNotification =
-		conversionReportingEnabled && isACRNotificationDismissed === false;
 
 	const isUserInputCompletedLoading = useSelect(
 		( select ) =>
@@ -125,9 +119,9 @@ export default function SettingsCardKeyMetrics() {
 				{ isUserInputCompleted === false && (
 					<Fragment>
 						<SettingsKeyMetrics />
-						{ showACRNotification && (
+						{ conversionReportingEnabled && (
 							<Fragment>
-								<ACRSubtleNotification />
+								<ConversionReportingSettingsSubtleNotification />
 								{ inView && (
 									<SurveyViewTrigger
 										triggerID="view_kmw_setup_cta"
@@ -136,7 +130,7 @@ export default function SettingsCardKeyMetrics() {
 								) }
 							</Fragment>
 						) }
-						{ ! showACRNotification && (
+						{ ! conversionReportingEnabled && (
 							<Grid>
 								<Row>
 									<Cell

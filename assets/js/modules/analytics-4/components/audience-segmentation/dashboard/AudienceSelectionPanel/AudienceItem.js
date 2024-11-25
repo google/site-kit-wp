@@ -151,7 +151,7 @@ AudienceItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
-	subtitle: PropTypes.string.isRequired,
+	subtitle: PropTypes.string,
 	userCount: PropTypes.number.isRequired,
 	audienceType: PropTypes.string.isRequired,
 };

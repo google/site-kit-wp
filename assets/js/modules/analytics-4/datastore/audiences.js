@@ -391,6 +391,14 @@ const baseActions = {
 			return { error: syncError };
 		}
 
+		const { error: syncDimensionsError } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableCustomDimensions()
+		);
+
+		if ( syncDimensionsError ) {
+			return { error: syncDimensionsError };
+		}
+
 		const configuredAudiences = [];
 
 		if ( ! failedSiteKitAudienceSlugs?.length ) {
@@ -584,6 +592,12 @@ const baseActions = {
 		if ( saveSettingsError ) {
 			return { error: saveSettingsError };
 		}
+
+		dispatch( CORE_USER ).triggerSurvey(
+			'audience_segmentation_setup_completed'
+		);
+
+		return {};
 	},
 
 	/**

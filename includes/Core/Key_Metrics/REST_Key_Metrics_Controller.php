@@ -184,6 +184,18 @@ class REST_Key_Metrics_Controller {
 					),
 				)
 			),
+			new REST_Route(
+				'core/user/data/reset-key-metrics-selection',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => function () {
+						$this->settings->merge( array( 'widgetSlugs' => array() ) );
+
+						return new WP_REST_Response( $this->settings->get() );
+					},
+					'permission_callback' => $has_capabilities,
+				)
+			),
 		);
 	}
 }
