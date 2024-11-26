@@ -37,9 +37,25 @@
 					margin-top: 0;
 				}
 
+				.googlesitekit-selection-panel-footer__item-count {
+					@media (max-width: $bp-mobileOnly) {
+						text-align: center;
+					}
+				}
+
 				.googlesitekit-selection-panel-footer__actions {
 					justify-content: space-between;
 					width: 100%;
+
+					@media (max-width: $bp-mobileOnly) {
+						display: block;
+					}
+
+					button {
+						@media (max-width: 600px) {
+							width: 100%;
+						}
+					}
 				}
 			}
 

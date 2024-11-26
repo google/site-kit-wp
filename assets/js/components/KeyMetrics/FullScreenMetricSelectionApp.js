@@ -161,7 +161,7 @@ export default function FullScreenMetricSelectionApp() {
 														savedViewableMetrics
 													}
 													showHeader={ false }
-													variation="fullscreen"
+													isFullScreen
 												/>
 											</Cell>
 										</Row>

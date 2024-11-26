@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,7 +30,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import classnames from 'classnames';
 import CustomDimensionsNotice from './CustomDimensionsNotice';
 import Header from './Header';
 import Footer from './Footer';
@@ -42,7 +42,7 @@ export default function PanelContent( {
 	savedViewableMetrics,
 	showHeader = true,
 	setIsNavigatingToOAuthURL,
-	variation = 'default',
+	isFullScreen = false,
 } ) {
 	return (
 		<Fragment>
@@ -54,7 +54,7 @@ export default function PanelContent( {
 					'googlesitekit-user-input__footer-container',
 					{
 						'googlesitekit-user-input__footer-container--fullscreen':
-							'fullscreen' === variation,
+							isFullScreen,
 					}
 				) }
 			>
@@ -66,7 +66,7 @@ export default function PanelContent( {
 					onNavigationToOAuthURL={ () => {
 						setIsNavigatingToOAuthURL( true );
 					} }
-					variation={ variation }
+					isFullScreen={ isFullScreen }
 				/>
 			</div>
 		</Fragment>
@@ -79,5 +79,5 @@ PanelContent.propTypes = {
 	savedViewableMetrics: PropTypes.array,
 	showHeader: PropTypes.bool,
 	setIsNavigatingToOAuthURL: PropTypes.func,
-	variation: PropTypes.string,
+	isFullScreen: PropTypes.bool,
 };
