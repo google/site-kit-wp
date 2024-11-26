@@ -43,7 +43,7 @@ Default.args = {
 	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
-	label: 'KeyMetrics/FullScreenMetricsSelectionPanel',
+	label: 'KeyMetrics/FullScreenMetricsSelectionApp',
 };
 
 export default {
