@@ -17,11 +17,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	useState,
-	Fragment,
-	createInterpolateElement,
-} from '@wordpress/element';
+import { useState, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,9 +32,8 @@ import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTr
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
-import Link from '../Link';
 
-export default function ConversionTrackingToggle( { loading } ) {
+export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();
 	const [ saveError ] = useState( null );
 	const [ showConfirmDialog, setShowConfirmDialog ] = useState( false );
@@ -51,36 +46,15 @@ export default function ConversionTrackingToggle( { loading } ) {
 		select( CORE_SITE ).isFetchingSaveConversionTrackingSettings()
 	);
 
-	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL(
-			'enhanced-conversion-tracking'
-		)
-	);
-
 	const { setConversionTrackingEnabled } = useDispatch( CORE_SITE );
 
 	return (
 		<Fragment>
 			<LoadingWrapper loading={ loading } width="180px" height="21.3px">
 				<Switch
-					label={ createInterpolateElement(
-						__(
-							'<span>Enable enhanced conversion tracking</span><span>Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a></span>',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<Link
-									href={ conversionTrackingDocumentationURL }
-									external
-									aria-label={ __(
-										'Learn more about conversion tracking',
-										'google-site-kit'
-									) }
-								/>
-							),
-							span: <span />,
-						}
+					label={ __(
+						'Enable enhanced conversion tracking',
+						'google-site-kit'
 					) }
 					checked={ isConversionTrackingEnabled }
 					disabled={ isSaving || loading }
@@ -103,7 +77,20 @@ export default function ConversionTrackingToggle( { loading } ) {
 				/>
 			</LoadingWrapper>
 			{ !! saveError && <ErrorText message={ saveError.message } /> }
-
+			<LoadingWrapper
+				className="googlesitekit-settings-conversion-tracking-switch-description--loading"
+				loading={ loading }
+				width="750px"
+				height="42px"
+				smallWidth="386px"
+				smallHeight="84px"
+				tabletWidth="540px"
+				tabletHeight="84px"
+			>
+				<p className="googlesitekit-settings-module__fields-group-helper-text">
+					{ children }
+				</p>
+			</LoadingWrapper>
 			{ showConfirmDialog && (
 				<ConfirmDisableConversionTrackingDialog
 					onConfirm={ () => {
@@ -124,5 +111,6 @@ export default function ConversionTrackingToggle( { loading } ) {
 }
 
 ConversionTrackingToggle.propTypes = {
+	children: PropTypes.node.isRequired,
 	loading: PropTypes.bool,
 };

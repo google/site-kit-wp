@@ -52,8 +52,6 @@ export default function EnhancedMeasurementSwitch( {
 	loading = false,
 	formName = ENHANCED_MEASUREMENT_FORM,
 	isEnhancedMeasurementAlreadyEnabled = false,
-	hideDescription = false,
-	label,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
@@ -93,16 +91,6 @@ export default function EnhancedMeasurementSwitch( {
 		} );
 	} );
 
-	const alreadyEnabledLabel =
-		label ||
-		__(
-			'Enhanced measurement is enabled for this web data stream',
-			'google-site-kit'
-		);
-
-	const notEnabledLabel =
-		label || __( 'Enable enhanced measurement', 'google-site-kit' );
-
 	return (
 		<div
 			className={ classnames(
@@ -125,36 +113,40 @@ export default function EnhancedMeasurementSwitch( {
 					<div className="googlesitekit-settings-enhanced-measurement-enabled-icon">
 						<Tick />
 					</div>
-					{ alreadyEnabledLabel }
+					{ __(
+						'Enhanced measurement is enabled for this web data stream',
+						'google-site-kit'
+					) }
 				</div>
 			) }
 			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
-					label={ notEnabledLabel }
+					label={ __(
+						'Enable enhanced measurement',
+						'google-site-kit'
+					) }
 					checked={ isEnhancedMeasurementEnabled }
 					disabled={ disabled }
 					onClick={ handleClick }
 					hideLabel={ false }
 				/>
 			) }
-			{ ! hideDescription && (
-				<p>
-					{ createInterpolateElement(
-						__(
-							'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
-							'google-site-kit'
+			<p className="googlesitekit-settings-module__fields-group-helper-text">
+				{ createInterpolateElement(
+					__(
+						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<SupportLink
+								path="/analytics/answer/9216061"
+								external
+							/>
 						),
-						{
-							a: (
-								<SupportLink
-									path="/analytics/answer/9216061"
-									external
-								/>
-							),
-						}
-					) }
-				</p>
-			) }
+					}
+				) }
+			</p>
 		</div>
 	);
 }
@@ -164,6 +156,4 @@ EnhancedMeasurementSwitch.propTypes = {
 	disabled: PropTypes.bool,
 	loading: PropTypes.bool,
 	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
-	hideDescription: PropTypes.bool,
-	label: PropTypes.node,
 };

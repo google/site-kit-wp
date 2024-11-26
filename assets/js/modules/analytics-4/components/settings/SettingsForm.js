@@ -82,7 +82,22 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						}
 					) }
 				/>
-				<ConversionTrackingToggle />
+				<ConversionTrackingToggle>
+					{ createInterpolateElement(
+						__(
+							'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<SupportLink
+									path="/analytics/answer/9216061"
+									external
+								/>
+							),
+						}
+					) }
+				</ConversionTrackingToggle>
 			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (
