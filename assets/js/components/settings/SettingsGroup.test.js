@@ -1,5 +1,5 @@
 /**
- * Settings admin styles.
+ * SettingsGroup component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,30 +16,24 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+import { render } from '../../../../tests/js/test-utils';
+import SettingsGroup from './SettingsGroup';
 
-	.googlesitekit-settings-module__group {
-		background-color: $c-neutral-n-10;
-		border-radius: $br-xs;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		padding: $grid-gap-desktop;
+describe( 'SettingsGroup', () => {
+	it( 'renders children', () => {
+		const { container } = render(
+			<SettingsGroup title="Test Title">
+				<div>Test Child 1</div>
+				<div>Test Child 2</div>
+			</SettingsGroup>
+		);
 
-		h4 {
-			font-size: $fs-title-md;
-			font-weight: $fw-medium;
-			margin: 0;
-		}
+		expect( container ).toMatchSnapshot();
 
-		.googlesitekit-settings-module__setting {
-
-			.googlesitekit-settings-module__fields-group-helper-text {
-				color: $c-neutral-n-500;
-				flex-basis: 100%;
-				font-size: $fs-label-sm;
-				margin: 6px 0 0 42px; // margin-left = 32px switch width + 10px margin-left of label.
-			}
-		}
-	}
-}
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-settings-module__setting'
+			).length
+		).toBe( 2 );
+	} );
+} );

@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
 import { Children } from '@wordpress/element';
 
 export default function SettingsGroup( { title, children } ) {
@@ -26,7 +34,7 @@ export default function SettingsGroup( { title, children } ) {
 			{ Children.map( children, ( child, index ) => (
 				<div
 					key={ index }
-					className="googlesitekit-settings-module__settings"
+					className="googlesitekit-settings-module__setting"
 				>
 					{ child }
 				</div>
@@ -34,3 +42,8 @@ export default function SettingsGroup( { title, children } ) {
 		</div>
 	);
 }
+
+SettingsGroup.propTypes = {
+	title: PropTypes.string.isRequired,
+	children: PropTypes.node.isRequired,
+};
