@@ -26,13 +26,22 @@ import PropTypes from 'prop-types';
  */
 import { useSelect } from 'googlesitekit-data';
 import useViewContext from '../../hooks/useViewContext';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
-export default function Notifications( { areaSlug } ) {
+export default function Notifications( {
+	areaSlug,
+	groupID = NOTIFICATION_GROUPS.DEFAULT,
+} ) {
 	const viewContext = useViewContext();
 	const queuedNotifications = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).getQueuedNotifications( viewContext )
+		select( CORE_NOTIFICATIONS ).getQueuedNotifications(
+			viewContext,
+			groupID
+		)
 	);
 
 	if (

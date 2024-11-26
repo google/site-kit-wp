@@ -58,6 +58,7 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 export default function UserInputPreviewGroup( {
 	slug,
 	title,
+	subtitle,
 	values,
 	options = {},
 	loading = false,
@@ -212,6 +213,8 @@ export default function UserInputPreviewGroup( {
 		toggleEditMode();
 	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
 
+	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
@@ -220,7 +223,15 @@ export default function UserInputPreviewGroup( {
 					settingsView,
 			} ) }
 		>
-			<div className="googlesitekit-user-input__preview-group-title">
+			<div
+				className={ classnames(
+					'googlesitekit-user-input__preview-group-title',
+					{
+						'googlesitekit-user-input__preview-group-title-with-subtitle':
+							Subtitle || subtitle,
+					}
+				) }
+			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
 					<p>{ title }</p>
 				</LoadingWrapper>
@@ -248,6 +259,17 @@ export default function UserInputPreviewGroup( {
 					</Link>
 				</LoadingWrapper>
 			</div>
+
+			<LoadingWrapper>
+				<div className="googlesitekit-user-input__preview-group-subtitle">
+					{ Subtitle && (
+						<div className="googlesitekit-user-input__preview-group-subtitle-component">
+							<Subtitle />
+						</div>
+					) }
+					{ ! Subtitle && <p>{ subtitle }</p> }
+				</div>
+			</LoadingWrapper>
 
 			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
@@ -332,6 +354,10 @@ export default function UserInputPreviewGroup( {
 UserInputPreviewGroup.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
+	subtitle: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.elementType,
+	] ),
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
 	loading: PropTypes.bool,

@@ -33,12 +33,12 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'should display appropriate subtitle', async () => {
+	it( 'should display appropriate subtitle', () => {
 		provideModules( registry, [
 			{ slug: 'ads', active: true, connected: true },
 		] );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByText } = render(
 			<ConfirmDisableConversionTrackingDialog
 				onConfirm={ () => {} }
 				onCancel={ () => {} }
@@ -47,8 +47,6 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 				registry,
 			}
 		);
-
-		await waitForRegistry();
 
 		expect(
 			getByText(
@@ -57,12 +55,12 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should display appropriate point items', async () => {
+	it( 'should display appropriate point items', () => {
 		provideModules( registry, [
 			{ slug: 'ads', active: true, connected: true },
 		] );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByText } = render(
 			<ConfirmDisableConversionTrackingDialog
 				onConfirm={ () => {} }
 				onCancel={ () => {} }
@@ -71,8 +69,6 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 				registry,
 			}
 		);
-
-		await waitForRegistry();
 
 		expect(
 			getByText( /Performance of your Ad campaigns/i )
