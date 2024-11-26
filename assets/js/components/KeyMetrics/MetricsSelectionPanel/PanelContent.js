@@ -75,7 +75,7 @@ export default function PanelContent( {
 
 PanelContent.propTypes = {
 	isOpen: PropTypes.bool,
-	closePanel: PropTypes.func,
+	closePanel: PropTypes.func.isRequired,
 	savedViewableMetrics: PropTypes.array,
 	showHeader: PropTypes.bool,
 	setIsNavigatingToOAuthURL: PropTypes.func,
