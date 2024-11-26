@@ -120,10 +120,18 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		[ keyMetricsGroups ]
 	);
 
+	const conversionReportingEventsChange = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange()
+	);
+	const conversionReportingEventWidgets = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
+	);
+
 	// Currently selected group does not include total selected number, so it will
 	// always be 0.
 	const selectedCounts = { [ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: 0 };
 	const activeMetricItems = {};
+	const newlyDetectedMetrics = {};
 
 	for ( const metricItemSlug in allMetricItems ) {
 		const metricGroup = allMetricItems[ metricItemSlug ].group;
@@ -152,6 +160,25 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				}
 			).length;
 			selectedCounts[ metricGroup ] = selectedCount;
+		}
+
+		// Check if metric is conversion event related and if new badge should be included.
+		if ( conversionReportingEventsChange?.newEvents ) {
+			const isNewlyDetectedKeyMetrics =
+				conversionReportingEventsChange.newEvents.some(
+					( conversionEvent ) =>
+						conversionReportingEventWidgets[
+							conversionEvent
+						].includes( metricItemSlug )
+				);
+
+			if ( isNewlyDetectedKeyMetrics ) {
+				newlyDetectedMetrics[ metricGroup ] = newlyDetectedMetrics[
+					metricGroup
+				]
+					? [ ...newlyDetectedMetrics[ metricGroup ], metricItemSlug ]
+					: [ metricItemSlug ];
+			}
 		}
 	}
 
@@ -190,12 +217,24 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
 	const isSelectionPanelOpenPrevious = usePrevious( isSelectionPanelOpen );
+	const newlyDetectedMetricsKeys = Object.keys( newlyDetectedMetrics );
 
 	useEffect( () => {
 		// Ensure that current selection group is always active when selection panel re-opens.
 		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
-			setIsActive( KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG );
-			setActiveGroupIndex( 0 );
+			if ( newlyDetectedMetricsKeys.length ) {
+				const firstNewlyDetectedGroup = allGroups.find(
+					( group ) => group.SLUG === newlyDetectedMetricsKeys[ 0 ]
+				);
+
+				setActiveGroupIndex(
+					allGroups.indexOf( firstNewlyDetectedGroup )
+				);
+				setIsActive( firstNewlyDetectedGroup.SLUG );
+			} else {
+				setActiveGroupIndex( 0 );
+				setIsActive( KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG );
+			}
 		}
 
 		if ( isSelectionPanelOpenPrevious && ! isSelectionPanelOpen ) {
@@ -206,6 +245,8 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		isSelectionPanelOpen,
 		isSelectionPanelOpenPrevious,
 		unstagedSelection,
+		allGroups,
+		newlyDetectedMetricsKeys,
 		resetUnstagedSelection,
 	] );
 
@@ -230,6 +271,11 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 									key={ group.SLUG }
 									slug={ group.SLUG }
 									label={ group.LABEL }
+									hasNewBadge={
+										!! newlyDetectedMetrics?.[
+											group.SLUG
+										] ?? false
+									}
 									isActive={ group.SLUG === isActive }
 									onClick={ onChipChange }
 									selectedCount={
@@ -259,20 +305,32 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 										({ selectedCounts[ group.SLUG ] })
 									</span>
 								) }
+								{ !! newlyDetectedMetrics?.[ group.SLUG ] && (
+									<span className="googlesitekit-chip-tab-group__chip-item-new-dot" />
+								) }
 							</Tab>
 						) ) }
 					</TabBar>
 				) }
 			</div>
 			<div className="googlesitekit-chip-tab-group__tab-item">
-				{ Object.keys( activeMetricItems ).map( ( slug ) => (
-					<MetricItem
-						key={ slug }
-						slug={ slug }
-						savedItemSlugs={ savedItemSlugs }
-						{ ...activeMetricItems[ slug ] }
-					/>
-				) ) }
+				{ Object.keys( activeMetricItems ).map( ( slug ) => {
+					const metricGroup = activeMetricItems[ slug ].group;
+					const isNewlyDetected =
+						newlyDetectedMetrics?.[ metricGroup ]?.includes(
+							slug
+						) ?? false;
+
+					return (
+						<MetricItem
+							key={ slug }
+							slug={ slug }
+							savedItemSlugs={ savedItemSlugs }
+							isNewlyDetected={ isNewlyDetected }
+							{ ...activeMetricItems[ slug ] }
+						/>
+					);
+				} ) }
 				{ ! Object.keys( activeMetricItems ).length && (
 					<div className="googlesitekit-chip-tab-group__graphic">
 						<NoSelectedItemsSVG height={ 250 } />
