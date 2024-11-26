@@ -60,6 +60,10 @@ describe( 'useEnableAudienceGroup', () => {
 		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
+	const syncAvailableCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+	);
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -172,6 +176,11 @@ describe( 'useEnableAudienceGroup', () => {
 			body: audiencesFixture,
 		} );
 
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
+		} );
+
 		fetchMock.postOnce( audienceSettingsEndpoint, {
 			status: 200,
 			body: {
@@ -211,6 +220,11 @@ describe( 'useEnableAudienceGroup', () => {
 		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
+		} );
+
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
 		} );
 
 		fetchMock.postOnce( audienceSettingsEndpoint, {

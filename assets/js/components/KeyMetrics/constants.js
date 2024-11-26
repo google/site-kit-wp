@@ -22,13 +22,13 @@
 import { __ } from '@wordpress/i18n';
 
 export const KEY_METRICS_SETUP_CTA_WIDGET_SLUG = 'key-metrics-setup-cta-widget';
-export const ACR_SUBTLE_NOTIFICATION_SLUG =
-	'key-metrics-acr-subtle-notification';
 
 export const KEY_METRICS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-key-metrics-selection-panel-opened';
 export const KEY_METRICS_SELECTION_FORM = 'key-metrics-selection-form';
 export const KEY_METRICS_SELECTED = 'key-metrics-selected';
+export const EFFECTIVE_SELECTION = 'key-metrics-effective-selection';
+export const UNSTAGED_SELECTION = 'key-metrics-unstaged-selection';
 export const MIN_SELECTED_METRICS_COUNT = 2;
 export const MAX_SELECTED_METRICS_COUNT = 4;
 export const MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS = 8;
@@ -54,11 +54,3 @@ export const KEY_METRICS_GROUP_CONTENT_PERFORMANCE = {
 	SLUG: 'content-performance',
 	LABEL: __( 'Content performance', 'google-site-kit' ),
 };
-
-export const KEY_METRICS_GROUPS = [
-	KEY_METRICS_GROUP_VISITORS,
-	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
-	KEY_METRICS_GROUP_GENERATING_LEADS,
-	KEY_METRICS_GROUP_SELLING_PRODUCTS,
-	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
-];

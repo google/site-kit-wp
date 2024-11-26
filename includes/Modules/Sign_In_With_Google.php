@@ -38,7 +38,7 @@ use WP_Error;
 use WP_User;
 
 /**
- * Class representing the Sign in With Google module.
+ * Class representing the Sign in with Google module.
  *
  * @since 1.137.0
  * @access private
@@ -344,32 +344,32 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
-				'label' => __( 'Sign in with Google Client ID', 'google-site-kit' ),
+				'label' => __( 'Sign in with Google: Client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'] ),
 			),
 			'sign_in_with_google_shape'                    => array(
-				'label' => __( 'Sign in with Google Shape', 'google-site-kit' ),
+				'label' => __( 'Sign in with Google: Shape', 'google-site-kit' ),
 				'value' => $this->get_settings()->get_label( 'shape', $settings['shape'] ),
 				'debug' => $settings['shape'],
 			),
 			'sign_in_with_google_text'                     => array(
-				'label' => __( 'Sign in with Google Text', 'google-site-kit' ),
+				'label' => __( 'Sign in with Google: Text', 'google-site-kit' ),
 				'value' => $this->get_settings()->get_label( 'text', $settings['text'] ),
 				'debug' => $settings['text'],
 			),
 			'sign_in_with_google_theme'                    => array(
-				'label' => __( 'Sign in with Google Theme', 'google-site-kit' ),
+				'label' => __( 'Sign in with Google: Theme', 'google-site-kit' ),
 				'value' => $this->get_settings()->get_label( 'theme', $settings['theme'] ),
 				'debug' => $settings['theme'],
 			),
 			'sign_in_with_google_use_snippet'              => array(
-				'label' => __( 'Sign in with Google One-tap Enabled', 'google-site-kit' ),
+				'label' => __( 'Sign in with Google: One-tap Enabled', 'google-site-kit' ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
-				'label' => __( 'Sign in with Google Number of users who have authenticated using Sign in with Google', 'google-site-kit' ),
+				'label' => __( 'Sign in with Google: Number of users who have authenticated using Sign in with Google', 'google-site-kit' ),
 				'value' => $authenticated_user_count,
 				'debug' => $authenticated_user_count,
 			),

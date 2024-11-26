@@ -1,5 +1,5 @@
 /**
- * ACRSubtleNotification component.
+ * ConversionReportingSettingsSubtleNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -25,26 +25,14 @@ import { useState, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
 import StarFill from '../../../svg/icons/star-fill.svg';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from './constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
-export default function ACRSubtleNotification() {
+export default function ConversionReportingSettingsSubtleNotification() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
-
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( ACR_SUBTLE_NOTIFICATION_SLUG )
-	);
-
-	const onDismiss = useCallback( async () => {
-		await dismissItem( ACR_SUBTLE_NOTIFICATION_SLUG );
-	}, [ dismissItem ] );
 
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -54,10 +42,6 @@ export default function ACRSubtleNotification() {
 		setIsNavigating( true );
 	}, [ setIsNavigating ] );
 
-	if ( isDismissed ) {
-		return null;
-	}
-
 	return (
 		<SubtleNotification
 			className="googlesitekit-acr-subtle-notification"
@@ -66,11 +50,6 @@ export default function ACRSubtleNotification() {
 				'Set up your goals by answering 3 quick questions to help us show the most relevant data for your site',
 				'google-site-kit'
 			) }
-			dismissCTA={
-				<Button tertiary onClick={ onDismiss }>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
-			}
 			additionalCTA={
 				<SpinnerButton
 					onClick={ handleCTAClick }

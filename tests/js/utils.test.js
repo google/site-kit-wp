@@ -15,10 +15,39 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistry } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import { CORE_UI } from '../../assets/js/googlesitekit/datastore/ui/constants';
-import { createTestRegistry, subscribeUntil } from './utils';
+import {
+	createTestRegistry,
+	createWaitForRegistry,
+	subscribeUntil,
+} from './utils';
+
+const basicStore = {
+	initialState: {
+		count: 0,
+	},
+	actions: {
+		update: () => ( { type: 'UPDATE' } ),
+		noop: () => ( { type: 'NOOP' } ),
+	},
+	reducer( state, action ) {
+		if ( action.type === 'UPDATE' ) {
+			return { ...state, count: state.count + 1 };
+		}
+		return state;
+	},
+	selectors: {
+		getCount: ( state ) => state.count,
+	},
+};
+const wait = ( ms ) => new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 
 describe( 'test utilities', () => {
 	describe( 'subscribeUntil', () => {
@@ -105,6 +134,71 @@ describe( 'test utilities', () => {
 			expect( listener_a ).toHaveBeenCalledTimes( 3 );
 			expect( listener_b ).toHaveBeenCalledTimes( 3 );
 			expect( listener_c ).toHaveBeenCalledTimes( 2 );
+		} );
+	} );
+
+	describe( 'createWaitForRegistry', () => {
+		let registry;
+		let update;
+		let stateChangeListener;
+		beforeEach( () => {
+			registry = createRegistry();
+			registry.registerStore( 'test', basicStore );
+			( { update } = registry.dispatch( 'test' ) );
+			stateChangeListener = jest.fn();
+			registry.subscribe( stateChangeListener );
+		} );
+
+		it( 'fails if attempted to use with fake timers', () => {
+			jest.useFakeTimers();
+			const waitForRegistry = createWaitForRegistry( registry );
+
+			expect( waitForRegistry ).toThrow(
+				/cannot be used with fake timers/i
+			);
+		} );
+
+		it( 'resolves 50ms after state changes', async () => {
+			const waitForRegistry = createWaitForRegistry( registry );
+			const then = jest.fn();
+
+			const promise = waitForRegistry();
+			promise.then( then );
+
+			expect( then ).not.toHaveBeenCalled();
+			await update(); // Starts timer.
+			expect( stateChangeListener ).toHaveBeenCalled();
+			expect( then ).not.toHaveBeenCalled();
+			await wait( 40 );
+			expect( then ).not.toHaveBeenCalled();
+			await wait( 11 );
+			expect( then ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'waits another 50ms if no state changes are detected when called', async () => {
+			const waitForRegistry = createWaitForRegistry( registry );
+			const then = jest.fn();
+
+			const promise = waitForRegistry(); // Starts fallback timer.
+			promise.then( then );
+
+			expect( stateChangeListener ).not.toHaveBeenCalled();
+			await wait( 40 );
+			expect( then ).not.toHaveBeenCalled();
+			// Need to update or it will fail.
+			await update();
+			await wait( 40 );
+			expect( then ).not.toHaveBeenCalled();
+			await wait( 11 );
+			expect( then ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'errors if no state changes are detected during 50ms grace period', async () => {
+			const waitForRegistry = createWaitForRegistry( registry );
+
+			await expect( waitForRegistry ).rejects.toThrow(
+				/No state changes were observed/i
+			);
 		} );
 	} );
 } );

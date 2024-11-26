@@ -632,7 +632,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				}
 			);
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 
 			expect(
 				getByRole( 'button', { name: /Don’t show again/i } )
@@ -660,6 +660,16 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				status: 200,
 				body: audiencesFixture,
 			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				),
+				{
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				}
+			);
 
 			const settingsBody = {
 				configuredAudiences: [
@@ -836,6 +846,16 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				status: 200,
 				body: audiencesFixture,
 			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				),
+				{
+					body: [ 'googlesitekit_post_type' ],
+					status: 200,
+				}
+			);
 
 			const settingsBody = {
 				configuredAudiences: [

@@ -29,7 +29,10 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../../../googlesitekit/notifications/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -192,7 +195,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			await registry
 				.dispatch( CORE_NOTIFICATIONS )
-				.receiveQueuedNotifications( [ { id } ] );
+				.receiveQueuedNotifications(
+					[ { id } ],
+					NOTIFICATION_GROUPS.DEFAULT
+				);
 
 			const { container, getByText } = render(
 				<NotificationWithComponentProps />,
