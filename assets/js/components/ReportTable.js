@@ -105,7 +105,11 @@ export default function ReportTable( props ) {
 					className={ classnames(
 						'googlesitekit-table__wrapper',
 						`googlesitekit-table__wrapper--${ contentColumns.length }-col`,
-						`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`
+						`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`,
+						{
+							'googlesitekit-table__wrapper--tabbed-layout':
+								tabbedLayout,
+						}
 					) }
 				>
 					{ ! tabbedLayout && (

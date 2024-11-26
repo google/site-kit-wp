@@ -45,11 +45,18 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import ga4ReportingTour from '../../../../../feature-tours/ga4-reporting';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
+
+	const breakpoint = useBreakpoint();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
@@ -229,17 +236,26 @@ function ModulePopularPagesWidgetGA4( props ) {
 		} );
 	}
 
+	const tabbedLayout =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
+	const reportTable = (
+		<ReportTable
+			rows={ rows }
+			columns={ tableColumns }
+			zeroState={ ZeroState }
+			gatheringData={ isGatheringData }
+			tabbedLayout={ tabbedLayout }
+		/>
+	);
+
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
-			<TableOverflowContainer>
-				<ReportTable
-					className="googlesitekit-analytics-popular-pages-widget__report-table"
-					rows={ rows }
-					columns={ tableColumns }
-					zeroState={ ZeroState }
-					gatheringData={ isGatheringData }
-				/>
-			</TableOverflowContainer>
+			{ tabbedLayout ? (
+				reportTable
+			) : (
+				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
+			) }
 		</Widget>
 	);
 }
