@@ -21,6 +21,7 @@
  */
 import { render } from '../../../../../../tests/js/test-utils';
 import {
+	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
@@ -31,6 +32,8 @@ import {
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {
 	const { Widget, WidgetNull } = getWidgetComponentProps(
@@ -38,40 +41,31 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 	);
 
 	it( 'renders correctly with the expected metrics', async () => {
+		const registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		provideKeyMetrics( registry );
+		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideAnalytics4MockReport( registry, {
+			...registry.select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} ),
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'sessionConversionRate',
+				},
+			],
+			limit: 1,
+			orderBy: 'sessionConversionRate',
+		} );
 		const { container, waitForRegistry } = render(
 			<TopConvertingTrafficSourceWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
 			/>,
 			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
-
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideKeyMetrics( registry );
-					provideAnalytics4MockReport( registry, {
-						compareStartDate: '2020-07-14',
-						compareEndDate: '2020-08-10',
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						dimensions: [ 'sessionDefaultChannelGroup' ],
-						metrics: [
-							{
-								name: 'sessionConversionRate',
-							},
-						],
-						limit: 1,
-						orderBy: 'sessionConversionRate',
-					} );
-				},
+				registry,
 			}
 		);
 		await waitForRegistry();

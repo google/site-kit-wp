@@ -35,6 +35,7 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { negateDefined } from '../../../util/negate';
 import {
+	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
@@ -66,6 +67,19 @@ const dismissNewConversionReportingEventsStore = createFetchStore( {
 			'clear-conversion-reporting-new-events'
 		);
 	},
+	reducerCallback: ( state, values ) => {
+		if ( values === false ) {
+			return state;
+		}
+
+		return {
+			...state,
+			detectedEventsChange: {
+				...state.detectedEventsChange,
+				newEvents: [],
+			},
+		};
+	},
 } );
 
 const dismissLostConversionReportingEventsStore = createFetchStore( {
@@ -76,6 +90,19 @@ const dismissLostConversionReportingEventsStore = createFetchStore( {
 			'analytics-4',
 			'clear-conversion-reporting-lost-events'
 		);
+	},
+	reducerCallback: ( state, values ) => {
+		if ( values === false ) {
+			return state;
+		}
+
+		return {
+			...state,
+			detectedEventsChange: {
+				...state.detectedEventsChange,
+				lostEvents: [],
+			},
+		};
 	},
 } );
 
@@ -236,6 +263,40 @@ export const selectors = {
 	 */
 	hasLostConversionReportingEvents:
 		hasConversionReportingEventsOfType( 'lostEvents' ),
+
+	/**
+	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}  purpose      Value of saved site purpose from user input settings.
+	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @return {boolean} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise.
+	 */
+	haveConversionEventsForTailoredMetrics: createRegistrySelector(
+		( select ) => ( state, useNewEvents ) => {
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			const purposeTailoredMetrics = select(
+				CORE_USER
+			).getAnswerBasedMetrics( null, true );
+
+			const conversionReportingEventsChange = useNewEvents
+				? select(
+						MODULES_ANALYTICS_4
+				  ).getConversionReportingEventsChange()?.newEvents
+				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			return conversionReportingEventsChange?.some( ( event ) =>
+				conversionEventWidgets[ event ].some( ( widget ) =>
+					purposeTailoredMetrics.includes( widget )
+				)
+			);
+		}
+	),
 
 	/**
 	 * Gets conversion events related metrics.
