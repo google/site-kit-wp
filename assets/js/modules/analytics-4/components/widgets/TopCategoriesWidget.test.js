@@ -34,7 +34,10 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
 import TopCategoriesWidget from './TopCategoriesWidget';
 
 describe( 'TopCategoriesWidget', () => {
@@ -73,8 +76,9 @@ describe( 'TopCategoriesWidget', () => {
 
 	it( 'renders correctly with the expected metrics', async () => {
 		provideAnalytics4MockReport( registry, {
-			startDate: '2020-08-11',
-			endDate: '2020-09-07',
+			...registry.select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} ),
 			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
 			dimensionFilters: {
 				'customEvent:googlesitekit_post_categories': {
