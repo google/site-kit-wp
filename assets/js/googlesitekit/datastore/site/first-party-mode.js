@@ -80,6 +80,15 @@ const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
+	baseName: 'getFPMServerRequirementStatus',
+	controlCallback: () =>
+		API.get( 'core', 'site', 'fpm-server-requirement-status', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: settingsReducerCallback,
+} );
+
 const baseInitialState = {
 	firstPartyModeSettings: undefined,
 };
@@ -206,6 +215,7 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetFirstPartyModeSettingsStore,
 	fetchSaveFirstPartyModeSettingsStore,
+	fetchGetFPMServerRequirementStatusStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

@@ -24,7 +24,11 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
-import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from './constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -438,6 +442,69 @@ describe( 'core/notifications Notifications', () => {
 					.getQueuedNotifications( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 				expect( queuedNotifications ).toHaveLength( 2 );
+			} );
+
+			it( 'should return registered and grouped notifications by their groupID', async () => {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'default-1', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 10,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'setup-cta-1', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+						priority: 20,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'default-2', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						priority: 10,
+					} );
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( 'setup-cta-2', {
+						Component: TestNotificationComponent,
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+						priority: 20,
+					} );
+
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.SETUP_CTAS
+					);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.SETUP_CTAS
+				);
+
+				const queuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.SETUP_CTAS
+					);
+
+				expect( queuedNotifications ).toHaveLength( 2 );
+				expect( queuedNotifications[ 0 ].id ).toBe( 'setup-cta-1' );
+				expect( queuedNotifications[ 1 ].id ).toBe( 'setup-cta-2' );
 			} );
 
 			it( 'should return notifications filtered by their checkRequirements callback when specified', async () => {

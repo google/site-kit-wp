@@ -29,6 +29,7 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -187,6 +188,9 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				},
 			};
 			it( 'does not make a network request if there are no missing custom dimensions', async () => {
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
+				} );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: customDimensionNames,

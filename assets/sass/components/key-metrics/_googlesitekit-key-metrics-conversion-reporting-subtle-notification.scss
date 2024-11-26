@@ -1,5 +1,5 @@
 /**
- * Key Metrics ACR Subtle Notification styles.
+ * Key Metrics Conversion Reporting Subtle Notification styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -30,8 +30,39 @@
 		}
 
 		.googlesitekit-subtle-notification__content,
-		.mdc-button--tertiary:not(:disabled) {
+		.mdc-button--tertiary:not(:disabled),
+		p > a {
 			color: $c-violet-v-600;
+		}
+	}
+
+	.googlesitekit-widget--keyMetricsEventDetectionCalloutNotification {
+		.googlesitekit-widget__body,
+		.mdc-layout-grid {
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary {
+
+		.googlesitekit-widget-area-widgets {
+
+			.googlesitekit-widget--keyMetricsEventDetectionCalloutNotification {
+
+				.googlesitekit-widget__body,
+				.mdc-layout-grid,
+				.mdc-layout-grid__inner {
+					display: block;
+				}
+
+				.googlesitekit-acr-subtle-notification {
+					display: flex;
+				}
+
+				.googlesitekit-cta-link {
+					text-decoration: underline;
+				}
+			}
 		}
 	}
 }
