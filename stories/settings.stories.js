@@ -163,6 +163,8 @@ storiesOf( 'Settings', module )
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
 
+				provideModules( registry );
+
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetTracking( { enabled: false } );
