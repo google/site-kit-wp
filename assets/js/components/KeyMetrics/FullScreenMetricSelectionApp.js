@@ -41,11 +41,8 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 } from '../KeyMetrics/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { useFeature } from '../../hooks/useFeature';
 
 export default function FullScreenMetricSelectionApp() {
-	const conversionReportingEnabled = useFeature( 'conversionReporting' );
-
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -87,18 +84,10 @@ export default function FullScreenMetricSelectionApp() {
 	);
 
 	useEffect( () => {
-		if (
-			( ! conversionReportingEnabled || isKeyMetricsSetupCompleted ) &&
-			mainDashboardURL
-		) {
+		if ( isKeyMetricsSetupCompleted && mainDashboardURL ) {
 			navigateTo( mainDashboardURL );
 		}
-	}, [
-		conversionReportingEnabled,
-		mainDashboardURL,
-		navigateTo,
-		isKeyMetricsSetupCompleted,
-	] );
+	}, [ mainDashboardURL, navigateTo, isKeyMetricsSetupCompleted ] );
 
 	useEffect( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
