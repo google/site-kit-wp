@@ -52,7 +52,7 @@ export default function OneTapToggle() {
 						a: (
 							<Link
 								key="link"
-								href="https://developers.google.com/identity/gsi/web/guides/offerings#one_tap"
+								href="https://sitekit.withgoogle.com/documentation/using-site-kit/sign-in-with-google#one-tap"
 								external
 							/>
 						),
