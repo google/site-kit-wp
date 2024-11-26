@@ -1,5 +1,5 @@
 /**
- * SIgn In With Google Setup form.
+ * Sign in with Google Setup form.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -28,7 +28,6 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ClientIDTextField from '../common/ClientIDTextField';
 import { Button } from 'googlesitekit-components';
 import SupportLink from '../../../../components/SupportLink';
@@ -40,10 +39,11 @@ const LazyGraphicSVG = lazy( () =>
 );
 
 export default function SetupForm() {
-	const siteName = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteName()
+	const serviceClientIDProvisioningURL = useSelect( ( select ) =>
+		select(
+			MODULES_SIGN_IN_WITH_GOOGLE
+		).getServiceClientIDProvisioningURL()
 	);
-	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );
 
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
@@ -55,7 +55,7 @@ export default function SetupForm() {
 				<p className="googlesitekit-setup-module__step-description">
 					{ createInterpolateElement(
 						__(
-							'To set up Sign in With Google, Site Kit will help you create an "OAuth Client ID" that will be used to enable Sign in With Google on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
+							'To set up Sign in with Google, Site Kit will help you create an "OAuth Client ID" that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -74,9 +74,7 @@ export default function SetupForm() {
 				</div>
 				<Button
 					className="googlesitekit-sign-in-with-google-client-id-cta"
-					href={ `https://developers.google.com/web/site-kit?sitename=${ encodeURIComponent(
-						siteName
-					) }&siteurl=${ encodeURIComponent( homeURL ) }` }
+					href={ serviceClientIDProvisioningURL }
 					target="_blank"
 					trailingIcon={ <ExternalIcon width="15" height="15" /> }
 					inverse

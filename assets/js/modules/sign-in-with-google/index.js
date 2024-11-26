@@ -31,8 +31,12 @@ import {
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
+import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
@@ -43,9 +47,7 @@ export function registerModule( modules ) {
 	modules.registerModule( 'sign-in-with-google', {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
-		SettingsViewComponent() {
-			return null;
-		},
+		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
 		onCompleteSetup: async ( registry, finishSetup ) => {
 			const { submitChanges } = registry.dispatch(
@@ -68,7 +70,7 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 			__(
-				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress\' "Reset my password" to set a password for their account',
+				'Existing users who have only used Sign in with Google to sign in to your site will need to use WordPress\' "Reset my password" to set a password for their account',
 				'google-site-kit'
 			),
 		],
@@ -99,6 +101,7 @@ export const registerNotifications = ( notifications ) => {
 			Component: SignInWithGoogleSetupCTABanner,
 			priority: 320,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			checkRequirements: async ( { select, resolveSelect } ) => {
 				await Promise.all( [

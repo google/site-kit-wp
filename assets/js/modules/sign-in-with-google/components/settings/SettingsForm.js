@@ -25,7 +25,6 @@ import {
 	ButtonThemeSelect,
 	ClientIDTextField,
 	OneTapToggle,
-	Preview,
 } from '../common';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -41,7 +40,7 @@ export default function SettingsForm() {
 			<Grid>
 				<Row>
 					<Cell size={ 8 }>
-						<Grid>
+						<Grid className="googlesitekit-sign-in-with-google-settings-fields__stretch-form">
 							<Row>
 								<Cell size={ 12 }>
 									<ClientIDTextField />
@@ -58,15 +57,10 @@ export default function SettingsForm() {
 									<ButtonShapeSelect />
 								</Cell>
 							</Row>
-							<Row>
-								<Cell size={ 12 }>
-									<OneTapToggle />
-								</Cell>
-							</Row>
 						</Grid>
 					</Cell>
-					<Cell size={ 4 }>
-						<Preview />
+					<Cell size={ 12 }>
+						<OneTapToggle />
 					</Cell>
 				</Row>
 			</Grid>

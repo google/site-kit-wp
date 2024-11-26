@@ -37,7 +37,10 @@ export default function HTTPSWarning( { moduleSlug, className } ) {
 	);
 	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );
 
-	if ( ! module?.name || isURLUsingHTTPS( homeURL ) ) {
+	if (
+		! module?.name ||
+		( homeURL !== undefined && isURLUsingHTTPS( homeURL ) )
+	) {
 		return null;
 	}
 

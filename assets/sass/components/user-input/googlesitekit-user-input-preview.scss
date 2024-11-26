@@ -120,6 +120,10 @@
 		justify-content: space-between;
 		margin-bottom: 14px;
 
+		&.googlesitekit-user-input__preview-group-title-with-subtitle {
+			margin-bottom: 0;
+		}
+
 		@media (min-width: $bp-desktop) {
 			flex-direction: row;
 		}
@@ -153,6 +157,21 @@
 			&:focus {
 				svg { fill: none; }
 			}
+		}
+	}
+
+	.googlesitekit-user-input__preview-group-subtitle {
+
+		p {
+			margin-top: 0;
+		}
+
+		.mdc-layout-grid {
+			padding: 0 0 25px;
+		}
+
+		.googlesitekit-user-input__preview-group-subtitle-component {
+			margin-top: 14px;
 		}
 	}
 
