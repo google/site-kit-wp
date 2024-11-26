@@ -109,7 +109,7 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
@@ -174,7 +174,7 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
@@ -215,7 +215,7 @@ describe( 'ErrorNotifications', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 		await act( waitForDefaultTimeouts );
 
 		expect( container ).toHaveTextContent(
