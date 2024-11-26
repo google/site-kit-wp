@@ -34,6 +34,16 @@ import {
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { negateDefined } from '../../../util/negate';
+import {
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+} from '../../../googlesitekit/datastore/user/constants';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -226,6 +236,37 @@ export const selectors = {
 	 */
 	hasLostConversionReportingEvents:
 		hasConversionReportingEventsOfType( 'lostEvents' ),
+
+	/**
+	 * Gets conversion events related metrics.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Metrics list object.
+	 */
+	getKeyMetricsConversionEventWidgets() {
+		const leadRelatedMetrics = [
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		];
+
+		return {
+			purchase: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+			],
+			add_to_cart: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+			],
+			contact: leadRelatedMetrics,
+			submit_lead_form: leadRelatedMetrics,
+			generate_lead: leadRelatedMetrics,
+		};
+	},
 };
 
 export default combineStores(
