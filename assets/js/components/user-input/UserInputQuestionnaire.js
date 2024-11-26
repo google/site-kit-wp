@@ -46,6 +46,7 @@ import useViewContext from '../../hooks/useViewContext';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -159,10 +160,18 @@ export default function UserInputQuestionnaire() {
 	] );
 
 	const haveConversionReportingEventsForTailoredMetrics = useSelect(
-		( select ) =>
-			select(
+		( select ) => {
+			const isGA4Connected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			if ( ! isGA4Connected ) {
+				return false;
+			}
+
+			return select(
 				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics()
+			).haveConversionEventsForTailoredMetrics();
+		}
 	);
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );

@@ -158,7 +158,7 @@ describe( 'AudienceTileError', () => {
 			}
 		);
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
 
@@ -192,7 +192,7 @@ describe( 'AudienceTileError', () => {
 			/>
 		);
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_audiences-tile',
@@ -266,7 +266,7 @@ describe( 'AudienceTileError', () => {
 			/>
 		);
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_audiences-tile',

@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideKeyMetrics,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
@@ -40,6 +41,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
+		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		mockSurveyEndpoints();

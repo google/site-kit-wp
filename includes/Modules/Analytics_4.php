@@ -505,37 +505,37 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$debug_fields = array(
 			'analytics_4_account_id'                  => array(
-				'label' => __( 'Analytics account ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'analytics_4_property_id'                 => array(
-				'label' => __( 'Analytics property ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id'          => array(
-				'label' => __( 'Analytics web data stream ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Web Data Stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
 			'analytics_4_measurement_id'              => array(
-				'label' => __( 'Analytics measurement ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Measurement ID', 'google-site-kit' ),
 				'value' => $settings['measurementID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['measurementID'] ),
 			),
 			'analytics_4_use_snippet'                 => array(
-				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
+				'label' => __( 'Analytics: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics Ads conversion ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Ads Conversion ID', 'google-site-kit' ),
 				'value' => $settings['adsConversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			'analytics_4_available_custom_dimensions' => array(
-				'label' => __( 'Analytics available custom dimensions', 'google-site-kit' ),
+				'label' => __( 'Analytics: Available Custom Dimensions', 'google-site-kit' ),
 				'value' => empty( $settings['availableCustomDimensions'] )
 					? __( 'None', 'google-site-kit' )
 					: join(
@@ -548,12 +548,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					: join( ', ', $settings['availableCustomDimensions'] ),
 			),
 			'analytics_4_ads_linked'                  => array(
-				'label' => __( 'Analytics Ads Linked', 'google-site-kit' ),
+				'label' => __( 'Analytics: Ads Linked', 'google-site-kit' ),
 				'value' => $settings['adsLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
 				'debug' => $settings['adsLinked'],
 			),
 			'analytics_4_ads_linked_last_synced_at'   => array(
-				'label' => __( 'Analytics Ads Linked Last Synced At', 'google-site-kit' ),
+				'label' => __( 'Analytics: Ads Linked Last Synced At', 'google-site-kit' ),
 				'value' => $settings['adsLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adsLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => $settings['adsLinkedLastSyncedAt'],
 			),
@@ -561,13 +561,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		if ( $this->is_adsense_connected() ) {
 			$debug_fields['analytics_4_adsense_linked'] = array(
-				'label' => __( 'Analytics AdSense Linked', 'google-site-kit' ),
+				'label' => __( 'Analytics: AdSense Linked', 'google-site-kit' ),
 				'value' => $settings['adSenseLinked'] ? __( 'Connected', 'google-site-kit' ) : __( 'Not connected', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinked'] ),
 			);
 
 			$debug_fields['analytics_4_adsense_linked_last_synced_at'] = array(
-				'label' => __( 'Analytics AdSense Linked Last Synced At', 'google-site-kit' ),
+				'label' => __( 'Analytics: AdSense Linked Last Synced At', 'google-site-kit' ),
 				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
 			);
@@ -579,7 +579,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
 
 			$debug_fields['analytics_4_site_kit_audiences'] = array(
-				'label' => __( 'Analytics site created audiences', 'google-site-kit' ),
+				'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
 				'value' => empty( $site_kit_audiences )
 					? __( 'None', 'google-site-kit' )
 					: join(
