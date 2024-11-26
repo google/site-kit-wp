@@ -140,7 +140,7 @@ export default function FullScreenMetricSelectionApp() {
 											>
 												<span className="googlesitekit-user-input__subtitle">
 													{ __(
-														"Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit's main dashboard.",
+														'Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit’s main dashboard.',
 														'google-site-kit'
 													) }
 												</span>
