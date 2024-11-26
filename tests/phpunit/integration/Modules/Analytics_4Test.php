@@ -4394,7 +4394,7 @@ class Analytics_4Test extends TestCase {
 
 		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
 
-		$this->assertEquals( 'Analytics site created audiences', $audience_field['label'] );
+		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'] );
 
 		if ( $this->authentication->is_authenticated() ) {
 			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );

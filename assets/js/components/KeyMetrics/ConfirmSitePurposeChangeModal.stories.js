@@ -21,19 +21,11 @@
  */
 import ConfirmSitePurposeChangeModal from './ConfirmSitePurposeChangeModal';
 import {
-	provideKeyMetrics,
 	provideKeyMetricsUserInputSettings,
-	provideModules,
 	provideUserAuthentication,
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import {
-	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_POPULAR_CONTENT,
-} from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
@@ -68,31 +60,14 @@ export default {
 					.setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 						[ USER_INPUT_QUESTIONS_PURPOSE ]: [ 'publish_news' ],
 					} );
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
 				provideUserAuthentication( registry );
-				provideKeyMetrics( registry, {
-					widgetSlugs: [
-						KM_ANALYTICS_NEW_VISITORS,
-						KM_ANALYTICS_POPULAR_CONTENT,
-						KM_ANALYTICS_MOST_ENGAGING_PAGES,
-						KM_ANALYTICS_POPULAR_AUTHORS,
-					],
-				} );
 				provideKeyMetricsUserInputSettings( registry, {
 					purpose: {
-						values: [ 'publish_news' ],
+						values: [ 'publish_blog' ],
 						scope: 'site',
 					},
 				} );
-				provideSiteInfo( registry, {
-					postTypes: [ { slug: 'product', label: 'Product' } ],
-				} );
+				provideSiteInfo( registry );
 			};
 
 			return (

@@ -24,12 +24,12 @@ import {
 	createTestRegistry,
 	screen,
 	waitFor,
-	act,
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
+	act,
 } from '../../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import EnableAutoUpdateBannerNotification from '.';
 import useQueryArg from '../../../hooks/useQueryArg';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -68,10 +68,9 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			return Promise.resolve( true );
 		} );
 
-		fetchMock.get( /^\/google-site-kit\/v1\/core\/user\/data\/nonces/, {
-			body: { updates: '751b9198d2' },
-			status: 200,
-		} );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetNonces( { updates: '751b9198d2' } );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
@@ -80,15 +79,15 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		useQueryArg.mockClear();
 		apiCache.setItem.mockClear();
 		apiCache.getItem.mockClear();
+		delete global.ajaxurl;
 	} );
 
 	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
 			siteKitAutoUpdatesEnabled: false,
 		} );
-
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+		provideUserCapabilities( registry, {
 			googlesitekit_update_plugins: true,
 		} );
 
@@ -111,28 +110,25 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			googlesitekit_update_plugins: true,
 		} );
 
-		await registry
+		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ DISMISSED_ITEM_KEY ] );
 
-		const { container, waitForRegistry } = render(
-			<EnableAutoUpdateBannerNotification />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
+		const { container } = render( <EnableAutoUpdateBannerNotification />, {
+			registry,
+		} );
+		await act( waitForDefaultTimeouts );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not show the notification when auto updates are already enabled for Site Kit', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+	it( 'should not show the notification when auto updates are already enabled for Site Kit', () => {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
 			siteKitAutoUpdatesEnabled: true,
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+		provideUserCapabilities( registry, {
 			googlesitekit_update_plugins: true,
 		} );
 
@@ -143,13 +139,13 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not show the notification when user can not update plugins', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+	it( 'should not show the notification when user can not update plugins', () => {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
 			siteKitAutoUpdatesEnabled: false,
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+		provideUserCapabilities( registry, {
 			googlesitekit_update_plugins: false,
 		} );
 
@@ -160,13 +156,13 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not show the notification if plugin auto updates can not be enabled', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+	it( 'should not show the notification if plugin auto updates can not be enabled', () => {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: false,
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
-			googlesitekit_update_plugins: true,
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: false,
 		} );
 
 		const { container } = render( <EnableAutoUpdateBannerNotification />, {
@@ -177,11 +173,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	} );
 
 	it( 'should not show the notification when hide banner cache key is set', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+		provideUserCapabilities( registry, {
 			googlesitekit_update_plugins: true,
 		} );
 
@@ -205,16 +201,16 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	} );
 
 	it( 'should send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
 			pluginBasename: 'google-site-kit/google-site-kit.php',
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveNonces( {
+		registry.dispatch( CORE_USER ).receiveGetNonces( {
 			updates: '751b9198d2',
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+		provideUserCapabilities( registry, {
 			googlesitekit_update_plugins: true,
 		} );
 
@@ -225,10 +221,8 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			status: 200,
 		} );
 
-		act( () => {
-			render( <EnableAutoUpdateBannerNotification />, {
-				registry,
-			} );
+		render( <EnableAutoUpdateBannerNotification />, {
+			registry,
 		} );
 
 		expect(
@@ -238,27 +232,21 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		fireEvent.click( screen.getByText( 'Enable auto-updates' ) );
 
 		await waitFor( () => expect( fetchMock ).toHaveFetchedTimes( 1 ) );
-
-		delete global.ajaxurl;
 	} );
 
 	it( 'should not show the notification directly after Site Kit initial setup', async () => {
 		stubMockUseQueryArg( true );
 
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
 		} );
 
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+		provideUserCapabilities( registry, {
 			googlesitekit_update_plugins: true,
 		} );
 
-		let container;
-
-		act( () => {
-			( { container } = render( <EnableAutoUpdateBannerNotification />, {
-				registry,
-			} ) );
+		const { container } = render( <EnableAutoUpdateBannerNotification />, {
+			registry,
 		} );
 
 		await waitFor( () =>
