@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 
@@ -241,6 +242,10 @@ function ModulePopularPagesWidgetGA4( props ) {
 
 	const reportTable = (
 		<ReportTable
+			className={ classnames( {
+				'googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout':
+					tabbedLayout,
+			} ) }
 			rows={ rows }
 			columns={ tableColumns }
 			zeroState={ ZeroState }

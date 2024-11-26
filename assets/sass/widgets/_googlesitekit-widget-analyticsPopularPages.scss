@@ -17,17 +17,10 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-analytics-popular-pages-widget__report-table {
+	.googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout {
 		.googlesitekit-table__body-item:last-child {
-			width: 25%;
-
-			@media (min-width: $width-xsmall + 1 + px) {
-				width: 20%;
-			}
-
-			@media (min-width: $width-tablet + 1 + px) {
-				width: 15%;
-			}
+			// Ensure the metric shown in the last column is not wrapped.
+			white-space: nowrap;
 		}
 	}
 }
