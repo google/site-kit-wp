@@ -418,7 +418,7 @@ class Debug_Data {
 			$fields[ "{$module_slug}_shared_roles" ] = array_merge(
 				array(
 					/* translators: %s: module name */
-					'label' => sprintf( __( '%s Shared Roles', 'google-site-kit' ), $module->name ),
+					'label' => sprintf( __( '%s: Shared Roles', 'google-site-kit' ), $module->name ),
 				),
 				$this->get_module_shared_role_names( $module_settings['sharedRoles'] )
 			);
@@ -426,7 +426,7 @@ class Debug_Data {
 			$fields[ "{$module_slug}_management" ] = array_merge(
 				array(
 					/* translators: %s: module name */
-					'label' => sprintf( __( '%s Management', 'google-site-kit' ), $module->name ),
+					'label' => sprintf( __( '%s: Management', 'google-site-kit' ), $module->name ),
 				),
 				$this->get_module_management( $module_settings['management'] )
 			);

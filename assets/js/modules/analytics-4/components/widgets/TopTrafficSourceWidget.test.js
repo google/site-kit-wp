@@ -26,6 +26,7 @@ import {
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import {
+	createTestRegistry,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
@@ -41,60 +42,57 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import WidgetNull from '../../../../googlesitekit/widgets/components/WidgetNull';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'TopTrafficSourceWidget', () => {
 	const { Widget } = getWidgetComponentProps(
 		KM_ANALYTICS_TOP_TRAFFIC_SOURCE
 	);
 
+	let registry;
+	let dateRangeDates;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		dateRangeDates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		provideKeyMetrics( registry );
+		provideModules( registry, withConnected( 'analytics-4' ) );
+	} );
+
 	it( 'renders correctly with the expected metrics', async () => {
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			limit: 1,
+			orderBy: 'totalUsers',
+		} );
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+		} );
 		const { container, waitForRegistry } = render(
 			<TopTrafficSourceWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
 			/>,
 			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
-
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideKeyMetrics( registry );
-					provideAnalytics4MockReport( registry, {
-						compareStartDate: '2020-07-14',
-						compareEndDate: '2020-08-10',
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						dimensions: [ 'sessionDefaultChannelGroup' ],
-						metrics: [
-							{
-								name: 'totalUsers',
-							},
-						],
-						limit: 1,
-						orderBy: 'totalUsers',
-					} );
-
-					provideAnalytics4MockReport( registry, {
-						compareStartDate: '2020-07-14',
-						compareEndDate: '2020-08-10',
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						metrics: [
-							{
-								name: 'totalUsers',
-							},
-						],
-					} );
-				},
+				registry,
 			}
 		);
 		await waitForRegistry();
@@ -130,30 +128,16 @@ describe( 'TopTrafficSourceWidget', () => {
 			}
 		);
 
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
 		const { container, getByText, waitForRegistry } = render(
 			<TopTrafficSourceWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
 			/>,
 			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
-
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideModuleRegistrations( registry );
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( {} );
-					provideKeyMetrics( registry );
-				},
+				registry,
 			}
 		);
 
@@ -169,10 +153,7 @@ describe( 'TopTrafficSourceWidget', () => {
 			),
 			{
 				body: getAnalytics4MockResponse( {
-					compareStartDate: '2020-07-14',
-					compareEndDate: '2020-08-10',
-					startDate: '2020-08-11',
-					endDate: '2020-09-07',
+					...dateRangeDates,
 					dimensions: [ 'sessionDefaultChannelGroup' ],
 					metrics: [
 						{
@@ -192,10 +173,7 @@ describe( 'TopTrafficSourceWidget', () => {
 			),
 			{
 				body: getAnalytics4MockResponse( {
-					compareStartDate: '2020-07-14',
-					compareEndDate: '2020-08-10',
-					startDate: '2020-08-11',
-					endDate: '2020-09-07',
+					...dateRangeDates,
 					metrics: [
 						{
 							name: 'totalUsers',

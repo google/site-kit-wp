@@ -1,5 +1,5 @@
 /**
- * SIgn In With Google Setup form.
+ * Sign in with Google Setup form.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -55,7 +55,7 @@ export default function SetupForm() {
 				<p className="googlesitekit-setup-module__step-description">
 					{ createInterpolateElement(
 						__(
-							'To set up Sign in With Google, Site Kit will help you create an "OAuth Client ID" that will be used to enable Sign in With Google on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
+							'To set up Sign in with Google, Site Kit will help you create an "OAuth Client ID" that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{

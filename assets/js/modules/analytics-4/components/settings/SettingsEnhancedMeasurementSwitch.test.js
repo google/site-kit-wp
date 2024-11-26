@@ -280,7 +280,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 			expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 		}
 	);
 
@@ -319,7 +319,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		switchControl.click();
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( switchControl ).toBeChecked();
 	} );
@@ -345,7 +345,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		switchControl.click();
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect(
 			registry
@@ -385,7 +385,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 			switchControl.click();
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 
 			expect( switchControl ).not.toBeChecked();
 
@@ -447,7 +447,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		switchControl.click();
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( switchControl ).not.toBeChecked();
 
@@ -457,7 +457,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			} );
 		} );
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( switchControl ).not.toBeInTheDocument();
 
@@ -493,7 +493,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 		switchControl.click();
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( switchControl ).not.toBeChecked();
 
@@ -503,7 +503,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			} );
 		} );
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		expect( switchControl ).not.toBeInTheDocument();
 
@@ -540,7 +540,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				}
 			);
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
@@ -557,7 +557,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				}
 			);
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
@@ -570,7 +570,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				}
 			);
 
-			await act( waitForRegistry );
+			await waitForRegistry();
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( fetchMock ).toHaveFetched(
