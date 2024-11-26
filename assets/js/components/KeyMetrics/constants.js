@@ -22,8 +22,6 @@
 import { __ } from '@wordpress/i18n';
 
 export const KEY_METRICS_SETUP_CTA_WIDGET_SLUG = 'key-metrics-setup-cta-widget';
-export const ACR_SUBTLE_NOTIFICATION_SLUG =
-	'key-metrics-acr-subtle-notification';
 
 export const KEY_METRICS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-key-metrics-selection-panel-opened';

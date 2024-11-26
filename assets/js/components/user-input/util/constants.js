@@ -42,6 +42,8 @@ export const USER_INPUT_CURRENTLY_EDITING_KEY =
 
 export const FORM_USER_INPUT_QUESTION_NUMBER = 'user_input_question_number';
 export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
+export const USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY =
+	'user-input-legacy-site-purpose-dismissed-item';
 
 /**
  * Gets available questions for user input settings.
