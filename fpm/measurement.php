@@ -1,3 +1,4 @@
+<?php // phpcs:disable ?>
 <?php
 /**
  * FirstPartyServing redirect file
@@ -8,8 +9,6 @@
  *
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
  */
-
-// phpcs:disable
 
 namespace Google\FirstPartyLibrary;
 
