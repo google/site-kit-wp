@@ -139,7 +139,7 @@ export default function DashboardMainApp() {
 
 				function handleScrollEnd() {
 					scrollToWidgetArea();
-					global.removeEventListener( 'scroll', handleScrollEnd );
+					global.removeEventListener( 'scrollend', handleScrollEnd );
 				}
 
 				global.addEventListener( 'scrollend', handleScrollEnd );
