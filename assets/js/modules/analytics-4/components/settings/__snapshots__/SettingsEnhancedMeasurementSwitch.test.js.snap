@@ -15,7 +15,9 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
       </div>
       Enhanced measurement is enabled for this web data stream
     </div>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -80,7 +82,9 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     >
       Enable enhanced measurement
     </label>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -136,7 +140,9 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         />
       </div>
     </div>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -192,7 +198,9 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         />
       </div>
     </div>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -248,7 +256,9 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
         />
       </div>
     </div>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -312,7 +322,9 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
     >
       Enable enhanced measurement
     </label>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -376,7 +388,9 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
     >
       Enable enhanced measurement
     </label>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -440,7 +454,9 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
     >
       Enable enhanced measurement
     </label>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
@@ -504,7 +520,9 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
     >
       Enable enhanced measurement
     </label>
-    <p>
+    <p
+      class="googlesitekit-settings-module__fields-group-helper-text"
+    >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
         aria-label="Learn more (opens in a new tab)"
