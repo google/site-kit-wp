@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -67,3 +72,12 @@ export default function PanelContent( {
 		</Fragment>
 	);
 }
+
+PanelContent.propTypes = {
+	isOpen: PropTypes.bool,
+	closePanel: PropTypes.func,
+	savedViewableMetrics: PropTypes.array,
+	showHeader: PropTypes.bool,
+	setIsNavigatingToOAuthURL: PropTypes.func,
+	variation: PropTypes.string,
+};
