@@ -45,6 +45,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '../../../googlesitekit/datastore/user/constants';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -275,43 +276,114 @@ export const selectors = {
 	 */
 	haveConversionEventsForTailoredMetrics: createRegistrySelector(
 		( select ) => ( state, useNewEvents ) => {
-			const leadRelatedMetrics = [
-				KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-				KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-			];
-			const conversionEventWidgets = {
-				purchase: [
-					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-				],
-				add_to_cart: [
-					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-				],
-				contact: leadRelatedMetrics,
-				submit_lead_form: leadRelatedMetrics,
-				generate_lead: leadRelatedMetrics,
-			};
-
-			const purposeTailoredMetrics = select(
-				CORE_USER
-			).getAnswerBasedMetrics( null, true );
-
 			const conversionReportingEventsChange = useNewEvents
 				? select(
 						MODULES_ANALYTICS_4
 				  ).getConversionReportingEventsChange()?.newEvents
 				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
-			return conversionReportingEventsChange?.some( ( event ) =>
+			const currentTailoredMetrics =
+				select( CORE_USER ).getAnswerBasedMetrics();
+
+			const tailoredMetricsWithNewEvents = select(
+				CORE_USER
+			).getAnswerBasedMetrics( null, conversionReportingEventsChange );
+
+			return tailoredMetricsWithNewEvents?.some(
+				( metric, index ) =>
+					metric !== currentTailoredMetrics?.[ index ]
+			);
+		}
+	),
+
+	/**
+	 * Checks if there are key metrics widgets that relly on the conversion events that have been lost.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} TRUE if current metrics are depending on the conversion events that have been lost, FALSE otherwise.
+	 */
+	haveLostEventsForCurrentMetrics: createRegistrySelector(
+		( select ) => () => {
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			const currentMetrics = select( CORE_USER ).getKeyMetrics();
+
+			const conversionReportingLostEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange()?.lostEvents;
+
+			return conversionReportingLostEvents?.some( ( event ) =>
 				conversionEventWidgets[ event ]?.some( ( widget ) =>
-					purposeTailoredMetrics?.includes( widget )
+					currentMetrics?.includes( widget )
 				)
 			);
 		}
 	),
+
+	/**
+	 * Returns the conversion events associated with the current site purpose.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array} List of detected conversion events connected to the current site purpose.
+	 */
+	getUserInputPurposeConversionEvents: createRegistrySelector(
+		( select ) => () => {
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
+
+			const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+
+			const purposeEvents =
+				USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING[ purpose ];
+
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			return purposeEvents?.reduce( ( acc, event ) => {
+				if ( detectedEvents?.includes( event ) ) {
+					return [ ...acc, event ];
+				}
+				return acc;
+			}, [] );
+		}
+	),
+
+	/**
+	 * Gets conversion events related metrics.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Metrics list object.
+	 */
+	getKeyMetricsConversionEventWidgets() {
+		const leadRelatedMetrics = [
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		];
+
+		return {
+			purchase: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+			],
+			add_to_cart: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+			],
+			contact: leadRelatedMetrics,
+			submit_lead_form: leadRelatedMetrics,
+			generate_lead: leadRelatedMetrics,
+		};
+	},
 };
 
 export default combineStores(
