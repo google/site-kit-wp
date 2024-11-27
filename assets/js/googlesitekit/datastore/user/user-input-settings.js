@@ -264,7 +264,7 @@ const baseSelectors = {
 	/**
 	 * Gets saved input settings info for this user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Saved user input settings.

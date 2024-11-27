@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Util\Input;
 /**
  * Defines methods that must be implemented by an authenticator class.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ interface Authenticator_Interface {
 	/**
 	 * Authenticates the user using the provided input data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param Input $input Input instance.
 	 * @return string Redirect URL.

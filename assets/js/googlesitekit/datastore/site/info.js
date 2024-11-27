@@ -899,7 +899,7 @@ export const selectors = {
 	/**
 	 * Checks if user registrations are open on this WordPress site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if registrations are open; `false` if not. Returns `undefined` if not yet loaded.

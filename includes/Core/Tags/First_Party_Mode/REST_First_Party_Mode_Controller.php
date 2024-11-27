@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling First Party Mode settings via REST API.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * First_Party_Mode_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 * @var First_Party_Mode_Settings
 	 */
 	private $first_party_mode_settings;
@@ -37,7 +37,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
 	 */
@@ -48,7 +48,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,7 +74,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -156,7 +156,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
