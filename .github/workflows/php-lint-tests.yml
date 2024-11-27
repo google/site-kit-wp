@@ -81,9 +81,14 @@ jobs:
         wp_multisite: ['']
         wp_version: ['latest']
         include:
+          # Min supported PHP + WP Oldest
+          - php_version: '7.4'
+            wp_version: '5.2.21'
+          # Min supported PHP + WP Latest Multisite
           - php_version: '7.4'
             wp_multisite: '1'
             wp_version: 'latest'
+          # Min supported PHP + WP Nightly
           - php_version: '7.4'
             wp_version: 'nightly'
     services:
