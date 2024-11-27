@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Tags;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -84,6 +85,75 @@ class GTagTest extends TestCase {
 		// Assert the array of inline script data contains the necessary gtag config line.
 		// Should be in index 5, the first registered gtag.
 		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][5] );
+	}
+
+	/**
+	 * @dataProvider provider_first_party_mode_data
+	 */
+	public function test_gtag_script_src__first_party_mode( $data ) {
+		self::enable_feature( 'firstPartyMode' );
+
+		$first_party_mode_settings = new First_Party_Mode_Settings( $this->options );
+		$first_party_mode_settings->set( $data['settings'] );
+
+		$this->assertEquals( $data['expected_src'], $this->gtag->get_gtag_src() );
+	}
+
+	public function provider_first_party_mode_data() {
+		$googletagmanager_url = 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_1;
+
+		return array(
+			'all settings enabled'        => array(
+				array(
+					'settings'     => array(
+						'isEnabled'             => true,
+						'isFPMHealthy'          => true,
+						'isScriptAccessEnabled' => true,
+					),
+					'expected_src' => plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1 . '&s=/gtag/js',
+				),
+			),
+			'isEnabled false'             => array(
+				array(
+					'settings'     => array(
+						'isEnabled'             => false,
+						'isFPMHealthy'          => true,
+						'isScriptAccessEnabled' => true,
+					),
+					'expected_src' => $googletagmanager_url,
+				),
+			),
+			'isFPMHealthy false'          => array(
+				array(
+					'settings'     => array(
+						'isEnabled'             => true,
+						'isFPMHealthy'          => false,
+						'isScriptAccessEnabled' => true,
+					),
+					'expected_src' => $googletagmanager_url,
+				),
+			),
+			'isScriptAccessEnabled false' => array(
+				array(
+					'settings'     => array(
+						'isEnabled'             => true,
+						'isFPMHealthy'          => true,
+						'isScriptAccessEnabled' => false,
+					),
+					'expected_src' => $googletagmanager_url,
+				),
+			),
+			'all settings disabled'       => array(
+				array(
+					'settings'     => array(
+						'isEnabled'             => false,
+						'isFPMHealthy'          => false,
+						'isScriptAccessEnabled' => false,
+					),
+					'expected_src' => $googletagmanager_url,
+				),
+			),
+		);
 	}
 
 	public function test_gtag_script_commands() {
