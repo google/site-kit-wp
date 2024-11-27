@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,8 +41,14 @@ import SettingsNotice, {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import WarningIcon from '../../../../../svg/icons/warning.svg';
+import {
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
+} from '../../../../hooks/useBreakpoint';
 
 export default function SettingsView() {
+	const breakpoint = useBreakpoint();
+
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const clientID = useSelect( ( select ) =>
@@ -199,11 +205,17 @@ export default function SettingsView() {
 						Icon={ WarningIcon }
 						notice={ createInterpolateElement(
 							__(
-								'Enable the “Anyone can register” setting to allow your visitors to create an account using the Sign in with Google button. Visit <a>WordPress Settings</a> to manage this setting.',
+								'Enable the “Anyone can register” setting to allow your visitors to create an account using the Sign in with Google button.<br /> Visit <a>WordPress Settings</a> to manage this setting.',
 								'google-site-kit'
 							),
 							{
 								a: <Link href={ generalSettingsURL } />,
+								br:
+									breakpoint === BREAKPOINT_XLARGE ? (
+										<br />
+									) : (
+										<Fragment />
+									),
 							}
 						) }
 					/>
