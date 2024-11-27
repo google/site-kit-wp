@@ -214,6 +214,7 @@ class GTag {
 	 * Returns the gtag source URL.
 	 *
 	 * @since 1.124.0
+	 * @since n.e.x.t Provides support for first-party mode.
 	 *
 	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
