@@ -1,5 +1,5 @@
 /**
- * Selection Panel Items component.
+ * Metric selection.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,30 +17,30 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import PropTypes from 'prop-types';
+import domReady from '@wordpress/dom-ready';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import ChipTabGroup from '../ChipTabGroup';
+import Root from './components/Root';
+import FullScreenMetricSelectionApp from './components/KeyMetrics/FullScreenMetricSelectionApp';
+import { VIEW_CONTEXT_METRIC_SELECTION } from './googlesitekit/constants';
 
-export default function SelectionPanelItems( {
-	savedItemSlugs = [],
-	allMetricItems,
-} ) {
-	return (
-		<div className="googlesitekit-selection-panel-items">
-			<ChipTabGroup
-				savedItemSlugs={ savedItemSlugs }
-				allMetricItems={ allMetricItems }
-			/>
-		</div>
+// Initialize the app once the DOM is ready.
+domReady( () => {
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-metric-selection'
 	);
-}
 
-SelectionPanelItems.propTypes = {
-	savedItemSlugs: PropTypes.array,
-	allMetricItems: PropTypes.object.isRequired,
-};
+	if ( renderTarget ) {
+		render(
+			<Root viewContext={ VIEW_CONTEXT_METRIC_SELECTION }>
+				<FullScreenMetricSelectionApp />
+			</Root>,
+			renderTarget
+		);
+	}
+} );
