@@ -45,6 +45,7 @@ export default function SideSheet( {
 	className,
 	children,
 	isOpen,
+	isLoading,
 	onOpen = () => {},
 	closeSheet = () => {},
 	focusTrapOptions = {},
@@ -72,7 +73,7 @@ export default function SideSheet( {
 	return (
 		<Portal>
 			<FocusTrap
-				active={ !! isOpen }
+				active={ !! isOpen && ! isLoading }
 				focusTrapOptions={ {
 					fallbackFocus: 'body',
 					...focusTrapOptions,
@@ -104,6 +105,7 @@ SideSheet.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	onOpen: PropTypes.func,
 	closeSheet: PropTypes.func,
 	focusTrapOptions: PropTypes.object,
