@@ -39,7 +39,9 @@
 
 				.googlesitekit-selection-panel-footer__item-count {
 					@media (max-width: $bp-mobileOnly) {
+						order: 1;
 						text-align: left;
+						width: 100%;
 					}
 				}
 
@@ -48,13 +50,14 @@
 					width: 100%;
 
 					@media (max-width: $bp-mobileOnly) {
-						display: block;
+						flex-wrap: wrap;
+						justify-content: flex-end;
 					}
 
-					.googlesitekit-selection-panel-footer__actions--mobile-buttons {
-						column-gap: 8px;
-						display: flex;
-						flex-direction: row-reverse;
+					button {
+						@media (max-width: $bp-mobileOnly) {
+							order: 2;
+						}
 					}
 				}
 			}

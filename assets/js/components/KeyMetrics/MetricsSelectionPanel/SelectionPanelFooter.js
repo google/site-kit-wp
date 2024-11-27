@@ -42,7 +42,6 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { safelySort } from '../../../util';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import PreviewBlock from '../../PreviewBlock';
-import { useBreakpoint, BREAKPOINT_SMALL } from '../../../hooks/useBreakpoint';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
@@ -62,8 +61,6 @@ export default function SelectionPanelFooter( {
 	const isLoading = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
 	);
-
-	const breakpoint = useBreakpoint();
 
 	const haveSettingsChanged = useMemo( () => {
 		// Arrays need to be sorted to match in `isEqual`.
@@ -151,57 +148,28 @@ export default function SelectionPanelFooter( {
 	return (
 		<footer className="googlesitekit-selection-panel-footer">
 			<div className="googlesitekit-selection-panel-footer__content">
-				{ ! isFullScreen && itemCountElement }
-				{ breakpoint === BREAKPOINT_SMALL && isFullScreen && (
-					<div className="googlesitekit-selection-panel-footer__actions">
-						{ itemCountElement }
-						<div className="googlesitekit-selection-panel-footer__actions--mobile-buttons">
-							<SpinnerButton
-								onClick={ onSaveClick }
-								isSaving={ isBusy }
-								disabled={
-									selectedItemCount < minSelectedItemCount ||
-									selectedItemCount > maxSelectedItemCount ||
-									isBusy ||
-									( ! isOpen && wasSaved )
-								}
-							>
-								{ finalButtonText || currentButtonText }
-							</SpinnerButton>
-							<Button
-								tertiary
-								onClick={ onCancelClick }
-								disabled={ isBusy }
-							>
-								{ __( 'Cancel', 'google-site-kit' ) }
-							</Button>
-						</div>
-					</div>
-				) }
-				{ breakpoint !== BREAKPOINT_SMALL && isFullScreen && (
-					<div className="googlesitekit-selection-panel-footer__actions">
-						<Button
-							tertiary
-							onClick={ onCancelClick }
-							disabled={ isBusy }
-						>
-							{ __( 'Cancel', 'google-site-kit' ) }
-						</Button>
-						{ itemCountElement }
-						<SpinnerButton
-							onClick={ onSaveClick }
-							isSaving={ isBusy }
-							disabled={
-								selectedItemCount < minSelectedItemCount ||
-								selectedItemCount > maxSelectedItemCount ||
-								isBusy ||
-								( ! isOpen && wasSaved )
-							}
-						>
-							{ finalButtonText || currentButtonText }
-						</SpinnerButton>
-					</div>
-				) }
+				<div className="googlesitekit-selection-panel-footer__actions">
+					<Button
+						tertiary
+						onClick={ onCancelClick }
+						disabled={ isBusy }
+					>
+						{ __( 'Cancel', 'google-site-kit' ) }
+					</Button>
+					{ itemCountElement }
+					<SpinnerButton
+						onClick={ onSaveClick }
+						isSaving={ isBusy }
+						disabled={
+							selectedItemCount < minSelectedItemCount ||
+							selectedItemCount > maxSelectedItemCount ||
+							isBusy ||
+							( ! isOpen && wasSaved )
+						}
+					>
+						{ finalButtonText || currentButtonText }
+					</SpinnerButton>
+				</div>
 			</div>
 		</footer>
 	);
