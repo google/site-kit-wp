@@ -426,6 +426,7 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 			KM_ANALYTICS_NEW_VISITORS,
 			KM_ANALYTICS_RETURNING_VISITORS,
 		],
+		includeConversionTailoredMetrics: [],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
