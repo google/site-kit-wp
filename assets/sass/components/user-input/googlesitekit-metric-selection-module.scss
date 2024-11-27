@@ -51,10 +51,10 @@
 						display: block;
 					}
 
-					button {
-						@media (max-width: 600px) {
-							width: 100%;
-						}
+					.googlesitekit-selection-panel-footer__actions--mobile-buttons {
+						column-gap: 8px;
+						display: flex;
+						flex-direction: row-reverse;
 					}
 				}
 			}
