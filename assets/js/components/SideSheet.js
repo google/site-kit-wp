@@ -70,21 +70,6 @@ export default function SideSheet( {
 
 	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeSheet );
 
-	const content = (
-		<section
-			ref={ sideSheetRef }
-			className={ classnames( 'googlesitekit-side-sheet', className, {
-				'googlesitekit-side-sheet--open': isOpen,
-			} ) }
-			role="dialog"
-			aria-modal="true"
-			aria-hidden={ ! isOpen }
-			tabIndex="0"
-		>
-			{ children }
-		</section>
-	);
-
 	return (
 		<Portal>
 			<FocusTrap
@@ -94,7 +79,22 @@ export default function SideSheet( {
 					...focusTrapOptions,
 				} }
 			>
-				{ content }
+				<section
+					ref={ sideSheetRef }
+					className={ classnames(
+						'googlesitekit-side-sheet',
+						className,
+						{
+							'googlesitekit-side-sheet--open': isOpen,
+						}
+					) }
+					role="dialog"
+					aria-modal="true"
+					aria-hidden={ ! isOpen }
+					tabIndex="0"
+				>
+					{ children }
+				</section>
 			</FocusTrap>
 			{ isOpen && <span className="googlesitekit-side-sheet-overlay" /> }
 		</Portal>
