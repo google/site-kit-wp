@@ -35,6 +35,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import whenActive from '../../util/when-active';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import LostEventsSubtleNotification from './LostEventsSubtleNotification';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -42,11 +43,12 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isUserInputCompleted()
 	);
 
-	const keyMetricSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
-	);
 	const hasUserPickedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
+	);
+
+	const haveLostConversionEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveLostEventsForCurrentMetrics()
 	);
 
 	const haveConversionReportingEventsForTailoredMetrics = useSelect(
@@ -63,18 +65,25 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const shouldShowInitialCalloutForTailoredMetrics =
 		! hasUserPickedMetrics?.length &&
 		isUserInputCompleted &&
-		haveConversionReportingEventsForTailoredMetrics &&
-		! keyMetricSettings?.includeConversionTailoredMetrics;
+		haveConversionReportingEventsForTailoredMetrics;
 
+	const userInputPurposeConversionEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
+	);
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
-	const { dismissNewConversionReportingEvents } =
-		useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		dismissNewConversionReportingEvents,
+		dismissLostConversionReportingEvents,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
-			setKeyMetricsSetting( 'includeConversionTailoredMetrics', true );
+			setKeyMetricsSetting(
+				'includeConversionTailoredMetrics',
+				userInputPurposeConversionEvents
+			);
 			saveKeyMetricsSettings( {
 				widgetSlugs: undefined,
 			} );
@@ -86,21 +95,33 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		setKeyMetricsSetting,
 		saveKeyMetricsSettings,
 		dismissNewConversionReportingEvents,
+		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
 	] );
 
-	if ( ! shouldShowInitialCalloutForTailoredMetrics ) {
+	if (
+		! shouldShowInitialCalloutForTailoredMetrics &&
+		! haveLostConversionEvents
+	) {
 		return <WidgetNull />;
 	}
 
 	return (
 		<Widget noPadding fullWidth>
-			<ConversionReportingDashboardSubtleNotification
-				ctaLabel={ __( 'Add metrics', 'google-site-kit' ) }
-				handleCTAClick={ handleAddMetricsClick }
-				isSaving={ isSaving }
-				onDismiss={ dismissNewConversionReportingEvents }
-			/>
+			{ haveLostConversionEvents && (
+				<LostEventsSubtleNotification
+					onSelectMetricsCallback={ () => {} }
+					onDismissCallback={ dismissLostConversionReportingEvents }
+				/>
+			) }
+			{ shouldShowInitialCalloutForTailoredMetrics && (
+				<ConversionReportingDashboardSubtleNotification
+					ctaLabel={ __( 'Add metrics', 'google-site-kit' ) }
+					handleCTAClick={ handleAddMetricsClick }
+					isSaving={ isSaving }
+					onDismiss={ dismissNewConversionReportingEvents }
+				/>
+			) }
 		</Widget>
 	);
 }
