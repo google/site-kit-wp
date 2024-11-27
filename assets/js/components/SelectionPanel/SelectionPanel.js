@@ -30,6 +30,7 @@ import SideSheet from '../SideSheet';
 export default function SelectionPanel( {
 	children,
 	isOpen,
+	isLoading,
 	onOpen,
 	closePanel,
 	className,
@@ -41,11 +42,11 @@ export default function SelectionPanel( {
 				className
 			) }
 			isOpen={ isOpen }
+			isLoading={ isLoading }
 			onOpen={ onOpen }
 			closeSheet={ closePanel }
 			focusTrapOptions={ {
-				initialFocus:
-					'.googlesitekit-selection-panel-item .googlesitekit-selection-box input',
+				initialFocus: `.${ className } .googlesitekit-selection-panel-item .googlesitekit-selection-box input`,
 			} }
 		>
 			{ children }
@@ -56,7 +57,8 @@ export default function SelectionPanel( {
 SelectionPanel.propTypes = {
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	onOpen: PropTypes.func,
 	closePanel: PropTypes.func,
-	className: PropTypes.string,
+	className: PropTypes.string.isRequired,
 };
