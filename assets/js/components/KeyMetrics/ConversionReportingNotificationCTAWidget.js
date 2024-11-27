@@ -36,6 +36,8 @@ import whenActive from '../../util/when-active';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import LostEventsSubtleNotification from './LostEventsSubtleNotification';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -99,6 +101,20 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		shouldShowInitialCalloutForTailoredMetrics,
 	] );
 
+	const { setValue } = useDispatch( CORE_UI );
+
+	const handleSelectMetricsClick = useCallback( () => {
+		if ( haveLostConversionEvents ) {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+			dismissLostConversionReportingEvents();
+		}
+	}, [
+		setValue,
+		haveLostConversionEvents,
+		dismissLostConversionReportingEvents,
+	] );
+
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
 		! haveLostConversionEvents
@@ -110,7 +126,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		<Widget noPadding fullWidth>
 			{ haveLostConversionEvents && (
 				<LostEventsSubtleNotification
-					onSelectMetricsCallback={ () => {} }
+					onSelectMetricsCallback={ handleSelectMetricsClick }
 					onDismissCallback={ dismissLostConversionReportingEvents }
 				/>
 			) }
