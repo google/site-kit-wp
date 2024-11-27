@@ -306,8 +306,8 @@ export const selectors = {
 				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
 			return conversionReportingEventsChange?.some( ( event ) =>
-				conversionEventWidgets[ event ].some( ( widget ) =>
-					purposeTailoredMetrics.includes( widget )
+				conversionEventWidgets[ event ]?.some( ( widget ) =>
+					purposeTailoredMetrics?.includes( widget )
 				)
 			);
 		}
