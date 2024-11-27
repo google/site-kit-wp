@@ -65,4 +65,21 @@
 			}
 		}
 	}
+
+	.googlesitekit-acr-subtle-notification__lost-events {
+		background-color: $c-utility-warning-container;
+
+		@media (min-width: $bp-tablet) {
+			gap: 10px;
+		}
+
+		.mdc-button--raised:not(:disabled) {
+			background-color: $c-utility-on-warning-container;
+		}
+
+		.googlesitekit-subtle-notification__content,
+		.mdc-button--tertiary:not(:disabled) {
+			color: $c-utility-on-warning-container;
+		}
+	}
 }
