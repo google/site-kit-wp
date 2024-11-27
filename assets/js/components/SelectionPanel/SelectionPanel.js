@@ -35,6 +35,11 @@ export default function SelectionPanel( {
 	closePanel,
 	className,
 } ) {
+	const classNameSelector = className
+		.split( /\s+/ )
+		.map( ( name ) => `.${ name }` )
+		.join( '' );
+
 	return (
 		<SideSheet
 			className={ classnames(
@@ -46,7 +51,7 @@ export default function SelectionPanel( {
 			onOpen={ onOpen }
 			closeSheet={ closePanel }
 			focusTrapOptions={ {
-				initialFocus: `.${ className } .googlesitekit-selection-panel-item .googlesitekit-selection-box input`,
+				initialFocus: `${ classNameSelector } .googlesitekit-selection-panel-item .googlesitekit-selection-box input`,
 			} }
 		>
 			{ children }
