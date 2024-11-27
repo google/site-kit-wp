@@ -47,9 +47,20 @@
 		.googlesitekit-selection-panel-footer__actions {
 			width: 100%;
 
+			@media (max-width: $bp-mobileOnly) {
+				flex-wrap: wrap;
+				justify-content: flex-end;
+			}
+
 			.googlesitekit-selection-panel-footer__item-count {
 				margin-right: auto;
 				order: 1;
+
+				@media (max-width: $bp-mobileOnly) {
+					order: 1;
+					text-align: left;
+					width: 100%;
+				}
 			}
 
 			button {

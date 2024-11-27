@@ -70,10 +70,14 @@ export default function SelectionPanelFooter( {
 		);
 	}, [ savedItemSlugs, selectedItemSlugs ] );
 
-	const currentButtonText =
-		! isFullScreen && savedItemSlugs?.length > 0 && haveSettingsChanged
+	let currentButtonText =
+		savedItemSlugs?.length > 0 && haveSettingsChanged
 			? __( 'Apply changes', 'google-site-kit' )
-			: __( 'Complete setup', 'google-site-kit' );
+			: __( 'Save selection', 'google-site-kit' );
+
+	if ( isFullScreen ) {
+		currentButtonText = __( 'Complete setup', 'google-site-kit' );
+	}
 
 	const onSaveClick = useCallback( async () => {
 		const { error } = await saveSettings( selectedItemSlugs );
