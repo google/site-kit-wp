@@ -27,5 +27,34 @@
 		.googlesitekit-selection-panel-items {
 			flex: 1;
 		}
+
+		.googlesitekit-selection-panel-footer__actions {
+			width: 100%;
+
+			.googlesitekit-selection-panel-footer__item-count {
+				margin-right: auto;
+				order: 1;
+			}
+
+			button {
+				order: 2;
+			}
+		}
+	}
+
+	.googlesitekit-km-selection-panel {
+
+		.googlesitekit-selection-panel-footer__actions {
+			width: 100%;
+
+			.googlesitekit-selection-panel-footer__item-count {
+				margin-right: auto;
+				order: 1;
+			}
+
+			button {
+				order: 2;
+			}
+		}
 	}
 }
