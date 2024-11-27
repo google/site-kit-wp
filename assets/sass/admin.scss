@@ -173,7 +173,7 @@
 @import "components/key-metrics/googlesitekit-key-metrics-widgets";
 @import "components/key-metrics/googlesitekit-chip-tab-group";
 @import "components/key-metrics/googlesitekit-key-metrics-selection-panel";
-@import "components/key-metrics/googlesitekit-key-metrics-acr-subtle-notification";
+@import "components/key-metrics/googlesitekit-key-metrics-conversion-reporting-subtle-notification";
 @import "components/key-metrics/googlesitekit-key-metrics-site-purpose-change-modal";
 
 // Setup
@@ -196,6 +196,7 @@
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
+@import "components/user-input/googlesitekit-metric-selection-module";
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";

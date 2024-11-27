@@ -22,10 +22,13 @@
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
+	provideKeyMetricsUserInputSettings,
 	provideModules,
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -246,6 +249,97 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					[ selector ]();
 
 				expect( data ).toEqual( expectedReturn );
+			} );
+		} );
+
+		describe( 'haveConversionEventsForTailoredMetrics', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'conversionReporting' );
+
+				provideKeyMetricsUserInputSettings( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'conversionReporting' );
+			} );
+
+			it( 'should return true when detectedEvents have an event associated with ACR KWM for the current purpose', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'contact' ] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				// Default purpose answer provided by provideKeyMetricsUserInputSettings is "publish_blog", which
+				// has metrics related to the "contact" event, so selector should return true.
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					true
+				);
+			} );
+
+			it( 'should return true when new detected events have an event associated with ACR KWM for the passed purpose when useNewEvents is passed', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ 'contact' ],
+						lostEvents: [],
+					} );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics(
+						'publish_blog',
+						true
+					);
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					true
+				);
+			} );
+
+			it( 'should return false when detectedEvents do not have an event associated with ACR KWM for the current purpose', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'purchase' ] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					false
+				);
+			} );
+
+			it( 'should return false when new detected events do not have an event associated with ACR KWM for the passed purpose when useNewEvents is passed', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ 'add_to_cart' ],
+						lostEvents: [],
+					} );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics(
+						'publish_blog',
+						true
+					);
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					false
+				);
 			} );
 		} );
 	} );

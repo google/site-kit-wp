@@ -173,22 +173,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		return array(
 			'tagmanager_account_id'       => array(
-				'label' => __( 'Tag Manager account ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'tagmanager_container_id'     => array(
-				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Container ID', 'google-site-kit' ),
 				'value' => $settings['containerID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['containerID'], 7 ),
 			),
 			'tagmanager_amp_container_id' => array(
-				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: AMP Container ID', 'google-site-kit' ),
 				'value' => $settings['ampContainerID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
 			),
 			'tagmanager_use_snippet'      => array(
-				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),

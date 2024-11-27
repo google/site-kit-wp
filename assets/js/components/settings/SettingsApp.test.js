@@ -32,7 +32,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
-	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -193,8 +192,6 @@ describe( 'SettingsApp', () => {
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ]
 		);
-
-		await act( waitForRegistry );
 
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );
