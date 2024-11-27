@@ -57,7 +57,9 @@ export default function SetupMain() {
 			<div className="googlesitekit-setup-module__step">
 				<HTTPSWarning moduleSlug="sign-in-with-google" />
 
-				{ isURLUsingHTTPS( homeURL ) && <SetupForm /> }
+				{ homeURL !== undefined && isURLUsingHTTPS( homeURL ) && (
+					<SetupForm />
+				) }
 			</div>
 		</div>
 	);
