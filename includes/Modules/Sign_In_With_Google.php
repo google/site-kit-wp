@@ -71,7 +71,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
-	 * @since n.e.x.t Add functionality to allow users to disconnect their own account and admins to disconnect any user.
+	 * @since 1.141.0 Add functionality to allow users to disconnect their own account and admins to disconnect any user.
 	 */
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
@@ -454,7 +454,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Returns the disconnect URL for the specified user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param int $user_id WordPress User ID.
 	 */
@@ -472,7 +472,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Handles the disconnect action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 */
 	public function handle_disconnect_user() {
 		$input   = $this->context->input();
@@ -499,7 +499,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Displays a disconnect button on user profile pages.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param WP_User $user WordPress user object.
 	 */

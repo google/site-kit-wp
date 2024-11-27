@@ -97,7 +97,7 @@ const baseActions = {
 	/**
 	 * Saves the first-party mode settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -113,7 +113,7 @@ const baseActions = {
 	/**
 	 * Sets the first-party mode enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {boolean} isEnabled First-party mode enabled status.
 	 * @return {Object} Redux-style action.
@@ -157,7 +157,7 @@ const baseSelectors = {
 	/**
 	 * Gets the first-party mode settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} First-party mode settings, or undefined if not loaded.
@@ -169,7 +169,7 @@ const baseSelectors = {
 	/**
 	 * Checks if first-party mode is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
@@ -184,7 +184,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the FPFE service is determined to be healthy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if the FPFE service is healthy, otherwise false. Returns undefined if the state is not loaded.
@@ -199,7 +199,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the GTag proxy script is accessible.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if the `fpm/measurement.php` proxy script is accessible, otherwise false. Returns undefined if the state is not loaded.

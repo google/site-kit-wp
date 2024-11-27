@@ -17,7 +17,7 @@ use WP_Error;
 /**
  * Reads Google user profile data.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Profile_Reader implements Profile_Reader_Interface {
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -34,7 +34,7 @@ class Profile_Reader implements Profile_Reader_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param Settings $settings Settings instance.
 	 */
@@ -45,7 +45,7 @@ class Profile_Reader implements Profile_Reader_Interface {
 	/**
 	 * Gets the user profile data using the provided ID token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param string $id_token ID token.
 	 * @return array|WP_Error User profile data or WP_Error on failure.
