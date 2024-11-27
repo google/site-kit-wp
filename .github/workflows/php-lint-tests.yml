@@ -77,6 +77,7 @@ jobs:
       fail-fast: false
       matrix:
         composer_php_version: ['']
+        composer_phpunit_version: ['']
         php_version: ['7.4', '8.1']
         wp_multisite: ['']
         wp_version: ['latest']
@@ -84,6 +85,7 @@ jobs:
           # Min supported PHP + WP Oldest
           - php_version: '7.4'
             wp_version: '5.2.21'
+            composer_phpunit_version: '^7'
           # Min supported PHP + WP Latest Multisite
           - php_version: '7.4'
             wp_multisite: '1'
@@ -135,6 +137,10 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+
+      - name: Configure PHPUnit
+        if: ${{ matrix.composer_phpunit_version }}
+        run: composer require phpunit/phpunit "${{ matrix.composer_phpunit_version }}" --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress
