@@ -36,9 +36,13 @@ export default function SelectionPanel( {
 	className,
 } ) {
 	const classNameSelector = className
-		.split( /\s+/ )
+		?.split( /\s+/ )
 		.map( ( name ) => `.${ name }` )
 		.join( '' );
+
+	const initialFocus = classNameSelector
+		? `${ classNameSelector } .googlesitekit-selection-panel-item .googlesitekit-selection-box input`
+		: '.googlesitekit-selection-panel-item .googlesitekit-selection-box input';
 
 	return (
 		<SideSheet
@@ -51,7 +55,7 @@ export default function SelectionPanel( {
 			onOpen={ onOpen }
 			closeSheet={ closePanel }
 			focusTrapOptions={ {
-				initialFocus: `${ classNameSelector } .googlesitekit-selection-panel-item .googlesitekit-selection-box input`,
+				initialFocus,
 			} }
 		>
 			{ children }
@@ -65,5 +69,5 @@ SelectionPanel.propTypes = {
 	isLoading: PropTypes.bool,
 	onOpen: PropTypes.func,
 	closePanel: PropTypes.func,
-	className: PropTypes.string.isRequired,
+	className: PropTypes.string,
 };
