@@ -45,6 +45,7 @@ export default function SideSheet( {
 	className,
 	children,
 	isOpen,
+	isLoading,
 	onOpen = () => {},
 	closeSheet = () => {},
 	focusTrapOptions = {},
@@ -69,31 +70,31 @@ export default function SideSheet( {
 
 	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeSheet );
 
+	const content = (
+		<section
+			ref={ sideSheetRef }
+			className={ classnames( 'googlesitekit-side-sheet', className, {
+				'googlesitekit-side-sheet--open': isOpen,
+			} ) }
+			role="dialog"
+			aria-modal="true"
+			aria-hidden={ ! isOpen }
+			tabIndex="0"
+		>
+			{ children }
+		</section>
+	);
+
 	return (
 		<Portal>
 			<FocusTrap
-				active={ !! isOpen }
+				active={ !! isOpen && ! isLoading }
 				focusTrapOptions={ {
 					fallbackFocus: 'body',
 					...focusTrapOptions,
 				} }
 			>
-				<section
-					ref={ sideSheetRef }
-					className={ classnames(
-						'googlesitekit-side-sheet',
-						className,
-						{
-							'googlesitekit-side-sheet--open': isOpen,
-						}
-					) }
-					role="dialog"
-					aria-modal="true"
-					aria-hidden={ ! isOpen }
-					tabIndex="0"
-				>
-					{ children }
-				</section>
+				{ content }
 			</FocusTrap>
 			{ isOpen && <span className="googlesitekit-side-sheet-overlay" /> }
 		</Portal>
@@ -104,6 +105,7 @@ SideSheet.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	isOpen: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	onOpen: PropTypes.func,
 	closeSheet: PropTypes.func,
 	focusTrapOptions: PropTypes.object,
