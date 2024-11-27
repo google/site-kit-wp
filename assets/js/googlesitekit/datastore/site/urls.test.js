@@ -90,6 +90,23 @@ describe( 'core/site urls', () => {
 
 				expect( url ).toBe( `${ baseURL }?doc=${ testSlug }` );
 			} );
+
+			it( 'should return the correct documentation URL given a documentation slug and hashProperty', () => {
+				const testSlug = 'test-slug';
+				const testHashProperty = 'test-hash-property';
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getDocumentationLinkURL( testSlug, testHashProperty );
+
+				expect( url ).toBe(
+					`${ baseURL }?doc=${ testSlug }#${ testHashProperty }`
+				);
+			} );
 		} );
 
 		describe( 'getErrorTroubleshootingLinkURL', () => {
