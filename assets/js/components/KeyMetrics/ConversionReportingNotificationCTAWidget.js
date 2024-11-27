@@ -48,15 +48,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isUserInputCompleted()
 	);
 
-	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
-		select( CORE_SITE ).isKeyMetricsSetupCompleted()
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
-	const hasDetectedEvents = detectedEvents?.length > 0;
-
 	const keyMetricSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetricsSettings()
 	);
@@ -81,13 +72,21 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		haveConversionReportingEventsForTailoredMetrics &&
 		! keyMetricSettings?.includeConversionTailoredMetrics;
 
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics()
+	);
+
 	// If users have set up key metrics manually and ACR events are detected,
 	// we display the same callout banner, with a different call to action
 	// "Select metrics" which opens the metric selection panel.
-	const shouldShowCalloutForTailoredMetrics =
-		! isUserInputCompleted &&
+	const shouldShowCalloutForUserPickedMetrics =
+		hasUserPickedMetrics?.length &&
 		isKeyMetricsSetupCompleted &&
-		hasDetectedEvents;
+		hasConversionEventsForUserPickedMetrics;
 
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
@@ -113,20 +112,20 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	] );
 
 	const handleSelectMetricsClick = useCallback( () => {
-		if ( shouldShowCalloutForTailoredMetrics ) {
+		if ( shouldShowCalloutForUserPickedMetrics ) {
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 
 			dismissNewConversionReportingEvents();
 		}
 	}, [
 		setValue,
-		shouldShowCalloutForTailoredMetrics,
+		shouldShowCalloutForUserPickedMetrics,
 		dismissNewConversionReportingEvents,
 	] );
 
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
-		! shouldShowCalloutForTailoredMetrics
+		! shouldShowCalloutForUserPickedMetrics
 	) {
 		return <WidgetNull />;
 	}

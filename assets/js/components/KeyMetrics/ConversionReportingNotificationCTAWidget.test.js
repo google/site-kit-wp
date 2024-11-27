@@ -21,7 +21,10 @@
  */
 import {
 	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
@@ -41,6 +44,7 @@ import {
 	provideKeyMetricsUserInputSettings,
 	act,
 	fireEvent,
+	provideKeyMetrics,
 } from '../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { enabledFeatures } from '../../features';
@@ -336,35 +340,217 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 			] );
 		} );
+	} );
 
-		it( 'Select metrics CTA should show if user input is not completed and should open key metrics panel', async () => {
+	describe( 'Existing user with manually selected metrics', () => {
+		it( 'Does not render when there are no metrics selected.', async () => {
 			enabledFeatures.add( 'conversionReporting' );
 
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [],
+				isWidgetHidden: false,
+			} );
+
+			// The beforeEach sets a `contact` detected event, so if the users existing
+			// site purpose does not have any suggested new metrics the banner should not render.
+			provideKeyMetricsUserInputSettings( registry, {
+				purpose: {
+					values: [ 'sell_products' ],
+					scope: 'site',
+				},
+			} );
+
+			const { container, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
+
+		it( 'Does not render if new events would suggest metrics the user has already selected', async () => {
+			enabledFeatures.add( 'conversionReporting' );
+
+			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
+
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			// The beforeEach sets a `contact` detected event, so if the user already has all of the
+			// metrics this event would add, we don't need to show the banner.
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+				],
+				isWidgetHidden: false,
+			} );
+
+			provideKeyMetricsUserInputSettings( registry, {
+				purpose: {
+					values: [ 'sell_products' ],
+					scope: 'site',
+				},
+			} );
+
+			const { container, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
+
+		it( 'Does not render when key metrics setup is not completed', async () => {
+			enabledFeatures.add( 'conversionReporting' );
+
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [],
+				isWidgetHidden: false,
+			} );
+
+			// isKeyMetricsSetupCompleted is based on the getKeyMetricsSetupCompletedBy,
+			// without setting this then isKeyMetricsSetupCompleted will return false.
+
+			const { container, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
+
+		it( 'Renders when there are new events with metrics the user has not already selected', async () => {
+			enabledFeatures.add( 'conversionReporting' );
+
+			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
+
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			// The beforeEach sets a `contact` detected event, providing some but not
+			// all of the suggested metrics should show the banner.
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+				],
+				isWidgetHidden: false,
+			} );
+
+			provideKeyMetricsUserInputSettings( registry, {
+				purpose: {
+					values: [ 'sell_products' ],
+					scope: 'site',
+				},
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: 'Select metrics' } )
+			).toBeInTheDocument();
+		} );
+
+		it( 'Renders if user input has been completed and the user switches to manual selection', async () => {
+			enabledFeatures.add( 'conversionReporting' );
+
+			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
+
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_RETURNING_VISITORS,
+				],
+				isWidgetHidden: false,
+			} );
+
+			provideKeyMetricsUserInputSettings( registry, {
+				purpose: {
+					values: [ 'sell_products' ],
+					scope: 'site',
+				},
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: 'Select metrics' } )
+			).toBeInTheDocument();
+		} );
+
+		it( 'Select metrics CTA should open key metrics panel', async () => {
 			fetchMock.postOnce( fetchDismissNotification, {
 				body: true,
 			} );
 
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-			] );
+			enabledFeatures.add( 'conversionReporting' );
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
-			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-				widgetSlugs: [],
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			// The beforeEach sets a `contact` detected event, providing some but not
+			// all of the suggested metrics should show the banner.
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+				],
 				isWidgetHidden: false,
-				isUserInputCompleted: false,
-				detectedEvents: [ 'add_to_cart' ],
+			} );
+
+			provideKeyMetricsUserInputSettings( registry, {
+				purpose: {
+					values: [ 'sell_products' ],
+					scope: 'site',
+				},
 			} );
 
 			const { getByRole, waitForRegistry } = render(
