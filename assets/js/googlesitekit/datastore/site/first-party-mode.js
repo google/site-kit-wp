@@ -128,6 +128,13 @@ const baseActions = {
 		};
 	},
 
+	/**
+	 * Returns the current settings back to the current saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
 	resetFirstPartyModeSettings() {
 		return {
 			payload: {},
@@ -226,6 +233,14 @@ const baseSelectors = {
 		return isScriptAccessEnabled;
 	} ),
 
+	/**
+	 * Indicates whether the current first-party mode settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
 	haveFirstPartyModeSettingsChanged( state ) {
 		const { firstPartyModeSettings, firstPartyModeSavedSettings } = state;
 
