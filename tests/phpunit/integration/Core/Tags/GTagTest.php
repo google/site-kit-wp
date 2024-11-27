@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Tests\Core\Tags;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -32,10 +34,19 @@ class GTagTest extends TestCase {
 	const TEST_COMMAND_2          = 'foo';
 	const TEST_COMMAND_2_PARAMS   = array( array( 'bar' => 'far' ) );
 
+	/**
+	 * Options object.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
 	public function set_up() {
 		parent::set_up();
 
-		$this->gtag = new GTag();
+		$context       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options = new Options( $context );
+		$this->gtag    = new GTag( $this->options );
 		$this->gtag->register();
 
 		$this->gtag->add_tag( static::TEST_TAG_ID_1 );
@@ -107,7 +118,7 @@ class GTagTest extends TestCase {
 		$this->assertEquals( 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_1, $this->gtag->get_gtag_src() );
 
 		// Reset the GTag instance.
-		$this->gtag = new GTag();
+		$this->gtag = new GTag( $this->options );
 		$this->gtag->register();
 
 		// Verify that this returns `false` when no tags are added.
