@@ -65,9 +65,16 @@ function ConfirmSitePurposeChangeModal( {
 			return false;
 		}
 
-		return select(
-			MODULES_ANALYTICS_4
-		).haveConversionEventsForTailoredMetrics();
+		const haveConversionEventsForTailoredMetrics =
+			select(
+				MODULES_ANALYTICS_4
+			).haveConversionEventsForTailoredMetrics();
+
+		if ( haveConversionEventsForTailoredMetrics ) {
+			return select( MODULES_ANALYTICS_4 ).getDetectedEvents() || [];
+		}
+
+		return [];
 	} );
 
 	const newMetrics = useSelect( ( select ) => {
@@ -115,14 +122,50 @@ function ConfirmSitePurposeChangeModal( {
 		setUIValues,
 	] );
 
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const userInputPurposeConversionEvents = useSelect( ( select ) => {
+		const isGA4Connected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getUserInputPurposeConversionEvents();
+	} );
+
+	const {
+		saveUserInputSettings,
+		setKeyMetricsSetting,
+		saveKeyMetricsSettings,
+	} = useDispatch( CORE_USER );
 
 	const saveChanges = useCallback( async () => {
 		setIsSaving( true );
 		await saveUserInputSettings();
+
+		// Update 'includeConversionTailoredMetrics' key metrics setting with included
+		//conversion events, to mark that their respective metrics should be included in the
+		// list of tailored metrics and persist on the dashboard in case events are lost.
+		setKeyMetricsSetting(
+			'includeConversionTailoredMetrics',
+			userInputPurposeConversionEvents
+		);
+		saveKeyMetricsSettings( {
+			widgetSlugs: undefined,
+		} );
+
 		setIsSaving( false );
 		onClose();
-	}, [ saveUserInputSettings, onClose, setIsSaving ] );
+	}, [
+		saveUserInputSettings,
+		onClose,
+		setIsSaving,
+		setKeyMetricsSetting,
+		saveKeyMetricsSettings,
+		userInputPurposeConversionEvents,
+	] );
 
 	return (
 		<Dialog
