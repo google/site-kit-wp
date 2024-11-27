@@ -47,7 +47,7 @@ export function setEnabledFeatures( features ) {
  * @param {*}        ui                      Any valid React child element.
  * @param {Object}   [options]               Optional. Render options.
  * @param {string[]} [options.features]      Feature flags to enable for this hook render.
- * @param {Function} [options.setupRegistry] A function which accepts the registry instance to configure it.
+ * @param {Function} [options.setupRegistry] Deprecated. Use options.registry instead. A function which accepts the registry instance to configure it.
  * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
  * @param {History}  [options.history]       History object for React Router. Defaults to MemoryHistory.
  * @param {string}   [options.route]         Route to pass to history as starting route.
@@ -61,6 +61,11 @@ const customRender = ( ui, options = {} ) => {
 	// which depends on the enabledFeatures module rather than Context.
 	setEnabledFeatures( options.features || [] );
 
+	if ( options.setupRegistry ) {
+		global.console.debug(
+			'options.setupRegistry is deprecated. Pass `registry` instead.'
+		);
+	}
 	const {
 		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),

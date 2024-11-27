@@ -34,6 +34,7 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
+	EFFECTIVE_SELECTION,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
@@ -72,6 +73,7 @@ export default function Panel() {
 	const onSideSheetOpen = useCallback( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
+			[ EFFECTIVE_SELECTION ]: savedViewableMetrics,
 		} );
 		trackEvent( `${ viewContext }_kmw-sidebar`, 'metrics_sidebar_view' );
 	}, [ savedViewableMetrics, setValues, viewContext ] );

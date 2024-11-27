@@ -182,36 +182,32 @@ export default function SettingsView() {
 							/>
 						</p>
 					) }
-
-					{ anyoneCanRegisterNoticeDismissed === false &&
-						anyoneCanRegister === false && (
-							<SettingsNotice
-								type={ TYPE_WARNING }
-								dismiss
-								dismissCallback={ () => {
-									dismissItem(
-										'sign-in-with-google-anyone-can-register-notice'
-									);
-								} }
-								dismissLabel={ __(
-									'Got it',
-									'google-site-kit'
-								) }
-								Icon={ WarningIcon }
-								notice={ createInterpolateElement(
-									__(
-										'Enable the “Anyone can register” setting to allow your visitors to create an account using the Sign in with Google button. <br/>Visit <a>WordPress Settings</a> to manage this setting.',
-										'google-site-kit'
-									),
-									{
-										a: <Link href={ generalSettingsURL } />,
-										br: <br />,
-									}
-								) }
-							/>
-						) }
 				</div>
 			</div>
+
+			{ anyoneCanRegisterNoticeDismissed === false &&
+				anyoneCanRegister === false && (
+					<SettingsNotice
+						type={ TYPE_WARNING }
+						dismiss
+						dismissCallback={ () => {
+							dismissItem(
+								'sign-in-with-google-anyone-can-register-notice'
+							);
+						} }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+						Icon={ WarningIcon }
+						notice={ createInterpolateElement(
+							__(
+								'Enable the “Anyone can register” setting to allow your visitors to create an account using the Sign in with Google button. Visit <a>WordPress Settings</a> to manage this setting.',
+								'google-site-kit'
+							),
+							{
+								a: <Link href={ generalSettingsURL } />,
+							}
+						) }
+					/>
+				) }
 		</div>
 	);
 }

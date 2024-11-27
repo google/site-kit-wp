@@ -25,19 +25,30 @@ import { applyMiddleware } from 'redux';
  * Creates a middleware for logging dispatched actions to the console.
  *
  * @since 1.11.0
+ * @since n.e.x.t Added support for store name.
  *
+ * @param {Option}   args          Arguments.
+ * @param {Function} args.dispatch Function to dispatch an action on the store.
+ * @param {Function} args.getState Function to retrieve the current store state.
+ * @param {string}   args.name     Store name / reducer key.
  * @return {Function} Middleware function.
  */
-function createLoggerMiddleware() {
+function createLoggerMiddleware( { name } ) {
 	return ( next ) => ( action ) => {
 		const { type, ..._action } = action;
 
 		// Objects must be stringified to be inspectable from the console during E2E tests.
 		// Not all structures can be stringified so errors must be caught.
 		try {
-			global.console.debug( 'DISPATCH', type, JSON.stringify( _action ) );
+			global.console.debug(
+				'DISPATCH',
+				name,
+				type,
+				':::',
+				JSON.stringify( _action )
+			);
 		} catch ( e ) {
-			global.console.debug( 'DISPATCH', type, 'JSON ERROR' );
+			global.console.debug( 'DISPATCH', name, type, 'JSON ERROR' );
 		}
 
 		return next( action );
@@ -55,7 +66,23 @@ function createLoggerMiddleware() {
  * @see {@link https://github.com/WordPress/gutenberg/blob/2611a1df0a423dd22cbbabef8f2e87eb91b54bb2/packages/data/src/namespace-store/index.js#L124-L147}
  */
 export function setupReduxLogger() {
-	global.__REDUX_DEVTOOLS_EXTENSION__ = () => {
-		return applyMiddleware( createLoggerMiddleware );
+	setupReduxWithMiddleware( createLoggerMiddleware );
+}
+
+/**
+ * Sets up Redux with additional middlewares applied.
+ * Must be called before stores are created.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...Function} middlewares Middleware functions to apply.
+ */
+export function setupReduxWithMiddleware( ...middlewares ) {
+	global.__REDUX_DEVTOOLS_EXTENSION__ = ( { name } ) => {
+		const nameAwareMiddlewares = middlewares.map(
+			( middleware ) => ( middlewareAPI ) =>
+				middleware( { ...middlewareAPI, name } )
+		);
+		return applyMiddleware( ...nameAwareMiddlewares );
 	};
 }
