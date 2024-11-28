@@ -42,8 +42,6 @@ import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const { setValue } = useDispatch( CORE_UI );
-
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
@@ -110,6 +108,8 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		dismissNewConversionReportingEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
 	] );
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	const handleSelectMetricsClick = useCallback( () => {
 		if ( shouldShowCalloutForUserPickedMetrics ) {

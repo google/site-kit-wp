@@ -343,9 +343,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	} );
 
 	describe( 'Existing user with manually selected metrics', () => {
-		it( 'Does not render when there are no metrics selected.', async () => {
+		beforeAll( () => {
 			enabledFeatures.add( 'conversionReporting' );
+		} );
 
+		afterAll( () => {
+			enabledFeatures.delete( 'conversionReporting' );
+		} );
+
+		it( 'Does not render when there are no metrics selected.', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
 			provideKeyMetrics( registry, {
@@ -378,8 +384,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Does not render if new events would suggest metrics the user has already selected', async () => {
-			enabledFeatures.add( 'conversionReporting' );
-
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
@@ -418,8 +422,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Does not render when key metrics setup is not completed', async () => {
-			enabledFeatures.add( 'conversionReporting' );
-
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
 			provideKeyMetrics( registry, {
@@ -446,8 +448,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Renders when there are new events with metrics the user has not already selected', async () => {
-			enabledFeatures.add( 'conversionReporting' );
-
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
@@ -487,8 +487,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Renders if user input has been completed and the user switches to manual selection', async () => {
-			enabledFeatures.add( 'conversionReporting' );
-
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
@@ -529,8 +527,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			fetchMock.postOnce( fetchDismissNotification, {
 				body: true,
 			} );
-
-			enabledFeatures.add( 'conversionReporting' );
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
