@@ -58,9 +58,8 @@
 			}
 		}
 
-		// Remove bottom border from the field group located above the Ads
-		// Conversion ID notice.
-		.googlesitekit-settings-module__fields-group:has(+ .googlesitekit-settings-analytics-ads-conversion-id-notice) {
+		// Remove bottom border from the last field group.
+		.googlesitekit-settings-module__fields-group:nth-last-child(1 of .googlesitekit-settings-module__fields-group) {
 			border-bottom: none;
 		}
 	}
