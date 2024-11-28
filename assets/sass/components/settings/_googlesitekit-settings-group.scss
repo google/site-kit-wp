@@ -19,7 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-module-settings-group {
-		background-color: $c-neutral-n-10;
+		background-color: $c-surfaces-background;
 		border-radius: $br-xs;
 		display: flex;
 		flex-direction: column;
@@ -35,7 +35,7 @@
 		}
 
 		.googlesitekit-module-settings-group__helper-text {
-			color: $c-neutral-n-500;
+			color: $c-surfaces-on-surface-variant;
 			flex-basis: 100%;
 			font-size: $fs-label-sm;
 			margin: 6px 0 0 42px; // margin-left = 32px switch width + 10px margin-left of label.
