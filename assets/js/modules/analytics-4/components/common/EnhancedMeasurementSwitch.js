@@ -110,7 +110,7 @@ export default function EnhancedMeasurementSwitch( {
 				/>
 			) }
 			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
-				<div className="googlesitekit-margin-top-0 googlesitekit-settings-enhanced-measurement-enabled">
+				<div className="googlesitekit-settings-enhanced-measurement-enabled">
 					{ showTick && (
 						<div className="googlesitekit-settings-enhanced-measurement-enabled-icon">
 							<Tick />
