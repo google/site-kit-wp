@@ -63,16 +63,5 @@
 		.googlesitekit-settings-module__fields-group:has(+ .googlesitekit-settings-analytics-ads-conversion-id-notice) {
 			border-bottom: none;
 		}
-
-		.googlesitekit-settings-module__measurement_toggles {
-			background-color: $c-neutral-n-10;
-			border-radius: $br-xs;
-			padding: $grid-gap-desktop;
-
-			h4 {
-				font-size: $fs-title-md;
-				font-weight: $fw-medium;
-			}
-		}
 	}
 }
