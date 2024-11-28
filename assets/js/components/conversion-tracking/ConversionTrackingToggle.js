@@ -53,7 +53,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 			<LoadingWrapper loading={ loading } width="180px" height="21.3px">
 				<Switch
 					label={ __(
-						'Enable enhanced conversion tracking',
+						'Enhanced conversion tracking',
 						'google-site-kit'
 					) }
 					checked={ isConversionTrackingEnabled }
