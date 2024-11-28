@@ -146,7 +146,7 @@ function ConfirmSitePurposeChangeModal( {
 		await saveUserInputSettings();
 
 		// Update 'includeConversionTailoredMetrics' key metrics setting with included
-		//conversion events, to mark that their respective metrics should be included in the
+		// conversion events, to mark that their respective metrics should be included in the
 		// list of tailored metrics and persist on the dashboard in case events are lost.
 		setKeyMetricsSetting(
 			'includeConversionTailoredMetrics',
