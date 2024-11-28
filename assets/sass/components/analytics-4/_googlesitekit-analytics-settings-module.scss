@@ -81,18 +81,7 @@
 
 		.googlesitekit-settings-enhanced-measurement-enabled {
 			display: flex;
-			gap: 9px;
-
-			.googlesitekit-settings-enhanced-measurement-enabled-info {
-				display: flex;
-				flex-direction: column;
-				gap: 6px;
-
-				& span:nth-child(2) {
-					color: $c-neutral-n-500;
-					font-size: $fs-label-sm;
-				}
-			}
+			gap: 6px;
 		}
 
 		.googlesitekit-settings-enhanced-measurement-enabled-icon {
@@ -103,7 +92,7 @@
 			display: flex;
 			height: 22px;
 			justify-content: center;
-			margin-left: 9px;
+			margin-left: 14px;
 			min-width: 22px;
 			width: 22px;
 

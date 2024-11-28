@@ -62,25 +62,6 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			>
 				<SettingsEnhancedMeasurementSwitch
 					hasModuleAccess={ hasModuleAccess }
-					hideDescription
-					label={ createInterpolateElement(
-						__(
-							'<div><span>Enhanced measurement is enabled for this web data stream</span><span>This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a></span></div>',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<SupportLink
-									path="/analytics/answer/9216061"
-									external
-								/>
-							),
-							span: <span />,
-							div: (
-								<div className="googlesitekit-settings-enhanced-measurement-enabled-info" />
-							),
-						}
-					) }
 				/>
 				<ConversionTrackingToggle>
 					{ createInterpolateElement(
