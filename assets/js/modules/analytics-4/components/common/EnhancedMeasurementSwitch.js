@@ -131,7 +131,7 @@ export default function EnhancedMeasurementSwitch( {
 					hideLabel={ false }
 				/>
 			) }
-			<p className="googlesitekit-settings-module__fields-group-helper-text">
+			<p className="googlesitekit-module-settings-group__helper-text">
 				{ createInterpolateElement(
 					__(
 						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',

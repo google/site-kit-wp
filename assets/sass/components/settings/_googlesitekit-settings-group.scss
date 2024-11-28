@@ -18,7 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-settings-module__group {
+	.googlesitekit-module-settings-group {
 		background-color: $c-neutral-n-10;
 		border-radius: $br-xs;
 		display: flex;
@@ -32,7 +32,7 @@
 			margin: 0;
 		}
 
-		.googlesitekit-settings-module__fields-group-helper-text {
+		.googlesitekit-module-settings-group__helper-text {
 			color: $c-neutral-n-500;
 			flex-basis: 100%;
 			font-size: $fs-label-sm;

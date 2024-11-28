@@ -87,7 +87,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 				tabletWidth="540px"
 				tabletHeight="84px"
 			>
-				<p className="googlesitekit-settings-module__fields-group-helper-text">
+				<p className="googlesitekit-module-settings-group__helper-text">
 					{ children }
 				</p>
 			</LoadingWrapper>

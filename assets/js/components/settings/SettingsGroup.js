@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 
 export default function SettingsGroup( { title, children } ) {
 	return (
-		<div className="googlesitekit-settings-module__group">
+		<div className="googlesitekit-module-settings-group">
 			<h4>{ title }</h4>
 			{ children }
 		</div>
