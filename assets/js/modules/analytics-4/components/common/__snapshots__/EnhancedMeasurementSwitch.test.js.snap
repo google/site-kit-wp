@@ -6,17 +6,12 @@ exports[`EnhancedMeasurementSwitch should render correctly in the already enable
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      class="googlesitekit-margin-top-0 googlesitekit-settings-enhanced-measurement-enabled"
+      class="googlesitekit-settings-enhanced-measurement-enabled"
     >
-      <div
-        class="googlesitekit-settings-enhanced-measurement-enabled-icon"
-      >
-        <svg />
-      </div>
       Enhanced measurement is enabled for this web data stream
     </div>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -82,7 +77,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the default state 
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -149,7 +144,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the disabled state
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -207,7 +202,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
       </div>
     </div>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a

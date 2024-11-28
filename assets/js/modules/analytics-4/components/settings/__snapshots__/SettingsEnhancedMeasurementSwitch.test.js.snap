@@ -6,7 +6,7 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      class="googlesitekit-margin-top-0 googlesitekit-settings-enhanced-measurement-enabled"
+      class="googlesitekit-settings-enhanced-measurement-enabled"
     >
       <div
         class="googlesitekit-settings-enhanced-measurement-enabled-icon"
@@ -16,7 +16,7 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
       Enhanced measurement is enabled for this web data stream
     </div>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -83,7 +83,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -141,7 +141,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -199,7 +199,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -257,7 +257,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
       </div>
     </div>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -323,7 +323,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -389,7 +389,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render with the switch default
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -455,7 +455,7 @@ exports[`SettingsEnhancedMeasurementSwitch when propertyID is property_create sh
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -521,7 +521,7 @@ exports[`SettingsEnhancedMeasurementSwitch when webDataStreamID is webdatastream
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-settings-module__fields-group-helper-text"
+      class="googlesitekit-module-settings-group__helper-text"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
