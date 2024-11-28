@@ -86,15 +86,14 @@
 
 		.googlesitekit-settings-enhanced-measurement-enabled-icon {
 			align-items: center;
-			background-color: $c-site-kit-sk-500;
-			background-color: $c-site-kit-sk-100;
+			background-color: $c-content-primary;
 			border-radius: 11px;
+			color: $c-content-on-primary;
 			display: flex;
-			height: 22px;
+			height: 20px;
 			justify-content: center;
-			margin-left: 14px;
-			min-width: 22px;
-			width: 22px;
+			margin-left: 16px;
+			width: 20px;
 
 			svg {
 				height: 10px;
