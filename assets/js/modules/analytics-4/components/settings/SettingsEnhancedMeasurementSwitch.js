@@ -48,7 +48,6 @@ import {
 
 export default function SettingsEnhancedMeasurementSwitch( {
 	hasModuleAccess,
-	...restProps
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -221,7 +220,6 @@ export default function SettingsEnhancedMeasurementSwitch( {
 					! isEnhancedMeasurementEnabled
 				);
 			} }
-			{ ...restProps }
 		/>
 	);
 }
