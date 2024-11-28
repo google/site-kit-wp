@@ -199,6 +199,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	return (
 		<EnhancedMeasurementSwitch
+			showTick
 			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={
