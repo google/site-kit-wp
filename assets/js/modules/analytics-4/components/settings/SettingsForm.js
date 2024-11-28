@@ -38,13 +38,20 @@ import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
-import SupportLink from '../../../../components/SupportLink';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
+	);
+
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversion-tracking'
+		)
 	);
 
 	return (
@@ -71,9 +78,13 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						),
 						{
 							a: (
-								<SupportLink
-									path="/analytics/answer/9216061"
+								<Link
+									href={ conversionTrackingDocumentationURL }
 									external
+									aria-label={ __(
+										'Learn more about conversion tracking',
+										'google-site-kit'
+									) }
 								/>
 							),
 						}
