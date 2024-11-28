@@ -6,10 +6,10 @@ exports[`SettingsEnhancedMeasurementSwitch should not render the switch when enh
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      class="googlesitekit-settings-enhanced-measurement-enabled"
+      class="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label"
     >
       <div
-        class="googlesitekit-settings-enhanced-measurement-enabled-icon"
+        class="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-tick"
       >
         <svg />
       </div>

@@ -6,7 +6,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the already enable
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      class="googlesitekit-settings-enhanced-measurement-enabled"
+      class="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label"
     >
       Enhanced measurement is enabled for this web data stream
     </div>
