@@ -1,26 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SettingsGroup renders children 1`] = `
+exports[`SettingsGroup renders correctly 1`] = `
 <div>
   <div
-    class="googlesitekit-settings-module__group"
+    class="googlesitekit-module-settings-group"
   >
     <h4>
       Test Title
     </h4>
-    <div
-      class="googlesitekit-settings-module__setting"
-    >
-      <div>
-        Test Child 1
-      </div>
+    <div>
+      Test Child 1
     </div>
-    <div
-      class="googlesitekit-settings-module__setting"
-    >
-      <div>
-        Test Child 2
-      </div>
+    <div>
+      Test Child 2
     </div>
   </div>
 </div>

@@ -20,7 +20,7 @@ import { render } from '../../../../tests/js/test-utils';
 import SettingsGroup from './SettingsGroup';
 
 describe( 'SettingsGroup', () => {
-	it( 'renders children', () => {
+	it( 'renders correctly', () => {
 		const { container } = render(
 			<SettingsGroup title="Test Title">
 				<div>Test Child 1</div>
@@ -29,11 +29,5 @@ describe( 'SettingsGroup', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
-
-		expect(
-			container.querySelectorAll(
-				'.googlesitekit-settings-module__setting'
-			).length
-		).toBe( 2 );
 	} );
 } );
