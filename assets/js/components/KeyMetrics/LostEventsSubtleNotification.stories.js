@@ -34,6 +34,6 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 
 export default {
-	title: 'Components/LostEventsSubtleNotification',
+	title: 'Key Metrics/LostEventsSubtleNotification',
 	component: LostEventsSubtleNotification,
 };
