@@ -297,7 +297,7 @@ export const selectors = {
 	),
 
 	/**
-	 * Checks if there are key metrics widgets that relly on the conversion events that have been lost.
+	 * Checks if there are key metrics widgets that rely on the conversion events that have been lost.
 	 *
 	 * @since n.e.x.t
 	 *
