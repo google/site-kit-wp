@@ -21,24 +21,11 @@
  */
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { Children } from '@wordpress/element';
-
 export default function SettingsGroup( { title, children } ) {
 	return (
 		<div className="googlesitekit-settings-module__group">
 			<h4>{ title }</h4>
-
-			{ Children.map( children, ( child, index ) => (
-				<div
-					key={ index }
-					className="googlesitekit-settings-module__setting"
-				>
-					{ child }
-				</div>
-			) ) }
+			{ children }
 		</div>
 	);
 }

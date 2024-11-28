@@ -32,14 +32,11 @@
 			margin: 0;
 		}
 
-		.googlesitekit-settings-module__setting {
-
-			.googlesitekit-settings-module__fields-group-helper-text {
-				color: $c-neutral-n-500;
-				flex-basis: 100%;
-				font-size: $fs-label-sm;
-				margin: 6px 0 0 42px; // margin-left = 32px switch width + 10px margin-left of label.
-			}
+		.googlesitekit-settings-module__fields-group-helper-text {
+			color: $c-neutral-n-500;
+			flex-basis: 100%;
+			font-size: $fs-label-sm;
+			margin: 6px 0 0 42px; // margin-left = 32px switch width + 10px margin-left of label.
 		}
 	}
 }
