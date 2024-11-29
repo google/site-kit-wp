@@ -22,11 +22,11 @@
 	color: $c-badge-text;
 	display: inline-block;
 	font-family: $f-primary;
-	font-size: $fs-body-sm;
+	font-size: $fs-label-sm;
 	font-weight: $fw-medium;
 	letter-spacing: $ls-xs;
-	line-height: 1;
-	padding: 6px 12px;
+	line-height: $lh-label-sm;
+	padding: 4px 8px;
 	vertical-align: middle;
 	white-space: nowrap;
 }
