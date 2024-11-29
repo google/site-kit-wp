@@ -43,7 +43,6 @@ export default function SettingsStatuses( { statuses } ) {
 			) ) }
 		</div>
 	);
-	);
 }
 
 SettingsStatuses.propTypes = {
