@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { Fragment } from '@wordpress/element';
+import PropTypes from 'prop-types';
 
 export default function SettingsStatuses( { statuses } ) {
 	if ( ! statuses || statuses.length === 0 ) {
