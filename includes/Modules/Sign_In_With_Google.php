@@ -152,10 +152,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
+	 * Persist the clientID on module disconnection, so it can be
+	 * reused if the module were to be reconnected.
+	 *
 	 * @since 1.137.0
 	 */
 	public function on_deactivation() {
+		$pre_deactivation_settings = $this->get_settings()->get();
+
 		$this->get_settings()->delete();
+
+		$post_deactivation_settings             = $this->get_settings()->get();
+		$post_deactivation_settings['clientID'] = $pre_deactivation_settings['clientID'];
+		$this->get_settings()->merge( $post_deactivation_settings );
 	}
 
 	/**
