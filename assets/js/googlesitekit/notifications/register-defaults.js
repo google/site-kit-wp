@@ -24,7 +24,11 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '../constants';
-import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from './datastore/constants';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
@@ -40,6 +44,7 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
+import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -394,6 +399,35 @@ export const DEFAULT_NOTIFICATIONS = {
 			return (
 				analyticsState === 'zero-data' ||
 				searchConsoleState === 'zero-data'
+			);
+		},
+		isDismissible: true,
+	},
+	'first-party-mode-setup-cta-banner': {
+		Component: FirstPartyModeSetupBanner,
+		priority: 1,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const analyticsModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics' );
+			const adsModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'ads' );
+
+			const FPMSettings = await resolveSelect(
+				CORE_SITE
+			).getFirstPartyModeSettings();
+
+			const isFirstPartyModeEnabled = FPMSettings?.enabled;
+			const isFPMHealthy = FPMSettings?.isFPMHealthy;
+			const isScriptAccessEnabled = FPMSettings?.isScriptAccessEnabled;
+
+			return (
+				( analyticsModuleConnected || adsModuleConnected ) &&
+				! isFirstPartyModeEnabled &&
+				isFPMHealthy &&
+				isScriptAccessEnabled
 			);
 		},
 		isDismissible: true,
