@@ -45,3 +45,12 @@ export default function SettingsStatuses( { statuses } ) {
 	);
 	);
 }
+
+SettingsStatuses.propTypes = {
+	statuses: PropTypes.arrayOf(
+		PropTypes.shape( {
+			label: PropTypes.string.isRequired,
+			status: PropTypes.string,
+		} )
+	),
+};
