@@ -27,22 +27,21 @@ export default function SettingsStatuses( { statuses } ) {
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-settings-module__meta-items">
-				{ statuses.map( ( { label, status } ) => (
-					<div
-						key={ label }
-						className="googlesitekit-settings-module__meta-item"
-					>
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ label }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							{ status !== undefined && status }
-						</p>
-					</div>
-				) ) }
-			</div>
-		</Fragment>
+		<div className="googlesitekit-settings-module__meta-items">
+			{ statuses.map( ( { label, status } ) => (
+				<div
+					key={ label }
+					className="googlesitekit-settings-module__meta-item"
+				>
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ label }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ status !== undefined && status }
+					</p>
+				</div>
+			) ) }
+		</div>
+	);
 	);
 }
