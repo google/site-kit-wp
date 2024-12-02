@@ -33,7 +33,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Object containing optional path and query args.
@@ -69,7 +69,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to fetch the client ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The URL to the clientID, or `undefined` if not loaded.

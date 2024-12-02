@@ -70,7 +70,7 @@ export default function ClientIDTextField() {
 				helperText={
 					! isValid &&
 					__(
-						'The Sign in with Google button won’t be displayed until you insert a valid Client ID',
+						'A valid Client ID is required to use Sign in with Google',
 						'google-site-kit'
 					)
 				}

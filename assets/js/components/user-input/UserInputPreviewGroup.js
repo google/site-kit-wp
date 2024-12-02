@@ -45,6 +45,7 @@ import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
+	getUserInputAnswersDescription,
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
@@ -215,6 +216,10 @@ export default function UserInputPreviewGroup( {
 
 	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
 
+	const {
+		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
+	} = getUserInputAnswersDescription();
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
@@ -304,6 +309,7 @@ export default function UserInputPreviewGroup( {
 						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 						options={ options }
 						alignLeftOptions
+						descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
 					/>
 					{ errorMessage && (
 						<p className="googlesitekit-error-text">
