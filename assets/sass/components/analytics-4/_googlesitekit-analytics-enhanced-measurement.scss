@@ -18,6 +18,29 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
+		display: flex;
+		gap: 6px;
+		margin-top: 1px;
+	}
+
+	.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-tick {
+		align-items: center;
+		background-color: $c-content-primary;
+		border-radius: 11px;
+		color: $c-content-on-primary;
+		display: flex;
+		height: 20px;
+		justify-content: center;
+		margin-left: 16px;
+		width: 20px;
+
+		svg {
+			height: 10px;
+			width: 10px;
+		}
+	}
+
 	.googlesitekit-analytics-enable-enhanced-measurement--loading {
 		padding-top: 10px;
 	}

@@ -130,7 +130,7 @@
 	{
 		"slug": "sign-in-with-google",
 		"name": "Sign in with Google",
-		"description": "Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors",
+		"description": "Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors",
 		"homepage": "https://developers.google.com/identity/gsi/web/guides/overview",
 		"internal": false,
 		"order": 10,

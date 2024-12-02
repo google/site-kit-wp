@@ -60,6 +60,7 @@ export default function Footer( {
 	closePanel,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
+	isFullScreen = false,
 } ) {
 	const viewContext = useViewContext();
 	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
@@ -204,6 +205,7 @@ export default function Footer( {
 			onCancel={ onCancel }
 			isOpen={ isOpen }
 			closePanel={ closePanel }
+			isFullScreen={ isFullScreen }
 		/>
 	);
 }
@@ -213,4 +215,5 @@ Footer.propTypes = {
 	closePanel: PropTypes.func.isRequired,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
+	isFullScreen: PropTypes.bool,
 };
