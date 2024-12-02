@@ -21,8 +21,12 @@ import {
 	provideModules,
 	render,
 } from '../../../../tests/js/test-utils';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import FirstPartyModeSetupSuccessSubtleNotification from './FirstPartyModeSetupSuccessSubtleNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { FPM_SHOW_SETUP_SUCCESS_NOTIFICATION } from './FirstPartyModeSetupBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-fpm'
@@ -99,5 +103,36 @@ describe( 'FirstPartyModeSetupSuccessSubtleNotification', () => {
 		).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	describe( 'checkRequirements', () => {
+		const notification =
+			DEFAULT_NOTIFICATIONS[ 'setup-success-notification-fpm' ];
+
+		it( 'is active when FPM_SHOW_SETUP_SUCCESS_NOTIFICATION is true', () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
+
+			const isActive = notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when FPM_SHOW_SETUP_SUCCESS_NOTIFICATION is false', () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, false );
+
+			const isActive = notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
