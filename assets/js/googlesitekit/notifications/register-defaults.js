@@ -419,7 +419,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				CORE_SITE
 			).getFirstPartyModeSettings();
 
-			const isFirstPartyModeEnabled = FPMSettings?.enabled;
+			const isFirstPartyModeEnabled = FPMSettings?.isEnabled;
 			const isFPMHealthy = FPMSettings?.isFPMHealthy;
 			const isScriptAccessEnabled = FPMSettings?.isScriptAccessEnabled;
 
