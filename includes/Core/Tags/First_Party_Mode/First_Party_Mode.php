@@ -75,6 +75,40 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	}
 
 	/**
+	 * Gets a healthcheck debug field display value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $setting_value Setting value.
+	 * @return string
+	 */
+	private function health_check_debug_field_value( $setting_value ) {
+		if ( true === $setting_value ) {
+			return __( 'Yes', 'google-site-kit' );
+		} elseif ( false === $setting_value ) {
+			return __( 'No', 'google-site-kit' );
+		}
+		return '-';
+	}
+
+	/**
+	 * Gets a healthcheck debug field debug value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $setting_value Setting value.
+	 * @return string
+	 */
+	private function health_check_debug_field_debug( $setting_value ) {
+		if ( true === $setting_value ) {
+			return 'yes';
+		} elseif ( false === $setting_value ) {
+			return 'no';
+		}
+		return '-';
+	}
+
+	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since n.e.x.t
@@ -85,10 +119,20 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 		$settings = $this->first_party_mode_settings->get();
 
 		return array(
-			'first_party_mode_is_enabled' => array(
+			'first_party_mode_is_enabled'               => array(
 				'label' => __( 'First Party Mode: Enabled', 'google-site-kit' ),
 				'value' => $settings['isEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['isEnabled'] ? 'yes' : 'no',
+			),
+			'first_party_mode_is_fpm_healthy'           => array(
+				'label' => __( 'First Party Mode: Service healthy', 'google-site-kit' ),
+				'value' => $this->health_check_debug_field_value( $settings['isFPMHealthy'] ),
+				'debug' => $this->health_check_debug_field_debug( $settings['isFPMHealthy'] ),
+			),
+			'first_party_mode_is_script_access_enabled' => array(
+				'label' => __( 'First Party Mode: Script accessible', 'google-site-kit' ),
+				'value' => $this->health_check_debug_field_value( $settings['isScriptAccessEnabled'] ),
+				'debug' => $this->health_check_debug_field_debug( $settings['isScriptAccessEnabled'] ),
 			),
 		);
 	}
