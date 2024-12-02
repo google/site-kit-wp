@@ -24,6 +24,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_ADS } from './constants';
 import { validateCanSubmitChanges } from './settings';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/ads settings', () => {
 	let registry;
@@ -49,6 +50,12 @@ describe( 'modules/ads settings', () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '12345',
 			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
 		} );
 
 		it( 'should not trigger saveSettings action if nothing is changed', async () => {
@@ -69,6 +76,38 @@ describe( 'modules/ads settings', () => {
 				body: {
 					data: {
 						conversionID: '56789',
+					},
+				},
+			} );
+		} );
+
+		it( 'should send a POST request to FPM settings endpoint when toggle state is changed', async () => {
+			const fpmEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-settings'
+			);
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( fpmEndpoint, {
+				body: JSON.stringify( {
+					data: { settings: { isEnabled: true } },
+				} ),
+				status: 200,
+			} );
+
+			await registry
+				.dispatch( CORE_SITE )
+				.setFirstPartyModeEnabled( true );
+
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).toHaveFetched( fpmEndpoint, {
+				body: {
+					data: {
+						settings: { isEnabled: true },
 					},
 				},
 			} );
