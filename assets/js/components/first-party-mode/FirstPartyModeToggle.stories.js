@@ -63,7 +63,6 @@ ServerRequirementsLoading.args = {
 		freezeFetch( serverRequirementStatusEndpoint );
 	},
 };
-ServerRequirementsLoading.scenario = {};
 
 export default {
 	title: 'Components/First Party Mode/FirstPartyModeToggle',
