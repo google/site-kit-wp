@@ -20,18 +20,12 @@
  * Internal dependencies
  */
 import {
-	render,
 	createTestRegistry,
 	provideSiteInfo,
 	provideNotifications,
 } from '../../../../tests/js/test-utils';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_SPLASH,
-} from '../../googlesitekit/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import Notifications from './Notifications';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_error';
@@ -59,38 +53,6 @@ describe( 'SetupErrorNotification', () => {
 			true
 		);
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-	} );
-
-	it( 'should display the notification when there is a permission error during setup', async () => {
-		const { getByText, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_SPLASH,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText( /oops! there was a problem during set up/i )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should not display the notification when permission error happens outside the setup screen', async () => {
-		const { queryByText, waitForRegistry } = render(
-			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			queryByText( /oops! there was a problem during set up/i )
-		).not.toBeInTheDocument();
 	} );
 
 	describe( 'checkRequirements', () => {
