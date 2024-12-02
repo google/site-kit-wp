@@ -182,7 +182,7 @@ export default function Header( { slug } ) {
 							) }
 							{ BETA_MODULES.includes( slug ) && (
 								<Badge
-									className="googlesitekit-badge--beta"
+									className="googlesitekit-beta-badge"
 									label={ __( 'Beta', 'google-site-kit' ) }
 									hasLeftSpacing
 								/>

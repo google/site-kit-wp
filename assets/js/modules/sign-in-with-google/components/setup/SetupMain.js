@@ -49,7 +49,7 @@ export default function SetupMain() {
 						'google-site-kit'
 					) }
 					<Badge
-						className="googlesitekit-badge--beta"
+						className="googlesitekit-beta-badge"
 						label={ __( 'Beta', 'google-site-kit' ) }
 					/>
 				</h2>
