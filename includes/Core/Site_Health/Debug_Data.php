@@ -645,7 +645,7 @@ class Debug_Data {
 	/**
 	 * Gets the key metrics status fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return array
 	 */

@@ -47,17 +47,26 @@ function Template() {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.parameters = {
+	features: [ 'firstPartyMode' ],
+};
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE enabled';
 IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
+IceEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
 
 export const IceDisabled = Template.bind( null );
 IceDisabled.storyName = 'With ICE disabled';
 IceDisabled.args = {
 	enhancedConversionTracking: false,
+};
+IceDisabled.parameters = {
+	features: [ 'firstPartyMode' ],
 };
 
 export default {
@@ -101,18 +110,41 @@ PaxConnected.scenario = {
 	label: 'Modules/Ads/Settings/SettingsView/PAX',
 };
 PaxConnected.parameters = {
-	features: [ 'adsPax' ],
+	features: [ 'adsPax', 'firstPartyMode' ],
 };
 PaxConnected.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Unset the value set in the prrevious scenario.
+			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const FPMEnabled = Template.bind( null );
+FPMEnabled.storyName = 'With First-Party Mode enabled';
+FPMEnabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsView/First-Party Mode Enabled',
+};
+FPMEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+FPMEnabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ADS ).setConversionID( 'AW-123456789' );
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 		};
 
 		return (

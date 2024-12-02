@@ -1,5 +1,5 @@
 /**
- * Ads Settings styles.
+ * SettingsInactiveModules component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,28 +16,21 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-	.googlesitekit-ads-settings-fields {
-
-		.googlesitekit-settings-module__fields-group-title {
-			margin-bottom: 0;
-		}
-
-		p.googlesitekit-settings-module__fields-group-helper-text {
-			color: $c-surfaces-on-surface-variant;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			margin-bottom: 20px;
-			margin-top: 6px;
-		}
-
-		p.mdc-dialog__lead {
-			font-size: $fs-title-sm;
-		}
-
-		.googlesitekit-setup-module__inputs {
-			margin-bottom: 34px;
-		}
-	}
+export default function SettingsGroup( { title, children } ) {
+	return (
+		<div className="googlesitekit-module-settings-group">
+			<h4>{ title }</h4>
+			{ children }
+		</div>
+	);
 }
+
+SettingsGroup.propTypes = {
+	title: PropTypes.string.isRequired,
+	children: PropTypes.node.isRequired,
+};

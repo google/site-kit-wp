@@ -1,5 +1,5 @@
 /**
- * Ads Settings styles.
+ * SettingsGroup component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,28 +16,18 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+import { render } from '../../../../tests/js/test-utils';
+import SettingsGroup from './SettingsGroup';
 
-	.googlesitekit-ads-settings-fields {
+describe( 'SettingsGroup', () => {
+	it( 'renders correctly', () => {
+		const { container } = render(
+			<SettingsGroup title="Test Title">
+				<div>Test Child 1</div>
+				<div>Test Child 2</div>
+			</SettingsGroup>
+		);
 
-		.googlesitekit-settings-module__fields-group-title {
-			margin-bottom: 0;
-		}
-
-		p.googlesitekit-settings-module__fields-group-helper-text {
-			color: $c-surfaces-on-surface-variant;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			margin-bottom: 20px;
-			margin-top: 6px;
-		}
-
-		p.mdc-dialog__lead {
-			font-size: $fs-title-sm;
-		}
-
-		.googlesitekit-setup-module__inputs {
-			margin-bottom: 34px;
-		}
-	}
-}
+		expect( container ).toMatchSnapshot();
+	} );
+} );

@@ -1,5 +1,5 @@
 /**
- * Ads Settings styles.
+ * SettingsStatuses component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,28 +16,37 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * Internal dependencies
+ */
+import SettingsStatuses from './SettingsStatuses';
 
-	.googlesitekit-ads-settings-fields {
-
-		.googlesitekit-settings-module__fields-group-title {
-			margin-bottom: 0;
-		}
-
-		p.googlesitekit-settings-module__fields-group-helper-text {
-			color: $c-surfaces-on-surface-variant;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			margin-bottom: 20px;
-			margin-top: 6px;
-		}
-
-		p.mdc-dialog__lead {
-			font-size: $fs-title-sm;
-		}
-
-		.googlesitekit-setup-module__inputs {
-			margin-bottom: 34px;
-		}
-	}
+function Template( args ) {
+	return (
+		<div className="googlesitekit-plugin">
+			<div className="googlesitekit-settings-module">
+				<SettingsStatuses { ...args } />
+			</div>
+		</div>
+	);
 }
+
+export const Default = Template.bind( null );
+Default.storyName = 'Default';
+Default.args = {
+	statuses: [
+		{
+			label: 'Label 1',
+			status: 'Enabled',
+		},
+		{
+			label: 'Label 2',
+			status: 'Disabled',
+		},
+	],
+};
+
+export default {
+	title: 'Components/SettingsStatuses',
+	component: SettingsStatuses,
+};
