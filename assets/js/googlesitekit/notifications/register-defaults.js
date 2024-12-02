@@ -45,6 +45,7 @@ import GatheringDataNotification from '../../components/notifications/GatheringD
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
+import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -410,6 +411,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
 			const analyticsModuleConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics' );
 			const adsModuleConnected =
