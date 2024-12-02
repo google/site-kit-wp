@@ -57,6 +57,10 @@ export default function Panel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
+	const isLoading = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
+	);
+
 	const savedItemSlugs = useInViewSelect( ( select ) => {
 		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
 		const { getConfiguredAudiences } = select( CORE_USER );
@@ -104,6 +108,7 @@ export default function Panel() {
 			className="googlesitekit-audience-selection-panel"
 			closePanel={ closePanel }
 			isOpen={ isOpen || isCreatingAudienceFromOAuth }
+			isLoading={ isLoading }
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />

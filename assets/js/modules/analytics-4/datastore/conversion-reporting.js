@@ -267,7 +267,7 @@ export const selectors = {
 	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
@@ -306,8 +306,8 @@ export const selectors = {
 				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
 			return conversionReportingEventsChange?.some( ( event ) =>
-				conversionEventWidgets[ event ].some( ( widget ) =>
-					purposeTailoredMetrics.includes( widget )
+				conversionEventWidgets[ event ]?.some( ( widget ) =>
+					purposeTailoredMetrics?.includes( widget )
 				)
 			);
 		}

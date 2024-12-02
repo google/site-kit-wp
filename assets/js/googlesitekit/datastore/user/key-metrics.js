@@ -184,7 +184,7 @@ const baseActions = {
 	/**
 	 * Resets key metrics selecton.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -291,7 +291,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Key Metric widget slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */
@@ -354,7 +354,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Conversion Key Reporting Metric widget slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */

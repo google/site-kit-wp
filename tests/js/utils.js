@@ -633,7 +633,7 @@ export const waitForTimeouts = ( timeout ) => {
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
- * @since n.e.x.t Reimplemented using debounced timer for reliability. Not compatible with fake timers.
+ * @since 1.141.0 Reimplemented using debounced timer for reliability. Not compatible with fake timers.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.

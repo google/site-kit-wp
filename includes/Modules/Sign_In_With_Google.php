@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
@@ -70,7 +71,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
-	 * @since n.e.x.t Add functionality to allow users to disconnect their own account and admins to disconnect any user.
+	 * @since 1.141.0 Add functionality to allow users to disconnect their own account and admins to disconnect any user.
 	 */
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
@@ -168,7 +169,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Sign in with Google', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors', 'google-site-kit' ),
+			'description' => __( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', 'google-site-kit' ),
 			'order'       => 10,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
 		);
@@ -262,10 +263,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Render the Sign in with Google button and related inline styles.
 		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
+		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
+		ob_start();
 		?>
-<?php /* phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript */ ?>
-<script src="https://accounts.google.com/gsi/client"></script>
-<script>
 ( () => {
 	const parent = document.createElement( 'div' );
 <?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
@@ -306,8 +306,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
-</script>
 		<?php
+		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 	}
 
@@ -454,7 +454,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Returns the disconnect URL for the specified user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param int $user_id WordPress User ID.
 	 */
@@ -472,7 +472,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Handles the disconnect action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 */
 	public function handle_disconnect_user() {
 		$input   = $this->context->input();
@@ -499,7 +499,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Displays a disconnect button on user profile pages.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param WP_User $user WordPress user object.
 	 */
