@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 
@@ -559,7 +560,13 @@ class Debug_Data {
 			array_values( $modules_with_debug_fields )
 		);
 
-		return array_merge( array(), ...$fields_by_module );
+		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
+			// First-Party Mode is not a module so it's debug fields must be added here.
+			$first_party_mode             = new First_Party_Mode( $this->context );
+			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+		}
+
+		return array_merge( array(), $fields_from_first_party_mode, ...$fields_by_module );
 	}
 
 	/**
