@@ -37,6 +37,7 @@ import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { enabledFeatures } from '../../features';
 
 const FPM_SETUP_BANNER_NOTIFICATION = 'first-party-mode-setup-cta-banner';
 
@@ -47,6 +48,8 @@ describe( 'FirstPartyModeSetupBanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		enabledFeatures.add( 'firstPartyMode' );
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );

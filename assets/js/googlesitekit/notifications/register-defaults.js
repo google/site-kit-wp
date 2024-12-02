@@ -406,7 +406,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'first-party-mode-setup-cta-banner': {
 		Component: FirstPartyModeSetupBanner,
-		priority: 1,
+		priority: 320,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
