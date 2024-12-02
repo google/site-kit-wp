@@ -242,7 +242,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	useEffect( () => {
 		// Ensure that current selection group is always active when selection panel re-opens.
 		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
-			if ( newlyDetectedMetricsKeys.length ) {
+			if ( newlyDetectedMetricsKeys.length && isMobileBreakpoint ) {
 				const firstNewlyDetectedGroup = allGroups.find(
 					( group ) => group.SLUG === newlyDetectedMetricsKeys[ 0 ]
 				);
@@ -266,6 +266,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		isSelectionPanelOpenPrevious,
 		unstagedSelection,
 		allGroups,
+		isMobileBreakpoint,
 		newlyDetectedMetricsKeys,
 		resetUnstagedSelection,
 	] );
