@@ -29,7 +29,11 @@ import FirstPartyModeToggle from './FirstPartyModeToggle';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 function Template() {
-	return <FirstPartyModeToggle />;
+	return (
+		<div className="googlesitekit-module-settings-group">
+			<FirstPartyModeToggle />
+		</div>
+	);
 }
 
 const serverRequirementStatusEndpoint = new RegExp(
