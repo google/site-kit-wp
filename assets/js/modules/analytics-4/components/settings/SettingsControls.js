@@ -35,7 +35,6 @@ import {
 	WebDataStreamSelect,
 	WebDataStreamNameInput,
 } from '../common';
-import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
@@ -88,10 +87,6 @@ export default function SettingsControls( props ) {
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-
-			<SettingsEnhancedMeasurementSwitch
-				hasModuleAccess={ hasModuleAccess }
-			/>
 		</div>
 	);
 }
