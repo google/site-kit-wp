@@ -49,6 +49,7 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const currentSelectionGroup = {
 	SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
@@ -88,9 +89,16 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			) || []
 	);
 
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
+	const detectedEvents = useSelect( ( select ) => {
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+	} );
 	const hasGeneratingLeadsGroup = [
 		'submit_lead_form',
 		'contact',
@@ -120,12 +128,24 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		[ keyMetricsGroups ]
 	);
 
-	const conversionReportingEventsChange = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange()
-	);
-	const conversionReportingEventWidgets = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
-	);
+	const conversionReportingEventsChange = useSelect( ( select ) => {
+		if ( ! isGA4Connected ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getConversionReportingEventsChange();
+	} );
+	const conversionReportingEventWidgets = useSelect( ( select ) => {
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getKeyMetricsConversionEventWidgets();
+	} );
 
 	// Currently selected group does not include total selected number, so it will
 	// always be 0.
