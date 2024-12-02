@@ -85,7 +85,7 @@ export default function FirstPartyModeToggle( { className } ) {
 					/>
 					<p className="googlesitekit-module-settings-group__helper-text">
 						{ __(
-							'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views).',
+							'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.',
 							'google-site-kit'
 						) }
 					</p>
