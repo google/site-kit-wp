@@ -186,6 +186,10 @@
 				margin: 0;
 				overflow: hidden;
 				text-overflow: ellipsis;
+
+				.mdc-linear-progress {
+					margin: 8px 0;
+				}
 			}
 
 			.googlesitekit-settings-module__meta-item-data--wrap {

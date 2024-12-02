@@ -21,9 +21,28 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { ProgressBar } from 'googlesitekit-components';
+
 export default function SettingsStatuses( { statuses } ) {
 	if ( ! statuses || statuses.length === 0 ) {
 		return null;
+	}
+
+	function renderStatus( status ) {
+		if ( status === undefined ) {
+			return <ProgressBar />;
+		}
+		return status
+			? __( 'Enabled', 'google-site-kit' )
+			: __( 'Disabled', 'google-site-kit' );
 	}
 
 	return (
@@ -37,7 +56,7 @@ export default function SettingsStatuses( { statuses } ) {
 						{ label }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ status !== undefined && status }
+						{ renderStatus( status ) }
 					</p>
 				</div>
 			) ) }

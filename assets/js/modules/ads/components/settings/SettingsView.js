@@ -91,18 +91,14 @@ export default function SettingsView() {
 										'Enhanced Conversion Tracking',
 										'google-site-kit'
 									),
-									status: isConversionTrackingEnabled
-										? __( 'Enabled', 'google-site-kit' )
-										: __( 'Disabled', 'google-site-kit' ),
+									status: isConversionTrackingEnabled,
 								},
 								{
 									label: __(
 										'First-Party Mode',
 										'google-site-kit'
 									),
-									status: isFirstPartyModeEnabled
-										? __( 'Enabled', 'google-site-kit' )
-										: __( 'Disabled', 'google-site-kit' ),
+									status: isFirstPartyModeEnabled,
 								},
 						  ]
 						: [
@@ -111,9 +107,7 @@ export default function SettingsView() {
 										'Conversion Tracking',
 										'google-site-kit'
 									),
-									status: isConversionTrackingEnabled
-										? __( 'Enabled', 'google-site-kit' )
-										: __( 'Disabled', 'google-site-kit' ),
+									status: isConversionTrackingEnabled,
 								},
 						  ]
 				}

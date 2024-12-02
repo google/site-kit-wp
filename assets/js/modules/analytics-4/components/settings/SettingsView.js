@@ -31,7 +31,6 @@ import {
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
 import OptionalSettingsView from './OptionalSettingsView';
-import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import DisplaySetting, {
 	BLANK_SPACE,
@@ -39,8 +38,17 @@ import DisplaySetting, {
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
+import { useFeature } from '../../../../hooks/useFeature';
+import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamID,
+} from '../../utils/validation';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function SettingsView() {
+	const fpmEnabled = useFeature( 'firstPartyMode' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -63,6 +71,32 @@ export default function SettingsView() {
 	);
 	const editDataStreamSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
+	);
+
+	const webDataStreamID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+	);
+
+	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
+		if (
+			! isValidPropertyID( propertyID ) ||
+			! isValidWebDataStreamID( webDataStreamID )
+		) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
+			propertyID,
+			webDataStreamID
+		);
+	} );
+
+	const isConversionTrackingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isConversionTrackingEnabled()
+	);
+
+	const isFirstPartyModeEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isFirstPartyModeEnabled()
 	);
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
@@ -181,9 +215,52 @@ export default function SettingsView() {
 				</div>
 			</div>
 
-			<SettingsEnhancedMeasurementView />
-
 			<OptionalSettingsView />
+
+			<SettingsStatuses
+				statuses={
+					fpmEnabled
+						? [
+								{
+									label: __(
+										'Enhance Measurement',
+										'google-site-kit'
+									),
+									status: isEnhancedMeasurementStreamEnabled,
+								},
+								{
+									label: __(
+										'Enhanced Conversion Tracking',
+										'google-site-kit'
+									),
+									status: isConversionTrackingEnabled,
+								},
+								{
+									label: __(
+										'First-Party Mode',
+										'google-site-kit'
+									),
+									status: isFirstPartyModeEnabled,
+								},
+						  ]
+						: [
+								{
+									label: __(
+										'Enhance Measurement',
+										'google-site-kit'
+									),
+									status: isEnhancedMeasurementStreamEnabled,
+								},
+								{
+									label: __(
+										'Enhanced Conversion Tracking',
+										'google-site-kit'
+									),
+									status: isConversionTrackingEnabled,
+								},
+						  ]
+				}
+			/>
 		</div>
 	);
 }
