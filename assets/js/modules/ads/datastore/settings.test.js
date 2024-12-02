@@ -35,6 +35,12 @@ describe( 'modules/ads settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+			isEnabled: false,
+			isFPMHealthy: true,
+			isScriptAccessEnabled: true,
+		} );
 	} );
 
 	afterAll( () => {
@@ -49,12 +55,6 @@ describe( 'modules/ads settings', () => {
 		beforeEach( () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '12345',
-			} );
-
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				isEnabled: false,
-				isFPMHealthy: true,
-				isScriptAccessEnabled: true,
 			} );
 		} );
 
@@ -150,6 +150,27 @@ describe( 'modules/ads settings', () => {
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
 				'a valid conversionID is required to submit changes'
 			);
+		} );
+	} );
+
+	describe( 'rollbackChanges', () => {
+		it( 'should rollback to the original settings', () => {
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: '12345',
+			} );
+
+			registry.dispatch( MODULES_ADS ).setConversionID( '56789' );
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+
+			registry.dispatch( MODULES_ADS ).rollbackChanges();
+
+			expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
+				'12345'
+			);
+
+			expect(
+				registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+			).toBe( false );
 		} );
 	} );
 } );
