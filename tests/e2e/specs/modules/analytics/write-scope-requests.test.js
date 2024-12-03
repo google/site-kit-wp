@@ -209,6 +209,8 @@ describe( 'Analytics write scope requests', () => {
 						),
 					},
 				} );
+			} else if ( request.url().match( 'user/data/survey-timeouts' ) ) {
+				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}
