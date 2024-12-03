@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -71,34 +71,37 @@ export default function FirstPartyModeToggle( { className } ) {
 				className
 			) }
 		>
-			{ loading && <ProgressBar small /> }
+			{ loading && (
+				<ProgressBar
+					small
+					className="googlesitekit-first-party-mode-toggle__progress"
+				/>
+			) }
 			{ ! loading && (
-				<Fragment>
-					<Switch
-						label={ __( 'First-party mode', 'google-site-kit' ) }
-						checked={
-							!! isFirstPartyModeEnabled && metServerRequirements
-						}
-						disabled={ ! metServerRequirements }
-						onClick={ handleClick }
-						hideLabel={ false }
-					/>
-					<p className="googlesitekit-module-settings-group__helper-text">
-						{ __(
-							'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.',
-							'google-site-kit'
-						) }
-					</p>
-					{ ! metServerRequirements && (
-						<SubtleNotification
-							title={ __(
-								'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.',
-								'google-site-kit'
-							) }
-							variant="warning"
-						/>
+				<Switch
+					label={ __( 'First-party mode', 'google-site-kit' ) }
+					checked={
+						!! isFirstPartyModeEnabled && metServerRequirements
+					}
+					disabled={ ! metServerRequirements }
+					onClick={ handleClick }
+					hideLabel={ false }
+				/>
+			) }
+			<p className="googlesitekit-module-settings-group__helper-text">
+				{ __(
+					'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.',
+					'google-site-kit'
+				) }
+			</p>
+			{ ! loading && ! metServerRequirements && (
+				<SubtleNotification
+					title={ __(
+						'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.',
+						'google-site-kit'
 					) }
-				</Fragment>
+					variant="warning"
+				/>
 			) }
 		</div>
 	);

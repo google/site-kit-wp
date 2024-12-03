@@ -20,6 +20,10 @@
 
 	.googlesitekit-first-party-mode-toggle {
 
+		.googlesitekit-first-party-mode-toggle__progress {
+			margin: 11.5px 0; // Prevents layout shift.
+		}
+
 		.googlesitekit-subtle-notification {
 			margin-top: 10px;
 
