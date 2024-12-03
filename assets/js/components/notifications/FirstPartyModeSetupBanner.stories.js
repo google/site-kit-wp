@@ -48,9 +48,7 @@ function Template() {
 
 export const Default = Template.bind();
 Default.storyName = 'FirstPartyModeSetupBanner';
-Default.scenario = {
-	label: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupBanner',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupBanner',

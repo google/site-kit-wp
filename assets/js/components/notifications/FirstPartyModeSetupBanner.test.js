@@ -46,6 +46,18 @@ describe( 'FirstPartyModeSetupBanner', () => {
 
 	const notification = DEFAULT_NOTIFICATIONS[ FPM_SETUP_BANNER_NOTIFICATION ];
 
+	const FPMBannerComponent = withNotificationComponentProps(
+		FPM_SETUP_BANNER_NOTIFICATION
+	)( FirstPartyModeSetupBanner );
+
+	const fpmSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/fpm-settings'
+	);
+
+	const dismissItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -83,7 +95,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'is active', async () => {
+		it( 'is active when all required conditions are met', async () => {
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD
@@ -138,111 +150,85 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		} );
 	} );
 
-	describe( 'Rendering', () => {
-		let FPMBannerComponent;
-
-		beforeAll( () => {
-			enabledFeatures.add( 'firstPartyMode' );
-
-			FPMBannerComponent = withNotificationComponentProps(
-				FPM_SETUP_BANNER_NOTIFICATION
-			)( FirstPartyModeSetupBanner );
-		} );
-
-		it( 'should render the banner', async () => {
-			const { getByRole, getByText, waitForRegistry } = render(
-				<FPMBannerComponent />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			expect(
-				getByText(
-					'Get more comprehensive stats by collecting metrics via your own site'
-				)
-			).toBeInTheDocument();
-
-			expect(
-				getByRole( 'button', { name: 'Enable First-party mode' } )
-			).toBeInTheDocument();
-
-			expect(
-				getByRole( 'button', { name: 'Maybe later' } )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should not render the banner if dismissed', () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [ FPM_SETUP_BANNER_NOTIFICATION ] );
-
-			const { container } = render( <FPMBannerComponent />, {
+	it( 'should render the banner', async () => {
+		const { getByRole, getByText, waitForRegistry } = render(
+			<FPMBannerComponent />,
+			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+			}
+		);
 
-			expect( container ).toBeEmptyDOMElement();
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Get more comprehensive stats by collecting metrics via your own site'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			getByRole( 'button', { name: 'Enable First-party mode' } )
+		).toBeInTheDocument();
+
+		expect(
+			getByRole( 'button', { name: 'Maybe later' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should not render the banner if dismissed', () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ FPM_SETUP_BANNER_NOTIFICATION ] );
+
+		const { container } = render( <FPMBannerComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		describe( 'onCTAClick', () => {
-			const FPMSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-settings'
-			);
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
-			const dismissItemEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismiss-item'
-			);
+	it( 'should call onCTAClick when the CTA button is clicked', async () => {
+		fetchMock.postOnce( fpmSettingsEndpoint, {
+			body: JSON.stringify( {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} ),
+			status: 200,
+		} );
 
-			it( 'should call onCTAClick when the CTA button is clicked', async () => {
-				fetchMock.postOnce( FPMSettingsEndpoint, {
-					body: JSON.stringify( {
-						isEnabled: true,
-						isFPMHealthy: true,
-						isScriptAccessEnabled: true,
-					} ),
-					status: 200,
-				} );
+		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
 
-				const { getByRole, waitForRegistry } = render(
-					<FPMBannerComponent />,
-					{
-						registry,
-						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					}
-				);
+		await waitForRegistry();
 
-				await waitForRegistry();
+		expect(
+			registry.select( CORE_SITE ).getFirstPartyModeSettings().isEnabled
+		).toBe( false );
 
-				expect(
-					registry.select( CORE_SITE ).getFirstPartyModeSettings()
-						.isEnabled
-				).toBe( false );
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
 
-				fetchMock.post( dismissItemEndpoint, {
-					body: JSON.stringify( [ FPM_SETUP_BANNER_NOTIFICATION ] ),
-					status: 200,
-				} );
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Enable First-party mode',
+			} )
+		);
 
-				fireEvent.click(
-					getByRole( 'button', {
-						name: 'Enable First-party mode',
-					} )
-				);
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getFirstPartyModeSettings()
+					.isEnabled
+			).toBe( true );
 
-				await waitFor( () => {
-					expect(
-						registry.select( CORE_SITE ).getFirstPartyModeSettings()
-							.isEnabled
-					).toBe( true );
-
-					expect( fetchMock ).toHaveFetched( FPMSettingsEndpoint );
-					expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
-				} );
-			} );
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 	} );
 } );

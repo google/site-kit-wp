@@ -21,14 +21,10 @@
 	.googlesitekit-setup-cta-banner--first-party-mode-setup-cta-banner {
 
 		.googlesitekit-setup-cta-banner__actions-wrapper {
-			gap: 0; // Fix buttons being one on top of another on medium mobile viewports.
+			gap: 4px; // Fix buttons being one on top of another on medium mobile viewports.
 
 			@media (min-width: $width-tablet + 1 + px) {
-				gap: $grid-gap-phone;
-			}
-
-			@media (min-width: $width-desktop + 1 + px) {
-				gap: $grid-gap-desktop;
+				gap: 10px;
 			}
 		}
 
