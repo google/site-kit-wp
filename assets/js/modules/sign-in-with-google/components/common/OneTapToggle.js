@@ -27,12 +27,19 @@ import { Switch, HelperText } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import Link from '../../../../components/Link';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function OneTapToggle() {
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
 	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+
+	const learnMoreLink = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'sign-in-with-google-one-tap'
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__one-tap">
@@ -49,13 +56,7 @@ export default function OneTapToggle() {
 						'google-site-kit'
 					),
 					{
-						a: (
-							<Link
-								key="link"
-								href="https://developers.google.com/identity/gsi/web/guides/offerings#one_tap"
-								external
-							/>
-						),
+						a: <Link key="link" href={ learnMoreLink } external />,
 					}
 				) }
 			</HelperText>
