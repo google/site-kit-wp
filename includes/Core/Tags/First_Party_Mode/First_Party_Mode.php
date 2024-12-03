@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -21,7 +22,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class First_Party_Mode {
+class First_Party_Mode implements Module_With_Debug_Fields {
 	use Method_Proxy_Trait;
 
 	/**
@@ -71,5 +72,24 @@ class First_Party_Mode {
 	public function register() {
 		$this->first_party_mode_settings->register();
 		$this->rest_controller->register();
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->first_party_mode_settings->get();
+
+		return array(
+			'first_party_mode_is_enabled' => array(
+				'label' => __( 'First-Party Mode: Enabled', 'google-site-kit' ),
+				'value' => $settings['isEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['isEnabled'] ? 'yes' : 'no',
+			),
+		);
 	}
 }
