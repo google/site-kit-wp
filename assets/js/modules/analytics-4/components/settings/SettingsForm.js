@@ -39,15 +39,11 @@ import EntityOwnershipChangeNotice from '../../../../components/settings/EntityO
 import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
 import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
-import { useFeature } from '../../../../hooks/useFeature';
 
 export default function SettingsForm( { hasModuleAccess } ) {
-	const fpmEnabled = useFeature( 'firstPartyMode' );
-
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -94,7 +90,6 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						}
 					) }
 				</ConversionTrackingToggle>
-				{ fpmEnabled && <FirstPartyModeToggle /> }
 			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (

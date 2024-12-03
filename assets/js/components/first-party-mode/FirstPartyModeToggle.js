@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,25 +40,20 @@ export default function FirstPartyModeToggle( { className } ) {
 	const isFirstPartyModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isFirstPartyModeEnabled()
 	);
-	const loading = useSelect( ( select ) =>
+	const isLoading = useSelect( ( select ) =>
 		select( CORE_SITE ).isFetchingGetFPMServerRequirementStatus()
 	);
-	const metServerRequirements = useSelect( ( select ) => {
+	const hasMetServerRequirements = useSelect( ( select ) => {
 		const { isFPMHealthy, isScriptAccessEnabled } = select( CORE_SITE );
 
-		const fpmHealthy = isFPMHealthy() !== false;
-		const scriptAccessEnabled = isScriptAccessEnabled() !== false;
-
-		return fpmHealthy && scriptAccessEnabled;
+		return isFPMHealthy() !== false && isScriptAccessEnabled() !== false;
 	} );
 
 	const { fetchGetFPMServerRequirementStatus, setFirstPartyModeEnabled } =
 		useDispatch( CORE_SITE );
 
 	// Fetch the server requirement status on mount.
-	useMount( () => {
-		fetchGetFPMServerRequirementStatus();
-	} );
+	useMount( fetchGetFPMServerRequirementStatus );
 
 	const handleClick = useCallback( () => {
 		setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
@@ -71,34 +66,37 @@ export default function FirstPartyModeToggle( { className } ) {
 				className
 			) }
 		>
-			{ loading && <ProgressBar small /> }
-			{ ! loading && (
-				<Fragment>
-					<Switch
-						label={ __( 'First-party mode', 'google-site-kit' ) }
-						checked={
-							!! isFirstPartyModeEnabled && metServerRequirements
-						}
-						disabled={ ! metServerRequirements }
-						onClick={ handleClick }
-						hideLabel={ false }
-					/>
-					<p className="googlesitekit-module-settings-group__helper-text">
-						{ __(
-							'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.',
-							'google-site-kit'
-						) }
-					</p>
-					{ ! metServerRequirements && (
-						<SubtleNotification
-							title={ __(
-								'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.',
-								'google-site-kit'
-							) }
-							variant="warning"
-						/>
+			{ isLoading && (
+				<ProgressBar
+					small
+					className="googlesitekit-first-party-mode-toggle__progress"
+				/>
+			) }
+			{ ! isLoading && (
+				<Switch
+					label={ __( 'First-party mode', 'google-site-kit' ) }
+					checked={
+						!! isFirstPartyModeEnabled && hasMetServerRequirements
+					}
+					disabled={ ! hasMetServerRequirements }
+					onClick={ handleClick }
+					hideLabel={ false }
+				/>
+			) }
+			<p className="googlesitekit-module-settings-group__helper-text">
+				{ __(
+					'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.',
+					'google-site-kit'
+				) }
+			</p>
+			{ ! isLoading && ! hasMetServerRequirements && (
+				<SubtleNotification
+					title={ __(
+						'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.',
+						'google-site-kit'
 					) }
-				</Fragment>
+					variant="warning"
+				/>
 			) }
 		</div>
 	);

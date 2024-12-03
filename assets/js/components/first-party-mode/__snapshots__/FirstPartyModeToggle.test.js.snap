@@ -120,7 +120,7 @@ exports[`FirstPartyModeToggle should render in loading state if the server requi
     class="googlesitekit-first-party-mode-toggle"
   >
     <div
-      class="mdc-linear-progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-first-party-mode-toggle__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div
@@ -144,6 +144,11 @@ exports[`FirstPartyModeToggle should render in loading state if the server requi
         />
       </div>
     </div>
+    <p
+      class="googlesitekit-module-settings-group__helper-text"
+    >
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+    </p>
   </div>
 </div>
 `;
