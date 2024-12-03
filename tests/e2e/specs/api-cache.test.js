@@ -25,6 +25,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
+	pageWait,
 	resetSiteKit,
 	safeLoginUser,
 	setupSiteKit,
@@ -81,6 +82,8 @@ describe( 'API cache', () => {
 
 		await goToSiteKitDashboard();
 
+		await pageWait();
+
 		await page.waitForSelector(
 			`#${ firstTestNotification.id }.googlesitekit-publisher-win--is-open`,
 			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
@@ -106,6 +109,8 @@ describe( 'API cache', () => {
 		await safeLoginUser( 'admin', 'password' );
 
 		await goToSiteKitDashboard();
+
+		await pageWait();
 
 		// Ensure the second notification is displayed.
 		await page.waitForSelector(
