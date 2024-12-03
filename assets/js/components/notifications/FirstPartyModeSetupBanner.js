@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -111,9 +111,14 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 					'Get more comprehensive stats by collecting metrics via your own site',
 					'google-site-kit'
 				) }
-				description={ __(
-					'Enable First-party mode (beta) to send measurement through your own domain - this helps improve the quality and completeness of Analytics and Ads metrics.',
-					'google-site-kit'
+				description={ createInterpolateElement(
+					__(
+						'Enable First-party mode (<beta />) to send measurement through your own domain - this helps improve the quality and completeness of Analytics and Ads metrics.',
+						'google-site-kit'
+					),
+					{
+						beta: <em>{ __( 'beta', 'google-site-kit' ) }</em>,
+					}
 				) }
 				actions={
 					<ActionsCTALinkDismiss
