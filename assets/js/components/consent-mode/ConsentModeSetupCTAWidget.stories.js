@@ -79,6 +79,10 @@ export default {
 					.dispatch( CORE_SITE )
 					.receiveGetConsentModeSettings( { enabled: false } );
 
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetAdsMeasurementStatus( { connected: true } );
+
 				fetchMock.postOnce(
 					new RegExp(
 						'google-site-kit/v1/core/site/data/consent-mode'

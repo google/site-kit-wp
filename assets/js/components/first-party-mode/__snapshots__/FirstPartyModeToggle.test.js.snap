@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FirstPartyModeToggle should render in default state 1`] = `
+<div>
+  <div
+    class="googlesitekit-first-party-mode-toggle"
+  >
+    <div
+      aria-checked="false"
+      class="mdc-switch"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            id="googlesitekit-switch-4"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-4"
+    >
+      First-party mode
+    </label>
+    <p
+      class="googlesitekit-module-settings-group__helper-text"
+    >
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`FirstPartyModeToggle should render in disabled state if server requirements are not met 1`] = `
+<div>
+  <div
+    class="googlesitekit-first-party-mode-toggle"
+  >
+    <div
+      aria-checked="false"
+      class="mdc-switch mdc-switch--disabled"
+      role="switch"
+      tabindex="0"
+    >
+      <div
+        class="mdc-switch__track"
+      >
+         
+      </div>
+      <div
+        class="mdc-switch__thumb-underlay"
+      >
+        <div
+          class="mdc-switch__thumb"
+        >
+          <input
+            class="mdc-switch__native-control"
+            disabled=""
+            id="googlesitekit-switch-6"
+            readonly=""
+            role="switch"
+            type="checkbox"
+          />
+        </div>
+      </div>
+    </div>
+    <label
+      class=""
+      for="googlesitekit-switch-6"
+    >
+      First-party mode
+    </label>
+    <p
+      class="googlesitekit-module-settings-group__helper-text"
+    >
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+    </p>
+    <div
+      class="googlesitekit-subtle-notification googlesitekit-subtle-notification--warning"
+    >
+      <div
+        class="googlesitekit-subtle-notification__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-subtle-notification__content"
+      >
+        <p>
+          Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.
+        </p>
+      </div>
+      <div
+        class="googlesitekit-subtle-notification__action"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FirstPartyModeToggle should render in loading state if the server requirement status is still loading 1`] = `
+<div>
+  <div
+    class="googlesitekit-first-party-mode-toggle"
+  >
+    <div
+      class="mdc-linear-progress googlesitekit-first-party-mode-toggle__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      role="progressbar"
+    >
+      <div
+        class="mdc-linear-progress__buffering-dots"
+      />
+      <div
+        class="mdc-linear-progress__buffer"
+      />
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+    </div>
+    <p
+      class="googlesitekit-module-settings-group__helper-text"
+    >
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+    </p>
+  </div>
+</div>
+`;

@@ -35,9 +35,13 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import whenActive from '../../util/when-active';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
+
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
@@ -66,6 +70,22 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		haveConversionReportingEventsForTailoredMetrics &&
 		! keyMetricSettings?.includeConversionTailoredMetrics;
 
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics()
+	);
+
+	// If users have set up key metrics manually and ACR events are detected,
+	// we display the same callout banner, with a different call to action
+	// "Select metrics" which opens the metric selection panel.
+	const shouldShowCalloutForUserPickedMetrics =
+		hasUserPickedMetrics?.length &&
+		isKeyMetricsSetupCompleted &&
+		hasConversionEventsForUserPickedMetrics;
+
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
 	const { dismissNewConversionReportingEvents } =
@@ -89,15 +109,40 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		shouldShowInitialCalloutForTailoredMetrics,
 	] );
 
-	if ( ! shouldShowInitialCalloutForTailoredMetrics ) {
+	const { setValue } = useDispatch( CORE_UI );
+
+	const handleSelectMetricsClick = useCallback( () => {
+		if ( shouldShowCalloutForUserPickedMetrics ) {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+			dismissNewConversionReportingEvents();
+		}
+	}, [
+		setValue,
+		shouldShowCalloutForUserPickedMetrics,
+		dismissNewConversionReportingEvents,
+	] );
+
+	if (
+		! shouldShowInitialCalloutForTailoredMetrics &&
+		! shouldShowCalloutForUserPickedMetrics
+	) {
 		return <WidgetNull />;
 	}
 
 	return (
 		<Widget noPadding fullWidth>
 			<ConversionReportingDashboardSubtleNotification
-				ctaLabel={ __( 'Add metrics', 'google-site-kit' ) }
-				handleCTAClick={ handleAddMetricsClick }
+				ctaLabel={
+					shouldShowInitialCalloutForTailoredMetrics
+						? __( 'Add metrics', 'google-site-kit' )
+						: __( 'Select metrics', 'google-site-kit' )
+				}
+				handleCTAClick={
+					shouldShowInitialCalloutForTailoredMetrics
+						? handleAddMetricsClick
+						: handleSelectMetricsClick
+				}
 				isSaving={ isSaving }
 				onDismiss={ dismissNewConversionReportingEvents }
 			/>
