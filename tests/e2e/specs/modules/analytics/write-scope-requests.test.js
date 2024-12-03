@@ -126,7 +126,11 @@ describe( 'Analytics write scope requests', () => {
 				}
 			} else if (
 				request.url().match( 'analytics-4/data/conversion-events' ) ||
-				request.url().match( 'search-console/data/searchanalytics' )
+				request.url().match( 'search-console/data/searchanalytics' ) ||
+				request
+					.url()
+					.match( 'analytics-4/data/sync-custom-dimensions' ) ||
+				request.url().match( 'user/data/survey-timeout' )
 			) {
 				request.respond( {
 					status: 200,
@@ -186,13 +190,6 @@ describe( 'Analytics write scope requests', () => {
 					body: JSON.stringify( property ),
 				} );
 			} else if (
-				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
-			) {
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
-			} else if (
 				// Intercept request to GA TOS URL and redirect to gatoscallback.
 				request
 					.url()
@@ -209,8 +206,6 @@ describe( 'Analytics write scope requests', () => {
 						),
 					},
 				} );
-			} else if ( request.url().match( 'user/data/survey-timeouts' ) ) {
-				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}
