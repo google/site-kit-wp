@@ -37,8 +37,7 @@ export default function OneTapToggle() {
 
 	const learnMoreLink = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'sign-in-with-google',
-			'one-tap'
+			'sign-in-with-google-one-tap'
 		);
 	} );
 

@@ -112,33 +112,20 @@ export const selectors = {
 	 * Gets the Site Kit documentation URL.
 	 *
 	 * @since 1.80.0
-	 * @since n.e.x.t Added the `hasProperty` argument.
 	 *
-	 * @param {Object}  state       Data store's state.
-	 * @param {string}  slug        The slug of the documentation page.
-	 * @param {boolean} hasProperty Optional hash property to link to a specific section of the support page.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  The slug of the documentation page.
 	 * @return {string} The Site Kit support URL.
 	 */
 	getDocumentationLinkURL: createRegistrySelector(
-		( select ) =>
-			( state, slug, hasProperty = false ) => {
-				invariant( slug, 'A slug is required.' );
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'A slug is required.' );
 
-				const proxySupportLink =
-					select( CORE_SITE ).getProxySupportLinkURL();
+			const proxySupportLink =
+				select( CORE_SITE ).getProxySupportLinkURL();
 
-				let supportLink = `${ proxySupportLink }?doc=${ encodeURIComponent(
-					slug
-				) }`;
-
-				if ( hasProperty ) {
-					supportLink = `${ supportLink }#${ encodeURIComponent(
-						hasProperty
-					) }`;
-				}
-
-				return supportLink;
-			}
+			return `${ proxySupportLink }?doc=${ encodeURIComponent( slug ) }`;
+		}
 	),
 
 	/**
