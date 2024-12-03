@@ -22,11 +22,9 @@
 import {
 	createTestRegistry,
 	provideSiteInfo,
-	provideNotifications,
 } from '../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_error';
 
@@ -37,26 +35,17 @@ describe( 'SetupErrorNotification', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		provideSiteInfo( registry, {
-			setupErrorRedoURL: '#',
-			setupErrorCode: 'access_denied',
-			setupErrorMessage:
-				'Setup was interrupted because you did not grant the necessary permissions',
-		} );
-
-		provideNotifications(
-			registry,
-			{
-				[ SETUP_ERROR_NOTIFICATION ]: notification,
-			},
-			true
-		);
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	describe( 'checkRequirements', () => {
 		it( 'is active', async () => {
+			provideSiteInfo( registry, {
+				setupErrorRedoURL: '#',
+				setupErrorCode: 'access_denied',
+				setupErrorMessage:
+					'Setup was interrupted because you did not grant the necessary permissions',
+			} );
+
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_SPLASH
