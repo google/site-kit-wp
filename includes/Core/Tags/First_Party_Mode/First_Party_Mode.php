@@ -82,6 +82,8 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	public function register() {
 		$this->first_party_mode_settings->register();
 		$this->rest_controller->register();
+		$this->cron->register();
+
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
 	}
 
