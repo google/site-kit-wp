@@ -141,8 +141,12 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 		}
 	} );
 
-	const redoModuleSetup = useCallback( async () => {
+	const onCTAClick = useCallback( async () => {
 		doingCTARef.current = true;
+
+		if ( ! inProgressModuleSetup ) {
+			return;
+		}
 
 		const { error, response } = await activateModule(
 			inProgressModuleSetup
@@ -244,26 +248,14 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 				title={ title }
 				description={ <Description text={ message } /> }
 				actions={
-					inProgressModuleSetup ? (
-						<CTALink
-							id={ id }
-							ctaLabel={ sprintf(
-								/* translators: %s: Module name */
-								__( 'Redo %s setup', 'google-site-kit' ),
-								modules?.[ inProgressModuleSetup ]?.name
-							) }
-							onCTAClick={ redoModuleSetup }
-						/>
-					) : (
-						<CTALink
-							id={ id }
-							ctaLabel={ ctaLabel }
-							ctaLink={ connectURL }
-							onCTAClick={ () => {
-								doingCTARef.current = true;
-							} }
-						/>
-					)
+					<CTALink
+						id={ id }
+						ctaLabel={ ctaLabel }
+						ctaLink={
+							inProgressModuleSetup ? undefined : connectURL
+						}
+						onCTAClick={ onCTAClick }
+					/>
 				}
 			/>
 		</Notification>
