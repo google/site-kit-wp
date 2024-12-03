@@ -1,7 +1,7 @@
 /**
  * Menu Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import { Menu } from 'googlesitekit-components';
 
-storiesOf( 'Global', module ).add(
-	'Menu',
-	() => (
+function Template() {
+	return (
 		<div>
 			<div className="mdc-menu-surface--anchor">
 				<p>Menu</p>
@@ -48,10 +42,13 @@ storiesOf( 'Global', module ).add(
 				/>
 			</div>
 		</div>
-	),
-	{
-		options: {
-			onReadyScript: 'mouse.js',
-		},
-	}
-);
+	);
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+
+export default {
+	title: 'Components/Menu',
+	component: Menu,
+};

@@ -1,7 +1,7 @@
 /**
- * Switch Component Stories.
+ * Radio Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,30 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import { Switch } from 'googlesitekit-components';
+import { Radio } from 'googlesitekit-components';
 
-storiesOf( 'Global', module ).add( 'Switches', () => (
-	<div>
-		<div>
-			<Switch id="switch-story" label="Unswitched" hideLabel={ false } />
-		</div>
-		<div>
-			<Switch
-				id="switch-story"
-				label="Switched"
-				hideLabel={ false }
-				checked
-			/>
-		</div>
-		<div>
-			<Switch id="switch-story" label="Hidden Label" checked />
-		</div>
-	</div>
-) );
+function Template( args ) {
+	return <Radio { ...args } />;
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.args = {};
+
+export const Checked = Template.bind( {} );
+Checked.storyName = 'Checked';
+Checked.args = {
+	checked: true,
+};
+
+export const Disabled = Template.bind( {} );
+Disabled.storyName = 'Disabled';
+Disabled.args = {
+	disabled: true,
+};
+
+export default {
+	title: 'Components/Radio',
+};

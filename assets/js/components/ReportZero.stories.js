@@ -1,7 +1,7 @@
 /**
  * ReportZero stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import {
 	createTestRegistry,
 	provideModules,
 	WithTestRegistry,
-} from '../tests/js/utils';
-import { createModuleStore } from '../assets/js/googlesitekit/modules/create-module-store';
-import ReportZero from '../assets/js/components/ReportZero';
+} from './../../../tests/js/utils';
+import { createModuleStore } from './../googlesitekit/modules/create-module-store';
+import ReportZero from './ReportZero';
 
 export function ReportZeroStory() {
 	return <ReportZero moduleSlug="test-module" />;
@@ -54,5 +54,5 @@ ReportZeroStory.decorators = [
 ];
 
 export default {
-	title: 'Global',
+	title: 'Components/ReportZero',
 };

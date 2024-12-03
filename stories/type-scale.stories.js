@@ -117,7 +117,7 @@ export const DefaultTypeScale = Template.bind( {} );
 DefaultTypeScale.scenario = {};
 
 export default {
-	title: 'Global/TypeScale',
+	title: 'Legacy/Global/TypeScale',
 	decorators: [
 		( Story ) => {
 			return (
