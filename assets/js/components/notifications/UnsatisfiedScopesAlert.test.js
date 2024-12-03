@@ -103,7 +103,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		expect( ctaButton ).toHaveAttribute( 'href', connectURL );
 	} );
 
-	it( 'should have a CTA that says "Redo {module} setup" that retries module activation when the alert appears during the module setup', async () => {
+	it( 'should have a CTA that retries module activation when the alert appears during the module setup', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -123,7 +123,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		await waitForRegistry();
 
 		const ctaButton = getByRole( 'button', {
-			name: /Redo analytics setup/i,
+			name: /Redo setup/i,
 		} );
 
 		expect( ctaButton ).toBeInTheDocument();
