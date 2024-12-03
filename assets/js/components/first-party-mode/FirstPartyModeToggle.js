@@ -40,25 +40,20 @@ export default function FirstPartyModeToggle( { className } ) {
 	const isFirstPartyModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isFirstPartyModeEnabled()
 	);
-	const loading = useSelect( ( select ) =>
+	const isLoading = useSelect( ( select ) =>
 		select( CORE_SITE ).isFetchingGetFPMServerRequirementStatus()
 	);
-	const metServerRequirements = useSelect( ( select ) => {
+	const hasMetServerRequirements = useSelect( ( select ) => {
 		const { isFPMHealthy, isScriptAccessEnabled } = select( CORE_SITE );
 
-		const fpmHealthy = isFPMHealthy() !== false;
-		const scriptAccessEnabled = isScriptAccessEnabled() !== false;
-
-		return fpmHealthy && scriptAccessEnabled;
+		return isFPMHealthy() !== false && isScriptAccessEnabled() !== false;
 	} );
 
 	const { fetchGetFPMServerRequirementStatus, setFirstPartyModeEnabled } =
 		useDispatch( CORE_SITE );
 
 	// Fetch the server requirement status on mount.
-	useMount( () => {
-		fetchGetFPMServerRequirementStatus();
-	} );
+	useMount( fetchGetFPMServerRequirementStatus );
 
 	const handleClick = useCallback( () => {
 		setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
@@ -71,19 +66,19 @@ export default function FirstPartyModeToggle( { className } ) {
 				className
 			) }
 		>
-			{ loading && (
+			{ isLoading && (
 				<ProgressBar
 					small
 					className="googlesitekit-first-party-mode-toggle__progress"
 				/>
 			) }
-			{ ! loading && (
+			{ ! isLoading && (
 				<Switch
 					label={ __( 'First-party mode', 'google-site-kit' ) }
 					checked={
-						!! isFirstPartyModeEnabled && metServerRequirements
+						!! isFirstPartyModeEnabled && hasMetServerRequirements
 					}
-					disabled={ ! metServerRequirements }
+					disabled={ ! hasMetServerRequirements }
 					onClick={ handleClick }
 					hideLabel={ false }
 				/>
@@ -94,7 +89,7 @@ export default function FirstPartyModeToggle( { className } ) {
 					'google-site-kit'
 				) }
 			</p>
-			{ ! loading && ! metServerRequirements && (
+			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotification
 					title={ __(
 						'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.',
