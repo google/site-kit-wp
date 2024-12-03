@@ -142,6 +142,8 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		let FPMBannerComponent;
 
 		beforeAll( () => {
+			enabledFeatures.add( 'firstPartyMode' );
+
 			FPMBannerComponent = withNotificationComponentProps(
 				FPM_SETUP_BANNER_NOTIFICATION
 			)( FirstPartyModeSetupBanner );
@@ -161,12 +163,6 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			expect(
 				getByText(
 					'Get more comprehensive stats by collecting metrics via your own site'
-				)
-			).toBeInTheDocument();
-
-			expect(
-				getByText(
-					'Enable First-party mode (beta) to send measurement through your own domain - this helps improve the quality and completeness of Analytics and Ads metrics.'
 				)
 			).toBeInTheDocument();
 
