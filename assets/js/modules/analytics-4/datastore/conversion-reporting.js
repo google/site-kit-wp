@@ -350,7 +350,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
-	 * @return {boolean} TRUE if there are any ACR key metrics based on the users existing selected metrics, FALSE otherwise.
+	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
 	 */
 	haveConversionEventsForUserPickedMetrics: createRegistrySelector(
 		( select ) => ( state, useNewEvents ) => {
