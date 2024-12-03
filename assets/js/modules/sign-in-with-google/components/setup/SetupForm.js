@@ -27,10 +27,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import ClientIDTextField from '../common/ClientIDTextField';
 import { Button } from 'googlesitekit-components';
-import SupportLink from '../../../../components/SupportLink';
+import Link from '../../../../components/Link';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import MediaErrorHandler from '../../../../components/MediaErrorHandler';
@@ -39,6 +40,12 @@ const LazyGraphicSVG = lazy( () =>
 );
 
 export default function SetupForm() {
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'sign-in-with-google'
+		);
+	} );
+
 	const serviceClientIDProvisioningURL = useSelect( ( select ) =>
 		select(
 			MODULES_SIGN_IN_WITH_GOOGLE
@@ -59,7 +66,7 @@ export default function SetupForm() {
 							'google-site-kit'
 						),
 						{
-							a: <SupportLink path="#" external />,
+							a: <Link href={ learnMoreURL } external />,
 						}
 					) }
 				</p>

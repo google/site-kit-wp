@@ -18,7 +18,7 @@ use WP_User;
 /**
  * The authenticator class that processes SiwG callback requests to authenticate users.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
@@ -38,7 +38,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * User options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -46,7 +46,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Profile reader instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 * @var Profile_Reader_Interface
 	 */
 	private $profile_reader;
@@ -54,7 +54,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param User_Options             $user_options User options instance.
 	 * @param Profile_Reader_Interface $profile_reader Profile reader instance.
@@ -67,7 +67,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Authenticates the user using the provided input data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param Input $input Input instance.
 	 * @return string Redirect URL.
@@ -150,7 +150,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Tries to find a user using user ID or email recieved from Google. If the user is not found,
 	 * attempts to create a new one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
@@ -230,7 +230,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the default role for new users.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return string Default role.
 	 */
@@ -246,7 +246,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the path for the redirect cookie.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return string Cookie path.
 	 */

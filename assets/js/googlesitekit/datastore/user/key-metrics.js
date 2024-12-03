@@ -183,7 +183,7 @@ const baseActions = {
 	/**
 	 * Resets key metrics selecton.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -290,7 +290,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Key Metric widget slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */
@@ -333,7 +333,7 @@ const baseSelectors = {
 					: KM_ANALYTICS_POPULAR_CONTENT,
 				KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 			],
 			provide_services: [
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
@@ -353,7 +353,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Conversion Key Reporting Metric widget slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
 	 */
@@ -369,9 +369,12 @@ const baseSelectors = {
 			const showConversionTailoredMetrics = ( events ) => {
 				return events.some(
 					( event ) =>
-						keyMetricSettings?.includeConversionTailoredMetrics?.includes(
-							event
-						) ||
+						( Array.isArray(
+							keyMetricSettings?.includeConversionTailoredMetrics
+						) &&
+							keyMetricSettings?.includeConversionTailoredMetrics?.includes(
+								event
+							) ) ||
 						( Array.isArray( includeConversionTailoredMetrics ) &&
 							includeConversionTailoredMetrics?.includes(
 								event
@@ -482,7 +485,6 @@ const baseSelectors = {
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					KM_ANALYTICS_POPULAR_CONTENT,
-					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 				],
 				share_portfolio: [
 					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,

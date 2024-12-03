@@ -268,7 +268,7 @@ export const selectors = {
 	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
@@ -384,6 +384,38 @@ export const selectors = {
 			generate_lead: leadRelatedMetrics,
 		};
 	},
+
+	/**
+	 * Checks if there are conversion events for the user picked metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
+	 */
+	haveConversionEventsForUserPickedMetrics: createRegistrySelector(
+		( select ) => ( state, useNewEvents ) => {
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			const userPickedKeyMetrics =
+				select( CORE_USER ).getUserPickedMetrics();
+
+			const conversionReportingEventsChange = useNewEvents
+				? select(
+						MODULES_ANALYTICS_4
+				  ).getConversionReportingEventsChange()?.newEvents
+				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			return conversionReportingEventsChange?.some( ( event ) =>
+				conversionEventWidgets[ event ]?.some( ( widget ) => {
+					return ! userPickedKeyMetrics?.includes( widget );
+				} )
+			);
+		}
+	),
 };
 
 export default combineStores(

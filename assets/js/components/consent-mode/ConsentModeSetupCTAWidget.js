@@ -74,10 +74,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).isConsentModeEnabled()
 	);
 
-	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
-	);
-
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -119,12 +115,21 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const inView = !! intersectionEntry?.intersectionRatio;
 
-	const shouldShowWidget =
-		! viewOnlyDashboard &&
-		( isSaving ||
-			( isDismissed === false &&
-				isConsentModeEnabled === false &&
-				isAdsConnected ) );
+	const shouldShowWidget = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return false;
+		}
+
+		if ( isSaving ) {
+			return true;
+		}
+
+		if ( isDismissed !== false || isConsentModeEnabled !== false ) {
+			return false;
+		}
+
+		return select( CORE_SITE ).isAdsConnected();
+	} );
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView && shouldShowWidget ) {

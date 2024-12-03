@@ -52,14 +52,14 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 			<NotificationWithSVG
 				id={ id }
 				title={ __(
-					'Boost onboarding, security, and trust on your site using Sign in with Google',
+					'Boost onboarding, security and trust on your site using Sign in with Google',
 					'google-site-kit'
 				) }
 				description={
 					<Description
 						className="googlesitekit-setup-cta-banner__description"
 						text={ __(
-							'Provide your site visitors with a simple, secure, and personalised experience by adding a Sign in with Google button to your login page.',
+							'Provide your site visitors with a simple, secure and personalised experience by adding a Sign in with Google button to your login page.',
 							'google-site-kit'
 						) }
 						learnMoreLink={

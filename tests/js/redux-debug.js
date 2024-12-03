@@ -25,7 +25,7 @@ import { applyMiddleware } from 'redux';
  * Creates a middleware for logging dispatched actions to the console.
  *
  * @since 1.11.0
- * @since n.e.x.t Added support for store name.
+ * @since 1.141.0 Added support for store name.
  *
  * @param {Option}   args          Arguments.
  * @param {Function} args.dispatch Function to dispatch an action on the store.
@@ -73,7 +73,7 @@ export function setupReduxLogger() {
  * Sets up Redux with additional middlewares applied.
  * Must be called before stores are created.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  *
  * @param {...Function} middlewares Middleware functions to apply.
  */

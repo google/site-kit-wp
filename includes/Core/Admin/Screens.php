@@ -480,6 +480,17 @@ final class Screens {
 			)
 		);
 
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$screens[] = new Screen(
+				self::PREFIX . 'metric-selection',
+				array(
+					'title'       => __( 'Select Key Metrics', 'google-site-kit' ),
+					'capability'  => Permissions::MANAGE_OPTIONS,
+					'parent_slug' => self::PARENT_SLUG_NULL,
+				)
+			);
+		}
+
 		return $screens;
 	}
 }

@@ -442,7 +442,6 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 						KM_ANALYTICS_POPULAR_CONTENT,
-						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 					],
 					[
 						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
@@ -452,7 +451,6 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 						KM_ANALYTICS_POPULAR_CONTENT,
-						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 					],
 					[ 'contact', 'generate_lead', 'submit_lead_form' ],
 				],
