@@ -272,7 +272,7 @@ export const selectors = {
 	 *
 	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
-	 * @return {boolean} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise.
+	 * @return {boolean|undefined} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise, and undefined if metrics are not loaded.
 	 */
 	haveConversionEventsForTailoredMetrics: createRegistrySelector(
 		( select ) => ( state, useNewEvents ) => {
@@ -301,7 +301,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean} TRUE if current metrics are depending on the conversion events that have been lost, FALSE otherwise.
+	 * @return {boolean|undefined} TRUE if current metrics are depending on the conversion events that have been lost, FALSE otherwise, and undefined if event change data is not resolved.
 	 */
 	haveLostEventsForCurrentMetrics: createRegistrySelector(
 		( select ) => () => {
@@ -330,7 +330,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Array} List of detected conversion events connected to the current site purpose.
+	 * @return {Array|undefined} List of detected conversion events connected to the current site purpose, or undefined if data is not resolved.
 	 */
 	getUserInputPurposeConversionEvents: createRegistrySelector(
 		( select ) => () => {

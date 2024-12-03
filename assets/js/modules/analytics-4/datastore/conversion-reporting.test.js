@@ -401,6 +401,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			afterEach( () => {
 				enabledFeatures.delete( 'conversionReporting' );
 			} );
+
 			it( 'should return false if no events associated with the current site purpose have been lost', () => {
 				registry
 					.dispatch( CORE_USER )
@@ -457,6 +458,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				expect( haveLostEventsForCurrentMetrics ).toEqual( true );
 			} );
+
 			it( 'should return false if no events associated with the current manual selection have been lost', () => {
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
