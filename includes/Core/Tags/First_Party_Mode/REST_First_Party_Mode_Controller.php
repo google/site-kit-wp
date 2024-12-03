@@ -161,7 +161,7 @@ class REST_First_Party_Mode_Controller {
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
 	 */
-	protected function is_endpoint_healthy( $endpoint ) {
+	public function is_endpoint_healthy( $endpoint ) {
 		try {
 			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$response = file_get_contents( $endpoint );
