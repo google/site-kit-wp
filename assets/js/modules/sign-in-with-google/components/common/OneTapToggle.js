@@ -50,7 +50,7 @@ export default function OneTapToggle() {
 		trackToggleChange();
 	}, [ oneTapEnabled, setOneTapEnabled, trackToggleChange ] );
 
-  const learnMoreLink = useSelect( ( select ) => {
+	const learnMoreLink = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'sign-in-with-google-one-tap'
 		);
