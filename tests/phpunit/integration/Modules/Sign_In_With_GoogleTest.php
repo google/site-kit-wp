@@ -271,4 +271,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		return $mock;
 	}
+
+	public function test_on_deactivation__persists_client_id() {
+		$pre_activation_settings = $this->module->get_settings()->get();
+
+		$test_settings = array( 'clientID' => 'test_client_id.apps.googleusercontent.com' );
+		$this->module->get_settings()->merge( $test_settings );
+
+		$post_deactivation_settings = $this->module->get_settings()->get();
+	}
 }
