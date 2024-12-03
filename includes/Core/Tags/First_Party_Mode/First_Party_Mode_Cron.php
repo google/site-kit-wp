@@ -55,7 +55,7 @@ class First_Party_Mode_Cron {
 	 */
 	public function maybe_schedule_cron() {
 		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {
-			wp_schedule_event( time(), HOUR_IN_SECONDS, self::CRON_ACTION );
+			$result = wp_schedule_event( time(), 'hourly', self::CRON_ACTION );
 		}
 	}
 }

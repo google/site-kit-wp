@@ -21,6 +21,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Cron;
 
 /**
  * Utility class for handling uninstallation of the plugin.
@@ -60,6 +61,7 @@ class Uninstallation {
 		Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,
 		Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED,
 		Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY,
+		First_Party_Mode_Cron::CRON_ACTION,
 	);
 
 	/**
