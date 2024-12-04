@@ -516,7 +516,6 @@ describe( 'core/user key metrics', () => {
 				'should return the correct metrics for the %s purpose when conversionReporting is enabled',
 				async (
 					purpose,
-					expectedMetrics,
 					expectedMetricsIncludingConversionTailored,
 					conversionEvents
 				) => {
