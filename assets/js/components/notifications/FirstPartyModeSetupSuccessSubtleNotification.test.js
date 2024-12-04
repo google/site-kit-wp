@@ -16,11 +16,7 @@
  * limitations under the License.
  */
 
-import {
-	createTestRegistry,
-	provideModules,
-	render,
-} from '../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
@@ -39,20 +35,7 @@ describe( 'FirstPartyModeSetupSuccessSubtleNotification', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'should render correctly when Analytics and Ads are connected', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'ads',
-				active: true,
-				connected: true,
-			},
-		] );
-
+	it( 'should render correctly', () => {
 		const { container, getByText } = render(
 			<NotificationWithComponentProps />,
 			{ registry }
@@ -62,44 +45,6 @@ describe( 'FirstPartyModeSetupSuccessSubtleNotification', () => {
 			getByText(
 				'You can always disable it in Analytics or Ads settings'
 			)
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render correctly when Analytics is connected but Ads is not', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		const { container, getByText } = render(
-			<NotificationWithComponentProps />,
-			{ registry }
-		);
-
-		expect(
-			getByText( 'You can always disable it in Analytics settings' )
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render correctly when Ads is connected but Analytics is not', () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
-		] );
-
-		const { container, getByText } = render(
-			<NotificationWithComponentProps />,
-			{ registry }
-		);
-
-		expect(
-			getByText( 'You can always disable it in Ads settings' )
 		).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
