@@ -57,10 +57,5 @@
 				font-family: $f-secondary;
 			}
 		}
-
-		// Remove bottom border from the last field group.
-		.googlesitekit-settings-module__fields-group:nth-last-child(1 of .googlesitekit-settings-module__fields-group) {
-			border-bottom: none;
-		}
 	}
 }
