@@ -22,8 +22,10 @@
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import {
+	provideModules,
+	WithTestRegistry,
+} from '../../../../../../tests/js/utils';
 
 function Template( args ) {
 	return (
@@ -47,37 +49,30 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsForm/Default',
-	delay: 250,
-};
-Default.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-				conversionID: 'AW-123456789',
-			} );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+			conversionID: 'AW-123456789',
+		} );
 	},
-];
+};
 
 export const Empty = Template.bind( null );
 Empty.storyName = 'Empty';
-Empty.scenario = {
-	label: 'Modules/Ads/Settings/SettingsForm/Empty',
-	delay: 250,
+Empty.scenario = {};
+
+export const FirstPartyModeEnabled = Template.bind( null );
+FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
+FirstPartyModeEnabled.scenario = {};
+FirstPartyModeEnabled.args = {
+	features: [ 'firstPartyMode' ],
 };
 
 export default {
 	title: 'Modules/Ads/Settings/SettingsForm',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -86,12 +81,16 @@ export default {
 						connected: true,
 					},
 				] );
+				args.setupRegistry?.( registry );
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithTestRegistry
+					callback={ setupRegistry }
+					features={ args?.features || [] }
+				>
 					<Story />
-				</WithRegistrySetup>
+				</WithTestRegistry>
 			);
 		},
 	],
