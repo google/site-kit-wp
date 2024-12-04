@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import fetchMock from 'fetch-mock';
+
 /**
  * Internal dependencies
  */
@@ -26,6 +28,7 @@ import {
 	provideModules,
 	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 function Template( args ) {
 	return (
@@ -67,6 +70,25 @@ FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
 FirstPartyModeEnabled.scenario = {};
 FirstPartyModeEnabled.args = {
 	features: [ 'firstPartyMode' ],
+	setupRegistry: ( registry ) => {
+		const fpmServerRequirementsEndpoint = new RegExp(
+			/^\/google-site-kit\/v1\/core\/site\/data\/fpm-server-requirement-status/
+		);
+
+		fetchMock.get( fpmServerRequirementsEndpoint, {
+			body: {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			},
+		} );
+
+		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+			isEnabled: true,
+			isFPMHealthy: true,
+			isScriptAccessEnabled: true,
+		} );
+	},
 };
 
 export default {

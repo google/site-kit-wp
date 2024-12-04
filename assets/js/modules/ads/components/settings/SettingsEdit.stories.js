@@ -16,14 +16,20 @@
  * limitations under the License.
  */
 
+import fetchMock from 'fetch-mock';
+
 /**
  * Internal dependencies
  */
 import SettingsEdit from './SettingsEdit';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	WithTestRegistry,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 function Template( args ) {
 	return (
@@ -169,6 +175,41 @@ IcePaxEnabled.decorators = [
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
+		);
+	},
+];
+
+export const FirstPartyModeEnabled = Template.bind( null );
+FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
+FirstPartyModeEnabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const fpmServerRequirementsEndpoint = new RegExp(
+				/^\/google-site-kit\/v1\/core\/site\/data\/fpm-server-requirement-status/
+			);
+
+			fetchMock.get( fpmServerRequirementsEndpoint, {
+				body: {
+					isEnabled: true,
+					isFPMHealthy: true,
+					isScriptAccessEnabled: true,
+				},
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+		};
+
+		return (
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'firstPartyMode' ] }
+			>
+				<Story />
+			</WithTestRegistry>
 		);
 	},
 ];
