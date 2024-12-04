@@ -134,6 +134,42 @@ WithFirstPartyModeEnabled.decorators = [
 ];
 WithFirstPartyModeEnabled.scenario = {};
 
+export const WithFirstPartyModeDisabled = Template.bind( null );
+WithFirstPartyModeDisabled.storyName = 'With first party mode disabled';
+WithFirstPartyModeDisabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+WithFirstPartyModeDisabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const fpmServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			);
+
+			fetchMock.get( fpmServerRequirementsEndpoint, {
+				body: {
+					isEnabled: true,
+					isFPMHealthy: false,
+					isScriptAccessEnabled: false,
+				},
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: true,
+				isFPMHealthy: false,
+				isScriptAccessEnabled: false,
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithFirstPartyModeDisabled.scenario = {};
+
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
 WithoutModuleAccess.args = {
