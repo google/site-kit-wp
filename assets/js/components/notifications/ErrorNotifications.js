@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AuthError from './AuthError';
 import InternalServerError from './InternalServerError';
 import {
 	CORE_USER,
@@ -106,7 +105,6 @@ export default function ErrorNotifications() {
 	return (
 		<Fragment>
 			<InternalServerError />
-			<AuthError />
 			{ setupErrorMessage && (
 				<BannerNotification
 					id="setup_error"
