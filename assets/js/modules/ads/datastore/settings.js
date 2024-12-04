@@ -35,8 +35,7 @@ import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datasto
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
 import { isValidConversionID } from '../utils/validation';
-
-const FPM_SETUP_CTA_BANNER_NOTIFICATION = 'first-party-mode-setup-cta-banner';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_CONVERSION_ID =
