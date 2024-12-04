@@ -32,6 +32,7 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { setItem } from '../googlesitekit/api/cache';
 import { trackEvent } from '../util/tracking';
 import useViewContext from './useViewContext';
 
@@ -66,6 +67,8 @@ export default function useActivateModuleCallback( moduleSlug ) {
 				'activate_module',
 				moduleSlug
 			);
+
+			await setItem( 'module_setup', moduleSlug, { ttl: 300 } );
 
 			navigateTo( response.moduleReauthURL );
 		} else {

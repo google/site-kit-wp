@@ -1,5 +1,5 @@
 /**
- * UnsatisfiedScopesAlert Component Stories.
+ * SetupErrorNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,51 +19,40 @@
 /**
  * Internal dependencies
  */
-import { deleteItem, setItem } from '../../googlesitekit/api/cache';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
-	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
+import SetupErrorNotification from './SetupErrorNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'gathering-data-notification'
-)( UnsatisfiedScopesAlert );
+	'setup_error'
+)( SetupErrorNotification );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-
-export const ModuleSetupInProgress = Template.bind( {} );
-ModuleSetupInProgress.storyName = 'Module setup in progress';
-ModuleSetupInProgress.args = {
-	setupRegistry: () => {
-		setItem( 'module_setup', 'analytics-4' );
-	},
-};
+Default.storyName = 'SetupErrorNotification';
 
 export default {
-	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlert',
+	title: 'Components/Notifications/Errors/SetupErrorNotification',
 	decorators: [
-		( Story, { args } ) => {
+		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry );
 				provideUserAuthentication( registry, {
-					unsatisfiedScopes: [
-						'https://www.googleapis.com/auth/analytics.readonly',
-					],
+					authenticated: false,
 				} );
 
-				// Ensure the storage item is unavailable by default.
-				deleteItem( 'module_setup' );
-
-				// Call story-specific setup.
-				args.setupRegistry?.( registry );
+				provideSiteInfo( registry, {
+					setupErrorRedoURL: '#',
+					setupErrorCode: 'access_denied',
+					setupErrorMessage:
+						'Setup was interrupted because you did not grant the necessary permissions',
+				} );
 			};
 
 			return (
