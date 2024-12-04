@@ -46,7 +46,7 @@ import { useFeature } from '../../../../hooks/useFeature';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
-	const isFPMEnabled = useFeature( 'firstPartyMode' );
+	const fpmEnabled = useFeature( 'firstPartyMode' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -94,7 +94,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						}
 					) }
 				</ConversionTrackingToggle>
-				{ isFPMEnabled && <FirstPartyModeToggle /> }
+				{ fpmEnabled && <FirstPartyModeToggle /> }
 			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (
