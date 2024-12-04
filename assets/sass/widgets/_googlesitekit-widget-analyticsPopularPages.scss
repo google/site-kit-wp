@@ -21,6 +21,10 @@
 		.googlesitekit-table__body-item:last-child {
 			// Ensure the metric shown in the last column is not wrapped.
 			white-space: nowrap;
+
+			.googlesitekit-table__body-item-content {
+				padding-left: 1em;
+			}
 		}
 	}
 }
