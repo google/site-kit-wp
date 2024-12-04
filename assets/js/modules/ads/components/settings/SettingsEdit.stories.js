@@ -185,7 +185,7 @@ FirstPartyModeEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const fpmServerRequirementsEndpoint = new RegExp(
-				/^\/google-site-kit\/v1\/core\/site\/data\/fpm-server-requirement-status/
+				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 			);
 
 			fetchMock.get( fpmServerRequirementsEndpoint, {
