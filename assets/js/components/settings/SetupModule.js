@@ -116,7 +116,7 @@ export default function SetupModule( { slug, name, description } ) {
 					) }
 					{ BETA_MODULES.includes( slug ) && (
 						<Badge
-							className="googlesitekit-beta-badge"
+							className="googlesitekit-badge--beta"
 							label={ __( 'Beta', 'google-site-kit' ) }
 						/>
 					) }
