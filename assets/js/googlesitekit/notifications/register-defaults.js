@@ -39,6 +39,7 @@ import {
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
@@ -434,6 +435,29 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
+	},
+	'auth-error': {
+		Component: AuthError,
+		priority: 160,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getAuthError() selector relies on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+			] );
+
+			const error = select( CORE_USER ).getAuthError();
+
+			return !! error;
+		},
+		isDismissible: false,
 	},
 };
 
