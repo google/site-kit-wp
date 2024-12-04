@@ -25,7 +25,6 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from './FirstPartyModeSetupBanner';
 import {
-	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
