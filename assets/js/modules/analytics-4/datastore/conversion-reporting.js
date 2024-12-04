@@ -45,6 +45,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '../../../googlesitekit/datastore/user/constants';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -267,37 +268,140 @@ export const selectors = {
 	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
-	 * @return {boolean} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise.
+	 * @return {boolean|undefined} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise, and undefined if metrics are not loaded.
 	 */
 	haveConversionEventsForTailoredMetrics: createRegistrySelector(
 		( select ) => ( state, useNewEvents ) => {
-			const leadRelatedMetrics = [
-				KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-				KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-			];
-			const conversionEventWidgets = {
-				purchase: [
-					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-				],
-				add_to_cart: [
-					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-				],
-				contact: leadRelatedMetrics,
-				submit_lead_form: leadRelatedMetrics,
-				generate_lead: leadRelatedMetrics,
-			};
+			const conversionReportingEventsChange = useNewEvents
+				? select(
+						MODULES_ANALYTICS_4
+				  ).getConversionReportingEventsChange()?.newEvents
+				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
-			const purposeTailoredMetrics = select(
+			const currentTailoredMetrics =
+				select( CORE_USER ).getAnswerBasedMetrics();
+
+			const tailoredMetricsWithNewEvents = select(
 				CORE_USER
-			).getAnswerBasedMetrics( null, true );
+			).getAnswerBasedMetrics( null, conversionReportingEventsChange );
+
+			return tailoredMetricsWithNewEvents?.some(
+				( metric, index ) =>
+					metric !== currentTailoredMetrics?.[ index ]
+			);
+		}
+	),
+
+	/**
+	 * Checks if there are key metrics widgets that rely on the conversion events that have been lost.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} TRUE if current metrics are depending on the conversion events that have been lost, FALSE otherwise, and undefined if event change data is not resolved.
+	 */
+	haveLostEventsForCurrentMetrics: createRegistrySelector(
+		( select ) => () => {
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			const currentMetrics = select( CORE_USER ).getKeyMetrics();
+
+			const conversionReportingLostEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).getConversionReportingEventsChange()?.lostEvents;
+
+			return conversionReportingLostEvents?.some( ( event ) =>
+				conversionEventWidgets[ event ]?.some( ( widget ) =>
+					currentMetrics?.includes( widget )
+				)
+			);
+		}
+	),
+
+	/**
+	 * Returns the conversion events associated with the current site purpose.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array|undefined} List of detected conversion events connected to the current site purpose, or undefined if data is not resolved.
+	 */
+	getUserInputPurposeConversionEvents: createRegistrySelector(
+		( select ) => () => {
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
+
+			const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+
+			const purposeEvents =
+				USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING[ purpose ];
+
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			return purposeEvents?.reduce( ( acc, event ) => {
+				if ( detectedEvents?.includes( event ) ) {
+					return [ ...acc, event ];
+				}
+				return acc;
+			}, [] );
+		}
+	),
+
+	/**
+	 * Gets conversion events related metrics.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Metrics list object.
+	 */
+	getKeyMetricsConversionEventWidgets() {
+		const leadRelatedMetrics = [
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		];
+
+		return {
+			purchase: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+			],
+			add_to_cart: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+			],
+			contact: leadRelatedMetrics,
+			submit_lead_form: leadRelatedMetrics,
+			generate_lead: leadRelatedMetrics,
+		};
+	},
+
+	/**
+	 * Checks if there are conversion events for the user picked metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
+	 */
+	haveConversionEventsForUserPickedMetrics: createRegistrySelector(
+		( select ) => ( state, useNewEvents ) => {
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			const userPickedKeyMetrics =
+				select( CORE_USER ).getUserPickedMetrics();
 
 			const conversionReportingEventsChange = useNewEvents
 				? select(
@@ -306,9 +410,9 @@ export const selectors = {
 				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
 			return conversionReportingEventsChange?.some( ( event ) =>
-				conversionEventWidgets[ event ]?.some( ( widget ) =>
-					purposeTailoredMetrics?.includes( widget )
-				)
+				conversionEventWidgets[ event ]?.some( ( widget ) => {
+					return ! userPickedKeyMetrics?.includes( widget );
+				} )
 			);
 		}
 	),

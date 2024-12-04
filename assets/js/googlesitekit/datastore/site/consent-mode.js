@@ -31,10 +31,8 @@ import {
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createReducer } from '../../data/create-reducer';
-import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { clearError, receiveError } = errorStoreActions;
 
@@ -129,12 +127,25 @@ const fetchActivateConsentAPI = createFetchStore( {
 	},
 } );
 
+const fetchGetAdsMeasurementStatusStore = createFetchStore( {
+	baseName: 'getAdsMeasurementStatus',
+	controlCallback: () => {
+		return API.get( 'core', 'site', 'ads-measurement-status', null, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: createReducer( ( state, response ) => {
+		state.consentMode.adsConnected = response.connected;
+	} ),
+} );
+
 const baseInitialState = {
 	consentMode: {
 		settings: undefined,
 		apiInfo: undefined,
 		apiInstallResponse: undefined,
 		isApiFetching: undefined,
+		adsConnected: undefined,
 	},
 };
 
@@ -337,49 +348,14 @@ const baseSelectors = {
 	 *
 	 * @since 1.124.0
 	 * @since 1.125.0 Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
+	 * @since n.e.x.t Updated to a simple selector which returns value from the state.
 	 *
+	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
-	isAdsConnected: createRegistrySelector( ( select ) => () => {
-		const { isModuleConnected } = select( CORE_MODULES );
-
-		// The Ads module being connected implies that an Ads conversion tracking
-		// ID is set. If so, return true.
-		if ( isModuleConnected( 'ads' ) ) {
-			return true;
-		}
-
-		if ( isModuleConnected( 'analytics-4' ) ) {
-			const { getAdsLinked, getGoogleTagContainerDestinationIDs } =
-				select( MODULES_ANALYTICS_4 );
-
-			const adsLinked = getAdsLinked();
-			const googleTagContainerDestinationIDs =
-				getGoogleTagContainerDestinationIDs();
-
-			// If necessary settings have not loaded, return undefined.
-			if (
-				[ adsLinked, googleTagContainerDestinationIDs ].includes(
-					undefined
-				)
-			) {
-				return undefined;
-			}
-
-			if (
-				Array.isArray( googleTagContainerDestinationIDs ) &&
-				googleTagContainerDestinationIDs.some( ( id ) =>
-					id.startsWith( 'AW-' )
-				)
-			) {
-				return true;
-			}
-
-			return !! adsLinked;
-		}
-
-		return false;
-	} ),
+	isAdsConnected: ( state ) => {
+		return state.consentMode.adsConnected;
+	},
 };
 
 const baseResolvers = {
@@ -402,6 +378,16 @@ const baseResolvers = {
 
 		yield fetchGetConsentAPIInfoStore.actions.fetchGetConsentAPIInfo();
 	},
+
+	*isAdsConnected() {
+		const { select } = yield getRegistry();
+
+		if ( select( CORE_SITE ).isAdsConnected() !== undefined ) {
+			return;
+		}
+
+		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus();
+	},
 };
 
 const store = combineStores(
@@ -410,6 +396,7 @@ const store = combineStores(
 	fetchGetConsentAPIInfoStore,
 	fetchInstallActivateWPConsentAPI,
 	fetchActivateConsentAPI,
+	fetchGetAdsMeasurementStatusStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

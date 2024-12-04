@@ -20,10 +20,7 @@
 
 	.googlesitekit-acr-subtle-notification {
 		background-color: $c-violet-v-50;
-
-		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-phone - 2px $grid-gap-desktop;
-		}
+		padding: $grid-gap-phone - 2px $grid-gap-desktop;
 
 		.mdc-button--raised:not(:disabled) {
 			background-color: $c-violet-v-600;
@@ -33,6 +30,15 @@
 		.mdc-button--tertiary:not(:disabled),
 		p > a {
 			color: $c-violet-v-600;
+		}
+
+		.googlesitekit-subtle-notification__action {
+			grid-gap: 10px;
+			justify-content: flex-end;
+
+			@media (min-width: $bp-tablet) {
+				grid-gap: $grid-gap-phone;
+			}
 		}
 	}
 
@@ -63,6 +69,23 @@
 					text-decoration: underline;
 				}
 			}
+		}
+	}
+
+	.googlesitekit-acr-subtle-notification__lost-events {
+		background-color: $c-utility-warning-container;
+
+		@media (min-width: $bp-tablet) {
+			gap: 10px;
+		}
+
+		.mdc-button--raised:not(:disabled) {
+			background-color: $c-utility-on-warning-container;
+		}
+
+		.googlesitekit-subtle-notification__content,
+		.mdc-button--tertiary:not(:disabled) {
+			color: $c-utility-on-warning-container;
 		}
 	}
 }

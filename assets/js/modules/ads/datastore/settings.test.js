@@ -24,6 +24,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_ADS } from './constants';
 import { validateCanSubmitChanges } from './settings';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/ads settings', () => {
 	let registry;
@@ -34,6 +35,12 @@ describe( 'modules/ads settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+			isEnabled: false,
+			isFPMHealthy: true,
+			isScriptAccessEnabled: true,
+		} );
 	} );
 
 	afterAll( () => {
@@ -69,6 +76,35 @@ describe( 'modules/ads settings', () => {
 				body: {
 					data: {
 						conversionID: '56789',
+					},
+				},
+			} );
+		} );
+
+		it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+			const fpmSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-settings'
+			);
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( fpmSettingsEndpoint, {
+				body: JSON.stringify( {
+					data: { settings: { isEnabled: true } },
+				} ),
+				status: 200,
+			} );
+
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint, {
+				body: {
+					data: {
+						settings: { isEnabled: true },
 					},
 				},
 			} );
@@ -111,6 +147,27 @@ describe( 'modules/ads settings', () => {
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
 				'a valid conversionID is required to submit changes'
 			);
+		} );
+	} );
+
+	describe( 'rollbackChanges', () => {
+		it( 'should rollback to the original settings', () => {
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: '12345',
+			} );
+
+			registry.dispatch( MODULES_ADS ).setConversionID( '56789' );
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+
+			registry.dispatch( MODULES_ADS ).rollbackChanges();
+
+			expect( registry.select( MODULES_ADS ).getConversionID() ).toBe(
+				'12345'
+			);
+
+			expect(
+				registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+			).toBe( false );
 		} );
 	} );
 } );

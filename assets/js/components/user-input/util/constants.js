@@ -45,6 +45,16 @@ export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
 export const USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY =
 	'user-input-legacy-site-purpose-dismissed-item';
 
+export const USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING = {
+	publish_blog: [ 'contact', 'generate_lead', 'submit_lead_form' ],
+	publish_news: [ 'contact', 'generate_lead', 'submit_lead_form' ],
+	monetize_content: [],
+	sell_products_or_service: [ 'purchase', 'add_to_cart' ],
+	sell_products: [ 'purchase', 'add_to_cart' ],
+	provide_services: [ 'contact', 'generate_lead', 'submit_lead_form' ],
+	share_portfolio: [ 'contact', 'generate_lead', 'submit_lead_form' ],
+};
+
 /**
  * Gets available questions for user input settings.
  *
