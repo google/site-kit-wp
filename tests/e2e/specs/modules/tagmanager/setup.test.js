@@ -90,6 +90,11 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( { status: 200, body: '[]' } );
 			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'core/site/data/ads-measurement-status' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { connected: true } ),
+				} );
 			} else {
 				request.continue();
 			}
