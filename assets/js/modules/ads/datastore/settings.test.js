@@ -81,8 +81,8 @@ describe( 'modules/ads settings', () => {
 			} );
 		} );
 
-		it( 'should send a POST request to FPM settings endpoint when toggle state is changed', async () => {
-			const fpmEndpoint = new RegExp(
+		it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+			const fpmSettingsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/fpm-settings'
 			);
 
@@ -91,7 +91,7 @@ describe( 'modules/ads settings', () => {
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( fpmEndpoint, {
+			fetchMock.postOnce( fpmSettingsEndpoint, {
 				body: JSON.stringify( {
 					data: { settings: { isEnabled: true } },
 				} ),
@@ -101,7 +101,7 @@ describe( 'modules/ads settings', () => {
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
-			expect( fetchMock ).toHaveFetched( fpmEndpoint, {
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint, {
 				body: {
 					data: {
 						settings: { isEnabled: true },
