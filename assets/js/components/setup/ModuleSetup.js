@@ -36,6 +36,7 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
@@ -61,6 +62,8 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 */
 	const finishSetup = useCallbackOne(
 		async ( redirectURL ) => {
+			await deleteItem( 'module_setup' );
+
 			await trackEvent(
 				'moduleSetup',
 				'complete_module_setup',
