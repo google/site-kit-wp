@@ -44,6 +44,7 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import { setItem } from '../../../../../googlesitekit/api/cache';
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import SupportLink from '../../../../../components/SupportLink';
@@ -112,6 +113,8 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 			'activate_module',
 			'adsense'
 		);
+
+		await setItem( 'module_setup', 'adsense', { ttl: 300 } );
 
 		navigateTo( response.moduleReauthURL );
 	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );

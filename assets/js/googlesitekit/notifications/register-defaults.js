@@ -456,7 +456,7 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			if (
 				! (
-					isModuleConnected( 'analytics' ) ||
+					isModuleConnected( 'analytics-4' ) ||
 					isModuleConnected( 'ads' )
 				)
 			) {
