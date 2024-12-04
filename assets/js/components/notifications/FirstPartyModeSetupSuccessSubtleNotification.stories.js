@@ -33,7 +33,7 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+Default.storyName = 'FirstPartyModeSetupSuccessSubtleNotification';
 Default.scenario = {};
 
 export default {
