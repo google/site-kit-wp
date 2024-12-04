@@ -36,7 +36,7 @@ function Template() {
 export const WithAdsAndAnalytics = Template.bind( {} );
 WithAdsAndAnalytics.storyName = 'With Ads and Analytics';
 WithAdsAndAnalytics.args = {
-	modules: [ 'ads', 'analytics' ],
+	modules: [ 'ads', 'analytics-4' ],
 };
 WithAdsAndAnalytics.scenario = {};
 
@@ -49,7 +49,7 @@ WithAds.args = {
 export const WithAnalytics = Template.bind( {} );
 WithAnalytics.storyName = 'With Analytics';
 WithAnalytics.args = {
-	modules: [ 'analytics' ],
+	modules: [ 'analytics-4' ],
 };
 
 export default {

@@ -42,7 +42,7 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 	Notification,
 } ) {
 	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
 	const isAdsConnected = useSelect( ( select ) =>

@@ -42,7 +42,7 @@ describe( 'FirstPartyModeSetupSuccessSubtleNotification', () => {
 	it( 'should render correctly when Analytics and Ads are connected', () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
@@ -70,7 +70,7 @@ describe( 'FirstPartyModeSetupSuccessSubtleNotification', () => {
 	it( 'should render correctly when Analytics is connected but Ads is not', () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics',
+				slug: 'analytics-4',
 				active: true,
 				connected: true,
 			},
