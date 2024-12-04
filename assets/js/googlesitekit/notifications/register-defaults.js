@@ -452,24 +452,29 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			const analyticsModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics' );
-			const adsModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'ads' );
+			const { isModuleConnected } = select( CORE_MODULES );
 
-			const FPMSettings = await resolveSelect(
-				CORE_SITE
-			).getFirstPartyModeSettings();
+			if (
+				! (
+					isModuleConnected( 'analytics' ) ||
+					isModuleConnected( 'ads' )
+				)
+			) {
+				return false;
+			}
 
-			const isFirstPartyModeEnabled = FPMSettings?.isEnabled;
-			const isFPMHealthy = FPMSettings?.isFPMHealthy;
-			const isScriptAccessEnabled = FPMSettings?.isScriptAccessEnabled;
+			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+
+			const {
+				isFirstPartyModeEnabled,
+				isFPMHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
 
 			return (
-				( analyticsModuleConnected || adsModuleConnected ) &&
-				! isFirstPartyModeEnabled &&
-				isFPMHealthy &&
-				isScriptAccessEnabled
+				! isFirstPartyModeEnabled() &&
+				isFPMHealthy() &&
+				isScriptAccessEnabled()
 			);
 		},
 		isDismissible: true,
