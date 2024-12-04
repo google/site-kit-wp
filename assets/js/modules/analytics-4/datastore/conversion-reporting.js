@@ -312,6 +312,69 @@ export const selectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets conversion events related metrics.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Metrics list object.
+	 */
+	getKeyMetricsConversionEventWidgets() {
+		const leadRelatedMetrics = [
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		];
+
+		return {
+			purchase: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+			],
+			add_to_cart: [
+				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+			],
+			contact: leadRelatedMetrics,
+			submit_lead_form: leadRelatedMetrics,
+			generate_lead: leadRelatedMetrics,
+		};
+	},
+
+	/**
+	 * Checks if there are conversion events for the user picked metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
+	 */
+	haveConversionEventsForUserPickedMetrics: createRegistrySelector(
+		( select ) => ( state, useNewEvents ) => {
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			const userPickedKeyMetrics =
+				select( CORE_USER ).getUserPickedMetrics();
+
+			const conversionReportingEventsChange = useNewEvents
+				? select(
+						MODULES_ANALYTICS_4
+				  ).getConversionReportingEventsChange()?.newEvents
+				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			return conversionReportingEventsChange?.some( ( event ) =>
+				conversionEventWidgets[ event ]?.some( ( widget ) => {
+					return ! userPickedKeyMetrics?.includes( widget );
+				} )
+			);
+		}
+	),
 };
 
 export default combineStores(

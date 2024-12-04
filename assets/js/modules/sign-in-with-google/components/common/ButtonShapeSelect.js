@@ -31,12 +31,25 @@ import {
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 } from '../../datastore/constants';
 import { Option, Select } from 'googlesitekit-components';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { useDebounce } from '../../../../hooks/useDebounce';
 
 export default function ButtonShapeSelect() {
+	const viewContext = useViewContext();
 	const shape = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShape()
 	);
 	const { setShape } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+
+	const trackButtonClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_sign-in-with-google-settings`,
+			'change_button_shape'
+		);
+	}, [ viewContext ] );
+
+	const debounceTrackButtonClick = useDebounce( trackButtonClick, 500 );
 
 	const onEnhancedChange = useCallback(
 		( i, item ) => {
@@ -44,9 +57,10 @@ export default function ButtonShapeSelect() {
 
 			if ( newValue !== shape ) {
 				setShape( newValue );
+				debounceTrackButtonClick();
 			}
 		},
-		[ shape, setShape ]
+		[ shape, setShape, debounceTrackButtonClick ]
 	);
 
 	return (
