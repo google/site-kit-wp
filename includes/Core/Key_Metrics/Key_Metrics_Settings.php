@@ -49,7 +49,7 @@ class Key_Metrics_Settings extends User_Setting {
 		return array(
 			'widgetSlugs'                      => array(),
 			'isWidgetHidden'                   => false,
-			'includeConversionTailoredMetrics' => false,
+			'includeConversionTailoredMetrics' => array(),
 		);
 	}
 
@@ -105,7 +105,7 @@ class Key_Metrics_Settings extends User_Setting {
 			}
 
 			if ( isset( $settings['includeConversionTailoredMetrics'] ) ) {
-				$sanitized_settings['includeConversionTailoredMetrics'] = false !== $settings['includeConversionTailoredMetrics'];
+				$sanitized_settings['includeConversionTailoredMetrics'] = Sanitize::sanitize_string_list( $settings['includeConversionTailoredMetrics'] );
 			}
 
 			return $sanitized_settings;

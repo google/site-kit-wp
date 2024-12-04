@@ -96,7 +96,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		beforeEach( () => {
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 				widgetSlugs: [],
-				includeConversionTailoredMetrics: false,
+				includeConversionTailoredMetrics: [],
 				isWidgetHidden: false,
 			} );
 
@@ -148,12 +148,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does not render when includeConversionTailoredMetrics is already set', async () => {
+		it( 'does not render when includeConversionTailoredMetrics contains existing events', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 				widgetSlugs: [],
-				includeConversionTailoredMetrics: true,
+				includeConversionTailoredMetrics: [ 'contact' ],
 				isWidgetHidden: false,
 			} );
 
@@ -263,7 +263,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
 				body: {
 					widgetSlugs: undefined,
-					includeConversionTailoredMetrics: true,
+					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				},
 				status: 200,
@@ -325,9 +325,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				.getAnswerBasedMetrics( 'publish_blog' );
 
 			expect( fetchMock ).toHaveFetchedTimes( 2 );
-			expect( keyMetricSettings?.includeConversionTailoredMetrics ).toBe(
-				true
-			);
+			expect(
+				keyMetricSettings?.includeConversionTailoredMetrics
+			).toEqual( [ 'contact' ] );
 
 			expect( newMetrics ).toEqual( [
 				KM_ANALYTICS_TOP_CATEGORIES,
