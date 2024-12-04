@@ -35,15 +35,19 @@ import { TrackingExclusionSwitches } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsControls from './SettingsControls';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
-import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
+import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
 import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
+import { isValidAccountID } from '../../utils/validation';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const isFPMEnabled = useFeature( 'firstPartyMode' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -90,6 +94,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						}
 					) }
 				</ConversionTrackingToggle>
+				{ isFPMEnabled && <FirstPartyModeToggle /> }
 			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (
