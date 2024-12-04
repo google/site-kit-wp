@@ -29,10 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
-import { useSelect } from 'googlesitekit-data';
 
 export const FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-fpm';
@@ -41,36 +39,6 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 	id,
 	Notification,
 } ) {
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'ads' )
-	);
-
-	function getDescription() {
-		if ( isAnalyticsConnected && isAdsConnected ) {
-			return __(
-				'You can always disable it in Analytics or Ads settings',
-				'google-site-kit'
-			);
-		}
-
-		if ( isAnalyticsConnected ) {
-			return __(
-				'You can always disable it in Analytics settings',
-				'google-site-kit'
-			);
-		}
-
-		// If Analytics is not connected, Ads will be.
-		return __(
-			'You can always disable it in Ads settings',
-			'google-site-kit'
-		);
-	}
-
 	return (
 		<Notification>
 			<SubtleNotification
@@ -78,7 +46,10 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 					'You successfully enabled First-party mode!',
 					'google-site-kit'
 				) }
-				description={ getDescription() }
+				description={ __(
+					'You can always disable it in Analytics or Ads settings',
+					'google-site-kit'
+				) }
 				dismissCTA={
 					<Dismiss
 						id={ id }
