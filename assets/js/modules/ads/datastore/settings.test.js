@@ -98,10 +98,7 @@ describe( 'modules/ads settings', () => {
 				status: 200,
 			} );
 
-			await registry
-				.dispatch( CORE_SITE )
-				.setFirstPartyModeEnabled( true );
-
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
 			expect( fetchMock ).toHaveFetched( fpmEndpoint, {
