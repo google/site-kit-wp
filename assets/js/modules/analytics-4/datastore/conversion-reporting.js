@@ -425,7 +425,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean} `true` if there are metrics related to the new conversion events that differ from already detected ones, `false` otherwise. Will return `undefined` if the data is not loaded yet.
+	 * @return {boolean} `true` if there are metrics related to the new conversion events that differ from already detected/selected ones, `false` otherwise.
 	 */
 	haveConversionEventsWithDifferentMetrics: createRegistrySelector(
 		( select ) => () => {
