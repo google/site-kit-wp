@@ -162,9 +162,8 @@ storiesOf( 'Settings', module )
 
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
-				provideModules( registry, [
-					{ slug: 'ads', active: true, connected: true },
-				] );
+
+				provideModules( registry );
 
 				registry
 					.dispatch( CORE_USER )
@@ -175,6 +174,9 @@ storiesOf( 'Settings', module )
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetConsentModeSettings( { enabled: false } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetAdsMeasurementStatus( { connected: true } );
 				registry.dispatch( CORE_SITE ).receiveGetConsentAPIInfo( {
 					hasConsentAPI: false,
 					wpConsentPlugin: {
