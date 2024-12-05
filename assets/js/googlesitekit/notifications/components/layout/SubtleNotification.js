@@ -66,7 +66,7 @@ export default function SubtleNotification( {
 					</div>
 
 					<div className="googlesitekit-subtle-notification__content">
-						{ title && <p>{ title }</p> }
+						<p>{ title }</p>
 						<p className="googlesitekit-subtle-notification__secondary_description">
 							{ description }
 						</p>
@@ -84,7 +84,7 @@ export default function SubtleNotification( {
 
 SubtleNotification.propTypes = {
 	className: PropTypes.string,
-	title: PropTypes.string,
+	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,

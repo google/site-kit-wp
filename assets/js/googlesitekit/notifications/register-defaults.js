@@ -51,7 +51,6 @@ import ZeroDataNotification from '../../components/notifications/ZeroDataNotific
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
-import { isFeatureEnabled } from '../../features';
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -449,18 +448,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
-				return false;
-			}
+			const fpmModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			const { isModuleConnected } = select( CORE_MODULES );
-
-			if (
-				! (
-					isModuleConnected( 'analytics-4' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! fpmModuleConnected ) {
 				return false;
 			}
 
@@ -486,18 +477,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
-				return false;
-			}
+			const fpmModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			const { isModuleConnected } = select( CORE_MODULES );
-
-			if (
-				! (
-					isModuleConnected( 'analytics' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! fpmModuleConnected ) {
 				return false;
 			}
 
