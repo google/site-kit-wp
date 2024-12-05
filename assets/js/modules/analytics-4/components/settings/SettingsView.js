@@ -237,7 +237,7 @@ export default function SettingsView() {
 								},
 								{
 									label: __(
-										'First-Party Mode',
+										'First-party Mode',
 										'google-site-kit'
 									),
 									status: isFirstPartyModeEnabled,

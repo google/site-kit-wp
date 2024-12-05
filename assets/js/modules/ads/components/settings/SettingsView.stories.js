@@ -61,7 +61,7 @@ IceEnabled.parameters = {
 };
 
 export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'With First-Party Mode Enabled';
+FPMEnabled.storyName = 'With First-party Mode Enabled';
 FPMEnabled.args = {
 	firstPartyMode: true,
 };
