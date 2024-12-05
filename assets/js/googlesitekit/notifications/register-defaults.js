@@ -482,7 +482,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'auth-error': {
 		Component: AuthError,
-		priority: 160,
+		priority: 120,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
