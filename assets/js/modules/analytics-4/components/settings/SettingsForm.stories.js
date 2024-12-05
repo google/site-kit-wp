@@ -98,12 +98,12 @@ EnhancedMeasurementSwitch.decorators = [
 	},
 ];
 
-export const WithFirstPartyModeEnabled = Template.bind( null );
-WithFirstPartyModeEnabled.storyName = 'With first party mode enabled';
-WithFirstPartyModeEnabled.parameters = {
+export const WithFirstPartyModeAvailable = Template.bind( null );
+WithFirstPartyModeAvailable.storyName = 'With first party mode available';
+WithFirstPartyModeAvailable.parameters = {
 	features: [ 'firstPartyMode' ],
 };
-WithFirstPartyModeEnabled.decorators = [
+WithFirstPartyModeAvailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const fpmServerRequirementsEndpoint = new RegExp(
@@ -132,14 +132,14 @@ WithFirstPartyModeEnabled.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeEnabled.scenario = {};
+WithFirstPartyModeAvailable.scenario = {};
 
-export const WithFirstPartyModeDisabled = Template.bind( null );
-WithFirstPartyModeDisabled.storyName = 'With first party mode disabled';
-WithFirstPartyModeDisabled.parameters = {
+export const WithFirstPartyModeUnavailable = Template.bind( null );
+WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
+WithFirstPartyModeUnavailable.parameters = {
 	features: [ 'firstPartyMode' ],
 };
-WithFirstPartyModeDisabled.decorators = [
+WithFirstPartyModeUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const fpmServerRequirementsEndpoint = new RegExp(
@@ -168,7 +168,7 @@ WithFirstPartyModeDisabled.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeDisabled.scenario = {};
+WithFirstPartyModeUnavailable.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
