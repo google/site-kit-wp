@@ -57,6 +57,7 @@ import FirstPartyModeSetupBanner, {
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { isFeatureEnabled } from '../../features';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
+import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -495,6 +496,42 @@ export const DEFAULT_NOTIFICATIONS = {
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
 			);
 		},
+	},
+	'fpm-warning-notification': {
+		Component: FirstPartyModeWarningNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			if (
+				! (
+					isModuleConnected( 'analytics' ) ||
+					isModuleConnected( 'ads' )
+				)
+			) {
+				return false;
+			}
+
+			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+
+			const {
+				isFirstPartyModeEnabled,
+				isFPMHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
+
+			return (
+				isFirstPartyModeEnabled() &&
+				( ! isFPMHealthy() || ! isScriptAccessEnabled() )
+			);
+		},
+		isDismissible: true,
 	},
 };
 
