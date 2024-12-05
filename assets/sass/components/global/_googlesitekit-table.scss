@@ -48,6 +48,10 @@
 		}
 	}
 
+	.googlesitekit-table__wrapper--tabbed-layout {
+		table-layout: auto;
+	}
+
 	.googlesitekit-table__head-row {
 		border-bottom: 1px solid $c-border-light;
 	}
