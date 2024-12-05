@@ -20,8 +20,12 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideNotifications,
+} from '../../../../../tests/js/utils';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -49,6 +53,9 @@ describe( 'modules/ads settings', () => {
 		);
 		const fpmSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/fpm-settings'
+		);
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
 		);
 
 		const error = {
@@ -87,6 +94,18 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FPM_SETUP_CTA_BANNER_NOTIFICATION,
+				] );
+
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 				body: JSON.parse( opts.body )?.data,
 				status: 200,
@@ -101,18 +120,6 @@ describe( 'modules/ads settings', () => {
 				status: 200,
 			} );
 
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				isEnabled: false,
-				isFPMHealthy: true,
-				isScriptAccessEnabled: true,
-			} );
-
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [
-					FPM_SETUP_CTA_BANNER_NOTIFICATION,
-				] );
-
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
@@ -126,6 +133,12 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 				body: JSON.parse( opts.body )?.data,
 				status: 200,
@@ -134,12 +147,6 @@ describe( 'modules/ads settings', () => {
 			fetchMock.postOnce( fpmSettingsEndpoint, {
 				body: error,
 				status: 500,
-			} );
-
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				isEnabled: false,
-				isFPMHealthy: true,
-				isScriptAccessEnabled: true,
 			} );
 
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
@@ -153,20 +160,114 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should not send a POST request to the FPM settings endpoint when the toggle state is not changed', async () => {
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
-				status: 200,
-			} ) );
-
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
 				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
 
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
 			expect( fetchMock ).not.toHaveFetched( fpmSettingsEndpoint );
+		} );
+
+		it( 'should dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `true`', async () => {
+			provideNotifications(
+				registry,
+				{
+					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+						DEFAULT_NOTIFICATIONS[
+							FPM_SETUP_CTA_BANNER_NOTIFICATION
+						],
+				},
+				{ overwrite: true }
+			);
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: null,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( fpmSettingsEndpoint, {
+				body: {
+					isEnabled: true,
+					isFPMHealthy: true,
+					isScriptAccessEnabled: true,
+				},
+				status: 200,
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ FPM_SETUP_CTA_BANNER_NOTIFICATION ],
+				status: 200,
+			} );
+
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: FPM_SETUP_CTA_BANNER_NOTIFICATION,
+						expiration: 0,
+					},
+				},
+			} );
+			expect( fetchMock ).toHaveFetchedTimes( 3 );
+		} );
+
+		it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
+			provideNotifications(
+				registry,
+				{
+					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+						DEFAULT_NOTIFICATIONS[
+							FPM_SETUP_CTA_BANNER_NOTIFICATION
+						],
+				},
+				{ overwrite: true }
+			);
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: null,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( fpmSettingsEndpoint, {
+				body: {
+					isEnabled: false,
+					isFPMHealthy: true,
+					isScriptAccessEnabled: true,
+				},
+				status: 200,
+			} );
+
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( false );
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 		} );
 	} );
 
