@@ -34,6 +34,8 @@ import {
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { isFeatureEnabled } from '../../../features';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
 const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
@@ -246,6 +248,20 @@ const baseSelectors = {
 
 		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
 	},
+
+	isAnyFirstPartyModeModuleConnected: createRegistrySelector(
+		( select ) => () => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			return (
+				isModuleConnected( 'analytics-4' ) || isModuleConnected( 'ads' )
+			);
+		}
+	),
 };
 
 const store = combineStores(

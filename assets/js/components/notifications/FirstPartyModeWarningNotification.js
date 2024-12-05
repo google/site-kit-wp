@@ -36,7 +36,7 @@ export default function FirstPartyModeWarningNotification( {
 	return (
 		<Notification>
 			<SubtleNotification
-				description={ createInterpolateElement(
+				title={ createInterpolateElement(
 					__(
 						'First-party mode has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
 						'google-site-kit'

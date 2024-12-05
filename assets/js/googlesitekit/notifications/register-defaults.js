@@ -55,7 +55,6 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
-import { isFeatureEnabled } from '../../features';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 
@@ -454,18 +453,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
-				return false;
-			}
+			const fpmModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			const { isModuleConnected } = select( CORE_MODULES );
-
-			if (
-				! (
-					isModuleConnected( 'analytics-4' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! fpmModuleConnected ) {
 				return false;
 			}
 
@@ -503,18 +494,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
-				return false;
-			}
+			const fpmModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			const { isModuleConnected } = select( CORE_MODULES );
-
-			if (
-				! (
-					isModuleConnected( 'analytics' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! fpmModuleConnected ) {
 				return false;
 			}
 
