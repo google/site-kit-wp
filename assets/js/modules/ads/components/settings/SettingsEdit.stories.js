@@ -191,7 +191,7 @@ FirstPartyModeEnabled.decorators = [
 				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 			);
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
+			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
 				body: {
 					isEnabled: true,
 					isFPMHealthy: true,
@@ -227,11 +227,11 @@ FirstPartyModeDisabledWithWarning.decorators = [
 				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 			);
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
+			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
 				body: {
 					isEnabled: true,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
+					isFPMHealthy: false,
+					isScriptAccessEnabled: false,
 				},
 			} );
 

@@ -78,7 +78,7 @@ FirstPartyModeEnabled.args = {
 			'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 		);
 
-		fetchMock.get( fpmServerRequirementsEndpoint, {
+		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
 			body: {
 				isEnabled: true,
 				isFPMHealthy: true,
@@ -95,7 +95,8 @@ FirstPartyModeEnabled.args = {
 };
 
 export const FirstPartyModeDisabledWithWarning = Template.bind( null );
-FirstPartyModeEnabled.storyName = 'FirstPartyModeDisabledWithWarning';
+FirstPartyModeDisabledWithWarning.storyName =
+	'FirstPartyModeDisabledWithWarning';
 FirstPartyModeDisabledWithWarning.scenario = {};
 FirstPartyModeDisabledWithWarning.args = {
 	features: [ 'firstPartyMode' ],
@@ -104,7 +105,7 @@ FirstPartyModeDisabledWithWarning.args = {
 			'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 		);
 
-		fetchMock.get( fpmServerRequirementsEndpoint, {
+		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
 			body: {
 				isEnabled: true,
 				isFPMHealthy: false,
