@@ -229,6 +229,54 @@ describe( 'modules/ads settings', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 3 );
 		} );
 
+		it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
+			provideNotifications(
+				registry,
+				{
+					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+						DEFAULT_NOTIFICATIONS[
+							FPM_SETUP_CTA_BANNER_NOTIFICATION
+						],
+				},
+				{ overwrite: true }
+			);
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: null,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( fpmSettingsEndpoint, {
+				body: {
+					isEnabled: true,
+					isFPMHealthy: true,
+					isScriptAccessEnabled: true,
+				},
+				status: 200,
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: error,
+				status: 500,
+			} );
+
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+			const { error: submitChangesError } = await registry
+				.dispatch( MODULES_ADS )
+				.submitChanges();
+
+			expect( submitChangesError ).toEqual( error );
+			expect( console ).toHaveErrored();
+		} );
+
 		it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
 			provideNotifications(
 				registry,

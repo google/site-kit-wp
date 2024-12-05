@@ -686,6 +686,65 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
+			it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
+				provideNotifications(
+					registry,
+					{
+						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+							DEFAULT_NOTIFICATIONS[
+								FPM_SETUP_CTA_BANNER_NOTIFICATION
+							],
+					},
+					{ overwrite: true }
+				);
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: null,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( fpmSettingsEndpoint, {
+					body: {
+						isEnabled: true,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				const { error: submitChangesError } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.submitChanges();
+
+				expect( submitChangesError ).toEqual( error );
+				expect( console ).toHaveErrored();
+			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
 				provideNotifications(
