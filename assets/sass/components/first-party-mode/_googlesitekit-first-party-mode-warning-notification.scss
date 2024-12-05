@@ -1,4 +1,6 @@
 /**
+ * First-party mode warning notification styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,5 +16,13 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-first-party-mode-setup-cta-banner";
-@import "googlesitekit-first-party-mode-warning-notification";
+.googlesitekit-plugin {
+
+	.googlesitekit-fpm-subtle-notification {
+
+		p > a {
+			color: $c-yellow-y-700;
+			text-decoration: underline;
+		}
+	}
+}
