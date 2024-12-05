@@ -212,6 +212,7 @@
 @import "components/analytics-4";
 @import "components/reader-revenue-manager";
 @import "components/sign-in-with-google";
+@import "components/first-party-mode";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -231,6 +232,7 @@
 @import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
+@import "widgets/googlesitekit-widget-analyticsPopularPages";
 @import "widgets/googlesitekit-widget-overallPageMetrics";
 @import "widgets/googlesitekit-widget-error-handler";
 

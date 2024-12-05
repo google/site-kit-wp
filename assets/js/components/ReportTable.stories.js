@@ -35,16 +35,14 @@ function Template( args ) {
 	return <ReportTable { ...args } />;
 }
 
-export const ReportTableBasic = Template.bind( {} );
-ReportTableBasic.storyName = 'Basic';
-ReportTableBasic.decorators = [
-	( Story, { args } ) => {
-		const registry = createTestRegistry();
-		provideModules( registry );
-		provideModuleRegistrations( registry );
-		const modules = registry.select( CORE_MODULES ).getModules();
-		args.rows = Object.values( modules );
-		args.columns = [
+function createBasicArgs() {
+	const registry = createTestRegistry();
+	provideModules( registry );
+	provideModuleRegistrations( registry );
+	const modules = registry.select( CORE_MODULES ).getModules();
+	return {
+		rows: Object.values( modules ),
+		columns: [
 			{
 				title: 'Name',
 				description: 'Module name',
@@ -70,11 +68,19 @@ ReportTableBasic.decorators = [
 					return row.Icon && <row.Icon width={ 33 } />;
 				},
 			},
-		];
+		],
+	};
+}
 
-		return <Story />;
-	},
-];
+export const ReportTableBasic = Template.bind( {} );
+ReportTableBasic.storyName = 'Basic';
+ReportTableBasic.args = createBasicArgs();
+ReportTableBasic.scenario = {};
+
+export const ReportTableTabbedLayout = Template.bind( {} );
+ReportTableTabbedLayout.storyName = 'Tabbed Layout';
+ReportTableTabbedLayout.args = { ...createBasicArgs(), tabbedLayout: true };
+ReportTableTabbedLayout.scenario = {};
 
 export const ReportTableGatheringData = Template.bind( {} );
 ReportTableGatheringData.storyName = 'Gathering Data';

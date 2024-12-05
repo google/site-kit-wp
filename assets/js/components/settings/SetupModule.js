@@ -42,6 +42,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from './constants';
+import { setItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -64,6 +65,8 @@ export default function SetupModule( { slug, name, description } ) {
 				'activate_module',
 				slug
 			);
+
+			await setItem( 'module_setup', slug, { ttl: 300 } );
 
 			navigateTo( response.moduleReauthURL );
 		} else {

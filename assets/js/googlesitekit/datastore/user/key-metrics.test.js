@@ -280,7 +280,7 @@ describe( 'core/user key metrics', () => {
 					.dispatch( CORE_USER )
 					.receiveGetKeyMetricsSettings( {
 						widgetSlugs: [],
-						includeConversionTailoredMetrics: false,
+						includeConversionTailoredMetrics: [],
 					} );
 			} );
 
@@ -426,6 +426,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 					],
+					[ 'contact', 'generate_lead', 'submit_lead_form' ],
 				],
 				[
 					'publish_news',
@@ -439,6 +440,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 					],
+					[ 'contact', 'generate_lead', 'submit_lead_form' ],
 				],
 				[
 					'monetize_content',
@@ -452,6 +454,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
+					[ 'contact', 'generate_lead', 'submit_lead_form' ],
 				],
 				[
 					'sell_products_or_service',
@@ -465,6 +468,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
+					[ 'purchase', 'add_to_cart' ],
 				],
 				[
 					'sell_products',
@@ -478,6 +482,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
+					[ 'purchase', 'add_to_cart' ],
 				],
 				[
 					'provide_services',
@@ -491,6 +496,7 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_POPULAR_CONTENT,
 						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 					],
+					[ 'contact', 'generate_lead', 'submit_lead_form' ],
 				],
 				[
 					'share_portfolio',
@@ -504,12 +510,14 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_POPULAR_CONTENT,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
+					[ 'contact', 'generate_lead', 'submit_lead_form' ],
 				],
 			] )(
 				'should return the correct metrics for the %s purpose when conversionReporting is enabled',
 				async (
 					purpose,
-					expectedMetricsIncludingConversionTailored
+					expectedMetricsIncludingConversionTailored,
+					conversionEvents
 				) => {
 					enabledFeatures.add( 'conversionReporting' );
 
@@ -543,19 +551,19 @@ describe( 'core/user key metrics', () => {
 					}
 
 					// Conversion Tailored Metrics should be included in the list if the
-					// includeConversionTailoredMetrics setting is true.
+					// includeConversionTailoredMetrics contains their respective conversion reporting events.
 					await registry
 						.dispatch( CORE_USER )
 						.receiveGetKeyMetricsSettings( {
 							widgetSlugs: [],
-							includeConversionTailoredMetrics: true,
+							includeConversionTailoredMetrics: conversionEvents,
 						} );
 
 					expect(
 						registry.select( CORE_USER ).getKeyMetricsSettings()
 					).toEqual( {
 						widgetSlugs: [],
-						includeConversionTailoredMetrics: true,
+						includeConversionTailoredMetrics: conversionEvents,
 					} );
 
 					expect(

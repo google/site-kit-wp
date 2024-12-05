@@ -480,7 +480,10 @@ export function registerDefaults( widgetsAPI ) {
 					if (
 						! select(
 							MODULES_ANALYTICS_4
-						).hasNewConversionReportingEvents()
+						).hasNewConversionReportingEvents() &&
+						! select(
+							MODULES_ANALYTICS_4
+						).hasLostConversionReportingEvents()
 					) {
 						return false;
 					}

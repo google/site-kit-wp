@@ -25,7 +25,12 @@ import {
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_SPLASH,
 } from '../constants';
-import { CORE_NOTIFICATIONS, NOTIFICATION_AREAS } from './datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from './datastore/constants';
+import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
 import {
 	CORE_USER,
@@ -44,8 +49,9 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
+import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
-import { CORE_FORMS } from '../datastore/forms/constants';
+import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -431,6 +437,44 @@ export const DEFAULT_NOTIFICATIONS = {
 			return (
 				analyticsState === 'zero-data' ||
 				searchConsoleState === 'zero-data'
+			);
+		},
+		isDismissible: true,
+	},
+	'first-party-mode-setup-cta-banner': {
+		Component: FirstPartyModeSetupBanner,
+		priority: 320,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			if (
+				! (
+					isModuleConnected( 'analytics-4' ) ||
+					isModuleConnected( 'ads' )
+				)
+			) {
+				return false;
+			}
+
+			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+
+			const {
+				isFirstPartyModeEnabled,
+				isFPMHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
+
+			return (
+				! isFirstPartyModeEnabled() &&
+				isFPMHealthy() &&
+				isScriptAccessEnabled()
 			);
 		},
 		isDismissible: true,

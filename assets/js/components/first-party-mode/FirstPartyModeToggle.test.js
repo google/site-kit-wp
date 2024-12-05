@@ -228,4 +228,29 @@ describe( 'FirstPartyModeToggle', () => {
 			false
 		);
 	} );
+
+	it( 'should render a "Beta" badge', async () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: {
+				isEnabled: null,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			},
+			status: 200,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<FirstPartyModeToggle />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const badgeElement = container.querySelector( '.googlesitekit-badge' );
+
+		expect( badgeElement ).toBeInTheDocument();
+		expect( badgeElement ).toHaveTextContent( 'Beta' );
+	} );
 } );
