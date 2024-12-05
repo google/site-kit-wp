@@ -50,7 +50,7 @@ const measurementID =
 function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics-4">
 				<div className="googlesitekit-setup-module">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>

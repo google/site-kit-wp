@@ -38,6 +38,11 @@ exports[`FirstPartyModeToggle should render in default state 1`] = `
     >
       First-party mode
     </label>
+    <span
+      class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+    >
+      Beta
+    </span>
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
@@ -86,6 +91,11 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
     >
       First-party mode
     </label>
+    <span
+      class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+    >
+      Beta
+    </span>
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
