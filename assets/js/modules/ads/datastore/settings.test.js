@@ -21,10 +21,12 @@
  */
 import API from 'googlesitekit-api';
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from './constants';
 import { validateCanSubmitChanges } from './settings';
-import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/ads settings', () => {
 	let registry;
@@ -91,9 +93,11 @@ describe( 'modules/ads settings', () => {
 			} ) );
 
 			fetchMock.postOnce( fpmSettingsEndpoint, {
-				body: JSON.stringify( {
-					data: { settings: { isEnabled: true } },
-				} ),
+				body: {
+					isEnabled: true,
+					isFPMHealthy: true,
+					isScriptAccessEnabled: true,
+				},
 				status: 200,
 			} );
 
@@ -102,6 +106,12 @@ describe( 'modules/ads settings', () => {
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FPM_SETUP_CTA_BANNER_NOTIFICATION,
+				] );
 
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 			await registry.dispatch( MODULES_ADS ).submitChanges();

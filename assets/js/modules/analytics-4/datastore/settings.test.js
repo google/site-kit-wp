@@ -31,6 +31,7 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -518,9 +519,11 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				fetchMock.postOnce( fpmSettingsEndpoint, {
-					body: JSON.stringify( {
-						data: { settings: { isEnabled: true } },
-					} ),
+					body: {
+						isEnabled: true,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
 					status: 200,
 				} );
 
@@ -531,6 +534,12 @@ describe( 'modules/analytics-4 settings', () => {
 						isFPMHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						FPM_SETUP_CTA_BANNER_NOTIFICATION,
+					] );
 
 				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
