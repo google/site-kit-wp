@@ -86,7 +86,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 
 		return array(
 			'first_party_mode_is_enabled' => array(
-				'label' => __( 'First-Party Mode: Enabled', 'google-site-kit' ),
+				'label' => __( 'First-party Mode: Enabled', 'google-site-kit' ),
 				'value' => $settings['isEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['isEnabled'] ? 'yes' : 'no',
 			),

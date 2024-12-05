@@ -37,11 +37,26 @@ Default.args = {
 	statuses: [
 		{
 			label: 'Label 1',
-			status: 'Enabled',
+			status: true,
 		},
 		{
 			label: 'Label 2',
-			status: 'Disabled',
+			status: false,
+		},
+	],
+};
+
+export const LoadingValue = Template.bind( null );
+LoadingValue.storyName = 'Loading Value';
+LoadingValue.args = {
+	statuses: [
+		{
+			label: 'Label 1',
+			status: undefined,
+		},
+		{
+			label: 'Label 2',
+			status: false,
 		},
 	],
 };
