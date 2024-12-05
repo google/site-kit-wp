@@ -43,7 +43,9 @@ import {
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../../googlesitekit/datastore/user/constants';
@@ -113,6 +115,38 @@ Default.args = {
 };
 Default.scenario = {
 	label: 'Components/KeyMetrics/ChipTabGroup/default',
+};
+
+export const WithNewlyDetectedMetrics = Template.bind( {} );
+WithNewlyDetectedMetrics.storyName = 'With Newly Detected Events';
+WithNewlyDetectedMetrics.args = {
+	setupRegistry: ( registry ) => {
+		const selectedMetrics = [
+			KM_ANALYTICS_VISITS_PER_VISITOR,
+			KM_ANALYTICS_VISIT_LENGTH,
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		];
+
+		registry.dispatch( CORE_FORMS ).setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: selectedMetrics,
+			[ EFFECTIVE_SELECTION ]: selectedMetrics,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'contact' ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveConversionReportingInlineData( {
+				newEvents: [ 'contact' ],
+				lostEvents: [],
+			} );
+	},
+	features: [ 'conversionReporting' ],
+};
+WithNewlyDetectedMetrics.scenario = {
+	label: 'Components/KeyMetrics/ChipTabGroup/WithNewlyDetectedMetrics',
 };
 
 export const WithError = Template.bind( {} );
