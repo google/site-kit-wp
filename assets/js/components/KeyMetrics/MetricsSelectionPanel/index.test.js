@@ -530,7 +530,7 @@ describe( 'MetricsSelectionPanel', () => {
 				.receiveIsUserInputCompleted( false );
 			await registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 				widgetSlugs: [],
-				includeConversionTailoredMetrics: false,
+				includeConversionTailoredMetrics: [],
 			} );
 
 			provideKeyMetrics( registry );

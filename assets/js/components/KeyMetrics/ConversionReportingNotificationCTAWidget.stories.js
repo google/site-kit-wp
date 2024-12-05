@@ -83,7 +83,7 @@ export default {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: false,
+					includeConversionTailoredMetrics: [],
 					isWidgetHidden: false,
 				} );
 

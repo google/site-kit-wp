@@ -27,6 +27,7 @@ import {
 	provideUserCapabilities,
 	renderHook,
 } from '../../../tests/js/test-utils';
+import { getItem } from '../googlesitekit/api/cache';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import * as tracking from '../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
@@ -120,6 +121,38 @@ describe( 'useActivateModuleCallback', () => {
 			.select( MODULES_ANALYTICS_4 )
 			.getAdminReauthURL();
 		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
+	} );
+
+	it( 'should set an item in storage before navigating to the module reauthentication URL', async () => {
+		const { result } = renderHook(
+			() => useActivateModuleCallback( 'analytics-4' ),
+			{ registry }
+		);
+
+		expect( result.current ).toBeInstanceOf( Function );
+
+		fetchMock.postOnce(
+			RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
+			{ body: { success: true } }
+		);
+		fetchMock.getOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{ body: { needsReauthentication: false } }
+		);
+
+		expect( sessionStorage.setItem ).not.toHaveBeenCalled();
+
+		let storageItem = await getItem( 'module_setup' );
+
+		expect( storageItem.value ).toBeUndefined();
+
+		await result.current();
+
+		expect( sessionStorage.setItem ).toHaveBeenCalled();
+
+		storageItem = await getItem( 'module_setup' );
+
+		expect( storageItem.value ).toBe( 'analytics-4' );
 	} );
 
 	it( 'should set internal error state when module activation fails', async () => {
