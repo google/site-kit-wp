@@ -533,13 +533,21 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, {
-					body: {
-						isEnabled: true,
-						isFPMHealthy: true,
-						isScriptAccessEnabled: true,
-					},
-					status: 200,
+				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isFPMHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
 				} );
 
 				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
@@ -659,13 +667,21 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, {
-					body: {
-						isEnabled: true,
-						isFPMHealthy: true,
-						isScriptAccessEnabled: true,
-					},
-					status: 200,
+				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isFPMHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
 				} );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
@@ -723,13 +739,21 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, {
-					body: {
-						isEnabled: true,
-						isFPMHealthy: true,
-						isScriptAccessEnabled: true,
-					},
-					status: 200,
+				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isFPMHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
 				} );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
@@ -783,13 +807,21 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, {
-					body: {
-						isEnabled: false,
-						isFPMHealthy: true,
-						isScriptAccessEnabled: true,
-					},
-					status: 200,
+				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isFPMHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
 				} );
 
 				registry

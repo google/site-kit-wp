@@ -77,7 +77,7 @@ describe( 'modules/ads settings', () => {
 
 		it( 'should send a POST request when saving changed settings', async () => {
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+				body: JSON.parse( opts.body ).data,
 				status: 200,
 			} ) );
 
@@ -111,13 +111,21 @@ describe( 'modules/ads settings', () => {
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( fpmSettingsEndpoint, {
-				body: {
-					isEnabled: true,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
-				},
-				status: 200,
+			fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
 			} );
 
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
@@ -140,7 +148,7 @@ describe( 'modules/ads settings', () => {
 			} );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+				body: JSON.parse( opts.body ).data,
 				status: 200,
 			} ) );
 
@@ -197,17 +205,25 @@ describe( 'modules/ads settings', () => {
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+				body: JSON.parse( opts.body ).data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( fpmSettingsEndpoint, {
-				body: {
-					isEnabled: true,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
-				},
-				status: 200,
+			fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
@@ -250,17 +266,25 @@ describe( 'modules/ads settings', () => {
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+				body: JSON.parse( opts.body ).data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( fpmSettingsEndpoint, {
-				body: {
-					isEnabled: true,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
-				},
-				status: 200,
+			fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
@@ -298,17 +322,25 @@ describe( 'modules/ads settings', () => {
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+				body: JSON.parse( opts.body ).data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( fpmSettingsEndpoint, {
-				body: {
-					isEnabled: false,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
-				},
-				status: 200,
+			fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
 			} );
 
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( false );
