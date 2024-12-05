@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 
 /**
  * Class for handling First Party Mode settings via REST API.
@@ -25,6 +26,14 @@ use WP_REST_Server;
  * @ignore
  */
 class REST_First_Party_Mode_Controller {
+
+	/**
+	 * First_Party_Mode instance.
+	 *
+	 * @since n.e.x.t
+	 * @var First_Party_Mode
+	 */
+	private $first_party_mode;
 
 	/**
 	 * First_Party_Mode_Settings instance.
@@ -39,9 +48,11 @@ class REST_First_Party_Mode_Controller {
 	 *
 	 * @since 1.141.0
 	 *
+	 * @param First_Party_Mode          $first_party_mode          First_Party_Mode instance.
 	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
 	 */
-	public function __construct( First_Party_Mode_Settings $first_party_mode_settings ) {
+	public function __construct( First_Party_Mode $first_party_mode, First_Party_Mode_Settings $first_party_mode_settings ) {
+		$this->first_party_mode          = $first_party_mode;
 		$this->first_party_mode_settings = $first_party_mode_settings;
 	}
 
@@ -134,16 +145,7 @@ class REST_First_Party_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$is_fpm_healthy = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
-							$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-
-							$this->first_party_mode_settings->merge(
-								array(
-									'isFPMHealthy' => $is_fpm_healthy,
-									'isScriptAccessEnabled' => $is_script_access_enabled,
-								)
-							);
-
+							$this->first_party_mode->healthcheck();
 							return new WP_REST_Response( $this->first_party_mode_settings->get() );
 						},
 						'permission_callback' => $can_manage_options,
@@ -151,28 +153,5 @@ class REST_First_Party_Mode_Controller {
 				)
 			),
 		);
-	}
-
-	/**
-	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
-	 *
-	 * @since 1.141.0
-	 *
-	 * @param string $endpoint The endpoint to check.
-	 * @return bool True if the endpoint is healthy, false otherwise.
-	 */
-	public function is_endpoint_healthy( $endpoint ) {
-		try {
-			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$response = file_get_contents( $endpoint );
-		} catch ( \Exception $e ) {
-			return false;
-		}
-
-		if ( 'ok' !== $response ) {
-			return false;
-		}
-
-		return strpos( $http_response_header[0], '200 OK' ) !== false;
 	}
 }

@@ -13,8 +13,8 @@ namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Cron;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
  * Class for handling First Party Mode.
@@ -70,7 +70,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 		$this->context                   = $context;
 		$options                         = $options ?: new Options( $context );
 		$this->first_party_mode_settings = new First_Party_Mode_Settings( $options );
-		$this->rest_controller           = new REST_First_Party_Mode_Controller( $this->first_party_mode_settings );
+		$this->rest_controller           = new REST_First_Party_Mode_Controller( $this, $this->first_party_mode_settings );
 		$this->cron                      = new First_Party_Mode_Cron( array( $this, 'healthcheck' ) );
 	}
 
@@ -114,15 +114,11 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @return void
 	 */
 	public function healthcheck() {
-		$is_fpm_healthy           = $this->rest_controller->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
-		$is_script_access_enabled = $this->rest_controller->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-
-		$settings    = $this->first_party_mode_settings->get();
-		$fpm_enabled = $settings['isEnabled'];
+		$is_fpm_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
+		$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 
 		$this->first_party_mode_settings->merge(
 			array(
-				'isEnabled'             => $fpm_enabled ? $is_fpm_healthy && $is_script_access_enabled : $fpm_enabled,
 				'isFPMHealthy'          => $is_fpm_healthy,
 				'isScriptAccessEnabled' => $is_script_access_enabled,
 			)
@@ -136,5 +132,28 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 */
 	public function on_admin_init() {
 		$this->cron->maybe_schedule_cron();
+	}
+
+	/**
+	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @param string $endpoint The endpoint to check.
+	 * @return bool True if the endpoint is healthy, false otherwise.
+	 */
+	protected function is_endpoint_healthy( $endpoint ) {
+		try {
+			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$response = file_get_contents( $endpoint );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+
+		if ( 'ok' !== $response ) {
+			return false;
+		}
+
+		return strpos( $http_response_header[0], '200 OK' ) !== false;
 	}
 }

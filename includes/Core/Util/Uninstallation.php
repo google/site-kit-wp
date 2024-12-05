@@ -17,11 +17,11 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Cron;
 
 /**
  * Utility class for handling uninstallation of the plugin.
