@@ -19,9 +19,13 @@
 /**
  * Internal dependencies
  */
-import { provideUserAuthentication } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { deleteItem, setItem } from '../../googlesitekit/api/cache';
+import {
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -33,18 +37,33 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'UnsatisfiedScopesAlert';
+Default.storyName = 'Default';
+
+export const ModuleSetupInProgress = Template.bind( {} );
+ModuleSetupInProgress.storyName = 'Module setup in progress';
+ModuleSetupInProgress.args = {
+	setupRegistry: () => {
+		setItem( 'module_setup', 'analytics-4' );
+	},
+};
 
 export default {
 	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlert',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry );
 				provideUserAuthentication( registry, {
 					unsatisfiedScopes: [
 						'https://www.googleapis.com/auth/analytics.readonly',
 					],
 				} );
+
+				// Ensure the storage item is unavailable by default.
+				deleteItem( 'module_setup' );
+
+				// Call story-specific setup.
+				args.setupRegistry?.( registry );
 			};
 
 			return (

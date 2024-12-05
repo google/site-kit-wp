@@ -35,9 +35,11 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
+import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
 
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );
+	const fpmEnabled = useFeature( 'firstPartyMode' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -145,6 +147,7 @@ export default function SettingsForm() {
 							}
 						) }
 					</ConversionTrackingToggle>
+					{ fpmEnabled && <FirstPartyModeToggle /> }
 				</SettingsGroup>
 			</div>
 		</Fragment>

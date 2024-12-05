@@ -66,7 +66,6 @@ import { actions as errorStoreActions } from '../../data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
 import { isFeatureEnabled } from '../../../features';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 const { receiveError, clearError } = errorStoreActions;
 
@@ -367,16 +366,21 @@ const baseSelectors = {
 			const keyMetricSettings =
 				select( CORE_USER ).getKeyMetricsSettings();
 
-			const isGA4Connected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-
-			const detectedEvents = isGA4Connected
-				? select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-				: [];
-
-			const showConversionTailoredMetrics =
-				keyMetricSettings?.includeConversionTailoredMetrics ||
-				includeConversionTailoredMetrics;
+			const showConversionTailoredMetrics = ( events ) => {
+				return events.some(
+					( event ) =>
+						( Array.isArray(
+							keyMetricSettings?.includeConversionTailoredMetrics
+						) &&
+							keyMetricSettings?.includeConversionTailoredMetrics?.includes(
+								event
+							) ) ||
+						( Array.isArray( includeConversionTailoredMetrics ) &&
+							includeConversionTailoredMetrics?.includes(
+								event
+							) )
+				);
+			};
 
 			return {
 				publish_blog: [
@@ -386,7 +390,11 @@ const baseSelectors = {
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-					...( showConversionTailoredMetrics
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
 						? [
 								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
@@ -400,7 +408,11 @@ const baseSelectors = {
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-					...( showConversionTailoredMetrics
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
 						? [
 								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
@@ -421,20 +433,16 @@ const baseSelectors = {
 					hasProductPostType
 						? KM_ANALYTICS_POPULAR_PRODUCTS
 						: KM_ANALYTICS_POPULAR_CONTENT,
-					...( showConversionTailoredMetrics
+					...( showConversionTailoredMetrics( [ 'purchase' ] )
 						? [
-								...( detectedEvents?.includes( 'purchase' )
-									? [
-											KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-											KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-									  ]
-									: [] ),
-								...( detectedEvents?.includes( 'add_to_cart' )
-									? [
-											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-									  ]
-									: [] ),
+								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						  ]
+						: [] ),
+					...( showConversionTailoredMetrics( [ 'add_to_cart' ] )
+						? [
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 						  ]
 						: [] ),
 					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -445,20 +453,16 @@ const baseSelectors = {
 					hasProductPostType
 						? KM_ANALYTICS_POPULAR_PRODUCTS
 						: KM_ANALYTICS_POPULAR_CONTENT,
-					...( showConversionTailoredMetrics
+					...( showConversionTailoredMetrics( [ 'purchase' ] )
 						? [
-								...( detectedEvents?.includes( 'purchase' )
-									? [
-											KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-											KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-									  ]
-									: [] ),
-								...( detectedEvents?.includes( 'add_to_cart' )
-									? [
-											KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-									  ]
-									: [] ),
+								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						  ]
+						: [] ),
+					...( showConversionTailoredMetrics( [ 'add_to_cart' ] )
+						? [
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 						  ]
 						: [] ),
 					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -466,7 +470,11 @@ const baseSelectors = {
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 				],
 				provide_services: [
-					...( showConversionTailoredMetrics
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
 						? [
 								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
@@ -477,12 +485,17 @@ const baseSelectors = {
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 				],
 				share_portfolio: [
 					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 					KM_ANALYTICS_POPULAR_AUTHORS,
-					...( showConversionTailoredMetrics
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
 						? [
 								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
