@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -119,7 +119,11 @@ export default function Description() {
 			<p>{ description }</p>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
-					{ __( 'Sign in with Google', 'google-site-kit' ) }
+					{ _x(
+						'Sign in with Google',
+						'Service/product name (do not translate)',
+						'google-site-kit'
+					) }
 				</Button>
 			) }
 		</li>

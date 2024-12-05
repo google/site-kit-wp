@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -58,16 +58,32 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 		<Notification>
 			<NotificationWithSVG
 				id={ id }
-				title={ __(
-					'Boost onboarding, security and trust on your site using Sign in with Google',
-					'google-site-kit'
+				title={ sprintf(
+					/* translators: %s: Sign in with Google service name */
+					__(
+						'Boost onboarding, security and trust on your site using %s',
+						'google-site-kit'
+					),
+					_x(
+						'Sign in with Google',
+						'Service/product name (do not translate)',
+						'google-site-kit'
+					)
 				) }
 				description={
 					<Description
 						className="googlesitekit-setup-cta-banner__description"
-						text={ __(
-							'Provide your site visitors with a simple, secure and personalised experience by adding a Sign in with Google button to your login page.',
-							'google-site-kit'
+						text={ sprintf(
+							/* translators: %s: Sign in with Google service name */
+							__(
+								'Provide your site visitors with a simple, secure and personalised experience by adding a %s button to your login page.',
+								'google-site-kit'
+							),
+							_x(
+								'Sign in with Google',
+								'Service/product name (do not translate)',
+								'google-site-kit'
+							)
 						) }
 						learnMoreLink={
 							<LearnMoreLink
@@ -82,9 +98,14 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 					<ActionsCTALinkDismiss
 						id={ id }
 						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __(
-							'Set up Sign in with Google',
-							'google-site-kit'
+						ctaLabel={ sprintf(
+							/* translators: %s: Sign in with Google service name */
+							__( 'Set up %s', 'google-site-kit' ),
+							_x(
+								'Sign in with Google',
+								'Service/product name (do not translate)',
+								'google-site-kit'
+							)
 						) }
 						onCTAClick={ onSetupActivate }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
