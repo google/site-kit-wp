@@ -850,7 +850,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			} );
 		} );
 
-		describe( 'user with manualy selected metrics', () => {
+		describe( 'user with manually-selected metrics', () => {
 			it( 'does not render when there are new events with metrics that are already selected', async () => {
 				registry
 					.dispatch( CORE_USER )
