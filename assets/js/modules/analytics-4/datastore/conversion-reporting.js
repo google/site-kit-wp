@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual } from 'lodash';
 
 /**
  * Internal dependencies
@@ -31,9 +32,6 @@ import {
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { negateDefined } from '../../../util/negate';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -45,7 +43,12 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { negateDefined } from '../../../util/negate';
+import { safelySort } from '../../../util';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -414,6 +417,88 @@ export const selectors = {
 					return ! userPickedKeyMetrics?.includes( widget );
 				} )
 			);
+		}
+	),
+
+	/**
+	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} `true` if there are metrics related to the new conversion events that differ from already detected ones, `false` otherwise. Will return `undefined` if the data is not loaded yet.
+	 */
+	haveConversionEventsWithDifferentMetrics: createRegistrySelector(
+		( select ) => () => {
+			const leadEvents = [
+				'contact',
+				'generate_lead',
+				'submit_lead_form',
+			];
+			const isGA4Connected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			if ( ! isGA4Connected ) {
+				return false;
+			}
+
+			const {
+				getDetectedEvents,
+				getConversionReportingEventsChange,
+				haveConversionEventsForUserPickedMetrics,
+			} = select( MODULES_ANALYTICS_4 );
+			const detectedEvents = getDetectedEvents();
+			const conversionReportingEventsChange =
+				getConversionReportingEventsChange();
+
+			if (
+				! detectedEvents?.length ||
+				! conversionReportingEventsChange?.newEvents?.length ||
+				// If events in detectedEvents do not differ from the new ones it means
+				// it is the initial detection, since after initial detection newEvents will
+				// only contain the difference in events.
+				isEqual(
+					safelySort( conversionReportingEventsChange?.newEvents ),
+					safelySort( detectedEvents )
+				)
+			) {
+				return false;
+			}
+
+			const detectedLeadEvents = detectedEvents.filter( ( event ) =>
+				leadEvents.includes( event )
+			);
+			const newLeadEvents =
+				conversionReportingEventsChange.newEvents.filter( ( event ) =>
+					leadEvents.includes( event )
+				);
+			const newNonLeadEvents =
+				conversionReportingEventsChange.newEvents.filter(
+					( event ) => ! leadEvents.includes( event )
+				);
+
+			// If new events include only additional lead events return early.
+			if (
+				detectedLeadEvents.length > 1 &&
+				newLeadEvents.length > 0 &&
+				! newNonLeadEvents.length
+			) {
+				return false;
+			}
+
+			const userPickedMetrics =
+				select( CORE_USER ).getUserPickedMetrics();
+
+			const haveNewConversionEventsForUserPickedMetrics =
+				haveConversionEventsForUserPickedMetrics( true );
+
+			if (
+				userPickedMetrics?.length &&
+				! haveNewConversionEventsForUserPickedMetrics
+			) {
+				return false;
+			}
+
+			return true;
 		}
 	),
 };
