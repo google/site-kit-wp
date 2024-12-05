@@ -129,7 +129,7 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: DEBUG_REST=1 npm run test:e2e
+        run: npm run test:e2e
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
