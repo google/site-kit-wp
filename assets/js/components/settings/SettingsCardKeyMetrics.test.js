@@ -25,11 +25,12 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideKeyMetrics,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from '../KeyMetrics/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -40,9 +41,12 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
+		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		mockSurveyEndpoints();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
 		muteFetch(
 			new RegExp(
@@ -72,7 +76,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		);
 	} );
 
-	it( 'should show ACRSubtleNotification when Key metrics are not setup', async () => {
+	it( 'should show ConversionReportingSettingsSubtleNotification when Key metrics are not setup', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -92,7 +96,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show ACRSubtleNotification when Key metrics are setup manually', async () => {
+	it( 'should show ConversionReportingSettingsSubtleNotification when Key metrics are setup manually', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -113,41 +117,22 @@ describe( 'SettingsCardKeyMetrics', () => {
 			container.querySelector( '.googlesitekit-acr-subtle-notification' )
 		).toBeInTheDocument();
 
-		// Default content should be replaced with ACRSubtleNotification, so it should
-		// not be shown at the same time as ACR notification.
+		// Default content should be replaced with ConversionReportingSettingsSubtleNotification,
+		// so it should not be shown at the same time as ACR notification.
 		expect(
 			container.querySelector( '.googlesitekit-user-input__notification' )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not show ACRSubtleNotification when Key metrics are setup using tailored metrics', async () => {
+	it( 'should not show ConversionReportingSettingsSubtleNotification when Key metrics are setup using tailored metrics', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
 
-		const { container, waitForRegistry } = render(
-			<SettingsCardKeyMetrics />,
-			{
-				registry,
-				features: [ 'conversionReporting' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'should not show ACRSubtleNotification if it was previously dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ ACR_SUBTLE_NOTIFICATION_SLUG ] );
-
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [],
+			includeConversionTailoredMetrics: [ 'contact' ],
+		} );
 
 		const { container, waitForRegistry } = render(
 			<SettingsCardKeyMetrics />,
@@ -164,7 +149,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not show ACRSubtleNotification if conversionReporting feature flag is not enabled', async () => {
+	it( 'should not show ConversionReportingSettingsSubtleNotification if conversionReporting feature flag is not enabled', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );

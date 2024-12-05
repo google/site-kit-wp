@@ -21,6 +21,7 @@
  */
 import { render } from '../../../../../../tests/js/test-utils';
 import {
+	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
@@ -31,43 +32,36 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopCountriesWidget from './TopCountriesWidget';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 
 describe( 'TopCountriesWidget', () => {
 	const { Widget } = getWidgetComponentProps( KM_ANALYTICS_TOP_COUNTRIES );
 
 	it( 'renders correctly with the expected metrics', async () => {
+		const registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		provideKeyMetrics( registry );
+		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideAnalytics4MockReport( registry, {
+			...registry
+				.select( CORE_USER )
+				.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
+			dimensions: [ 'country' ],
+			metrics: [ { name: 'totalUsers' } ],
+			orderby: [
+				{
+					metric: {
+						metricName: 'totalUsers',
+					},
+					desc: true,
+				},
+			],
+			limit: 3,
+		} );
 		const { container, waitForRegistry } = render(
 			<TopCountriesWidget Widget={ Widget } />,
-			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideKeyMetrics( registry );
-					provideAnalytics4MockReport( registry, {
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						dimensions: [ 'country' ],
-						metrics: [ { name: 'totalUsers' } ],
-						orderby: [
-							{
-								metric: {
-									metricName: 'totalUsers',
-								},
-								desc: true,
-							},
-						],
-						limit: 3,
-					} );
-				},
-			}
+			{ registry }
 		);
 		await waitForRegistry();
 

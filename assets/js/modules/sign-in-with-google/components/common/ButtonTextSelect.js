@@ -31,12 +31,25 @@ import {
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 } from '../../datastore/constants';
 import { Option, Select } from 'googlesitekit-components';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { useDebounce } from '../../../../hooks/useDebounce';
 
 export default function ButtonTextSelect() {
+	const viewContext = useViewContext();
 	const text = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getText()
 	);
 	const { setText } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+
+	const trackButtonClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_sign-in-with-google-settings`,
+			'change_button_text'
+		);
+	}, [ viewContext ] );
+
+	const debounceTrackButtonClick = useDebounce( trackButtonClick, 500 );
 
 	const onEnhancedChange = useCallback(
 		( i, item ) => {
@@ -44,9 +57,10 @@ export default function ButtonTextSelect() {
 
 			if ( newValue !== text ) {
 				setText( newValue );
+				debounceTrackButtonClick();
 			}
 		},
-		[ text, setText ]
+		[ text, setText, debounceTrackButtonClick ]
 	);
 
 	return (

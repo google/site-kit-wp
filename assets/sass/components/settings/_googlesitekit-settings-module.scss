@@ -113,7 +113,8 @@
 			border-bottom: 1px solid $c-mercury;
 			margin-bottom: 1em;
 
-			&:last-child {
+			&:last-child,
+			&:has(+ .googlesitekit-module-settings-group) {
 				border-bottom: none;
 				margin-bottom: 0;
 			}
@@ -184,6 +185,8 @@
 				letter-spacing: $ls-s;
 				line-height: $lh-body-md;
 				margin: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 
 			.googlesitekit-settings-module__meta-item-data--wrap {

@@ -49,6 +49,7 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 	return (
 		<Fragment>
 			<Link
+				className="googlesitekit-font-weight-medium"
 				href={ serviceURL || detailsURL }
 				external={ !! serviceURL }
 				hideExternalIndicator

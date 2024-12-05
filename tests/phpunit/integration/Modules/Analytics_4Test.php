@@ -140,7 +140,7 @@ class Analytics_4Test extends TestCase {
 		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
-		( new GTag() )->register();
+		( new GTag( $this->options ) )->register();
 	}
 
 	public function test_register() {
@@ -4394,7 +4394,7 @@ class Analytics_4Test extends TestCase {
 
 		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
 
-		$this->assertEquals( 'Analytics site created audiences', $audience_field['label'] );
+		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'] );
 
 		if ( $this->authentication->is_authenticated() ) {
 			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );

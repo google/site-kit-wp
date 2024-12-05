@@ -43,6 +43,7 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
@@ -79,21 +80,9 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
 
-	const baseReportOptions = {
-		startDate: '2024-02-29',
-		endDate: '2024-03-27',
-		metrics: [ { name: 'totalUsers' } ],
-	};
+	let baseReportOptions;
 
-	const reportOptions = {
-		...baseReportOptions,
-		dimensions: [ { name: 'audienceResourceName' } ],
-		dimensionFilters: {
-			audienceResourceName: availableAudiences.map(
-				( { name } ) => name
-			),
-		},
-	};
+	let reportOptions;
 
 	const configuredAudiences = [
 		'properties/12345/audiences/3',
@@ -121,6 +110,22 @@ describe( 'AudienceSelectionPanel', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+		const dateRangeDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		baseReportOptions = {
+			...dateRangeDates,
+			metrics: [ { name: 'totalUsers' } ],
+		};
+		reportOptions = {
+			...baseReportOptions,
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: availableAudiences.map(
+					( { name } ) => name
+				),
+			},
+		};
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry
@@ -186,31 +191,21 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'Header', () => {
-		it( 'should display a settings link to deactivate the widget', async () => {
-			const { getByText, waitForRegistry } = render(
-				<AudienceSelectionPanel />,
-				{
-					registry,
-				}
-			);
-
-			await waitForRegistry();
+		it( 'should display a settings link to deactivate the widget', () => {
+			const { getByText } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
 
 			expect(
 				getByText( /You can deactivate this widget in/i )
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not display a settings link to deactivate the widget for a view-only user', async () => {
-			const { container, waitForRegistry } = render(
-				<AudienceSelectionPanel />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-				}
-			);
-
-			await waitForRegistry();
+		it( 'should not display a settings link to deactivate the widget for a view-only user', () => {
+			const { container } = render( <AudienceSelectionPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			} );
 
 			expect( container ).not.toHaveTextContent(
 				'You can deactivate this widget in'
@@ -220,6 +215,15 @@ describe( 'AudienceSelectionPanel', () => {
 
 	describe( 'AudienceItems', () => {
 		it( 'should list available audiences', async () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
+
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,
 			} );
@@ -239,7 +243,7 @@ describe( 'AudienceSelectionPanel', () => {
 			).toHaveTextContent( 'New visitors' );
 		} );
 
-		it( 'should not list "Purchasers" if it has no data', async () => {
+		it( 'should not list "Purchasers" if it has no data', () => {
 			// Simulate no data available state for "Purchasers".
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -273,11 +277,9 @@ describe( 'AudienceSelectionPanel', () => {
 				},
 			} );
 
-			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+			render( <AudienceSelectionPanel />, {
 				registry,
 			} );
-
-			await waitForRegistry();
 
 			expect(
 				document.querySelector(
@@ -1064,6 +1066,15 @@ describe( 'AudienceSelectionPanel', () => {
 			};
 
 			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: nonSiteKitAvailableAudiences,
+				status: 200,
+			} );
+
+			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
@@ -1120,6 +1131,15 @@ describe( 'AudienceSelectionPanel', () => {
 
 			provideUserAuthentication( registry, {
 				grantedScopes: [],
+			} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: nonSiteKitAvailableAudiences,
+				status: 200,
 			} );
 
 			registry
@@ -1692,6 +1712,35 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'ErrorNotice', () => {
+		const commonSetup = ( error, additionalSetup = () => {} ) => {
+			provideModules( registry );
+			provideModuleRegistrations( registry );
+
+			if ( error.data?.reason ) {
+				provideUserInfo( registry );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					accountID: '12345',
+					propertyID: '34567',
+					measurementID: '56789',
+					webDataStreamID: '78901',
+				} );
+			}
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			additionalSetup();
+		};
+
+		const assertTextsInDocument = ( getByText, expectedTexts ) => {
+			expectedTexts.forEach( ( text ) => {
+				expect(
+					getByText( new RegExp( text, 'i' ) )
+				).toBeInTheDocument();
+			} );
+		};
+
 		it( 'should not display an error notice when there are no errors', async () => {
 			const { container, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -1709,30 +1758,39 @@ describe( 'AudienceSelectionPanel', () => {
 		} );
 
 		it.each( [
-			[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
-			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
-		] )(
-			'should display an error notice when there is an insufficient permissions error while %s',
-			async ( _, storeFunctionName, args ) => {
-				const error = {
+			[
+				'error message for insufficient permission',
+				{
 					code: 'test_error',
 					message: 'Error message.',
 					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-				};
+				},
+				403,
+				[
+					'Insufficient permissions, contact your administrator',
+					'get help',
+					'request access',
+				],
+			],
+			[
+				'error message',
+				{
+					code: 'test_error',
+					message: 'Error message.',
+					data: {},
+				},
+				500,
+				[ 'Data loading failed', 'retry' ],
+			],
+		] )(
+			'should display an %s while resyncing available audiences',
+			async ( _, error, errorCode, expectedTexts ) => {
+				commonSetup( error );
 
-				provideUserInfo( registry );
-				provideModules( registry );
-				provideModuleRegistrations( registry );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					accountID: '12345',
-					propertyID: '34567',
-					measurementID: '56789',
-					webDataStreamID: '78901',
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: error,
+					status: errorCode,
 				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, storeFunctionName, args );
 
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
@@ -1743,34 +1801,47 @@ describe( 'AudienceSelectionPanel', () => {
 
 				await waitForRegistry();
 
-				expect(
-					getByText(
-						/Insufficient permissions, contact your administrator/i
-					)
-				).toBeInTheDocument();
-				expect( getByText( /get help/i ) ).toBeInTheDocument();
-				expect( getByText( /request access/i ) ).toBeInTheDocument();
+				expect( console ).toHaveErrored();
+				assertTextsInDocument( getByText, expectedTexts );
 			}
 		);
 
 		it.each( [
-			[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
-			[ 'retrieving user count', 'getReport', [ reportOptions ] ],
-		] )(
-			'should display an error notice when %s fails',
-			async ( _, storeFunctionName, args ) => {
-				const error = {
+			[
+				'error message for insufficient permission',
+				{
+					code: 'test_error',
+					message: 'Error message.',
+					data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+				},
+				[
+					'Insufficient permissions, contact your administrator',
+					'get help',
+					'request access',
+				],
+			],
+			[
+				'error message',
+				{
 					code: 'test_error',
 					message: 'Error message.',
 					data: {},
-				};
+				},
+				[ 'Data loading failed', 'retry' ],
+			],
+		] )(
+			'should display an %s while retrieving user count',
+			async ( _, error, expectedTexts ) => {
+				commonSetup( error, () => {
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: availableAudiences,
+						status: 200,
+					} );
 
-				provideModules( registry );
-				provideModuleRegistrations( registry );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error, storeFunctionName, args );
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveError( error, 'getReport', [ reportOptions ] );
+				} );
 
 				const { getByText, waitForRegistry } = render(
 					<AudienceSelectionPanel />,
@@ -1780,11 +1851,7 @@ describe( 'AudienceSelectionPanel', () => {
 				);
 
 				await waitForRegistry();
-
-				expect(
-					getByText( /Data loading failed/i )
-				).toBeInTheDocument();
-				expect( getByText( /retry/i ) ).toBeInTheDocument();
+				assertTextsInDocument( getByText, expectedTexts );
 			}
 		);
 	} );
@@ -1826,10 +1893,13 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should display error message when no group is checked', async () => {
 			registry
-				.dispatch( CORE_FORMS )
-				.setValues( AUDIENCE_SELECTION_FORM, {
-					[ AUDIENCE_SELECTED ]: [],
-				} );
+				.dispatch( CORE_UI )
+				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: availableAudiences,
+				status: 200,
+			} );
 
 			const { findByLabelText, waitForRegistry } = render(
 				<AudienceSelectionPanel />,
@@ -1839,6 +1909,15 @@ describe( 'AudienceSelectionPanel', () => {
 			);
 
 			await waitForRegistry();
+
+			// De-select the selected groups.
+			const newVisitorsCheckbox = await findByLabelText( 'New visitors' );
+			fireEvent.click( newVisitorsCheckbox );
+
+			const returningVisitorsCheckbox = await findByLabelText(
+				'Returning visitors'
+			);
+			fireEvent.click( returningVisitorsCheckbox );
 
 			expect(
 				document.querySelector(

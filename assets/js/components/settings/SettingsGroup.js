@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager - DashboardMainEffectComponent component.
+ * SettingsInactiveModules component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,27 +19,18 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
+import PropTypes from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import { useDispatch } from 'googlesitekit-data';
-import { MODULES_READER_REVENUE_MANAGER } from '../datastore/constants';
-import useViewOnly from '../../../hooks/useViewOnly';
-
-export default function DashboardMainEffectComponent() {
-	const viewOnlyDashboard = useViewOnly();
-
-	const { maybeSyncPublicationOnboardingState } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
+export default function SettingsGroup( { title, children } ) {
+	return (
+		<div className="googlesitekit-module-settings-group">
+			<h4>{ title }</h4>
+			{ children }
+		</div>
 	);
-
-	useMount( () => {
-		if ( ! viewOnlyDashboard ) {
-			maybeSyncPublicationOnboardingState();
-		}
-	} );
-
-	return null;
 }
+
+SettingsGroup.propTypes = {
+	title: PropTypes.string.isRequired,
+	children: PropTypes.node.isRequired,
+};

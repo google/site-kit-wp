@@ -29,6 +29,7 @@ import {
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
@@ -496,6 +497,53 @@ describe( 'modules/analytics-4 settings', () => {
 				).toBe( false );
 			} );
 
+			it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				const fpmSettingsEndpoint = new RegExp(
+					'^/google-site-kit/v1/core/site/data/fpm-settings'
+				);
+
+				fetchMock.postOnce( fpmSettingsEndpoint, {
+					body: JSON.stringify( {
+						data: { settings: { isEnabled: true } },
+					} ),
+					status: 200,
+				} );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint, {
+					body: {
+						data: {
+							settings: { isEnabled: true },
+						},
+					},
+				} );
+			} );
+
 			it( 'should reset audience settings in the store when Analytics settings have successfully saved', async () => {
 				const analyticsSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -600,6 +648,36 @@ describe( 'modules/analytics-4 settings', () => {
 					'identifier:analytics-4',
 					'error:"Something wrong happened."'
 				);
+			} );
+		} );
+
+		describe( 'rollbackChanges', () => {
+			it( 'should rollback to the original settings', () => {
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( false );
 			} );
 		} );
 	} );

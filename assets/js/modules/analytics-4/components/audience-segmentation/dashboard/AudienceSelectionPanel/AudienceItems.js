@@ -31,7 +31,7 @@ import { useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -63,24 +63,15 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			return;
 		}
 
-		syncAvailableAudiences();
+		const syncAudiences = async () => {
+			await syncAvailableAudiences();
+		};
+
 		setFirstView( false );
+		syncAudiences();
 	}, [ firstView, isOpen, syncAvailableAudiences ] );
 
-	useEffect( () => {
-		// @TODO Explore more elegant option to re-establish the focus. After `syncAvailableAudiences`
-		// happens the focus is lost, even without preview block being shown.
-		if ( ! isLoading && isOpen ) {
-			const firstInput = document.querySelector(
-				'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item input'
-			);
-			if ( firstInput ) {
-				firstInput.focus();
-			}
-		}
-	}, [ isLoading, isOpen ] );
-
-	const availableAudiences = useSelect( ( select ) => {
+	const availableAudiences = useInViewSelect( ( select ) => {
 		const {
 			getConfigurableAudiences,
 			getReport,

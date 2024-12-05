@@ -1,5 +1,5 @@
 /**
- * Key Metrics ACR Subtle Notification styles.
+ * First-party mode Setup CTA Banner styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -18,20 +18,29 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-acr-subtle-notification {
-		background-color: $c-violet-v-50;
+	.googlesitekit-setup-cta-banner--first-party-mode-setup-cta-banner {
 
-		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-phone - 2px $grid-gap-desktop;
+		.googlesitekit-setup-cta-banner__actions-wrapper {
+			gap: 4px; // Fix buttons being one on top of another on medium mobile viewports.
+
+			@media (min-width: $width-tablet + 1 + px) {
+				gap: 10px;
+			}
 		}
 
-		.mdc-button--raised:not(:disabled) {
-			background-color: $c-violet-v-600;
-		}
+		.googlesitekit-setup-cta-banner__svg-wrapper--first-party-mode-setup-cta-banner {
+			align-items: flex-end;
+			display: flex;
+			justify-content: center;
 
-		.googlesitekit-subtle-notification__content,
-		.mdc-button--tertiary:not(:disabled) {
-			color: $c-violet-v-600;
+			svg {
+				flex: 1;
+				max-height: 136px;
+
+				@media (min-width: $width-desktop + 1 + px) {
+					max-height: 265px;
+				}
+			}
 		}
 	}
 }

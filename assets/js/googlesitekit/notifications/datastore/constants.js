@@ -30,6 +30,11 @@ export const NOTIFICATION_AREAS = {
 	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
 };
 
+export const NOTIFICATION_GROUPS = {
+	DEFAULT: 'default',
+	SETUP_CTAS: 'setup-ctas',
+};
+
 export const NOTIFICATION_VIEW_CONTEXTS = [
 	VIEW_CONTEXT_SPLASH,
 	VIEW_CONTEXT_MAIN_DASHBOARD,

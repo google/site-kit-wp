@@ -496,7 +496,7 @@ describe( 'AudienceTilesWidget', () => {
 			}
 		);
 
-		await act( waitForRegistry );
+		await waitForRegistry();
 
 		const [ siteKitAudiences ] = registry
 			.select( MODULES_ANALYTICS_4 )

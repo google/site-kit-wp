@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.139.0
+Stable tag:        1.141.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,32 +109,47 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.139.0 =
+= 1.141.0 =
 
 **Added**
 
-* Add the Google sign-in button to the login screen. See [#9337](https://github.com/google/site-kit-wp/issues/9337).
-* Add Top Device Driving Purchases Key Metric Widget. See [#9162](https://github.com/google/site-kit-wp/issues/9162).
+* Add Sign in with Google to WooCommerce login page. See [#9340](https://github.com/google/site-kit-wp/issues/9340).
 
 **Enhanced**
 
-* Add GA event tracking for user interactions with the No Audiences Banner and Info Notice. See [#9496](https://github.com/google/site-kit-wp/issues/9496).
-* Add opt-in event tracking for an audience tile's "Top content" metric area. See [#9495](https://github.com/google/site-kit-wp/issues/9495).
-* Add Dashboard Sharing support to Analytics Conversion Reporting tiles. See [#9377](https://github.com/google/site-kit-wp/issues/9377).
-* Improved the design of the User Input Questionnaire. See [#9374](https://github.com/google/site-kit-wp/issues/9374).
-* Update requirement checks for notifications to have all selectors resolved correctly and efficiently. See [#9351](https://github.com/google/site-kit-wp/issues/9351).
-* Update conversion reporting events synchronization to save detected and lost events. See [#9342](https://github.com/google/site-kit-wp/issues/9342).
-* Add the setup form for the Sign in With Google module. See [#9336](https://github.com/google/site-kit-wp/issues/9336).
-* Implement the ability to edit Sign in With Google settings. See [#9334](https://github.com/google/site-kit-wp/issues/9334).
+* Update Sign in with Google descriptions in Site Health. See [#9680](https://github.com/google/site-kit-wp/issues/9680).
+* Update the Sign in with Google login to use the popup approach. See [#9677](https://github.com/google/site-kit-wp/issues/9677).
+* Integrate the First-party mode proxy script that will allow Analytics events to be tracked via requests made from the browser to the user's site rather than directly to Google's servers. See [#9665](https://github.com/google/site-kit-wp/issues/9665).
+* Add info to the "One-tap" option in Sign in with Google settings. See [#9643](https://github.com/google/site-kit-wp/issues/9643).
+* Do not show "Maybe later" in Key Metrics Admin Settings callout banner. See [#9636](https://github.com/google/site-kit-wp/issues/9636).
+* Implement the `fetchGetFPMServerRequirementStatus()` Redux action used to retrieve the FPM server requirement status. See [#9634](https://github.com/google/site-kit-wp/issues/9634).
+* Add an `fpm-server-requirement-status` API endpoint to verify First-Party Mode readiness by performing FPFE health checks and verifying direct PHP script access. See [#9632](https://github.com/google/site-kit-wp/issues/9632).
+* Add a partial datastore for First-Party Mode in the `core/site` datastore to manage its settings. See [#9628](https://github.com/google/site-kit-wp/issues/9628).
+* Add REST endpoints for First-Party Mode module settings. See [#9625](https://github.com/google/site-kit-wp/issues/9625).
+* Update "Get your Client ID" link in Sign in with Google setup. See [#9621](https://github.com/google/site-kit-wp/issues/9621).
+* Ensure tailored metrics override previous metrics when switching from manually-selected metrics. See [#9613](https://github.com/google/site-kit-wp/issues/9613).
+* Improve the accuracy of the mechanism that scrolls the user to a widget area. See [#9603](https://github.com/google/site-kit-wp/issues/9603).
+* Improve visitor groups selection panel to prevent a console warning. See [#9602](https://github.com/google/site-kit-wp/issues/9602).
+* Add an external icon to external links in the audience selection panel and placeholder tile. See [#9598](https://github.com/google/site-kit-wp/issues/9598).
+* Remove visitor groups setup success notifications when the user chooses not to display visitor groups in dashboard. See [#9596](https://github.com/google/site-kit-wp/issues/9596).
+* Introduce grouping of notification queues. See [#9568](https://github.com/google/site-kit-wp/issues/9568).
+* Add notice for users who used a legacy answer in Key Metrics settings. See [#9518](https://github.com/google/site-kit-wp/issues/9518).
+* Split the "Sell products or services" answer in the User Input app. See [#9489](https://github.com/google/site-kit-wp/issues/9489).
+* Persist selection group in Key Metrics selection panel. See [#9385](https://github.com/google/site-kit-wp/issues/9385).
+* Add support for disconnecting associated Google account for sign in from WordPress user edit screen. See [#9380](https://github.com/google/site-kit-wp/issues/9380).
+* Implement new subtle notification banner in KMW dashboard area. See [#9371](https://github.com/google/site-kit-wp/issues/9371).
+* Move on-demand onboarding state synchronization to the server side, avoiding the need to reload the full list of publications. See [#9363](https://github.com/google/site-kit-wp/issues/9363).
+* Improve selection panels so that they perform actions only when in view. See [#9312](https://github.com/google/site-kit-wp/issues/9312).
+* Improve Reader Revenue Manager publication onboarding state synchronization. See [#9149](https://github.com/google/site-kit-wp/issues/9149).
+* Add Key Metrics info to Site Health report. See [#9112](https://github.com/google/site-kit-wp/issues/9112).
+
+**Changed**
+
+* Implement settings view for Sign in with Google. See [#9477](https://github.com/google/site-kit-wp/issues/9477).
+* Implement Sign in with Google token response login handling. See [#9339](https://github.com/google/site-kit-wp/issues/9339).
 
 **Fixed**
 
-* Fix an issue that caused the visitor groups overlay notification to appear unexpectedly. See [#9481](https://github.com/google/site-kit-wp/issues/9481).
-* Ensure the "Purchasers" default audience can be added to the audience selection when initially setting up the Audience Segmentation feature under the right conditions. See [#9478](https://github.com/google/site-kit-wp/issues/9478).
-* Prevent rendering of the Audience Selection Panel before the feature is set up, ensuring it only renders after setup is complete. See [#9475](https://github.com/google/site-kit-wp/issues/9475).
-* Ensure partial data badges display correctly when the connected Analytics property is in the partial data state. See [#9474](https://github.com/google/site-kit-wp/issues/9474).
-* Fix an issue that caused the visitor groups visibility toggle to appear when the feature wasn't yet set up. See [#9473](https://github.com/google/site-kit-wp/issues/9473).
-* Handle insufficient permission errors correctly when attempting to create audiences via the Audience Segmentation Setup CTA Banner. See [#9471](https://github.com/google/site-kit-wp/issues/9471).
-* Prevent console errors appearing when visiting the dashboard as a secondary admin or view-only user after the Audience Segmentation feature has been set up. See [#9445](https://github.com/google/site-kit-wp/issues/9445).
+* Fix a bug that caused a custom dimension to not be created while setting up visitor groups. See [#9597](https://github.com/google/site-kit-wp/issues/9597).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

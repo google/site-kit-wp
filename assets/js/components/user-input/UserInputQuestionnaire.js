@@ -45,6 +45,9 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -52,6 +55,7 @@ export default function UserInputQuestionnaire() {
 		'question',
 		USER_INPUT_QUESTIONS_LIST[ 0 ]
 	);
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const activeSlugIndex = USER_INPUT_QUESTIONS_LIST.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -66,8 +70,11 @@ export default function UserInputQuestionnaire() {
 				'questionNumber'
 			)
 		) || 1;
-
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const userPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const { saveUserInputSettings, resetKeyMetricsSelection } =
+		useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const dashboardURL = useSelect( ( select ) =>
@@ -154,15 +161,58 @@ export default function UserInputQuestionnaire() {
 		questionNumber,
 	] );
 
+	const userInputPurposeConversionEvents = useSelect( ( select ) => {
+		const isGA4Connected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ! isGA4Connected || ! isConversionReportingEnabled ) {
+			return [];
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getUserInputPurposeConversionEvents();
+	} );
+
+	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
+		useDispatch( CORE_USER );
+
 	const submitChanges = useCallback( async () => {
 		trackEvent( gaEventCategory, 'summary_submit' );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
+			if ( isConversionReportingEnabled ) {
+				// Update 'includeConversionTailoredMetrics' key metrics setting with included
+				//conversion events, to mark that their respective metrics should be included in the
+				// list of tailored metrics and persist on the dashboard in case events are lost.
+				await setKeyMetricsSetting(
+					'includeConversionTailoredMetrics',
+					userInputPurposeConversionEvents
+				);
+				await saveKeyMetricsSettings( {
+					widgetSlugs: undefined,
+				} );
+			}
+
+			if ( !! userPickedMetrics ) {
+				await resetKeyMetricsSelection();
+			}
 			const url = new URL( dashboardURL );
 			navigateTo( url.toString() );
 		}
-	}, [ gaEventCategory, saveUserInputSettings, dashboardURL, navigateTo ] );
+	}, [
+		gaEventCategory,
+		saveUserInputSettings,
+		userInputPurposeConversionEvents,
+		dashboardURL,
+		setKeyMetricsSetting,
+		saveKeyMetricsSettings,
+		navigateTo,
+		isConversionReportingEnabled,
+		userPickedMetrics,
+		resetKeyMetricsSelection,
+	] );
 
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()

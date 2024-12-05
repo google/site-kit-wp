@@ -191,6 +191,18 @@ async function saveSettings( select, dispatch ) {
 		}
 	}
 
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
 	return {};
 }
 
@@ -240,6 +252,7 @@ export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 		dispatch( CORE_SITE ).resetConversionTrackingSettings();
+		dispatch( CORE_SITE ).resetFirstPartyModeSettings();
 	}
 
 	dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
@@ -308,17 +321,22 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+
 	if ( keys ) {
 		invariant(
 			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
-				haveConversionTrackingSettingsChanged,
+				haveConversionTrackingSettingsChanged ||
+				haveFirstPartyModeSettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
 		);
 	}
 
 	invariant(
 		! isEqual( settings, savedSettings ) ||
-			haveConversionTrackingSettingsChanged,
+			haveConversionTrackingSettingsChanged ||
+			haveFirstPartyModeSettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 }

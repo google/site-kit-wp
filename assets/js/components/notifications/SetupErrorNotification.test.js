@@ -20,70 +20,49 @@
  * Internal dependencies
  */
 import {
-	render,
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_SPLASH,
-} from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import SetupErrorNotification from './SetupErrorNotification';
+import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_error';
 
 describe( 'SetupErrorNotification', () => {
 	let registry;
 
-	const NotificationWithComponentProps = withNotificationComponentProps(
-		SETUP_ERROR_NOTIFICATION
-	)( SetupErrorNotification );
+	const notification = DEFAULT_NOTIFICATIONS[ SETUP_ERROR_NOTIFICATION ];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+	} );
 
-		provideSiteInfo( registry, {
-			setupErrorRedoURL: '#',
-			setupErrorCode: 'access_denied',
-			setupErrorMessage:
-				'Setup was interrupted because you did not grant the necessary permissions',
+	describe( 'checkRequirements', () => {
+		it( 'is active', async () => {
+			provideSiteInfo( registry, {
+				setupErrorRedoURL: '#',
+				setupErrorCode: 'access_denied',
+				setupErrorMessage:
+					'Setup was interrupted because you did not grant the necessary permissions',
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_SPLASH
+			);
+
+			expect( isActive ).toBe( true );
 		} );
-	} );
 
-	it( 'should display the notification when there is a permission error during setup', async () => {
-		const { getByText, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
+		it( 'is not active when there is no setup error', async () => {
+			provideSiteInfo( registry );
+
+			const isActive = await notification.checkRequirements(
 				registry,
-				viewContext: VIEW_CONTEXT_SPLASH,
-			}
-		);
+				VIEW_CONTEXT_SPLASH
+			);
 
-		await waitForRegistry();
-
-		expect(
-			getByText( /oops! there was a problem during set up/i )
-		).toBeInTheDocument();
-	} );
-
-	// Skipped in the meantime until notifications API testing infrastructure is set in place,
-	// currently this can't be tested as banner itself does not handle the checks and queue when it will be shown.
-	// @TODO enbale test once notifications API is included in tests.
-	// eslint-disable-next-line jest/no-disabled-tests
-	it.skip( 'should not display the notification when permission error happens outside the setup screen', async () => {
-		const { getByText, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText( /oops! there was a problem during set up/i )
-		).not.toBeInTheDocument();
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
