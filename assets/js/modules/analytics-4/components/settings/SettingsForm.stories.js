@@ -110,19 +110,19 @@ WithFirstPartyModeAvailable.decorators = [
 				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 			);
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: {
-					isEnabled: true,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
-				},
-			} );
-
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+			const fpmSettings = {
 				isEnabled: true,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
+			};
+
+			fetchMock.get( fpmServerRequirementsEndpoint, {
+				body: fpmSettings,
 			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetFirstPartyModeSettings( fpmSettings );
 		};
 
 		return (
@@ -146,19 +146,19 @@ WithFirstPartyModeUnavailable.decorators = [
 				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 			);
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: {
-					isEnabled: true,
-					isFPMHealthy: false,
-					isScriptAccessEnabled: false,
-				},
-			} );
-
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+			const fpmSettings = {
 				isEnabled: true,
 				isFPMHealthy: false,
 				isScriptAccessEnabled: false,
+			};
+
+			fetchMock.get( fpmServerRequirementsEndpoint, {
+				body: fpmSettings,
 			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetFirstPartyModeSettings( fpmSettings );
 		};
 
 		return (
