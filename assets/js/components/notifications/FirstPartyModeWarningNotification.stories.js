@@ -36,10 +36,10 @@ import {
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
-const FPM_BANNER_ID = 'fpm-warning-notification';
+const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID = 'fpm-warning-notification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	FPM_BANNER_ID
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID
 )( FirstPartyModeWarningNotification );
 
 function Template() {
@@ -57,7 +57,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: FPM_BANNER_ID,
+						slug: FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 						active: false,
 					},
 				] );
@@ -65,12 +65,15 @@ export default {
 				// Register the notification to avoid errors in console.
 				registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.registerNotification( FPM_BANNER_ID, {
-						Component: FirstPartyModeWarningNotification,
-						areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-						isDismissible: true,
-					} );
+					.registerNotification(
+						FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+						{
+							Component: FirstPartyModeWarningNotification,
+							areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							isDismissible: true,
+						}
+					);
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -80,7 +83,7 @@ export default {
 					),
 					{
 						body: {
-							[ FPM_BANNER_ID ]: {
+							[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 								expires: Date.now() / 1000 + WEEK_IN_SECONDS,
 								count: 1,
 							},
