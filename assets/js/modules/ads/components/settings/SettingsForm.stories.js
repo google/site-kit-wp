@@ -26,12 +26,12 @@ import fetchMock from 'fetch-mock';
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import {
 	provideModules,
 	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 function Template( args ) {
 	return (
@@ -78,19 +78,19 @@ FirstPartyModeEnabled.args = {
 			'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 		);
 
-		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-			body: {
-				isEnabled: true,
-				isFPMHealthy: true,
-				isScriptAccessEnabled: true,
-			},
-		} );
-
-		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+		const fpmSettings = {
 			isEnabled: true,
 			isFPMHealthy: true,
 			isScriptAccessEnabled: true,
+		};
+
+		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
+			body: fpmSettings,
 		} );
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetFirstPartyModeSettings( fpmSettings );
 	},
 };
 
@@ -105,19 +105,19 @@ FirstPartyModeDisabledWithWarning.args = {
 			'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
 		);
 
-		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-			body: {
-				isEnabled: true,
-				isFPMHealthy: false,
-				isScriptAccessEnabled: false,
-			},
-		} );
-
-		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+		const fpmSettings = {
 			isEnabled: true,
 			isFPMHealthy: false,
 			isScriptAccessEnabled: false,
+		};
+
+		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
+			body: fpmSettings,
 		} );
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetFirstPartyModeSettings( fpmSettings );
 	},
 };
 
