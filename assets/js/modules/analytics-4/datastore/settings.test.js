@@ -59,9 +59,6 @@ describe( 'modules/analytics-4 settings', () => {
 		data: { status: 500 },
 	};
 
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
-	);
 	const createPropertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
 	);
@@ -87,6 +84,13 @@ describe( 'modules/analytics-4 settings', () => {
 
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
+			const settingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+			);
+			const fpmSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-settings'
+			);
+
 			beforeEach( () => {
 				provideUserAuthentication( registry );
 
@@ -513,6 +517,13 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( fpmSettingsEndpoint, {
+					body: JSON.stringify( {
+						data: { settings: { isEnabled: true } },
+					} ),
+					status: 200,
+				} );
+
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
@@ -520,17 +531,6 @@ describe( 'modules/analytics-4 settings', () => {
 						isFPMHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
-
-				const fpmSettingsEndpoint = new RegExp(
-					'^/google-site-kit/v1/core/site/data/fpm-settings'
-				);
-
-				fetchMock.postOnce( fpmSettingsEndpoint, {
-					body: JSON.stringify( {
-						data: { settings: { isEnabled: true } },
-					} ),
-					status: 200,
-				} );
 
 				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
@@ -542,6 +542,74 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					},
 				} );
+			} );
+
+			it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( fpmSettingsEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				const { error: submitChangesError } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.submitChanges();
+
+				expect( submitChangesError ).toEqual( error );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				expect( fetchMock ).not.toHaveFetched( fpmSettingsEndpoint );
 			} );
 
 			it( 'should reset audience settings in the store when Analytics settings have successfully saved', async () => {

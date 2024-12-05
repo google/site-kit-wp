@@ -35,12 +35,6 @@ describe( 'modules/ads settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-			isEnabled: false,
-			isFPMHealthy: true,
-			isScriptAccessEnabled: true,
-		} );
 	} );
 
 	afterAll( () => {
@@ -51,6 +45,15 @@ describe( 'modules/ads settings', () => {
 		const settingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/modules/ads/data/settings'
 		);
+		const fpmSettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/site/data/fpm-settings'
+		);
+
+		const error = {
+			code: 'internal_error',
+			message: 'Something wrong happened.',
+			data: { status: 500 },
+		};
 
 		beforeEach( () => {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
@@ -82,10 +85,6 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
-			const fpmSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-settings'
-			);
-
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 				body: JSON.parse( opts.body )?.data,
 				status: 200,
@@ -98,6 +97,12 @@ describe( 'modules/ads settings', () => {
 				status: 200,
 			} );
 
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
@@ -108,6 +113,50 @@ describe( 'modules/ads settings', () => {
 					},
 				},
 			} );
+		} );
+
+		it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( fpmSettingsEndpoint, {
+				body: error,
+				status: 500,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+			const { error: submitChangesError } = await registry
+				.dispatch( MODULES_ADS )
+				.submitChanges();
+
+			expect( submitChangesError ).toEqual( error );
+
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should not send a POST request to the FPM settings endpoint when the toggle state is not changed', async () => {
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body )?.data,
+				status: 200,
+			} ) );
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).not.toHaveFetched( fpmSettingsEndpoint );
 		} );
 	} );
 
@@ -157,6 +206,13 @@ describe( 'modules/ads settings', () => {
 			} );
 
 			registry.dispatch( MODULES_ADS ).setConversionID( '56789' );
+
+			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
 			registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
 
 			registry.dispatch( MODULES_ADS ).rollbackChanges();
