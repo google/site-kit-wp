@@ -8,7 +8,6 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import {
 	deactivateUtilityPlugins,
-	pageWait,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
 	setAuthToken,
@@ -215,7 +214,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
 		);
-		await pageWait();
+		await page.waitForTimeout( 250 );
 	} );
 
 	it( 'does allow Analytics to be set up with an existing tag if it is a GA4 tag', async () => {
