@@ -31,6 +31,7 @@ use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
@@ -160,11 +161,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function on_deactivation() {
 		$pre_deactivation_settings = $this->get_settings()->get();
 
-		$this->get_settings()->delete();
+		if ( isset( $pre_deactivation_settings['clientID'] ) ) {
+			( new Existing_Client_ID( $this->options ) )->set( $pre_deactivation_settings['clientID'] );
+		}
 
-		$post_deactivation_settings             = $this->get_settings()->get();
-		$post_deactivation_settings['clientID'] = $pre_deactivation_settings['clientID'];
-		$this->get_settings()->merge( $post_deactivation_settings );
+		$this->get_settings()->delete();
 	}
 
 	/**
