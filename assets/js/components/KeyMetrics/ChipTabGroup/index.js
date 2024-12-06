@@ -51,6 +51,7 @@ import CheckMark from '../../../../svg/icons/check-2.svg';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import StarFill from '../../../../svg/icons/star-fill.svg';
 
 const currentSelectionGroup = {
 	SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
@@ -278,6 +279,12 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 								{ index === 0 && (
 									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg">
 										<CheckMark width={ 12 } height={ 12 } />
+									</span>
+								) }
+								{ KEY_METRICS_SUGGESTED_GROUP_SLUG ===
+									group.SLUG && (
+									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg googlesitekit-chip-tab-group__tab-item-mobile-svg--suggested">
+										<StarFill width={ 12 } height={ 12 } />
 									</span>
 								) }
 								{ group.LABEL }

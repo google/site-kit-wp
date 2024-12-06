@@ -123,14 +123,6 @@
 			}
 		}
 
-		.googlesitekit-chip-tab-group__tab-item-mobile-svg {
-			margin-right: 7px;
-
-			svg {
-				display: block;
-			}
-		}
-
 		.googlesitekit-chip-tab-group__graphic {
 			align-items: center;
 			display: flex;
@@ -142,6 +134,24 @@
 
 				@media (min-width: $bp-tablet) {
 					max-height: unset;
+				}
+			}
+		}
+
+		.googlesitekit-chip-tab-group__tab-item-mobile-svg {
+			margin-right: 7px;
+
+			svg {
+				display: block;
+			}
+
+			&.googlesitekit-chip-tab-group__tab-item-mobile-svg--suggested {
+
+				svg {
+
+					path {
+						fill: $c-neutral-n-900;
+					}
 				}
 			}
 		}
