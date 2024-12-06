@@ -39,7 +39,10 @@ export default function Notification( {
 } ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
-	const trackEvents = useNotificationEvents( id );
+	const trackEvents = useNotificationEvents(
+		id,
+		gaTrackingEventArgs?.category
+	);
 
 	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
 
