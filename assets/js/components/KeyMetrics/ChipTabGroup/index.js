@@ -31,6 +31,7 @@ import { Tab, TabBar } from 'googlesitekit-components';
 import {
 	EFFECTIVE_SELECTION,
 	KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
+	KEY_METRICS_SUGGESTED_GROUP_SLUG,
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
 	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
 	KEY_METRICS_GROUP_GENERATING_LEADS,
@@ -49,10 +50,16 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const currentSelectionGroup = {
 	SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
 	LABEL: __( 'Current selection', 'google-site-kit' ),
+};
+
+const suggestedGroup = {
+	SLUG: KEY_METRICS_SUGGESTED_GROUP_SLUG,
+	LABEL: __( 'Suggested', 'google-site-kit' ),
 };
 
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
@@ -87,7 +94,12 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				UNSTAGED_SELECTION
 			) || []
 	);
-
+	const isUserInputCompleted = useSelect( ( select ) =>
+		select( CORE_USER ).isUserInputCompleted()
+	);
+	const answerBasedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics()
+	);
 	const detectedEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
 	);
@@ -115,8 +127,13 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		[ hasGeneratingLeadsGroup, hasSellingProductsGroup ]
 	);
 
+	let dynamicGroups = [ currentSelectionGroup ];
+	if ( isUserInputCompleted ) {
+		dynamicGroups = [ currentSelectionGroup, suggestedGroup ];
+	}
+
 	const allGroups = useMemo(
-		() => [ currentSelectionGroup, ...keyMetricsGroups ],
+		() => () => [ ...dynamicGroups, ...keyMetricsGroups ],
 		[ keyMetricsGroups ]
 	);
 
@@ -124,6 +141,14 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	// always be 0.
 	const selectedCounts = { [ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: 0 };
 	const activeMetricItems = {};
+
+	if ( isActive === suggestedGroup.SLUG ) {
+		Object.keys( allMetricItems ).forEach( ( slug ) => {
+			if ( answerBasedMetrics.includes( slug ) ) {
+				activeMetricItems[ slug ] = allMetricItems[ slug ];
+			}
+		} );
+	}
 
 	for ( const metricItemSlug in allMetricItems ) {
 		const metricGroup = allMetricItems[ metricItemSlug ].group;
@@ -210,7 +235,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	] );
 
 	const chipItemRows = [
-		[ currentSelectionGroup, ...keyMetricsGroups.slice( 0, 2 ) ],
+		[ ...dynamicGroups, ...keyMetricsGroups.slice( 0, 2 ) ],
 		[ ...keyMetricsGroups.slice( 2 ) ],
 	];
 
