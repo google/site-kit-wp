@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,13 +31,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { isValidClientID } from '../../utils/validation';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
 export default function ClientIDTextField() {
+	const registry = useRegistry();
+
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
@@ -59,6 +62,33 @@ export default function ClientIDTextField() {
 		},
 		[ clientID, setClientID, debounceSetIsValid ]
 	);
+
+	// Prefill the clientID field with a value from a previous module connection, if it exists.
+	useMount( async () => {
+		// Allow default `settings` and `savedSettings` to load before updating
+		// the `clientID` setting again.
+		await registry
+			.resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getSettings();
+
+		// The clientID is fetched again as useMount does not receive the
+		// updated clientID.
+		const currentClientID = registry
+			.select( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getClientID();
+
+		if (
+			currentClientID === '' &&
+			global._googlesitekitModulesData?.[ 'sign-in-with-google' ][
+				'existingClientID'
+			]
+		) {
+			setClientID(
+				global._googlesitekitModulesData[ 'sign-in-with-google' ]
+					.existingClientID
+			);
+		}
+	} );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
