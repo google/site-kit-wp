@@ -121,8 +121,8 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 		return array(
 			'first_party_mode_is_enabled'               => array(
 				'label' => __( 'First-Party Mode: Enabled', 'google-site-kit' ),
-				'value' => $settings['isEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
-				'debug' => $settings['isEnabled'] ? 'yes' : 'no',
+				'value' => $this->health_check_debug_field_value( $settings['isEnabled'] ),
+				'debug' => $this->health_check_debug_field_debug( $settings['isEnabled'] ),
 			),
 			'first_party_mode_is_fpm_healthy'           => array(
 				'label' => __( 'First Party Mode: Service healthy', 'google-site-kit' ),
