@@ -34,6 +34,7 @@ export default function SelectionPanelItems( {
 	availableSavedItems = {},
 	availableUnsavedItems = {},
 	ItemComponent,
+	NoticeComponent,
 } ) {
 	const renderItems = ( items ) => {
 		return Object.keys( items ).map( ( slug ) => (
@@ -76,6 +77,7 @@ export default function SelectionPanelItems( {
 					{ renderItems( availableUnsavedItems ) }
 				</div>
 			) }
+			{ NoticeComponent && <NoticeComponent /> }
 		</div>
 	);
 }
@@ -87,4 +89,5 @@ SelectionPanelItems.propTypes = {
 	availableSavedItems: PropTypes.object,
 	availableUnsavedItems: PropTypes.object,
 	ItemComponent: PropTypes.elementType,
+	NoticeComponent: PropTypes.elementType,
 };
