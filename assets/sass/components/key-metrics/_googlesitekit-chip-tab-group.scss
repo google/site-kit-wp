@@ -106,6 +106,12 @@
 			background-color: $c-site-kit-sk-100;
 		}
 
+		.googlesitekit-chip-tab-group__chip-item-svg__suggested {
+			path {
+				fill: $c-neutral-n-900;
+			}
+		}
+
 		.googlesitekit-chip-tab-group__chip-item-count {
 			margin-left: 3px;
 		}
