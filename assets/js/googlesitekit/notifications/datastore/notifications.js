@@ -217,16 +217,18 @@ export const controls = {
 					.filter( ( notification ) =>
 						notification.viewContexts.includes( viewContext )
 					)
-					.filter(
-						( notification ) =>
-							!! notification.isDismissible &&
-							isNotificationDismissed( notification.id )
+					.filter( ( { isDismissible, id } ) =>
+						isDismissible ? isNotificationDismissed( id ) : true
 					)
-					.map( ( notification ) => ( {
+					.map( ( { checkRequirements, ...notification } ) => ( {
 						...notification,
-						check:
-							notification.checkRequirements ||
-							Promise.resolve( true ),
+						checkRequirements,
+						async check() {
+							if ( checkRequirements ) {
+								return await checkRequirements( registry );
+							}
+							return true;
+						},
 					} ) );
 
 				const { queueNotification } =
