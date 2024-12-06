@@ -127,14 +127,16 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		[ hasGeneratingLeadsGroup, hasSellingProductsGroup ]
 	);
 
-	let dynamicGroups = [ currentSelectionGroup ];
-	if ( isUserInputCompleted ) {
-		dynamicGroups = [ currentSelectionGroup, suggestedGroup ];
-	}
+	const dynamicGroups = useMemo( () => {
+		if ( isUserInputCompleted ) {
+			return [ currentSelectionGroup, suggestedGroup ];
+		}
+		return [ currentSelectionGroup ];
+	}, [ isUserInputCompleted ] );
 
 	const allGroups = useMemo(
-		() => () => [ ...dynamicGroups, ...keyMetricsGroups ],
-		[ keyMetricsGroups ]
+		() => [ ...dynamicGroups, ...keyMetricsGroups ],
+		[ dynamicGroups, keyMetricsGroups ]
 	);
 
 	// Currently selected group does not include total selected number, so it will
