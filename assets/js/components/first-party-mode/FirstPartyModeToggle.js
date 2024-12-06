@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -74,7 +74,7 @@ export default function FirstPartyModeToggle( { className } ) {
 				/>
 			) }
 			{ ! isLoading && (
-				<Fragment>
+				<div className="googlesitekit-module-settings-group__switch">
 					<Switch
 						label={ __( 'First-party mode', 'google-site-kit' ) }
 						checked={
@@ -85,12 +85,14 @@ export default function FirstPartyModeToggle( { className } ) {
 						onClick={ handleClick }
 						hideLabel={ false }
 					/>
-					<Badge
-						className="googlesitekit-badge--beta"
-						hasLeftSpacing
-						label={ __( 'Beta', 'google-site-kit' ) }
-					/>
-				</Fragment>
+					<div>
+						<Badge
+							className="googlesitekit-badge--beta"
+							hasLeftSpacing
+							label={ __( 'Beta', 'google-site-kit' ) }
+						/>
+					</div>
+				</div>
 			) }
 			<p className="googlesitekit-module-settings-group__helper-text">
 				{ __(
