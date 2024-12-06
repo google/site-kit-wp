@@ -555,4 +555,27 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 </div>
 		<?php
 	}
+
+
+	/**
+	 * Exposes an existing client ID from a previous connection
+	 * to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	protected function inline_existing_client_id( $modules_data ) {
+		$existing_client_id = ( new Existing_Client_ID( $this->options ) )->get();
+
+		if ( $existing_client_id ) {
+			// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
+			$modules_data['sign-in-with-google'] = array(
+				'existingClientID' => $existing_client_id,
+			);
+		}
+
+		return $modules_data;
+	}
 }
