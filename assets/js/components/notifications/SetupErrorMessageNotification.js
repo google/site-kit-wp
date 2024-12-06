@@ -35,8 +35,10 @@ import NotificationError from '../../googlesitekit/notifications/components/layo
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
+import useViewContext from '../../hooks/useViewContext';
 
-export default function SetupErrorMessageNotification( { id, Notification } ) {
+export default function SetupErrorMessageNotification( { Notification } ) {
+	const viewContext = useViewContext();
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -95,8 +97,15 @@ export default function SetupErrorMessageNotification( { id, Notification } ) {
 		}
 	}
 
+	const gaTrackingProps = {
+		gaTrackingEventArgs: { category: `${ viewContext }_setup_error` },
+	};
+
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+		<Notification
+			{ ...gaTrackingProps }
+			className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error"
+		>
 			<NotificationError
 				title={ title }
 				description={
@@ -104,7 +113,7 @@ export default function SetupErrorMessageNotification( { id, Notification } ) {
 						text={ setupErrorMessage }
 						learnMoreLink={
 							<LearnMoreLink
-								id={ id }
+								id="setup_error"
 								label={ __( 'Get help', 'google-site-kit' ) }
 								url={ errorTroubleshootingLinkURL }
 							/>
@@ -114,7 +123,7 @@ export default function SetupErrorMessageNotification( { id, Notification } ) {
 				actions={
 					setupErrorRedoURL && (
 						<CTALink
-							id={ id }
+							id="setup_error"
 							ctaLabel={ ctaLabel }
 							ctaLink={ setupErrorRedoURL }
 						/>
