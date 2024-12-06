@@ -70,9 +70,6 @@ export default function UserInputQuestionnaire() {
 				'questionNumber'
 			)
 		) || 1;
-	const userPickedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -206,7 +203,6 @@ export default function UserInputQuestionnaire() {
 		saveKeyMetricsSettings,
 		navigateTo,
 		isConversionReportingEnabled,
-		userPickedMetrics,
 	] );
 
 	const settings = useSelect( ( select ) =>
