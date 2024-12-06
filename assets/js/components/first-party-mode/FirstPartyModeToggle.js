@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Badge from '../Badge';
 import SubtleNotification from '../notifications/SubtleNotification';
 
 export default function FirstPartyModeToggle( { className } ) {
@@ -73,15 +74,23 @@ export default function FirstPartyModeToggle( { className } ) {
 				/>
 			) }
 			{ ! isLoading && (
-				<Switch
-					label={ __( 'First-party mode', 'google-site-kit' ) }
-					checked={
-						!! isFirstPartyModeEnabled && hasMetServerRequirements
-					}
-					disabled={ ! hasMetServerRequirements }
-					onClick={ handleClick }
-					hideLabel={ false }
-				/>
+				<Fragment>
+					<Switch
+						label={ __( 'First-party mode', 'google-site-kit' ) }
+						checked={
+							!! isFirstPartyModeEnabled &&
+							hasMetServerRequirements
+						}
+						disabled={ ! hasMetServerRequirements }
+						onClick={ handleClick }
+						hideLabel={ false }
+					/>
+					<Badge
+						className="googlesitekit-badge--beta"
+						hasLeftSpacing
+						label={ __( 'Beta', 'google-site-kit' ) }
+					/>
+				</Fragment>
 			) }
 			<p className="googlesitekit-module-settings-group__helper-text">
 				{ __(

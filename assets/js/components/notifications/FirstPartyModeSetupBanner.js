@@ -113,7 +113,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Enable First-party mode (<emphasis>beta</emphasis>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics and Ads metrics.',
+						'Enable First-party mode (<emphasis>beta</emphasis>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
 						'google-site-kit'
 					),
 					{

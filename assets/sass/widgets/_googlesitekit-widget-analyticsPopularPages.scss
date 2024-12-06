@@ -1,7 +1,7 @@
 /**
- * Font Weight utilities.
+ * Analytics Popular Pages styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
  */
 
 .googlesitekit-plugin {
+	.googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout {
+		.googlesitekit-table__body-item:last-child {
+			// Ensure the metric shown in the last column is not wrapped.
+			white-space: nowrap;
 
-	.googlesitekit-font-weight-medium {
-		font-weight: $fw-medium;
-	}
-	.googlesitekit-font-weight-bold {
-		font-weight: $fw-bold !important;
+			.googlesitekit-table__body-item-content {
+				padding-left: 1em;
+			}
+		}
 	}
 }

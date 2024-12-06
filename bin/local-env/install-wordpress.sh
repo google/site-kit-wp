@@ -87,6 +87,12 @@ if [ "$WP_VERSION" == "latest" ]; then
 	wp core update-db --quiet
 fi
 
+if [ -n "$CA_CERT_REFRESH" ]; then
+  status_message "Updating WordPress certificate bundle..."
+  container curl --remote-name --show-error --silent https://raw.githubusercontent.com/WordPress/wordpress-develop/refs/heads/trunk/src/wp-includes/certificates/ca-bundle.crt
+  container mv ca-bundle.crt wp-includes/certificates/ca-bundle.crt
+fi
+
 # Switch to `twentytwenty` theme for consistent results (particularly for AMP compatibility).
 # For older versions of WP, download and install it if it isn't present.
 # If `twentytwenty` is already the active theme, the script will continue

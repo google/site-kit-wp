@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 
@@ -45,11 +46,18 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import ga4ReportingTour from '../../../../../feature-tours/ga4-reporting';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
+
+	const breakpoint = useBreakpoint();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
@@ -185,7 +193,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
 			description: __( 'Sessions', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.1.value',
 			className: 'googlesitekit-table__head-item--sessions',
 			Component( { fieldValue } ) {
@@ -197,7 +204,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Engagement Rate', 'google-site-kit' ),
 			description: __( 'Engagement Rate', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			className: 'googlesitekit-table__head-item--engagement-rate',
 			Component( { fieldValue } ) {
@@ -207,7 +213,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.3.value',
 			Component( { fieldValue } ) {
 				return <span>{ numFmt( fieldValue, 's' ) }</span>;
@@ -232,16 +237,30 @@ function ModulePopularPagesWidgetGA4( props ) {
 		} );
 	}
 
+	const tabbedLayout =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
+	const reportTable = (
+		<ReportTable
+			className={ classnames( {
+				'googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout':
+					tabbedLayout,
+			} ) }
+			rows={ rows }
+			columns={ tableColumns }
+			zeroState={ ZeroState }
+			gatheringData={ isGatheringData }
+			tabbedLayout={ tabbedLayout }
+		/>
+	);
+
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
-			<TableOverflowContainer>
-				<ReportTable
-					rows={ rows }
-					columns={ tableColumns }
-					zeroState={ ZeroState }
-					gatheringData={ isGatheringData }
-				/>
-			</TableOverflowContainer>
+			{ tabbedLayout ? (
+				reportTable
+			) : (
+				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
+			) }
 		</Widget>
 	);
 }
