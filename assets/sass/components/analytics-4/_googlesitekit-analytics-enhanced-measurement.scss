@@ -30,6 +30,7 @@
 		border-radius: 11px;
 		color: $c-content-on-primary;
 		display: flex;
+		flex-shrink: 0;
 		height: 20px;
 		justify-content: center;
 		margin-left: 16px;

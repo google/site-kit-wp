@@ -33,8 +33,10 @@ export default function ActionsCTALinkDismiss( {
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
+	onDismiss = () => {},
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
+	dismissOptions = {},
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -58,6 +60,8 @@ export default function ActionsCTALinkDismiss( {
 				dismissLabel={ dismissLabel }
 				dismissExpires={ dismissExpires }
 				disabled={ isNavigatingToCTALink }
+				onDismiss={ onDismiss }
+				dismissOptions={ dismissOptions }
 			/>
 		</div>
 	);

@@ -31,8 +31,6 @@
 		border-radius: $br-sm;
 
 		.googlesitekit-widget-audience-tiles__tabs {
-			border-bottom: 1px solid $c-utility-divider;
-
 			.mdc-tab-scroller {
 				// Fix ripple escaping the curved corners of the widget.
 				border-top-left-radius: $br-sm;
@@ -40,20 +38,10 @@
 
 				.mdc-tab-scroller__scroll-content {
 					.mdc-tab {
-						flex: none;
-						height: 56px;
-
 						// Remove pointer events from the button so that the tooltip inside can be hovered upon
 						pointer-events: none;
 
 						.mdc-tab__content {
-							color: $c-surfaces-on-surface;
-							font-size: $fs-label-sm;
-							font-weight: $fw-medium;
-							letter-spacing: -0.1px;
-							line-height: $lh-label-sm;
-							padding-top: 2px;
-
 							// Add back the pointer events within the button so that the tooltip can be hovered
 							// upon and the tabs can still be clicked.
 							pointer-events: all;
@@ -63,15 +51,7 @@
 								margin-left: 5px;
 							}
 						}
-
-						&.mdc-tab--active .mdc-tab__content {
-							color: $c-content-primary;
-						}
 					}
-				}
-
-				.mdc-tab-indicator > .mdc-tab-indicator__content--underline {
-					height: 3px;
 				}
 			}
 		}
