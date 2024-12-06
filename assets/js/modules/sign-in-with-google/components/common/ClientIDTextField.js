@@ -104,7 +104,7 @@ export default function ClientIDTextField() {
 
 	if ( isExistingClientID ) {
 		helperText = __(
-			'A Client ID from a previous connection was prefilled. You may use it or overwrite it with a newly generated ID.',
+			'Sign in with Google was already set up on this site. We recommend using your existing Client ID.',
 			'google-site-kit'
 		);
 	}
