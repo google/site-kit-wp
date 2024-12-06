@@ -45,8 +45,8 @@ import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
 import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
 import AddGroupNotice from './AddGroupNotice';
-import AudienceCreationNotice from './AudienceCreationNotice';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
+import AudienceCreationNotice from './AudienceCreationNotice';
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const [ firstView, setFirstView ] = useState( true );
@@ -272,12 +272,12 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				isLoading ? AudienceItemPreviewBlock : AudienceItem
 			}
 			savedItemSlugs={ savedItemSlugs }
-			NoticeComponent={ () => (
+			notice={
 				<Fragment>
 					<AddGroupNotice />
 					{ ! viewOnlyDashboard && <AudienceCreationNotice /> }
 				</Fragment>
-			) }
+			}
 		/>
 	);
 }
