@@ -51,30 +51,32 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 	return (
 		<div>
 			<LoadingWrapper loading={ loading } width="180px" height="21.3px">
-				<Switch
-					label={ __(
-						'Enhanced conversion tracking',
-						'google-site-kit'
-					) }
-					checked={ isConversionTrackingEnabled }
-					disabled={ isSaving || loading }
-					onClick={ () => {
-						// If Conversion Tracking is currently enabled, show a confirmation
-						// dialog warning users about the impact of disabling it.
-						if ( isConversionTrackingEnabled ) {
-							trackEvent( `${ viewContext }`, 'ect_disable' );
+				<div className="googlesitekit-module-settings-group__switch">
+					<Switch
+						label={ __(
+							'Enhanced conversion tracking',
+							'google-site-kit'
+						) }
+						checked={ isConversionTrackingEnabled }
+						disabled={ isSaving || loading }
+						onClick={ () => {
+							// If Conversion Tracking is currently enabled, show a confirmation
+							// dialog warning users about the impact of disabling it.
+							if ( isConversionTrackingEnabled ) {
+								trackEvent( `${ viewContext }`, 'ect_disable' );
 
-							setShowConfirmDialog( true );
-						} else {
-							trackEvent( `${ viewContext }`, 'ect_enable' );
+								setShowConfirmDialog( true );
+							} else {
+								trackEvent( `${ viewContext }`, 'ect_enable' );
 
-							// Conversion Tracking is not currently enabled, so this toggle
-							// enables it.
-							setConversionTrackingEnabled( true );
-						}
-					} }
-					hideLabel={ false }
-				/>
+								// Conversion Tracking is not currently enabled, so this toggle
+								// enables it.
+								setConversionTrackingEnabled( true );
+							}
+						} }
+						hideLabel={ false }
+					/>
+				</div>
 			</LoadingWrapper>
 			{ !! saveError && <ErrorText message={ saveError.message } /> }
 			<LoadingWrapper
