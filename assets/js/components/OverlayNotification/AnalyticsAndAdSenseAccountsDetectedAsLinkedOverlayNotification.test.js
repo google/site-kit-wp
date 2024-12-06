@@ -38,7 +38,10 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -51,18 +54,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	let registry;
 
 	const adSenseAccountID = 'pub-1234567890';
-
-	const reportOptions = {
-		startDate: '2020-08-11',
-		endDate: '2020-09-07',
-		dimensions: [ 'pagePath', 'adSourceName' ],
-		metrics: [ { name: 'totalAdRevenue' } ],
-		dimensionFilters: {
-			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-		},
-		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
-		limit: 1,
-	};
 
 	const fetchGetDismissedItemsRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismissed-items'
@@ -95,6 +86,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			'googlesitekit_read_shared_module_data::["adsense"]': true,
 		},
 	};
+	let reportOptions;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -121,9 +113,24 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			accountID: adSenseAccountID,
 		} );
+		const dateRangeDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		reportOptions = {
+			...dateRangeDates,
+			dimensions: [ 'pagePath', 'adSourceName' ],
+			metrics: [ { name: 'totalAdRevenue' } ],
+			dimensionFilters: {
+				adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+			},
+			orderby: [
+				{ metric: { metricName: 'totalAdRevenue' }, desc: true },
+			],
+			limit: 1,
+		};
 	} );
 
-	it( 'does not render when Analytics module is not connected', () => {
+	it( 'does not render when Analytics module is not connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'adsense',
@@ -137,19 +144,20 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			},
 		] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render when AdSense module is not connected', () => {
+	it( 'does not render when AdSense module is not connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'adsense',
@@ -163,47 +171,50 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			},
 		] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render when isAdSenseLinked is `false`', () => {
+	it( 'does not render when isAdSenseLinked is `false`', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render if dismissed previously', () => {
+	it( 'does not render if dismissed previously', async () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
 				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 			] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
@@ -222,13 +233,14 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 			);
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
@@ -241,58 +253,61 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			.dispatch( CORE_UI )
 			.setOverlayNotificationToShow( 'TestOverlayNotification' );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render without the feature flag', () => {
+	it( 'does not render without the feature flag', async () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
 				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 			] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render if adSenseLinked is `true` but data is in a "gathering data" state', () => {
+	it( 'does not render if adSenseLinked is `true` but data is in a "gathering data" state', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( {}, { options: reportOptions } );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render if adSenseLinked is `true` but there is zero data', () => {
+	it( 'does not render if adSenseLinked is `true` but there is zero data', async () => {
 		const report = getAnalytics4MockResponse( reportOptions );
 		const zeroReport =
 			replaceValuesInAnalytics4ReportWithZeroData( report );
@@ -301,135 +316,143 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( zeroReport, { options: reportOptions } );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'renders if adSenseLinked is `true` and data is available', () => {
+	it( 'renders if adSenseLinked is `true` and data is available', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render in entity dashboard', () => {
+	it( 'does not render in entity dashboard', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render in "view only" dashboard without Analytics access', () => {
+	it( 'does not render in "view only" dashboard without Analytics access', async () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetCapabilities(
 				capabilitiesAnalyticsNoAccess.permissions
 			);
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render in "view only" dashboard without AdSense access', () => {
+	it( 'does not render in "view only" dashboard without AdSense access', async () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetCapabilities( capabilitiesAdSenseNoAccess.permissions );
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'renders in "view only" dashboard with Analytics and AdSense access', () => {
+	it( 'renders in "view only" dashboard with Analytics and AdSense access', async () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetCapabilities( capabilities.permissions );
 		provideAnalytics4MockReport( registry, reportOptions );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'does not render in "view only" entity dashboard', () => {
+	it( 'does not render in "view only" entity dashboard', async () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetCapabilities( capabilities.permissions );
 		provideAnalytics4MockReport( registry, reportOptions );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			}
 		);
+		await waitForRegistry();
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
 
-	it( 'renders `Show me` and `Maybe later` buttons`', () => {
+	it( 'renders `Show me` and `Maybe later` buttons`', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Show me' );
 		expect( container ).toHaveTextContent( 'Maybe later' );
@@ -488,11 +511,11 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 
-		act( () => {
-			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /maybe later/i } )
+			);
 		} );
-
-		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
