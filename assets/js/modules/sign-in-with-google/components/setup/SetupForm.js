@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { lazy, Suspense, createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -61,9 +61,17 @@ export default function SetupForm() {
 				/>
 				<p className="googlesitekit-setup-module__step-description">
 					{ createInterpolateElement(
-						__(
-							'To set up Sign in with Google, Site Kit will help you create an "OAuth Client ID" that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
-							'google-site-kit'
+						sprintf(
+							/* translators: %1$s: Sign in with Google service name */
+							__(
+								'To set up %1$s, Site Kit will help you create an "OAuth Client ID" that will be used to enable %1$s on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
+								'google-site-kit'
+							),
+							_x(
+								'Sign in with Google',
+								'Service/product name (do not translate)',
+								'google-site-kit'
+							)
 						),
 						{
 							a: <Link href={ learnMoreURL } external />,
