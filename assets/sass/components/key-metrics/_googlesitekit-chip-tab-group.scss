@@ -106,6 +106,12 @@
 			background-color: $c-site-kit-sk-100;
 		}
 
+		.googlesitekit-chip-tab-group__chip-item-svg__suggested {
+			path {
+				fill: $c-neutral-n-900;
+			}
+		}
+
 		.googlesitekit-chip-tab-group__chip-item-count {
 			margin-left: 3px;
 		}
@@ -114,14 +120,6 @@
 
 			.googlesitekit-selection-box {
 				padding: 0 4px 10px;
-			}
-		}
-
-		.googlesitekit-chip-tab-group__tab-item-mobile-svg {
-			margin-right: 7px;
-
-			svg {
-				display: block;
 			}
 		}
 
@@ -136,6 +134,24 @@
 
 				@media (min-width: $bp-tablet) {
 					max-height: unset;
+				}
+			}
+		}
+
+		.googlesitekit-chip-tab-group__tab-item-mobile-svg {
+			margin-right: 7px;
+
+			svg {
+				display: block;
+			}
+
+			&.googlesitekit-chip-tab-group__tab-item-mobile-svg--suggested {
+
+				svg {
+
+					path {
+						fill: $c-neutral-n-900;
+					}
 				}
 			}
 		}
