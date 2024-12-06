@@ -34,6 +34,7 @@ export const MAX_SELECTED_METRICS_COUNT = 4;
 export const MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS = 8;
 
 export const KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG = 'current-selection';
+export const KEY_METRICS_SUGGESTED_GROUP_SLUG = 'suggested';
 export const KEY_METRICS_GROUP_VISITORS = {
 	SLUG: 'visitors',
 	LABEL: __( 'Visitors', 'google-site-kit' ),
