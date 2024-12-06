@@ -104,16 +104,6 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	},
 } );
 
-const fetchResetKeyMetricsSelectionStore = createFetchStore( {
-	baseName: 'resetKeyMetricsSelection',
-	controlCallback: () =>
-		API.set( 'core', 'user', 'reset-key-metrics-selection' ),
-	reducerCallback: ( state, keyMetricsSettings ) => ( {
-		...state,
-		keyMetricsSettings,
-	} ),
-} );
-
 const baseActions = {
 	/**
 	 * Sets key metrics setting.
@@ -175,33 +165,6 @@ const baseActions = {
 				.setKeyMetricsSetupCompletedBy(
 					registry.select( CORE_USER ).getID()
 				);
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Resets key metrics selecton.
-	 *
-	 * @since 1.141.0
-	 *
-	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
-	 * @return {Object} Object with `response` and `error`.
-	 */
-	*resetKeyMetricsSelection( settings = {} ) {
-		invariant(
-			isPlainObject( settings ),
-			'key metric settings should be an object to save.'
-		);
-
-		yield clearError( 'resetKeyMetricsSelection', [] );
-
-		const { response, error } =
-			yield fetchResetKeyMetricsSelectionStore.actions.fetchResetKeyMetricsSelection();
-
-		if ( error ) {
-			// Store error manually since resetKeyMetricsSelection signature differs from fetchResetKeyMetricsSelectionStore.
-			yield receiveError( error, 'resetKeyMetricsSelection', [] );
 		}
 
 		return { response, error };
@@ -725,7 +688,6 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetKeyMetricsSettingsStore,
 	fetchSaveKeyMetricsSettingsStore,
-	fetchResetKeyMetricsSelectionStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
