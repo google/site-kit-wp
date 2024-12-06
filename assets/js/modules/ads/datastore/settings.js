@@ -31,9 +31,11 @@ import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
 import { isValidConversionID } from '../utils/validation';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_CONVERSION_ID =
@@ -73,6 +75,22 @@ export async function submitChanges( { select, dispatch } ) {
 
 		if ( error ) {
 			return { error };
+		}
+
+		if (
+			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				FPM_SETUP_CTA_BANNER_NOTIFICATION
+			)
+		) {
+			const { error: dismissError } =
+				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					FPM_SETUP_CTA_BANNER_NOTIFICATION
+				) ) || {};
+
+			if ( dismissError ) {
+				return { error: dismissError };
+			}
 		}
 	}
 
