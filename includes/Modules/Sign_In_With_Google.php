@@ -77,6 +77,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_existing_client_id' ), 10 );
+
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
 			function () {
