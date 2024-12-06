@@ -26,7 +26,7 @@ import { useDeepCompareEffect } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,11 +44,15 @@ import { WEEK_IN_SECONDS } from '../../../../../../util';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
 import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
+import AddGroupNotice from './AddGroupNotice';
+import AudienceCreationNotice from './AudienceCreationNotice';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const [ firstView, setFirstView ] = useState( true );
 	const { setExpirableItemTimers } = useDispatch( CORE_USER );
 	const { syncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+	const viewOnlyDashboard = useViewOnly();
 
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
@@ -268,6 +272,12 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				isLoading ? AudienceItemPreviewBlock : AudienceItem
 			}
 			savedItemSlugs={ savedItemSlugs }
+			NoticeComponent={ () => (
+				<Fragment>
+					<AddGroupNotice />
+					{ ! viewOnlyDashboard && <AudienceCreationNotice /> }
+				</Fragment>
+			) }
 		/>
 	);
 }
