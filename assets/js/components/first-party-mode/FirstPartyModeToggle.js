@@ -85,7 +85,7 @@ export default function FirstPartyModeToggle( { className } ) {
 						onClick={ handleClick }
 						hideLabel={ false }
 					/>
-					<div>
+					<div className="googlesitekit-first-party-mode-toggle__switch-badge">
 						<Badge
 							className="googlesitekit-badge--beta"
 							hasLeftSpacing

@@ -46,6 +46,11 @@
 			}
 		}
 
+		.googlesitekit-first-party-mode-toggle__switch-badge {
+			position: relative;
+			top: -2px;
+		}
+
 		.googlesitekit-module-settings-group__helper-text {
 			color: $c-surfaces-on-surface-variant;
 			flex-basis: 100%;
