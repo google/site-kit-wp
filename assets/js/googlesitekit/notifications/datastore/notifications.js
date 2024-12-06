@@ -137,11 +137,12 @@ export const actions = {
 	resetQueue( groupID = NOTIFICATION_GROUPS.DEFAULT ) {
 		return { type: RESET_QUEUE, payload: { groupID } };
 	},
-	*populateQueue( viewContext ) {
+	*populateQueue( viewContext, groupID = NOTIFICATION_GROUPS.DEFAULT ) {
 		yield {
 			type: POPULATE_QUEUE,
 			payload: {
 				viewContext,
+				groupID,
 			},
 		};
 	},
@@ -231,7 +232,7 @@ export const controls = {
 						notification.viewContexts.includes( viewContext )
 					)
 					.filter( ( { isDismissible, id } ) =>
-						isDismissible ? isNotificationDismissed( id ) : true
+						isDismissible ? ! isNotificationDismissed( id ) : true
 					)
 					.map( ( { checkRequirements, ...notification } ) => ( {
 						...notification,
