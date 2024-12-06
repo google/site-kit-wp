@@ -13,10 +13,10 @@ namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 
 /**
  * Class for handling First Party Mode settings via REST API.

@@ -138,6 +138,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Relocated from REST_First_Party_Mode_Controller.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.

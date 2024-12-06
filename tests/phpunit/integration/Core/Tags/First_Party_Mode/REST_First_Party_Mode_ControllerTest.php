@@ -12,11 +12,11 @@ namespace Google\Site_Kit\Tests\Core\Tags\First_Party_Mode;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\REST_First_Party_Mode_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\REST_First_Party_Mode_Controller;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
