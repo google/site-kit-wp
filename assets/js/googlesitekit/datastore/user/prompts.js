@@ -182,15 +182,21 @@ const baseSelectors = {
 	 * Checks whether or not the prompt is being dismissed for the given slug.
 	 *
 	 * @since 1.121.0
+	 * @since n.e.x.t Added `expiresInSeconds` parameter to correctly determine whether the prompt is being dismissed if it has a non zero expiry.
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Prompt slug.
+	 * @param {Object} state            Data store's state.
+	 * @param {string} slug             Prompt slug.
+	 * @param {number} expiresInSeconds (optional) Prompt expiry in seconds.
 	 * @return {boolean} True if the prompt is being dismissed, otherwise false.
 	 */
 	isDismissingPrompt: createRegistrySelector(
-		( select ) => ( state, slug ) => {
-			return select( CORE_USER ).isFetchingDismissPrompt( slug );
-		}
+		( select ) =>
+			( state, slug, expiresInSeconds = 0 ) => {
+				return select( CORE_USER ).isFetchingDismissPrompt(
+					slug,
+					expiresInSeconds
+				);
+			}
 	),
 };
 

@@ -93,6 +93,18 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
 
+	const promptBeingDismissed = useSelect(
+		( select ) =>
+			select( CORE_USER ).isDismissingPrompt(
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+				2 * WEEK_IN_SECONDS
+			) ||
+			select( CORE_USER ).isDismissingPrompt(
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+				0
+			)
+	);
+
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
@@ -228,6 +240,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed ||
+		promptBeingDismissed ||
 		! dismissedPromptsLoaded
 	) {
 		return null;
