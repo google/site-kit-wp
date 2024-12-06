@@ -44,6 +44,8 @@ export default function ClientIDTextField() {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
 
+	const [ isExistingClientID, setIsExistingClientID ] = useState( false );
+
 	const [ isValid, setIsValid ] = useState(
 		! clientID || isValidClientID( clientID )
 	);
@@ -56,6 +58,7 @@ export default function ClientIDTextField() {
 
 			if ( newValue !== clientID ) {
 				setClientID( newValue );
+				setIsExistingClientID( false );
 			}
 
 			debounceSetIsValid( isValidClientID( newValue ) );
@@ -87,8 +90,24 @@ export default function ClientIDTextField() {
 				global._googlesitekitModulesData[ 'sign-in-with-google' ]
 					.existingClientID
 			);
+			setIsExistingClientID( true );
 		}
 	} );
+
+	let helperText;
+	if ( ! isValid ) {
+		helperText = __(
+			'A valid Client ID is required to use Sign in with Google',
+			'google-site-kit'
+		);
+	}
+
+	if ( isExistingClientID ) {
+		helperText = __(
+			'A Client ID from a previous connection was prefilled. You may use it or overwrite it with a newly generated ID.',
+			'google-site-kit'
+		);
+	}
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
@@ -97,13 +116,7 @@ export default function ClientIDTextField() {
 				className={ classnames( 'googlesitekit-text-field-client-id', {
 					'mdc-text-field--error': ! isValid,
 				} ) }
-				helperText={
-					! isValid &&
-					__(
-						'A valid Client ID is required to use Sign in with Google',
-						'google-site-kit'
-					)
-				}
+				helperText={ helperText }
 				outlined
 				value={ clientID }
 				onChange={ onChange }
