@@ -43,6 +43,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '../../../../util/errors';
+import { setItem } from '../../../../googlesitekit/api/cache';
 import {
 	AccountSelect,
 	AMPContainerSelect,
@@ -129,6 +130,10 @@ export default function SetupForm( { finishSetup } ) {
 					if ( error ) {
 						throw error;
 					}
+
+					await setItem( 'module_setup', 'analytics-4', {
+						ttl: 300,
+					} );
 
 					// Reauth/setup URL needs to come from async activateModule action to be fresh.
 					finishSetup( response.moduleReauthURL );

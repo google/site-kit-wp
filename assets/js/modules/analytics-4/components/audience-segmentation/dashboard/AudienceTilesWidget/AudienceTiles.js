@@ -475,7 +475,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 					<TabBar
 						// Force re-render when the number of audiences change, this is a workaround for a bug in TabBar which maintains an internal list of tabs but doesn't update it when the number of tabs is reduced.
 						key={ visibleAudiences.length }
-						className="googlesitekit-widget-audience-tiles__tabs"
+						className="googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
 						activeIndex={ activeTileIndex }
 						handleActiveIndexUpdate={ ( index ) =>
 							setActiveTile( visibleAudiences[ index ] )

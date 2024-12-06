@@ -63,6 +63,19 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
 	await API.invalidateCache( 'modules', 'ads' );
 
 	return {};
