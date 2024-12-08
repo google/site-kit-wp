@@ -70,7 +70,7 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 							'Customize settings',
 							'google-site-kit'
 						) }
-						ctaLink={ `${ settingsURL }#connected-services/sign-in-with-google/edit` }
+						ctaLink={ `${ settingsURL }#connected-services/sign-in-with-google` }
 					/>
 				}
 			/>
