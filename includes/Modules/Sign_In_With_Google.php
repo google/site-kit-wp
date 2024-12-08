@@ -163,7 +163,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function on_deactivation() {
 		$pre_deactivation_settings = $this->get_settings()->get();
 
-		if ( isset( $pre_deactivation_settings['clientID'] ) ) {
+		if ( ! empty( $pre_deactivation_settings['clientID'] ) ) {
 			( new Existing_Client_ID( $this->options ) )->set( $pre_deactivation_settings['clientID'] );
 		}
 
