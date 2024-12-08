@@ -40,6 +40,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { requiredAudienceSlugs } from '../datastore/audiences';
 
 export default function useEnableAudienceGroup( {
 	redirectURL,
@@ -61,6 +62,33 @@ export default function useEnableAudienceGroup( {
 			'autoSubmit'
 		)
 	);
+	const requiresAudienceCreation = useSelect( ( select ) => {
+		const availableAudiences =
+			select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+		if ( ! availableAudiences ) {
+			return true;
+		}
+
+		return requiredAudienceSlugs.some(
+			( slug ) =>
+				! availableAudiences.some(
+					( audience ) => audience.audienceSlug === slug
+				)
+		);
+	} );
+	const requiresDimensionCreation = useSelect( ( select ) => {
+		const availableCustomDimensions =
+			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
+
+		if ( ! availableCustomDimensions ) {
+			return true;
+		}
+
+		return ! availableCustomDimensions.includes(
+			'googlesitekit_post_type'
+		);
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
@@ -75,10 +103,14 @@ export default function useEnableAudienceGroup( {
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
 
-		// If scope is not granted, trigger scope error right away. These are
-		// typically handled automatically based on API responses, but
-		// this particular case has some special handling to improve UX.
-		if ( ! hasAnalytics4EditScope ) {
+		// If scope is not granted and it is required, trigger scope
+		// error right away. These are typically handled automatically
+		// based on API responses, but this particular case has some
+		// special handling to improve UX.
+		if (
+			! hasAnalytics4EditScope &&
+			( requiresAudienceCreation || requiresDimensionCreation )
+		) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
@@ -129,6 +161,8 @@ export default function useEnableAudienceGroup( {
 		}
 	}, [
 		hasAnalytics4EditScope,
+		requiresAudienceCreation,
+		requiresDimensionCreation,
 		setValues,
 		enableAudienceGroup,
 		failedAudiences,

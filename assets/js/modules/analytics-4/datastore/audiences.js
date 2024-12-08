@@ -44,6 +44,8 @@ const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
 const FINISH_AUDIENCES_SETUP = 'FINISH_AUDIENCES_SETUP';
 
+export const requiredAudienceSlugs = [ 'new-visitors', 'returning-visitors' ];
+
 /**
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
  * sorts them by total users, and returns the audienceResourceNames in that order.
@@ -440,10 +442,6 @@ const baseActions = {
 		}
 
 		if ( configuredAudiences.length === 0 ) {
-			const requiredAudienceSlugs = [
-				'new-visitors',
-				'returning-visitors',
-			];
 			const audiencesToCreate = failedSiteKitAudienceSlugs?.length
 				? failedSiteKitAudienceSlugs
 				: requiredAudienceSlugs;
