@@ -10,8 +10,11 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -67,6 +70,36 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Disconnect action name.
 	 */
 	const ACTION_DISCONNECT = 'googlesitekit_auth_disconnect';
+
+	/**
+	 * Existing_Client_ID instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Existing_Client_ID
+	 */
+	protected $existing_client_id;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->existing_client_id = new Existing_Client_ID( $this->options );
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
