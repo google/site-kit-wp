@@ -197,7 +197,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$pre_deactivation_settings = $this->get_settings()->get();
 
 		if ( ! empty( $pre_deactivation_settings['clientID'] ) ) {
-			( new Existing_Client_ID( $this->options ) )->set( $pre_deactivation_settings['clientID'] );
+			$this->existing_client_id->set( $pre_deactivation_settings['clientID'] );
 		}
 
 		$this->get_settings()->delete();
@@ -602,7 +602,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @return array Inline modules data.
 	 */
 	protected function inline_existing_client_id( $modules_data ) {
-		$existing_client_id = ( new Existing_Client_ID( $this->options ) )->get();
+		$existing_client_id = $this->existing_client_id->get();
 
 		if ( $existing_client_id ) {
 			// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
