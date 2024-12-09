@@ -218,12 +218,12 @@ describe( 'useEnableAudienceGroup', () => {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
 
-		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
 		} );
 
-		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_type' ],
 			status: 200,
 		} );
@@ -262,12 +262,12 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', async () => {
-		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
 		} );
 
-		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_type' ],
 			status: 200,
 		} );
@@ -308,12 +308,12 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
-		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
 		} );
 
-		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_type' ],
 			status: 200,
 		} );

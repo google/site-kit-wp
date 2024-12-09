@@ -62,37 +62,14 @@ export default function useEnableAudienceGroup( {
 			'autoSubmit'
 		)
 	);
-	const requiresAudienceCreation = useSelect( ( select ) => {
-		const availableAudiences =
-			select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-		if ( ! availableAudiences ) {
-			return true;
-		}
-
-		return requiredAudienceSlugs.some(
-			( slug ) =>
-				! availableAudiences.some(
-					( audience ) => audience.audienceSlug === slug
-				)
-		);
-	} );
-	const requiresDimensionCreation = useSelect( ( select ) => {
-		const availableCustomDimensions =
-			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
-
-		if ( ! availableCustomDimensions ) {
-			return true;
-		}
-
-		return ! availableCustomDimensions.includes(
-			'googlesitekit_post_type'
-		);
-	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
-	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		enableAudienceGroup,
+		fetchSyncAvailableCustomDimensions,
+		syncAvailableAudiences,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	if ( ! redirectURL ) {
 		redirectURL = addQueryArgs( global.location.href, {
@@ -102,6 +79,22 @@ export default function useEnableAudienceGroup( {
 
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
+
+		const { response: availableAudiences } = await syncAvailableAudiences();
+
+		const { response: availableCustomDimensions } =
+			await fetchSyncAvailableCustomDimensions();
+
+		const requiresAudienceCreation = requiredAudienceSlugs.some(
+			( slug ) =>
+				! availableAudiences.some(
+					( audience ) => audience.audienceSlug === slug
+				)
+		);
+
+		const requiresDimensionCreation = ! availableCustomDimensions.includes(
+			'googlesitekit_post_type'
+		);
 
 		// If scope is not granted and it is required, trigger scope
 		// error right away. These are typically handled automatically
@@ -160,9 +153,9 @@ export default function useEnableAudienceGroup( {
 			setIsSaving( false );
 		}
 	}, [
+		syncAvailableAudiences,
+		fetchSyncAvailableCustomDimensions,
 		hasAnalytics4EditScope,
-		requiresAudienceCreation,
-		requiresDimensionCreation,
 		setValues,
 		enableAudienceGroup,
 		failedAudiences,
