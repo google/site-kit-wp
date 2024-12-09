@@ -15,11 +15,21 @@
  */
 
 /**
+ * Defines async task.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} AsyncTask
+ * @property {number}     priority          Priority of task – executed in ascending order.
+ * @property {function(): Promise<boolean>} check Async function that resolves to a boolean. `true` if its checks pass, otherwise `false`.
+ */
+
+/**
  * Finds the highest priority task from a collection of tasks with async checks.
  *
  * @since n.e.x.t
  *
- * @param {Object[]} tasks List of task objects.
+ * @param {AsyncTask[]} tasks List of task objects.
  * @return {Promise<Object|null>} Promise that resolves to the highest priority task object which finishes its check first or `null` if no checks pass.
  */
 export async function racePrioritizedAsyncTasks( tasks ) {
