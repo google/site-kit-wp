@@ -91,7 +91,7 @@ export default function SettingsForm() {
 											),
 											_x(
 												'Sign in with Google',
-												'Service/product name (do not translate)',
+												'Service name',
 												'google-site-kit'
 											)
 									  )
@@ -103,7 +103,7 @@ export default function SettingsForm() {
 											),
 											_x(
 												'Sign in with Google',
-												'Service/product name (do not translate)',
+												'Service name',
 												'google-site-kit'
 											)
 									  ) }
