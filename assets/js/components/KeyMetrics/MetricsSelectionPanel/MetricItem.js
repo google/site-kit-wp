@@ -45,6 +45,7 @@ export default function MetricItem( {
 	slug,
 	title,
 	description,
+	isNewlyDetected,
 	savedItemSlugs = [],
 } ) {
 	const disconnectedModules = useSelect( ( select ) => {
@@ -107,6 +108,7 @@ export default function MetricItem( {
 			slug={ slug }
 			title={ title }
 			description={ description }
+			isNewlyDetected={ isNewlyDetected }
 			isItemSelected={ isMetricSelected }
 			isItemDisabled={ isMetricDisabled }
 			onCheckboxChange={ onCheckboxChange }
@@ -135,5 +137,6 @@ MetricItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
+	isNewlyDetected: PropTypes.bool,
 	savedItemSlugs: PropTypes.array,
 };
