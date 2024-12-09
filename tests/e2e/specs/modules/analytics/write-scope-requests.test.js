@@ -126,7 +126,11 @@ describe( 'Analytics write scope requests', () => {
 				}
 			} else if (
 				request.url().match( 'analytics-4/data/conversion-events' ) ||
-				request.url().match( 'search-console/data/searchanalytics' )
+				request.url().match( 'search-console/data/searchanalytics' ) ||
+				request
+					.url()
+					.match( 'analytics-4/data/sync-custom-dimensions' ) ||
+				request.url().match( 'user/data/survey-timeout' )
 			) {
 				request.respond( {
 					status: 200,
@@ -184,13 +188,6 @@ describe( 'Analytics write scope requests', () => {
 				);
 				request.respond( {
 					body: JSON.stringify( property ),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
-			) {
-				request.respond( {
-					status: 200,
-					body: '[]',
 				} );
 			} else if (
 				// Intercept request to GA TOS URL and redirect to gatoscallback.
@@ -425,7 +422,7 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForTimeout( 5000 );
+		await page.waitForTimeout( 2000 );
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{
