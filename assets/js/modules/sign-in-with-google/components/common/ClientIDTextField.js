@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,16 +31,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { isValidClientID } from '../../utils/validation';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
 export default function ClientIDTextField() {
+	const registry = useRegistry();
+
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
+
+	const [ isExistingClientID, setIsExistingClientID ] = useState( false );
 
 	const [ isValid, setIsValid ] = useState(
 		! clientID || isValidClientID( clientID )
@@ -53,12 +58,56 @@ export default function ClientIDTextField() {
 
 			if ( newValue !== clientID ) {
 				setClientID( newValue );
+				setIsExistingClientID( false );
 			}
 
 			debounceSetIsValid( isValidClientID( newValue ) );
 		},
 		[ clientID, setClientID, debounceSetIsValid ]
 	);
+
+	// Prefill the clientID field with a value from a previous module connection, if it exists.
+	useMount( async () => {
+		// Allow default `settings` and `savedSettings` to load before updating
+		// the `clientID` setting again.
+		await registry
+			.resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getSettings();
+
+		// The clientID is fetched again as useMount does not receive the
+		// updated clientID.
+		const currentClientID = registry
+			.select( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getClientID();
+
+		if (
+			currentClientID === '' &&
+			global._googlesitekitModulesData?.[ 'sign-in-with-google' ][
+				'existingClientID'
+			]
+		) {
+			setClientID(
+				global._googlesitekitModulesData[ 'sign-in-with-google' ]
+					.existingClientID
+			);
+			setIsExistingClientID( true );
+		}
+	} );
+
+	let helperText;
+	if ( ! isValid ) {
+		helperText = __(
+			'A valid Client ID is required to use Sign in with Google',
+			'google-site-kit'
+		);
+	}
+
+	if ( isExistingClientID ) {
+		helperText = __(
+			'Sign in with Google was already set up on this site. We recommend using your existing Client ID.',
+			'google-site-kit'
+		);
+	}
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
@@ -67,13 +116,7 @@ export default function ClientIDTextField() {
 				className={ classnames( 'googlesitekit-text-field-client-id', {
 					'mdc-text-field--error': ! isValid,
 				} ) }
-				helperText={
-					! isValid &&
-					__(
-						'A valid Client ID is required to use Sign in with Google',
-						'google-site-kit'
-					)
-				}
+				helperText={ helperText }
 				outlined
 				value={ clientID }
 				onChange={ onChange }
