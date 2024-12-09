@@ -266,11 +266,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		printf(
 			"\n<!-- %s -->\n",
 			esc_html(
-				sprintf(
-				/* translators: %s: Sign in with Google service name */
-					__( '%s button added by Site Kit', 'google-site-kit' ),
-					_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
-				)
+				// Purposely not translated as this is a technical comment.
+				//
+				// See: https://github.com/google/site-kit-wp/pull/9826#discussion_r1876026945.
+				'Sign in with Google button added by Site Kit'
 			)
 		);
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
