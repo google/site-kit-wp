@@ -29,7 +29,7 @@ import {
 	Fragment,
 	useCallback,
 } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
 /**
@@ -225,8 +225,12 @@ export default function SetupUsingProxyWithSignIn() {
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 			punycode.toUnicode( new URL( siteURL ).hostname )
 		);
+		// Note: This is referencing a button labelled "Sign in with Google"
+		// in the Site Kit UI, not referencing the "Sign in with Google" service.
+		//
+		// Do not use `_x( 'Sign in with Google', 'Service name', 'google-site-kit' )` for Sign in with Google text here.
 		description = __(
-			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.',
+			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click “Sign in with Google“ below to generate new credentials.',
 			'google-site-kit'
 		);
 	} else if (
@@ -406,8 +410,9 @@ export default function SetupUsingProxyWithSignIn() {
 																		! complete
 																	}
 																>
-																	{ __(
+																	{ _x(
 																		'Sign in with Google',
+																		'Prompt to authenticate Site Kit with Google Account',
 																		'google-site-kit'
 																	) }
 																</Button>
