@@ -132,6 +132,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
 		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
+
+		// Delete client ID stored from previous module connection on module reconnection.
+		add_action(
+			'googlesitekit_save_settings_' . self::MODULE_SLUG,
+			function () {
+				if ( $this->is_connected() ) {
+					$this->existing_client_id->delete();
+				}
+			}
+		);
 	}
 
 	/**
