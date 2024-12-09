@@ -191,6 +191,18 @@ async function saveSettings( select, dispatch ) {
 		}
 	}
 
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
 	return {};
 }
 
