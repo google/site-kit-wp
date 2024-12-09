@@ -55,8 +55,8 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
+import { isFeatureEnabled } from '../../features';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
-import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -453,10 +453,18 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			const fpmModuleConnected =
-				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
 
-			if ( ! fpmModuleConnected ) {
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			if (
+				! (
+					isModuleConnected( 'analytics-4' ) ||
+					isModuleConnected( 'ads' )
+				)
+			) {
 				return false;
 			}
 
@@ -487,34 +495,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
 			);
 		},
-	},
-	'fpm-warning-notification': {
-		Component: FirstPartyModeWarningNotification,
-		priority: 10,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const fpmModuleConnected =
-				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
-
-			if ( ! fpmModuleConnected ) {
-				return false;
-			}
-
-			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
-
-			const {
-				isFirstPartyModeEnabled,
-				isFPMHealthy,
-				isScriptAccessEnabled,
-			} = select( CORE_SITE );
-
-			return (
-				isFirstPartyModeEnabled() &&
-				( ! isFPMHealthy() || ! isScriptAccessEnabled() )
-			);
-		},
-		isDismissible: true,
 	},
 };
 

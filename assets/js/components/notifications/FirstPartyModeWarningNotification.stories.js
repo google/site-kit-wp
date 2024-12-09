@@ -33,10 +33,9 @@ import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotificati
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-
-const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID = 'fpm-warning-notification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID

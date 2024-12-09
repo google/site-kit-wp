@@ -108,8 +108,13 @@
 		background-color: $c-utility-warning-container;
 
 		.googlesitekit-subtle-notification__icon,
-		.googlesitekit-subtle-notification__content {
+		.googlesitekit-subtle-notification__content,
+		p > a {
 			color: $c-utility-on-warning-container;
+		}
+
+		.googlesitekit-subtle-notification__content p > a {
+			text-decoration: underline;
 		}
 
 		.mdc-button {
