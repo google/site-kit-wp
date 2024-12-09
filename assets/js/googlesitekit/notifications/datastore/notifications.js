@@ -134,9 +134,26 @@ export const actions = {
 			type: RECEIVE_QUEUED_NOTIFICATIONS,
 		};
 	},
+	/**
+	 * Resets a notification queue.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string?} groupID Group ID of queue to reset. Default: default.
+	 * @return {Object} Redux-style action.
+	 */
 	resetQueue( groupID = NOTIFICATION_GROUPS.DEFAULT ) {
 		return { type: RESET_QUEUE, payload: { groupID } };
 	},
+	/**
+	 * Populates a queue with qualifying notifications ordered by priority.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}  viewContext View context to populate queue for.
+	 * @param {string?} groupID     Group ID of queue to populate. Default: default.
+	 * @yield {Object} Redux-style action.
+	 */
 	*populateQueue( viewContext, groupID = NOTIFICATION_GROUPS.DEFAULT ) {
 		yield {
 			type: POPULATE_QUEUE,
@@ -146,6 +163,14 @@ export const actions = {
 			},
 		};
 	},
+	/**
+	 * Adds the given notification to its respective queue.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} notification Notification definition.
+	 * @return {Object} Redux-style action.
+	 */
 	queueNotification( notification ) {
 		return {
 			payload: {
