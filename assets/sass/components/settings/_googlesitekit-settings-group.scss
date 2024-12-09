@@ -55,7 +55,7 @@
 			color: $c-surfaces-on-surface-variant;
 			flex-basis: 100%;
 			font-size: $fs-label-sm;
-			margin: 6px 0 0 42px; // margin-left = 32px switch width + 10px margin-left of label.
+			margin: 6px 0 0 calc(32px + 10px);
 		}
 
 		.googlesitekit-analytics-enable-enhanced-measurement--loading {
