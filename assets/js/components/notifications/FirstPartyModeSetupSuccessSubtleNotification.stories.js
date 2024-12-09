@@ -38,21 +38,4 @@ Default.scenario = {};
 
 export default {
 	title: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupSuccessSubtleNotification',
-	decorators: [
-		( Story ) => {
-			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
-						isEnabled: true,
-					} );
-			};
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
-			);
-		},
-	],
 };
