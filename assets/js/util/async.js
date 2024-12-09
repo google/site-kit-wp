@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isPromiseResolved } from 'promise-status-async';
+
+/**
  * Defines async task.
  *
  * @since n.e.x.t
@@ -63,10 +68,11 @@ export async function racePrioritizedAsyncTasks( tasks ) {
 			// If we got here, then the fastest task's check did not pass.
 			// Filter out all tasks with completed failed checks.
 			for ( const i in group ) {
-				// Here `r` will either be `false` if the promise is pending, or
-				// an object `{ task, result }` as set above.
-				const r = await Promise.race( [ group[ i ], false ] );
-				if ( r && ! r.result ) {
+				const task = group[ i ];
+				if (
+					( await isPromiseResolved( task ) ) &&
+					false === ( await task ).result
+				) {
 					delete group[ i ];
 				}
 			}
