@@ -197,7 +197,7 @@ describe( 'modules/ads settings', () => {
 			);
 
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
@@ -258,7 +258,7 @@ describe( 'modules/ads settings', () => {
 			);
 
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
@@ -314,7 +314,7 @@ describe( 'modules/ads settings', () => {
 			);
 
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			} );

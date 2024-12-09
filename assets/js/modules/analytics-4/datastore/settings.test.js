@@ -645,7 +645,7 @@ describe( 'modules/analytics-4 settings', () => {
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
-						isEnabled: null,
+						isEnabled: false,
 						isFPMHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
@@ -717,7 +717,7 @@ describe( 'modules/analytics-4 settings', () => {
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
-						isEnabled: null,
+						isEnabled: false,
 						isFPMHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
@@ -785,7 +785,7 @@ describe( 'modules/analytics-4 settings', () => {
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
-						isEnabled: null,
+						isEnabled: false,
 						isFPMHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
