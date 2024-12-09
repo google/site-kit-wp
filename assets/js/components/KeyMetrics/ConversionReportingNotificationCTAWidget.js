@@ -93,7 +93,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	// If new events have been detected after initial set of events, we display
-	// the same callout banner, with a different call to actioc "View metrics"
+	// the same callout banner, with a different call to action "View metrics"
 	// which opens the metric selection panel.
 	const shouldShowCalloutForNewEvents =
 		isKeyMetricsSetupCompleted && haveConversionEventsWithDifferentMetrics;
