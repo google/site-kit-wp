@@ -35,11 +35,10 @@ import {
 	NOTIFICATION_AREAS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-
-const FPM_BANNER_ID = 'first-party-mode-setup-cta-banner';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	FPM_BANNER_ID
+	FPM_SETUP_CTA_BANNER_NOTIFICATION
 )( FirstPartyModeSetupBanner );
 
 function Template() {
@@ -57,7 +56,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: FPM_BANNER_ID,
+						slug: FPM_SETUP_CTA_BANNER_NOTIFICATION,
 						active: false,
 					},
 				] );
@@ -65,7 +64,7 @@ export default {
 				// Register the notification to avoid errors in console.
 				registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.registerNotification( FPM_BANNER_ID, {
+					.registerNotification( FPM_SETUP_CTA_BANNER_NOTIFICATION, {
 						Component: FirstPartyModeSetupBanner,
 						areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -80,7 +79,7 @@ export default {
 					),
 					{
 						body: {
-							[ FPM_BANNER_ID ]: {
+							[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 								expires: Date.now() / 1000 + WEEK_IN_SECONDS,
 								count: 1,
 							},

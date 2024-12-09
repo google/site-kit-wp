@@ -52,6 +52,7 @@ import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSe
 import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import { isFeatureEnabled } from '../../features';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -441,7 +442,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
-	'first-party-mode-setup-cta-banner': {
+	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: 320,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
