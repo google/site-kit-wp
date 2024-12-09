@@ -84,7 +84,8 @@
 		}
 
 		.googlesitekit-subtle-notification__content,
-		.mdc-button--tertiary:not(:disabled) {
+		.mdc-button--tertiary:not(:disabled),
+		.googlesitekit-subtle-notification__icon svg {
 			color: $c-utility-on-warning-container;
 		}
 	}
