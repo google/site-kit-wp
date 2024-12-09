@@ -451,7 +451,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
 				return false;
 			}
@@ -475,11 +475,19 @@ export const DEFAULT_NOTIFICATIONS = {
 				isScriptAccessEnabled,
 			} = select( CORE_SITE );
 
-			return (
-				! isFirstPartyModeEnabled() &&
-				isFPMHealthy() &&
-				isScriptAccessEnabled()
-			);
+			if ( isFirstPartyModeEnabled() ) {
+				return false;
+			}
+
+			if (
+				[ isFPMHealthy(), isScriptAccessEnabled() ].includes( null )
+			) {
+				await dispatch(
+					CORE_SITE
+				).fetchGetFPMServerRequirementStatus();
+			}
+
+			return isFPMHealthy() && isScriptAccessEnabled();
 		},
 		isDismissible: true,
 	},
