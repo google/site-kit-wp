@@ -343,7 +343,7 @@ class SetupUsingGCP extends Component {
 															>
 																{ _x(
 																	'Sign in with Google',
-																	'Service/product name (do not translate)',
+																	'Service name',
 																	'google-site-kit'
 																) }
 															</Button>

@@ -59,7 +59,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 					),
 					_x(
 						'Sign in with Google',
-						'Service/product name (do not translate)',
+						'Service name',
 						'google-site-kit'
 					)
 				) }
@@ -74,7 +74,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 							),
 							_x(
 								'Sign in with Google',
-								'Service/product name (do not translate)',
+								'Service name',
 								'google-site-kit'
 							)
 						) }
@@ -96,7 +96,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 							__( 'Set up %s', 'google-site-kit' ),
 							_x(
 								'Sign in with Google',
-								'Service/product name (do not translate)',
+								'Service name',
 								'google-site-kit'
 							)
 						) }

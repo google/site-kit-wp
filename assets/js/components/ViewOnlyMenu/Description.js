@@ -121,7 +121,7 @@ export default function Description() {
 				<Button onClick={ onButtonClick }>
 					{ _x(
 						'Sign in with Google',
-						'Service/product name (do not translate)',
+						'Service name',
 						'google-site-kit'
 					) }
 				</Button>

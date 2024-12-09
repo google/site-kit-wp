@@ -228,7 +228,7 @@ export default function SetupUsingProxyWithSignIn() {
 		// Note: This is referencing a button labelled "Sign in with Google"
 		// in the Site Kit UI, not referencing the "Sign in with Google" service.
 		//
-		// Do not use `_x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' )` for Sign in with Google text here.
+		// Do not use `_x( 'Sign in with Google', 'Service name', 'google-site-kit' )` for Sign in with Google text here.
 		description = __(
 			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click “Sign in with Google“ below to generate new credentials.',
 			'google-site-kit'
