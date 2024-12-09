@@ -785,7 +785,7 @@ describe( 'modules/analytics-4 settings', () => {
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
-						isEnabled: false,
+						isEnabled: true,
 						isFPMHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
