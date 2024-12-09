@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { createTestRegistry, render } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
