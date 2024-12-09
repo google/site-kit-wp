@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { racePrioritizedAsyncTasks } from '.';
+import { racePrioritizedAsyncTasks } from './async';
 
 describe( 'racePrioritizedAsyncTasks', () => {
 	it( 'should return the first task with the highest priority', async () => {
