@@ -106,9 +106,6 @@ export const registerNotifications = ( notifications ) => {
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			checkRequirements: async ( { select, resolveSelect } ) => {
-				if ( 1 ) {
-					return true;
-				}
 				await Promise.all( [
 					// The isModuleConnected() relies on the resolution
 					// of the getModules() resolver.
