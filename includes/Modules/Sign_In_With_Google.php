@@ -184,7 +184,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		switch ( $error_code ) {
 			case Authenticator::ERROR_INVALID_REQUEST:
 				/* translators: %s: Sign in with Google service name */
-				$error->add( self::MODULE_SLUG, sprintf( __( 'Login with %s failed.', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ) );
+				$error->add( self::MODULE_SLUG, sprintf( __( 'Login with %s failed.', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
 				break;
 			case Authenticator::ERROR_SIGNIN_FAILED:
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
@@ -224,7 +224,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	protected function setup_info() {
 		return array(
 			'slug'        => self::MODULE_SLUG,
-			'name'        => _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ),
+			'name'        => _x( 'Sign in with Google', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', 'google-site-kit' ),
 			'order'       => 10,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
@@ -324,7 +324,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				sprintf(
 				/* translators: %s: Sign in with Google service name */
 					__( '%s button added by Site Kit', 'google-site-kit' ),
-					_x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' )
+					_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
 				)
 			)
 		);
@@ -410,37 +410,37 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: Client ID', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: Client ID', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'] ),
 			),
 			'sign_in_with_google_shape'                    => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: Shape', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: Shape', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'shape', $settings['shape'] ),
 				'debug' => $settings['shape'],
 			),
 			'sign_in_with_google_text'                     => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: Text', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: Text', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'text', $settings['text'] ),
 				'debug' => $settings['text'],
 			),
 			'sign_in_with_google_theme'                    => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: Theme', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: Theme', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'theme', $settings['theme'] ),
 				'debug' => $settings['theme'],
 			),
 			'sign_in_with_google_use_snippet'              => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: One-tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: One-tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%1$s: Number of users who have authenticated using %2$s', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%1$s: Number of users who have authenticated using %2$s', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $authenticated_user_count,
 				'debug' => $authenticated_user_count,
 			),
@@ -514,7 +514,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$search_string              = 'Sign in with Google button added by Site Kit';
 		$search_translatable_string =
 			/* translators: %s: Sign in with Google service name */
-			sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) );
+			sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) );
 
 		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
 			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
@@ -593,7 +593,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	<h2>
 		<?php
 		/* translators: %s: Sign in with Google service name */
-		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service/product name (do not translate)', 'google-site-kit' ) ) );
+		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
 		?>
 	</h2>
 	<p>
