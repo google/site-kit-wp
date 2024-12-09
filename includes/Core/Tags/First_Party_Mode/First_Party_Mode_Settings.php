@@ -46,7 +46,7 @@ class First_Party_Mode_Settings extends Setting {
 	 */
 	protected function get_default() {
 		return array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
