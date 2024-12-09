@@ -80,12 +80,15 @@ jobs:
       matrix:
         amp_version: ['']
         wp_version: ['latest', 'nightly']
+        ca_cert_refresh: ['']
         include:
           - amp_version: '1.5.5'
             wp_version: '5.2.21'
+            ca_cert_refresh: true
     env:
       AMP_VERSION: ${{ matrix.amp_version }}
       WP_VERSION: ${{ matrix.wp_version }}
+      CA_CERT_REFRESH: ${{ matrix.ca_cert_refresh }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.pull_request.draft == false
