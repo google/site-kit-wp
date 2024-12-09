@@ -35,6 +35,12 @@
 
 		.googlesitekit-sign-in-with-google-settings-fields {
 
+			.googlesitekit-module-settings-group {
+				p {
+					margin: 0;
+				}
+			}
+
 			.googlesitekit-text-field-client-id,
 			.mdc-select,
 			.mdc-select__selected-text {
