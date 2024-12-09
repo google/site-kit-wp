@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupSuccessSubtleNotification Component Stories.
+ * FirstPartyModeSetupSuccessSubtleNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
