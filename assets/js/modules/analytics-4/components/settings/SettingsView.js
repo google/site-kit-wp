@@ -95,9 +95,12 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
-	const isFirstPartyModeEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isFirstPartyModeEnabled()
-	);
+	const isFirstPartyModeEnabled = useSelect( ( select ) => {
+		const { isEnabled, isFPMHealthy, isScriptAccessEnabled } =
+			select( CORE_SITE ).getFirstPartyModeSettings() || {};
+
+		return ! ( ! isEnabled || ! isFPMHealthy || ! isScriptAccessEnabled );
+	} );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
