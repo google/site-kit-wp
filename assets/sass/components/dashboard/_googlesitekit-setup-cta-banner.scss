@@ -70,11 +70,11 @@
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-			gap: $grid-gap-phone;
+			gap: 4px;
 			margin: 20px 0;
 
-			@media (min-width: $width-desktop + 1 + px) {
-				gap: $grid-gap-desktop;
+			@media (min-width: $width-tablet + 1 + px) {
+				gap: 10px;
 				margin-bottom: 0;
 			}
 		}

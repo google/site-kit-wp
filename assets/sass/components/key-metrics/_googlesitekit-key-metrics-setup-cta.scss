@@ -173,6 +173,10 @@
 				width: auto;
 			}
 
+			@media (min-width: $width-tablet + 1 + px) {
+				gap: 10px;
+			}
+
 			@media (min-width: $bp-nonMobile) {
 				margin-top: $grid-gap-desktop;
 

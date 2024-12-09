@@ -189,14 +189,14 @@ export default function CreateMessageStep() {
 									'google-site-kit'
 								) }
 							</SpinnerButton>
-							<Link
+							<Button
 								onClick={ handleSecondaryCTAClick }
 								href={ privacyMessagingURL }
-								external
-								hideExternalIndicator
+								target="_blank"
+								tertiary
 							>
 								{ __( 'Create message', 'google-site-kit' ) }
-							</Link>
+							</Button>
 						</Fragment>
 					) : (
 						<Fragment>
