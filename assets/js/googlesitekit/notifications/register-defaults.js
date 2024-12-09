@@ -49,8 +49,9 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
-import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
+import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
+import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -58,6 +59,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: UnsatisfiedScopesAlert,
 		priority: 150,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -111,6 +113,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: UnsatisfiedScopesAlertGTE,
 		priority: 150,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -158,6 +161,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: SetupErrorNotification,
 		priority: 140,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// The getSetupErrorMessage selector relies on the resolution
@@ -182,6 +186,42 @@ export const DEFAULT_NOTIFICATIONS = {
 			}
 
 			return true;
+		},
+		isDismissible: false,
+	},
+	setup_plugin_error: {
+		Component: SetupErrorMessageNotification,
+		priority: 140,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		groupID: NOTIFICATION_GROUPS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const temporaryPersistedPermissionsError = select(
+				CORE_FORMS
+			).getValue(
+				FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+				'permissionsError'
+			);
+
+			if (
+				temporaryPersistedPermissionsError?.data
+					?.skipDefaultErrorNotifications
+			) {
+				return false;
+			}
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			return !! setupErrorMessage;
 		},
 		isDismissible: false,
 	},
