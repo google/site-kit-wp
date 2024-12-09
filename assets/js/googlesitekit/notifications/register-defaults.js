@@ -29,6 +29,7 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 } from './datastore/constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
@@ -471,7 +472,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
-	'fpm-warning-notification': {
+	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
