@@ -39,7 +39,7 @@ describe( 'FirstPartyModeToggle', () => {
 		registry = createTestRegistry();
 
 		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-			isEnabled: null,
+			isEnabled: false,
 			isFPMHealthy: null,
 			isScriptAccessEnabled: null,
 		} );
@@ -77,7 +77,7 @@ describe( 'FirstPartyModeToggle', () => {
 	it( 'should render in default state', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			},
@@ -101,7 +101,7 @@ describe( 'FirstPartyModeToggle', () => {
 	it( 'should render in disabled state if server requirements are not met', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: false,
 				isScriptAccessEnabled: false,
 			},
@@ -130,7 +130,7 @@ describe( 'FirstPartyModeToggle', () => {
 		'should not render in disabled state unless %s is explicitly false',
 		async ( requirement ) => {
 			const response = {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			};
@@ -159,7 +159,7 @@ describe( 'FirstPartyModeToggle', () => {
 		'should render in disabled state if %s is false',
 		async ( requirement ) => {
 			const response = {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			};
@@ -187,7 +187,7 @@ describe( 'FirstPartyModeToggle', () => {
 	it( 'should toggle first party mode on click', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			},
@@ -207,9 +207,9 @@ describe( 'FirstPartyModeToggle', () => {
 
 		expect( switchControl ).not.toBeChecked();
 
-		expect(
-			registry.select( CORE_SITE ).isFirstPartyModeEnabled()
-		).toBeNull();
+		expect( registry.select( CORE_SITE ).isFirstPartyModeEnabled() ).toBe(
+			false
+		);
 
 		switchControl.click();
 
@@ -232,7 +232,7 @@ describe( 'FirstPartyModeToggle', () => {
 	it( 'should render a "Beta" badge', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: true,
 				isScriptAccessEnabled: true,
 			},
