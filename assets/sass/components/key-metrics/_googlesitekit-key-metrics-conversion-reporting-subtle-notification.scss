@@ -26,7 +26,9 @@
 			background-color: $c-violet-v-600;
 		}
 
-		.googlesitekit-subtle-notification__content {
+		.googlesitekit-subtle-notification__content,
+		.mdc-button--tertiary:not(:disabled),
+		p > a {
 			color: $c-violet-v-600;
 		}
 
