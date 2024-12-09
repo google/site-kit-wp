@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useState, useEffect, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -75,6 +76,9 @@ export default function Preview() {
 
 	return (
 		<div className="googlesitekit-sign-in-with-google__preview">
+			<p className="googlesitekit-sign-in-with-google__preview--label">
+				{ __( 'Preview', 'google-site-kit' ) }
+			</p>
 			<div ref={ containerRef } />
 			<div className="googlesitekit-sign-in-with-google__preview--protector" />
 		</div>
