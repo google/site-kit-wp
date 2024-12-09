@@ -6,43 +6,51 @@ exports[`FirstPartyModeToggle should render in default state 1`] = `
     class="googlesitekit-first-party-mode-toggle"
   >
     <div
-      aria-checked="false"
-      class="mdc-switch"
-      role="switch"
-      tabindex="0"
+      class="googlesitekit-module-settings-group__switch"
     >
       <div
-        class="mdc-switch__track"
-      >
-         
-      </div>
-      <div
-        class="mdc-switch__thumb-underlay"
+        aria-checked="false"
+        class="mdc-switch"
+        role="switch"
+        tabindex="0"
       >
         <div
-          class="mdc-switch__thumb"
+          class="mdc-switch__track"
         >
-          <input
-            class="mdc-switch__native-control"
-            id="googlesitekit-switch-4"
-            readonly=""
-            role="switch"
-            type="checkbox"
-          />
+           
+        </div>
+        <div
+          class="mdc-switch__thumb-underlay"
+        >
+          <div
+            class="mdc-switch__thumb"
+          >
+            <input
+              class="mdc-switch__native-control"
+              id="googlesitekit-switch-4"
+              readonly=""
+              role="switch"
+              type="checkbox"
+            />
+          </div>
         </div>
       </div>
+      <label
+        class=""
+        for="googlesitekit-switch-4"
+      >
+        First-party mode
+      </label>
+      <div
+        class="googlesitekit-first-party-mode-toggle__switch-badge"
+      >
+        <span
+          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+        >
+          Beta
+        </span>
+      </div>
     </div>
-    <label
-      class=""
-      for="googlesitekit-switch-4"
-    >
-      First-party mode
-    </label>
-    <span
-      class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
-    >
-      Beta
-    </span>
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
@@ -58,44 +66,52 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
     class="googlesitekit-first-party-mode-toggle"
   >
     <div
-      aria-checked="false"
-      class="mdc-switch mdc-switch--disabled"
-      role="switch"
-      tabindex="0"
+      class="googlesitekit-module-settings-group__switch"
     >
       <div
-        class="mdc-switch__track"
-      >
-         
-      </div>
-      <div
-        class="mdc-switch__thumb-underlay"
+        aria-checked="false"
+        class="mdc-switch mdc-switch--disabled"
+        role="switch"
+        tabindex="0"
       >
         <div
-          class="mdc-switch__thumb"
+          class="mdc-switch__track"
         >
-          <input
-            class="mdc-switch__native-control"
-            disabled=""
-            id="googlesitekit-switch-6"
-            readonly=""
-            role="switch"
-            type="checkbox"
-          />
+           
+        </div>
+        <div
+          class="mdc-switch__thumb-underlay"
+        >
+          <div
+            class="mdc-switch__thumb"
+          >
+            <input
+              class="mdc-switch__native-control"
+              disabled=""
+              id="googlesitekit-switch-6"
+              readonly=""
+              role="switch"
+              type="checkbox"
+            />
+          </div>
         </div>
       </div>
+      <label
+        class=""
+        for="googlesitekit-switch-6"
+      >
+        First-party mode
+      </label>
+      <div
+        class="googlesitekit-first-party-mode-toggle__switch-badge"
+      >
+        <span
+          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+        >
+          Beta
+        </span>
+      </div>
     </div>
-    <label
-      class=""
-      for="googlesitekit-switch-6"
-    >
-      First-party mode
-    </label>
-    <span
-      class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
-    >
-      Beta
-    </span>
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
