@@ -385,7 +385,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%1$s: Number of users who have authenticated using %2$s', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%1$s: Number of users who have authenticated using %1$s', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $authenticated_user_count,
 				'debug' => $authenticated_user_count,
 			),
