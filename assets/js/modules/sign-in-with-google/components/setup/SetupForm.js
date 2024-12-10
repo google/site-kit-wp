@@ -64,7 +64,7 @@ export default function SetupForm() {
 						sprintf(
 							/* translators: %1$s: Sign in with Google service name */
 							__(
-								'To set up %1$s, Site Kit will help you create an "OAuth Client ID" that will be used to enable %1$s on your website. You will be directed to a page that will allow you to generate an "OAuth Client ID". <a>Learn more</a>',
+								'To set up %1$s, Site Kit will help you create an “OAuth Client ID“ that will be used to enable %1$s on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. <a>Learn more</a>',
 								'google-site-kit'
 							),
 							_x(
