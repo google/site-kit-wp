@@ -29,12 +29,12 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { HelperText } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
 import {
-	BREAKPOINT_XLARGE,
+	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
+import { HelperText } from 'googlesitekit-components';
+import Link from '../../../../components/Link';
 
 export default function AnyoneCanRegisterReadOnly() {
 	const breakpoint = useBreakpoint();
@@ -87,7 +87,7 @@ export default function AnyoneCanRegisterReadOnly() {
 									/>
 								),
 							br:
-								breakpoint === BREAKPOINT_XLARGE ? (
+								breakpoint !== BREAKPOINT_SMALL ? (
 									<br />
 								) : (
 									<Fragment />
