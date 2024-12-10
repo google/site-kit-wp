@@ -24,11 +24,10 @@ import {
 	provideSiteInfo,
 	WithTestRegistry,
 } from '../../../../tests/js/utils';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import FullScreenMetricsSelectionApp from './FullScreenMetricSelectionApp';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-
 function Template() {
 	return (
 		<ViewContextProvider value={ VIEW_CONTEXT_METRIC_SELECTION }>
