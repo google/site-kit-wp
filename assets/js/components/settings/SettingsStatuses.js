@@ -38,11 +38,19 @@ export default function SettingsStatuses( { statuses } ) {
 
 	function renderStatus( status ) {
 		if ( status === undefined ) {
-			return <ProgressBar />;
+			return (
+				<div className="googlesitekit-settings-module__meta-item-data">
+					<ProgressBar />
+				</div>
+			);
 		}
-		return status
-			? __( 'Enabled', 'google-site-kit' )
-			: __( 'Disabled', 'google-site-kit' );
+		return (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				{ status
+					? __( 'Enabled', 'google-site-kit' )
+					: __( 'Disabled', 'google-site-kit' ) }
+			</p>
+		);
 	}
 
 	return (
@@ -55,9 +63,7 @@ export default function SettingsStatuses( { statuses } ) {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ label }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ renderStatus( status ) }
-					</p>
+					{ renderStatus( status ) }
 				</div>
 			) ) }
 		</div>
@@ -68,7 +74,7 @@ SettingsStatuses.propTypes = {
 	statuses: PropTypes.arrayOf(
 		PropTypes.shape( {
 			label: PropTypes.string.isRequired,
-			status: PropTypes.string,
+			status: PropTypes.oneOf( [ undefined, true, false ] ),
 		} )
 	),
 };

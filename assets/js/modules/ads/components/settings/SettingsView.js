@@ -67,11 +67,11 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
-	const isFirstPartyModeEnabled = useSelect( ( select ) => {
-		const { isEnabled, isFPMHealthy, isScriptAccessEnabled } =
-			select( CORE_SITE ).getFirstPartyModeSettings() || {};
+	const isFPMEnabled = useSelect( ( select ) => {
+		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
+			select( CORE_SITE );
 
-		return ! ( ! isEnabled || ! isFPMHealthy || ! isScriptAccessEnabled );
+		return isFirstPartyModeEnabled && isFPMHealthy && isScriptAccessEnabled;
 	} );
 
 	return (
@@ -101,7 +101,7 @@ export default function SettingsView() {
 										'First-party Mode',
 										'google-site-kit'
 									),
-									status: isFirstPartyModeEnabled,
+									status: isFPMEnabled,
 								},
 						  ]
 						: [
