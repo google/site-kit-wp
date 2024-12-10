@@ -25,16 +25,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from '../../datastore/constants';
+import { AnyoneCanRegisterDisabledNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import AnyoneCanRegisterDisabledNotice from '../common/AnyoneCanRegisterDisabledNotice';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>

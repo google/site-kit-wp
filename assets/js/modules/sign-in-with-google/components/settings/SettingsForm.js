@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import {
+	AnyoneCanRegisterReadOnly,
+	AnyoneCanRegisterDisabledNotice,
 	ButtonShapeSelect,
 	ButtonTextSelect,
 	ButtonThemeSelect,
@@ -29,8 +31,6 @@ import {
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { Cell, Grid, Row } from '../../../../material-components';
-import AnyoneCanRegisterReadOnly from '../common/AnyoneCanRegisterReadOnly';
-import AnyoneCanRegisterDisabledNotice from '../common/AnyoneCanRegisterDisabledNotice';
 
 export default function SettingsForm() {
 	return (
