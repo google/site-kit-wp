@@ -50,7 +50,7 @@ ServerRequirementsFail.args = {
 	setupRegistry: () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
-				isEnabled: null,
+				isEnabled: false,
 				isFPMHealthy: false,
 				isScriptAccessEnabled: false,
 			},
