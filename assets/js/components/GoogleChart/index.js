@@ -28,6 +28,7 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
 import { useMount } from 'react-use';
+import { debounce } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -339,6 +340,27 @@ export default function GoogleChart( props ) {
 		}
 	};
 
+	const [ resizeChartWidth, setResizeChartWidth ] = useState( '100%' );
+	const debounceSetResizeChartWidth = debounce( setResizeChartWidth, 100 );
+
+	useEffect( () => {
+		if ( global.ResizeObserver ) {
+			const targetElement = global.document.querySelector(
+				'.googlesitekit-unique-visitors-chart-widget'
+			);
+			const resizeObserver = new ResizeObserver( () => {
+				debounceSetResizeChartWidth(
+					`${ targetElement.offsetWidth }px`
+				);
+			} );
+			resizeObserver.observe( targetElement );
+
+			return () => {
+				resizeObserver.disconnect();
+			};
+		}
+	}, [] );
+
 	if ( googleChartsCollisionError ) {
 		return null;
 	}
@@ -394,6 +416,7 @@ export default function GoogleChart( props ) {
 				) }
 				id={ `googlesitekit-chart-${ instanceID }` }
 				tabIndex={ -1 }
+				style={ { width: resizeChartWidth } }
 			>
 				<Chart
 					className="googlesitekit-chart__inner"
