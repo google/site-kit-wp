@@ -145,14 +145,6 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const selectedCounts = { [ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: 0 };
 	const activeMetricItems = {};
 
-	if ( isActive === suggestedGroup.SLUG ) {
-		Object.keys( allMetricItems ).forEach( ( slug ) => {
-			if ( answerBasedMetrics.includes( slug ) ) {
-				activeMetricItems[ slug ] = allMetricItems[ slug ];
-			}
-		} );
-	}
-
 	for ( const metricItemSlug in allMetricItems ) {
 		const metricGroup = allMetricItems[ metricItemSlug ].group;
 		if (
@@ -162,6 +154,16 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		) {
 			activeMetricItems[ metricItemSlug ] =
 				allMetricItems[ metricItemSlug ];
+		}
+
+		if (
+			isActive === suggestedGroup.SLUG &&
+			answerBasedMetrics.includes( metricItemSlug )
+		) {
+			if ( answerBasedMetrics.includes( metricItemSlug ) ) {
+				activeMetricItems[ metricItemSlug ] =
+					allMetricItems[ metricItemSlug ];
+			}
 		}
 
 		if ( ! selectedCounts[ metricGroup ] ) {
