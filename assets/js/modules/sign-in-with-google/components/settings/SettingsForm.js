@@ -17,15 +17,8 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __, _x, sprintf } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import {
 	ButtonShapeSelect,
 	ButtonTextSelect,
@@ -33,31 +26,12 @@ import {
 	ClientIDTextField,
 	OneTapToggle,
 } from '../common';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { Cell, Grid, Row } from '../../../../material-components';
-import SettingsGroup from '../../../../components/settings/SettingsGroup';
-import Link from '../../../../components/Link';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../../../../googlesitekit/datastore/user/constants';
+import AnyoneCanRegisterReadOnly from '../common/AnyoneCanRegisterReadOnly';
 
 export default function SettingsForm() {
-	const anyoneCanRegister = useSelect( ( select ) =>
-		select( CORE_SITE ).getAnyoneCanRegister()
-	);
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL()
-	);
-	const hasCapability = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
-	);
-	const isMultisite = useSelect( ( select ) =>
-		select( CORE_SITE ).getIsMultisite()
-	);
-
 	return (
 		<div className="googlesitekit-sign-in-with-google-settings-fields">
 			<StoreErrorNotices
@@ -90,56 +64,7 @@ export default function SettingsForm() {
 						<OneTapToggle />
 					</Cell>
 					<Cell size={ 12 }>
-						<SettingsGroup
-							title={ __(
-								'Users can create new accounts',
-								'google-site-kit'
-							) }
-						>
-							<p>
-								{ anyoneCanRegister
-									? sprintf(
-											/* translators: %s: Sign in with Google service name */
-											__(
-												'Users can create new accounts on this site using %s. ',
-												'google-site-kit'
-											),
-											_x(
-												'Sign in with Google',
-												'Service name',
-												'google-site-kit'
-											)
-									  )
-									: sprintf(
-											/* translators: %s: Sign in with Google service name */
-											__(
-												'Only existing users can use %s to access their accounts. ',
-												'google-site-kit'
-											),
-											_x(
-												'Sign in with Google',
-												'Service name',
-												'google-site-kit'
-											)
-									  ) }
-								{ hasCapability &&
-									! isMultisite &&
-									createInterpolateElement(
-										__(
-											'You can change this setting in <a>Settings->General->Membership.</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													key="link"
-													href={ `${ settingsURL }/options-general.php` }
-												/>
-											),
-										}
-									) }
-							</p>
-						</SettingsGroup>
+						<AnyoneCanRegisterReadOnly />
 					</Cell>
 				</Row>
 			</Grid>
