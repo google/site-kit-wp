@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import {
+	AnyoneCanRegisterReadOnly,
+	AnyoneCanRegisterDisabledNotice,
 	ButtonShapeSelect,
 	ButtonTextSelect,
 	ButtonThemeSelect,
@@ -76,6 +78,10 @@ export default function SettingsForm() {
 				<Row>
 					<Cell size={ 12 }>
 						<OneTapToggle />
+					</Cell>
+					<Cell size={ 12 }>
+						<AnyoneCanRegisterReadOnly />
+						<AnyoneCanRegisterDisabledNotice />
 					</Cell>
 				</Row>
 			</Grid>
