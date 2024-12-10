@@ -41,8 +41,6 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
 
-	const [ isExistingClientID, setIsExistingClientID ] = useState( false );
-
 	const [ isValid, setIsValid ] = useState(
 		! clientID || isValidClientID( clientID )
 	);
@@ -62,7 +60,6 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 
 			if ( newValue !== clientID ) {
 				setClientID( newValue );
-				setIsExistingClientID( false );
 			}
 
 			debounceSetIsValid( isValidClientID( newValue ) );
@@ -78,7 +75,7 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		);
 	}
 
-	if ( isExistingClientID ) {
+	if ( clientID === existingClientID ) {
 		helperText = __(
 			'Sign in with Google was already set up on this site. We recommend using your existing Client ID.',
 			'google-site-kit'
