@@ -98,7 +98,12 @@ export default function SettingsView() {
 	const isFPMEnabled = useSelect( ( select ) => {
 		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
 			select( CORE_SITE );
-		return isFirstPartyModeEnabled && isFPMHealthy && isScriptAccessEnabled;
+
+		return (
+			isFirstPartyModeEnabled() &&
+			isFPMHealthy() &&
+			isScriptAccessEnabled()
+		);
 	} );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {

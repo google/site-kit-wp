@@ -94,7 +94,11 @@ export default {
 
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( args.firstPartyMode || false );
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: args.firstPartyMode || false,
+						isFPMHealthy: args.firstPartyMode || false,
+						isScriptAccessEnabled: args.firstPartyMode || false,
+					} );
 			};
 
 			return (

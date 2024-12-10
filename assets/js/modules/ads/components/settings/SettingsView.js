@@ -71,7 +71,11 @@ export default function SettingsView() {
 		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
 			select( CORE_SITE );
 
-		return isFirstPartyModeEnabled && isFPMHealthy && isScriptAccessEnabled;
+		return (
+			isFirstPartyModeEnabled() &&
+			isFPMHealthy() &&
+			isScriptAccessEnabled()
+		);
 	} );
 
 	return (
