@@ -32,9 +32,9 @@ import PropTypes from 'prop-types';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import LostEventsSubtleNotification from './LostEventsSubtleNotification';
@@ -71,15 +71,13 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		isUserInputCompleted &&
 		haveConversionReportingEventsForTailoredMetrics;
 
-	const userInputPurposeConversionEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
+	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics(
+			true
+		)
 	);
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
-	);
-
-	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics()
 	);
 
 	// If users have set up key metrics manually and ACR events are detected,
@@ -89,6 +87,20 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		hasUserPickedMetrics?.length &&
 		isKeyMetricsSetupCompleted &&
 		hasConversionEventsForUserPickedMetrics;
+
+	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsWithDifferentMetrics()
+	);
+
+	// If new events have been detected after initial set of events, we display
+	// the same callout banner, with a different call to action "View metrics"
+	// which opens the metric selection panel.
+	const shouldShowCalloutForNewEvents =
+		isKeyMetricsSetupCompleted && haveConversionEventsWithDifferentMetrics;
+
+	const userInputPurposeConversionEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
+	);
 
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
@@ -142,9 +154,19 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
 		! haveLostConversionEvents &&
-		! shouldShowCalloutForUserPickedMetrics
+		! shouldShowCalloutForUserPickedMetrics &&
+		! shouldShowCalloutForNewEvents
 	) {
 		return <WidgetNull />;
+	}
+
+	let ctaLabel = __( 'Select metrics', 'google-site-kit' );
+
+	if ( shouldShowInitialCalloutForTailoredMetrics ) {
+		ctaLabel = __( 'Add metrics', 'google-site-kit' );
+	}
+	if ( shouldShowCalloutForNewEvents ) {
+		ctaLabel = __( 'View metrics', 'google-site-kit' );
 	}
 
 	return (
@@ -156,13 +178,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				/>
 			) }
 			{ ( shouldShowInitialCalloutForTailoredMetrics ||
-				shouldShowCalloutForUserPickedMetrics ) && (
+				shouldShowCalloutForUserPickedMetrics ||
+				shouldShowCalloutForNewEvents ) && (
 				<ConversionReportingDashboardSubtleNotification
-					ctaLabel={
-						shouldShowInitialCalloutForTailoredMetrics
-							? __( 'Add metrics', 'google-site-kit' )
-							: __( 'Select metrics', 'google-site-kit' )
-					}
+					ctaLabel={ ctaLabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
 							? handleAddMetricsClick

@@ -86,7 +86,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->grant_manage_options_permission();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -106,7 +106,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -130,7 +130,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->grant_manage_options_permission();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -165,7 +165,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -282,7 +282,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'isEnabled'             => null,
+				'isEnabled'             => false,
 				'isFPMHealthy'          => $expected_settings['isFPMHealthy'],
 				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
 			),

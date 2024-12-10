@@ -48,7 +48,7 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 		$default_settings = get_option( $this->get_option_name() );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'isEnabled'             => null,
+				'isEnabled'             => false,
 				'isFPMHealthy'          => null,
 				'isScriptAccessEnabled' => null,
 			),
@@ -73,7 +73,7 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 			'empty settings'        => array(
 				array(),
 				array(
-					'isEnabled'             => null,
+					'isEnabled'             => false,
 					'isFPMHealthy'          => null,
 					'isScriptAccessEnabled' => null,
 				),

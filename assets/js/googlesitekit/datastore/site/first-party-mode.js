@@ -196,7 +196,7 @@ const baseSelectors = {
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =

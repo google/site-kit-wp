@@ -37,6 +37,7 @@ import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../datastore/user/constants';
+import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -50,9 +51,13 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
-import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
+import FirstPartyModeSetupBanner, {
+	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
+} from '../../components/notifications/FirstPartyModeSetupBanner';
+import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -442,7 +447,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
-	'first-party-mode-setup-cta-banner': {
+	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: 320,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -499,6 +504,18 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
+	},
+	'setup-success-notification-fpm': {
+		Component: FirstPartyModeSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: ( { select } ) => {
+			return !! select( CORE_UI ).getValue(
+				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
+			);
+		},
 	},
 };
 
