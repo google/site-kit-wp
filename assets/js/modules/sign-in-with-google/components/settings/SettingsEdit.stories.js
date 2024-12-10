@@ -47,18 +47,14 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Default',
-};
+Default.scenario = {};
 
 export const NewUserAccountsEnabled = Template.bind( null );
 NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
 NewUserAccountsEnabled.args = {
 	anyoneCanRegister: true,
 };
-NewUserAccountsEnabled.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/NewUserAccountsEnabled',
-};
+NewUserAccountsEnabled.scenario = {};
 
 Default.decorators = [
 	( Story, { args } ) => {
@@ -93,9 +89,7 @@ Default.decorators = [
 
 export const InvalidClientID = Template.bind( null );
 InvalidClientID.storyName = 'Invalid Client ID';
-InvalidClientID.scenario = {
-	label: 'Modules/Sign in with Google/Settings/SettingsForm/Invalid Client ID',
-};
+InvalidClientID.scenario = {};
 InvalidClientID.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -120,6 +114,10 @@ InvalidClientID.decorators = [
 	},
 ];
 
+export const Empty = Template.bind( null );
+Empty.storyName = 'Empty';
+Empty.scenario = {};
+
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
@@ -142,10 +140,4 @@ export default {
 			);
 		},
 	],
-};
-
-export const Empty = Template.bind( null );
-Empty.storyName = 'Empty';
-Empty.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Empty',
 };
