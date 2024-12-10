@@ -40,10 +40,9 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import SettingsNotice, {
-	TYPE_WARNING,
+	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
-import WarningIcon from '../../../../../svg/icons/warning.svg';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 	'sign-in-with-google-anyone-can-register-notice';
@@ -86,13 +85,12 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 				'googlesitekit-anyone-can-register-disabled-notice',
 				className
 			) }
-			type={ TYPE_WARNING }
+			type={ TYPE_INFO }
 			dismiss
 			dismissCallback={ () =>
 				dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE )
 			}
 			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-			Icon={ WarningIcon }
 			notice={ createInterpolateElement(
 				sprintf(
 					/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
