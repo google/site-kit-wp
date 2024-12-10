@@ -163,7 +163,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 
 		// Allow filters to override the health check results if needed.
 		$is_fpm_healthy           = apply_filters( 'googlesitekit_is_fpm_healthy', $is_fpm_healthy );
-		$is_script_access_enabled = apply_filters( 'googlesitekit_is_script_access_enabled', $is_script_access_enabled );
+		$is_script_access_enabled = apply_filters( 'googlesitekit_is_fpm_script_access_enabled', $is_script_access_enabled );
 
 		$this->first_party_mode_settings->merge(
 			array(
