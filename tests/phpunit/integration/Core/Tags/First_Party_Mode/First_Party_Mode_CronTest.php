@@ -37,7 +37,7 @@ class First_Party_Mode_CronTest extends TestCase {
 	}
 
 	public function test_register() {
-		$cron = new First_Party_Mode_Cron( '__return_true', $this->settings );
+		$cron = new First_Party_Mode_Cron( $this->settings, '__return_true' );
 		$this->assertFalse( has_action( First_Party_Mode_Cron::CRON_ACTION ) );
 
 		$cron->register();
@@ -47,7 +47,7 @@ class First_Party_Mode_CronTest extends TestCase {
 
 	public function test_register__given_callable() {
 		$spy  = new MethodSpy();
-		$cron = new First_Party_Mode_Cron( array( $spy, 'func' ), $this->settings );
+		$cron = new First_Party_Mode_Cron( $this->settings, array( $spy, 'func' ) );
 		$cron->register();
 		$this->assertTrue( empty( $spy->invocations['func'] ) );
 
@@ -57,7 +57,7 @@ class First_Party_Mode_CronTest extends TestCase {
 	}
 
 	public function test_maybe_schedule_cron() {
-		$cron = new First_Party_Mode_Cron( '__return_true', $this->settings );
+		$cron = new First_Party_Mode_Cron( $this->settings, '__return_true' );
 
 		$this->assertFalse(
 			wp_next_scheduled( First_Party_Mode_Cron::CRON_ACTION )

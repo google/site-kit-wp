@@ -40,15 +40,15 @@ class First_Party_Mode_Cron {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param callable                  $callback                  Function to call on the cron action.
 	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
+	 * @param callable                  $callback                  Function to call on the cron action.
 	 */
 	public function __construct(
-		callable $callback,
-		First_Party_Mode_Settings $first_party_mode_settings
+		First_Party_Mode_Settings $first_party_mode_settings,
+		callable $callback
 	) {
-		$this->cron_callback             = $callback;
 		$this->first_party_mode_settings = $first_party_mode_settings;
+		$this->cron_callback             = $callback;
 	}
 
 	/**
