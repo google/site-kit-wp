@@ -918,7 +918,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
 	 */
-	getIsMultisite: getSiteInfoProperty( 'isMultisite' ),
+	isMultisite: getSiteInfoProperty( 'isMultisite' ),
 };
 
 export default {
