@@ -17,15 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { lazy, Suspense, createInterpolateElement } from '@wordpress/element';
+import {
+	lazy,
+	Suspense,
+	createInterpolateElement,
+	useState,
+} from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useRegistry, useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
@@ -40,6 +50,9 @@ const LazyGraphicSVG = lazy( () =>
 );
 
 export default function SetupForm() {
+	const registry = useRegistry();
+	const [ existingClientID, setExistingClientID ] = useState();
+
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'sign-in-with-google'
@@ -51,6 +64,33 @@ export default function SetupForm() {
 			MODULES_SIGN_IN_WITH_GOOGLE
 		).getServiceClientIDProvisioningURL()
 	);
+
+	// Prefill the clientID field with a value from a previous module connection, if it exists.
+	useMount( async () => {
+		// Allow default `settings` and `savedSettings` to load before updating
+		// the `clientID` setting again.
+		await registry
+			.resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getSettings();
+
+		// The clientID is fetched again as useMount does not receive the
+		// updated clientID.
+		const currentClientID = registry
+			.select( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getClientID();
+
+		if (
+			currentClientID === '' &&
+			global._googlesitekitModulesData?.[ 'sign-in-with-google' ]?.[
+				'existingClientID'
+			]
+		) {
+			setExistingClientID(
+				global._googlesitekitModulesData[ 'sign-in-with-google' ]
+					.existingClientID
+			);
+		}
+	} );
 
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
@@ -85,7 +125,7 @@ export default function SetupForm() {
 					) }
 				</p>
 				<div className="googlesitekit-setup-module__inputs">
-					<ClientIDTextField />
+					<ClientIDTextField existingClientID={ existingClientID } />
 				</div>
 				<Button
 					className="googlesitekit-sign-in-with-google-client-id-cta"
