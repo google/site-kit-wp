@@ -34,15 +34,16 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import WarningIcon from '../../../../../svg/icons/warning.svg';
-import SettingsNotice, {
-	TYPE_WARNING,
-} from '../../../../components/SettingsNotice';
 import {
+	BREAKPOINT_DESKTOP,
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
+import SettingsNotice, {
+	TYPE_WARNING,
+} from '../../../../components/SettingsNotice';
+import Link from '../../../../components/Link';
+import WarningIcon from '../../../../../svg/icons/warning.svg';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 	'sign-in-with-google-anyone-can-register-notice';
@@ -50,9 +51,6 @@ const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 	const breakpoint = useBreakpoint();
 
-	const anyoneCanRegister = useSelect( ( select ) =>
-		select( CORE_SITE ).getAnyoneCanRegister()
-	);
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
@@ -66,33 +64,14 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 				select( CORE_SITE ).getAdminURL()
 			).href
 	);
+
+	const anyoneCanRegister = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegister()
+	);
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ANYONE_CAN_REGISTER_DISABLED_NOTICE
 		)
-	);
-
-	const notice = createInterpolateElement(
-		sprintf(
-			/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
-			__(
-				'Enable the %1$s setting to allow your visitors to create an account using the %2$s button. <br/>Visit <a>WP settings</a> page to manage this membership setting.',
-				'google-site-kit'
-			),
-			isMultisite
-				? __( '"Allow new registrations"', 'google-site-kit' )
-				: __( '"Anyone can register"', 'google-site-kit' ),
-			_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
-		),
-		{
-			a:
-				! canManageOptions && isMultisite ? (
-					<span />
-				) : (
-					<Link key="link" href={ generalSettingsURL } />
-				),
-			br: breakpoint === BREAKPOINT_XLARGE ? <br /> : <Fragment />,
-		}
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -109,12 +88,43 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 			) }
 			type={ TYPE_WARNING }
 			dismiss
-			dismissCallback={ () => {
-				dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE );
-			} }
+			dismissCallback={ () =>
+				dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE )
+			}
 			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 			Icon={ WarningIcon }
-			notice={ notice }
+			notice={ createInterpolateElement(
+				sprintf(
+					/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
+					__(
+						'Enable the %1$s setting to allow your visitors to create an account using the %2$s button. <br/>Visit <a>WP settings</a> page to manage this membership setting.',
+						'google-site-kit'
+					),
+					isMultisite
+						? __( '"Allow new registrations"', 'google-site-kit' )
+						: __( '"Anyone can register"', 'google-site-kit' ),
+					_x(
+						'Sign in with Google',
+						'Service name',
+						'google-site-kit'
+					)
+				),
+				{
+					a:
+						! canManageOptions && isMultisite ? (
+							<span />
+						) : (
+							<Link key="link" href={ generalSettingsURL } />
+						),
+					br:
+						breakpoint === BREAKPOINT_XLARGE ||
+						breakpoint === BREAKPOINT_DESKTOP ? (
+							<br />
+						) : (
+							<Fragment />
+						),
+				}
+			) }
 		/>
 	);
 }
