@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -98,3 +99,7 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		</div>
 	);
 }
+
+ClientIDTextField.propTypes = {
+	existingClientID: PropTypes.string,
+};
