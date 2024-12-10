@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -29,15 +29,18 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { HelperText } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
-import SettingsGroup from '../../../../components/settings/SettingsGroup';
+import {
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
+} from '../../../../hooks/useBreakpoint';
 
 export default function AnyoneCanRegisterReadOnly() {
+	const breakpoint = useBreakpoint();
+
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
-	);
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL()
 	);
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
@@ -45,17 +48,26 @@ export default function AnyoneCanRegisterReadOnly() {
 	const isMultisite = useSelect( ( select ) =>
 		select( CORE_SITE ).isMultisite()
 	);
+	const generalSettingsURL = useSelect(
+		( select ) =>
+			new URL(
+				isMultisite ? 'network/settings.php' : 'options-general.php',
+				select( CORE_SITE ).getAdminURL()
+			).href
+	);
 
 	return (
-		<SettingsGroup
-			title={ __( 'Users can create new accounts', 'google-site-kit' ) }
-		>
-			<p className="googlesitekit-margin-top-0 googlesitekit-margin-bottom-0">
-				{ anyoneCanRegister
-					? sprintf(
+		<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--read-only">
+			<span>
+				{ __( 'Anyone can register WP setting', 'google-site-kit' ) }
+			</span>
+			{ anyoneCanRegister && (
+				<HelperText persistent>
+					{ createInterpolateElement(
+						sprintf(
 							/* translators: %s: Sign in with Google service name */
 							__(
-								'Users can create new accounts on this site using %s. ',
+								'Users can create new accounts on this site using %s. <br/>Visit <a>WP settings</a> page to manage this membership setting.',
 								'google-site-kit'
 							),
 							_x(
@@ -63,50 +75,43 @@ export default function AnyoneCanRegisterReadOnly() {
 								'Service name',
 								'google-site-kit'
 							)
-					  )
-					: sprintf(
-							/* translators: %s: Sign in with Google service name */
-							__(
-								'Only existing users can use %s to access their accounts. ',
-								'google-site-kit'
-							),
-							_x(
-								'Sign in with Google',
-								'Service name',
-								'google-site-kit'
-							)
-					  ) }
-				{ canManageOptions &&
-					( ! isMultisite
-						? createInterpolateElement(
-								__(
-									'You can change this setting in <a>Settings > General > Membership.</a>',
-									'google-site-kit'
+						),
+						{
+							a:
+								! canManageOptions && isMultisite ? (
+									<span />
+								) : (
+									<Link
+										key="link"
+										href={ generalSettingsURL }
+									/>
 								),
-								{
-									a: (
-										<Link
-											key="link"
-											href={ `${ settingsURL }/options-general.php` }
-										/>
-									),
-								}
-						  )
-						: createInterpolateElement(
-								__(
-									'You can change this setting in <a>Settings > Network Settings > Registration Settings.</a>',
-									'google-site-kit'
+							br:
+								breakpoint === BREAKPOINT_XLARGE ? (
+									<br />
+								) : (
+									<Fragment />
 								),
-								{
-									a: (
-										<Link
-											key="link"
-											href={ `${ settingsURL }/network/settings.php` }
-										/>
-									),
-								}
-						  ) ) }
-			</p>
-		</SettingsGroup>
+						}
+					) }
+				</HelperText>
+			) }
+			{ anyoneCanRegister === false && (
+				<HelperText persistent>
+					{ sprintf(
+						/* translators: %s: Sign in with Google service name */
+						__(
+							'Only existing users can use %s to access their accounts.',
+							'google-site-kit'
+						),
+						_x(
+							'Sign in with Google',
+							'Service name',
+							'google-site-kit'
+						)
+					) }
+				</HelperText>
+			) }
+		</div>
 	);
 }
