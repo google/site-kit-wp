@@ -75,7 +75,7 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		);
 	}
 
-	if ( clientID === existingClientID ) {
+	if ( existingClientID && clientID === existingClientID ) {
 		helperText = __(
 			'Sign in with Google was already set up on this site. We recommend using your existing Client ID.',
 			'google-site-kit'
