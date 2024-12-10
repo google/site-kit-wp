@@ -43,6 +43,7 @@ import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
+import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 	'sign-in-with-google-anyone-can-register-notice';
@@ -86,6 +87,7 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 				className
 			) }
 			type={ TYPE_INFO }
+			Icon={ InfoIcon }
 			dismiss
 			dismissCallback={ () =>
 				dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE )
