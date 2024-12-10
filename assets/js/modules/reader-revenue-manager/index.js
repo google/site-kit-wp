@@ -38,6 +38,7 @@ import { isURLUsingHTTPS } from './utils/validation';
 import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -82,6 +83,12 @@ export const registerNotifications = ( notifications ) => {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			const rrmConnected = select( CORE_MODULES ).isModuleConnected();
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 

@@ -29,19 +29,29 @@ import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/a
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import { PublicationApprovedOverlayNotification } from '../../modules/reader-revenue-manager/components/dashboard';
+import { useSelect } from 'googlesitekit-data';
+import { MODULES_READER_REVENUE_MANAGER } from '../../modules/reader-revenue-manager/datastore/constants';
 
 export default function OverlayNotificationsRenderer() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
+	const analyticsConnected = useSelect( ( select ) =>
+		select( 'core/modules' ).isModuleConnected( 'modules/analytics-4' )
+	);
+	const rrmConnected = useSelect( ( select ) =>
+		select( 'core/modules' ).isModuleConnected(
+			MODULES_READER_REVENUE_MANAGER
+		)
+	);
 
 	return (
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
-			{ audienceSegmentationEnabled && (
+			{ analyticsConnected && audienceSegmentationEnabled && (
 				<AudienceSegmentationIntroductoryOverlayNotification />
 			) }
-			{ readerRevenueManagerEnabled && (
+			{ rrmConnected && readerRevenueManagerEnabled && (
 				<PublicationApprovedOverlayNotification />
 			) }
 		</Fragment>
