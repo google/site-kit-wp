@@ -49,7 +49,9 @@ export default function Preview() {
 
 			// Using a fake client ID here since the user won't be able
 			// to click on the button anyway.
-			global.google.accounts.id.initialize( { client_id: 'notrealclientid' } );
+			global.google.accounts.id.initialize( {
+				client_id: 'notrealclientid',
+			} );
 		};
 
 		script.src = 'https://accounts.google.com/gsi/client';
