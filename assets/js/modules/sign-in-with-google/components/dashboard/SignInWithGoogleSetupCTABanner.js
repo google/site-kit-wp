@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -29,8 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
@@ -43,6 +45,11 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'sign-in-with-google'
 		);
+	} );
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+	useMount( () => {
+		triggerSurvey( 'view_siwg_setup_cta' );
 	} );
 
 	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
