@@ -70,11 +70,11 @@
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-			gap: $grid-gap-phone;
+			gap: $cta-gap-phone;
 			margin: 20px 0;
 
-			@media (min-width: $width-desktop + 1 + px) {
-				gap: $grid-gap-desktop;
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 				margin-bottom: 0;
 			}
 		}
