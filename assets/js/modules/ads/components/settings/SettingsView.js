@@ -67,9 +67,16 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
-	const isFirstPartyModeEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isFirstPartyModeEnabled()
-	);
+	const isFPMEnabled = useSelect( ( select ) => {
+		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
+			select( CORE_SITE );
+
+		return (
+			isFirstPartyModeEnabled() &&
+			isFPMHealthy() &&
+			isScriptAccessEnabled()
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-setup-module">
@@ -91,18 +98,14 @@ export default function SettingsView() {
 										'Enhanced Conversion Tracking',
 										'google-site-kit'
 									),
-									status: isConversionTrackingEnabled
-										? __( 'Enabled', 'google-site-kit' )
-										: __( 'Disabled', 'google-site-kit' ),
+									status: isConversionTrackingEnabled,
 								},
 								{
 									label: __(
-										'First-Party Mode',
+										'First-party Mode',
 										'google-site-kit'
 									),
-									status: isFirstPartyModeEnabled
-										? __( 'Enabled', 'google-site-kit' )
-										: __( 'Disabled', 'google-site-kit' ),
+									status: isFPMEnabled,
 								},
 						  ]
 						: [
@@ -111,9 +114,7 @@ export default function SettingsView() {
 										'Conversion Tracking',
 										'google-site-kit'
 									),
-									status: isConversionTrackingEnabled
-										? __( 'Enabled', 'google-site-kit' )
-										: __( 'Disabled', 'google-site-kit' ),
+									status: isConversionTrackingEnabled,
 								},
 						  ]
 				}

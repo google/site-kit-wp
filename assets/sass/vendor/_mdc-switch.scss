@@ -40,7 +40,7 @@
 		font-size: $fs-body-md;
 		letter-spacing: $ls-s;
 		line-height: $lh-body-md;
-		margin-left: 10px;
+		margin-left: $mdc-switch-label-margin-left;
 	}
 
 	.mdc-switch__track {
