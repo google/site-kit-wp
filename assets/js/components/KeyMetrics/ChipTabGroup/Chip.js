@@ -40,26 +40,20 @@ export default function Chip( {
 	onClick,
 	selectedCount = 0,
 } ) {
-	let icon = null;
+	function Icon() {
+		return null;
+	}
 
 	switch ( slug ) {
 		case KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG:
-			icon = (
-				<CheckMark
-					width={ 12 }
-					height={ 12 }
-					className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__chip-item-svg__${ slug }` }
-				/>
-			);
+			Icon = function ( args ) {
+				return <CheckMark { ...args } />;
+			};
 			break;
 		case KEY_METRICS_SUGGESTED_GROUP_SLUG:
-			icon = (
-				<StarFill
-					className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__chip-item-svg__${ slug }` }
-					width={ 12 }
-					height={ 12 }
-				/>
-			);
+			Icon = function ( args ) {
+				return <StarFill { ...args } />;
+			};
 			break;
 	}
 	return (
@@ -67,7 +61,13 @@ export default function Chip( {
 			className={ classnames( 'googlesitekit-chip-tab-group__chip-item', {
 				'googlesitekit-chip-tab-group__chip-item--active': isActive,
 			} ) }
-			icon={ icon }
+			icon={
+				<Icon
+					width={ 12 }
+					height={ 12 }
+					className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__chip-item-svg__${ slug }` }
+				/>
+			}
 			trailingIcon={
 				selectedCount > 0 ? (
 					<span className="googlesitekit-chip-tab-group__chip-item-count">
