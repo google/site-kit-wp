@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import InfoIcon from '../../../svg/icons/info-circle.svg';
+import InfoIcon from '../../../svg/icons/info-icon.svg';
 import SuggestionIcon from '../../../svg/icons/suggestion-icon.svg';
 import WarningIcon from '../../../svg/icons/warning-icon.svg';
 import Null from '../Null';
