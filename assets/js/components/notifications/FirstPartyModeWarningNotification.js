@@ -44,7 +44,12 @@ export default function FirstPartyModeWarningNotification( {
 					),
 					{
 						// ToDo: Update learn more link in https://github.com/google/site-kit-wp/issues/9699
-						a: <SupportLink path="/analytics/answer/10096855" />,
+						a: (
+							<SupportLink
+								path="/analytics/answer/10096855"
+								external
+							/>
+						),
 					}
 				) }
 				dismissCTA={

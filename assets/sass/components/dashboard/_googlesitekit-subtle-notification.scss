@@ -53,6 +53,11 @@
 			@media (min-width: $bp-tablet) {
 				margin: 0;
 			}
+
+			& > a {
+				color: inherit;
+				text-decoration: underline;
+			}
 		}
 	}
 
@@ -108,13 +113,8 @@
 		background-color: $c-utility-warning-container;
 
 		.googlesitekit-subtle-notification__icon,
-		.googlesitekit-subtle-notification__content,
-		p > a {
+		.googlesitekit-subtle-notification__content {
 			color: $c-utility-on-warning-container;
-		}
-
-		.googlesitekit-subtle-notification__content p > a {
-			text-decoration: underline;
 		}
 
 		.mdc-button {
