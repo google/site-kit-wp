@@ -1,4 +1,6 @@
 /**
+ * Sign in with Google AnyoneCanRegisterDisabledNotice styles.
+ *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +16,29 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-sign-in-with-google-setup-cta-banner";
-@import "googlesitekit-sign-in-with-google-setup-module";
-@import "googlesitekit-sign-in-with-google-settings-module";
-@import "googlesitekit-anyone-can-register-disabled-notice";
+.googlesitekit-plugin {
+
+	.googlesitekit-anyone-can-register-disabled-notice {
+		padding: $grid-gap-phone - 2px $grid-gap-desktop;
+
+		.googlesitekit-settings-notice__icon {
+			margin-right: 16px;
+
+			svg {
+				height: 24px;
+				width: 24px;
+			}
+		}
+
+		.googlesitekit-settings-notice__text {
+			color: $c-utility-on-warning-container;
+			font-size: $fs-title-sm;
+			font-weight: $fw-medium;
+			line-height: $lh-body-md;
+		}
+
+		.mdc-button--tertiary:not(:disabled) {
+			color: $c-utility-on-warning-container;
+		}
+	}
+}
