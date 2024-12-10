@@ -18,7 +18,10 @@
 
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
 
@@ -47,9 +50,22 @@ Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Default',
 };
+
+export const NewUserAccountsEnabled = Template.bind( null );
+NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
+NewUserAccountsEnabled.args = {
+	anyoneCanRegister: true,
+};
+NewUserAccountsEnabled.scenario = {
+	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/NewUserAccountsEnabled',
+};
+
 Default.decorators = [
-	( Story ) => {
+	( Story, { args } ) => {
 		const setupRegistry = ( registry ) => {
+			const { anyoneCanRegister = false } = args;
+			provideSiteInfo( registry, { anyoneCanRegister } );
+
 			registry
 				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 				.receiveGetSettings( {
@@ -60,6 +76,11 @@ Default.decorators = [
 					shape: 'rectangular',
 					OneTapEnabled: true,
 				} );
+
+			// Story-specific setup.
+			if ( args.setupRegistry ) {
+				args.setupRegistry( registry );
+			}
 		};
 
 		return (
@@ -78,6 +99,8 @@ InvalidClientID.scenario = {
 InvalidClientID.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry, { anyoneCanRegister: true } );
+
 			registry
 				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 				.receiveGetSettings( {
@@ -102,6 +125,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry, { anyoneCanRegister: true } );
 				provideModules( registry, [
 					{
 						slug: 'sign-in-with-google',
