@@ -480,15 +480,15 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			if (
-				[ isFPMHealthy(), isScriptAccessEnabled() ].includes( null )
-			) {
-				await dispatch(
-					CORE_SITE
-				).fetchGetFPMServerRequirementStatus();
+			const isHealthy = isFPMHealthy();
+			const isAccessEnabled = isScriptAccessEnabled();
+
+			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
+				dispatch( CORE_SITE ).fetchGetFPMServerRequirementStatus();
+				return false;
 			}
 
-			return isFPMHealthy() && isScriptAccessEnabled();
+			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
 	},
