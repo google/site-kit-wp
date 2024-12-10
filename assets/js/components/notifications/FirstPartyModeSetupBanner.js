@@ -31,8 +31,12 @@ import {
 	useTooltipState,
 	AdminMenuTooltip,
 } from '../AdminMenuTooltip';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import FPMSetupCTASVGDesktop from '../../../svg/graphics/first-party-mode-setup-banner-desktop.svg';
@@ -43,14 +47,17 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
+import useViewContext from '../../hooks/useViewContext';
+
+export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
+	'fpm-show-setup-success-notification';
 
 export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
-
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const showTooltip = useShowTooltip( id );
 
@@ -60,9 +67,19 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
 
+	const { dismissNotification, invalidateResolution } =
+		useDispatch( CORE_NOTIFICATIONS );
+	const { setValue } = useDispatch( CORE_UI );
+
 	const onCTAClick = () => {
 		setFirstPartyModeEnabled( true );
 		saveFirstPartyModeSettings();
+
+		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
+		invalidateResolution( 'getQueuedNotifications', [
+			viewContext,
+			NOTIFICATION_GROUPS.DEFAULT,
+		] );
 
 		dismissNotification( id );
 	};
