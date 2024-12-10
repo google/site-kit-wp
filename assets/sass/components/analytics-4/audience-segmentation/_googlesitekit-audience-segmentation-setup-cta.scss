@@ -59,15 +59,15 @@
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-			gap: 4px;
+			gap: $cta-gap-phone;
 			margin: 25px 0;
 
 			@media (min-width: $bp-desktop) {
 				margin: 25px 0 0;
 			}
 
-			@media (min-width: $width-tablet + 1 + px) {
-				gap: 10px;
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 			}
 
 			a,

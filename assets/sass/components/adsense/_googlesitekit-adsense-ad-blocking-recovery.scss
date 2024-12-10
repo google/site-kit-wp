@@ -208,10 +208,10 @@
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-			gap: 4px;
+			gap: 30px;
 
-			@media (min-width: $width-tablet + 1 + px) {
-				gap: 10px;
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 			}
 
 			.googlesitekit-cta-link {
