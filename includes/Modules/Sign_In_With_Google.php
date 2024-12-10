@@ -601,7 +601,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		<?php
 	}
 
-
 	/**
 	 * Exposes an existing client ID from a previous connection
 	 * to JS via _googlesitekitModulesData.
