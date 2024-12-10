@@ -1459,8 +1459,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$custom_dimension->setParameterName( $custom_dimension_data['parameterName'] );
 				$custom_dimension->setDisplayName( $custom_dimension_data['displayName'] );
 				$custom_dimension->setScope( $custom_dimension_data['scope'] );
-				isset( $custom_dimension_data['description'] ) && $custom_dimension->setDescription( $custom_dimension_data['description'] );
-				isset( $custom_dimension_data['disallowAdsPersonalization'] ) && $custom_dimension->setDisallowAdsPersonalization( $custom_dimension_data['disallowAdsPersonalization'] );
+
+				if ( isset( $custom_dimension_data['description'] ) ) {
+					$custom_dimension->setDescription( $custom_dimension_data['description'] );
+				}
+
+				if ( isset( $custom_dimension_data['disallowAdsPersonalization'] ) ) {
+					$custom_dimension->setDisallowAdsPersonalization( $custom_dimension_data['disallowAdsPersonalization'] );
+				}
 
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 
