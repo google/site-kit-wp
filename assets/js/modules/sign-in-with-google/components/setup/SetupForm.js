@@ -117,9 +117,7 @@ export default function SetupForm() {
 					) }
 				</p>
 				<div className="googlesitekit-setup-module__inputs">
-					<ClientIDTextField
-						existingClientID={ existingClientID ?? '' }
-					/>
+					<ClientIDTextField existingClientID={ existingClientID } />
 				</div>
 				<Button
 					className="googlesitekit-sign-in-with-google-client-id-cta"
