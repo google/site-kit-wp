@@ -161,6 +161,10 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 		$is_fpm_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
 		$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 
+		// Allow filters to override the health check results if needed.
+		$is_fpm_healthy           = apply_filters( 'googlesitekit_is_fpm_healthy', $is_fpm_healthy );
+		$is_script_access_enabled = apply_filters( 'googlesitekit_is_script_access_enabled', $is_script_access_enabled );
+
 		$this->first_party_mode_settings->merge(
 			array(
 				'isFPMHealthy'          => $is_fpm_healthy,
