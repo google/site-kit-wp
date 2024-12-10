@@ -16,6 +16,12 @@
 	}
 }
 
+.googlesitekit-widget--InfoNoticeWidget {
+	svg {
+		color: $c-yellow-y-100;
+	}
+}
+
 .googlesitekit-audience-segmentation-info-notice__body {
 	align-items: center;
 	display: flex;
