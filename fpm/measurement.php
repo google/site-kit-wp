@@ -1,4 +1,3 @@
-<?php // phpcs:disable ?>
 <?php
 /**
  * FirstPartyServing redirect file
@@ -13,7 +12,7 @@
  */
 
 // This file should run in isolation from any other PHP file. This means using
-// minimal to no external dependencies, which leads us to supressing the
+// minimal to no external dependencies, which leads us to suppressing the
 // following linting rules:
 //
 // phpcs:disable PSR1.Files.SideEffects.FoundWithSymbols
@@ -30,7 +29,6 @@ if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceV
 final class Measurement
 {
     private const TAG_ID_QUERY = '?id=';
-    private const REDIRECTOR_ID_QUERY = '.php' . self::TAG_ID_QUERY;
     private const PATH_QUERY = '&s=';
     private const FPS_PATH = 'PHP_FPM_REPLACE_PATH';
 
@@ -50,31 +48,19 @@ final class Measurement
     /** Run the measurement logic. */
     public function run()
     {
-        $requestString = $_SERVER['REQUEST_URI'];
-        $documentRoot = $_SERVER['DOCUMENT_ROOT'];
-
-        if (empty($documentRoot) || empty($requestString)) {
-            $this->helper->invalidRequest(500);
-            return "";
-        }
-
-        $redirectorFile = explode($documentRoot, __FILE__)[1];
+        $redirectorFile = $_SERVER['SCRIPT_NAME'] ?? '';
         if (empty($redirectorFile)) {
             $this->helper->invalidRequest(500);
             return "";
         }
 
-        $parameters = self::extractParameters($requestString);
-        if (empty($parameters)) {
-            $this->helper->invalidRequest(400);
-            return "";
-        }
+        $parameters = self::extractParameters();
 
         $tagId = $parameters['tag_id'];
         $path = $parameters['path'];
 
-        if (strlen($tagId) === 0 || strlen($path) === 0) {
-            http_response_code(400);
+        if (empty($tagId) || empty($path)) {
+            $this->helper->invalidRequest(400);
             return "";
         }
 
@@ -86,11 +72,12 @@ final class Measurement
 
         if (self::isScriptRequest($path)) {
             $response = $this->helper->sendRequest($fpsUrl);
-            return str_replace(
+            $response['body'] = str_replace(
                 '/' . self::FPS_PATH . '/',
                 $redirectorFile . self::TAG_ID_QUERY . $tagId . self::PATH_QUERY,
-                $response
+                $response['body']
             );
+            return $response;
         } else {
             return $this->helper->sendRequest($fpsUrl);
         }
@@ -110,7 +97,7 @@ final class Measurement
         $requestIP = urlencode($requestIP);
 
         $gaPath = "/g/collect";
-        if (strpos($path, $gaPath) !== false) {
+        if (false !== strpos($path, $gaPath)) {
             return $path . '&_uip=' . $requestIP;
         } else {
             return $path . '&uip=' . $requestIP;
@@ -125,32 +112,43 @@ final class Measurement
     }
 
 
-    private static function extractParameters($requestString)
+    private static function extractParameters()
     {
-        $tagIdPosition = strpos($requestString, self::REDIRECTOR_ID_QUERY);
-        if ($tagIdPosition === false) {
-            return null;
+        $get = $_GET;
+        if (empty($get)) {
+            return array(
+                "tag_id" =>  '',
+                "path" => '',
+            );
         }
 
-        $tagIdStart = $tagIdPosition + strlen(self::REDIRECTOR_ID_QUERY);
-        $tagIdEnd = strpos($requestString, self::PATH_QUERY, $tagIdStart);
-        if ($tagIdEnd === false) {
-            return null;
-        }
+        $tagId = $get['id'] ?? '';
+        $path = $get['s'] ?? '';
 
-        $tagId = substr($requestString, $tagIdStart, $tagIdEnd - $tagIdStart);
-        $path = substr($requestString, $tagIdEnd + strlen(self::PATH_QUERY));
+        unset($get['id'], $get['s']);
+
+        if (!empty($get)) {
+            $containsQueryParameters = strpos($path, '?') !== false;
+            $paramSeparator = $containsQueryParameters ? '&' : '?';
+            $path .= $paramSeparator . http_build_query($get, '', '&', PHP_QUERY_RFC3986);
+        }
 
         return array(
-        "tag_id" =>  $tagId,
-        "path" => $path,
+            "tag_id" =>  $tagId,
+            "path" => $path,
         );
     }
 }
 
+// REQUEST_HELPER_START
 /**
- * Isolates network requests and other methods like exit to inject into the
- * Measurement class
+ * NOTE: DO NOT edit RequestHelper directly nor remove the start and end tags.
+ *
+ * This class is copied over from src/RequestHelper.php. If any changes are
+ * needed, change that file and run the command `npm run copy:RequestHelper`.
+ */
+/**
+ * Isolates network requests and other methods like exit to inject into classes.
  */
 class RequestHelper
 {
@@ -159,18 +157,37 @@ class RequestHelper
      *
      * @param int $statusCode
      */
-    public function invalidRequest($statsCode)
+    public function invalidRequest($statsCode): void
     {
         http_response_code($statsCode);
         exit();
     }
 
     /**
+     * Set the headers from a headers array.
+     *
+     * @param array<string, string> $headers
+     */
+    public function setHeaders($headers): void
+    {
+        foreach ($headers as $header) {
+            if (!empty($header)) {
+                header($header);
+            }
+        }
+    }
+
+    /**
      * Helper method to send requests depending on the PHP environment.
      *
      * @param string $url
+     * @return array{
+     *      body: string,
+     *      headers: array<string, string>,
+     *      statusCode: int,
+     * }
      */
-    public function sendRequest($url)
+    public function sendRequest($url): array
     {
         if ($this->isCurlInstalled()) {
             $response = $this->sendCurlRequest($url);
@@ -180,28 +197,93 @@ class RequestHelper
         return $response;
     }
 
-    protected function sendCurlRequest($url)
+    /**
+     * @param string $url
+     * @return array{
+     *      body: string,
+     *      headers: array<string, string>,
+     *      statusCode: int,
+     * }
+     */
+    protected function sendCurlRequest($url): array
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
+
         $result = curl_exec($ch);
+
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headersString = substr($result, 0, $headerSize);
+        $headers = explode("\r\n", $headersString);
+
+        $body = substr($result, $headerSize);
+
         curl_close($ch);
-        return $result;
+
+        return array(
+            'body' => $body,
+            'headers' => $headers,
+            'statusCode' => $statusCode,
+        );
     }
 
-    protected function sendFileGetContents($url)
+    /**
+     * @param string $url
+     * @return array{
+     *      body: string,
+     *      headers: array<string, string>,
+     *      statusCode: int,
+     * }
+     */
+    protected function sendFileGetContents($url): array
     {
-        return file_get_contents($url);
+        $streamContext = array(
+            "http" => array(
+                "method" => "GET",
+            )
+        );
+
+        // Calling file_get_contents will set the variable $http_response_header
+        // within the local scope.
+        $result = file_get_contents($url, false, $streamContext);
+
+        /** @var string[] $headers */
+        $headers = $http_response_header ?? [];
+
+        $statusCode = 200;
+        if (!empty($headers)) {
+            // The first element in the headers array will be the HTTP version
+            // and status code used, parse out the status code and remove this
+            // value from the headers.
+            preg_match('/HTTP\/\d\.\d\s+(\d+)/', $headers[0], $statusHeader);
+            $statusCode = intval($statusHeader[1]) ?? 200;
+            array_shift($headers);
+        }
+
+        return array(
+            'body' => $result,
+            'headers' => $headers,
+            'statusCode' => $statusCode,
+        );
     }
 
-    protected function isCurlInstalled()
+    protected function isCurlInstalled(): bool
     {
         return extension_loaded('curl');
     }
 }
+// REQUEST_HELPER_END
 
 // Skip initial run for testing
 if (!defined('IS_FIRST_PARTY_MODE_TEST')) {
-    echo (new Measurement(new RequestHelper()))->run();
+    $requestHelper = new RequestHelper();
+    $response = (new Measurement($requestHelper))->run();
+
+    $requestHelper->setHeaders($response['headers']);
+    http_response_code($response['statusCode']);
+    echo $response['body'];
 }
