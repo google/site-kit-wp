@@ -19,7 +19,12 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-anyone-can-register-disabled-notice {
-		padding: $grid-gap-phone - 2px $grid-gap-desktop;
+		padding: $fs-body-sm $grid-gap-desktop;
+
+		@media (min-width: $bp-desktop) {
+			padding-bottom: $fs-body-md;
+			padding-top: $fs-body-md;
+		}
 
 		.googlesitekit-settings-notice__icon {
 			margin-right: 16px;
@@ -31,18 +36,13 @@
 		}
 
 		.googlesitekit-settings-notice__text {
-			color: $c-utility-on-warning-container;
 			font-size: $fs-body-sm;
 			font-weight: $fw-medium;
 			line-height: $lh-body-md;
 
 			@media (min-width: $bp-desktop) {
-				font-size: $fs-title-sm;
+				font-size: $fs-body-md;
 			}
-		}
-
-		.mdc-button--tertiary:not(:disabled) {
-			color: $c-utility-on-warning-container;
 		}
 	}
 }
