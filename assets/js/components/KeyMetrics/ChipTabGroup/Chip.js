@@ -26,8 +26,12 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG } from '../constants';
+import {
+	KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
+	KEY_METRICS_SUGGESTED_GROUP_SLUG,
+} from '../constants';
 import CheckMark from '../../../../svg/icons/check-2.svg';
+import StarFill from '../../../../svg/icons/star-fill.svg';
 
 export default function Chip( {
 	slug,
@@ -36,16 +40,34 @@ export default function Chip( {
 	onClick,
 	selectedCount = 0,
 } ) {
+	let icon = null;
+
+	switch ( slug ) {
+		case KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG:
+			icon = (
+				<CheckMark
+					width={ 12 }
+					height={ 12 }
+					className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__chip-item-svg__${ slug }` }
+				/>
+			);
+			break;
+		case KEY_METRICS_SUGGESTED_GROUP_SLUG:
+			icon = (
+				<StarFill
+					className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__chip-item-svg__${ slug }` }
+					width={ 12 }
+					height={ 12 }
+				/>
+			);
+			break;
+	}
 	return (
 		<Button
 			className={ classnames( 'googlesitekit-chip-tab-group__chip-item', {
 				'googlesitekit-chip-tab-group__chip-item--active': isActive,
 			} ) }
-			icon={
-				slug === KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ? (
-					<CheckMark width={ 12 } height={ 12 } />
-				) : null
-			}
+			icon={ icon }
 			trailingIcon={
 				selectedCount > 0 ? (
 					<span className="googlesitekit-chip-tab-group__chip-item-count">
