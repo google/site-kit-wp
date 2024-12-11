@@ -520,6 +520,9 @@ export const selectors = {
 					currentKeyMetrics?.includes( keyMetric )
 				);
 
+			// If current site purpose has all conversion event metrics, a new events would bring
+			// or there are some metrics that can be added via Add metrics CTA
+			// do not show the View metrics variation.
 			if (
 				! userPickedMetrics?.length &&
 				( haveConversionEventsForTailoredMetrics( true ) ||
