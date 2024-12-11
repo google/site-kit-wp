@@ -131,6 +131,7 @@ function ConfirmSitePurposeChangeModal( {
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
+		viewContext,
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
@@ -184,6 +185,7 @@ function ConfirmSitePurposeChangeModal( {
 		setKeyMetricsSetting,
 		saveKeyMetricsSettings,
 		userInputPurposeConversionEvents,
+		viewContext,
 	] );
 
 	return (
