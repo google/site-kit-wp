@@ -59,7 +59,7 @@ export default function AnyoneCanRegisterReadOnly() {
 	return (
 		<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--read-only">
 			<span>
-				{ __( 'Anyone can register WP setting', 'google-site-kit' ) }
+				{ __( 'Users can create new accounts', 'google-site-kit' ) }
 			</span>
 			{ anyoneCanRegister && (
 				<HelperText persistent>
