@@ -504,6 +504,7 @@ export const selectors = {
 			const keyMetricsConversionEventWidgets =
 				getKeyMetricsConversionEventWidgets();
 			const newConversionEventKeyMetrics = [];
+
 			// Pick all conversion event widgets associated with new events.
 			for ( const event in keyMetricsConversionEventWidgets ) {
 				if (
@@ -520,9 +521,9 @@ export const selectors = {
 					currentKeyMetrics?.includes( keyMetric )
 				);
 
-			// If current site purpose has all conversion event metrics, a new events would bring
-			// or there are some metrics that can be added via Add metrics CTA
-			// do not show the View metrics variation.
+			// If the current site purpose has all conversion event metrics,
+			// or there are some metrics that can be added via "Add
+			// metrics CTA", don't show the "View metrics" variation.
 			if (
 				! userPickedMetrics?.length &&
 				( haveConversionEventsForTailoredMetrics( true ) ||

@@ -758,7 +758,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				).toBeInTheDocument();
 			} );
 
-			it( 'does not renders when newly detected events suggest metrics user does not have within same site purpose', async () => {
+			it( 'does not render when newly detected events suggest metrics user does not have within same site purpose', async () => {
 				registry
 					.dispatch( CORE_SITE )
 					.setKeyMetricsSetupCompletedBy( 1 );
