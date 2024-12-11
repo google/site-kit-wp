@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -47,13 +47,26 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	return (
 		<Notification>
 			<SubtleNotification
-				title={ __(
-					'You successfully set up Sign in with Google!',
-					'google-site-kit'
+				title={ sprintf(
+					/* translators: %s: Sign in with Google service name */
+					__( 'You successfully set up %s!', 'google-site-kit' ),
+					_x(
+						'Sign in with Google',
+						'Service name',
+						'google-site-kit'
+					)
 				) }
-				description={ __(
-					'Sign in with Google button was added to your site login page. You can customize the button appearance in settings.',
-					'google-site-kit'
+				description={ sprintf(
+					/* translators: %s: Sign in with Google service name */
+					__(
+						'%s button was added to your site login page. You can customize the button appearance in settings.',
+						'google-site-kit'
+					),
+					_x(
+						'Sign in with Google',
+						'Service name',
+						'google-site-kit'
+					)
 				) }
 				dismissCTA={
 					<Dismiss
