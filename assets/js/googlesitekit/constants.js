@@ -33,6 +33,7 @@ export const VIEW_CONTEXT_MODULE = 'module';
 export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY = 'wpDashboardViewOnly';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
+export const VIEW_CONTEXT_METRIC_SELECTION = 'metricSelection';
 
 // Anchor ID Constants
 export const ANCHOR_ID_KEY_METRICS = 'key-metrics';
@@ -51,6 +52,7 @@ export const SITE_KIT_VIEW_CONTEXTS = [
 	VIEW_CONTEXT_SPLASH,
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_MODULE_SETUP,
+	VIEW_CONTEXT_METRIC_SELECTION,
 ];
 
 // Site Kit view-only contexts

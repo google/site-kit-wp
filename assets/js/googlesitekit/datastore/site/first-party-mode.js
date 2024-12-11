@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isPlainObject } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 import invariant from 'invariant';
 
 /**
@@ -36,10 +36,12 @@ import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
+const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
 
 const settingsReducerCallback = createReducer(
 	( state, firstPartyModeSettings ) => {
 		state.firstPartyModeSettings = firstPartyModeSettings;
+		state.firstPartyModeSavedSettings = firstPartyModeSettings;
 	}
 );
 
@@ -91,6 +93,7 @@ const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
 
 const baseInitialState = {
 	firstPartyModeSettings: undefined,
+	firstPartyModeSavedSettings: undefined,
 };
 
 const baseActions = {
@@ -124,6 +127,20 @@ const baseActions = {
 			payload: { isEnabled },
 		};
 	},
+
+	/**
+	 * Returns the current settings back to the current saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetFirstPartyModeSettings() {
+		return {
+			payload: {},
+			type: RESET_FIRST_PARTY_MODE_SETTINGS,
+		};
+	},
 };
 
 const baseControls = {};
@@ -133,6 +150,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_FIRST_PARTY_MODE_ENABLED: {
 			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
 			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
+			break;
+		}
+
+		case RESET_FIRST_PARTY_MODE_SETTINGS: {
+			state.firstPartyModeSettings = state.firstPartyModeSavedSettings;
 			break;
 		}
 
@@ -172,7 +194,7 @@ const baseSelectors = {
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =
@@ -210,6 +232,20 @@ const baseSelectors = {
 
 		return isScriptAccessEnabled;
 	} ),
+
+	/**
+	 * Indicates whether the current first-party mode settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	haveFirstPartyModeSettingsChanged( state ) {
+		const { firstPartyModeSettings, firstPartyModeSavedSettings } = state;
+
+		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
+	},
 };
 
 const store = combineStores(

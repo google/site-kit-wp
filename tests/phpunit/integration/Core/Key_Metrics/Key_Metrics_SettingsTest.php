@@ -156,13 +156,13 @@ class Key_Metrics_SettingsTest extends TestCase {
 		$original_settings = array(
 			'widgetSlugs'                      => array( 'widgetA' ),
 			'isWidgetHidden'                   => false,
-			'includeConversionTailoredMetrics' => false,
+			'includeConversionTailoredMetrics' => array(),
 		);
 
 		$changed_settings = array(
 			'widgetSlugs'                      => array( 'widgetB' ),
 			'isWidgetHidden'                   => true,
-			'includeConversionTailoredMetrics' => true,
+			'includeConversionTailoredMetrics' => array( 'contact' ),
 		);
 
 		// Make sure settings can be updated even without having them set initially
@@ -180,7 +180,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 			array(
 				'widgetSlugs'                      => $original_settings['widgetSlugs'],
 				'isWidgetHidden'                   => true,
-				'includeConversionTailoredMetrics' => false,
+				'includeConversionTailoredMetrics' => array(),
 			),
 			$this->key_metrics_settings->get()
 		);

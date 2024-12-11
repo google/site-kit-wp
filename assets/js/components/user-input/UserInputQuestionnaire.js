@@ -47,6 +47,7 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { useFeature } from '../../hooks/useFeature';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -54,6 +55,7 @@ export default function UserInputQuestionnaire() {
 		'question',
 		USER_INPUT_QUESTIONS_LIST[ 0 ]
 	);
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const activeSlugIndex = USER_INPUT_QUESTIONS_LIST.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -159,20 +161,19 @@ export default function UserInputQuestionnaire() {
 		questionNumber,
 	] );
 
-	const haveConversionReportingEventsForTailoredMetrics = useSelect(
-		( select ) => {
-			const isGA4Connected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	const userInputPurposeConversionEvents = useSelect( ( select ) => {
+		const isGA4Connected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-			if ( ! isGA4Connected ) {
-				return false;
-			}
-
-			return select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics();
+		if ( ! isGA4Connected || ! isConversionReportingEnabled ) {
+			return [];
 		}
-	);
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getUserInputPurposeConversionEvents();
+	} );
+
 	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
 
@@ -181,15 +182,15 @@ export default function UserInputQuestionnaire() {
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			// If selected purpose has any ACR KMW assigned to it,
-			// mark 'includeConversionTailoredMetrics' key metrics setting to true
-			// so they can be included.
-			if ( haveConversionReportingEventsForTailoredMetrics ) {
-				setKeyMetricsSetting(
+			if ( isConversionReportingEnabled ) {
+				// Update 'includeConversionTailoredMetrics' key metrics setting with included
+				//conversion events, to mark that their respective metrics should be included in the
+				// list of tailored metrics and persist on the dashboard in case events are lost.
+				await setKeyMetricsSetting(
 					'includeConversionTailoredMetrics',
-					true
+					userInputPurposeConversionEvents
 				);
-				saveKeyMetricsSettings( {
+				await saveKeyMetricsSettings( {
 					widgetSlugs: undefined,
 				} );
 			}
@@ -203,11 +204,12 @@ export default function UserInputQuestionnaire() {
 	}, [
 		gaEventCategory,
 		saveUserInputSettings,
-		haveConversionReportingEventsForTailoredMetrics,
+		userInputPurposeConversionEvents,
 		dashboardURL,
 		setKeyMetricsSetting,
 		saveKeyMetricsSettings,
 		navigateTo,
+		isConversionReportingEnabled,
 		userPickedMetrics,
 		resetKeyMetricsSelection,
 	] );

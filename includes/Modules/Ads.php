@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
@@ -307,13 +308,24 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$debug_fields = array(
 			'ads_conversion_tracking_id' => array(
 				'label' => __( 'Ads: Conversion Tracking ID', 'google-site-kit' ),
 				'value' => $settings['conversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
+
+		// Add fields from First-party Mode.
+		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
+		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
+			$first_party_mode             = new First_Party_Mode( $this->context );
+			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+
+			$debug_fields = array_merge( $debug_fields, $fields_from_first_party_mode );
+		}
+
+		return $debug_fields;
 	}
 
 	/**

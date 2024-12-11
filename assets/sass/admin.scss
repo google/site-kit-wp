@@ -103,6 +103,7 @@
 @import "components/global/googlesitekit-entity-search";
 @import "components/global/googlesitekit-error-handler";
 @import "components/global/googlesitekit-error-text";
+@import "components/global/googlesitekit-first-party-mode-toggle";
 @import "components/global/googlesitekit-gathering-data-notice";
 @import "components/global/googlesitekit-generic-error-handler-actions";
 @import "components/global/googlesitekit-header";
@@ -185,6 +186,7 @@
 @import "components/settings/googlesitekit-settings-admin";
 @import "components/settings/googlesitekit-settings-connect-module";
 @import "components/settings/googlesitekit-settings-consent-mode";
+@import "components/settings/googlesitekit-settings-group";
 @import "components/settings/googlesitekit-settings-meta";
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-notice";
@@ -196,6 +198,7 @@
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
+@import "components/user-input/googlesitekit-metric-selection-module";
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
@@ -209,6 +212,7 @@
 @import "components/analytics-4";
 @import "components/reader-revenue-manager";
 @import "components/sign-in-with-google";
+@import "components/first-party-mode";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -228,6 +232,7 @@
 @import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
+@import "widgets/googlesitekit-widget-analyticsPopularPages";
 @import "widgets/googlesitekit-widget-overallPageMetrics";
 @import "widgets/googlesitekit-widget-error-handler";
 

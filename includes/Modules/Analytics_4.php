@@ -89,6 +89,7 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
@@ -591,6 +592,15 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					? 'none'
 					: join( ', ', $site_kit_audiences ),
 			);
+		}
+
+		// Add fields from First-party Mode.
+		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
+		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
+			$first_party_mode             = new First_Party_Mode( $this->context );
+			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+
+			$debug_fields = array_merge( $debug_fields, $fields_from_first_party_mode );
 		}
 
 		return $debug_fields;

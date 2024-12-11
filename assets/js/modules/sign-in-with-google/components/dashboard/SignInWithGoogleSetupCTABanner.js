@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -29,8 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
@@ -45,6 +47,11 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 		);
 	} );
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
+	useMount( () => {
+		triggerSurvey( 'view_siwg_setup_cta' );
+	} );
+
 	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
 
 	return (
@@ -52,14 +59,14 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 			<NotificationWithSVG
 				id={ id }
 				title={ __(
-					'Boost onboarding, security, and trust on your site using Sign in with Google',
+					'Boost onboarding, security and trust on your site using Sign in with Google',
 					'google-site-kit'
 				) }
 				description={
 					<Description
 						className="googlesitekit-setup-cta-banner__description"
 						text={ __(
-							'Provide your site visitors with a simple, secure, and personalised experience by adding a Sign in with Google button to your login page.',
+							'Provide your site visitors with a simple, secure and personalised experience by adding a Sign in with Google button to your login page.',
 							'google-site-kit'
 						) }
 						learnMoreLink={
