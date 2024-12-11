@@ -459,10 +459,10 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			const fpmModuleConnected =
+			const isFPMModuleConnected =
 				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			if ( ! fpmModuleConnected ) {
+			if ( ! isFPMModuleConnected ) {
 				return false;
 			}
 
@@ -496,10 +496,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			const fpmModuleConnected =
+			const isFPMModuleConnected =
 				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			if ( ! fpmModuleConnected ) {
+			if ( ! isFPMModuleConnected ) {
 				return false;
 			}
 
