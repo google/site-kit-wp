@@ -68,7 +68,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 			},
-			true
+			{ overwrite: true }
 		);
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
@@ -99,7 +99,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 			},
-			true
+			{ overwrite: true }
 		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
@@ -165,7 +165,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
 			},
-			true
+			{ overwrite: true }
 		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
@@ -203,7 +203,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
 			},
-			true
+			{ overwrite: true }
 		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
@@ -242,7 +242,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
 			},
-			true
+			{ overwrite: true }
 		);
 		provideSiteInfo( registry, {
 			setupErrorRedoURL: '#',
@@ -278,7 +278,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
 			},
-			true
+			{ overwrite: true }
 		);
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',

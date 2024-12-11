@@ -26,7 +26,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
-describe( 'core/site First-Party Mode', () => {
+describe( 'core/site First-party Mode', () => {
 	let registry;
 
 	const firstPartyModeSettingsEndpointRegExp = new RegExp(

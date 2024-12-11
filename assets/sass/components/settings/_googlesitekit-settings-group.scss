@@ -24,7 +24,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
-		padding: $grid-gap-desktop;
+		padding: $grid-gap-desktop $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: $grid-gap-desktop;
+		}
 
 		h4 {
 			font-family: $f-primary;
@@ -34,15 +38,24 @@
 			margin: 0;
 		}
 
+		.googlesitekit-module-settings-group__switch {
+			display: flex;
+
+			.mdc-switch {
+				top: 3px;
+			}
+		}
+
+		.googlesitekit-first-party-mode-toggle__switch-badge {
+			position: relative;
+			top: -2px;
+		}
+
 		.googlesitekit-module-settings-group__helper-text {
 			color: $c-surfaces-on-surface-variant;
 			flex-basis: 100%;
 			font-size: $fs-label-sm;
-			margin: 6px 0 0;
-
-			@media (min-width: $bp-tablet) {
-				margin-left: 42px; // margin-left = 32px switch width + 10px margin-left of label.
-			}
+			margin: 6px 0 0 $mdc-switch-track-width + $mdc-switch-label-margin-left;
 		}
 
 		.googlesitekit-analytics-enable-enhanced-measurement--loading {

@@ -56,6 +56,7 @@ import FirstPartyModeSetupBanner, {
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { isFeatureEnabled } from '../../features';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -445,13 +446,13 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
-	'first-party-mode-setup-cta-banner': {
+	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: 320,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
 				return false;
 			}
@@ -475,11 +476,19 @@ export const DEFAULT_NOTIFICATIONS = {
 				isScriptAccessEnabled,
 			} = select( CORE_SITE );
 
-			return (
-				! isFirstPartyModeEnabled() &&
-				isFPMHealthy() &&
-				isScriptAccessEnabled()
-			);
+			if ( isFirstPartyModeEnabled() ) {
+				return false;
+			}
+
+			const isHealthy = isFPMHealthy();
+			const isAccessEnabled = isScriptAccessEnabled();
+
+			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
+				dispatch( CORE_SITE ).fetchGetFPMServerRequirementStatus();
+				return false;
+			}
+
+			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
 	},
