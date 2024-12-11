@@ -230,7 +230,7 @@ export default function SettingsView() {
 						? [
 								{
 									label: __(
-										'Enhance Measurement',
+										'Enhanced Measurement',
 										'google-site-kit'
 									),
 									status: isEnhancedMeasurementStreamEnabled,
@@ -253,7 +253,7 @@ export default function SettingsView() {
 						: [
 								{
 									label: __(
-										'Enhance Measurement',
+										'Enhanced Measurement',
 										'google-site-kit'
 									),
 									status: isEnhancedMeasurementStreamEnabled,
