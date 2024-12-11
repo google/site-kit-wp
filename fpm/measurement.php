@@ -8,8 +8,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
- *
- * PHPCS rules have been disabled at the very top of the file to allow it to be included in Site Kit's codebase mostly unmodified.
  */
 
 // This file should run in isolation from any other PHP file. This means using
