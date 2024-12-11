@@ -671,7 +671,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// are associated with either `contact`, `generate_lead` or `submit_lead_form` events.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact' ] );
+					.setDetectedEvents( [ 'contact', 'generate_lead' ] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -712,7 +712,53 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				expect( container ).toBeEmptyDOMElement();
 			} );
 
-			it( 'renders when newly detected events suggest metrics user does not have within same site purpose', async () => {
+			it( 'does not render when there is a new event matching the saved site purpose, which had no conversion events with previously detected events', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					includeConversionTailoredMetrics: [ 'contact' ],
+					isWidgetHidden: false,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: {
+						values: [ 'sell_products' ],
+						scope: 'site',
+					},
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'contact', 'purchase' ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ 'purchase' ],
+						lostEvents: [],
+					} );
+
+				const { getByRole, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect(
+					getByRole( 'button', { name: 'Add metrics' } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'does not renders when newly detected events suggest metrics user does not have within same site purpose', async () => {
 				registry
 					.dispatch( CORE_SITE )
 					.setKeyMetricsSetupCompletedBy( 1 );
@@ -769,8 +815,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// After initial events, `add_to_cart` has been detected.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'purchase', 'add_to_cart' ] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase', 'add_to_cart' ],
+						newEvents: [ 'add_to_cart' ],
 						lostEvents: [],
 					} );
 
@@ -787,7 +836,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				await waitForRegistry();
 
 				expect(
-					getByRole( 'button', { name: 'View metrics' } )
+					getByRole( 'button', { name: 'Add metrics' } )
 				).toBeInTheDocument();
 			} );
 
