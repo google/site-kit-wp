@@ -17,15 +17,16 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -46,6 +47,16 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
 
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ isViewed, setIsViewed ] = useState( false );
+
+	const conversionReportingNotificationRef = useRef();
+	const intersectionEntry = useIntersection(
+		conversionReportingNotificationRef,
+		{
+			threshold: 0.25,
+		}
+	);
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
@@ -211,6 +222,26 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		conversionReportingDetectedEventsTracking,
 	] );
 
+	// Track when the notification is viewed.
+	useEffect( () => {
+		if ( ! isViewed && inView ) {
+			// Handle internal tracking.
+			conversionReportingDetectedEventsTracking(
+				conversionReportingDetectedEventsTrackingArgs,
+				viewContext,
+				'view_notification'
+			);
+
+			setIsViewed( true );
+		}
+	}, [
+		isViewed,
+		inView,
+		viewContext,
+		conversionReportingDetectedEventsTracking,
+		conversionReportingDetectedEventsTrackingArgs,
+	] );
+
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
 		! haveLostConversionEvents &&
@@ -233,6 +264,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		<Widget noPadding fullWidth>
 			{ haveLostConversionEvents && (
 				<LostEventsSubtleNotification
+					ref={ conversionReportingNotificationRef }
 					onSelectMetricsCallback={ handleSelectMetricsClick }
 					onDismissCallback={
 						handleDismissLostConversionReportingEvents
@@ -243,6 +275,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				shouldShowCalloutForUserPickedMetrics ||
 				shouldShowCalloutForNewEvents ) && (
 				<ConversionReportingDashboardSubtleNotification
+					ref={ conversionReportingNotificationRef }
 					ctaLabel={ ctaLabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
