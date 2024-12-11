@@ -26,7 +26,13 @@ import { useIntersection } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -125,13 +131,21 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	// Build a common object to use as the first argument in conversionReportingDetectedEventsTracking().
-	const conversionReportingDetectedEventsTrackingArgs = {
+	const conversionReportingDetectedEventsTrackingArgs = useMemo( () => {
+		return {
+			shouldShowInitialCalloutForTailoredMetrics,
+			shouldShowCalloutForUserPickedMetrics,
+			haveConversionEventsWithDifferentMetrics,
+			hasUserPickedMetrics,
+			haveLostConversionEvents,
+		};
+	}, [
 		shouldShowInitialCalloutForTailoredMetrics,
 		shouldShowCalloutForUserPickedMetrics,
 		haveConversionEventsWithDifferentMetrics,
 		hasUserPickedMetrics,
 		haveLostConversionEvents,
-	};
+	] );
 
 	const handleDismissLostConversionReportingEvents = useCallback( () => {
 		dismissLostConversionReportingEvents();
@@ -144,8 +158,8 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}, [
 		dismissLostConversionReportingEvents,
-		conversionReportingDetectedEventsTracking,
 		conversionReportingDetectedEventsTrackingArgs,
+		viewContext,
 	] );
 
 	const handleDismissNewConversionReportingEvents = useCallback( () => {
@@ -159,7 +173,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}, [
 		dismissNewConversionReportingEvents,
-		conversionReportingDetectedEventsTracking,
 		conversionReportingDetectedEventsTrackingArgs,
 		viewContext,
 	] );
@@ -188,7 +201,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}, [
 		setKeyMetricsSetting,
 		saveKeyMetricsSettings,
-		conversionReportingDetectedEventsTracking,
 		conversionReportingDetectedEventsTrackingArgs,
 		dismissNewConversionReportingEvents,
 		userInputPurposeConversionEvents,
@@ -221,7 +233,8 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		haveLostConversionEvents,
 		dismissNewConversionReportingEvents,
 		dismissLostConversionReportingEvents,
-		conversionReportingDetectedEventsTracking,
+		conversionReportingDetectedEventsTrackingArgs,
+		viewContext,
 	] );
 
 	// Track when the notification is viewed.
@@ -240,7 +253,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		isViewed,
 		inView,
 		viewContext,
-		conversionReportingDetectedEventsTracking,
 		conversionReportingDetectedEventsTrackingArgs,
 	] );
 
