@@ -445,7 +445,10 @@ export const selectors = {
 				getDetectedEvents,
 				getConversionReportingEventsChange,
 				haveConversionEventsForUserPickedMetrics,
+				haveConversionEventsForTailoredMetrics,
+				getKeyMetricsConversionEventWidgets,
 			} = select( MODULES_ANALYTICS_4 );
+
 			const detectedEvents = getDetectedEvents();
 			const conversionReportingEventsChange =
 				getConversionReportingEventsChange();
@@ -485,15 +488,42 @@ export const selectors = {
 				return false;
 			}
 
-			const userPickedMetrics =
-				select( CORE_USER ).getUserPickedMetrics();
+			const { getUserPickedMetrics, getKeyMetrics } = select( CORE_USER );
 
+			const userPickedMetrics = getUserPickedMetrics();
 			const haveNewConversionEventsForUserPickedMetrics =
 				haveConversionEventsForUserPickedMetrics( true );
 
 			if (
 				userPickedMetrics?.length &&
 				! haveNewConversionEventsForUserPickedMetrics
+			) {
+				return false;
+			}
+
+			const keyMetricsConversionEventWidgets =
+				getKeyMetricsConversionEventWidgets();
+			const newConversionEventKeyMetrics = [];
+			// Pick all conversion event widgets associated with new events.
+			for ( const event in keyMetricsConversionEventWidgets ) {
+				if (
+					conversionReportingEventsChange.newEvents.includes( event )
+				) {
+					newConversionEventKeyMetrics.push(
+						...keyMetricsConversionEventWidgets[ event ]
+					);
+				}
+			}
+			const currentKeyMetrics = getKeyMetrics();
+			const haveAllConversionEventMetrics =
+				newConversionEventKeyMetrics.every( ( keyMetric ) =>
+					currentKeyMetrics?.includes( keyMetric )
+				);
+
+			if (
+				! userPickedMetrics?.length &&
+				( haveConversionEventsForTailoredMetrics( true ) ||
+					haveAllConversionEventMetrics )
 			) {
 				return false;
 			}
