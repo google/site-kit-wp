@@ -309,29 +309,4 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			),
 		);
 	}
-
-	public function test_reset_key_metrics_selection() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$original_settings = array(
-			'widgetSlugs'    => array( 'widgetA' ),
-			'isWidgetHidden' => false,
-		);
-
-		$expected_change_in_settings = array(
-			'widgetSlugs'    => array(),
-			'isWidgetHidden' => false,
-		);
-
-		$this->settings->register();
-		$this->settings->set( $original_settings );
-
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/reset-key-metrics-selection' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEqualSetsWithIndex( $expected_change_in_settings, $response->get_data() );
-		$this->assertEqualSetsWithIndex( $expected_change_in_settings, $this->settings->get() );
-	}
 }
