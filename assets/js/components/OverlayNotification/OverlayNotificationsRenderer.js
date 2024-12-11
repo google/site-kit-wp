@@ -31,15 +31,16 @@ import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsA
 import { PublicationApprovedOverlayNotification } from '../../modules/reader-revenue-manager/components/dashboard';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../modules/reader-revenue-manager/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export default function OverlayNotificationsRenderer() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 	const analyticsConnected = useSelect( ( select ) =>
-		select( 'core/modules' ).isModuleConnected( 'modules/analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( 'modules/analytics-4' )
 	);
 	const rrmConnected = useSelect( ( select ) =>
-		select( 'core/modules' ).isModuleConnected(
+		select( CORE_MODULES ).isModuleConnected(
 			MODULES_READER_REVENUE_MANAGER
 		)
 	);
