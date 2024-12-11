@@ -72,6 +72,12 @@ export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 
 	const onDismiss = useCallback( async () => {
 		await dismissItem( USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY );
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-suggested-site-purpose-edit-notification`,
+			'confirm_notification',
+			'conversion_reporting'
+		);
 	}, [ dismissItem ] );
 
 	if ( isDismissed ) {
