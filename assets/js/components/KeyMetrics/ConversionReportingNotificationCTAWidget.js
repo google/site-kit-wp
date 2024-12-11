@@ -36,11 +36,15 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { conversionReportingDetectedEventsTracking } from './utils';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import LostEventsSubtleNotification from './LostEventsSubtleNotification';
 import whenActive from '../../util/when-active';
+import useViewContext from '../../hooks/useViewContext';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
+
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const isUserInputCompleted = useSelect( ( select ) =>
@@ -109,6 +113,44 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		dismissLostConversionReportingEvents,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
+	// Build a common object to use as the first argument in conversionReportingDetectedEventsTracking().
+	const conversionReportingDetectedEventsTrackingArgs = {
+		shouldShowInitialCalloutForTailoredMetrics,
+		shouldShowCalloutForUserPickedMetrics,
+		haveConversionEventsWithDifferentMetrics,
+		hasUserPickedMetrics,
+		haveLostConversionEvents,
+	};
+
+	const handleDismissLostConversionReportingEvents = useCallback( () => {
+		dismissLostConversionReportingEvents();
+
+		// Handle internal tracking.
+		conversionReportingDetectedEventsTracking(
+			conversionReportingDetectedEventsTrackingArgs,
+			viewContext,
+			'dismiss_notification'
+		);
+	}, [
+		dismissLostConversionReportingEvents,
+		conversionReportingDetectedEventsTracking,
+	] );
+
+	const handleDismissNewConversionReportingEvents = useCallback( () => {
+		dismissNewConversionReportingEvents();
+
+		// Handle internal tracking.
+		conversionReportingDetectedEventsTracking(
+			conversionReportingDetectedEventsTrackingArgs,
+			viewContext,
+			'dismiss_notification'
+		);
+	}, [
+		conversionReportingDetectedEventsTracking,
+		conversionReportingDetectedEventsTrackingArgs,
+		viewContext,
+	] );
+
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
@@ -122,6 +164,13 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			setIsSaving( false );
 		}
 
+		// Handle internal tracking.
+		conversionReportingDetectedEventsTracking(
+			conversionReportingDetectedEventsTrackingArgs,
+			viewContext,
+			'confirm_add_new_conversion_metrics'
+		);
+
 		dismissNewConversionReportingEvents();
 	}, [
 		setKeyMetricsSetting,
@@ -129,6 +178,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		dismissNewConversionReportingEvents,
 		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
+		conversionReportingDetectedEventsTracking,
+		conversionReportingDetectedEventsTrackingArgs,
+		viewContext,
 	] );
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -143,12 +195,20 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		if ( haveLostConversionEvents ) {
 			dismissLostConversionReportingEvents();
 		}
+
+		// Handle internal tracking.
+		conversionReportingDetectedEventsTracking(
+			conversionReportingDetectedEventsTrackingArgs,
+			viewContext,
+			'confirm_select_new_conversion_metrics'
+		);
 	}, [
 		setValue,
 		shouldShowCalloutForUserPickedMetrics,
 		haveLostConversionEvents,
 		dismissNewConversionReportingEvents,
 		dismissLostConversionReportingEvents,
+		conversionReportingDetectedEventsTracking,
 	] );
 
 	if (
@@ -174,7 +234,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			{ haveLostConversionEvents && (
 				<LostEventsSubtleNotification
 					onSelectMetricsCallback={ handleSelectMetricsClick }
-					onDismissCallback={ dismissLostConversionReportingEvents }
+					onDismissCallback={
+						handleDismissLostConversionReportingEvents
+					}
 				/>
 			) }
 			{ ( shouldShowInitialCalloutForTailoredMetrics ||
@@ -188,7 +250,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 							: handleSelectMetricsClick
 					}
 					isSaving={ isSaving }
-					onDismiss={ dismissNewConversionReportingEvents }
+					onDismiss={ handleDismissNewConversionReportingEvents }
 				/>
 			) }
 		</Widget>
