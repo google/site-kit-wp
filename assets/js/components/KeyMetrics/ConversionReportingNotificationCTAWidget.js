@@ -275,10 +275,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget noPadding fullWidth>
+		<Widget noPadding fullWidth ref={ conversionReportingNotificationRef }>
 			{ haveLostConversionEvents && (
 				<LostEventsSubtleNotification
-					ref={ conversionReportingNotificationRef }
 					onSelectMetricsCallback={ handleSelectMetricsClick }
 					onDismissCallback={
 						handleDismissLostConversionReportingEvents
@@ -289,7 +288,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				shouldShowCalloutForUserPickedMetrics ||
 				shouldShowCalloutForNewEvents ) && (
 				<ConversionReportingDashboardSubtleNotification
-					ref={ conversionReportingNotificationRef }
 					ctaLabel={ ctaLabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
