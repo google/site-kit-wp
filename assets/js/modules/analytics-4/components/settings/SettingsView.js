@@ -225,23 +225,20 @@ export default function SettingsView() {
 			<OptionalSettingsView />
 
 			<SettingsStatuses
-				statuses={
-					fpmEnabled
+				statuses={ [
+					{
+						label: __( 'Enhanced Measurement', 'google-site-kit' ),
+						status: isEnhancedMeasurementStreamEnabled,
+					},
+					{
+						label: __(
+							'Enhanced Conversion Tracking',
+							'google-site-kit'
+						),
+						status: isConversionTrackingEnabled,
+					},
+					...( fpmEnabled
 						? [
-								{
-									label: __(
-										'Enhanced Measurement',
-										'google-site-kit'
-									),
-									status: isEnhancedMeasurementStreamEnabled,
-								},
-								{
-									label: __(
-										'Enhanced Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
 								{
 									label: __(
 										'First-party Mode',
@@ -250,23 +247,8 @@ export default function SettingsView() {
 									status: isFPMEnabled,
 								},
 						  ]
-						: [
-								{
-									label: __(
-										'Enhanced Measurement',
-										'google-site-kit'
-									),
-									status: isEnhancedMeasurementStreamEnabled,
-								},
-								{
-									label: __(
-										'Enhanced Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
-						  ]
-				}
+						: [] ),
+				] }
 			/>
 		</div>
 	);
