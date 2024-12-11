@@ -193,11 +193,10 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				);
 
 			if ( isNewlyDetectedKeyMetrics ) {
-				newlyDetectedMetrics[ metricGroup ] = newlyDetectedMetrics[
-					metricGroup
-				]
-					? [ ...newlyDetectedMetrics[ metricGroup ], metricItemSlug ]
-					: [ metricItemSlug ];
+				newlyDetectedMetrics[ metricGroup ] = [
+					...( newlyDetectedMetrics[ metricGroup ] ?? [] ),
+					metricItemSlug,
+				];
 			}
 		}
 	}
@@ -293,9 +292,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 									slug={ group.SLUG }
 									label={ group.LABEL }
 									hasNewBadge={
-										!! newlyDetectedMetrics?.[
-											group.SLUG
-										] ?? false
+										!! newlyDetectedMetrics?.[ group.SLUG ]
 									}
 									isActive={ group.SLUG === isActive }
 									onClick={ onChipChange }
@@ -338,9 +335,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				{ Object.keys( activeMetricItems ).map( ( slug ) => {
 					const metricGroup = activeMetricItems[ slug ].group;
 					const isNewlyDetected =
-						newlyDetectedMetrics?.[ metricGroup ]?.includes(
-							slug
-						) ?? false;
+						newlyDetectedMetrics?.[ metricGroup ]?.includes( slug );
 
 					return (
 						<MetricItem

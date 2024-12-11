@@ -34,7 +34,7 @@ export default function Chip( {
 	label,
 	isActive,
 	onClick,
-	hasNewBadge,
+	hasNewBadge = false,
 	selectedCount = 0,
 } ) {
 	return (
