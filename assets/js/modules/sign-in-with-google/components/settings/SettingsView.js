@@ -146,10 +146,7 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __(
-							'Users can create new accounts',
-							'google-site-kit'
-						) }
+						{ __( 'User registration', 'google-site-kit' ) }
 					</h5>
 					{ anyoneCanRegister !== undefined && (
 						<p className="googlesitekit-settings-module__meta-item-data">
