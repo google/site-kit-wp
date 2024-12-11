@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FirstPartyServing redirect file
  *
