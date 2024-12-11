@@ -101,8 +101,8 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 						'google-site-kit'
 					),
 					isMultisite
-						? __( '“Allow new registrations“', 'google-site-kit' )
-						: __( '“Anyone can register“', 'google-site-kit' ),
+						? __( '“Allow new registrations”', 'google-site-kit' )
+						: __( '“Anyone can register”', 'google-site-kit' ),
 					_x(
 						'Sign in with Google',
 						'Service name',
