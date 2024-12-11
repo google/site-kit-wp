@@ -42,6 +42,9 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
 
+	const [ existingClientIDWasSet, setExistingClientIDWasSet ] =
+		useState( false );
+
 	const [ isValid, setIsValid ] = useState(
 		! clientID || isValidClientID( clientID )
 	);
@@ -50,10 +53,13 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 	const { setClientID } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	useEffect( () => {
-		if ( ! clientID && existingClientID ) {
+		if ( ! clientID && existingClientID && ! existingClientIDWasSet ) {
 			setClientID( existingClientID );
+			// Prevent the existingClientID from prefilling again when a user
+			// clears the clientID in the field fully.
+			setExistingClientIDWasSet( true );
 		}
-	}, [ clientID, setClientID, existingClientID ] );
+	}, [ clientID, setClientID, existingClientID, existingClientIDWasSet ] );
 
 	const onChange = useCallback(
 		( { currentTarget } ) => {

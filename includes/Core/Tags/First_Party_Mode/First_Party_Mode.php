@@ -71,7 +71,10 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 		$options                         = $options ?: new Options( $context );
 		$this->first_party_mode_settings = new First_Party_Mode_Settings( $options );
 		$this->rest_controller           = new REST_First_Party_Mode_Controller( $this, $this->first_party_mode_settings );
-		$this->cron                      = new First_Party_Mode_Cron( array( $this, 'healthcheck' ) );
+		$this->cron                      = new First_Party_Mode_Cron(
+			$this->first_party_mode_settings,
+			array( $this, 'healthcheck' )
+		);
 	}
 
 	/**

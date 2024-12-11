@@ -57,18 +57,17 @@
 
 		.googlesitekit-widget-audience-segmentation-actions__wrapper {
 			align-items: center;
-			column-gap: 30px;
 			display: flex;
 			flex-wrap: wrap;
+			gap: $cta-gap-phone;
 			margin: 25px 0;
-			row-gap: 24px;
 
 			@media (min-width: $bp-desktop) {
 				margin: 25px 0 0;
 			}
 
-			@media (max-width: $bp-mobileOnly) {
-				column-gap: 10px;
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 			}
 
 			a,

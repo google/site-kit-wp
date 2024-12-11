@@ -260,6 +260,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,
+		isMultisite: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
