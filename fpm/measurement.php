@@ -19,10 +19,12 @@
 
 namespace Google\FirstPartyLibrary;
 
+/* Start of Site Kit modified code. */
 if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 	echo 'ok';
 	exit;
 }
+/* End of Site Kit modified code. */
 
 /** Core measurement.php logic. */
 final class Measurement
