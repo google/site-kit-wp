@@ -2932,6 +2932,7 @@ class Analytics_4Test extends TestCase {
 			'parameterName' => 'googlesitekit_post_author',
 			'scope'         => 'EVENT',
 		);
+
 		$this->fake_handler_and_invoke_register_method(
 			$property_id,
 			function ( Request $request ) use ( $raw_custom_dimension, $property_id ) {
@@ -2947,7 +2948,9 @@ class Analytics_4Test extends TestCase {
 				return new Response( 200 );
 			}
 		);
+
 		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
 		$response = $this->analytics->set_data(
 			'create-custom-dimension',
 			array(
@@ -2955,6 +2958,7 @@ class Analytics_4Test extends TestCase {
 				'customDimension' => $raw_custom_dimension,
 			)
 		);
+
 		$this->assertNotWPError( $response );
 		$this->assertEquals( $raw_custom_dimension, (array) $response->toSimpleObject() );
 	}
