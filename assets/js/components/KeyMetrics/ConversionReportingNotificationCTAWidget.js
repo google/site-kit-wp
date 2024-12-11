@@ -145,6 +145,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}, [
 		dismissLostConversionReportingEvents,
 		conversionReportingDetectedEventsTracking,
+		conversionReportingDetectedEventsTrackingArgs,
 	] );
 
 	const handleDismissNewConversionReportingEvents = useCallback( () => {
@@ -157,6 +158,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			'dismiss_notification'
 		);
 	}, [
+		dismissNewConversionReportingEvents,
 		conversionReportingDetectedEventsTracking,
 		conversionReportingDetectedEventsTrackingArgs,
 		viewContext,
@@ -186,11 +188,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}, [
 		setKeyMetricsSetting,
 		saveKeyMetricsSettings,
+		conversionReportingDetectedEventsTracking,
+		conversionReportingDetectedEventsTrackingArgs,
 		dismissNewConversionReportingEvents,
 		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
-		conversionReportingDetectedEventsTracking,
-		conversionReportingDetectedEventsTrackingArgs,
 		viewContext,
 	] );
 
