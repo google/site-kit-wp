@@ -78,7 +78,7 @@ export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 			'confirm_notification',
 			'conversion_reporting'
 		);
-	}, [ dismissItem ] );
+	}, [ dismissItem, viewContext ] );
 
 	if ( isDismissed ) {
 		return null;
