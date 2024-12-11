@@ -147,7 +147,7 @@ export default function SettingsView() {
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __(
-							'Anyone can register WP setting',
+							'Users can create new accounts',
 							'google-site-kit'
 						) }
 					</h5>
