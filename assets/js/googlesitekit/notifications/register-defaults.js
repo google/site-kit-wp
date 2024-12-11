@@ -199,14 +199,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			await Promise.all( [
-				// The getAdSenseLinked selector relies on the resolution
-				// of the getSettings() resolver.
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
+			await resolveSelect( CORE_MODULES ).getModules();
 
 			const adSenseModuleConnected =
 				select( CORE_MODULES ).isModuleConnected( 'adsense' );
@@ -214,17 +207,26 @@ export const DEFAULT_NOTIFICATIONS = {
 			const analyticsModuleConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
+			const analyticsAndAdsenseConnected =
+				adSenseModuleConnected && analyticsModuleConnected;
+
+			if ( ! analyticsAndAdsenseConnected ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
 			const isAdSenseLinked =
 				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			if ( ! isAdSenseLinked ) {
+				return false;
+			}
 
 			const analyticsAndAdsenseConnectedAndLinked =
 				adSenseModuleConnected &&
 				analyticsModuleConnected &&
 				isAdSenseLinked;
-
-			if ( ! analyticsAndAdsenseConnectedAndLinked ) {
-				return false;
-			}
 
 			const { startDate, endDate } = select(
 				CORE_USER

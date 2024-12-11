@@ -44,11 +44,18 @@ export default function OverlayNotificationsRenderer() {
 			MODULES_READER_REVENUE_MANAGER
 		)
 	);
+	const adsenseConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'modules/adsense' )
+	);
 
 	return (
 		<Fragment>
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
+			{ analyticsConnected && adsenseConnected && (
+				<Fragment>
+					<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
+					<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
+				</Fragment>
+			) }
 			{ analyticsConnected && audienceSegmentationEnabled && (
 				<AudienceSegmentationIntroductoryOverlayNotification />
 			) }
