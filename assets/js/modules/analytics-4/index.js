@@ -695,6 +695,13 @@ export const registerNotifications = ( notifications ) => {
 				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				checkRequirements: async ( { select, resolveSelect } ) => {
+					const analyticsConnected =
+						select( CORE_MODULES ).isModuleConnected();
+
+					if ( ! analyticsConnected ) {
+						return false;
+					}
+
 					await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 					const configuredAudiences =
 						select( CORE_USER ).getConfiguredAudiences();
