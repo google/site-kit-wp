@@ -16,17 +16,21 @@
  * limitations under the License.
  */
 
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { ToggleControl } from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
-import { registerPlugin } from '@wordpress/plugins';
+// import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+// import { ToggleControl } from '@wordpress/components';
+// import { useSelect, useDispatch } from '@wordpress/data';
+// import { registerPlugin } from '@wordpress/plugins';
+
+const { registerPlugin } = wp.plugins;
+const { PluginDocumentSettingPanel } = wp.editPost;
+const { ToggleControl } = wp.components;
 
 function MyPostSettingPanel() {
-	const meta = useSelect( ( select ) =>
-		select( 'core/editor' ).getEditedPostAttribute( 'meta' )
-	);
-	const { editPost } = useDispatch( 'core/editor' );
-	const { my_custom_setting: myCustomSetting } = meta || {};
+	// const meta = useSelect( ( select ) =>
+	// 	select( 'core/editor' ).getEditedPostAttribute( 'meta' )
+	// );
+	// const { editPost } = useDispatch( 'core/editor' );
+	// const { my_custom_setting: myCustomSetting } = meta || {};
 
 	return (
 		<PluginDocumentSettingPanel
@@ -36,13 +40,29 @@ function MyPostSettingPanel() {
 		>
 			<ToggleControl
 				label="Enable Custom Setting"
-				checked={ !! myCustomSetting }
-				onChange={ ( value ) =>
-					editPost( { meta: { my_custom_setting: value } } )
-				}
+				checked
+				// onChange={ ( value ) =>
+				// 	editPost( { meta: { my_custom_setting: value } } )
+				// }
 			/>
 		</PluginDocumentSettingPanel>
 	);
+
+	// return (
+	// 	<PluginDocumentSettingPanel
+	// 		name="my-custom-setting-panel"
+	// 		title="My Custom Setting"
+	// 		className="my-custom-setting-panel"
+	// 	>
+	// 		<ToggleControl
+	// 			label="Enable Custom Setting"
+	// 			checked={ !! myCustomSetting }
+	// 			onChange={ ( value ) =>
+	// 				editPost( { meta: { my_custom_setting: value } } )
+	// 			}
+	// 		/>
+	// 	</PluginDocumentSettingPanel>
+	// );
 }
 
 registerPlugin( 'my-custom-setting', {
