@@ -131,7 +131,7 @@ const baseActions = {
 	/**
 	 * Returns the current settings back to the current saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -236,7 +236,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current first-party mode settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.

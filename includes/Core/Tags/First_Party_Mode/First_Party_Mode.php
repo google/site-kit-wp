@@ -53,7 +53,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	/**
 	 * First_Party_Mode_Cron instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @var First_Party_Mode_Cron
 	 */
 	private $cron;
@@ -90,7 +90,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	/**
 	 * Gets a healthcheck debug field display value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param mixed $setting_value Setting value.
 	 * @return string
@@ -107,7 +107,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	/**
 	 * Gets a healthcheck debug field debug value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param mixed $setting_value Setting value.
 	 * @return string
@@ -124,7 +124,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return array
 	 */
@@ -153,7 +153,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	/**
 	 * Checks the health of First Party Mode server requirements.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return void
 	 */
@@ -172,7 +172,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	/**
 	 * Schedule cron on admin init.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 */
 	public function on_admin_init() {
 		$this->cron->maybe_schedule_cron();
@@ -182,7 +182,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Relocated from REST_First_Party_Mode_Controller.
+	 * @since 1.142.0 Relocated from REST_First_Party_Mode_Controller.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
