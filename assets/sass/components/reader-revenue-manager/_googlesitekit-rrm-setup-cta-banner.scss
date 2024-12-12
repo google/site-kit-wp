@@ -59,7 +59,7 @@
 			gap: 4px;
 			margin-bottom: 27px;
 
-			@media (min-width: $bp-nonTablet) {
+			@media (min-width: $bp-nonMobile) {
 				gap: 10px;
 				margin-bottom: 0;
 				padding: 10px 0;
