@@ -195,7 +195,7 @@ export default function CreateMessageStep() {
 								external
 								hideExternalIndicator
 							>
-								{ __( 'Create messagee', 'google-site-kit' ) }
+								{ __( 'Create message', 'google-site-kit' ) }
 							</Link>
 						</Fragment>
 					) : (
