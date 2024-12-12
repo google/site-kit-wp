@@ -126,6 +126,13 @@ describe( 'ErrorNotifications', () => {
 			setupErrorCode: 'error_code',
 			setupErrorMessage: 'An error occurred',
 		} );
+		provideNotifications(
+			registry,
+			{
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
+			},
+			{ overwrite: true }
+		);
 		const { container, getByRole, waitForRegistry } = render(
 			<ErrorNotifications />,
 			{
@@ -241,6 +248,7 @@ describe( 'ErrorNotifications', () => {
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
 			},
 			{ overwrite: true }
 		);
@@ -277,6 +285,7 @@ describe( 'ErrorNotifications', () => {
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
 			},
 			{ overwrite: true }
 		);
@@ -318,6 +327,13 @@ describe( 'ErrorNotifications', () => {
 					],
 				},
 			} );
+		provideNotifications(
+			registry,
+			{
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
+			},
+			{ overwrite: true }
+		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
