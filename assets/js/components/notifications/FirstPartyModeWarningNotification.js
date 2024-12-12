@@ -26,13 +26,21 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import SupportLink from '../SupportLink';
+import Link from '../Link';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { useSelect } from 'googlesitekit-data';
 
 export default function FirstPartyModeWarningNotification( {
 	id,
 	Notification,
 } ) {
+	const serverRequirementsLearnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'first-party-mode-server-requirements'
+		);
+	} );
+
 	return (
 		<Notification>
 			<SubtleNotification
@@ -43,11 +51,14 @@ export default function FirstPartyModeWarningNotification( {
 						'google-site-kit'
 					),
 					{
-						// ToDo: Update learn more link in https://github.com/google/site-kit-wp/issues/9699
 						a: (
-							<SupportLink
-								path="/analytics/answer/10096855"
+							<Link
+								href={ serverRequirementsLearnMoreURL }
 								external
+								aria-label={ __(
+									'Learn more about first-party mode server requirements',
+									'google-site-kit'
+								) }
 							/>
 						),
 					}

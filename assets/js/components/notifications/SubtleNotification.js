@@ -108,7 +108,7 @@ function SubtleNotification( {
 }
 
 SubtleNotification.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.node.isRequired,
 	description: PropTypes.string,
 	Icon: PropTypes.elementType,
 	ctaLink: PropTypes.string,
