@@ -29,6 +29,7 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 } from './datastore/constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
@@ -51,12 +52,13 @@ import GatheringDataNotification from '../../components/notifications/GatheringD
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
+import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
-import { isFeatureEnabled } from '../../features';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
+import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -457,14 +459,10 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			const { isModuleConnected } = select( CORE_MODULES );
+			const isFPMModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			if (
-				! (
-					isModuleConnected( 'analytics-4' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! isFPMModuleConnected ) {
 				return false;
 			}
 
@@ -489,6 +487,34 @@ export const DEFAULT_NOTIFICATIONS = {
 			}
 
 			return isHealthy && isAccessEnabled;
+		},
+		isDismissible: true,
+	},
+	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
+		Component: FirstPartyModeWarningNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const isFPMModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
+
+			if ( ! isFPMModuleConnected ) {
+				return false;
+			}
+
+			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+
+			const {
+				isFirstPartyModeEnabled,
+				isFPMHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
+
+			return (
+				isFirstPartyModeEnabled() &&
+				( ! isFPMHealthy() || ! isScriptAccessEnabled() )
+			);
 		},
 		isDismissible: true,
 	},
