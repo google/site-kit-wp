@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-// import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-// import { ToggleControl } from '@wordpress/components';
+import { PluginDocumentSettingPanel } from '@wordpress-core/edit-post';
+import { ToggleControl } from '@wordpress-core/components';
 // import { useSelect, useDispatch } from '@wordpress/data';
-// import { registerPlugin } from '@wordpress/plugins';
+import { registerPlugin } from '@wordpress-core/plugins';
 
-const { registerPlugin } = wp.plugins;
-const { PluginDocumentSettingPanel } = wp.editPost;
-const { ToggleControl } = wp.components;
+// const { registerPlugin } = wp.plugins;
+// const { PluginDocumentSettingPanel } = wp.editPost;
+// const { ToggleControl } = wp.components;
 
 function MyPostSettingPanel() {
 	// const meta = useSelect( ( select ) =>

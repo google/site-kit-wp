@@ -406,10 +406,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/googlesitekit-reader-revenue-manager-block-editor.js',
 					'dependencies'  => array(
-						'wp-plugins',
-						'wp-edit-post',
-						'wp-element',
 						'wp-components',
+						'wp-edit-post',
+						'wp-plugins',
+						'wp-element',
 						'wp-blocks',
 						'googlesitekit-i18n',
 						'wp-data',

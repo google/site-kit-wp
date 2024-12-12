@@ -84,8 +84,6 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				'./assets/js/googlesitekit-modules-sign-in-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
-			'googlesitekit-reader-revenue-manager-block-editor':
-				'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
 			'googlesitekit-ad-blocking-recovery':

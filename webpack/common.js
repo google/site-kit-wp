@@ -270,12 +270,15 @@ exports.GOOGLESITEKIT_VERSION = googleSiteKitVersion
 
 const corePackages = [
 	'api-fetch',
+	'components',
 	'compose',
 	'data',
 	'dom-ready',
+	'edit-post',
 	'element',
 	'icons',
 	'keycodes',
+	'plugins',
 	'url',
 ];
 
@@ -285,11 +288,11 @@ const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
-exports.gutenbergExternals = gutenbergExternals;
-
 corePackages.forEach( ( name ) => {
 	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
 		'wp',
 		name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ),
 	];
 } );
+
+exports.gutenbergExternals = gutenbergExternals;
