@@ -1,7 +1,7 @@
 /**
- * ErrorNotifications Component Stories.
+ * SetupErrorMessageNotification Component Stories.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import ErrorNotifications from './ErrorNotifications';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	provideSiteInfo,
@@ -27,15 +26,15 @@ import {
 } from '../../../../tests/js/utils';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 
-function Template( { ...args } ) {
-	return (
-		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-			<ErrorNotifications { ...args } />
-		</ViewContextProvider>
-	);
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'setup_plugin_error'
+)( SetupErrorMessageNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const PluginSetupError = Template.bind( {} );
