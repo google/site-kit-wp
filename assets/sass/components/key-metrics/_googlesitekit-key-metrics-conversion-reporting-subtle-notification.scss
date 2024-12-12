@@ -43,6 +43,7 @@
 	}
 
 	.googlesitekit-widget--keyMetricsEventDetectionCalloutNotification {
+
 		.googlesitekit-widget__body,
 		.mdc-layout-grid {
 			padding: 0;
@@ -54,11 +55,23 @@
 		.googlesitekit-widget-area-widgets {
 
 			.googlesitekit-widget--keyMetricsEventDetectionCalloutNotification {
+				background: transparent;
 
 				.googlesitekit-widget__body,
 				.mdc-layout-grid,
 				.mdc-layout-grid__inner {
 					display: block;
+				}
+
+				.googlesitekit-widget__body {
+
+					.mdc-layout-grid {
+						margin: 0;
+
+						&:nth-child(2) {
+							margin: 15px 0 0;
+						}
+					}
 				}
 
 				.googlesitekit-acr-subtle-notification {
@@ -84,7 +97,8 @@
 		}
 
 		.googlesitekit-subtle-notification__content,
-		.mdc-button--tertiary:not(:disabled) {
+		.mdc-button--tertiary:not(:disabled),
+		.googlesitekit-subtle-notification__icon svg {
 			color: $c-utility-on-warning-container;
 		}
 	}
