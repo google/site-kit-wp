@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting;
  * Class for persisting the client ID between module disconnection and
  * reconnection.
  *
- * @since n.e.x.t
+ * @since 1.142.0
  * @access private
  * @ignore
  */

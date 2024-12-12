@@ -30,7 +30,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * First_Party_Mode instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @var First_Party_Mode
 	 */
 	private $first_party_mode;

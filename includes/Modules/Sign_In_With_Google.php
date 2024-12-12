@@ -74,7 +74,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Existing_Client_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @var Existing_Client_ID
 	 */
 	protected $existing_client_id;
@@ -82,7 +82,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -605,7 +605,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Exposes an existing client ID from a previous connection
 	 * to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
