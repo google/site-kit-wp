@@ -136,6 +136,7 @@ CTALink.propTypes = {
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
+	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
 	showError: PropTypes.bool,
 };

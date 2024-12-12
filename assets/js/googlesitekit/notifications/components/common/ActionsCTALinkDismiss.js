@@ -89,5 +89,15 @@ export default function ActionsCTALinkDismiss( {
 }
 
 ActionsCTALinkDismiss.propTypes = {
+	id: PropTypes.string,
+	className: PropTypes.string,
+	ctaLink: PropTypes.string,
+	ctaLabel: PropTypes.string,
+	onCTAClick: PropTypes.func,
+	onDismiss: PropTypes.func,
+	dismissLabel: PropTypes.string,
+	dismissOnCTAClick: PropTypes.bool,
+	dismissExpires: PropTypes.number,
+	dismissOptions: PropTypes.object,
 	showCTAError: PropTypes.bool,
 };
