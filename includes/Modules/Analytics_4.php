@@ -96,6 +96,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
 use stdClass;
 use WP_Error;
+use WP_Post;
 
 /**
  * Class representing the Analytics 4 module.
@@ -2045,7 +2046,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$data = array();
 		$post = get_queried_object();
 
-		if ( in_array( 'googlesitekit_post_type', $settings['availableCustomDimensions'], true ) ) {
+		if ( $post instanceof WP_Post && in_array( 'googlesitekit_post_type', $settings['availableCustomDimensions'], true ) ) {
 			$data['googlesitekit_post_type'] = $post->post_type;
 		}
 
