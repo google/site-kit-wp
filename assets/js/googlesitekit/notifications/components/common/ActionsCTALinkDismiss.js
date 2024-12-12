@@ -58,7 +58,6 @@ export default function ActionsCTALinkDismiss( {
 		return select( CORE_SITE ).getError( 'notificationCTAClick', [ id ] );
 	} );
 
-	// Note that currently on `develop`, `dismissExpires` is passed to both the `CTALink` and `Dismiss` components, but is handled differently in each of them.
 	return (
 		<Fragment>
 			{ showCTAError && ctaError && (
