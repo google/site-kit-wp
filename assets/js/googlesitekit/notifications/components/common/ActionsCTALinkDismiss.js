@@ -15,17 +15,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../datastore/location/constants';
+import { CORE_SITE } from '../../../datastore/site/constants';
 import Dismiss from './Dismiss';
 import CTALink from './CTALink';
+import ErrorText from '../../../../components/ErrorText';
 
 export default function ActionsCTALinkDismiss( {
 	id,
@@ -35,8 +43,10 @@ export default function ActionsCTALinkDismiss( {
 	onCTAClick,
 	onDismiss = () => {},
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
+	dismissOnCTAClick = true,
 	dismissExpires = 0,
 	dismissOptions = {},
+	showCTAError = true,
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -44,25 +54,41 @@ export default function ActionsCTALinkDismiss( {
 			: false;
 	} );
 
-	return (
-		<div className={ className }>
-			<CTALink
-				id={ id }
-				ctaLink={ ctaLink }
-				ctaLabel={ ctaLabel }
-				onCTAClick={ onCTAClick }
-				dismissExpires={ dismissExpires }
-			/>
+	const ctaError = useSelect( ( select ) => {
+		return select( CORE_SITE ).getError( 'notificationCTAClick', [ id ] );
+	} );
 
-			<Dismiss
-				id={ id }
-				primary={ false }
-				dismissLabel={ dismissLabel }
-				dismissExpires={ dismissExpires }
-				disabled={ isNavigatingToCTALink }
-				onDismiss={ onDismiss }
-				dismissOptions={ dismissOptions }
-			/>
-		</div>
+	// Note that currently on `develop`, `dismissExpires` is passed to both the `CTALink` and `Dismiss` components, but is handled differently in each of them.
+	return (
+		<Fragment>
+			{ showCTAError && ctaError && (
+				<ErrorText message={ ctaError.message } />
+			) }
+			<div className={ className }>
+				<CTALink
+					id={ id }
+					ctaLink={ ctaLink }
+					ctaLabel={ ctaLabel }
+					onCTAClick={ onCTAClick }
+					dismissOnCTAClick={ dismissOnCTAClick }
+					dismissExpires={ dismissExpires }
+					showError={ false }
+				/>
+
+				<Dismiss
+					id={ id }
+					primary={ false }
+					dismissLabel={ dismissLabel }
+					dismissExpires={ dismissExpires }
+					disabled={ isNavigatingToCTALink }
+					onDismiss={ onDismiss }
+					dismissOptions={ dismissOptions }
+				/>
+			</div>
+		</Fragment>
 	);
 }
+
+ActionsCTALinkDismiss.propTypes = {
+	showCTAError: PropTypes.bool,
+};

@@ -23,7 +23,7 @@ import { useMountedState } from 'react-use';
 /*
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -31,15 +31,19 @@ import { useState } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../datastore/location/constants';
+import { CORE_SITE } from '../../../datastore/site/constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { SpinnerButton } from 'googlesitekit-components';
+import ErrorText from '../../../../components/ErrorText';
 
 export default function CTALink( {
 	id,
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
-	dismissExpires = -1,
+	dismissOnCTAClick = false,
+	dismissExpires = 0,
+	showError = true,
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
 		useState( false );
@@ -53,24 +57,39 @@ export default function CTALink( {
 			: false;
 	} );
 
+	const ctaError = useSelect( ( select ) => {
+		return select( CORE_SITE ).getError( 'notificationCTAClick', [ id ] );
+	} );
+
+	const { clearError, receiveError } = useDispatch( CORE_SITE );
+
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const handleCTAClick = async ( event ) => {
+		clearError( 'notificationCTAClick', [ id ] );
+
 		event.persist();
 		if ( ! event.defaultPrevented && ctaLink ) {
 			event.preventDefault();
 		}
 
 		setIsAwaitingCTAResponse( true );
-		await onCTAClick?.( event );
+
+		const { error } = ( await onCTAClick?.( event ) ) || {};
+
 		if ( isMounted() ) {
 			setIsAwaitingCTAResponse( false );
 		}
 
+		if ( error ) {
+			receiveError( error, 'notificationCTAClick', [ id ] );
+			return;
+		}
+
 		const ctaClickActions = [ trackEvents.confirm() ];
 
-		if ( dismissExpires >= 0 ) {
+		if ( dismissOnCTAClick ) {
 			ctaClickActions.push(
 				dismissNotification( id, {
 					expiresInSeconds: dismissExpires,
@@ -86,16 +105,28 @@ export default function CTALink( {
 		}
 	};
 
+	useEffect( () => {
+		return () => {
+			clearError( 'notificationCTAClick', [ id ] );
+		};
+	}, [ clearError, id ] );
+
 	return (
-		<SpinnerButton
-			className="googlesitekit-notification__cta"
-			href={ ctaLink }
-			onClick={ handleCTAClick }
-			disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
-			isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
-		>
-			{ ctaLabel }
-		</SpinnerButton>
+		<Fragment>
+			{ showError && ctaError && (
+				<ErrorText message={ ctaError.message } />
+			) }
+
+			<SpinnerButton
+				className="googlesitekit-notification__cta"
+				href={ ctaLink }
+				onClick={ handleCTAClick }
+				disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
+				isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
+			>
+				{ ctaLabel }
+			</SpinnerButton>
+		</Fragment>
 	);
 }
 
@@ -106,4 +137,5 @@ CTALink.propTypes = {
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	dismissExpires: PropTypes.number,
+	showError: PropTypes.bool,
 };
