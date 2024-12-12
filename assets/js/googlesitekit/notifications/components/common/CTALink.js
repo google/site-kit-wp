@@ -43,6 +43,7 @@ export default function CTALink( {
 	onCTAClick,
 	dismissOnCTAClick = false,
 	dismissExpires = 0,
+	dismissOptions = { skipHidingFromQueue: true },
 	showError = true,
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
@@ -92,8 +93,8 @@ export default function CTALink( {
 		if ( dismissOnCTAClick ) {
 			ctaClickActions.push(
 				dismissNotification( id, {
+					...dismissOptions,
 					expiresInSeconds: dismissExpires,
-					skipHidingFromQueue: true,
 				} )
 			);
 		}
@@ -138,5 +139,6 @@ CTALink.propTypes = {
 	onCTAClick: PropTypes.func,
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
+	dismissOptions: PropTypes.object,
 	showError: PropTypes.bool,
 };

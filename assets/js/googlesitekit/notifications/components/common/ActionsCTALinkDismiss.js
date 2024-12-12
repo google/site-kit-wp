@@ -41,6 +41,7 @@ export default function ActionsCTALinkDismiss( {
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
+	ctaDismissOptions, // Leave this without a default value, so it can be passed in as an optional prop.
 	onDismiss = () => {},
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissOnCTAClick = true,
@@ -71,6 +72,7 @@ export default function ActionsCTALinkDismiss( {
 					onCTAClick={ onCTAClick }
 					dismissOnCTAClick={ dismissOnCTAClick }
 					dismissExpires={ dismissExpires }
+					dismissOptions={ ctaDismissOptions }
 					showError={ false }
 				/>
 
@@ -95,6 +97,7 @@ ActionsCTALinkDismiss.propTypes = {
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
+	ctaDismissOptions: PropTypes.object,
 	dismissLabel: PropTypes.string,
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
