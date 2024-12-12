@@ -50,7 +50,7 @@ class GTag {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param Options $options Option API instance.
 	 */
@@ -214,7 +214,7 @@ class GTag {
 	 * Returns the gtag source URL.
 	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Provides support for first-party mode.
+	 * @since 1.142.0 Provides support for first-party mode.
 	 *
 	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
@@ -245,7 +245,7 @@ class GTag {
 	/**
 	 * Checks if first-party mode is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return bool True if first-party mode is active, false otherwise.
 	 */

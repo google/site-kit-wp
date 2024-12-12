@@ -54,7 +54,6 @@ NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
 NewUserAccountsEnabled.args = {
 	anyoneCanRegister: true,
 };
-NewUserAccountsEnabled.scenario = {};
 
 Default.decorators = [
 	( Story, { args } ) => {
@@ -89,7 +88,6 @@ Default.decorators = [
 
 export const InvalidClientID = Template.bind( null );
 InvalidClientID.storyName = 'Invalid Client ID';
-InvalidClientID.scenario = {};
 InvalidClientID.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -116,7 +114,6 @@ InvalidClientID.decorators = [
 
 export const Empty = Template.bind( null );
 Empty.storyName = 'Empty';
-Empty.scenario = {};
 
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',

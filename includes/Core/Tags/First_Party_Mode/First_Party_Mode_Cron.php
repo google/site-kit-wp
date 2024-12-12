@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 /**
  * Class to manage First Party Mode cron tasks.
  *
- * @since n.e.x.t
+ * @since 1.142.0
  * @access private
  * @ignore
  */
@@ -38,7 +38,7 @@ class First_Party_Mode_Cron {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
 	 * @param callable                  $callback                  Function to call on the cron action.
@@ -54,7 +54,7 @@ class First_Party_Mode_Cron {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 */
 	public function register() {
 		add_action( self::CRON_ACTION, $this->cron_callback );
@@ -63,7 +63,7 @@ class First_Party_Mode_Cron {
 	/**
 	 * Schedules cron if not already set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 */
 	public function maybe_schedule_cron() {
 		$settings    = $this->first_party_mode_settings->get();

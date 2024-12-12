@@ -913,7 +913,7 @@ export const selectors = {
 	/**
 	 * Checks if WordPress site is running in the multisite mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.

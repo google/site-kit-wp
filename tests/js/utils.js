@@ -464,7 +464,7 @@ export const provideKeyMetricsUserInputSettings = (
  * Provides notifications data to the given registry.
  *
  * @since 1.140.0
- * @since n.e.x.t Updated the `overwrite` option to be a named parameter.
+ * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
  *
  * @param {Object}  registry            The registry to set up.
  * @param {Object}  [extraData]         Extra data to merge with the default settings.

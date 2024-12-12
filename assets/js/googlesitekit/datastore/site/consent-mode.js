@@ -348,7 +348,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.124.0
 	 * @since 1.125.0 Updated to consider Ads connection status via the Analytics tag config, and to source Conversion ID field from Ads module.
-	 * @since n.e.x.t Updated to a simple selector which returns value from the state.
+	 * @since 1.142.0 Updated to a simple selector which returns value from the state.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
