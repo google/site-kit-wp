@@ -53,6 +53,11 @@
 			@media (min-width: $bp-tablet) {
 				margin: 0;
 			}
+
+			& > a {
+				color: inherit;
+				text-decoration: underline;
+			}
 		}
 	}
 
