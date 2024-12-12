@@ -66,7 +66,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: UnsatisfiedScopesAlert,
 		priority: 150,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
-		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -120,7 +119,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: UnsatisfiedScopesAlertGTE,
 		priority: 150,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
-		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -168,7 +166,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: SetupErrorNotification,
 		priority: 140,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
-		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// The getSetupErrorMessage selector relies on the resolution
@@ -200,7 +197,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: SetupErrorMessageNotification,
 		priority: 140,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
-		groupID: NOTIFICATION_GROUPS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

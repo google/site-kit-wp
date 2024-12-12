@@ -33,7 +33,6 @@ export const NOTIFICATION_AREAS = {
 export const NOTIFICATION_GROUPS = {
 	DEFAULT: 'default',
 	SETUP_CTAS: 'setup-ctas',
-	ERRORS: 'errors',
 };
 
 export const NOTIFICATION_VIEW_CONTEXTS = [

@@ -27,20 +27,14 @@ import { Fragment } from '@wordpress/element';
 import AuthError from './AuthError';
 import InternalServerError from './InternalServerError';
 import Notifications from './Notifications';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function ErrorNotifications() {
 	return (
 		<Fragment>
 			<InternalServerError />
 			<AuthError />
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.ERRORS }
-				groupID={ NOTIFICATION_GROUPS.ERRORS }
-			/>
+			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>
 	);
 }
