@@ -40,6 +40,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { requiredAudienceSlugs } from '../datastore/audiences';
 
 export default function useEnableAudienceGroup( {
 	redirectURL,
@@ -64,7 +65,11 @@ export default function useEnableAudienceGroup( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
-	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		enableAudienceGroup,
+		fetchSyncAvailableCustomDimensions,
+		syncAvailableAudiences,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	if ( ! redirectURL ) {
 		redirectURL = addQueryArgs( global.location.href, {
@@ -75,10 +80,30 @@ export default function useEnableAudienceGroup( {
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
 
-		// If scope is not granted, trigger scope error right away. These are
-		// typically handled automatically based on API responses, but
-		// this particular case has some special handling to improve UX.
-		if ( ! hasAnalytics4EditScope ) {
+		const { response: availableAudiences } = await syncAvailableAudiences();
+
+		const { response: availableCustomDimensions } =
+			await fetchSyncAvailableCustomDimensions();
+
+		const requiresAudienceCreation = requiredAudienceSlugs.some(
+			( slug ) =>
+				! availableAudiences.some(
+					( audience ) => audience.audienceSlug === slug
+				)
+		);
+
+		const requiresDimensionCreation = ! availableCustomDimensions.includes(
+			'googlesitekit_post_type'
+		);
+
+		// If scope is not granted and it is required, trigger scope
+		// error right away. These are typically handled automatically
+		// based on API responses, but this particular case has some
+		// special handling to improve UX.
+		if (
+			! hasAnalytics4EditScope &&
+			( requiresAudienceCreation || requiresDimensionCreation )
+		) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
@@ -128,6 +153,8 @@ export default function useEnableAudienceGroup( {
 			setIsSaving( false );
 		}
 	}, [
+		syncAvailableAudiences,
+		fetchSyncAvailableCustomDimensions,
 		hasAnalytics4EditScope,
 		setValues,
 		enableAudienceGroup,
