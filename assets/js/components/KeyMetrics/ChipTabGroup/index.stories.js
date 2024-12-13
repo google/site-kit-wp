@@ -43,7 +43,7 @@ import {
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../../googlesitekit/datastore/user/constants';
@@ -132,6 +132,13 @@ WithError.args = {
 			[ KEY_METRICS_SELECTED ]: savedKeyMetrics,
 			[ EFFECTIVE_SELECTION ]: selectedMetrics,
 		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveConversionReportingInlineData( {
+				newEvents: [],
+				lostEvents: [],
+			} );
 	},
 	features: [ 'conversionReporting' ],
 };
@@ -174,7 +181,7 @@ export default {
 					KM_ANALYTICS_VISITS_PER_VISITOR,
 					KM_ANALYTICS_VISIT_LENGTH,
 					KM_ANALYTICS_NEW_VISITORS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 				];
 
 				provideKeyMetrics( registry, { widgetSlugs: savedKeyMetrics } );
@@ -189,6 +196,13 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [ 'contact', 'purchase' ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ 'contact' ],
+						lostEvents: [],
+					} );
 
 				// Call story-specific setup.
 				if ( args && args?.setupRegistry ) {

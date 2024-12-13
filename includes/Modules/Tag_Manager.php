@@ -445,7 +445,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Gets the configured TagManager service instance.
 	 *
 	 * @since 1.2.0
-	 * @since n.e.x.t Made method public.
+	 * @since 1.142.0 Made method public.
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.

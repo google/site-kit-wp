@@ -302,7 +302,7 @@ export const selectors = {
 	/**
 	 * Checks if there are key metrics widgets that rely on the conversion events that have been lost.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {boolean|undefined} TRUE if current metrics are depending on the conversion events that have been lost, FALSE otherwise, and undefined if event change data is not resolved.
 	 */
@@ -331,7 +331,7 @@ export const selectors = {
 	/**
 	 * Returns the conversion events associated with the current site purpose.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {Array|undefined} List of detected conversion events connected to the current site purpose, or undefined if data is not resolved.
 	 */
@@ -360,7 +360,7 @@ export const selectors = {
 	/**
 	 * Gets conversion events related metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @private
 	 *
 	 * @return {Object} Metrics list object.
@@ -391,7 +391,7 @@ export const selectors = {
 	/**
 	 * Checks if there are conversion events for the user picked metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
@@ -423,7 +423,7 @@ export const selectors = {
 	/**
 	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {boolean} `true` if there are metrics related to the new conversion events that differ from already detected/selected ones, `false` otherwise.
 	 */
@@ -445,7 +445,10 @@ export const selectors = {
 				getDetectedEvents,
 				getConversionReportingEventsChange,
 				haveConversionEventsForUserPickedMetrics,
+				haveConversionEventsForTailoredMetrics,
+				getKeyMetricsConversionEventWidgets,
 			} = select( MODULES_ANALYTICS_4 );
+
 			const detectedEvents = getDetectedEvents();
 			const conversionReportingEventsChange =
 				getConversionReportingEventsChange();
@@ -485,15 +488,46 @@ export const selectors = {
 				return false;
 			}
 
-			const userPickedMetrics =
-				select( CORE_USER ).getUserPickedMetrics();
+			const { getUserPickedMetrics, getKeyMetrics } = select( CORE_USER );
 
+			const userPickedMetrics = getUserPickedMetrics();
 			const haveNewConversionEventsForUserPickedMetrics =
 				haveConversionEventsForUserPickedMetrics( true );
 
 			if (
 				userPickedMetrics?.length &&
 				! haveNewConversionEventsForUserPickedMetrics
+			) {
+				return false;
+			}
+
+			const keyMetricsConversionEventWidgets =
+				getKeyMetricsConversionEventWidgets();
+			const newConversionEventKeyMetrics = [];
+
+			// Pick all conversion event widgets associated with new events.
+			for ( const event in keyMetricsConversionEventWidgets ) {
+				if (
+					conversionReportingEventsChange.newEvents.includes( event )
+				) {
+					newConversionEventKeyMetrics.push(
+						...keyMetricsConversionEventWidgets[ event ]
+					);
+				}
+			}
+			const currentKeyMetrics = getKeyMetrics();
+			const haveAllConversionEventMetrics =
+				newConversionEventKeyMetrics.every( ( keyMetric ) =>
+					currentKeyMetrics?.includes( keyMetric )
+				);
+
+			// If the current site purpose has all conversion event metrics,
+			// or there are some metrics that can be added via "Add
+			// metrics CTA", don't show the "View metrics" variation.
+			if (
+				! userPickedMetrics?.length &&
+				( haveConversionEventsForTailoredMetrics( true ) ||
+					haveAllConversionEventMetrics )
 			) {
 				return false;
 			}
