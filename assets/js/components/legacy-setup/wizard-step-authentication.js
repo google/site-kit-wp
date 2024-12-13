@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
 /**
@@ -108,8 +108,9 @@ class WizardStepAuthentication extends Component {
 							) }
 							<p>
 								<Button onClick={ this.onButtonClick }>
-									{ __(
+									{ _x(
 										'Sign in with Google',
+										'Service name',
 										'google-site-kit'
 									) }
 								</Button>

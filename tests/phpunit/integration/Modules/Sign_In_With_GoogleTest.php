@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -60,7 +61,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug );
 		$this->assertEquals( 'Sign in with Google', $this->module->name );
 		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage );
-		$this->assertEquals( 'Improve user engagement, trust, and data privacy, while creating a simple, secure, and personalized experience for your visitors', $this->module->description );
+		$this->assertEquals( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', $this->module->description );
 		$this->assertEquals( 10, $this->module->order );
 	}
 
@@ -270,5 +271,17 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$mock->method( 'authenticate_user' )->willReturn( $redirect_to );
 
 		return $mock;
+	}
+
+	public function test_on_deactivation__persists_client_id() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$test_settings = array( 'clientID' => 'test_client_id.apps.googleusercontent.com' );
+		$this->module->get_settings()->merge( $test_settings );
+
+		$this->assertOptionNotExists( Existing_Client_ID::OPTION );
+		$this->module->on_deactivation();
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ) );
 	}
 }

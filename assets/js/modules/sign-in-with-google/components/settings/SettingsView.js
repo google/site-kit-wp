@@ -20,31 +20,23 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from '../../datastore/constants';
+import { AnyoneCanRegisterDisabledNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import Link from '../../../../components/Link';
-import SettingsNotice, {
-	TYPE_WARNING,
-} from '../../../../components/SettingsNotice';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import WarningIcon from '../../../../../svg/icons/warning.svg';
 
 export default function SettingsView() {
-	const { dismissItem } = useDispatch( CORE_USER );
-
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
@@ -80,18 +72,6 @@ export default function SettingsView() {
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
-
-	const generalSettingsURL = useSelect(
-		( select ) =>
-			new URL( 'options-general.php', select( CORE_SITE ).getAdminURL() )
-				.href
-	);
-
-	const anyoneCanRegisterNoticeDismissed = useSelect( ( select ) => {
-		return select( CORE_USER ).isItemDismissed(
-			'sign-in-with-google-anyone-can-register-notice'
-		);
-	} );
 
 	// If Sign in with Google does not have a client ID, do not display the
 	// settings view.
@@ -166,10 +146,7 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __(
-							'Users can create new accounts',
-							'google-site-kit'
-						) }
+						{ __( 'User registration', 'google-site-kit' ) }
 					</h5>
 					{ anyoneCanRegister !== undefined && (
 						<p className="googlesitekit-settings-module__meta-item-data">
@@ -182,36 +159,9 @@ export default function SettingsView() {
 							/>
 						</p>
 					) }
-
-					{ anyoneCanRegisterNoticeDismissed === false &&
-						anyoneCanRegister === false && (
-							<SettingsNotice
-								type={ TYPE_WARNING }
-								dismiss
-								dismissCallback={ () => {
-									dismissItem(
-										'sign-in-with-google-anyone-can-register-notice'
-									);
-								} }
-								dismissLabel={ __(
-									'Got it',
-									'google-site-kit'
-								) }
-								Icon={ WarningIcon }
-								notice={ createInterpolateElement(
-									__(
-										'Enable the “Anyone can register” setting to allow your visitors to create an account using the Sign in with Google button. <br/>Visit <a>WordPress Settings</a> to manage this setting.',
-										'google-site-kit'
-									),
-									{
-										a: <Link href={ generalSettingsURL } />,
-										br: <br />,
-									}
-								) }
-							/>
-						) }
 				</div>
 			</div>
+			<AnyoneCanRegisterDisabledNotice className="googlesitekit-margin-top-0" />
 		</div>
 	);
 }

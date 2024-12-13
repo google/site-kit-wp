@@ -697,6 +697,16 @@ final class Assets {
 			),
 		);
 
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$assets[] = new Script(
+				'googlesitekit-metric-selection',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			);
+		}
+
 		/**
 		 * Filters the list of assets that Site Kit should register.
 		 *
@@ -747,6 +757,7 @@ final class Assets {
 			'referenceDate'     => apply_filters( 'googlesitekit_reference_date', null ),
 			'productPostType'   => $this->get_product_post_type(),
 			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
+			'isMultisite'       => is_multisite(),
 		);
 
 		/**

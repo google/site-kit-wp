@@ -20,11 +20,12 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,10 +37,13 @@ import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { isValidClientID } from '../../utils/validation';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
-export default function ClientIDTextField() {
+export default function ClientIDTextField( { existingClientID = '' } ) {
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getClientID()
 	);
+
+	const [ existingClientIDWasSet, setExistingClientIDWasSet ] =
+		useState( false );
 
 	const [ isValid, setIsValid ] = useState(
 		! clientID || isValidClientID( clientID )
@@ -47,6 +51,16 @@ export default function ClientIDTextField() {
 	const debounceSetIsValid = useDebounce( setIsValid, 500 );
 
 	const { setClientID } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+
+	useEffect( () => {
+		if ( ! clientID && existingClientID && ! existingClientIDWasSet ) {
+			setClientID( existingClientID );
+			// Prevent the existingClientID from prefilling again when a user
+			// clears the clientID in the field fully.
+			setExistingClientIDWasSet( true );
+		}
+	}, [ clientID, setClientID, existingClientID, existingClientIDWasSet ] );
+
 	const onChange = useCallback(
 		( { currentTarget } ) => {
 			const newValue = currentTarget.value;
@@ -60,6 +74,21 @@ export default function ClientIDTextField() {
 		[ clientID, setClientID, debounceSetIsValid ]
 	);
 
+	let helperText;
+	if ( ! isValid ) {
+		helperText = __(
+			'A valid Client ID is required to use Sign in with Google',
+			'google-site-kit'
+		);
+	}
+
+	if ( existingClientID && clientID === existingClientID ) {
+		helperText = __(
+			'Sign in with Google was already set up on this site. We recommend using your existing Client ID.',
+			'google-site-kit'
+		);
+	}
+
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<TextField
@@ -67,13 +96,7 @@ export default function ClientIDTextField() {
 				className={ classnames( 'googlesitekit-text-field-client-id', {
 					'mdc-text-field--error': ! isValid,
 				} ) }
-				helperText={
-					! isValid &&
-					__(
-						'The Sign in with Google button won’t be displayed until you insert a valid Client ID',
-						'google-site-kit'
-					)
-				}
+				helperText={ helperText }
 				outlined
 				value={ clientID }
 				onChange={ onChange }
@@ -82,3 +105,7 @@ export default function ClientIDTextField() {
 		</div>
 	);
 }
+
+ClientIDTextField.propTypes = {
+	existingClientID: PropTypes.string,
+};

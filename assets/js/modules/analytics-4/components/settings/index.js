@@ -23,7 +23,6 @@ export { default as PropertyOrWebDataStreamNotAvailableError } from './PropertyO
 export { default as SettingsControls } from './SettingsControls';
 export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsEnhancedMeasurementSwitch } from './SettingsEnhancedMeasurementSwitch';
-export { default as SettingsEnhancedMeasurementView } from './SettingsEnhancedMeasurementView';
 export { default as SettingsForm } from './SettingsForm';
 export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
 export { default as SettingsView } from './SettingsView';

@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 /**
  * Class for synchronizing the onboarding state.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
@@ -44,7 +44,7 @@ class Synchronize_OnboardingState {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
 	 * @param User_Options           $user_options           User_Options instance.
@@ -57,7 +57,7 @@ class Synchronize_OnboardingState {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return void
 	 */
@@ -73,7 +73,7 @@ class Synchronize_OnboardingState {
 	/**
 	 * Cron callback for synchronizing the publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return void
 	 */
@@ -91,7 +91,7 @@ class Synchronize_OnboardingState {
 	/**
 	 * Synchronizes the onboarding state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return void
 	 */
@@ -145,7 +145,7 @@ class Synchronize_OnboardingState {
 	/**
 	 * Maybe schedule the synchronize onboarding state cron event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return void
 	 */

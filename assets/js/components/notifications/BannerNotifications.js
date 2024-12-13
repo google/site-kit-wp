@@ -51,6 +51,7 @@ import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../modules/reader-revenue
 const MODULES_USING_SUBTLE_NOTIFICATIONS = [
 	'ads',
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	'sign-in-with-google',
 ];
 
 export default function BannerNotifications() {

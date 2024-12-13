@@ -38,21 +38,6 @@ class AdsTest extends TestCase {
 	private $ads;
 
 	/**
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
-	 * @var Options
-	 */
-	protected $options;
-
-	/**
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
 	 * Plugin context.
 	 *
 	 * @var Context
@@ -228,7 +213,7 @@ class AdsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'ads_conversion_tracking_id' => array(
-					'label' => 'Ads Conversion Tracking ID',
+					'label' => 'Ads: Conversion Tracking ID',
 					'value' => 'AW-123456789',
 					'debug' => 'AW-1••••••••',
 				),
@@ -244,7 +229,7 @@ class AdsTest extends TestCase {
 	 */
 	public function test_template_redirect( $settings ) {
 		remove_all_actions( 'wp_enqueue_scripts' );
-		( new GTag() )->register();
+		( new GTag( new Options( $this->context ) ) )->register();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -291,7 +276,7 @@ class AdsTest extends TestCase {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_actions( 'wp_enqueue_scripts' );
-		( new GTag() )->register();
+		( new GTag( new Options( $this->context ) ) )->register();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();

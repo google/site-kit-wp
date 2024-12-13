@@ -49,7 +49,7 @@ export default function SetupMain() {
 						'google-site-kit'
 					) }
 					<Badge
-						className="googlesitekit-beta-badge"
+						className="googlesitekit-badge--beta"
 						label={ __( 'Beta', 'google-site-kit' ) }
 					/>
 				</h2>
@@ -57,7 +57,9 @@ export default function SetupMain() {
 			<div className="googlesitekit-setup-module__step">
 				<HTTPSWarning moduleSlug="sign-in-with-google" />
 
-				{ isURLUsingHTTPS( homeURL ) && <SetupForm /> }
+				{ homeURL !== undefined && isURLUsingHTTPS( homeURL ) && (
+					<SetupForm />
+				) }
 			</div>
 		</div>
 	);

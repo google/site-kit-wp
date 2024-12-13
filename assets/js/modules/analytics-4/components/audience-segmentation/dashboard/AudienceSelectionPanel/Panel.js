@@ -26,7 +26,6 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../../../hooks/useViewContext';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
 import {
 	AUDIENCE_CREATION_FORM,
@@ -40,23 +39,24 @@ import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/cons
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import AddGroupNotice from './AddGroupNotice';
 import AudienceItems from './AudienceItems';
 import ErrorNotice from './ErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
-import AudienceCreationNotice from './AudienceCreationNotice';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
 
 export default function Panel() {
 	const viewContext = useViewContext();
-	const viewOnlyDashboard = useViewOnly();
 
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
+	const isLoading = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
+	);
+
 	const savedItemSlugs = useInViewSelect( ( select ) => {
 		const { getConfigurableAudiences } = select( MODULES_ANALYTICS_4 );
 		const { getConfiguredAudiences } = select( CORE_USER );
@@ -104,12 +104,11 @@ export default function Panel() {
 			className="googlesitekit-audience-selection-panel"
 			closePanel={ closePanel }
 			isOpen={ isOpen || isCreatingAudienceFromOAuth }
+			isLoading={ isLoading }
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
-			<AddGroupNotice />
-			{ ! viewOnlyDashboard && <AudienceCreationNotice /> }
 			<LearnMoreLink />
 			<ErrorNotice />
 			<AudienceCreationSuccessNotice />

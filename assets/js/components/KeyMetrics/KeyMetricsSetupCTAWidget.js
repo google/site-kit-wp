@@ -38,10 +38,9 @@ import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import whenActive from '../../util/when-active';
 import {
 	AdminMenuTooltip,
@@ -52,12 +51,19 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { useFeature } from '../../hooks/useFeature';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const viewContext = useViewContext();
 	const displayCTAWidget = useDisplayCTAWidget();
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
+	);
+	const fullScreenSelectionLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
@@ -65,8 +71,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const dismissCallback = async () => {
 		await trackEvent(
@@ -81,13 +87,25 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		trackEvent( `${ viewContext }_kmw`, 'tooltip_dismiss' );
 	}, [ viewContext ] );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const openMetricsSelectionPanel = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+		if ( isConversionReportingEnabled ) {
+			navigateTo( fullScreenSelectionLink );
+		} else {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+		}
+
 		trackEvent(
 			`${ viewContext }_kmw-cta-notification`,
 			'confirm_pick_own_metrics'
 		);
-	}, [ setValue, viewContext ] );
+	}, [
+		navigateTo,
+		fullScreenSelectionLink,
+		viewContext,
+		isConversionReportingEnabled,
+		setValue,
+	] );
 
 	const onGetTailoredMetricsClick = useCallback( () => {
 		trackEvent(

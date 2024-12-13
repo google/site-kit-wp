@@ -208,7 +208,11 @@
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-			gap: $grid-gap-desktop + 2px; // The reference designs implement a spacing of 26px between the actions.
+			gap: 30px;
+
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
+			}
 
 			.googlesitekit-cta-link {
 				color: $c-surfaces-on-surface-variant;

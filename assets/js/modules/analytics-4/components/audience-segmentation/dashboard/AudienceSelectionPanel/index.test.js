@@ -43,6 +43,7 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
@@ -79,21 +80,9 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'AudienceSelectionPanel', () => {
 	let registry;
 
-	const baseReportOptions = {
-		startDate: '2024-02-29',
-		endDate: '2024-03-27',
-		metrics: [ { name: 'totalUsers' } ],
-	};
+	let baseReportOptions;
 
-	const reportOptions = {
-		...baseReportOptions,
-		dimensions: [ { name: 'audienceResourceName' } ],
-		dimensionFilters: {
-			audienceResourceName: availableAudiences.map(
-				( { name } ) => name
-			),
-		},
-	};
+	let reportOptions;
 
 	const configuredAudiences = [
 		'properties/12345/audiences/3',
@@ -121,6 +110,22 @@ describe( 'AudienceSelectionPanel', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+		const dateRangeDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		baseReportOptions = {
+			...dateRangeDates,
+			metrics: [ { name: 'totalUsers' } ],
+		};
+		reportOptions = {
+			...baseReportOptions,
+			dimensions: [ { name: 'audienceResourceName' } ],
+			dimensionFilters: {
+				audienceResourceName: availableAudiences.map(
+					( { name } ) => name
+				),
+			},
+		};
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry
@@ -186,31 +191,21 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'Header', () => {
-		it( 'should display a settings link to deactivate the widget', async () => {
-			const { getByText, waitForRegistry } = render(
-				<AudienceSelectionPanel />,
-				{
-					registry,
-				}
-			);
-
-			await waitForRegistry();
+		it( 'should display a settings link to deactivate the widget', () => {
+			const { getByText } = render( <AudienceSelectionPanel />, {
+				registry,
+			} );
 
 			expect(
 				getByText( /You can deactivate this widget in/i )
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not display a settings link to deactivate the widget for a view-only user', async () => {
-			const { container, waitForRegistry } = render(
-				<AudienceSelectionPanel />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-				}
-			);
-
-			await waitForRegistry();
+		it( 'should not display a settings link to deactivate the widget for a view-only user', () => {
+			const { container } = render( <AudienceSelectionPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			} );
 
 			expect( container ).not.toHaveTextContent(
 				'You can deactivate this widget in'
@@ -248,7 +243,7 @@ describe( 'AudienceSelectionPanel', () => {
 			).toHaveTextContent( 'New visitors' );
 		} );
 
-		it( 'should not list "Purchasers" if it has no data', async () => {
+		it( 'should not list "Purchasers" if it has no data', () => {
 			// Simulate no data available state for "Purchasers".
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -282,11 +277,9 @@ describe( 'AudienceSelectionPanel', () => {
 				},
 			} );
 
-			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
+			render( <AudienceSelectionPanel />, {
 				registry,
 			} );
-
-			await waitForRegistry();
 
 			expect(
 				document.querySelector(

@@ -25,10 +25,12 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideKeyMetrics,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -39,9 +41,12 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
+		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		mockSurveyEndpoints();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
 		muteFetch(
 			new RegExp(
@@ -123,6 +128,11 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
+
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [],
+			includeConversionTailoredMetrics: [ 'contact' ],
+		} );
 
 		const { container, waitForRegistry } = render(
 			<SettingsCardKeyMetrics />,

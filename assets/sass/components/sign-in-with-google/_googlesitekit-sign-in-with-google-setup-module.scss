@@ -18,6 +18,37 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-setup-cta-banner__svg-wrapper--sign-in-with-google-setup-cta {
+
+		@media (min-width: $bp-wpdb3) {
+			height: 100%;
+			position: relative;
+		}
+
+		svg {
+			display: block;
+			justify-self: center;
+			max-height: 180px;
+
+			@media (min-width: $bp-nonMobile) {
+				max-height: 210px;
+			}
+
+			@media (min-width: $bp-xlarge) {
+				justify-self: flex-end;
+				max-height: 274px;
+			}
+
+			@media (min-width: $bp-wpdb3) {
+				max-height: 300px;
+				position: absolute;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+			}
+		}
+	}
+
 	.googlesitekit-setup-module--sign-in-with-google {
 
 		.googlesitekit-badge {
@@ -115,6 +146,12 @@
 					max-width: 610px;
 				}
 			}
+		}
+
+		.googlesitekit-settings-notice__button {
+			align-items: center;
+			display: flex;
+			text-wrap: nowrap;
 		}
 	}
 
