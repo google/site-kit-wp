@@ -74,7 +74,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Existing_Client_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @var Existing_Client_ID
 	 */
 	protected $existing_client_id;
@@ -82,7 +82,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -183,7 +183,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		switch ( $error_code ) {
 			case Authenticator::ERROR_INVALID_REQUEST:
-				$error->add( self::MODULE_SLUG, __( 'Sign in with Google failed.', 'google-site-kit' ) );
+				/* translators: %s: Sign in with Google service name */
+				$error->add( self::MODULE_SLUG, sprintf( __( 'Login with %s failed.', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
 				break;
 			case Authenticator::ERROR_SIGNIN_FAILED:
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
@@ -317,7 +318,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		);
 
 		// Render the Sign in with Google button and related inline styles.
-		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
+		print(
+			// Purposely not translated as this is a technical comment.
+			//
+			// See: https://github.com/google/site-kit-wp/pull/9826#discussion_r1876026945.
+			"\n<!-- Sign in with Google button added by Site Kit -->\n"
+		);
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		ob_start();
 		?>
@@ -399,32 +405,38 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
-				'label' => __( 'Sign in with Google: Client ID', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Client ID', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'] ),
 			),
 			'sign_in_with_google_shape'                    => array(
-				'label' => __( 'Sign in with Google: Shape', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Shape', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'shape', $settings['shape'] ),
 				'debug' => $settings['shape'],
 			),
 			'sign_in_with_google_text'                     => array(
-				'label' => __( 'Sign in with Google: Text', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Text', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'text', $settings['text'] ),
 				'debug' => $settings['text'],
 			),
 			'sign_in_with_google_theme'                    => array(
-				'label' => __( 'Sign in with Google: Theme', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Theme', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'theme', $settings['theme'] ),
 				'debug' => $settings['theme'],
 			),
 			'sign_in_with_google_use_snippet'              => array(
-				'label' => __( 'Sign in with Google: One-tap Enabled', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: One-tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
-				'label' => __( 'Sign in with Google: Number of users who have authenticated using Sign in with Google', 'google-site-kit' ),
+				/* translators: %1$s: Sign in with Google service name */
+				'label' => sprintf( __( '%1$s: Number of users who have authenticated using %1$s', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $authenticated_user_count,
 				'debug' => $authenticated_user_count,
 			),
@@ -497,7 +509,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function has_placed_tag_in_content( $content ) {
 		$search_string              = 'Sign in with Google button added by Site Kit';
 		$search_translatable_string =
-			__( 'Sign in with Google button added by Site Kit', 'google-site-kit' );
+			/* translators: %s: Sign in with Google service name */
+			sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) );
 
 		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
 			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
@@ -573,7 +586,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		?>
 <div id="googlesitekit-sign-in-with-google-disconnect">
-	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
+	<h2>
+		<?php
+		/* translators: %s: Sign in with Google service name */
+		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
+		?>
+	</h2>
 	<p>
 		<?php
 		if ( get_current_user_id() === $user->ID ) {
@@ -605,7 +623,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Exposes an existing client ID from a previous connection
 	 * to JS via _googlesitekitModulesData.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

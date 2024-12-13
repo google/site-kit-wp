@@ -42,7 +42,10 @@ export default function Dismiss( {
 	gaTrackingEventArgs,
 	dismissOptions,
 } ) {
-	const trackEvents = useNotificationEvents( id );
+	const trackEvents = useNotificationEvents(
+		id,
+		gaTrackingEventArgs?.category
+	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 

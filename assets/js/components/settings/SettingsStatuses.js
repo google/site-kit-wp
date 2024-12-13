@@ -21,9 +21,36 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { ProgressBar } from 'googlesitekit-components';
+
 export default function SettingsStatuses( { statuses } ) {
 	if ( ! statuses || statuses.length === 0 ) {
 		return null;
+	}
+
+	function renderStatus( status ) {
+		if ( status === undefined ) {
+			return (
+				<div className="googlesitekit-settings-module__meta-item-data">
+					<ProgressBar />
+				</div>
+			);
+		}
+		return (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				{ status
+					? __( 'Enabled', 'google-site-kit' )
+					: __( 'Disabled', 'google-site-kit' ) }
+			</p>
+		);
 	}
 
 	return (
@@ -36,9 +63,7 @@ export default function SettingsStatuses( { statuses } ) {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ label }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ status !== undefined && status }
-					</p>
+					{ renderStatus( status ) }
 				</div>
 			) ) }
 		</div>
@@ -49,7 +74,7 @@ SettingsStatuses.propTypes = {
 	statuses: PropTypes.arrayOf(
 		PropTypes.shape( {
 			label: PropTypes.string.isRequired,
-			status: PropTypes.string,
+			status: PropTypes.oneOf( [ undefined, true, false ] ),
 		} )
 	),
 };

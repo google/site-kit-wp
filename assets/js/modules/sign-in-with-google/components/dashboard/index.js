@@ -17,3 +17,4 @@
  */
 
 export { default as SignInWithGoogleSetupCTABanner } from './SignInWithGoogleSetupCTABanner';
+export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';
