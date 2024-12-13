@@ -696,7 +696,9 @@ export const registerNotifications = ( notifications ) => {
 				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				checkRequirements: async ( { select, resolveSelect } ) => {
 					const analyticsConnected =
-						select( CORE_MODULES ).isModuleConnected();
+						select( CORE_MODULES ).isModuleConnected(
+							'analytics-4'
+						);
 
 					if ( ! analyticsConnected ) {
 						return false;

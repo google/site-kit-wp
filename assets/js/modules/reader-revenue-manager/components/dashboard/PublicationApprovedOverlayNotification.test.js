@@ -24,7 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
@@ -59,6 +62,16 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
+
+		provideModules( registry, [
+			{
+				slug: 'reader-revenue-manager',
+				active: true,
+				connected: true,
+				setupComplete: true,
+			},
+		] );
+
 		registry
 			.dispatch( CORE_UI )
 			.setValue(

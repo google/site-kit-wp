@@ -29,37 +29,19 @@ import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/a
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import { PublicationApprovedOverlayNotification } from '../../modules/reader-revenue-manager/components/dashboard';
-import { useSelect } from 'googlesitekit-data';
-import { MODULES_READER_REVENUE_MANAGER } from '../../modules/reader-revenue-manager/datastore/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export default function OverlayNotificationsRenderer() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
-	const analyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'modules/analytics-4' )
-	);
-	const rrmConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected(
-			MODULES_READER_REVENUE_MANAGER
-		)
-	);
-	const adsenseConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'modules/adsense' )
-	);
 
 	return (
 		<Fragment>
-			{ analyticsConnected && adsenseConnected && (
-				<Fragment>
-					<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
-					<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
-				</Fragment>
-			) }
-			{ analyticsConnected && audienceSegmentationEnabled && (
+			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
+			{ audienceSegmentationEnabled && (
 				<AudienceSegmentationIntroductoryOverlayNotification />
 			) }
-			{ rrmConnected && readerRevenueManagerEnabled && (
+			{ readerRevenueManagerEnabled && (
 				<PublicationApprovedOverlayNotification />
 			) }
 		</Fragment>

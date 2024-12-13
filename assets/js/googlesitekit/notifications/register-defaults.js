@@ -237,18 +237,15 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			await resolveSelect( CORE_MODULES ).getModules();
+			const adSenseModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'adsense' );
 
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'adsense' );
+			const analyticsModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
-			const analyticsModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-
-			const analyticsAndAdsenseConnected =
-				adSenseModuleConnected && analyticsModuleConnected;
-
-			if ( ! analyticsAndAdsenseConnected ) {
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
 				return false;
 			}
 
