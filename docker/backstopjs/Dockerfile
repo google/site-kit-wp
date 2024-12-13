@@ -10,8 +10,8 @@ RUN apt-get update
 
 # Install suggested requirements for running backstop in GitHub actions.
 # https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-on-gitlabci
-RUN apt-get install -yq gconf-service=3.2.6 libasound2=1.2.4 libatk1.0-0 libc6=2.31 libcairo2=1.16.0 \
-    libcups2=2.3.3 libdbus-1-3=1.12.28 libexpat1=2.2.10 libfontconfig1=2.13.1 libgbm1=20.3.5 libgcc1 libgconf-2-4=3.2.6 \
+RUN apt-get install -yq gconf-service=3.2.6-7 libasound2=1.2.4-1.1 libatk1.0-0=2.36.0-2 libc6=2.31-13+deb11u11 libcairo2=1.16.0-5 \
+    libcups2=2.3.3op2-3+deb11u9 libdbus-1-3=1.12.28-0+deb11u1 libexpat1=2.2.10-2+deb11u6 libfontconfig1=2.13.1-4.2 libgbm1=20.3.5-1 libgcc1 libgconf-2-4=3.2.6-7 \
     libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 \
     libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
