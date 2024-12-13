@@ -48,6 +48,8 @@ import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import whenActive from '../../util/when-active';
+import { GA4_MODULE_SLUG } from '../../modules/analytics-4/constants';
+import { ADSENSE_MODULE_SLUG } from '../../modules/adsense/constants';
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
@@ -253,8 +255,8 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
-	whenActive( { moduleName: 'adsense' } )(
+export default whenActive( { moduleName: GA4_MODULE_SLUG } )(
+	whenActive( { moduleName: ADSENSE_MODULE_SLUG } )(
 		AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification
 	)
 );

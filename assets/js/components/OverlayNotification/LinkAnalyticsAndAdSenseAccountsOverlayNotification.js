@@ -39,6 +39,8 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
 import whenActive from '../../util/when-active';
+import { GA4_MODULE_SLUG } from '../../modules/analytics-4/constants';
+import { ADSENSE_MODULE_SLUG } from '../../modules/adsense/constants';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
@@ -158,8 +160,8 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
-	whenActive( { moduleName: 'adsense' } )(
+export default whenActive( { moduleName: GA4_MODULE_SLUG } )(
+	whenActive( { moduleName: ADSENSE_MODULE_SLUG } )(
 		LinkAnalyticsAndAdSenseAccountsOverlayNotification
 	)
 );

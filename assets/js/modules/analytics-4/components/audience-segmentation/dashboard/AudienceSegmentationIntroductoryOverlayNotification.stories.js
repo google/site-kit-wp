@@ -28,6 +28,7 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { GA4_MODULE_SLUG } from '../../../constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
 
@@ -49,7 +50,7 @@ export default {
 				provideUserInfo( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: GA4_MODULE_SLUG,
 						active: true,
 						connected: true,
 						setupComplete: true,

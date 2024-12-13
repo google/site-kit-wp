@@ -43,6 +43,7 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '../../../../../googlesitekit/constants';
+import { GA4_MODULE_SLUG } from '../../../constants';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -66,7 +67,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: GA4_MODULE_SLUG,
 				active: true,
 				connected: true,
 				setupComplete: true,

@@ -42,6 +42,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../hooks/useDashboardType';
 import whenActive from '../../../../../util/when-active';
+import { GA4_MODULE_SLUG } from '../../../constants';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
@@ -180,6 +181,6 @@ function AudienceSegmentationIntroductoryOverlayNotification() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: GA4_MODULE_SLUG } )(
 	AudienceSegmentationIntroductoryOverlayNotification
 );

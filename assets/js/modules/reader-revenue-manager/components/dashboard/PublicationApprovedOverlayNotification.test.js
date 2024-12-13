@@ -41,6 +41,7 @@ import * as tracking from '../../../../util/tracking';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -65,7 +66,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'reader-revenue-manager',
+				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 				active: true,
 				connected: true,
 				setupComplete: true,

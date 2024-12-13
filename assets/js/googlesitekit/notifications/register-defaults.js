@@ -60,6 +60,8 @@ import FirstPartyModeSetupBanner, {
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 import { isFeatureEnabled } from '../../features';
+import { ADSENSE_MODULE_SLUG } from '../../modules/adsense/constants';
+import { GA4_MODULE_SLUG } from '../../modules/analytics-4/constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -239,11 +241,11 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			const adSenseModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'adsense' );
+			).isModuleConnected( ADSENSE_MODULE_SLUG );
 
 			const analyticsModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
+			).isModuleConnected( GA4_MODULE_SLUG );
 
 			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
 				return false;

@@ -83,9 +83,9 @@ export const registerNotifications = ( notifications ) => {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			const rrmConnected = select( CORE_MODULES ).isModuleConnected(
-				READER_REVENUE_MANAGER_MODULE_SLUG
-			);
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
 
 			if ( ! rrmConnected ) {
 				return false;
