@@ -57,7 +57,7 @@ class Consent_Mode {
 	 * Constructor.
 	 *
 	 * @since 1.122.0
-	 * @since n.e.x.t Introduced Modules instance as an argument.
+	 * @since 1.142.0 Introduced Modules instance as an argument.
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Modules $modules Modules instance.

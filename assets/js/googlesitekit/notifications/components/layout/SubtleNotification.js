@@ -94,7 +94,7 @@ const SubtleNotification = forwardRef(
 
 SubtleNotification.propTypes = {
 	className: PropTypes.string,
-	title: PropTypes.string.isRequired,
+	title: PropTypes.node.isRequired,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,

@@ -120,6 +120,20 @@
 			}
 		}
 
+		.googlesitekit-settings-module__fields-group--read-only {
+			border: none;
+
+			& > span {
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
+
+			.mdc-text-field-helper-text {
+				color: $c-surfaces-on-background-variant;
+			}
+		}
+
 		.googlesitekit-settings-module__fields-group--no-border {
 			border: none;
 		}
@@ -187,6 +201,10 @@
 				margin: 0;
 				overflow: hidden;
 				text-overflow: ellipsis;
+
+				.mdc-linear-progress {
+					margin: 8px 0;
+				}
 			}
 
 			.googlesitekit-settings-module__meta-item-data--wrap {
