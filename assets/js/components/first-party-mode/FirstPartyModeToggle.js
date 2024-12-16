@@ -133,6 +133,12 @@ export default function FirstPartyModeToggle( { className } ) {
 						a: (
 							<Link
 								href={ learnMoreURL }
+								onClick={ () => {
+									trackEvent(
+										`${ viewContext }_fpm-settings-toggle`,
+										'click_learn_more_link'
+									);
+								} }
 								external
 								aria-label={ __(
 									'Learn more about first-party mode',
