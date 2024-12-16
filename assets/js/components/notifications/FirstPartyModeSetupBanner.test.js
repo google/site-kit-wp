@@ -45,7 +45,11 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import * as tracking from '../../util/tracking';
 import { enabledFeatures } from '../../features';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FirstPartyModeSetupBanner', () => {
 	let registry;
@@ -99,6 +103,10 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			);
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	} );
+
+	afterEach( () => {
+		jest.clearAllMocks();
 	} );
 
 	describe( 'checkRequirements', () => {
@@ -287,5 +295,133 @@ describe( 'FirstPartyModeSetupBanner', () => {
 					NOTIFICATION_GROUPS.DEFAULT,
 				] )
 		).toBe( false );
+	} );
+
+	it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<FPMBannerComponent />
+			</div>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			'mainDashboard_fpm-setup-cta',
+			'tooltip_view'
+		);
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			'mainDashboard_fpm-setup-cta',
+			'dismiss_notification',
+			undefined,
+			undefined
+		);
+	} );
+
+	it( 'should track an event when the tooltip is closed by clicking the `X` button', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<FPMBannerComponent />
+			</div>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			3,
+			'mainDashboard_fpm-setup-cta',
+			'tooltip_dismiss'
+		);
+	} );
+
+	it( 'should track an event when the tooltip is closed by clicking the `Got it` button', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<FPMBannerComponent />
+			</div>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			3,
+			'mainDashboard_fpm-setup-cta',
+			'tooltip_dismiss'
+		);
 	} );
 } );
