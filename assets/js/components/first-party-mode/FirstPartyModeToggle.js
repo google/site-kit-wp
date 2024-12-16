@@ -37,8 +37,16 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Badge from '../Badge';
 import SubtleNotification from '../notifications/SubtleNotification';
 import Link from '../Link';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
+import withIntersectionObserver from '../../util/withIntersectionObserver';
+
+const SubtleNotificationWithIntersectionObserver =
+	withIntersectionObserver( SubtleNotification );
 
 export default function FirstPartyModeToggle( { className } ) {
+	const viewContext = useViewContext();
+
 	const isFirstPartyModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isFirstPartyModeEnabled()
 	);
@@ -70,8 +78,16 @@ export default function FirstPartyModeToggle( { className } ) {
 	useMount( fetchGetFPMServerRequirementStatus );
 
 	const handleClick = useCallback( () => {
-		setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
-	}, [ isFirstPartyModeEnabled, setFirstPartyModeEnabled ] );
+		const action = isFirstPartyModeEnabled
+			? 'deactivate_first_party_mode'
+			: 'activate_first_party_mode';
+
+		trackEvent( `${ viewContext }_fpm-settings-toggle`, action ).finally(
+			() => {
+				setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
+			}
+		);
+	}, [ isFirstPartyModeEnabled, setFirstPartyModeEnabled, viewContext ] );
 
 	return (
 		<div
@@ -128,7 +144,7 @@ export default function FirstPartyModeToggle( { className } ) {
 				) }
 			</p>
 			{ ! isLoading && ! hasMetServerRequirements && (
-				<SubtleNotification
+				<SubtleNotificationWithIntersectionObserver
 					title={ createInterpolateElement(
 						__(
 							'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
@@ -138,6 +154,12 @@ export default function FirstPartyModeToggle( { className } ) {
 							a: (
 								<Link
 									href={ serverRequirementsLearnMoreURL }
+									onClick={ () => {
+										trackEvent(
+											`${ viewContext }_fpm-settings-toggle-disabled`,
+											'click_learn_more_link'
+										);
+									} }
 									external
 									aria-label={ __(
 										'Learn more about first-party mode server requirements',
@@ -148,6 +170,12 @@ export default function FirstPartyModeToggle( { className } ) {
 						}
 					) }
 					variant="warning"
+					onInView={ () => {
+						trackEvent(
+							`${ viewContext }_fpm-settings-toggle-disabled`,
+							'view_notice'
+						);
+					} }
 				/>
 			) }
 		</div>
