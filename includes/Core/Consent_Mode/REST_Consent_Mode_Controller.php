@@ -10,9 +10,16 @@
 
 namespace Google\Site_Kit\Core\Consent_Mode;
 
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Tag_Manager\Settings as Tag_Manager_Settings;
+use Google\Site_Kit\Modules\Tag_Manager;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -35,15 +42,40 @@ class REST_Consent_Mode_Controller {
 	 */
 	private $consent_mode_settings;
 
+	/**
+	 * Modules instance.
+	 *
+	 * @since 1.142.0
+	 * @var Modules
+	 */
+	protected $modules;
+
+	/**
+	 * Options instance.
+	 *
+	 * @since 1.142.0
+	 * @var Options
+	 */
+	protected $options;
+
 		/**
 		 * Constructor.
 		 *
 		 * @since 1.122.0
+		 * @since 1.142.0 Introduces Modules as an argument.
 		 *
+		 * @param Modules               $modules               Modules instance.
 		 * @param Consent_Mode_Settings $consent_mode_settings Consent_Mode_Settings instance.
+		 * @param Options               $options               Optional. Option API instance. Default is a new instance.
 		 */
-	public function __construct( Consent_Mode_Settings $consent_mode_settings ) {
+	public function __construct(
+		Modules $modules,
+		Consent_Mode_Settings $consent_mode_settings,
+		Options $options
+	) {
+		$this->modules               = $modules;
 		$this->consent_mode_settings = $consent_mode_settings;
+		$this->options               = $options;
 	}
 
 	/**
@@ -223,6 +255,66 @@ class REST_Consent_Mode_Controller {
 							return new WP_REST_Response( array( 'success' => true ) );
 						},
 						'permission_callback' => $can_update_plugins,
+					),
+				),
+			),
+			new REST_Route(
+				'core/site/data/ads-measurement-status',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$ads_connected = apply_filters( 'googlesitekit_is_module_connected', false, Ads::MODULE_SLUG );
+
+							if ( $ads_connected ) {
+								return new WP_REST_Response( array( 'connected' => true ) );
+							}
+
+							$analytics_connected = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
+							if ( $analytics_connected ) {
+								$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
+								$adsense_linked     = $analytics_settings['adSenseLinked'] ?? false;
+
+								if ( $adsense_linked ) {
+									return new WP_REST_Response( array( 'connected' => true ) );
+								}
+
+								$container_destination_ids = $analytics_settings['googleTagContainerDestinationIDs'] ?? false;
+								if ( is_array( $container_destination_ids ) ) {
+									foreach ( $container_destination_ids as $destination_id ) {
+										if ( substr( $destination_id, 0, 3 ) === 'AW-' ) {
+											return new WP_REST_Response( array( 'connected' => true ) );
+										}
+									}
+								}
+							}
+
+							$tag_manager_connected = apply_filters( 'googlesitekit_is_module_connected', false, Tag_Manager::MODULE_SLUG );
+							if ( $tag_manager_connected ) {
+								$tag_manager          = $this->modules->get_module( Tag_Manager::MODULE_SLUG );
+								$tag_manager_settings = ( new Tag_Manager_Settings( $this->options ) )->get();
+
+								if ( ! $tag_manager || ! $tag_manager instanceof Tag_Manager ) {
+									return new WP_REST_Response( array( 'connected' => false ) );
+								}
+
+								$live_containers_versions = $tag_manager->get_tagmanager_service()->accounts_containers_versions->live(
+									"accounts/{$tag_manager_settings['accountID']}/containers/{$tag_manager_settings['internalContainerID']}"
+								);
+
+								if ( empty( $live_containers_versions->tag ) ) {
+									return new WP_REST_Response( array( 'connected' => false ) );
+								}
+
+								$has_ads_tag = array_search( 'awct', array_column( $live_containers_versions->tag, 'type' ), true );
+								if ( false !== $has_ads_tag ) {
+									return new WP_REST_Response( array( 'connected' => true ) );
+								}
+							}
+
+							return new WP_REST_Response( array( 'connected' => false ) );
+						},
+						'permission_callback' => $can_manage_options,
 					),
 				),
 			),

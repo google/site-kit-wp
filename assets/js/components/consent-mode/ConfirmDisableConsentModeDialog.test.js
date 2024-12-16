@@ -24,6 +24,7 @@ import {
 	provideModules,
 	render,
 } from '../../../../tests/js/test-utils';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 
 describe( 'ConfirmDisableConsentModeDialog', () => {
@@ -31,12 +32,14 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideModules( registry );
 	} );
 
 	it( 'should display appropriate subtitle with Ads not connected', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: false, connected: false },
-		] );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetAdsMeasurementStatus( { connected: false } );
 
 		const { getByText, waitForRegistry } = render(
 			<ConfirmDisableConsentModeDialog
@@ -58,9 +61,9 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 	} );
 
 	it( 'should display appropriate subtitle with Ads connected', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
-		] );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetAdsMeasurementStatus( { connected: true } );
 
 		const { getByText, waitForRegistry } = render(
 			<ConfirmDisableConsentModeDialog

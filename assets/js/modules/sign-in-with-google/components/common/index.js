@@ -20,5 +20,7 @@ export { default as ButtonTextSelect } from './ButtonTextSelect';
 export { default as ButtonThemeSelect } from './ButtonThemeSelect';
 export { default as ButtonShapeSelect } from './ButtonShapeSelect';
 export { default as ClientIDTextField } from './ClientIDTextField';
+export { default as AnyoneCanRegisterReadOnly } from './AnyoneCanRegisterReadOnly';
+export { default as AnyoneCanRegisterDisabledNotice } from './AnyoneCanRegisterDisabledNotice';
 export { default as OneTapToggle } from './OneTapToggle';
 export { default as Preview } from './Preview';

@@ -18,6 +18,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -33,8 +34,12 @@ import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
 
@@ -67,7 +72,7 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 			__(
-				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress\' "Reset my password" to set a password for their account',
+				'Existing users who have only used Sign in with Google to sign in to your site will need to use WordPress\' "Reset my password" to set a password for their account',
 				'google-site-kit'
 			),
 		],
@@ -94,10 +99,11 @@ export function registerModule( modules ) {
 
 export const registerNotifications = ( notifications ) => {
 	if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
-		notifications.registerNotification( 'setup-cta-siwg', {
+		notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 			Component: SignInWithGoogleSetupCTABanner,
-			priority: 320,
+			priority: 330,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			checkRequirements: async ( { select, resolveSelect } ) => {
 				await Promise.all( [
@@ -123,6 +129,28 @@ export const registerNotifications = ( notifications ) => {
 				return true;
 			},
 			isDismissible: true,
+		} );
+		notifications.registerNotification( 'setup-success-notification-siwg', {
+			Component: SetupSuccessSubtleNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: () => {
+				const notification = getQueryArg(
+					location.href,
+					'notification'
+				);
+				const slug = getQueryArg( location.href, 'slug' );
+
+				if (
+					'authentication_success' === notification &&
+					slug === 'sign-in-with-google'
+				) {
+					return true;
+				}
+
+				return false;
+			},
 		} );
 	}
 };

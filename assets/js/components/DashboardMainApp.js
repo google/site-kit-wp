@@ -80,6 +80,11 @@ import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
+import Notifications from './notifications/Notifications';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../googlesitekit/notifications/datastore/constants';
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
@@ -127,10 +132,24 @@ export default function DashboardMainApp() {
 			const widgetClass = `.googlesitekit-widget-area--${ widgetArea }`;
 
 			setTimeout( () => {
-				global.scrollTo( {
-					top: getNavigationalScrollTop( widgetClass, breakpoint ),
-					behavior: 'smooth',
-				} );
+				function scrollToWidgetArea() {
+					global.scrollTo( {
+						top: getNavigationalScrollTop(
+							widgetClass,
+							breakpoint
+						),
+						behavior: 'smooth',
+					} );
+				}
+
+				function handleScrollEnd() {
+					scrollToWidgetArea();
+					global.removeEventListener( 'scrollend', handleScrollEnd );
+				}
+
+				global.addEventListener( 'scrollend', handleScrollEnd );
+
+				scrollToWidgetArea();
 
 				setWidgetArea( undefined );
 			}, 100 );
@@ -264,6 +283,11 @@ export default function DashboardMainApp() {
 					) }
 				</Fragment>
 			) }
+
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>
 
 			<OverlayNotificationsRenderer />
 

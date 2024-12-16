@@ -262,6 +262,19 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Gets saved input settings info for this user.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Saved user input settings.
+	 */
+	getSavedUserInputSettings( state ) {
+		const { savedInputSettings } = state;
+		return savedInputSettings;
+	},
+
+	/**
 	 * Gets a particular input setting.
 	 *
 	 * @since 1.19.0

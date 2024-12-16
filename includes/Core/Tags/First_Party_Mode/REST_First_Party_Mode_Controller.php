@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -20,16 +21,24 @@ use WP_REST_Server;
 /**
  * Class for handling First Party Mode settings via REST API.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
 class REST_First_Party_Mode_Controller {
 
 	/**
+	 * First_Party_Mode instance.
+	 *
+	 * @since 1.142.0
+	 * @var First_Party_Mode
+	 */
+	private $first_party_mode;
+
+	/**
 	 * First_Party_Mode_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 * @var First_Party_Mode_Settings
 	 */
 	private $first_party_mode_settings;
@@ -37,18 +46,20 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
+	 * @param First_Party_Mode          $first_party_mode          First_Party_Mode instance.
 	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
 	 */
-	public function __construct( First_Party_Mode_Settings $first_party_mode_settings ) {
+	public function __construct( First_Party_Mode $first_party_mode, First_Party_Mode_Settings $first_party_mode_settings ) {
+		$this->first_party_mode          = $first_party_mode;
 		$this->first_party_mode_settings = $first_party_mode_settings;
 	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,7 +85,7 @@ class REST_First_Party_Mode_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -124,6 +135,20 @@ class REST_First_Party_Mode_Controller {
 								),
 							),
 						),
+					),
+				)
+			),
+
+			new REST_Route(
+				'core/site/data/fpm-server-requirement-status',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$this->first_party_mode->healthcheck();
+							return new WP_REST_Response( $this->first_party_mode_settings->get() );
+						},
+						'permission_callback' => $can_manage_options,
 					),
 				)
 			),

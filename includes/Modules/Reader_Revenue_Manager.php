@@ -474,12 +474,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		return array(
 			'reader_revenue_manager_publication_id' => array(
-				'label' => __( 'Reader Revenue Manager publication ID', 'google-site-kit' ),
+				'label' => __( 'Reader Revenue Manager: Publication ID', 'google-site-kit' ),
 				'value' => $settings['publicationID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['publicationID'] ),
 			),
 			'reader_revenue_manager_publication_onboarding_state' => array(
-				'label' => __( 'Reader Revenue Manager publication onboarding state', 'google-site-kit' ),
+				'label' => __( 'Reader Revenue Manager: Publication onboarding state', 'google-site-kit' ),
 				'value' => $settings['publicationOnboardingState'],
 				'debug' => $settings['publicationOnboardingState'],
 			),

@@ -183,7 +183,7 @@ const baseActions = {
 	/**
 	 * Resets key metrics selecton.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -288,6 +288,228 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets the Key Metric widget slugs.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
+	 */
+	getRegularKeyMetricsWidgetIDs: createRegistrySelector( ( select ) => () => {
+		const postTypes = select( CORE_SITE ).getPostTypes() || [];
+		const hasProductPostType = postTypes.some(
+			( { slug } ) => slug === 'product'
+		);
+
+		return {
+			publish_blog: [
+				KM_ANALYTICS_RETURNING_VISITORS,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+			],
+			publish_news: [
+				KM_ANALYTICS_PAGES_PER_VISIT,
+				KM_ANALYTICS_VISIT_LENGTH,
+				KM_ANALYTICS_VISITS_PER_VISITOR,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
+			monetize_content: [
+				KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			sell_products_or_service: [
+				hasProductPostType
+					? KM_ANALYTICS_POPULAR_PRODUCTS
+					: KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			sell_products: [
+				hasProductPostType
+					? KM_ANALYTICS_POPULAR_PRODUCTS
+					: KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+			],
+			provide_services: [
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_POPULAR_CONTENT,
+			],
+			share_portfolio: [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			],
+		};
+	} ),
+
+	/**
+	 * Gets the Conversion Key Reporting Metric widget slugs.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
+	 */
+	getConversionTailoredKeyMetricsWidgetIDs: createRegistrySelector(
+		( select ) => ( state, includeConversionTailoredMetrics ) => {
+			const postTypes = select( CORE_SITE ).getPostTypes() ?? [];
+			const hasProductPostType = postTypes.some(
+				( { slug } ) => slug === 'product'
+			);
+			const keyMetricSettings =
+				select( CORE_USER ).getKeyMetricsSettings();
+
+			const showConversionTailoredMetrics = ( events ) => {
+				return events.some(
+					( event ) =>
+						( Array.isArray(
+							keyMetricSettings?.includeConversionTailoredMetrics
+						) &&
+							keyMetricSettings?.includeConversionTailoredMetrics?.includes(
+								event
+							) ) ||
+						( Array.isArray( includeConversionTailoredMetrics ) &&
+							includeConversionTailoredMetrics?.includes(
+								event
+							) )
+				);
+			};
+
+			return {
+				publish_blog: [
+					KM_ANALYTICS_TOP_CATEGORIES,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
+						? [
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+				],
+				publish_news: [
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					KM_ANALYTICS_TOP_CITIES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
+						? [
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+				],
+				monetize_content: [
+					KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_VISITS_PER_VISITOR,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				sell_products_or_service: [
+					hasProductPostType
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					...( showConversionTailoredMetrics( [ 'purchase' ] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						  ]
+						: [] ),
+					...( showConversionTailoredMetrics( [ 'add_to_cart' ] )
+						? [
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+						  ]
+						: [] ),
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				sell_products: [
+					hasProductPostType
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					...( showConversionTailoredMetrics( [ 'purchase' ] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						  ]
+						: [] ),
+					...( showConversionTailoredMetrics( [ 'add_to_cart' ] )
+						? [
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+						  ]
+						: [] ),
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				provide_services: [
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+				],
+				share_portfolio: [
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					...( showConversionTailoredMetrics( [
+						'contact',
+						'generate_lead',
+						'submit_lead_form',
+					] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+			};
+		}
+	),
+
+	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
 	 * @since 1.103.0
@@ -295,125 +517,32 @@ const baseSelectors = {
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
 	 */
 	getAnswerBasedMetrics: createRegistrySelector(
-		( select ) => ( state, purposeOverride ) => {
-			const userInputSettings =
-				select( CORE_USER ).getUserInputSettings();
+		( select ) =>
+			( state, purposeOverride, includeConversionTailoredMetrics ) => {
+				const userInputSettings =
+					select( CORE_USER ).getUserInputSettings();
 
-			if ( userInputSettings === undefined ) {
-				return undefined;
+				if ( userInputSettings === undefined ) {
+					return undefined;
+				}
+
+				const isConversionReportingEnabled = isFeatureEnabled(
+					'conversionReporting'
+				);
+				const purpose =
+					purposeOverride ??
+					userInputSettings?.purpose?.values?.[ 0 ];
+
+				const widgetIDs = isConversionReportingEnabled
+					? select(
+							CORE_USER
+					  ).getConversionTailoredKeyMetricsWidgetIDs(
+							includeConversionTailoredMetrics
+					  )
+					: select( CORE_USER ).getRegularKeyMetricsWidgetIDs();
+
+				return widgetIDs[ purpose ] || [];
 			}
-
-			const purpose =
-				purposeOverride ?? userInputSettings?.purpose?.values?.[ 0 ];
-
-			const hasProductPostType = () => {
-				const postTypes = select( CORE_SITE ).getPostTypes();
-				return postTypes.some( ( { slug } ) => slug === 'product' );
-			};
-
-			const showConversionTailoredMetrics =
-				select( CORE_USER ).showConversionTailoredMetrics();
-
-			switch ( purpose ) {
-				case 'publish_blog':
-					return showConversionTailoredMetrics
-						? [
-								KM_ANALYTICS_TOP_CATEGORIES,
-								KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-								KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-								KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-						  ]
-						: [
-								KM_ANALYTICS_RETURNING_VISITORS,
-								KM_ANALYTICS_NEW_VISITORS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-								KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-						  ];
-
-				case 'publish_news':
-					return showConversionTailoredMetrics
-						? [
-								KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-								KM_ANALYTICS_POPULAR_AUTHORS,
-								KM_ANALYTICS_TOP_CITIES,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-								KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-						  ]
-						: [
-								KM_ANALYTICS_PAGES_PER_VISIT,
-								KM_ANALYTICS_VISIT_LENGTH,
-								KM_ANALYTICS_VISITS_PER_VISITOR,
-								KM_ANALYTICS_MOST_ENGAGING_PAGES,
-						  ];
-				case 'monetize_content':
-					return showConversionTailoredMetrics
-						? [
-								KM_ANALYTICS_MOST_ENGAGING_PAGES,
-								KM_ANALYTICS_POPULAR_CONTENT,
-								KM_ANALYTICS_NEW_VISITORS,
-								KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-								KM_ANALYTICS_VISIT_LENGTH,
-								KM_ANALYTICS_VISITS_PER_VISITOR,
-								KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						  ]
-						: [
-								KM_ANALYTICS_POPULAR_CONTENT,
-								KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-								KM_ANALYTICS_NEW_VISITORS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-						  ];
-
-				case 'sell_products_or_service':
-					return showConversionTailoredMetrics
-						? [
-								KM_ANALYTICS_POPULAR_PRODUCTS,
-								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-								KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-								KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						  ]
-						: [
-								hasProductPostType()
-									? KM_ANALYTICS_POPULAR_PRODUCTS
-									: KM_ANALYTICS_POPULAR_CONTENT,
-								KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-						  ];
-
-				case 'share_portfolio':
-					return showConversionTailoredMetrics
-						? [
-								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-								KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-								KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-								KM_ANALYTICS_POPULAR_AUTHORS,
-								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-								KM_ANALYTICS_POPULAR_CONTENT,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						  ]
-						: [
-								KM_ANALYTICS_NEW_VISITORS,
-								KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-								KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-								KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-						  ];
-				default:
-					return [];
-			}
-		}
 	),
 
 	/**
@@ -591,27 +720,6 @@ const baseSelectors = {
 			} );
 		}
 	),
-
-	/**
-	 * Gets whether the new Analytics Conversion Reporting metric tiles
-	 * should be made available or not.
-	 *
-	 * @since 1.140.0
-	 *
-	 * @return {boolean|undefined} True if ACR tiles should be shown, false if not.
-	 */
-	showConversionTailoredMetrics: createRegistrySelector( ( select ) => () => {
-		if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-			return false;
-		}
-
-		const keyMetricSettings = select( CORE_USER ).getKeyMetricsSettings();
-		const isUserInputCompleted = select( CORE_USER ).isUserInputCompleted();
-		return (
-			keyMetricSettings?.includeConversionTailoredMetrics ||
-			isUserInputCompleted
-		);
-	} ),
 };
 
 const store = combineStores(

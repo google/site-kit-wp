@@ -19,29 +19,51 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useEffect, useMemo } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { Tab, TabBar } from 'googlesitekit-components';
 import {
+	EFFECTIVE_SELECTION,
 	KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
-	KEY_METRICS_GROUPS,
+	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
+	KEY_METRICS_GROUP_GENERATING_LEADS,
+	KEY_METRICS_GROUP_SELLING_PRODUCTS,
+	KEY_METRICS_GROUP_VISITORS,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
+	UNSTAGED_SELECTION,
 } from '../constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import Chip from './Chip';
 import MetricItem from '../MetricsSelectionPanel/MetricItem';
 import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
+import CheckMark from '../../../../svg/icons/check-2.svg';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+
+const currentSelectionGroup = {
+	SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
+	LABEL: __( 'Current selection', 'google-site-kit' ),
+};
 
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const [ isActive, setIsActive ] = useState(
 		KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG
 	);
+	// Used for mobile chip tabs, which leverages the TabBar component for seemless horizontal scroll
+	// but it accepts a numerical index for the active tab.
+	const [ activeGroupIndex, setActiveGroupIndex ] = useState( 0 );
+
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
@@ -51,17 +73,93 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			KEY_METRICS_SELECTED
 		)
 	);
+	const effectiveSelection = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				KEY_METRICS_SELECTION_FORM,
+				EFFECTIVE_SELECTION
+			) || []
+	);
 
-	const currentSelectionGroup = {
-		SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
-		LABEL: __( 'Current selection', 'google-site-kit' ),
-	};
-	const selectedCounts = {};
+	const unstagedSelection = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				KEY_METRICS_SELECTION_FORM,
+				UNSTAGED_SELECTION
+			) || []
+	);
+
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+	const detectedEvents = useSelect( ( select ) => {
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+	} );
+	const hasGeneratingLeadsGroup = [
+		'submit_lead_form',
+		'contact',
+		'generate_lead',
+	].filter( ( item ) => detectedEvents?.includes( item ) );
+	const hasSellingProductsGroup = [ 'add_to_cart', 'purchase' ].filter(
+		( item ) => detectedEvents?.includes( item )
+	);
+
+	const keyMetricsGroups = useMemo(
+		() => [
+			KEY_METRICS_GROUP_VISITORS,
+			KEY_METRICS_GROUP_DRIVING_TRAFFIC,
+			...( hasGeneratingLeadsGroup?.length
+				? [ KEY_METRICS_GROUP_GENERATING_LEADS ]
+				: [] ),
+			...( hasSellingProductsGroup?.length
+				? [ KEY_METRICS_GROUP_SELLING_PRODUCTS ]
+				: [] ),
+			KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+		],
+		[ hasGeneratingLeadsGroup, hasSellingProductsGroup ]
+	);
+
+	const allGroups = useMemo(
+		() => [ currentSelectionGroup, ...keyMetricsGroups ],
+		[ keyMetricsGroups ]
+	);
+
+	const conversionReportingEventsChange = useSelect( ( select ) => {
+		if ( ! isGA4Connected ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getConversionReportingEventsChange();
+	} );
+	const conversionReportingEventWidgets = useSelect( ( select ) => {
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getKeyMetricsConversionEventWidgets();
+	} );
+
+	// Currently selected group does not include total selected number, so it will
+	// always be 0.
+	const selectedCounts = { [ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: 0 };
 	const activeMetricItems = {};
+	const newlyDetectedMetrics = {};
 
 	for ( const metricItemSlug in allMetricItems ) {
 		const metricGroup = allMetricItems[ metricItemSlug ].group;
-		if ( metricGroup === isActive ) {
+		if (
+			metricGroup === isActive ||
+			( isActive === currentSelectionGroup.SLUG &&
+				effectiveSelection.includes( metricItemSlug ) )
+		) {
 			activeMetricItems[ metricItemSlug ] =
 				allMetricItems[ metricItemSlug ];
 		}
@@ -73,7 +171,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 					// count is reflected in real time as metrics are checked/unchecked.
 					if (
 						allMetricItems[ slug ].group === metricGroup &&
-						selectedMetrics.includes( slug )
+						selectedMetrics?.includes( slug )
 					) {
 						return true;
 					}
@@ -83,20 +181,98 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			).length;
 			selectedCounts[ metricGroup ] = selectedCount;
 		}
-		// @TODO Will be updated in #9385 for current selection.
-		selectedCounts[ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ] = 0;
+
+		// Check if metric is conversion event related and if new badge should be included.
+		if ( conversionReportingEventsChange?.newEvents ) {
+			const isNewlyDetectedKeyMetrics =
+				conversionReportingEventsChange.newEvents.some(
+					( conversionEvent ) =>
+						conversionReportingEventWidgets[
+							conversionEvent
+						].includes( metricItemSlug )
+				);
+
+			if ( isNewlyDetectedKeyMetrics ) {
+				newlyDetectedMetrics[ metricGroup ] = [
+					...( newlyDetectedMetrics[ metricGroup ] ?? [] ),
+					metricItemSlug,
+				];
+			}
+		}
 	}
 
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const resetUnstagedSelection = useCallback( () => {
+		setValues( KEY_METRICS_SELECTION_FORM, {
+			[ KEY_METRICS_SELECTED ]: selectedMetrics,
+			[ EFFECTIVE_SELECTION ]: [
+				...effectiveSelection,
+				...unstagedSelection,
+			],
+			[ UNSTAGED_SELECTION ]: [],
+		} );
+	}, [ selectedMetrics, effectiveSelection, unstagedSelection, setValues ] );
+
 	const onChipChange = useCallback(
-		( slug ) => {
-			setIsActive( slug );
+		( slug, index ) => {
+			if ( ! slug ) {
+				// Set active group for mobile tabs.
+				const activeGroup = allGroups[ index ];
+				setActiveGroupIndex( index );
+				setIsActive( activeGroup.SLUG );
+			} else {
+				setIsActive( slug );
+			}
+
+			if ( unstagedSelection.length ) {
+				resetUnstagedSelection();
+			}
 		},
-		[ setIsActive ]
+		[ allGroups, unstagedSelection, setIsActive, resetUnstagedSelection ]
 	);
 
+	const isSelectionPanelOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+	);
+	const isSelectionPanelOpenPrevious = usePrevious( isSelectionPanelOpen );
+	const newlyDetectedMetricsKeys = Object.keys( newlyDetectedMetrics );
+
+	useEffect( () => {
+		// Ensure that current selection group is always active when selection panel re-opens.
+		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
+			if ( newlyDetectedMetricsKeys.length && isMobileBreakpoint ) {
+				const firstNewlyDetectedGroup = allGroups.find(
+					( group ) => group.SLUG === newlyDetectedMetricsKeys[ 0 ]
+				);
+
+				setActiveGroupIndex(
+					allGroups.indexOf( firstNewlyDetectedGroup )
+				);
+				setIsActive( firstNewlyDetectedGroup.SLUG );
+			} else {
+				setActiveGroupIndex( 0 );
+				setIsActive( KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG );
+			}
+		}
+
+		if ( isSelectionPanelOpenPrevious && ! isSelectionPanelOpen ) {
+			// Reset the unstaged selection when selection panel is closed.
+			resetUnstagedSelection();
+		}
+	}, [
+		isSelectionPanelOpen,
+		isSelectionPanelOpenPrevious,
+		unstagedSelection,
+		allGroups,
+		isMobileBreakpoint,
+		newlyDetectedMetricsKeys,
+		resetUnstagedSelection,
+	] );
+
 	const chipItemRows = [
-		[ currentSelectionGroup, ...KEY_METRICS_GROUPS.slice( 0, 2 ) ],
-		[ ...KEY_METRICS_GROUPS.slice( 2 ) ],
+		[ currentSelectionGroup, ...keyMetricsGroups.slice( 0, 2 ) ],
+		[ ...keyMetricsGroups.slice( 2 ) ],
 	];
 
 	return (
@@ -115,6 +291,9 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 									key={ group.SLUG }
 									slug={ group.SLUG }
 									label={ group.LABEL }
+									hasNewBadge={
+										!! newlyDetectedMetrics?.[ group.SLUG ]
+									}
 									isActive={ group.SLUG === isActive }
 									onClick={ onChipChange }
 									selectedCount={
@@ -124,29 +303,50 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 							) ) }
 						</div>
 					) ) }
-				{ isMobileBreakpoint &&
-					[ currentSelectionGroup, ...KEY_METRICS_GROUPS ].map(
-						( group ) => (
-							<Chip
-								key={ group.SLUG }
-								slug={ group.SLUG }
-								label={ group.LABEL }
-								isActive={ group.SLUG === isActive }
-								onClick={ onChipChange }
-								selectedCount={ selectedCounts[ group.SLUG ] }
-							/>
-						)
-					) }
+				{ isMobileBreakpoint && (
+					<TabBar
+						activeIndex={ activeGroupIndex }
+						handleActiveIndexUpdate={ ( index ) =>
+							onChipChange( null, index )
+						}
+					>
+						{ allGroups.map( ( group, index ) => (
+							<Tab key={ index } aria-label={ group.LABEL }>
+								{ index === 0 && (
+									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg">
+										<CheckMark width={ 12 } height={ 12 } />
+									</span>
+								) }
+								{ group.LABEL }
+								{ selectedCounts[ group.SLUG ] > 0 && (
+									<span className="googlesitekit-chip-tab-group__chip-item-count">
+										({ selectedCounts[ group.SLUG ] })
+									</span>
+								) }
+								{ !! newlyDetectedMetrics?.[ group.SLUG ] && (
+									<span className="googlesitekit-chip-tab-group__chip-item-new-dot" />
+								) }
+							</Tab>
+						) ) }
+					</TabBar>
+				) }
 			</div>
 			<div className="googlesitekit-chip-tab-group__tab-item">
-				{ Object.keys( activeMetricItems ).map( ( slug ) => (
-					<MetricItem
-						key={ slug }
-						slug={ slug }
-						savedItemSlugs={ savedItemSlugs }
-						{ ...activeMetricItems[ slug ] }
-					/>
-				) ) }
+				{ Object.keys( activeMetricItems ).map( ( slug ) => {
+					const metricGroup = activeMetricItems[ slug ].group;
+					const isNewlyDetected =
+						newlyDetectedMetrics?.[ metricGroup ]?.includes( slug );
+
+					return (
+						<MetricItem
+							key={ slug }
+							slug={ slug }
+							savedItemSlugs={ savedItemSlugs }
+							isNewlyDetected={ isNewlyDetected }
+							{ ...activeMetricItems[ slug ] }
+						/>
+					);
+				} ) }
 				{ ! Object.keys( activeMetricItems ).length && (
 					<div className="googlesitekit-chip-tab-group__graphic">
 						<NoSelectedItemsSVG height={ 250 } />

@@ -20,17 +20,19 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
@@ -45,22 +47,43 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 		);
 	} );
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
+	useMount( () => {
+		triggerSurvey( 'view_siwg_setup_cta' );
+	} );
+
 	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
 
 	return (
 		<Notification>
 			<NotificationWithSVG
 				id={ id }
-				title={ __(
-					'Boost onboarding, security, and trust on your site using Sign in with Google',
-					'google-site-kit'
+				title={ sprintf(
+					/* translators: %s: Sign in with Google service name */
+					__(
+						'Boost onboarding, security and trust on your site using %s',
+						'google-site-kit'
+					),
+					_x(
+						'Sign in with Google',
+						'Service name',
+						'google-site-kit'
+					)
 				) }
 				description={
 					<Description
 						className="googlesitekit-setup-cta-banner__description"
-						text={ __(
-							'Provide your site visitors with a simple, secure, and personalised experience by adding a Sign in with Google button to your login page.',
-							'google-site-kit'
+						text={ sprintf(
+							/* translators: %s: Sign in with Google service name */
+							__(
+								'Provide your site visitors with a simple, secure and personalised experience by adding a %s button to your login page.',
+								'google-site-kit'
+							),
+							_x(
+								'Sign in with Google',
+								'Service name',
+								'google-site-kit'
+							)
 						) }
 						learnMoreLink={
 							<LearnMoreLink
@@ -75,9 +98,14 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 					<ActionsCTALinkDismiss
 						id={ id }
 						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __(
-							'Set up Sign in with Google',
-							'google-site-kit'
+						ctaLabel={ sprintf(
+							/* translators: %s: Sign in with Google service name */
+							__( 'Set up %s', 'google-site-kit' ),
+							_x(
+								'Sign in with Google',
+								'Service name',
+								'google-site-kit'
+							)
 						) }
 						onCTAClick={ onSetupActivate }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }

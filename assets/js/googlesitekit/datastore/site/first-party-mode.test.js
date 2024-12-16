@@ -21,11 +21,12 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	subscribeUntil,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
-describe( 'core/site First-Party Mode', () => {
+describe( 'core/site First-party Mode', () => {
 	let registry;
 
 	const firstPartyModeSettingsEndpointRegExp = new RegExp(
@@ -162,6 +163,46 @@ describe( 'core/site First-Party Mode', () => {
 				expect(
 					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'resetFirstPartyModeSettings', () => {
+			it( 'resets the settings', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: true,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( true );
+
+				expect( registry.select( CORE_SITE ).isFPMHealthy() ).toBe(
+					true
+				);
+
+				expect(
+					registry.select( CORE_SITE ).isScriptAccessEnabled()
+				).toBe( true );
+
+				// Change the settings.
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( false );
+
+				registry.dispatch( CORE_SITE ).resetFirstPartyModeSettings();
+
+				// Reset to the original settings.
+				expect(
+					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+				).toBe( true );
 			} );
 		} );
 	} );
@@ -328,6 +369,67 @@ describe( 'core/site First-Party Mode', () => {
 					).toBe( isScriptAccessEnabled );
 				}
 			);
+		} );
+
+		describe( 'haveFirstPartyModeSettingsChanged', () => {
+			it( 'informs whether client-side settings differ from server-side ones', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+					} );
+
+				// Initially false.
+				expect(
+					registry
+						.select( CORE_SITE )
+						.haveFirstPartyModeSettingsChanged()
+				).toEqual( false );
+
+				const serverValues = { isEnabled: false };
+				const clientValues = { isEnabled: true };
+
+				fetchMock.getOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: serverValues,
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getFirstPartyModeSettings();
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( CORE_SITE )
+							.getFirstPartyModeSettings() !== undefined
+				);
+
+				// Still false after fetching settings from server.
+				expect(
+					registry
+						.select( CORE_SITE )
+						.haveFirstPartyModeSettingsChanged()
+				).toEqual( false );
+
+				// True after updating settings on client.
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( clientValues.isEnabled );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.haveFirstPartyModeSettingsChanged()
+				).toEqual( true );
+
+				// False after updating settings back to original server value on client.
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( serverValues.isEnabled );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.haveFirstPartyModeSettingsChanged()
+				).toEqual( false );
+			} );
 		} );
 	} );
 } );
