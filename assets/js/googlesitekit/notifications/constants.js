@@ -17,6 +17,6 @@
  */
 
 export const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
-	'fpm-warning-notification';
+	'warning-notification-fpm';
 
 export const FPM_SETUP_CTA_BANNER_NOTIFICATION = 'fpm-setup-cta';
