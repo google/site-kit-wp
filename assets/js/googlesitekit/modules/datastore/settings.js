@@ -124,6 +124,22 @@ export const controls = {
 
 export const selectors = {
 	/**
+	 * Checks whether changes are currently loading for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {boolean} Whether or not changes are currently loading for the module.
+	 */
+	isSettingsLoading: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'slug is required.' );
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			return !! select( storeName )?.isSettingsLoading?.();
+		}
+	),
+
+	/**
 	 * Checks whether changes are currently being submitted for a module.
 	 *
 	 * @since 1.20.0

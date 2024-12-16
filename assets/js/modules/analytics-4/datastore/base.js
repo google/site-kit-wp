@@ -26,6 +26,7 @@ import {
 	validateCanSubmitChanges,
 	rollbackChanges,
 	validateHaveSettingsChanged,
+	isSettingsLoading,
 } from './settings';
 import { convertDateStringToUNIXTimestamp } from '../../../util';
 
@@ -66,6 +67,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'audienceSegmentationSetupCompletedBy',
 		'detectedEvents',
 	],
+	isSettingsLoading,
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,

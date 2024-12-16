@@ -67,6 +67,12 @@ export const INVARIANT_INVALID_CONTAINER_NAME =
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
 
+export function isSettingsLoading( select ) {
+	return ! select( MODULES_TAGMANAGER ).hasFinishedResolution(
+		'getAccounts'
+	);
+}
+
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 	const containerID = select( MODULES_TAGMANAGER ).getContainerID();

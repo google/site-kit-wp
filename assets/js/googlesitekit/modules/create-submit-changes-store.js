@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createRegistryControl } from 'googlesitekit-data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createValidationSelector } from '../data/utils';
 import { actions as errorStoreActions } from '../data/create-error-store';
 
@@ -38,8 +41,10 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
  * Creates a store object implementing the necessary infrastructure for submitting module settings.
  *
  * @since 1.21.0
+ * @since n.e.x.t Added optional `isSettingsLoading` callback to be added to all module settings stores.
  *
  * @param {Object}   args                            Arguments for creating the submitChanges store.
+ * @param {Function} [args.isSettingsLoading]        Optional. Callback function to prevent submitting changes while resolvers relating to settings panel are still loading.
  * @param {Function} [args.submitChanges]            Optional. Callback function to issue the submit changes request. Will be used inside the submit changes control.
  * @param {Function} [args.rollbackChanges]          Optional. Callback function to rollback module settings changes.
  * @param {Function} [args.validateCanSubmitChanges] Optional. A helper function to validate that settings can be submitted.
@@ -47,6 +52,7 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
  */
 export function createSubmitChangesStore( args ) {
 	const {
+		isSettingsLoading = () => false,
 		submitChanges = () => ( {} ),
 		rollbackChanges = () => ( {} ),
 		validateCanSubmitChanges = () => {},
@@ -148,6 +154,9 @@ export function createSubmitChangesStore( args ) {
 	} = createValidationSelector( validateCanSubmitChanges );
 
 	const selectors = {
+		isSettingsLoading: createRegistrySelector(
+			( select ) => () => isSettingsLoading( select )
+		),
 		canSubmitChanges,
 		__dangerousCanSubmitChanges,
 

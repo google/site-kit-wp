@@ -67,6 +67,12 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
 
+export function isSettingsLoading( select ) {
+	return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+		'getAccountSummaries'
+	);
+}
+
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
