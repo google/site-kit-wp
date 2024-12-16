@@ -99,6 +99,7 @@ const fetchDismissItemStore = createFetchStore( {
 
 const baseInitialState = {
 	dismissedItems: undefined,
+	isDismissingItems: {},
 };
 
 const baseActions = {
@@ -179,7 +180,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			const { slug, state: isDismissing } = payload;
 			return {
 				...state,
-				isDismissingPrompts: {
+				isDismissingItems: {
 					[ stringifyObject( slug ) ]: isDismissing,
 				},
 			};
@@ -234,9 +235,9 @@ const baseSelectors = {
 	 * @param {string} slug  Item slug.
 	 * @return {(boolean|undefined)} True if the item is being dismissed, otherwise false.
 	 */
-	isDismissingItem: createRegistrySelector( ( select ) => ( state, slug ) => {
-		return select( CORE_USER ).isFetchingDismissItem( slug );
-	} ),
+	isDismissingItem( state, slug ) {
+		return !! state.isDismissingItems[ stringifyObject( slug ) ];
+	},
 };
 
 export const {

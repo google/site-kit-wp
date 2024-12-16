@@ -316,4 +316,24 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			}
 		);
 	} );
+
+	it( 'should not render the banner when the prompt is being dismissed', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.setItemDimissingState(
+				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+				true
+			);
+
+		const { container, waitForRegistry } = render(
+			<EnhancedMeasurementActivationBanner />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 } );
