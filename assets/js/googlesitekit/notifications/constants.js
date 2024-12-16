@@ -16,5 +16,7 @@
  * limitations under the License.
  */
 
-export const FPM_SETUP_CTA_BANNER_NOTIFICATION =
-	'first-party-mode-setup-cta-banner';
+export const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
+	'fpm-warning-notification';
+
+export const FPM_SETUP_CTA_BANNER_NOTIFICATION = 'fpm-setup-cta';

@@ -39,10 +39,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { enabledFeatures } from '../../features';
-import {
-	CORE_NOTIFICATIONS,
-	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
-} from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
 import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
 
 describe( 'FirstPartyModeWarningNotification', () => {

@@ -37,6 +37,7 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
@@ -46,15 +47,14 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { enabledFeatures } from '../../features';
 
-const FPM_SETUP_BANNER_NOTIFICATION = 'first-party-mode-setup-cta-banner';
-
 describe( 'FirstPartyModeSetupBanner', () => {
 	let registry;
 
-	const notification = DEFAULT_NOTIFICATIONS[ FPM_SETUP_BANNER_NOTIFICATION ];
+	const notification =
+		DEFAULT_NOTIFICATIONS[ FPM_SETUP_CTA_BANNER_NOTIFICATION ];
 
 	const FPMBannerComponent = withNotificationComponentProps(
-		FPM_SETUP_BANNER_NOTIFICATION
+		FPM_SETUP_CTA_BANNER_NOTIFICATION
 	)( FirstPartyModeSetupBanner );
 
 	const fpmSettingsEndpoint = new RegExp(
@@ -94,7 +94,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
-				FPM_SETUP_BANNER_NOTIFICATION,
+				FPM_SETUP_CTA_BANNER_NOTIFICATION,
 				notification
 			);
 
@@ -186,7 +186,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 	it( 'should not render the banner if dismissed', () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ FPM_SETUP_BANNER_NOTIFICATION ] );
+			.receiveGetDismissedItems( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] );
 
 		const { container } = render( <FPMBannerComponent />, {
 			registry,
@@ -218,7 +218,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		).toBe( false );
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -250,7 +250,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		muteFetch( fpmSettingsEndpoint );
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
