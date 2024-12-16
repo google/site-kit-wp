@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import {
@@ -28,7 +33,17 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import * as tracking from '../../util/tracking';
 import FirstPartyModeToggle from './FirstPartyModeToggle';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FirstPartyModeToggle', () => {
 	let registry;
@@ -38,6 +53,11 @@ describe( 'FirstPartyModeToggle', () => {
 	);
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 
 		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
@@ -45,6 +65,10 @@ describe( 'FirstPartyModeToggle', () => {
 			isFPMHealthy: null,
 			isScriptAccessEnabled: null,
 		} );
+	} );
+
+	afterEach( () => {
+		jest.clearAllMocks();
 	} );
 
 	it( 'should make a request to fetch the server requirement status', async () => {
@@ -126,6 +150,156 @@ describe( 'FirstPartyModeToggle', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should not track an event when the toggle is viewed with no warning notice', async () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			},
+			status: 200,
+		} );
+
+		const { getByLabelText, queryByText, rerender, waitForRegistry } =
+			render( <FirstPartyModeToggle />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+		await waitForRegistry();
+
+		expect( getByLabelText( 'First-party mode' ) ).toBeInTheDocument();
+
+		expect(
+			queryByText(
+				'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+			)
+		).not.toBeInTheDocument();
+
+		// Simulate the warning notice becoming visible if it were present.
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: true,
+			intersectionRatio: 1,
+		} ) );
+
+		rerender( <FirstPartyModeToggle /> );
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should track an event when the warning notice is viewed', async () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: {
+				isEnabled: false,
+				isFPMHealthy: false,
+				isScriptAccessEnabled: false,
+			},
+			status: 200,
+		} );
+
+		const { getByLabelText, getByText, rerender, waitForRegistry } = render(
+			<FirstPartyModeToggle />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByLabelText( 'First-party mode' ) ).toBeInTheDocument();
+
+		expect(
+			getByText(
+				'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+			)
+		).toBeInTheDocument();
+
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: true,
+			intersectionRatio: 1,
+		} ) );
+
+		// Simulate the warning notice becoming visible.
+		rerender( <FirstPartyModeToggle /> );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_fpm-settings-toggle-disabled',
+			'view_notice'
+		);
+	} );
+
+	it( 'should track an event when the `Learn more` link is clicked in the toggle description', async () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			},
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<FirstPartyModeToggle />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		const learnMoreLink = getByRole( 'link', {
+			name: 'Learn more about first-party mode (opens in a new tab)',
+		} );
+
+		learnMoreLink.click();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_fpm-settings-toggle',
+			'click_learn_more_link'
+		);
+	} );
+
+	it( 'should track an event when the `Learn more` link is clicked in the warning notice', async () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: {
+				isEnabled: false,
+				isFPMHealthy: false,
+				isScriptAccessEnabled: false,
+			},
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<FirstPartyModeToggle />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		const learnMoreLink = getByRole( 'link', {
+			name: 'Learn more about first-party mode server requirements (opens in a new tab)',
+		} );
+
+		learnMoreLink.click();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_fpm-settings-toggle-disabled',
+			'click_learn_more_link'
+		);
 	} );
 
 	it.each( [ 'isFPMHealthy', 'isScriptAccessEnabled' ] )(
@@ -234,6 +408,51 @@ describe( 'FirstPartyModeToggle', () => {
 
 		expect( registry.select( CORE_SITE ).isFirstPartyModeEnabled() ).toBe(
 			false
+		);
+	} );
+
+	it( 'should track an event when the toggle is clicked', async () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: {
+				isEnabled: false,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			},
+			status: 200,
+		} );
+
+		const { getByLabelText, waitForRegistry } = render(
+			<FirstPartyModeToggle />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		const switchControl = getByLabelText( 'First-party mode' );
+
+		switchControl.click();
+
+		// Allow the `trackEvent()` promise to resolve.
+		await act( waitForDefaultTimeouts );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_fpm-settings-toggle',
+			'activate_first_party_mode'
+		);
+
+		switchControl.click();
+
+		// Allow the `trackEvent()` promise to resolve.
+		await act( waitForDefaultTimeouts );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_fpm-settings-toggle',
+			'deactivate_first_party_mode'
 		);
 	} );
 
