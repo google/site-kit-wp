@@ -24,6 +24,8 @@ import {
 	createTestRegistry,
 	muteFetch,
 	freezeFetch,
+	act,
+	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import FirstPartyModeToggle from './FirstPartyModeToggle';
@@ -213,6 +215,9 @@ describe( 'FirstPartyModeToggle', () => {
 
 		switchControl.click();
 
+		// Allow the `trackEvent()` promise to resolve.
+		await act( waitForDefaultTimeouts );
+
 		expect( switchControl ).toBeChecked();
 
 		expect( registry.select( CORE_SITE ).isFirstPartyModeEnabled() ).toBe(
@@ -221,6 +226,9 @@ describe( 'FirstPartyModeToggle', () => {
 
 		// Give it another click to verify it can be toggled off.
 		switchControl.click();
+
+		// Allow the `trackEvent()` promise to resolve.
+		await act( waitForDefaultTimeouts );
 
 		expect( switchControl ).not.toBeChecked();
 
