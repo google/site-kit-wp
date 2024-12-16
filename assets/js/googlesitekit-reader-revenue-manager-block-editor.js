@@ -16,56 +16,53 @@
  * limitations under the License.
  */
 
-import { PluginDocumentSettingPanel } from '@wordpress-core/edit-post';
-import { ToggleControl } from '@wordpress-core/components';
-// import { useSelect, useDispatch } from '@wordpress/data';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress-core/element';
+import { PanelBody, ToggleControl } from '@wordpress-core/components';
+import {
+	PluginDocumentSettingPanel,
+	PluginSidebar,
+	PluginSidebarMoreMenuItem,
+} from '@wordpress-core/edit-post';
 import { registerPlugin } from '@wordpress-core/plugins';
 
-// const { registerPlugin } = wp.plugins;
-// const { PluginDocumentSettingPanel } = wp.editPost;
-// const { ToggleControl } = wp.components;
-
-function MyPostSettingPanel() {
-	// const meta = useSelect( ( select ) =>
-	// 	select( 'core/editor' ).getEditedPostAttribute( 'meta' )
-	// );
-	// const { editPost } = useDispatch( 'core/editor' );
-	// const { my_custom_setting: myCustomSetting } = meta || {};
-
-	return (
-		<PluginDocumentSettingPanel
-			name="my-custom-setting-panel"
-			title="My Custom Setting"
-			className="my-custom-setting-panel"
-		>
-			<ToggleControl
-				label="Enable Custom Setting"
-				checked
-				// onChange={ ( value ) =>
-				// 	editPost( { meta: { my_custom_setting: value } } )
-				// }
-			/>
-		</PluginDocumentSettingPanel>
-	);
-
-	// return (
-	// 	<PluginDocumentSettingPanel
-	// 		name="my-custom-setting-panel"
-	// 		title="My Custom Setting"
-	// 		className="my-custom-setting-panel"
-	// 	>
-	// 		<ToggleControl
-	// 			label="Enable Custom Setting"
-	// 			checked={ !! myCustomSetting }
-	// 			onChange={ ( value ) =>
-	// 				editPost( { meta: { my_custom_setting: value } } )
-	// 			}
-	// 		/>
-	// 	</PluginDocumentSettingPanel>
-	// );
+function SettingsForm() {
+	return <ToggleControl label="Enable Custom Setting" checked />;
 }
 
-registerPlugin( 'my-custom-setting', {
-	render: MyPostSettingPanel,
-	icon: 'admin-settings', // Optional icon
+function SiteKitSettingPanel() {
+	const isDocumentSettingPanelAvailable =
+		typeof wp.editPost?.PluginDocumentSettingPanel === 'function';
+
+	return (
+		<Fragment>
+			<PluginSidebarMoreMenuItem target="google-site-kit">
+				{ __( 'Google Site Kit', 'google-site-kit' ) }
+			</PluginSidebarMoreMenuItem>
+			<PluginSidebar
+				name="google-site-kit"
+				title={ __( 'Google Site Kit', 'google-site-kit' ) }
+			>
+				<PanelBody title={ __( 'Google Site Kit', 'google-site-kit' ) }>
+					<SettingsForm />
+				</PanelBody>
+			</PluginSidebar>
+			{ isDocumentSettingPanelAvailable && (
+				<PluginDocumentSettingPanel
+					name="google-site-kit"
+					title={ __( 'Google Site Kit', 'google-site-kit' ) }
+				>
+					<SettingsForm />
+				</PluginDocumentSettingPanel>
+			) }
+		</Fragment>
+	);
+}
+
+registerPlugin( 'google-site-kit', {
+	render: SiteKitSettingPanel,
+	icon: 'admin-settings',
 } );
