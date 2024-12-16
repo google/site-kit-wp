@@ -35,7 +35,7 @@ concurrency:
 jobs:
   visual-regression:
     name: Run VR Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event.pull_request.draft == false
     steps:
