@@ -39,7 +39,7 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 		$this->new_badge_events_sync = new Conversion_Reporting_New_Badge_Events_Sync( $this->transients );
 	}
 
-	public function sync_new_events_badge__no_transient_exists() {
+	public function test_sync_new_events_badge__no_transient_exists() {
 		$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 		$new_events = array( 'event1', 'event2' );
 
@@ -53,7 +53,8 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 		$this->assertEquals( $new_events, $result['events'] );
 	}
 
-	public function sync_new_events_badge__transient_younger_than_3_days() {
+	public function test_sync_new_events_badge__transient_younger_than_3_days() {
+		$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 		$existing_events = array( 'event1' );
 		$new_events      = array( 'event2' );
 
@@ -78,7 +79,8 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 		);
 	}
 
-	public function sync_new_events_badge__transient_older_than_3_days() {
+	public function test_sync_new_events_badge__transient_older_than_3_days() {
+		$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 		$existing_events = array( 'event1' );
 		$new_events      = array( 'event2' );
 
