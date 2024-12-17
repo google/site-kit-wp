@@ -174,27 +174,23 @@ export default function UserInputQuestionnaire() {
 		).getUserInputPurposeConversionEvents();
 	} );
 
-	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
-		useDispatch( CORE_USER );
+	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	const submitChanges = useCallback( async () => {
 		trackEvent( gaEventCategory, 'summary_submit' );
 
+		if ( isConversionReportingEnabled ) {
+			// Update 'includeConversionEvents' setting with included conversion events,
+			// to mark that their respective metrics should be included in the
+			// list of tailored metrics and persist on the dashboard in case events are lost.
+			setUserInputSetting(
+				'includeConversionEvents',
+				userInputPurposeConversionEvents
+			);
+		}
+
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			if ( isConversionReportingEnabled ) {
-				// Update 'includeConversionTailoredMetrics' key metrics setting with included
-				//conversion events, to mark that their respective metrics should be included in the
-				// list of tailored metrics and persist on the dashboard in case events are lost.
-				await setKeyMetricsSetting(
-					'includeConversionTailoredMetrics',
-					userInputPurposeConversionEvents
-				);
-				await saveKeyMetricsSettings( {
-					widgetSlugs: undefined,
-				} );
-			}
-
 			if ( !! userPickedMetrics ) {
 				await resetKeyMetricsSelection();
 			}
@@ -206,8 +202,7 @@ export default function UserInputQuestionnaire() {
 		saveUserInputSettings,
 		userInputPurposeConversionEvents,
 		dashboardURL,
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
+		setUserInputSetting,
 		navigateTo,
 		isConversionReportingEnabled,
 		userPickedMetrics,
