@@ -191,6 +191,44 @@ describe( 'core/user dismissed-items', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'setDismissedItems', () => {
+			it( 'should set the dismissing state for an item', () => {
+				const slug = 'foo-bar';
+
+				registry
+					.dispatch( CORE_USER )
+					.setItemDimissingState( slug, true );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_USER )
+					.setItemDimissingState( slug, false );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+
+			it( 'should always set the boolean value', () => {
+				const slug = 'foo-bar';
+
+				registry.dispatch( CORE_USER ).setItemDimissingState( slug, 1 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+
+				registry.dispatch( CORE_USER ).setItemDimissingState( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
