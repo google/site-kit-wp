@@ -32,6 +32,8 @@ import { registerPlugin } from '@wordpress-core/plugins';
 /**
  * Internal dependencies
  */
+import { select } from 'googlesitekit-data';
+import { CORE_MODULES } from './googlesitekit/modules/datastore/constants';
 import GoogleLogoIcon from '../svg/graphics/logo-g.svg';
 
 function SettingsForm( { label } ) {
@@ -64,6 +66,14 @@ function PanelSection( { children, title } ) {
 }
 
 function SiteKitSettingPanel() {
+	const isRRMConnected = select( CORE_MODULES ).isModuleConnected(
+		'reader-revenue-manager'
+	);
+
+	if ( ! isRRMConnected ) {
+		return null;
+	}
+
 	const isDocumentSettingPanelAvailable =
 		typeof wp.editPost?.PluginDocumentSettingPanel === 'function';
 

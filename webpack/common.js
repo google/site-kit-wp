@@ -286,6 +286,7 @@ exports.corePackages = corePackages;
 
 const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 };
 
 corePackages.forEach( ( name ) => {
