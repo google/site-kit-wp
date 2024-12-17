@@ -173,6 +173,7 @@ export function VRTStory() {
 }
 VRTStory.storyName = 'All Buttons VRT';
 VRTStory.scenario = {
+	delay: 3000,
 	hoverSelector: '.googlesitekit-button--icon',
 	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
