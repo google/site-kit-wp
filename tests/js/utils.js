@@ -385,6 +385,37 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 		);
 };
 
+export const provideModuleWidgetRegistrations = (
+	registry,
+	extraData = []
+) => {
+	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
+		return { ...acc, [ slug ]: { slug, ...data } };
+	}, {} );
+	const { registerWidgets: realRegisterWidgets, ...Widgets } =
+		coreWidgets.createWidgets( registry );
+	// Decorate `Modules.registerWidgets` with a function to apply extra data.
+	const registeredModules = {};
+	const testRegisterWidgets = ( slug, settings ) => {
+		registeredModules[ slug ] = true;
+		return realRegisterWidgets( slug, {
+			...settings,
+			...extraDataBySlug[ slug ],
+		} );
+	};
+	Widgets.registerWidgets = testRegisterWidgets;
+
+	allCoreModules.forEach( ( { registerWidgets } ) =>
+		registerWidgets?.( Widgets )
+	);
+	// Register any additional widgets provided.
+	Object.entries( extraDataBySlug )
+		.filter( ( [ slug ] ) => registeredModules[ slug ] !== true )
+		.forEach( ( [ slug, settings ] ) =>
+			realRegisterWidgets( slug, settings )
+		);
+};
+
 /**
  * Provides the current survey data to the given registry.
  *

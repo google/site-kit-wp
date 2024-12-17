@@ -46,6 +46,8 @@ import {
 	provideModuleRegistrations,
 	provideSiteConnection,
 	provideUserCapabilities,
+	provideKeyMetrics,
+	provideModuleWidgetRegistrations,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import {
@@ -61,6 +63,11 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
+import { withConnected } from '../googlesitekit/modules/datastore/__fixtures__';
+import { provideKeyMetricsWidgetRegistrations } from './KeyMetrics/test-utils';
+import { createWidgets } from '../googlesitekit/widgets';
+import { registerDefaults } from '../googlesitekit/widgets/register-defaults';
+import EntitySearchInput from './EntitySearchInput';
 
 function SubHeaderBannerNotification() {
 	return (
@@ -283,18 +290,51 @@ HeaderViewOnly.args = {
 	},
 };
 
+const domain = 'example.com';
+export const HighPotentialSites = Template.bind( {} );
+HighPotentialSites.args = {
+	setupRegistry: ( registry ) => {
+		registerDefaults( createWidgets( registry ) );
+		provideUserAuthentication( registry );
+		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModuleRegistrations( registry );
+		provideModuleWidgetRegistrations( registry );
+		// provideKeyMetricsWidgetRegistrations( registry );
+		provideKeyMetrics( registry );
+	},
+	children: (
+		<Fragment>
+			<EntitySearchInput />
+			<DateRangeSelector />
+			<DashboardSharingSettingsButton />
+			<HelpMenu />
+		</Fragment>
+	),
+	subHeader: (
+		<BannerNotification
+			id="testasdflasdfsdf"
+			title={ `${ domain } is attracting quality visitors. Time to earn from it.` }
+			description="Connect to AdSense and start turning your traffic into income."
+			ctaLink="#cta"
+			ctaLabel="Get started"
+			dismissLabel="Maybe later"
+			dismissible
+		/>
+	),
+	showNavigation: true,
+};
+
 export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
 		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-
 			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
+				<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+					<WithRegistrySetup func={ provideSiteInfo }>
+						<Story />
+					</WithRegistrySetup>
+				</ViewContextProvider>
 			);
 		},
 	],
