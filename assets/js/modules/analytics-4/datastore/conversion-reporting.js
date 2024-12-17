@@ -135,12 +135,13 @@ export const resolvers = {
 			return;
 		}
 
-		const { newEvents, lostEvents } =
+		const { newEvents, lostEvents, newBadgeEvents } =
 			global._googlesitekitModulesData[ 'analytics-4' ];
 
 		yield actions.receiveConversionReportingInlineData( {
 			newEvents,
 			lostEvents,
+			newBadgeEvents,
 		} );
 	},
 };
@@ -190,9 +191,13 @@ export const actions = {
 export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
-			const { newEvents, lostEvents } = payload.data;
+			const { newEvents, lostEvents, newBadgeEvents } = payload.data;
 
-			state.detectedEventsChange = { newEvents, lostEvents };
+			state.detectedEventsChange = {
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+			};
 			break;
 		}
 
@@ -269,11 +274,24 @@ export const selectors = {
 		hasConversionReportingEventsOfType( 'lostEvents' ),
 
 	/**
+	 * Returns newBadgeEvents if present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array|undefined} `newBadgeEvents` array if events are present, `undefined` otherwise.
+	 */
+	getNewBadgeEvents: createRegistrySelector( ( select ) => () => {
+		const inlineData =
+			select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange();
+
+		return inlineData?.newBadgeEvents;
+	} ),
+
+	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
 	 *
 	 * @since 1.141.0
 	 *
-	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise, and undefined if metrics are not loaded.
 	 */
