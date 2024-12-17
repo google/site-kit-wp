@@ -11,30 +11,14 @@
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
-use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Conversion_Reporting
  */
 class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
-	use Fake_Site_Connection_Trait;
-
-	/**
-	 * @var Context $context Context instance.
-	 */
-	private $context;
 
 	/**
 	 * @var Conversion_Reporting_New_Badge_Events_Sync $new_badge_events_sync Conversion_Reporting_New_Badge_Events_Sync instance.
