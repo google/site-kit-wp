@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { MemoryRouter } from 'react-router-dom';
+
+/**
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -28,11 +33,13 @@ import {
 } from './../../../../tests/js/utils';
 import SettingsModules from './SettingsModules';
 
-function Template( { setupRegistry } ) {
+function Template( { setupRegistry, route = '/connected-services' } ) {
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<SettingsModules />
-		</WithRegistrySetup>
+		<MemoryRouter initialEntries={ [ route ] }>
+			<WithRegistrySetup func={ setupRegistry }>
+				<SettingsModules />
+			</WithRegistrySetup>
+		</MemoryRouter>
 	);
 }
 
@@ -75,12 +82,11 @@ ConnectMoreServices.args = {
 		registry.select( CORE_MODULES ).getModule( 'adsense' );
 		await untilResolved( registry, CORE_MODULES ).getModules();
 	},
+	route: '/connect-more-services',
 };
-// TODO: find out how to configure react-router-dom with this story format.
-// ConnectMoreServices.scenario = {
-// 	label: 'Settings/SettingsModules/ConnectMoreServices',
-// 	route: '/connected-services',
-// };
+ConnectMoreServices.scenario = {
+	label: 'Settings/SettingsModules/ConnectMoreServices', // TODO: remove all labels from this branch and use the title instead. Make sure VRTs are still captured.
+};
 
 export default {
 	title: 'Components/SettingsModules',
