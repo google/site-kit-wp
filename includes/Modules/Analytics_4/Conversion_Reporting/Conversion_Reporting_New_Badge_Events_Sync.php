@@ -65,19 +65,22 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 			7 * DAY_IN_SECONDS
 		);
 
-		if ( $new_events_badge ) {
-			$new_events_badge_time_existed = time() - $new_events_badge['created_at'];
-			// If the transient existed for 3 days or less, prevent scenarios where
-			// a new event is detected shortly after (within 1-3 days) the previous events.
-			// This avoids shortening the "new badge" time for previous events.
-			// Instead, we merge the new events with the previous ones to ensure the user sees all of them.
-			if ( $new_events_badge_time_existed <= ( 3 * DAY_IN_SECONDS ) ) {
-				$events = array_merge( $new_events_badge['events'], $new_events );
-
-				$save_new_badge_transient( $events );
-			}
-		} else {
+		if ( ! $new_events_badge ) {
 			$save_new_badge_transient( $new_events );
+			return;
 		}
+
+		$new_events_badge_time_existed = time() - $new_events_badge['created_at'];
+		// If the transient existed for 3 days or less, prevent scenarios where
+		// a new event is detected shortly after (within 1-3 days) the previous events.
+		// This avoids shortening the "new badge" time for previous events.
+		// Instead, we merge the new events with the previous ones to ensure the user sees all of them.
+		if ( $new_events_badge_time_existed > ( 3 * DAY_IN_SECONDS ) ) {
+			$save_new_badge_transient( $new_events );
+			return;
+		}
+
+		$events = array_merge( $new_events_badge['events'], $new_events );
+		$save_new_badge_transient( $events );
 	}
 }
