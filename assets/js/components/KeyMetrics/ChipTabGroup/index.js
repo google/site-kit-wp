@@ -92,10 +92,10 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 
 	const currentlyActiveEvents = useSelect( ( select ) => {
 		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
-		// It is safe to access the selector without checking if GA4 is connected,
-		// since this selector does not make request to the module endpoint.
 
 		if ( userPickedMetrics?.length ) {
+			// It is safe to access the selector without checking if GA4 is connected,
+			// since this selector does not make request to the module endpoint.
 			const keyMetricsConversionEventWidgets =
 				select(
 					MODULES_ANALYTICS_4
