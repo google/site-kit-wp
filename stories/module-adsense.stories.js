@@ -43,7 +43,7 @@ function SetupWrap( { children } ) {
 	);
 }
 
-storiesOf( 'AdSense Module', module )
+storiesOf( 'Legacy/AdSense Module', module )
 	.add( 'Account Select, none selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {

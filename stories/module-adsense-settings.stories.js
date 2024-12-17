@@ -98,7 +98,7 @@ const withRegistry = ( Story ) => {
 	return <Story registry={ registry } />;
 };
 
-storiesOf( 'AdSense Module/Settings', module )
+storiesOf( 'Legacy/AdSense Module/Settings', module )
 	.add(
 		'View, closed',
 		( args, { registry } ) => {

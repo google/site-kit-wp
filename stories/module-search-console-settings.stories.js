@@ -65,7 +65,7 @@ const storyOptions = {
 	],
 };
 
-storiesOf( 'Search Console Module/Settings', module )
+storiesOf( 'Legacy/Search Console Module/Settings', module )
 	.add(
 		'View, closed',
 		( args, { registry } ) => {

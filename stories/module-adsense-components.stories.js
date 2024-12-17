@@ -62,7 +62,7 @@ const getCurrencyFromReportOptions = {
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics-4' ],
 	datastore: MODULES_ANALYTICS_4,
-	group: 'AdSense Module/Components/Dashboard/Top Earning Pages Widget',
+	group: 'Legacy/AdSense Module/Components/Dashboard/Top Earning Pages Widget',
 	referenceDate: '2021-09-12',
 	...generateAnalyticsData( topEarningPagesArgs ),
 	options: topEarningPagesArgs,
@@ -100,7 +100,7 @@ generateReportBasedWidgetStories( {
 	delay: 3000, // Allow time for the text resizing code to finish to prevent inconsistent rendering of chart during VRTs.
 	moduleSlugs: [ 'adsense' ],
 	datastore: MODULES_ADSENSE,
-	group: 'AdSense Module/Components/Module/Overview Widget',
+	group: 'Legacy/AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2021-11-25',
 	zeroing,
 	...generateAdSenseData( [

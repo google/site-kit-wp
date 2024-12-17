@@ -116,7 +116,7 @@ const withRegistrySecondaryAMP = ( Story ) => {
 	return <Story registry={ registry } />;
 };
 
-storiesOf( 'Tag Manager Module/Settings', module )
+storiesOf( 'Legacy/Tag Manager Module/Settings', module )
 	.add(
 		'View, closed',
 		( args, { registry } ) => {
