@@ -50,6 +50,7 @@ import CheckMark from '../../../../svg/icons/check-2.svg';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const currentSelectionGroup = {
 	SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
@@ -89,6 +90,30 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			) || []
 	);
 
+	const currentlyActiveEvents = useSelect( ( select ) => {
+		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+		// It is safe to access the selector without checking if GA4 is connected,
+		// since this selector does not make request to the module endpoint.
+
+		if ( userPickedMetrics?.length ) {
+			const keyMetricsConversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+
+			return Object.keys( keyMetricsConversionEventWidgets ).filter(
+				( event ) =>
+					userPickedMetrics.some( ( metric ) =>
+						keyMetricsConversionEventWidgets[ event ].includes(
+							metric
+						)
+					)
+			);
+		}
+
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+		return userInputSettings?.includeConversionEvents?.values;
+	} );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -103,9 +128,15 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		'submit_lead_form',
 		'contact',
 		'generate_lead',
-	].filter( ( item ) => detectedEvents?.includes( item ) );
+	].filter(
+		( item ) =>
+			detectedEvents?.includes( item ) ||
+			currentlyActiveEvents?.includes( item )
+	);
 	const hasSellingProductsGroup = [ 'add_to_cart', 'purchase' ].filter(
-		( item ) => detectedEvents?.includes( item )
+		( item ) =>
+			detectedEvents?.includes( item ) ||
+			currentlyActiveEvents?.includes( item )
 	);
 
 	const keyMetricsGroups = useMemo(
@@ -128,14 +159,12 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		[ keyMetricsGroups ]
 	);
 
-	const conversionReportingEventsChange = useSelect( ( select ) => {
+	const newBadgeEvents = useSelect( ( select ) => {
 		if ( ! isGA4Connected ) {
-			return null;
+			return [];
 		}
 
-		return select(
-			MODULES_ANALYTICS_4
-		).getConversionReportingEventsChange();
+		return select( MODULES_ANALYTICS_4 ).getNewBadgeEvents();
 	} );
 	const conversionReportingEventWidgets = useSelect( ( select ) => {
 		if ( ! isGA4Connected ) {
@@ -183,14 +212,13 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		}
 
 		// Check if metric is conversion event related and if new badge should be included.
-		if ( conversionReportingEventsChange?.newEvents ) {
-			const isNewlyDetectedKeyMetrics =
-				conversionReportingEventsChange.newEvents.some(
-					( conversionEvent ) =>
-						conversionReportingEventWidgets[
-							conversionEvent
-						].includes( metricItemSlug )
-				);
+		if ( newBadgeEvents?.length ) {
+			const isNewlyDetectedKeyMetrics = newBadgeEvents.some(
+				( conversionEvent ) =>
+					conversionReportingEventWidgets[ conversionEvent ].includes(
+						metricItemSlug
+					)
+			);
 
 			if ( isNewlyDetectedKeyMetrics ) {
 				newlyDetectedMetrics[ metricGroup ] = [
