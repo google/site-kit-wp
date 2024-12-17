@@ -234,6 +234,11 @@
 			margin-bottom: 12px;
 			padding: 14px $grid-gap-phone;
 
+			@media (max-width: $bp-xsmallOnly) {
+				flex-direction: column;
+				text-align: center;
+			}
+
 			.googlesitekit-audience-creation-error-notice__content {
 				display: flex;
 				flex-direction: column;
