@@ -163,8 +163,27 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		if ( ! isGA4Connected ) {
 			return [];
 		}
+		const leadEvents = [ 'contact', 'generate_lead', 'submit_lead_form' ];
 
-		return select( MODULES_ANALYTICS_4 ).getNewBadgeEvents();
+		const badgeEvents = select( MODULES_ANALYTICS_4 ).getNewBadgeEvents();
+
+		if ( detectedEvents?.length && badgeEvents?.length ) {
+			const detectedLeadEvents = detectedEvents.filter( ( event ) =>
+				leadEvents.includes( event )
+			);
+			const newLeadEvents = badgeEvents.filter( ( event ) =>
+				leadEvents.includes( event )
+			);
+			const newNonLeadEvents = badgeEvents.filter(
+				( event ) => ! leadEvents.includes( event )
+			);
+
+			if ( detectedLeadEvents?.length > 1 && newLeadEvents.length > 0 ) {
+				return newNonLeadEvents;
+			}
+		}
+
+		return badgeEvents;
 	} );
 	const conversionReportingEventWidgets = useSelect( ( select ) => {
 		if ( ! isGA4Connected ) {
