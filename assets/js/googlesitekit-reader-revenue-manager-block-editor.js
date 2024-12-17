@@ -21,7 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress-core/element';
-import { PanelBody, ToggleControl } from '@wordpress-core/components';
+import { PanelBody, SelectControl } from '@wordpress-core/components';
 import {
 	PluginDocumentSettingPanel,
 	PluginSidebar,
@@ -29,8 +29,38 @@ import {
 } from '@wordpress-core/edit-post';
 import { registerPlugin } from '@wordpress-core/plugins';
 
-function SettingsForm() {
-	return <ToggleControl label="Enable Custom Setting" checked />;
+/**
+ * Internal dependencies
+ */
+import GoogleLogoIcon from '../svg/graphics/logo-g.svg';
+
+function SettingsForm( { label } ) {
+	return (
+		<SelectControl
+			label={ label }
+			options={ [
+				{ label: __( 'Inherit', 'google-site-kit' ), value: '' },
+				{ label: __( 'None', 'google-site-kit' ), value: 'none' },
+				{
+					label: __( 'Open access', 'google-site-kit' ),
+					value: 'openaccess',
+				},
+			] }
+			help={ __(
+				'The snippet configuration will be inherited from a parent taxonomy term, or Site Kit settings.',
+				'google-site-kit'
+			) }
+		/>
+	);
+}
+
+function PanelSection( { children, title } ) {
+	return (
+		<section>
+			<h3>{ title }</h3>
+			{ children }
+		</section>
+	);
 }
 
 function SiteKitSettingPanel() {
@@ -39,23 +69,41 @@ function SiteKitSettingPanel() {
 
 	return (
 		<Fragment>
-			<PluginSidebarMoreMenuItem target="google-site-kit">
+			<PluginSidebarMoreMenuItem
+				target="google-site-kit"
+				icon={ <GoogleLogoIcon height="16" width="16" /> }
+			>
 				{ __( 'Google Site Kit', 'google-site-kit' ) }
 			</PluginSidebarMoreMenuItem>
 			<PluginSidebar
 				name="google-site-kit"
 				title={ __( 'Google Site Kit', 'google-site-kit' ) }
+				icon={ <GoogleLogoIcon height="16" width="16" /> }
 			>
-				<PanelBody title={ __( 'Google Site Kit', 'google-site-kit' ) }>
-					<SettingsForm />
+				<PanelBody
+					title={ __( 'Reader Revenue Manager', 'google-site-kit' ) }
+				>
+					<SettingsForm
+						label={ __( 'Choose snippet', 'google-site-kit' ) }
+					/>
 				</PanelBody>
 			</PluginSidebar>
 			{ isDocumentSettingPanelAvailable && (
 				<PluginDocumentSettingPanel
 					name="google-site-kit"
 					title={ __( 'Google Site Kit', 'google-site-kit' ) }
+					icon={ <GoogleLogoIcon height="16" width="16" /> }
 				>
-					<SettingsForm />
+					<PanelSection
+						title={ __(
+							'Reader Revenue Manager',
+							'google-site-kit'
+						) }
+					>
+						<SettingsForm
+							label={ __( 'Choose snippet', 'google-site-kit' ) }
+						/>
+					</PanelSection>
 				</PluginDocumentSettingPanel>
 			) }
 		</Fragment>
@@ -64,5 +112,5 @@ function SiteKitSettingPanel() {
 
 registerPlugin( 'google-site-kit', {
 	render: SiteKitSettingPanel,
-	icon: 'admin-settings',
+	icon: <GoogleLogoIcon height="16" width="16" />,
 } );
