@@ -237,6 +237,7 @@
 			@media (max-width: $bp-xsmallOnly) {
 				align-items: flex-start;
 				flex-direction: column;
+				gap: 6px;
 			}
 
 			.googlesitekit-audience-creation-error-notice__content {
@@ -270,6 +271,7 @@
 			.googlesitekit-audience-creation-error-notice__actions {
 				@media (max-width: $bp-xsmallOnly) {
 					align-self: flex-end;
+					margin-top: 10px;
 				}
 
 				.mdc-button {
