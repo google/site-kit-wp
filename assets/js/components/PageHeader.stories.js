@@ -33,6 +33,8 @@ function Template( args ) {
 }
 
 export const Connected = Template.bind( {} );
+Connected.storyName = 'Connected';
+Connected.scenario = {};
 Connected.args = {
 	title: 'Module Page Title',
 	status: 'connected',
@@ -40,6 +42,8 @@ Connected.args = {
 };
 
 export const NotConnectedWithIcon = Template.bind( {} );
+NotConnectedWithIcon.storyName = 'Not Connected with Icon';
+NotConnectedWithIcon.scenario = {};
 NotConnectedWithIcon.args = {
 	title: 'Module Page Title with Icon',
 	icon: (

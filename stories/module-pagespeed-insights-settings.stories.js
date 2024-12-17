@@ -47,7 +47,7 @@ const withRegistry = ( Story ) => {
 	return <Story registry={ registry } />;
 };
 
-storiesOf( 'Legacy/PageSpeed Insights Module/Settings', module )
+storiesOf( 'PageSpeed Insights Module/Settings', module )
 	.add(
 		'View, closed',
 		( args, { registry } ) => {

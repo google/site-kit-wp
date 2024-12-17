@@ -26,21 +26,40 @@ function Template( args ) {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
 Default.args = {};
 
 export const Small = Template.bind( {} );
-Small.storyName = 'Small';
 Small.args = {
 	small: true,
 };
 
 export const SmallCompress = Template.bind( {} );
-SmallCompress.storyName = 'Small Compress';
 SmallCompress.args = {
 	small: true,
 	compress: true,
 };
+
+export function VRTStory() {
+	return (
+		<div>
+			<div style={ { marginBottom: '50px' } }>
+				<h2>Default</h2>
+				<Default { ...Default.args } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<h2>Small</h2>
+				<Small { ...Small.args } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<h2>Small Compress</h2>
+				<SmallCompress { ...SmallCompress.args } />
+			</div>
+		</div>
+	);
+}
+
+VRTStory.storyName = 'All Progress Bars VRT';
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/ProgressBar',

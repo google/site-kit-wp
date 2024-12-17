@@ -55,6 +55,8 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {};
 
 export default {
 	title: 'Setup/Legacy/SetupUsingGCP',

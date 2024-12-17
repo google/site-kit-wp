@@ -46,7 +46,7 @@ function SetupWrap( { children } ) {
 	);
 }
 
-storiesOf( 'Legacy/Tag Manager Module', module )
+storiesOf( 'Tag Manager Module', module )
 	.add( 'AccountSelect', () => {
 		const setupRegistry = ( registry ) => {
 			registry

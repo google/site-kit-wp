@@ -26,20 +26,38 @@ function Template( args ) {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.args = {};
+Default.args = { description: 'Default' };
 
 export const Checked = Template.bind( {} );
-Checked.storyName = 'Checked';
 Checked.args = {
 	checked: true,
+	description: 'Checked',
 };
 
 export const Disabled = Template.bind( {} );
-Disabled.storyName = 'Disabled';
 Disabled.args = {
 	disabled: true,
+	description: 'Disabled',
 };
+
+export function VRTStory() {
+	return (
+		<div>
+			<div style={ { marginBottom: '50px' } }>
+				<Default { ...Default.args } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<Checked { ...Checked.args } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<Disabled { ...Disabled.args } />
+			</div>
+		</div>
+	);
+}
+
+VRTStory.storyName = 'All Radios VRT';
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/Radio',

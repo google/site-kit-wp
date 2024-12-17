@@ -81,7 +81,7 @@ const withRegistry = ( Story ) => {
 	return <Story registry={ registry } />;
 };
 
-storiesOf( 'Legacy/AdSense Module/Setup', module )
+storiesOf( 'AdSense Module/Setup', module )
 	.add(
 		'Loading',
 		( args, { registry } ) => {

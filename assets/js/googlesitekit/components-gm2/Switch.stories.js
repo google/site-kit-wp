@@ -47,6 +47,24 @@ HiddenLabel.args = {
 	checked: true,
 };
 
+export function VRTStory() {
+	return (
+		<div>
+			<div style={ { marginBottom: '50px' } }>
+				<Unswitched { ...Unswitched.args } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<Switched { ...Switched.args } />
+			</div>
+			<div style={ { marginBottom: '50px' } }>
+				<HiddenLabel { ...HiddenLabel.args } />
+			</div>
+		</div>
+	);
+}
+VRTStory.storyName = 'All Switches VRT';
+VRTStory.scenario = {};
+
 export default {
 	title: 'Components/Switch',
 	component: Switch,

@@ -40,6 +40,8 @@ function Template( { ...args } ) {
 }
 
 export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {};
 Default.args = {
 	header: true,
 	footer: true,
@@ -51,6 +53,8 @@ Default.args = {
 };
 
 export const WithHeaderAndFooter = Template.bind( {} );
+WithHeaderAndFooter.storyName = 'With Header and Footer';
+WithHeaderAndFooter.scenario = {};
 WithHeaderAndFooter.args = {
 	header: true,
 	footer: true,

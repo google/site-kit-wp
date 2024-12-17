@@ -53,6 +53,7 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 Default.scenario = {
 	delay: 3000,
 };

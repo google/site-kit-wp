@@ -68,7 +68,7 @@ function generateSearchConsoleWidgetStories( args ) {
 }
 
 generateSearchConsoleWidgetStories( {
-	group: 'Legacy/Search Console Module/Components/Dashboard/Popular Keywords Widget',
+	group: 'Search Console Module/Components/Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( [
 		{
@@ -88,7 +88,7 @@ generateSearchConsoleWidgetStories( {
 } );
 
 generateSearchConsoleWidgetStories( {
-	group: 'Legacy/Search Console Module/Components/Entity Dashboard/Popular Keywords Widget',
+	group: 'Search Console Module/Components/Entity Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( [
 		{
@@ -110,7 +110,7 @@ generateSearchConsoleWidgetStories( {
 } );
 
 generateSearchConsoleWidgetStories( {
-	group: 'Legacy/Search Console Module/Components/View Only Dashboard/Popular Keywords Widget',
+	group: 'Search Console Module/Components/View Only Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( [
 		{
