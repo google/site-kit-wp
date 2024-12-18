@@ -131,11 +131,16 @@ export const selectors = {
 	 * @param {string} slug Slug for module store.
 	 * @return {boolean} Whether or not changes are currently loading for the module.
 	 */
-	isSettingsLoading: createRegistrySelector(
+	areSettingsEditDependenciesLoaded: createRegistrySelector(
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'slug is required.' );
 			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
-			return !! select( storeName )?.isSettingsLoading?.();
+			const areSettingsEditDependenciesLoaded =
+				select( storeName )?.areSettingsEditDependenciesLoaded?.();
+			return (
+				areSettingsEditDependenciesLoaded ||
+				areSettingsEditDependenciesLoaded === undefined
+			);
 		}
 	),
 

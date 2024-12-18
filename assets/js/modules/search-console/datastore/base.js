@@ -21,18 +21,13 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_SEARCH_CONSOLE } from './constants';
-import {
-	isSettingsLoading,
-	submitChanges,
-	validateCanSubmitChanges,
-} from './settings';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	ownedSettingsSlugs: [ 'propertyID' ],
 	storeName: MODULES_SEARCH_CONSOLE,
 	settingSlugs: [ 'propertyID', 'ownerID' ],
 	requiresSetup: false,
-	isSettingsLoading,
 	submitChanges,
 	validateCanSubmitChanges,
 } );

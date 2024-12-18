@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import { isEqual, pick } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -67,11 +72,12 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
 
-export function isSettingsLoading( select ) {
-	return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-		'getAccountSummaries'
-	);
-}
+export const areSettingsEditDependenciesLoaded = createRegistrySelector(
+	( select ) => () =>
+		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getAccountSummaries'
+		)
+);
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();

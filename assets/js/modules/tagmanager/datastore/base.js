@@ -21,11 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_TAGMANAGER } from './constants';
-import {
-	isSettingsLoading,
-	submitChanges,
-	validateCanSubmitChanges,
-} from './settings';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 	ownedSettingsSlugs: [
@@ -45,7 +41,6 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'useSnippet',
 		'ownerID',
 	],
-	isSettingsLoading,
 	submitChanges,
 	validateCanSubmitChanges,
 } );

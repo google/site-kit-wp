@@ -58,8 +58,8 @@ export default function Footer( props ) {
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 	const isSavingKey = `module-${ slug }-isSaving`;
 
-	const isSettingsLoading = useSelect( ( select ) =>
-		select( CORE_MODULES ).isSettingsLoading( slug )
+	const areSettingsEditDependenciesLoaded = useSelect( ( select ) =>
+		select( CORE_MODULES ).areSettingsEditDependenciesLoaded( slug )
 	);
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitChanges( slug )
@@ -174,7 +174,7 @@ export default function Footer( props ) {
 					<SpinnerButton
 						disabled={
 							isSaving ||
-							isSettingsLoading ||
+							! areSettingsEditDependenciesLoaded ||
 							( ! canSubmitChanges && // Do not allow the form to be saved if the form is invalid.
 								haveSettingsChanged ) // Allow the form to be saved if the user hasn't made any changes.
 						}

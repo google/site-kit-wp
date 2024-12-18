@@ -29,7 +29,7 @@ import {
 
 describe( 'core/modules settings', () => {
 	let registry;
-	let isSettingsLoading;
+	let areSettingsEditDependenciesLoaded;
 	let submitChanges;
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
@@ -38,7 +38,7 @@ describe( 'core/modules settings', () => {
 	let validateCanSubmitChangesError = false;
 
 	beforeEach( () => {
-		isSettingsLoading = jest.fn();
+		areSettingsEditDependenciesLoaded = jest.fn();
 		submitChanges = jest.fn();
 
 		registry = createTestRegistry();
@@ -47,7 +47,7 @@ describe( 'core/modules settings', () => {
 			moduleStoreName,
 			Modules.createModuleStore( slug, {
 				storeName: moduleStoreName,
-				isSettingsLoading,
+				areSettingsEditDependenciesLoaded,
 				submitChanges,
 				validateCanSubmitChanges: () => {
 					if ( validateCanSubmitChangesError ) {
@@ -96,19 +96,25 @@ describe( 'core/modules settings', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'isSettingsLoading', () => {
+		describe( 'areSettingsEditDependenciesLoaded', () => {
 			it( 'should return FALSE for non existent module', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.isSettingsLoading( nonExistentModuleSlug )
+						.areSettingsEditDependenciesLoaded(
+							nonExistentModuleSlug
+						)
 				).toBe( false );
 			} );
 
 			it( 'should proxy the selector call to the module with the given slug', () => {
-				isSettingsLoading.mockImplementation( () => true );
+				areSettingsEditDependenciesLoaded.mockImplementation(
+					() => true
+				);
 				expect(
-					registry.select( CORE_MODULES ).isSettingsLoading( slug )
+					registry
+						.select( CORE_MODULES )
+						.areSettingsEditDependenciesLoaded( slug )
 				).toBe( true );
 			} );
 		} );
