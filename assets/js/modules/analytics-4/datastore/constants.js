@@ -88,6 +88,12 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 	},
 };
 
+export const CONVERSION_REPORTING_LEAD_EVENTS = [
+	'contact',
+	'generate_lead',
+	'submit_lead_form',
+];
+
 // Audience enums.
 export const AUDIENCE_FILTER_CLAUSE_TYPE_ENUM = {
 	AUDIENCE_CLAUSE_TYPE_UNSPECIFIED: 'AUDIENCE_CLAUSE_TYPE_UNSPECIFIED',
