@@ -32,6 +32,12 @@ import {
 } from '../constants';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
+import Null from '../../../components/Null';
+
+const icons = {
+	[ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: CheckMark,
+	[ KEY_METRICS_SUGGESTED_GROUP_SLUG ]: StarFill,
+};
 
 export default function Chip( {
 	slug,
@@ -40,22 +46,8 @@ export default function Chip( {
 	onClick,
 	selectedCount = 0,
 } ) {
-	function Icon() {
-		return null;
-	}
+	const Icon = icons[ slug ] || Null;
 
-	switch ( slug ) {
-		case KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG:
-			Icon = function ( args ) {
-				return <CheckMark { ...args } />;
-			};
-			break;
-		case KEY_METRICS_SUGGESTED_GROUP_SLUG:
-			Icon = function ( args ) {
-				return <StarFill { ...args } />;
-			};
-			break;
-	}
 	return (
 		<Button
 			className={ classnames( 'googlesitekit-chip-tab-group__chip-item', {
