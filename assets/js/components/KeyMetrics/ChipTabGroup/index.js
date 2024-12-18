@@ -30,8 +30,8 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Tab, TabBar } from 'googlesitekit-components';
 import {
 	EFFECTIVE_SELECTION,
-	KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
-	KEY_METRICS_SUGGESTED_GROUP_SLUG,
+	KEY_METRICS_GROUP_CURRENT,
+	KEY_METRICS_GROUP_SUGGESTED,
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
 	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
 	KEY_METRICS_GROUP_GENERATING_LEADS,
@@ -53,19 +53,9 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import StarFill from '../../../../svg/icons/star-fill.svg';
 
-const currentSelectionGroup = {
-	SLUG: KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
-	LABEL: __( 'Current selection', 'google-site-kit' ),
-};
-
-const suggestedGroup = {
-	SLUG: KEY_METRICS_SUGGESTED_GROUP_SLUG,
-	LABEL: __( 'Suggested', 'google-site-kit' ),
-};
-
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const [ isActive, setIsActive ] = useState(
-		KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG
+		KEY_METRICS_GROUP_CURRENT.SLUG
 	);
 	// Used for mobile chip tabs, which leverages the TabBar component for seemless horizontal scroll
 	// but it accepts a numerical index for the active tab.
@@ -113,27 +103,21 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		( item ) => detectedEvents?.includes( item )
 	);
 
-	const keyMetricsGroups = useMemo(
-		() => [
-			KEY_METRICS_GROUP_VISITORS,
-			KEY_METRICS_GROUP_DRIVING_TRAFFIC,
-			...( hasGeneratingLeadsGroup?.length
-				? [ KEY_METRICS_GROUP_GENERATING_LEADS ]
-				: [] ),
-			...( hasSellingProductsGroup?.length
-				? [ KEY_METRICS_GROUP_SELLING_PRODUCTS ]
-				: [] ),
-			KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
-		],
-		[ hasGeneratingLeadsGroup, hasSellingProductsGroup ]
-	);
+	const keyMetricsGroups = [
+		KEY_METRICS_GROUP_VISITORS,
+		KEY_METRICS_GROUP_DRIVING_TRAFFIC,
+		...( hasGeneratingLeadsGroup?.length
+			? [ KEY_METRICS_GROUP_GENERATING_LEADS ]
+			: [] ),
+		...( hasSellingProductsGroup?.length
+			? [ KEY_METRICS_GROUP_SELLING_PRODUCTS ]
+			: [] ),
+		KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+	];
 
-	const dynamicGroups = useMemo( () => {
-		if ( isUserInputCompleted ) {
-			return [ currentSelectionGroup, suggestedGroup ];
-		}
-		return [ currentSelectionGroup ];
-	}, [ isUserInputCompleted ] );
+	const dynamicGroups = isUserInputCompleted
+		? [ KEY_METRICS_GROUP_CURRENT, KEY_METRICS_GROUP_SUGGESTED ]
+		: [ KEY_METRICS_GROUP_CURRENT ];
 
 	const allGroups = useMemo(
 		() => [ ...dynamicGroups, ...keyMetricsGroups ],
@@ -142,14 +126,14 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 
 	// Currently selected group does not include total selected number, so it will
 	// always be 0.
-	const selectedCounts = { [ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: 0 };
+	const selectedCounts = { [ KEY_METRICS_GROUP_CURRENT.SLUG ]: 0 };
 	const activeMetricItems = {};
 
 	for ( const metricItemSlug in allMetricItems ) {
 		const metricGroup = allMetricItems[ metricItemSlug ].group;
 		if (
 			metricGroup === isActive ||
-			( isActive === currentSelectionGroup.SLUG &&
+			( isActive === KEY_METRICS_GROUP_CURRENT.SLUG &&
 				effectiveSelection.includes( metricItemSlug ) )
 		) {
 			activeMetricItems[ metricItemSlug ] =
@@ -157,7 +141,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		}
 
 		if (
-			isActive === suggestedGroup.SLUG &&
+			isActive === KEY_METRICS_GROUP_SUGGESTED.SLUG &&
 			answerBasedMetrics.includes( metricItemSlug )
 		) {
 			if ( answerBasedMetrics.includes( metricItemSlug ) ) {
@@ -224,7 +208,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	useEffect( () => {
 		// Ensure that current selection group is always active when selection panel re-opens.
 		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
-			setIsActive( KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG );
+			setIsActive( KEY_METRICS_GROUP_CURRENT.SLUG );
 			setActiveGroupIndex( 0 );
 		}
 
@@ -283,7 +267,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 										<CheckMark width={ 12 } height={ 12 } />
 									</span>
 								) }
-								{ KEY_METRICS_SUGGESTED_GROUP_SLUG ===
+								{ KEY_METRICS_GROUP_SUGGESTED.SLUG ===
 									group.SLUG && (
 									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg googlesitekit-chip-tab-group__tab-item-mobile-svg--suggested">
 										<StarFill width={ 12 } height={ 12 } />

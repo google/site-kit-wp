@@ -27,16 +27,16 @@ import classnames from 'classnames';
  */
 import { Button } from 'googlesitekit-components';
 import {
-	KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG,
-	KEY_METRICS_SUGGESTED_GROUP_SLUG,
+	KEY_METRICS_GROUP_CURRENT,
+	KEY_METRICS_GROUP_SUGGESTED,
 } from '../constants';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
 import Null from '../../../components/Null';
 
 const icons = {
-	[ KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ]: CheckMark,
-	[ KEY_METRICS_SUGGESTED_GROUP_SLUG ]: StarFill,
+	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
+	[ KEY_METRICS_GROUP_SUGGESTED.SLUG ]: StarFill,
 };
 
 export default function Chip( {
