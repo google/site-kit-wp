@@ -27,6 +27,8 @@ import { Fragment, useCallback, useEffect } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
@@ -43,25 +45,22 @@ import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 
 export default function SetupFormFields() {
-	const accounts =
-		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS_4 ).getAccountSummaries()
-		) || [];
+	const accounts = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getAccountSummaries() || []
+	);
+
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
-	const measurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
-	);
-	const webDataStreamID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+
+	const { accountID, propertyID, measurementID, webDataStreamID } = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getSettings()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
@@ -71,10 +70,16 @@ export default function SetupFormFields() {
 	}, [ setUseSnippet, hasExistingTag, existingTag, measurementID ] );
 
 	const resetEnhancedMeasurementSetting = useCallback( () => {
-		setValues( ENHANCED_MEASUREMENT_FORM, {
-			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-		} );
-	}, [ setValues ] );
+		if (
+			accountID === ACCOUNT_CREATE ||
+			propertyID === PROPERTY_CREATE ||
+			webDataStreamID === WEBDATASTREAM_CREATE
+		) {
+			setValues( ENHANCED_MEASUREMENT_FORM, {
+				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
+			} );
+		}
+	}, [ setValues, accountID, webDataStreamID, propertyID ] );
 
 	return (
 		<Fragment>
