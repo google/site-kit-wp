@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
+import { combineStores } from 'googlesitekit-data';
 import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
@@ -45,17 +46,21 @@ describe( 'core/modules settings', () => {
 
 		registry.registerStore(
 			moduleStoreName,
-			Modules.createModuleStore( slug, {
-				storeName: moduleStoreName,
-				areSettingsEditDependenciesLoaded,
-				submitChanges,
-				validateCanSubmitChanges: () => {
-					if ( validateCanSubmitChangesError ) {
-						throw new Error( validateCanSubmitChangesError );
-					}
-				},
-				settingSlugs: [ 'testSetting' ],
-			} )
+			combineStores(
+				Modules.createModuleStore( slug, {
+					storeName: moduleStoreName,
+					submitChanges,
+					validateCanSubmitChanges: () => {
+						if ( validateCanSubmitChangesError ) {
+							throw new Error( validateCanSubmitChangesError );
+						}
+					},
+					settingSlugs: [ 'testSetting' ],
+				} ),
+				{
+					selectors: { areSettingsEditDependenciesLoaded },
+				}
+			)
 		);
 
 		registry
@@ -97,17 +102,26 @@ describe( 'core/modules settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'areSettingsEditDependenciesLoaded', () => {
-			it( 'should return FALSE for non existent module', () => {
+			it( 'should return true for non existent module', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
 						.areSettingsEditDependenciesLoaded(
 							nonExistentModuleSlug
 						)
-				).toBe( false );
+				).toBe( true );
 			} );
 
 			it( 'should proxy the selector call to the module with the given slug', () => {
+				areSettingsEditDependenciesLoaded.mockImplementation(
+					() => false
+				);
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.areSettingsEditDependenciesLoaded( slug )
+				).toBe( false );
+
 				areSettingsEditDependenciesLoaded.mockImplementation(
 					() => true
 				);
