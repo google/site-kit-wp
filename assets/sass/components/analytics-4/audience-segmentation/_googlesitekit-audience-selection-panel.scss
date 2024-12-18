@@ -234,6 +234,12 @@
 			margin-bottom: 12px;
 			padding: 14px $grid-gap-phone;
 
+			@media (max-width: $bp-xsmallOnly) {
+				align-items: flex-start;
+				flex-direction: column;
+				gap: 6px;
+			}
+
 			.googlesitekit-audience-creation-error-notice__content {
 				display: flex;
 				flex-direction: column;
@@ -263,6 +269,10 @@
 			}
 
 			.googlesitekit-audience-creation-error-notice__actions {
+				@media (max-width: $bp-xsmallOnly) {
+					align-self: flex-end;
+					margin-top: 10px;
+				}
 
 				.mdc-button {
 					font-weight: $fw-medium;

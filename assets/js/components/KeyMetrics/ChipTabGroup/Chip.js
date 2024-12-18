@@ -44,6 +44,7 @@ export default function Chip( {
 	label,
 	isActive,
 	onClick,
+	hasNewBadge = false,
 	selectedCount = 0,
 } ) {
 	const Icon = icons[ slug ] || Null;
@@ -70,6 +71,9 @@ export default function Chip( {
 			onClick={ () => onClick( slug ) }
 		>
 			{ label }
+			{ hasNewBadge && (
+				<span className="googlesitekit-chip-tab-group__chip-item-new-dot" />
+			) }
 		</Button>
 	);
 }
@@ -78,6 +82,7 @@ Chip.propTypes = {
 	slug: propTypes.string.isRequired,
 	label: propTypes.string.isRequired,
 	isActive: propTypes.bool,
+	hasNewBadge: propTypes.bool,
 	selectedCount: propTypes.number,
 	onClick: propTypes.func.isRequired,
 };

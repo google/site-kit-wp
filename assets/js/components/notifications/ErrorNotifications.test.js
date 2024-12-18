@@ -68,7 +68,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 			},
-			true
+			{ overwrite: true }
 		);
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
@@ -99,7 +99,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 			},
-			true
+			{ overwrite: true }
 		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
@@ -126,6 +126,13 @@ describe( 'ErrorNotifications', () => {
 			setupErrorCode: 'error_code',
 			setupErrorMessage: 'An error occurred',
 		} );
+		provideNotifications(
+			registry,
+			{
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
+			},
+			{ overwrite: true }
+		);
 		const { container, getByRole, waitForRegistry } = render(
 			<ErrorNotifications />,
 			{
@@ -165,7 +172,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
 			},
-			true
+			{ overwrite: true }
 		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
@@ -203,7 +210,7 @@ describe( 'ErrorNotifications', () => {
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
 			},
-			true
+			{ overwrite: true }
 		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
@@ -241,8 +248,9 @@ describe( 'ErrorNotifications', () => {
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
 			},
-			true
+			{ overwrite: true }
 		);
 		provideSiteInfo( registry, {
 			setupErrorRedoURL: '#',
@@ -277,8 +285,9 @@ describe( 'ErrorNotifications', () => {
 					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
 				'authentication-error-gte':
 					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
 			},
-			true
+			{ overwrite: true }
 		);
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',
@@ -318,6 +327,13 @@ describe( 'ErrorNotifications', () => {
 					],
 				},
 			} );
+		provideNotifications(
+			registry,
+			{
+				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
+			},
+			{ overwrite: true }
+		);
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,

@@ -2923,6 +2923,46 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
+	public function test_create_custom_dimension__without_optional_fields() {
+		$property_id = '123456789';
+
+		// Create a custom dimension with only the required fields present.
+		$raw_custom_dimension = array(
+			'displayName'   => 'Test Custom Dimension',
+			'parameterName' => 'googlesitekit_post_author',
+			'scope'         => 'EVENT',
+		);
+
+		$this->fake_handler_and_invoke_register_method(
+			$property_id,
+			function ( Request $request ) use ( $raw_custom_dimension, $property_id ) {
+				$url = parse_url( $request->getUri() );
+				if ( "/v1beta/properties/$property_id/customDimensions" === $url['path'] ) {
+					$custom_dimension = new GoogleAnalyticsAdminV1betaCustomDimension( $raw_custom_dimension );
+					return new Response(
+						200,
+						array(),
+						json_encode( $custom_dimension )
+					);
+				}
+				return new Response( 200 );
+			}
+		);
+
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID'      => $property_id,
+				'customDimension' => $raw_custom_dimension,
+			)
+		);
+
+		$this->assertNotWPError( $response );
+		$this->assertEquals( $raw_custom_dimension, (array) $response->toSimpleObject() );
+	}
+
 	public function test_sync_custom_dimensions() {
 		$property_id = 'sync-custom-dimension-property-id';
 

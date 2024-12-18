@@ -137,7 +137,7 @@ export const actions = {
 	/**
 	 * Resets a notification queue.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {string?} groupID Group ID of queue to reset. Default: default.
 	 * @return {Object} Redux-style action.
@@ -148,7 +148,7 @@ export const actions = {
 	/**
 	 * Populates a queue with qualifying notifications ordered by priority.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {string}  viewContext View context to populate queue for.
 	 * @param {string?} groupID     Group ID of queue to populate. Default: default.
@@ -166,7 +166,7 @@ export const actions = {
 	/**
 	 * Adds the given notification to its respective queue.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {Object} notification Notification definition.
 	 * @return {Object} Redux-style action.

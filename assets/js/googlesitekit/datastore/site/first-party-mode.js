@@ -34,6 +34,8 @@ import {
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { isFeatureEnabled } from '../../../features';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
 const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
@@ -131,7 +133,7 @@ const baseActions = {
 	/**
 	 * Returns the current settings back to the current saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -236,7 +238,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current first-party mode settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.
@@ -246,6 +248,20 @@ const baseSelectors = {
 
 		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
 	},
+
+	isAnyFirstPartyModeModuleConnected: createRegistrySelector(
+		( select ) => () => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			return (
+				isModuleConnected( 'analytics-4' ) || isModuleConnected( 'ads' )
+			);
+		}
+	),
 };
 
 const store = combineStores(
