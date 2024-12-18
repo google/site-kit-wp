@@ -54,7 +54,7 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 	 *
 	 * @param array $new_events New events array.
 	 */
-	public function sync_new_events_badge( $new_events ) {
+	public function sync_new_badge_events( $new_events ) {
 		$new_events_badge         = $this->transients->get( self::NEW_EVENTS_BADGE_TRANSIENT );
 		$save_new_badge_transient = fn( $events ) => $this->transients->set(
 			self::NEW_EVENTS_BADGE_TRANSIENT,
@@ -70,12 +70,12 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 			return;
 		}
 
-		$new_events_badge_time_existed = time() - $new_events_badge['created_at'];
+		$new_events_badge_elapsed_time = time() - $new_events_badge['created_at'];
 		// If the transient existed for 3 days or less, prevent scenarios where
 		// a new event is detected shortly after (within 1-3 days) the previous events.
 		// This avoids shortening the "new badge" time for previous events.
 		// Instead, we merge the new events with the previous ones to ensure the user sees all of them.
-		if ( $new_events_badge_time_existed > ( 3 * DAY_IN_SECONDS ) ) {
+		if ( $new_events_badge_elapsed_time > ( 3 * DAY_IN_SECONDS ) ) {
 			$save_new_badge_transient( $new_events );
 			return;
 		}

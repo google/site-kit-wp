@@ -47,7 +47,10 @@ import MetricItem from '../MetricsSelectionPanel/MetricItem';
 import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 import CheckMark from '../../../../svg/icons/check-2.svg';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	CONVERSION_REPORTING_LEAD_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -163,19 +166,19 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		if ( ! isGA4Connected ) {
 			return [];
 		}
-		const leadEvents = [ 'contact', 'generate_lead', 'submit_lead_form' ];
 
 		const badgeEvents = select( MODULES_ANALYTICS_4 ).getNewBadgeEvents();
 
 		if ( detectedEvents?.length && badgeEvents?.length ) {
 			const detectedLeadEvents = detectedEvents.filter( ( event ) =>
-				leadEvents.includes( event )
+				CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 			);
 			const newLeadEvents = badgeEvents.filter( ( event ) =>
-				leadEvents.includes( event )
+				CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 			);
 			const newNonLeadEvents = badgeEvents.filter(
-				( event ) => ! leadEvents.includes( event )
+				( event ) =>
+					! CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 			);
 
 			if ( detectedLeadEvents?.length > 1 && newLeadEvents.length > 0 ) {

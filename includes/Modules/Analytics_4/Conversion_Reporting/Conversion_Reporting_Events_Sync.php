@@ -147,7 +147,7 @@ class Conversion_Reporting_Events_Sync {
 
 		if ( ! empty( $new_events ) ) {
 			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
-			$this->new_badge_events_sync->sync_new_events_badge( $new_events );
+			$this->new_badge_events_sync->sync_new_badge_events( $new_events );
 		}
 
 		if ( ! empty( $lost_events ) ) {
