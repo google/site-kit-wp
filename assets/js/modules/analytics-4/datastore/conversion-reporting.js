@@ -287,7 +287,7 @@ export const selectors = {
 		const inlineData =
 			select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange();
 
-		return inlineData?.newBadgeEvents;
+		return inlineData?.newBadgeEvents ?? null;
 	} ),
 
 	/**
