@@ -1,4 +1,6 @@
 {
 	"extends": [ "./.eslintrc.json" ],
-	"rules": {}
+	"rules": {
+		"sitekit/storybook-no-label": "error"
+	}
 }
