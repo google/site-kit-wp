@@ -151,6 +151,7 @@ class REST_First_Party_Mode_Controller {
 								array(
 									'settings'    => $this->first_party_mode_settings->get(),
 									'healthcheck' => $healthcheck,
+									'isUsingCurl' => extension_loaded( 'curl' ),
 								)
 							);
 						},

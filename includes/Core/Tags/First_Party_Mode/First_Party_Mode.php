@@ -196,6 +196,10 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @return array{success: bool, message: string} Success is true if the endpoint is healthy, false otherwise. Message is the error message if the endpoint is not healthy.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
+		if ( extension_loaded( 'curl' ) ) {
+			return $this->is_endpoint_healthy_with_curl( $endpoint );
+		}
+
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 		set_error_handler(
 			function ( $severity, $message, $file, $line ) {
@@ -230,6 +234,59 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 			: array(
 				'success' => true,
 			);
+	}
+
+	/**
+	 * Checks if an endpoint is healthy with cURL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $endpoint The endpoint to check.
+	 * @return array{success: bool, message: string} Success is true if the endpoint is healthy, false otherwise. Message is the error message if the endpoint is not healthy.
+	 */
+	protected function is_endpoint_healthy_with_curl( $endpoint ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
+		$ch = curl_init();
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+		curl_setopt( $ch, CURLOPT_HEADER, true );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+		curl_setopt( $ch, CURLOPT_URL, $endpoint );
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec
+		$result = curl_exec( $ch );
+
+		if ( false === $result ) {
+			return array(
+				'success' => false,
+				'message' => $this->trim_string( curl_error( $ch ) ), // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_error
+			);
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_getinfo
+		$status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_getinfo
+		$header_size    = curl_getinfo( $ch, CURLINFO_HEADER_SIZE );
+		$headers_string = substr( $result, 0, $header_size );
+		$headers        = explode( "\r\n", $headers_string );
+
+		$body = substr( $result, $header_size );
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
+		curl_close( $ch );
+
+		if ( 200 === $status_code && 'ok' === $body ) {
+			return array(
+				'success' => true,
+			);
+		}
+
+		return array(
+			'success' => false,
+			'message' => $status_code . ': ' . $this->trim_string( $body ),
+		);
 	}
 
 	/**
