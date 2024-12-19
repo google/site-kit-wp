@@ -273,10 +273,6 @@
 		.mdc-layout-grid__inner {
 
 			@media (min-width: $bp-tablet) {
-				grid-template-rows: auto 1fr auto 1fr;
-			}
-
-			@media (min-width: $bp-desktop) {
 				grid-template-rows: auto 1fr;
 			}
 		}

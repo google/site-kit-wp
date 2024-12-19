@@ -72,6 +72,7 @@ export default {
 				const data = {
 					newEvents: [ 'contact' ],
 					lostEvents: [],
+					newBadgeEvents: [],
 				};
 
 				await registry
