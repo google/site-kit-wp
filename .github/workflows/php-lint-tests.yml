@@ -71,7 +71,7 @@ jobs:
         run: composer lint
   php-tests:
     name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     strategy:
       fail-fast: false
