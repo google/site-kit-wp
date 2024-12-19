@@ -71,7 +71,7 @@ jobs:
         run: composer lint
   php-tests:
     name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -104,6 +104,9 @@ jobs:
       WP_VERSION: ${{ matrix.wp_version }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
 
       - uses: shivammathur/setup-php@v2
         with:
