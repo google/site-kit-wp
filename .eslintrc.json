@@ -178,7 +178,8 @@
         "*.test.js"
       ],
       "rules": {
-        "sitekit/no-direct-date": "off"
+        "sitekit/no-direct-date": "off",
+        "sitekit/storybook-no-label": "off"
       }
     }
   ],
