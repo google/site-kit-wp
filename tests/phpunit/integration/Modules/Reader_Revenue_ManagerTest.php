@@ -99,7 +99,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
 		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage );
 		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
-		$this->assertEquals( 5, $this->reader_revenue_manager->order );
+		$this->assertEquals( 10, $this->reader_revenue_manager->order ); // Since order is not set, it uses the default value.
 	}
 
 	public function test_get_scopes() {

@@ -130,7 +130,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $get_active_modules->invokeArgs( $site_status, array() );
 
-		$this->assertEquals(
+		$this->assertEqualSets(
 			array(
 				'adsense',
 				'analytics-4',

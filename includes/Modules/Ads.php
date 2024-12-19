@@ -208,7 +208,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			'slug'        => 'ads',
 			'name'        => _x( 'Ads', 'Service name', 'google-site-kit' ),
 			'description' => Feature_Flags::enabled( 'adsPax' ) ? __( 'Grow sales, leads or awareness for your business by advertising with Google Ads', 'google-site-kit' ) : __( 'Track conversions for your existing Google Ads campaigns', 'google-site-kit' ),
-			'order'       => 1,
 			'homepage'    => __( 'https://google.com/ads', 'google-site-kit' ),
 		);
 	}
