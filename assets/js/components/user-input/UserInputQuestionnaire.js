@@ -70,11 +70,7 @@ export default function UserInputQuestionnaire() {
 				'questionNumber'
 			)
 		) || 1;
-	const userPickedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
-	const { saveUserInputSettings, resetKeyMetricsSelection } =
-		useDispatch( CORE_USER );
+	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const dashboardURL = useSelect( ( select ) =>
@@ -191,9 +187,6 @@ export default function UserInputQuestionnaire() {
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
-			if ( !! userPickedMetrics ) {
-				await resetKeyMetricsSelection();
-			}
 			const url = new URL( dashboardURL );
 			navigateTo( url.toString() );
 		}
@@ -205,8 +198,6 @@ export default function UserInputQuestionnaire() {
 		setUserInputSetting,
 		navigateTo,
 		isConversionReportingEnabled,
-		userPickedMetrics,
-		resetKeyMetricsSelection,
 	] );
 
 	const settings = useSelect( ( select ) =>
