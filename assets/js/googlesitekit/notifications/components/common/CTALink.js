@@ -23,7 +23,7 @@ import { useMountedState } from 'react-use';
 /*
  * WordPress dependencies
  */
-import { Fragment, useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,7 +34,6 @@ import { CORE_LOCATION } from '../../../datastore/location/constants';
 import { CORE_SITE } from '../../../datastore/site/constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { SpinnerButton } from 'googlesitekit-components';
-import ErrorText from '../../../../components/ErrorText';
 
 export default function CTALink( {
 	id,
@@ -44,7 +43,6 @@ export default function CTALink( {
 	dismissOnCTAClick = false,
 	dismissExpires = 0,
 	dismissOptions = { skipHidingFromQueue: true },
-	showError = true,
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
 		useState( false );
@@ -58,17 +56,13 @@ export default function CTALink( {
 			: false;
 	} );
 
-	const ctaError = useSelect( ( select ) => {
-		return select( CORE_SITE ).getError( 'notificationCTAClick', [ id ] );
-	} );
-
 	const { clearError, receiveError } = useDispatch( CORE_SITE );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const handleCTAClick = async ( event ) => {
-		clearError( 'notificationCTAClick', [ id ] );
+		clearError( 'notificationAction', [ id ] );
 
 		event.persist();
 		if ( ! event.defaultPrevented && ctaLink ) {
@@ -84,7 +78,7 @@ export default function CTALink( {
 		}
 
 		if ( error ) {
-			receiveError( error, 'notificationCTAClick', [ id ] );
+			receiveError( error, 'notificationAction', [ id ] );
 			return;
 		}
 
@@ -106,28 +100,16 @@ export default function CTALink( {
 		}
 	};
 
-	useEffect( () => {
-		return () => {
-			clearError( 'notificationCTAClick', [ id ] );
-		};
-	}, [ clearError, id ] );
-
 	return (
-		<Fragment>
-			{ showError && ctaError && (
-				<ErrorText message={ ctaError.message } />
-			) }
-
-			<SpinnerButton
-				className="googlesitekit-notification__cta"
-				href={ ctaLink }
-				onClick={ handleCTAClick }
-				disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
-				isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
-			>
-				{ ctaLabel }
-			</SpinnerButton>
-		</Fragment>
+		<SpinnerButton
+			className="googlesitekit-notification__cta"
+			href={ ctaLink }
+			onClick={ handleCTAClick }
+			disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
+			isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
+		>
+			{ ctaLabel }
+		</SpinnerButton>
 	);
 }
 
@@ -140,5 +122,4 @@ CTALink.propTypes = {
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
 	dismissOptions: PropTypes.object,
-	showError: PropTypes.bool,
 };

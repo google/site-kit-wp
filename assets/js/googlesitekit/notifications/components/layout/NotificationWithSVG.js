@@ -28,6 +28,7 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import { Cell, Grid, Row } from '../../../../material-components';
+import Error from '../common/Error';
 
 export default function NotificationWithSVG( {
 	id,
@@ -76,6 +77,8 @@ export default function NotificationWithSVG( {
 											</h3>
 
 											{ description }
+
+											<Error id={ id } />
 
 											{ actions }
 										</Cell>

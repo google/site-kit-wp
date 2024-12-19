@@ -30,10 +30,8 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../datastore/location/constants';
-import { CORE_SITE } from '../../../datastore/site/constants';
 import Dismiss from './Dismiss';
 import CTALink from './CTALink';
-import ErrorText from '../../../../components/ErrorText';
 
 export default function ActionsCTALinkDismiss( {
 	id,
@@ -47,7 +45,6 @@ export default function ActionsCTALinkDismiss( {
 	dismissOnCTAClick = true,
 	dismissExpires = 0,
 	dismissOptions = {},
-	showCTAError = true,
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -55,15 +52,8 @@ export default function ActionsCTALinkDismiss( {
 			: false;
 	} );
 
-	const ctaError = useSelect( ( select ) => {
-		return select( CORE_SITE ).getError( 'notificationCTAClick', [ id ] );
-	} );
-
 	return (
 		<Fragment>
-			{ showCTAError && ctaError && (
-				<ErrorText message={ ctaError.message } />
-			) }
 			<div className={ className }>
 				<CTALink
 					id={ id }
@@ -73,7 +63,6 @@ export default function ActionsCTALinkDismiss( {
 					dismissOnCTAClick={ dismissOnCTAClick }
 					dismissExpires={ dismissExpires }
 					dismissOptions={ ctaDismissOptions }
-					showError={ false }
 				/>
 
 				<Dismiss
@@ -102,5 +91,4 @@ ActionsCTALinkDismiss.propTypes = {
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
 	dismissOptions: PropTypes.object,
-	showCTAError: PropTypes.bool,
 };
