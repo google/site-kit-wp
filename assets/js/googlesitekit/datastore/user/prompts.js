@@ -33,7 +33,6 @@ import {
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-import { stringifyObject } from '../../../util';
 
 const { getRegistry } = commonActions;
 
@@ -145,7 +144,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isDismissingPrompts: {
-					[ stringifyObject( slug ) ]: isDismissing,
+					[ slug ]: isDismissing,
 				},
 			};
 		default: {
@@ -225,7 +224,7 @@ const baseSelectors = {
 	 * @return {boolean} True if the prompt is being dismissed, otherwise false.
 	 */
 	isDismissingPrompt( state, slug ) {
-		return !! state.isDismissingPrompts[ stringifyObject( slug ) ];
+		return !! state.isDismissingPrompts[ slug ];
 	},
 };
 

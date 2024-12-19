@@ -22,6 +22,7 @@
 import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -223,6 +224,42 @@ describe( 'core/user dismissed-items', () => {
 				).toBe( true );
 
 				registry.dispatch( CORE_USER ).setItemDimissingState( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+
+			it( 'should set dismissing state to true while dismissing item', () => {
+				const slug = 'foo-bar';
+
+				freezeFetch( fetchDismissItem );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+
+				registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+			} );
+
+			it( 'should set dismissing state to false after dismissing item', async () => {
+				const slug = 'foo-bar';
+
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ slug ],
+					status: 200,
+				} );
+
+				// Explicitly set dismissing state to true.
+				registry
+					.dispatch( CORE_USER )
+					.setItemDimissingState( slug, true );
+
+				await registry.dispatch( CORE_USER ).dismissItem( slug );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingItem( slug )

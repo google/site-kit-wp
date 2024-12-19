@@ -33,7 +33,6 @@ import {
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-import { stringifyObject } from '../../../util';
 
 const { getRegistry } = commonActions;
 
@@ -181,7 +180,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isDismissingItems: {
-					[ stringifyObject( slug ) ]: isDismissing,
+					[ slug ]: isDismissing,
 				},
 			};
 		default: {
@@ -236,7 +235,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} True if the item is being dismissed, otherwise false.
 	 */
 	isDismissingItem( state, slug ) {
-		return !! state.isDismissingItems[ stringifyObject( slug ) ];
+		return !! state.isDismissingItems[ slug ];
 	},
 };
 
