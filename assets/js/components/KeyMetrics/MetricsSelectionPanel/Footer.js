@@ -127,8 +127,9 @@ export default function Footer( {
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
-	const acrSpecificKmwWidgets = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
+	const conversionReportingSpecificKeyMetricsWidgets = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
 	);
 
 	const saveSettings = useCallback(
@@ -146,14 +147,14 @@ export default function Footer( {
 
 	const onSaveSuccess = useCallback(
 		( selectedItemSlugs ) => {
-			const userSavedConversionReportingKmwList = Object.values(
-				acrSpecificKmwWidgets
+			const userSavedConversionReportingKeyMetricsList = Object.values(
+				conversionReportingSpecificKeyMetricsWidgets
 			)
 				.flat()
-				.filter( ( n ) => selectedItemSlugs.includes( n ) );
+				.some( ( n ) => selectedItemSlugs.includes( n ) );
 
 			// Include the conversion_reporting tracking label if necessary.
-			if ( userSavedConversionReportingKmwList ) {
+			if ( userSavedConversionReportingKeyMetricsList ) {
 				trackEvent(
 					trackingCategory,
 					'metrics_sidebar_save',
@@ -203,7 +204,7 @@ export default function Footer( {
 			closePanel,
 			setPermissionScopeError,
 			redirectURL,
-			acrSpecificKmwWidgets,
+			conversionReportingSpecificKeyMetricsWidgets,
 		]
 	);
 

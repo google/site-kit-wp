@@ -34,14 +34,9 @@ export function conversionReportingDetectedEventsTracking(
 		userPickedMetrics,
 		haveLostConversionEvents,
 	},
-	viewContext = '',
-	eventName = ''
+	viewContext,
+	eventName
 ) {
-	// Return early if view context or event name is not present.
-	if ( ! viewContext || ! eventName ) {
-		return;
-	}
-
 	// Handle internal tracking for when lost events are detected.
 	if ( haveLostConversionEvents ) {
 		trackEvent(
