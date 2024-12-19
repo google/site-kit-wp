@@ -88,6 +88,8 @@ class SettingsTest extends SettingsTestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
 			),
 			get_option( Settings::OPTION )
 		);
