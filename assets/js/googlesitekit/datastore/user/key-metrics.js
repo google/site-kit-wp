@@ -363,18 +363,15 @@ const baseSelectors = {
 			const hasProductPostType = postTypes.some(
 				( { slug } ) => slug === 'product'
 			);
-			const keyMetricSettings =
-				select( CORE_USER ).getKeyMetricsSettings();
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
 
 			const showConversionTailoredMetrics = ( events ) => {
 				return events.some(
 					( event ) =>
-						( Array.isArray(
-							keyMetricSettings?.includeConversionTailoredMetrics
-						) &&
-							keyMetricSettings?.includeConversionTailoredMetrics?.includes(
-								event
-							) ) ||
+						userInputSettings?.includeConversionEvents?.values?.includes(
+							event
+						) ||
 						( Array.isArray( includeConversionTailoredMetrics ) &&
 							includeConversionTailoredMetrics?.includes(
 								event

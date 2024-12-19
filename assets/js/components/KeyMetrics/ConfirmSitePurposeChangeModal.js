@@ -147,26 +147,19 @@ function ConfirmSitePurposeChangeModal( {
 		).getUserInputPurposeConversionEvents();
 	} );
 
-	const {
-		saveUserInputSettings,
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
-	} = useDispatch( CORE_USER );
+	const { setUserInputSetting, saveUserInputSettings } =
+		useDispatch( CORE_USER );
 
 	const saveChanges = useCallback( async () => {
 		setIsSaving( true );
-		await saveUserInputSettings();
-
-		// Update 'includeConversionTailoredMetrics' key metrics setting with included
-		// conversion events, to mark that their respective metrics should be included in the
+		// Update 'includeConversionEvents' setting with included conversion events,
+		// to mark that their respective metrics should be included in the
 		// list of tailored metrics and persist on the dashboard in case events are lost.
-		setKeyMetricsSetting(
-			'includeConversionTailoredMetrics',
+		setUserInputSetting(
+			'includeConversionEvents',
 			userInputPurposeConversionEvents
 		);
-		saveKeyMetricsSettings( {
-			widgetSlugs: undefined,
-		} );
+		await saveUserInputSettings();
 
 		setIsSaving( false );
 
@@ -182,8 +175,7 @@ function ConfirmSitePurposeChangeModal( {
 		saveUserInputSettings,
 		onClose,
 		setIsSaving,
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
+		setUserInputSetting,
 		userInputPurposeConversionEvents,
 		viewContext,
 	] );

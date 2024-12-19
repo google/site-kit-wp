@@ -67,14 +67,17 @@ class User_Input {
 	 * @var array|ArrayAccess
 	 */
 	private static $questions = array(
-		'purpose'       => array(
+		'purpose'                 => array(
 			'scope' => 'site',
 		),
-		'postFrequency' => array(
+		'postFrequency'           => array(
 			'scope' => 'user',
 		),
-		'goals'         => array(
+		'goals'                   => array(
 			'scope' => 'user',
+		),
+		'includeConversionEvents' => array(
+			'scope' => 'site',
 		),
 	);
 
