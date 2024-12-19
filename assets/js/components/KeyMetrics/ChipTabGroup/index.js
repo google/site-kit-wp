@@ -146,21 +146,27 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			currentlyActiveEvents?.includes( item )
 	);
 
-	const keyMetricsGroups = [
-		KEY_METRICS_GROUP_VISITORS,
-		KEY_METRICS_GROUP_DRIVING_TRAFFIC,
-		...( hasGeneratingLeadsGroup?.length
-			? [ KEY_METRICS_GROUP_GENERATING_LEADS ]
-			: [] ),
-		...( hasSellingProductsGroup?.length
-			? [ KEY_METRICS_GROUP_SELLING_PRODUCTS ]
-			: [] ),
-		KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
-	];
+	const keyMetricsGroups = useMemo( () => {
+		return [
+			KEY_METRICS_GROUP_VISITORS,
+			KEY_METRICS_GROUP_DRIVING_TRAFFIC,
+			...( hasGeneratingLeadsGroup?.length
+				? [ KEY_METRICS_GROUP_GENERATING_LEADS ]
+				: [] ),
+			...( hasSellingProductsGroup?.length
+				? [ KEY_METRICS_GROUP_SELLING_PRODUCTS ]
+				: [] ),
+			KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+		];
+	}, [ hasGeneratingLeadsGroup, hasSellingProductsGroup ] );
 
-	const dynamicGroups = isUserInputCompleted
-		? [ KEY_METRICS_GROUP_CURRENT, KEY_METRICS_GROUP_SUGGESTED ]
-		: [ KEY_METRICS_GROUP_CURRENT ];
+	const dynamicGroups = useMemo( () => {
+		if ( isUserInputCompleted ) {
+			return [ KEY_METRICS_GROUP_CURRENT, KEY_METRICS_GROUP_SUGGESTED ];
+		}
+
+		return [ KEY_METRICS_GROUP_CURRENT ];
+	}, [ isUserInputCompleted ] );
 
 	const allGroups = useMemo(
 		() => [ ...dynamicGroups, ...keyMetricsGroups ],
