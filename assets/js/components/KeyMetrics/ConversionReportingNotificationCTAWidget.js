@@ -159,9 +159,17 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	useEffect( () => {
 		if ( isSelectionPanelOpen ) {
 			if (
+				// Dismiss the new events callout if shouldShowCalloutForNewEvents is true
+				// and settings are not being saved. This prevents duplicate requests, as after
+				// the first call, the settings enter the saving state. Once saving is complete,
+				// shouldShowCalloutForNewEvents will no longer be true.
 				( ! isSavingConversionReportingSettings &&
 					( shouldShowCalloutForNewEvents ||
 						shouldShowCalloutForUserPickedMetrics ) ) ||
+				// shouldShowInitialCalloutForTailoredMetrics is more specific because the "Add metrics"
+				// CTA does not open the panel; it directly adds metrics. We want to dismiss this callout
+				// only when the user opens the selection panel and saves their metrics selection. This marks
+				// the transition to manual selection, after which this callout should no longer be shown.
 				( shouldShowInitialCalloutForTailoredMetrics &&
 					isSavingConversionReportingSettings )
 			) {
