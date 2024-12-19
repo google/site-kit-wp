@@ -1,5 +1,5 @@
 /**
- * Determines whether the initial new events callout should be displayed to the user with manualy selected metrics.
+ * Determines whether the initial new events callout should be displayed to the user with manually-selected metrics.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
