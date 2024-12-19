@@ -99,7 +99,7 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 
 			return module;
 		} )
-		.sort( ( a, b ) => a.order - b.order )
+		.sort( ( a, b ) => a.order - b.order || a.name.localeCompare( b.name ) )
 		.reduce( ( acc, module ) => {
 			return { ...acc, [ module.slug ]: module };
 		}, {} );
