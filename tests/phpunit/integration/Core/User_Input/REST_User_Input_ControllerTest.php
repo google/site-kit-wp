@@ -108,18 +108,22 @@ class REST_User_Input_ControllerTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'purpose'       => array(
+				'purpose'                 => array(
 					'scope'      => 'site',
 					'values'     => array( 'purpose1' ),
 					'answeredBy' => get_current_user_id(),
 				),
-				'postFrequency' => array(
+				'postFrequency'           => array(
 					'scope'  => 'user',
 					'values' => array( 'daily' ),
 				),
-				'goals'         => array(
+				'goals'                   => array(
 					'scope'  => 'user',
 					'values' => array( 'goal1', 'goal2' ),
+				),
+				'includeConversionEvents' => array(
+					'scope'  => 'site',
+					'values' => array(),
 				),
 			),
 			$response->get_data()
@@ -154,9 +158,10 @@ class REST_User_Input_ControllerTest extends TestCase {
 			array(
 				'data' => array(
 					'settings' => array(
-						'purpose'       => array( 'purpose1' ),
-						'postFrequency' => array( 'daily' ),
-						'goals'         => array( 'goal1', 'goal2' ),
+						'purpose'                 => array( 'purpose1' ),
+						'postFrequency'           => array( 'daily' ),
+						'goals'                   => array( 'goal1', 'goal2' ),
+						'includeConversionEvents' => array( 'contact' ),
 					),
 				),
 			)
@@ -167,18 +172,23 @@ class REST_User_Input_ControllerTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'purpose'       => array(
+				'purpose'                 => array(
 					'scope'      => 'site',
 					'values'     => array( 'purpose1' ),
 					'answeredBy' => get_current_user_id(),
 				),
-				'postFrequency' => array(
+				'postFrequency'           => array(
 					'scope'  => 'user',
 					'values' => array( 'daily' ),
 				),
-				'goals'         => array(
+				'goals'                   => array(
 					'scope'  => 'user',
 					'values' => array( 'goal1', 'goal2' ),
+				),
+				'includeConversionEvents' => array(
+					'scope'      => 'site',
+					'values'     => array( 'contact' ),
+					'answeredBy' => get_current_user_id(),
 				),
 			),
 			rest_get_server()->dispatch( $request )->get_data()
