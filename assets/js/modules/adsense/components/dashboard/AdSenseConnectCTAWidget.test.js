@@ -36,6 +36,14 @@ import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtur
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
+
+	function Widget( { children } ) {
+		return <div>{ children }</div>;
+	}
+	function WidgetNull() {
+		return <div>NULL</div>;
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
@@ -59,13 +67,6 @@ describe( 'AdSenseConnectCTA', () => {
 					status: 200,
 				}
 			);
-
-			function Widget( { children } ) {
-				return <div>{ children }</div>;
-			}
-			function WidgetNull() {
-				return <div>NULL</div>;
-			}
 
 			container = render(
 				<div>
@@ -123,5 +124,26 @@ describe( 'AdSenseConnectCTA', () => {
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
 		} );
+	} );
+
+	it( 'should render WidgetNull when the widget is being dismissed', () => {
+		registry
+			.dispatch( CORE_USER )
+			.setItemDimissingState(
+				ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+				true
+			);
+
+		const { container } = render(
+			<AdSenseConnectCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );

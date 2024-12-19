@@ -92,6 +92,13 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
 		)
 	);
+
+	const isDismissingPrompt = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingPrompt(
+			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+		)
+	);
+
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
@@ -124,7 +131,11 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 			return true;
 		}
 
-		if ( isDismissed !== false || isConsentModeEnabled !== false ) {
+		if (
+			isDismissed !== false ||
+			isDismissingPrompt ||
+			isConsentModeEnabled !== false
+		) {
 			return false;
 		}
 

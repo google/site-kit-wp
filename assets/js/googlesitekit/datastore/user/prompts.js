@@ -73,6 +73,7 @@ const fetchDismissPromptStore = createFetchStore( {
 
 const baseInitialState = {
 	dismissedPrompts: undefined,
+	isDismissingPrompts: {},
 };
 
 const baseActions = {
@@ -98,12 +99,31 @@ const baseActions = {
 		function* ( slug, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
 
-			return yield fetchDismissPromptStore.actions.fetchDismissPrompt(
-				slug,
-				expiresInSeconds
-			);
+			const registry = yield commonActions.getRegistry();
+
+			registry
+				.dispatch( CORE_USER )
+				.setPromptDimissingState( slug, true );
+
+			const { response, error } =
+				yield fetchDismissPromptStore.actions.fetchDismissPrompt(
+					slug,
+					expiresInSeconds
+				);
+
+			registry
+				.dispatch( CORE_USER )
+				.setPromptDimissingState( slug, false );
+
+			return { response, error };
 		}
 	),
+	setPromptDimissingState( slug, state ) {
+		return {
+			payload: { slug, state: !! state },
+			type: 'SET_PROMPT_DISMISSING_STATE',
+		};
+	},
 };
 
 const baseResolvers = {
@@ -115,6 +135,22 @@ const baseResolvers = {
 			yield fetchGetDismissedPromptsStore.actions.fetchGetDismissedPrompts();
 		}
 	},
+};
+
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case 'SET_PROMPT_DISMISSING_STATE':
+			const { slug, state: isDismissing } = payload;
+			return {
+				...state,
+				isDismissingPrompts: {
+					[ slug ]: isDismissing,
+				},
+			};
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseSelectors = {
@@ -187,11 +223,9 @@ const baseSelectors = {
 	 * @param {string} slug  Prompt slug.
 	 * @return {boolean} True if the prompt is being dismissed, otherwise false.
 	 */
-	isDismissingPrompt: createRegistrySelector(
-		( select ) => ( state, slug ) => {
-			return select( CORE_USER ).isFetchingDismissPrompt( slug );
-		}
-	),
+	isDismissingPrompt( state, slug ) {
+		return !! state.isDismissingPrompts[ slug ];
+	},
 };
 
 export const {
@@ -207,6 +241,7 @@ export const {
 		actions: baseActions,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
+		reducer: baseReducer,
 	},
 	fetchDismissPromptStore,
 	fetchGetDismissedPromptsStore

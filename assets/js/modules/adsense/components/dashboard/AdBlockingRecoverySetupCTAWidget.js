@@ -94,6 +94,12 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const isDismissingPrompt = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingPrompt(
+			AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
+		)
+	);
+
 	const adBlockingRecoverySetupStatus = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {
 			return null;
@@ -148,6 +154,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		! viewOnlyDashboard &&
 		hasExistingAdBlockingRecoveryTag === false &&
 		isDismissed === false &&
+		isDismissingPrompt === false &&
 		adBlockingRecoverySetupStatus === '' &&
 		accountStatus === ACCOUNT_STATUS_READY &&
 		siteStatus === SITE_STATUS_READY &&
