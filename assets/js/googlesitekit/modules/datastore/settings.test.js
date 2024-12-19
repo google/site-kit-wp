@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
+import { combineStores } from 'googlesitekit-data';
 import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
@@ -29,6 +30,7 @@ import {
 
 describe( 'core/modules settings', () => {
 	let registry;
+	let areSettingsEditDependenciesLoaded;
 	let submitChanges;
 	const slug = 'test-module';
 	const nonExistentModuleSlug = 'not-module';
@@ -37,22 +39,28 @@ describe( 'core/modules settings', () => {
 	let validateCanSubmitChangesError = false;
 
 	beforeEach( () => {
+		areSettingsEditDependenciesLoaded = jest.fn();
 		submitChanges = jest.fn();
 
 		registry = createTestRegistry();
 
 		registry.registerStore(
 			moduleStoreName,
-			Modules.createModuleStore( slug, {
-				storeName: moduleStoreName,
-				submitChanges,
-				validateCanSubmitChanges: () => {
-					if ( validateCanSubmitChangesError ) {
-						throw new Error( validateCanSubmitChangesError );
-					}
-				},
-				settingSlugs: [ 'testSetting' ],
-			} )
+			combineStores(
+				Modules.createModuleStore( slug, {
+					storeName: moduleStoreName,
+					submitChanges,
+					validateCanSubmitChanges: () => {
+						if ( validateCanSubmitChangesError ) {
+							throw new Error( validateCanSubmitChangesError );
+						}
+					},
+					settingSlugs: [ 'testSetting' ],
+				} ),
+				{
+					selectors: { areSettingsEditDependenciesLoaded },
+				}
+			)
 		);
 
 		registry
@@ -93,8 +101,40 @@ describe( 'core/modules settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'areSettingsEditDependenciesLoaded', () => {
+			it( 'should return true for non existent module', () => {
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.areSettingsEditDependenciesLoaded(
+							nonExistentModuleSlug
+						)
+				).toBe( true );
+			} );
+
+			it( 'should proxy the selector call to the module with the given slug', () => {
+				areSettingsEditDependenciesLoaded.mockImplementation(
+					() => false
+				);
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.areSettingsEditDependenciesLoaded( slug )
+				).toBe( false );
+
+				areSettingsEditDependenciesLoaded.mockImplementation(
+					() => true
+				);
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.areSettingsEditDependenciesLoaded( slug )
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'isDoingSubmitChanges', () => {
-			it( 'should return FALSE for non existing module', () => {
+			it( 'should return FALSE for non existent module', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )

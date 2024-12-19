@@ -125,4 +125,30 @@ describe( 'modules/search-console settings', () => {
 			).not.toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
 		} );
 	} );
+
+	describe( 'areSettingsEditDependenciesLoaded', () => {
+		it( 'should return false if getMatchedProperties selector has not resolved', () => {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.startResolution( 'getMatchedProperties', [] );
+
+			expect(
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.areSettingsEditDependenciesLoaded()
+			).toBe( false );
+		} );
+
+		it( 'should return true if getMatchedProperties selector has resolved', () => {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.finishResolution( 'getMatchedProperties', [] );
+
+			expect(
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.areSettingsEditDependenciesLoaded()
+			).toBe( true );
+		} );
+	} );
 } );

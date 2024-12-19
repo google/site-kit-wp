@@ -972,6 +972,32 @@ describe( 'modules/analytics-4 settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'areSettingsEditDependenciesLoaded', () => {
+			it( 'should return false if getAccountSummaries selector has not resolved', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getAccountSummaries', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( false );
+			} );
+
+			it( 'should return true if getAccountSummaries selector has resolved', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getAccountSummaries', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'canSubmitChanges', () => {
 			const propertyID = '1000';
 			const webDataStreamID = '2000';
