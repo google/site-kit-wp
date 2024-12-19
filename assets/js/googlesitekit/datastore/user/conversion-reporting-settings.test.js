@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: audience settings tests.
+ * `modules/analytics-4` data store: conversion reporting settings tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
