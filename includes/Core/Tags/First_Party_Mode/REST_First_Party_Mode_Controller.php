@@ -145,8 +145,14 @@ class REST_First_Party_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$this->first_party_mode->healthcheck();
-							return new WP_REST_Response( $this->first_party_mode_settings->get() );
+							$healthcheck = $this->first_party_mode->healthcheck();
+
+							return new WP_REST_Response(
+								array(
+									'settings'    => $this->first_party_mode_settings->get(),
+									'healthcheck' => $healthcheck,
+								)
+							);
 						},
 						'permission_callback' => $can_manage_options,
 					),

@@ -158,7 +158,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 *
 	 * @since 1.142.0
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function healthcheck() {
 		$is_fpm_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
@@ -166,9 +166,14 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 
 		$this->first_party_mode_settings->merge(
 			array(
-				'isFPMHealthy'          => $is_fpm_healthy,
-				'isScriptAccessEnabled' => $is_script_access_enabled,
+				'isFPMHealthy'          => $is_fpm_healthy['success'],
+				'isScriptAccessEnabled' => $is_script_access_enabled['success'],
 			)
+		);
+
+		return array(
+			'isFPMHealthy'          => $is_fpm_healthy,
+			'isScriptAccessEnabled' => $is_script_access_enabled,
 		);
 	}
 
@@ -188,20 +193,55 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @since 1.142.0 Relocated from REST_First_Party_Mode_Controller.
 	 *
 	 * @param string $endpoint The endpoint to check.
-	 * @return bool True if the endpoint is healthy, false otherwise.
+	 * @return array{success: bool, message: string} Success is true if the endpoint is healthy, false otherwise. Message is the error message if the endpoint is not healthy.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
+		set_error_handler(
+			function ( $severity, $message, $file, $line ) {
+					throw new \ErrorException( $message, $severity, $severity, $file, $line );
+			}
+		);
+
 		try {
 			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$response = file_get_contents( $endpoint );
-		} catch ( \Exception $e ) {
-			return false;
+		} catch ( \ErrorException $e ) {
+			return array(
+				'success' => false,
+				'message' => $this->trim_string( $e->getMessage() ),
+			);
+		} finally {
+			restore_error_handler();
 		}
 
 		if ( 'ok' !== $response ) {
-			return false;
+			return array(
+				'success' => false,
+				'message' => $this->trim_string( $response ),
+			);
 		}
 
-		return strpos( $http_response_header[0], '200 OK' ) !== false;
+		return strpos( $http_response_header[0], '200 OK' ) === false
+			? array(
+				'success' => false,
+				'message' => $this->trim_string( $http_response_header[0] ),
+			)
+			: array(
+				'success' => true,
+			);
+	}
+
+	/**
+	 * Trims a string to a maximum length.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string   $message The message to trim.
+	 * @param int|null $length  Optional. The maximum length. Default is 1024.
+	 * @return string
+	 */
+	private function trim_string( $message, $length = 1024 ) {
+		return strlen( $message ) > $length ? substr( $message, 0, $length ) . '...' : $message;
 	}
 }
