@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,11 +39,12 @@ import useViewOnly from '../../hooks/useViewOnly';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
+import whenActive from '../../util/when-active';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
-export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
+function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
 	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
@@ -156,3 +158,8 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		</OverlayNotification>
 	);
 }
+
+export default compose(
+	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: 'adsense' } )
+)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );

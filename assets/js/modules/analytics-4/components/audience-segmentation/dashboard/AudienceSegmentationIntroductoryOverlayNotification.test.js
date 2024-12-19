@@ -68,6 +68,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			{
 				slug: 'analytics-4',
 				active: true,
+				connected: true,
 				setupComplete: true,
 			},
 		] );

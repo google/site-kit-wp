@@ -40,16 +40,18 @@ import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
+import whenActive from '../../../../util/when-active';
 
 const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
 
-export default function PublicationApprovedOverlayNotification() {
+function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
@@ -205,3 +207,7 @@ export default function PublicationApprovedOverlayNotification() {
 		</OverlayNotification>
 	);
 }
+
+export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
+	PublicationApprovedOverlayNotification
+);

@@ -51,6 +51,7 @@ export default {
 					{
 						slug: 'analytics-4',
 						active: true,
+						connected: true,
 						setupComplete: true,
 					},
 				] );
