@@ -60,8 +60,6 @@ import FirstPartyModeSetupBanner, {
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 import { isFeatureEnabled } from '../../features';
-import { ADSENSE_MODULE_SLUG } from '../../modules/adsense/constants';
-import { GA4_MODULE_SLUG } from '../../modules/analytics-4/constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -241,11 +239,11 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			const adSenseModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( ADSENSE_MODULE_SLUG );
+			).isModuleConnected( 'adsense' );
 
 			const analyticsModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( GA4_MODULE_SLUG );
+			).isModuleConnected( 'analytics-4' );
 
 			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
 				return false;
@@ -259,11 +257,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			if ( ! isAdSenseLinked ) {
 				return false;
 			}
-
-			const analyticsAndAdsenseConnectedAndLinked =
-				adSenseModuleConnected &&
-				analyticsModuleConnected &&
-				isAdSenseLinked;
 
 			const { startDate, endDate } = select(
 				CORE_USER
@@ -298,10 +291,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			// we show them a different notification and should not show this one. Check
 			// to see if the user already has data and dismiss this notification without
 			// showing it.
-			if (
-				isZeroReport( report ) === false &&
-				analyticsAndAdsenseConnectedAndLinked
-			) {
+			if ( isZeroReport( report ) === false ) {
 				await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
 					'top-earning-pages-success-notification'
 				);

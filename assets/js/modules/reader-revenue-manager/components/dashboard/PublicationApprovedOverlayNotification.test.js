@@ -69,7 +69,6 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
 				active: true,
 				connected: true,
-				setupComplete: true,
 			},
 		] );
 

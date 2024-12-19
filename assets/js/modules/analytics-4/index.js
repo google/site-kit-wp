@@ -112,7 +112,6 @@ import AudienceSegmentationSetupSuccessSubtleNotification, {
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
-import { GA4_MODULE_SLUG } from './constants';
 
 export { registerStore } from './datastore';
 
@@ -698,7 +697,7 @@ export const registerNotifications = ( notifications ) => {
 				checkRequirements: async ( { select, resolveSelect } ) => {
 					const analyticsConnected = await resolveSelect(
 						CORE_MODULES
-					).isModuleConnected( GA4_MODULE_SLUG );
+					).isModuleConnected( 'analytics-4' );
 
 					if ( ! analyticsConnected ) {
 						return false;
