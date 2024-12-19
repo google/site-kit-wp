@@ -3,7 +3,7 @@
  * REST_Conversion_Reporting_ControllerTest
  *
  * @package   Google\Site_Kit\Tests\Core\User
- * @copyright 2022 Google LLC
+ * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -13,11 +13,8 @@ namespace Google\Site_Kit\Tests\Core\User;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User\Audience_Settings;
 use Google\Site_Kit\Core\User\Conversion_Reporting_Settings;
-use Google\Site_Kit\Core\User\REST_Audience_Settings_Controller;
 use Google\Site_Kit\Core\User\REST_Conversion_Reporting_Controller;
-use Google\Site_Kit\Core\User_Input\REST_User_Input_Controller;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 
