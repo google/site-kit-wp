@@ -203,6 +203,9 @@ class User_Input {
 			}
 		}
 
+		// Conversion events can be empty on setup if no event has been detected.
+		unset( $settings['includeConversionEvents'] );
+
 		foreach ( $settings as $setting ) {
 			if ( empty( $setting['values'] ) ) {
 				return true;
