@@ -18,6 +18,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -38,6 +39,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
 
@@ -127,6 +129,28 @@ export const registerNotifications = ( notifications ) => {
 				return true;
 			},
 			isDismissible: true,
+		} );
+		notifications.registerNotification( 'setup-success-notification-siwg', {
+			Component: SetupSuccessSubtleNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: () => {
+				const notification = getQueryArg(
+					location.href,
+					'notification'
+				);
+				const slug = getQueryArg( location.href, 'slug' );
+
+				if (
+					'authentication_success' === notification &&
+					slug === 'sign-in-with-google'
+				) {
+					return true;
+				}
+
+				return false;
+			},
 		} );
 	}
 };

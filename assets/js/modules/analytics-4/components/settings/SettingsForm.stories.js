@@ -17,10 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -91,6 +97,78 @@ EnhancedMeasurementSwitch.decorators = [
 		);
 	},
 ];
+
+export const WithFirstPartyModeAvailable = Template.bind( null );
+WithFirstPartyModeAvailable.storyName = 'With first party mode available';
+WithFirstPartyModeAvailable.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+WithFirstPartyModeAvailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const fpmServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			);
+
+			const fpmSettings = {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			};
+
+			fetchMock.get( fpmServerRequirementsEndpoint, {
+				body: fpmSettings,
+			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetFirstPartyModeSettings( fpmSettings );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithFirstPartyModeAvailable.scenario = {};
+
+export const WithFirstPartyModeUnavailable = Template.bind( null );
+WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
+WithFirstPartyModeUnavailable.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+WithFirstPartyModeUnavailable.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const fpmServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			);
+
+			const fpmSettings = {
+				isEnabled: true,
+				isFPMHealthy: false,
+				isScriptAccessEnabled: false,
+			};
+
+			fetchMock.get( fpmServerRequirementsEndpoint, {
+				body: fpmSettings,
+			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetFirstPartyModeSettings( fpmSettings );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithFirstPartyModeUnavailable.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
@@ -245,7 +323,7 @@ IceEnabled.decorators = [
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
 			const setupRegistry = ( registry ) => {
 				global._googlesitekitDashboardSharingData = {
 					settings: {},
@@ -295,7 +373,10 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithRegistrySetup
+					func={ setupRegistry }
+					features={ parameters.features || [] }
+				>
 					<Story />
 				</WithRegistrySetup>
 			);

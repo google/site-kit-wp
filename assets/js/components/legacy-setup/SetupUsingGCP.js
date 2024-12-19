@@ -24,7 +24,7 @@ import { delay } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { compose } from '@wordpress/compose';
 
@@ -341,8 +341,9 @@ class SetupUsingGCP extends Component {
 																		.onButtonClick
 																}
 															>
-																{ __(
+																{ _x(
 																	'Sign in with Google',
+																	'Service name',
 																	'google-site-kit'
 																) }
 															</Button>

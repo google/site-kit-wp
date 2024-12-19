@@ -32,9 +32,9 @@ import PropTypes from 'prop-types';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import LostEventsSubtleNotification from './LostEventsSubtleNotification';
@@ -65,21 +65,19 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	// Initial callout is surfaced to the users with tailored metrics, if detectedEvents setting
 	// has a conversion event associated with the ACR key metrics matching the current site purpose answer.
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
-	// and have not been already included, which is determined by includeConversionTailoredMetrics setting, callout banner should be displayed.
+	// and have not been already included, which is determined by includeConversionEvents user input setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
 		! hasUserPickedMetrics?.length &&
 		isUserInputCompleted &&
 		haveConversionReportingEventsForTailoredMetrics;
 
-	const userInputPurposeConversionEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
+	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics(
+			true
+		)
 	);
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
-	);
-
-	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics()
 	);
 
 	// If users have set up key metrics manually and ACR events are detected,
@@ -90,7 +88,21 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		isKeyMetricsSetupCompleted &&
 		hasConversionEventsForUserPickedMetrics;
 
-	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
+	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsWithDifferentMetrics()
+	);
+
+	// If new events have been detected after initial set of events, we display
+	// the same callout banner, with a different call to action "View metrics"
+	// which opens the metric selection panel.
+	const shouldShowCalloutForNewEvents =
+		isKeyMetricsSetupCompleted && haveConversionEventsWithDifferentMetrics;
+
+	const userInputPurposeConversionEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
+	);
+
+	const { setUserInputSetting, saveUserInputSettings } =
 		useDispatch( CORE_USER );
 	const {
 		dismissNewConversionReportingEvents,
@@ -100,20 +112,18 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
-			setKeyMetricsSetting(
-				'includeConversionTailoredMetrics',
+			setUserInputSetting(
+				'includeConversionEvents',
 				userInputPurposeConversionEvents
 			);
-			saveKeyMetricsSettings( {
-				widgetSlugs: undefined,
-			} );
+			saveUserInputSettings();
 			setIsSaving( false );
 		}
 
 		dismissNewConversionReportingEvents();
 	}, [
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
+		setUserInputSetting,
+		saveUserInputSettings,
 		dismissNewConversionReportingEvents,
 		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
@@ -142,9 +152,19 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
 		! haveLostConversionEvents &&
-		! shouldShowCalloutForUserPickedMetrics
+		! shouldShowCalloutForUserPickedMetrics &&
+		! shouldShowCalloutForNewEvents
 	) {
 		return <WidgetNull />;
+	}
+
+	let ctaLabel = __( 'Select metrics', 'google-site-kit' );
+
+	if ( shouldShowInitialCalloutForTailoredMetrics ) {
+		ctaLabel = __( 'Add metrics', 'google-site-kit' );
+	}
+	if ( shouldShowCalloutForNewEvents ) {
+		ctaLabel = __( 'View metrics', 'google-site-kit' );
 	}
 
 	return (
@@ -156,13 +176,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				/>
 			) }
 			{ ( shouldShowInitialCalloutForTailoredMetrics ||
-				shouldShowCalloutForUserPickedMetrics ) && (
+				shouldShowCalloutForUserPickedMetrics ||
+				shouldShowCalloutForNewEvents ) && (
 				<ConversionReportingDashboardSubtleNotification
-					ctaLabel={
-						shouldShowInitialCalloutForTailoredMetrics
-							? __( 'Add metrics', 'google-site-kit' )
-							: __( 'Select metrics', 'google-site-kit' )
-					}
+					ctaLabel={ ctaLabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
 							? handleAddMetricsClick

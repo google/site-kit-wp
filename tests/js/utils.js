@@ -260,6 +260,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,
+		isMultisite: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -426,7 +427,6 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 			KM_ANALYTICS_NEW_VISITORS,
 			KM_ANALYTICS_RETURNING_VISITORS,
 		],
-		includeConversionTailoredMetrics: [],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
@@ -452,6 +452,10 @@ export const provideKeyMetricsUserInputSettings = (
 			values: [ 'publish_news' ],
 			scope: 'site',
 		},
+		includeConversionEvents: {
+			values: [],
+			scope: 'site',
+		},
 	};
 	registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 		...defaults,
@@ -463,15 +467,17 @@ export const provideKeyMetricsUserInputSettings = (
  * Provides notifications data to the given registry.
  *
  * @since 1.140.0
+ * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
  *
- * @param {Object}  registry    The registry to set up.
- * @param {Object}  [extraData] Extra data to merge with the default settings.
- * @param {boolean} overwrite   Merges extra data with default notifications when false, else overwrites default notifications.
+ * @param {Object}  registry            The registry to set up.
+ * @param {Object}  [extraData]         Extra data to merge with the default settings.
+ * @param {Object}  [options]           Options object.
+ * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
  */
 export const provideNotifications = (
 	registry,
 	extraData,
-	overwrite = false
+	{ overwrite = false } = {}
 ) => {
 	const notificationsAPI = coreNotifications.createNotifications( registry );
 

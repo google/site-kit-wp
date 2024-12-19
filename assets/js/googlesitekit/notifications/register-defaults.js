@@ -29,6 +29,7 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 } from './datastore/constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
@@ -36,6 +37,7 @@ import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../datastore/user/constants';
+import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -50,8 +52,14 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
-import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
+import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
+import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
+import FirstPartyModeSetupBanner, {
+	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
+} from '../../components/notifications/FirstPartyModeSetupBanner';
+import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -183,6 +191,41 @@ export const DEFAULT_NOTIFICATIONS = {
 			}
 
 			return true;
+		},
+		isDismissible: false,
+	},
+	setup_plugin_error: {
+		Component: SetupErrorMessageNotification,
+		priority: 140,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const temporaryPersistedPermissionsError = select(
+				CORE_FORMS
+			).getValue(
+				FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+				'permissionsError'
+			);
+
+			if (
+				temporaryPersistedPermissionsError?.data
+					?.skipDefaultErrorNotifications
+			) {
+				return false;
+			}
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			return !! setupErrorMessage;
 		},
 		isDismissible: false,
 	},
@@ -442,25 +485,58 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
-	'first-party-mode-setup-cta-banner': {
+	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: 320,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
 				return false;
 			}
 
-			const { isModuleConnected } = select( CORE_MODULES );
+			const isFPMModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			if (
-				! (
-					isModuleConnected( 'analytics-4' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! isFPMModuleConnected ) {
+				return false;
+			}
+
+			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+
+			const {
+				isFirstPartyModeEnabled,
+				isFPMHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
+
+			if ( isFirstPartyModeEnabled() ) {
+				return false;
+			}
+
+			const isHealthy = isFPMHealthy();
+			const isAccessEnabled = isScriptAccessEnabled();
+
+			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
+				dispatch( CORE_SITE ).fetchGetFPMServerRequirementStatus();
+				return false;
+			}
+
+			return isHealthy && isAccessEnabled;
+		},
+		isDismissible: true,
+	},
+	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
+		Component: FirstPartyModeWarningNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const isFPMModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
+
+			if ( ! isFPMModuleConnected ) {
 				return false;
 			}
 
@@ -473,12 +549,23 @@ export const DEFAULT_NOTIFICATIONS = {
 			} = select( CORE_SITE );
 
 			return (
-				! isFirstPartyModeEnabled() &&
-				isFPMHealthy() &&
-				isScriptAccessEnabled()
+				isFirstPartyModeEnabled() &&
+				( ! isFPMHealthy() || ! isScriptAccessEnabled() )
 			);
 		},
 		isDismissible: true,
+	},
+	'setup-success-notification-fpm': {
+		Component: FirstPartyModeSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: ( { select } ) => {
+			return !! select( CORE_UI ).getValue(
+				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
+			);
+		},
 	},
 	'auth-error': {
 		Component: AuthError,

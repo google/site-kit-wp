@@ -6,42 +6,74 @@ exports[`FirstPartyModeToggle should render in default state 1`] = `
     class="googlesitekit-first-party-mode-toggle"
   >
     <div
-      aria-checked="false"
-      class="mdc-switch"
-      role="switch"
-      tabindex="0"
+      class="googlesitekit-module-settings-group__switch"
     >
       <div
-        class="mdc-switch__track"
-      >
-         
-      </div>
-      <div
-        class="mdc-switch__thumb-underlay"
+        aria-checked="false"
+        class="mdc-switch"
+        role="switch"
+        tabindex="0"
       >
         <div
-          class="mdc-switch__thumb"
+          class="mdc-switch__track"
         >
-          <input
-            class="mdc-switch__native-control"
-            id="googlesitekit-switch-4"
-            readonly=""
-            role="switch"
-            type="checkbox"
-          />
+           
+        </div>
+        <div
+          class="mdc-switch__thumb-underlay"
+        >
+          <div
+            class="mdc-switch__thumb"
+          >
+            <input
+              class="mdc-switch__native-control"
+              id="googlesitekit-switch-4"
+              readonly=""
+              role="switch"
+              type="checkbox"
+            />
+          </div>
         </div>
       </div>
+      <label
+        class=""
+        for="googlesitekit-switch-4"
+      >
+        First-party mode
+      </label>
+      <div
+        class="googlesitekit-first-party-mode-toggle__switch-badge"
+      >
+        <span
+          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+        >
+          Beta
+        </span>
+      </div>
     </div>
-    <label
-      class=""
-      for="googlesitekit-switch-4"
-    >
-      First-party mode
-    </label>
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
-      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
+      <a
+        aria-label="Learn more about first-party mode (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="undefined?doc=first-party-mode-introduction"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
+      </a>
     </p>
   </div>
 </div>
@@ -53,43 +85,75 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
     class="googlesitekit-first-party-mode-toggle"
   >
     <div
-      aria-checked="false"
-      class="mdc-switch mdc-switch--disabled"
-      role="switch"
-      tabindex="0"
+      class="googlesitekit-module-settings-group__switch"
     >
       <div
-        class="mdc-switch__track"
-      >
-         
-      </div>
-      <div
-        class="mdc-switch__thumb-underlay"
+        aria-checked="false"
+        class="mdc-switch mdc-switch--disabled"
+        role="switch"
+        tabindex="0"
       >
         <div
-          class="mdc-switch__thumb"
+          class="mdc-switch__track"
         >
-          <input
-            class="mdc-switch__native-control"
-            disabled=""
-            id="googlesitekit-switch-6"
-            readonly=""
-            role="switch"
-            type="checkbox"
-          />
+           
+        </div>
+        <div
+          class="mdc-switch__thumb-underlay"
+        >
+          <div
+            class="mdc-switch__thumb"
+          >
+            <input
+              class="mdc-switch__native-control"
+              disabled=""
+              id="googlesitekit-switch-6"
+              readonly=""
+              role="switch"
+              type="checkbox"
+            />
+          </div>
         </div>
       </div>
+      <label
+        class=""
+        for="googlesitekit-switch-6"
+      >
+        First-party mode
+      </label>
+      <div
+        class="googlesitekit-first-party-mode-toggle__switch-badge"
+      >
+        <span
+          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+        >
+          Beta
+        </span>
+      </div>
     </div>
-    <label
-      class=""
-      for="googlesitekit-switch-6"
-    >
-      First-party mode
-    </label>
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
-      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
+      <a
+        aria-label="Learn more about first-party mode (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="undefined?doc=first-party-mode-introduction"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
+      </a>
     </p>
     <div
       class="googlesitekit-subtle-notification googlesitekit-subtle-notification--warning"
@@ -103,7 +167,26 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
         class="googlesitekit-subtle-notification__content"
       >
         <p>
-          Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.
+          Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
+          <a
+            aria-label="Learn more about first-party mode server requirements (opens in a new tab)"
+            class="googlesitekit-cta-link"
+            href="undefined?doc=first-party-mode-server-requirements"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              Learn more
+            </span>
+            <span
+              class="googlesitekit-icon-wrapper"
+              style="margin-left: 5px;"
+            >
+              <svg />
+            </span>
+          </a>
         </p>
       </div>
       <div
@@ -147,7 +230,26 @@ exports[`FirstPartyModeToggle should render in loading state if the server requi
     <p
       class="googlesitekit-module-settings-group__helper-text"
     >
-      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.
+      Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
+      <a
+        aria-label="Learn more about first-party mode (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="undefined?doc=first-party-mode-introduction"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          Learn more
+        </span>
+        <span
+          class="googlesitekit-icon-wrapper"
+          style="margin-left: 5px;"
+        >
+          <svg />
+        </span>
+      </a>
     </p>
   </div>
 </div>

@@ -52,6 +52,8 @@ import {
 } from './constants';
 import { isValidConversionID } from '../../ads/utils/validation';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -188,6 +190,34 @@ async function saveSettings( select, dispatch ) {
 
 		if ( error ) {
 			return { error };
+		}
+	}
+
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+
+		if (
+			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				FPM_SETUP_CTA_BANNER_NOTIFICATION
+			)
+		) {
+			const { error: dismissError } =
+				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					FPM_SETUP_CTA_BANNER_NOTIFICATION
+				) ) || {};
+
+			if ( dismissError ) {
+				return { error: dismissError };
+			}
 		}
 	}
 

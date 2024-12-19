@@ -27,8 +27,10 @@ import {
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import SetupErrorNotification from './SetupErrorNotification';
 
+const NOTIFICATION_ID = 'setup_plugin_error';
+
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'setup_error'
+	NOTIFICATION_ID
 )( SetupErrorNotification );
 
 function Template() {

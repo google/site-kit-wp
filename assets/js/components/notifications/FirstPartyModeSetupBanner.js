@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,8 +31,14 @@ import {
 	useTooltipState,
 	AdminMenuTooltip,
 } from '../AdminMenuTooltip';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import FPMSetupCTASVGDesktop from '../../../svg/graphics/first-party-mode-setup-banner-desktop.svg';
@@ -43,14 +49,17 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
+import useViewContext from '../../hooks/useViewContext';
+
+export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
+	'fpm-show-setup-success-notification';
 
 export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
-
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const showTooltip = useShowTooltip( id );
 
@@ -60,9 +69,25 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
 
+	const { dismissNotification, invalidateResolution } =
+		useDispatch( CORE_NOTIFICATIONS );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'first-party-mode-introduction'
+		);
+	} );
+
 	const onCTAClick = () => {
 		setFirstPartyModeEnabled( true );
 		saveFirstPartyModeSettings();
+
+		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
+		invalidateResolution( 'getQueuedNotifications', [
+			viewContext,
+			NOTIFICATION_GROUPS.DEFAULT,
+		] );
 
 		dismissNotification( id );
 	};
@@ -111,15 +136,21 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 					'Get more comprehensive stats by collecting metrics via your own site',
 					'google-site-kit'
 				) }
-				description={ createInterpolateElement(
-					__(
-						'Enable First-party mode (<emphasis>beta</emphasis>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics and Ads metrics.',
-						'google-site-kit'
-					),
-					{
-						emphasis: <em />,
-					}
-				) }
+				description={
+					<Description
+						text={ __(
+							'Enable First-party mode (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ learnMoreURL }
+							/>
+						}
+					/>
+				}
 				actions={
 					<ActionsCTALinkDismiss
 						id={ id }
