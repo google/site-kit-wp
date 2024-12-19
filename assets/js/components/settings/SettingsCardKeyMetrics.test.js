@@ -129,11 +129,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( true );
 
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			includeConversionTailoredMetrics: [ 'contact' ],
-		} );
-
 		const { container, waitForRegistry } = render(
 			<SettingsCardKeyMetrics />,
 			{

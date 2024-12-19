@@ -138,6 +138,7 @@ WithError.args = {
 			.receiveConversionReportingInlineData( {
 				newEvents: [],
 				lostEvents: [],
+				newBadgeEvents: [],
 			} );
 	},
 	features: [ 'conversionReporting' ],
@@ -202,6 +203,7 @@ export default {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'contact' ],
 						lostEvents: [],
+						newBadgeEvents: [ 'contact' ],
 					} );
 
 				// Call story-specific setup.
