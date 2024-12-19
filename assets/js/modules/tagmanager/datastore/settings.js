@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -66,6 +71,11 @@ export const INVARIANT_INVALID_CONTAINER_NAME =
 	'a valid container name is required to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
+
+export const areSettingsEditDependenciesLoaded = createRegistrySelector(
+	( select ) => () =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+);
 
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();

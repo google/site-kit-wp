@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -33,6 +38,13 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
 	'a valid propertyID is required to submit changes';
+
+export const areSettingsEditDependenciesLoaded = createRegistrySelector(
+	( select ) => () =>
+		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+			'getMatchedProperties'
+		)
+);
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
