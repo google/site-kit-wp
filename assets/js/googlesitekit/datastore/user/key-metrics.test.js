@@ -268,12 +268,6 @@ describe( 'core/user key metrics', () => {
 				await registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( false );
-				await registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( {
-						widgetSlugs: [],
-						includeConversionTailoredMetrics: [],
-					} );
 			} );
 
 			it( 'should return undefined if user input settings are not resolved', async () => {
@@ -506,7 +500,7 @@ describe( 'core/user key metrics', () => {
 				],
 			] )(
 				'should return the correct metrics for the %s purpose when conversionReporting is enabled',
-				async (
+				(
 					purpose,
 					expectedMetricsIncludingConversionTailored,
 					conversionEvents
@@ -525,6 +519,10 @@ describe( 'core/user key metrics', () => {
 						.dispatch( CORE_USER )
 						.receiveGetUserInputSettings( {
 							purpose: { values: [ purpose ] },
+							includeConversionEvents: {
+								values: [ 'contact' ],
+								scope: 'site',
+							},
 						} );
 
 					registry
@@ -543,20 +541,21 @@ describe( 'core/user key metrics', () => {
 					}
 
 					// Conversion Tailored Metrics should be included in the list if the
-					// includeConversionTailoredMetrics contains their respective conversion reporting events.
-					await registry
+					// includeConversionEvents contains their respective conversion reporting events.
+					registry
 						.dispatch( CORE_USER )
-						.receiveGetKeyMetricsSettings( {
-							widgetSlugs: [],
-							includeConversionTailoredMetrics: conversionEvents,
+						.receiveGetUserInputSettings( {
+							purpose: { values: [ purpose ] },
+							includeConversionEvents: {
+								values: conversionEvents,
+								scope: 'site',
+							},
 						} );
 
 					expect(
-						registry.select( CORE_USER ).getKeyMetricsSettings()
-					).toEqual( {
-						widgetSlugs: [],
-						includeConversionTailoredMetrics: conversionEvents,
-					} );
+						registry.select( CORE_USER ).getUserInputSettings()
+							?.includeConversionEvents?.values
+					).toEqual( conversionEvents );
 
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()

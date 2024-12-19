@@ -92,6 +92,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
 use stdClass;
@@ -2624,10 +2625,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			return $modules_data;
 		}
 
-		$detected_events                           = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
-		$lost_events                               = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
-		$modules_data['analytics-4']['newEvents']  = is_array( $detected_events ) ? $detected_events : array();
-		$modules_data['analytics-4']['lostEvents'] = is_array( $lost_events ) ? $lost_events : array();
+		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+
+		$modules_data['analytics-4']['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
+		$modules_data['analytics-4']['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
+		$modules_data['analytics-4']['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
 
 		return $modules_data;
 	}
