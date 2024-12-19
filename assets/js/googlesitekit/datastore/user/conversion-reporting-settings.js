@@ -151,7 +151,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether the conversion reporting settings are being saved or not.
+	 * Determines whether the new events callout should be shown or not.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -179,11 +179,11 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Determines whether the conversion reporting settings are being saved or not.
+	 * Determines whether the lost events callout should be shown or not.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean} TRUE if the there were new events detected after the callout was dismissed, otherwise FALSE.
+	 * @return {boolean} TRUE if the there were lost events detected after the callout was dismissed, otherwise FALSE.
 	 */
 	haveLostConversionEventsAfterDismiss: createRegistrySelector(
 		( select ) => ( state, lostEventsLastSyncedAt ) => {
