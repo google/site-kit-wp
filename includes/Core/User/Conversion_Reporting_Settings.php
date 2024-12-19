@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
- * Class for handling audience settings rest routes.
+ * Class for handling conversion reporting settings rest routes.
  *
  * @since n.e.x.t
  * @access private

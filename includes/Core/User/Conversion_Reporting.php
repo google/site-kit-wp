@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
- * Class for handling audience settings rest routes.
+ * Class for handling conversion reporting settings rest routes.
  *
  * @since n.e.x.t
  * @access private
@@ -30,10 +30,10 @@ class Conversion_Reporting {
 	private $conversion_reporting_settings;
 
 	/**
-	 * REST_Audience_Settings_Controller instance.
+	 * REST_Conversion_Reporting_Controller instance.
 	 *
-	 * @since 1.134.0
-	 * @var REST_Audience_Settings_Controller
+	 * @since n.e.x.t
+	 * @var REST_Conversion_Reporting_Controller
 	 */
 	private $rest_controller;
 

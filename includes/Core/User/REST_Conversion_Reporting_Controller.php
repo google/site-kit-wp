@@ -19,7 +19,7 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class for handling audience settings rest routes.
+ * Class for handling conversion reporting settings rest routes.
  *
  * @since n.e.x.t
  * @access private
