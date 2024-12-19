@@ -29,8 +29,11 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 } from './datastore/constants';
+import {
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+} from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
 import {
@@ -58,7 +61,6 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {

@@ -23,6 +23,11 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
@@ -35,77 +40,83 @@ export const VARIANTS = {
 	WARNING: 'warning',
 };
 
-function SubtleNotification( {
-	title,
-	description,
-	Icon,
-	ctaLink,
-	ctaLabel,
-	className,
-	onCTAClick,
-	isCTALinkExternal,
-	dismissLabel,
-	onDismiss,
-	variant = VARIANTS.SUCCESS,
-	hideIcon = false,
-} ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-subtle-notification',
-				{
-					'googlesitekit-subtle-notification--success':
-						variant === VARIANTS.SUCCESS,
-					'googlesitekit-subtle-notification--warning':
-						variant === VARIANTS.WARNING,
-				},
-				className
-			) }
-		>
-			{ ! hideIcon && (
-				<div className="googlesitekit-subtle-notification__icon">
-					{ Icon && <Icon width={ 24 } height={ 24 } /> }
-					{ ! Icon && variant === VARIANTS.SUCCESS && (
-						<CheckFillSVG width={ 24 } height={ 24 } />
-					) }
-					{ ! Icon && variant === VARIANTS.WARNING && (
-						<WarningSVG width={ 24 } height={ 24 } />
+const SubtleNotification = forwardRef(
+	(
+		{
+			title,
+			description,
+			Icon,
+			ctaLink,
+			ctaLabel,
+			className,
+			onCTAClick,
+			isCTALinkExternal,
+			dismissLabel,
+			onDismiss,
+			variant = VARIANTS.SUCCESS,
+			hideIcon = false,
+		},
+		ref
+	) => {
+		return (
+			<div
+				ref={ ref }
+				className={ classnames(
+					'googlesitekit-subtle-notification',
+					{
+						'googlesitekit-subtle-notification--success':
+							variant === VARIANTS.SUCCESS,
+						'googlesitekit-subtle-notification--warning':
+							variant === VARIANTS.WARNING,
+					},
+					className
+				) }
+			>
+				{ ! hideIcon && (
+					<div className="googlesitekit-subtle-notification__icon">
+						{ Icon && <Icon width={ 24 } height={ 24 } /> }
+						{ ! Icon && variant === VARIANTS.SUCCESS && (
+							<CheckFillSVG width={ 24 } height={ 24 } />
+						) }
+						{ ! Icon && variant === VARIANTS.WARNING && (
+							<WarningSVG width={ 24 } height={ 24 } />
+						) }
+					</div>
+				) }
+				<div className="googlesitekit-subtle-notification__content">
+					<p>{ title }</p>
+					{ description && (
+						<p className="googlesitekit-subtle-notification__secondary_description">
+							{ description }
+						</p>
 					) }
 				</div>
-			) }
-			<div className="googlesitekit-subtle-notification__content">
-				<p>{ title }</p>
-				{ description && (
-					<p className="googlesitekit-subtle-notification__secondary_description">
-						{ description }
-					</p>
-				) }
+				<div className="googlesitekit-subtle-notification__action">
+					{ dismissLabel && (
+						<Button tertiary onClick={ onDismiss }>
+							{ dismissLabel }
+						</Button>
+					) }
+					{ ctaLabel && (
+						<Button
+							className="googlesitekit-subtle-notification__cta"
+							href={ ctaLink }
+							onClick={ onCTAClick }
+							target={ isCTALinkExternal ? '_blank' : '_self' }
+							trailingIcon={
+								isCTALinkExternal ? (
+									<ExternalSVG width={ 14 } height={ 14 } />
+								) : undefined
+							}
+						>
+							{ ctaLabel }
+						</Button>
+					) }
+				</div>
 			</div>
-			<div className="googlesitekit-subtle-notification__action">
-				{ dismissLabel && (
-					<Button tertiary onClick={ onDismiss }>
-						{ dismissLabel }
-					</Button>
-				) }
-				{ ctaLabel && (
-					<Button
-						className="googlesitekit-subtle-notification__cta"
-						href={ ctaLink }
-						onClick={ onCTAClick }
-						target={ isCTALinkExternal ? '_blank' : '_self' }
-						trailingIcon={
-							isCTALinkExternal ? (
-								<ExternalSVG width={ 14 } height={ 14 } />
-							) : undefined
-						}
-					>
-						{ ctaLabel }
-					</Button>
-				) }
-			</div>
-		</div>
-	);
-}
+		);
+	}
+);
 
 SubtleNotification.propTypes = {
 	title: PropTypes.node.isRequired,
