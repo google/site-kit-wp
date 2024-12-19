@@ -24,7 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../../tests/js/utils';
 import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
@@ -38,6 +41,7 @@ import * as tracking from '../../../../util/tracking';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_MODULE_SLUG,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -59,6 +63,15 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
+
+		provideModules( registry, [
+			{
+				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				active: true,
+				connected: true,
+			},
+		] );
+
 		registry
 			.dispatch( CORE_UI )
 			.setValue(
