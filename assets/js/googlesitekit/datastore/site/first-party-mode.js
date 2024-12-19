@@ -90,12 +90,19 @@ const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
 		API.get( 'core', 'site', 'fpm-server-requirement-status', undefined, {
 			useCache: false,
 		} ),
-	reducerCallback: settingsReducerCallback,
+	reducerCallback: createReducer(
+		( state, { settings: firstPartyModeSettings, healthcheck } ) => {
+			state.firstPartyModeSettings = firstPartyModeSettings;
+			state.firstPartyModeSavedSettings = firstPartyModeSettings;
+			state.healthcheck = healthcheck;
+		}
+	),
 } );
 
 const baseInitialState = {
 	firstPartyModeSettings: undefined,
 	firstPartyModeSavedSettings: undefined,
+	healthcheck: undefined,
 };
 
 const baseActions = {
@@ -188,6 +195,18 @@ const baseSelectors = {
 	 */
 	getFirstPartyModeSettings: ( state ) => {
 		return state.firstPartyModeSettings;
+	},
+
+	/**
+	 * Gets the first-party mode healthcheck.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object|undefined} First-party mode healthcheck, or undefined if not loaded.
+	 */
+	getFirstPartyModeHealthcheck: ( state ) => {
+		return state.healthcheck;
 	},
 
 	/**
