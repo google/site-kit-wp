@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useRef, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,9 +35,33 @@ import { SpinnerButton } from 'googlesitekit-components';
 import StarFill from '../../../svg/icons/star-fill.svg';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function ConversionReportingSettingsSubtleNotification() {
+	const viewContext = useViewContext();
 	const [ isNavigating, setIsNavigating ] = useState( false );
+	const [ isViewed, setIsViewed ] = useState( false );
+
+	const notificationRef = useRef();
+	const intersectionEntry = useIntersection( notificationRef, {
+		threshold: 0.25,
+	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	// Track when the notification is viewed.
+	useEffect( () => {
+		if ( ! isViewed && inView ) {
+			// Handle internal tracking.
+			trackEvent(
+				`${ viewContext }_kmw-settings-change-from-manual-to-tailored`,
+				'view_notification',
+				'conversion_reporting'
+			);
+
+			setIsViewed( true );
+		}
+	}, [ isViewed, inView, viewContext ] );
 
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -40,10 +69,18 @@ export default function ConversionReportingSettingsSubtleNotification() {
 
 	const handleCTAClick = useCallback( () => {
 		setIsNavigating( true );
-	}, [ setIsNavigating ] );
+
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-change-from-manual-to-tailored`,
+			'confirm_get_tailored_metrics',
+			'conversion_reporting'
+		);
+	}, [ setIsNavigating, viewContext ] );
 
 	return (
 		<SubtleNotification
+			ref={ notificationRef }
 			className="googlesitekit-acr-subtle-notification"
 			title={ __( 'Personalize your metrics', 'google-site-kit' ) }
 			description={ __(
