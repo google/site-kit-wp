@@ -23,13 +23,13 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: $grid-gap-phone;
+	padding: 14px $grid-gap-phone;
 
 	@media (min-width: $bp-tablet) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
-		padding: 18px $grid-gap-desktop;
+		padding: 14px $grid-gap-desktop;
 	}
 
 	.googlesitekit-subtle-notification__icon {
@@ -86,7 +86,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: $grid-gap-phone;
-		justify-content: center;
+		justify-content: end;
 		width: 100%;
 
 		@media (min-width: $bp-tablet) {
