@@ -49,6 +49,7 @@ import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
+import Null from '../../../components/Null';
 import {
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -56,6 +57,11 @@ import {
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+
+const icons = {
+	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
+	[ KEY_METRICS_GROUP_SUGGESTED.SLUG ]: StarFill,
+};
 
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const [ isActive, setIsActive ] = useState(
@@ -383,30 +389,29 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 							onChipChange( null, index )
 						}
 					>
-						{ allGroups.map( ( group, index ) => (
-							<Tab key={ index } aria-label={ group.LABEL }>
-								{ index === 0 && (
-									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg">
-										<CheckMark width={ 12 } height={ 12 } />
-									</span>
-								) }
-								{ KEY_METRICS_GROUP_SUGGESTED.SLUG ===
-									group.SLUG && (
-									<span className="googlesitekit-chip-tab-group__tab-item-mobile-svg googlesitekit-chip-tab-group__tab-item-mobile-svg--suggested">
-										<StarFill width={ 12 } height={ 12 } />
-									</span>
-								) }
-								{ group.LABEL }
-								{ selectedCounts[ group.SLUG ] > 0 && (
-									<span className="googlesitekit-chip-tab-group__chip-item-count">
-										({ selectedCounts[ group.SLUG ] })
-									</span>
-								) }
-								{ !! newlyDetectedMetrics?.[ group.SLUG ] && (
-									<span className="googlesitekit-chip-tab-group__chip-item-new-dot" />
-								) }
-							</Tab>
-						) ) }
+						{ allGroups.map( ( group, index ) => {
+							const Icon = icons[ group.SLUG ] || Null;
+							return (
+								<Tab key={ index } aria-label={ group.LABEL }>
+									<Icon
+										width={ 12 }
+										height={ 12 }
+										className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__tab-item-mobile-svg googlesitekit-chip-tab-group__chip-item-svg__${ group.SLUG }` }
+									/>
+									{ group.LABEL }
+									{ selectedCounts[ group.SLUG ] > 0 && (
+										<span className="googlesitekit-chip-tab-group__chip-item-count">
+											({ selectedCounts[ group.SLUG ] })
+										</span>
+									) }
+									{ !! newlyDetectedMetrics?.[
+										group.SLUG
+									] && (
+										<span className="googlesitekit-chip-tab-group__chip-item-new-dot" />
+									) }
+								</Tab>
+							);
+						} ) }
 					</TabBar>
 				) }
 			</div>
