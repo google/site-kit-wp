@@ -203,7 +203,10 @@ class User_Input {
 			}
 		}
 
-		// Conversion events can be empty on setup if no event has been detected.
+		// Conversion events may be empty during setup if no events have been detected.
+		// Since this setting does not affect whether user input is considered "set up",
+		// we are excluding it from this check. It relates to user input initially being
+		// set up with detected events or events added later.
 		unset( $settings['includeConversionEvents'] );
 
 		foreach ( $settings as $setting ) {
