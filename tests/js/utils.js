@@ -427,7 +427,6 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 			KM_ANALYTICS_NEW_VISITORS,
 			KM_ANALYTICS_RETURNING_VISITORS,
 		],
-		includeConversionTailoredMetrics: [],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
@@ -451,6 +450,10 @@ export const provideKeyMetricsUserInputSettings = (
 	const defaults = {
 		purpose: {
 			values: [ 'publish_news' ],
+			scope: 'site',
+		},
+		includeConversionEvents: {
+			values: [],
 			scope: 'site',
 		},
 	};

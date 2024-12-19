@@ -86,7 +86,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	// Initial callout is surfaced to the users with tailored metrics, if detectedEvents setting
 	// has a conversion event associated with the ACR key metrics matching the current site purpose answer.
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
-	// and have not been already included, which is determined by includeConversionTailoredMetrics setting, callout banner should be displayed.
+	// and have not been already included, which is determined by includeConversionEvents user input setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
 		! hasUserPickedMetrics?.length &&
 		isUserInputCompleted &&
@@ -123,7 +123,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
 	);
 
-	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
+	const { setUserInputSetting, saveUserInputSettings } =
 		useDispatch( CORE_USER );
 	const {
 		dismissNewConversionReportingEvents,
@@ -180,13 +180,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
-			setKeyMetricsSetting(
-				'includeConversionTailoredMetrics',
+			setUserInputSetting(
+				'includeConversionEvents',
 				userInputPurposeConversionEvents
 			);
-			saveKeyMetricsSettings( {
-				widgetSlugs: undefined,
-			} );
+			saveUserInputSettings();
 			setIsSaving( false );
 		}
 
@@ -199,13 +197,13 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 		dismissNewConversionReportingEvents();
 	}, [
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
-		conversionReportingDetectedEventsTrackingArgs,
+		setUserInputSetting,
+		saveUserInputSettings,
 		dismissNewConversionReportingEvents,
 		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
 		viewContext,
+		conversionReportingDetectedEventsTrackingArgs,
 	] );
 
 	const { setValue } = useDispatch( CORE_UI );
