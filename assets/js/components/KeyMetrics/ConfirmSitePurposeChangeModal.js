@@ -50,11 +50,14 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
 	handleDialog = null,
 } ) {
+	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const includeConversionTailoredMetrics = useSelect( ( select ) => {
@@ -113,6 +116,14 @@ function ConfirmSitePurposeChangeModal( {
 		setUIValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 		} );
+
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+			'cancel_update_metrics_selection',
+			'conversion_reporting'
+		);
+
 		handleDialog();
 	}, [
 		handleDialog,
@@ -120,6 +131,7 @@ function ConfirmSitePurposeChangeModal( {
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
+		viewContext,
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
@@ -150,6 +162,14 @@ function ConfirmSitePurposeChangeModal( {
 		await saveUserInputSettings();
 
 		setIsSaving( false );
+
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+			'confirm_update_metrics_selection',
+			'conversion_reporting'
+		);
+
 		onClose();
 	}, [
 		saveUserInputSettings,
@@ -157,6 +177,7 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving,
 		setUserInputSetting,
 		userInputPurposeConversionEvents,
+		viewContext,
 	] );
 
 	return (
