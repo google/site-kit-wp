@@ -103,7 +103,7 @@
     ],
     "lint": "phpcs",
     "lint-fix": "phpcbf",
-    "test": "GOOGLESITEKIT_TEST=1 phpunit",
+    "test": "phpunit",
     "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }
 }

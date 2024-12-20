@@ -28,7 +28,7 @@ class Exit_Handler {
 			exit;
 		};
 
-		if ( getenv( 'GOOGLESITEKIT_TEST' ) ) {
+		if ( defined( 'GOOGLESITEKIT_TESTS' ) ) {
 			/**
 			 * Allows the callback to be filtered during tests.
 			 *
