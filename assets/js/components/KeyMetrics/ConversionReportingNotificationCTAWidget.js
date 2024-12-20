@@ -257,7 +257,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				dismissCallout();
 			}
 
-			if ( shouldShowCalloutForLostEvents ) {
+			if (
+				shouldShowCalloutForLostEvents &&
+				! isSavingConversionReportingSettings
+			) {
 				dismissCallout( 'lostEvents' );
 			}
 		}
