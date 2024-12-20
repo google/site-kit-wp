@@ -283,13 +283,14 @@ class RequestHelper
 // REQUEST_HELPER_END
 
 /* Start of Site Kit modified code.
- * The condition has been modified to include a check for WPINC.
+ * The condition has been modified to include checks for GOOGLESITEKIT_TEST and WPINC.
  *
- * WPINC is defined when WordPress is loaded, and Site Kit includes this file in a WordPress
- * context in order to use the RequestHelper class.
+ * - The environment variable GOOGLESITEKIT_TEST is set when running Site Kit tests with composer.
+ * - The constant WPINC is defined when WordPress is loaded. Site Kit includes this file in a WordPress
+ *   context in order to use the RequestHelper class.
  */
 // Skip initial run for testing and when WordPress is loaded.
-if (!defined('IS_FIRST_PARTY_MODE_TEST') && !defined( 'WPINC')) {
+if (!defined('IS_FIRST_PARTY_MODE_TEST') && !getenv('GOOGLESITEKIT_TEST') && !defined('WPINC')) {
 /* End of Site Kit modified code. */
     $requestHelper = new RequestHelper();
     $response = (new Measurement($requestHelper))->run();
