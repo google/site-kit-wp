@@ -199,11 +199,11 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 
 		$response = $request_helper->sendRequest( $endpoint );
 
-		if ( 'ok' !== $response['body'] ) {
+		if ( 200 !== $response['statusCode'] ) {
 			return false;
 		}
 
-		if ( 200 !== $response['statusCode'] ) {
+		if ( 'ok' !== $response['body'] ) {
 			return false;
 		}
 
