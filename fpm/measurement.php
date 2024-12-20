@@ -21,7 +21,8 @@
 
 namespace Google\FirstPartyLibrary;
 
-/* Start of Site Kit modified code. */
+/* Start of Site Kit modified code.
+ * This block is an addition to the original file. */
 if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 	echo 'ok';
 	exit;
@@ -281,8 +282,15 @@ class RequestHelper
 }
 // REQUEST_HELPER_END
 
-// Skip initial run for testing
-if (!defined('IS_FIRST_PARTY_MODE_TEST')) {
+/* Start of Site Kit modified code.
+ * The condition has been modified to include a check for WPINC.
+ *
+ * WPINC is defined when WordPress is loaded, and Site Kit includes this file in a WordPress
+ * context in order to use the RequestHelper class.
+ */
+// Skip initial run for testing and when WordPress is loaded.
+if (!defined('IS_FIRST_PARTY_MODE_TEST') && !defined( 'WPINC')) {
+/* End of Site Kit modified code. */
     $requestHelper = new RequestHelper();
     $response = (new Measurement($requestHelper))->run();
 

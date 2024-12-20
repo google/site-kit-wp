@@ -30,6 +30,9 @@
     "paragonie/random_compat": ">=2"
   },
   "autoload": {
+    "files": [
+      "fpm/measurement.php"
+    ],
     "psr-4": {
       "Google\\Site_Kit\\": "includes"
     }
