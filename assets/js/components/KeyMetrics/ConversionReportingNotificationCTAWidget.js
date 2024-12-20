@@ -139,6 +139,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		haveLostConversionEvents,
 	] );
 
+	const isSavingConversionReportingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingConversionReportingSettings()
+	);
+
 	const { saveConversionReportingSettings } = useDispatch( CORE_USER );
 
 	const dismissCallout = useCallback(
@@ -154,21 +158,24 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 					timestamp;
 			}
 
-			await saveConversionReportingSettings(
-				conversionReportingSettings
-			);
+			if ( ! isSavingConversionReportingSettings ) {
+				await saveConversionReportingSettings(
+					conversionReportingSettings
+				);
 
-			// Handle internal tracking.
-			conversionReportingDetectedEventsTracking(
-				conversionReportingDetectedEventsTrackingArgs,
-				viewContext,
-				'dismiss_notification'
-			);
+				// Handle internal tracking.
+				conversionReportingDetectedEventsTracking(
+					conversionReportingDetectedEventsTrackingArgs,
+					viewContext,
+					'dismiss_notification'
+				);
+			}
 		},
 		[
 			viewContext,
 			conversionReportingDetectedEventsTrackingArgs,
 			saveConversionReportingSettings,
+			isSavingConversionReportingSettings,
 		]
 	);
 
@@ -227,9 +234,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	const isSelectionPanelOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
-	);
-	const isSavingConversionReportingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingConversionReportingSettings()
 	);
 
 	// Handle dismiss on opening of the selection panel.
