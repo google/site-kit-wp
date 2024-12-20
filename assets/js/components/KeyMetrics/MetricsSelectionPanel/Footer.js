@@ -151,7 +151,7 @@ export default function Footer( {
 				conversionReportingSpecificKeyMetricsWidgets
 			)
 				.flat()
-				.some( ( n ) => selectedItemSlugs.includes( n ) );
+				.some( ( slug ) => selectedItemSlugs.includes( slug ) );
 
 			// Include the conversion_reporting tracking label if necessary.
 			if ( userSavedConversionReportingKeyMetricsList ) {
