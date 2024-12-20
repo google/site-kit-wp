@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 
+use Google\FirstPartyLibrary\RequestHelper;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
@@ -186,22 +187,24 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 *
 	 * @since 1.141.0
 	 * @since 1.142.0 Relocated from REST_First_Party_Mode_Controller.
+	 * @since n.e.x.t Uses Google\FirstPartyLibrary\RequestHelper to send requests.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
-		try {
-			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$response = file_get_contents( $endpoint );
-		} catch ( \Exception $e ) {
+		$request_helper = new RequestHelper();
+
+		$response = $request_helper->sendRequest( $endpoint );
+
+		if ( 'ok' !== $response['body'] ) {
 			return false;
 		}
 
-		if ( 'ok' !== $response ) {
+		if ( 200 !== $response['statusCode'] ) {
 			return false;
 		}
 
-		return strpos( $http_response_header[0], '200 OK' ) !== false;
+		return true;
 	}
 }
