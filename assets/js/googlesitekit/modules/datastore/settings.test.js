@@ -72,7 +72,7 @@ describe( 'core/modules settings', () => {
 
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
-			it( 'should return an error if a module doesnt exist', async () => {
+			it( "should return an error if a module doesn't exist", async () => {
 				const expectedError = {
 					error: `The module '${ nonExistentModuleSlug }' does not have a store.`,
 				};
@@ -102,13 +102,39 @@ describe( 'core/modules settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'areSettingsEditDependenciesLoaded', () => {
-			it( 'should return true for non existent module', () => {
+			it( 'should return undefined if the module store has not been registered', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
 						.areSettingsEditDependenciesLoaded(
 							nonExistentModuleSlug
 						)
+				).toBe( undefined );
+			} );
+
+			it( 'should return true for module which does not implement areSettingsEditDependenciesLoaded', () => {
+				const notImplementedSlug = 'not-implemented-module';
+				const notImplementedModuleStoreName = `test/${ notImplementedSlug }`;
+
+				registry.registerStore(
+					notImplementedModuleStoreName,
+					Modules.createModuleStore( notImplementedSlug, {
+						storeName: notImplementedModuleStoreName,
+					} )
+				);
+
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( notImplementedSlug, {
+						storeName: notImplementedModuleStoreName,
+					} );
+
+				provideModules( registry );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.areSettingsEditDependenciesLoaded( notImplementedSlug )
 				).toBe( true );
 			} );
 
