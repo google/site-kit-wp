@@ -466,7 +466,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
-			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
 		);
 	}
