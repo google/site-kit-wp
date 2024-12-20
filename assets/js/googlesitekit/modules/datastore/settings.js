@@ -124,26 +124,28 @@ export const controls = {
 
 export const selectors = {
 	/**
-	 * Checks whether changes are currently loading for a module.
+	 * Checks whether settings edit dependencies are currently loading for a module.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} slug Slug for module store.
-	 * @return {boolean} Whether or not changes are currently loading for the module.
+	 * @param {string} slug Module slug.
+	 * @return {boolean?} Whether or not settings edit dependencies are currently loading for the module,
+	 *                    or `undefined` if the store doesn't exist.
 	 */
 	areSettingsEditDependenciesLoaded: createRegistrySelector(
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'slug is required.' );
 			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
-			const moduleStore = select( storeName );
-			if ( ! moduleStore ) {
+			const moduleSelectors = select( storeName );
+			if ( ! moduleSelectors ) {
 				return undefined;
 			}
-			const areSettingsEditDependenciesLoaded =
-				moduleStore.areSettingsEditDependenciesLoaded?.();
+
 			return (
-				areSettingsEditDependenciesLoaded ||
-				areSettingsEditDependenciesLoaded === undefined
+				// If the module doesn't implement the selector, consider dependencies loaded,
+				! moduleSelectors.areSettingsEditDependenciesLoaded ||
+				// otherwise defer to the result of the selector.
+				!! moduleSelectors.areSettingsEditDependenciesLoaded()
 			);
 		}
 	),
