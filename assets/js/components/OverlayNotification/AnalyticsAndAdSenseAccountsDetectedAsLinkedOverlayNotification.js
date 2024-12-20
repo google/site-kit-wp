@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -47,11 +48,12 @@ import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import whenActive from '../../util/when-active';
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
-export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
+function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const breakpoint = useBreakpoint();
 
 	const dashboardType = useDashboardType();
@@ -251,3 +253,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		</OverlayNotification>
 	);
 }
+
+export default compose(
+	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: 'adsense' } )
+)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );

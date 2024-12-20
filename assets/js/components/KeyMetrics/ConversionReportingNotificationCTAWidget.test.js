@@ -67,8 +67,8 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	const fetchDismissNotification = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
 	);
-	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+	const userInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
 	beforeEach( () => {
@@ -107,13 +107,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		beforeEach( () => {
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 				widgetSlugs: [],
-				includeConversionTailoredMetrics: [],
 				isWidgetHidden: false,
 			} );
 
 			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 				purpose: {
 					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+				includeConversionEvents: {
+					values: [],
 					scope: 'site',
 				},
 			} );
@@ -159,13 +162,18 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does not render when includeConversionTailoredMetrics contains existing events', async () => {
+		it( 'does not render when includeConversionEvents contains existing events', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
-			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-				widgetSlugs: [],
-				includeConversionTailoredMetrics: [ 'contact' ],
-				isWidgetHidden: false,
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+				includeConversionEvents: {
+					values: [ 'contact' ],
+					scope: 'site',
+				},
 			} );
 
 			const { container, waitForRegistry } = render(
@@ -214,7 +222,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does render when includeConversionTailoredMetrics is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
+		it( 'does render when includeConversionEvents is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
 			const { waitForRegistry } = render(
@@ -269,11 +277,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			fetchMock.postOnce( fetchDismissNotification, {
 				body: true,
 			} );
-			fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+			fetchMock.postOnce( userInputSettingsEndpointRegExp, {
 				body: {
-					widgetSlugs: undefined,
-					includeConversionTailoredMetrics: [ 'contact' ],
-					isWidgetHidden: false,
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ 'contact' ],
+						scope: 'site',
+					},
 				},
 				status: 200,
 			} );
@@ -325,9 +338,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 			} );
 
-			const keyMetricSettings = registry
+			const userInputSettings = registry
 				.select( CORE_USER )
-				.getKeyMetricsSettings();
+				.getUserInputSettings();
 
 			const newMetrics = registry
 				.select( CORE_USER )
@@ -335,7 +348,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			expect( fetchMock ).toHaveFetchedTimes( 2 );
 			expect(
-				keyMetricSettings?.includeConversionTailoredMetrics
+				userInputSettings?.includeConversionEvents?.values
 			).toEqual( [ 'contact' ] );
 
 			expect( newMetrics ).toEqual( [
@@ -648,13 +661,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ 'contact' ],
 						scope: 'site',
 					},
 				} );
@@ -719,13 +735,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'sell_products' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ 'contact' ],
 						scope: 'site',
 					},
 				} );
@@ -769,13 +788,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'purchase' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'sell_products' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ 'purchase' ],
 						scope: 'site',
 					},
 				} );
@@ -851,13 +873,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ 'contact' ],
 						scope: 'site',
 					},
 				} );

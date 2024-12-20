@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -34,6 +35,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 	private $user;
 	private $settings;
 	private $analytics;
+	private $new_badge_events_sync;
 	private $authentication;
 	private $request_handler_calls;
 
@@ -61,6 +63,8 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$this->authentication = new Authentication( $context, $options, $user_options );
 
 		$this->analytics = new Analytics_4( $context, $options, $user_options, $this->authentication );
+
+		$this->new_badge_events_sync = new Conversion_Reporting_New_Badge_Events_Sync( $this->transients );
 
 		wp_set_current_user( $this->user->ID );
 	}
@@ -117,9 +121,10 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 
 	public function get_instance() {
 		return new Conversion_Reporting_Events_Sync(
-			$this->context,
 			$this->settings,
-			$this->analytics
+			$this->transients,
+			$this->analytics,
+			$this->new_badge_events_sync
 		);
 	}
 

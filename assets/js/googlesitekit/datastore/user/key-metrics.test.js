@@ -91,14 +91,6 @@ describe( 'core/user key metrics', () => {
 		},
 	};
 
-	const coreKeyMetricsResetMetricSelectionEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/reset-key-metrics-selection'
-	);
-	const coreKeyMetricsResetMetricSelectionExpectedResponse = {
-		widgetSlugs: [],
-		isWidgetHidden: false,
-	};
-
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -276,12 +268,6 @@ describe( 'core/user key metrics', () => {
 				await registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( false );
-				await registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( {
-						widgetSlugs: [],
-						includeConversionTailoredMetrics: [],
-					} );
 			} );
 
 			it( 'should return undefined if user input settings are not resolved', async () => {
@@ -514,7 +500,7 @@ describe( 'core/user key metrics', () => {
 				],
 			] )(
 				'should return the correct metrics for the %s purpose when conversionReporting is enabled',
-				async (
+				(
 					purpose,
 					expectedMetricsIncludingConversionTailored,
 					conversionEvents
@@ -533,6 +519,10 @@ describe( 'core/user key metrics', () => {
 						.dispatch( CORE_USER )
 						.receiveGetUserInputSettings( {
 							purpose: { values: [ purpose ] },
+							includeConversionEvents: {
+								values: [ 'contact' ],
+								scope: 'site',
+							},
 						} );
 
 					registry
@@ -551,20 +541,21 @@ describe( 'core/user key metrics', () => {
 					}
 
 					// Conversion Tailored Metrics should be included in the list if the
-					// includeConversionTailoredMetrics contains their respective conversion reporting events.
-					await registry
+					// includeConversionEvents contains their respective conversion reporting events.
+					registry
 						.dispatch( CORE_USER )
-						.receiveGetKeyMetricsSettings( {
-							widgetSlugs: [],
-							includeConversionTailoredMetrics: conversionEvents,
+						.receiveGetUserInputSettings( {
+							purpose: { values: [ purpose ] },
+							includeConversionEvents: {
+								values: conversionEvents,
+								scope: 'site',
+							},
 						} );
 
 					expect(
-						registry.select( CORE_USER ).getKeyMetricsSettings()
-					).toEqual( {
-						widgetSlugs: [],
-						includeConversionTailoredMetrics: conversionEvents,
-					} );
+						registry.select( CORE_USER ).getUserInputSettings()
+							?.includeConversionEvents?.values
+					).toEqual( conversionEvents );
 
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
@@ -821,53 +812,6 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_SITE ).isKeyMetricsSetupCompleted()
 				).toBe( false );
-
-				expect( console ).not.toHaveErrored();
-			} );
-		} );
-
-		describe( 'resetKeyMetricsSelection', () => {
-			it( 'should clear widgetSlugs on resetKeyMetricsSelection', async () => {
-				const userID = 123;
-				provideUserInfo( registry, { id: userID } );
-				provideUserAuthentication( registry );
-
-				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
-					body: coreKeyMetricsExpectedResponse,
-					status: 200,
-				} );
-
-				fetchMock.postOnce(
-					coreKeyMetricsResetMetricSelectionEndpointRegExp,
-					{
-						body: coreKeyMetricsResetMetricSelectionExpectedResponse,
-						status: 200,
-					}
-				);
-
-				await registry
-					.dispatch( CORE_USER )
-					.receiveGetKeyMetricsSettings( {
-						widgetSlugs: [
-							KM_ANALYTICS_NEW_VISITORS,
-							KM_ANALYTICS_PAGES_PER_VISIT,
-						],
-						isWidgetHidden: false,
-					} );
-
-				expect( store.getState().keyMetricsSettings ).toMatchObject( {
-					widgetSlugs: [
-						KM_ANALYTICS_NEW_VISITORS,
-						KM_ANALYTICS_PAGES_PER_VISIT,
-					],
-					isWidgetHidden: false,
-				} );
-
-				await registry.dispatch( CORE_USER ).resetKeyMetricsSelection();
-
-				expect( store.getState().keyMetricsSettings ).toMatchObject( {
-					widgetSlugs: [],
-				} );
 
 				expect( console ).not.toHaveErrored();
 			} );
