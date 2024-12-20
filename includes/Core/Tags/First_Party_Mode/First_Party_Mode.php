@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 
+require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
+
 use Google\FirstPartyLibrary\RequestHelper;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
