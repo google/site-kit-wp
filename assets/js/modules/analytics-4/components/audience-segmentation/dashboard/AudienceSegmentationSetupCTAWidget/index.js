@@ -83,6 +83,13 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 		)
 	);
+
+	const isDismissingPrompt = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingPrompt(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)
+	);
+
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
@@ -228,7 +235,8 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed ||
-		! dismissedPromptsLoaded
+		! dismissedPromptsLoaded ||
+		isDismissingPrompt
 	) {
 		return null;
 	}

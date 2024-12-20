@@ -82,6 +82,12 @@ function EnhancedMeasurementActivationBanner() {
 		)
 	);
 
+	const isDismissingBanner = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem(
+			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+		)
+	);
+
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics-4' )
 	);
@@ -205,7 +211,11 @@ function EnhancedMeasurementActivationBanner() {
 		);
 	}
 
-	if ( ! isEnhancedMeasurementInitiallyDisabled || isBannerDismissed ) {
+	if (
+		! isEnhancedMeasurementInitiallyDisabled ||
+		isBannerDismissed ||
+		isDismissingBanner
+	) {
 		return null;
 	}
 

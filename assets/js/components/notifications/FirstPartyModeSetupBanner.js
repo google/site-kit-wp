@@ -50,6 +50,7 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -67,6 +68,10 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 	const isItemDismissed = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
+	);
+
+	const isDismissing = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem( id )
 	);
 
 	const { dismissNotification, invalidateResolution } =
@@ -112,7 +117,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		);
 	}
 
-	if ( isItemDismissed ) {
+	if ( isItemDismissed || isDismissing ) {
 		return null;
 	}
 
