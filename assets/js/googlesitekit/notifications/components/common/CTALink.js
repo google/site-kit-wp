@@ -31,6 +31,7 @@ import { useState } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../datastore/location/constants';
+import { CORE_SITE } from '../../../datastore/site/constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { SpinnerButton } from 'googlesitekit-components';
 
@@ -39,7 +40,9 @@ export default function CTALink( {
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
-	dismissExpires = -1,
+	dismissOnCTAClick = false,
+	dismissExpires = 0,
+	dismissOptions = { skipHidingFromQueue: true },
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
 		useState( false );
@@ -53,28 +56,39 @@ export default function CTALink( {
 			: false;
 	} );
 
+	const { clearError, receiveError } = useDispatch( CORE_SITE );
+
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const handleCTAClick = async ( event ) => {
+		clearError( 'notificationAction', [ id ] );
+
 		event.persist();
 		if ( ! event.defaultPrevented && ctaLink ) {
 			event.preventDefault();
 		}
 
 		setIsAwaitingCTAResponse( true );
-		await onCTAClick?.( event );
+
+		const { error } = ( await onCTAClick?.( event ) ) || {};
+
 		if ( isMounted() ) {
 			setIsAwaitingCTAResponse( false );
 		}
 
+		if ( error ) {
+			receiveError( error, 'notificationAction', [ id ] );
+			return;
+		}
+
 		const ctaClickActions = [ trackEvents.confirm() ];
 
-		if ( dismissExpires >= 0 ) {
+		if ( dismissOnCTAClick ) {
 			ctaClickActions.push(
 				dismissNotification( id, {
+					...dismissOptions,
 					expiresInSeconds: dismissExpires,
-					skipHidingFromQueue: true,
 				} )
 			);
 		}
@@ -105,5 +119,7 @@ CTALink.propTypes = {
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
+	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
+	dismissOptions: PropTypes.object,
 };
