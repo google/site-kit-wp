@@ -348,7 +348,7 @@ export function validateCanSubmitChanges( select ) {
 }
 
 export function validateHaveSettingsChanged( select, state, keys ) {
-	const { settings: newSettings, savedSettings } = state;
+	const { settings, savedSettings } = state;
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
@@ -357,10 +357,7 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 
 	if ( keys ) {
 		invariant(
-			! isEqual(
-				pick( newSettings, keys ),
-				pick( savedSettings, keys )
-			) ||
+			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
 				haveConversionTrackingSettingsChanged ||
 				haveFirstPartyModeSettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
@@ -368,7 +365,7 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	}
 
 	invariant(
-		! isEqual( newSettings, savedSettings ) ||
+		! isEqual( settings, savedSettings ) ||
 			haveConversionTrackingSettingsChanged ||
 			haveFirstPartyModeSettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED
