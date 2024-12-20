@@ -35,10 +35,10 @@ import properties from './properties';
 import report from './report';
 import pivotReport from './pivot-report';
 import service from './service';
+import settings from './settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
-import { settings } from './settings';
 
 const store = combineStores(
 	accounts,

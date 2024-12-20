@@ -68,7 +68,7 @@ export const INVARIANT_INVALID_CONTAINER_NAME =
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
 
-export const settings = {
+const store = {
 	selectors: {
 		areSettingsEditDependenciesLoaded: createRegistrySelector(
 			( select ) => () =>
@@ -78,6 +78,7 @@ export const settings = {
 		),
 	},
 };
+export default store;
 
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();

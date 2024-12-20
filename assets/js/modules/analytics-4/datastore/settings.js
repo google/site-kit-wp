@@ -68,7 +68,7 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
 
-export const settings = {
+const store = {
 	selectors: {
 		areSettingsEditDependenciesLoaded: createRegistrySelector(
 			( select ) => () =>
@@ -78,6 +78,7 @@ export const settings = {
 		),
 	},
 };
+export default store;
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();

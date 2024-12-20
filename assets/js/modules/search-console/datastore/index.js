@@ -24,8 +24,8 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 import baseModuleStore from './base';
 import report from './report';
 import service from './service';
+import settings from './settings';
 import properties from './properties';
-import { settings } from './settings';
 
 const store = combineStores(
 	baseModuleStore,

@@ -35,7 +35,7 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
 	'a valid propertyID is required to submit changes';
 
-export const settings = {
+const store = {
 	selectors: {
 		areSettingsEditDependenciesLoaded: createRegistrySelector(
 			( select ) => () =>
@@ -45,6 +45,7 @@ export const settings = {
 		),
 	},
 };
+export default store;
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
