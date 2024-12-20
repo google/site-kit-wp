@@ -20,8 +20,21 @@ services:
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ../../tests/e2e/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ./wordpress/ca-certificates:/usr/local/share/ca-certificates/
+      # - ./proxy/hosts:/etc/hosts
     depends_on:
       - mysql
+
+  proxy:
+    image: nginx:1.27.2-alpine
+    ports:
+      - 9003:80
+      - 443:443
+    volumes:
+      - ./proxy/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/certs:/etc/nginx/certs
+    depends_on:
+      - wordpress
 
   wordpress-debug-log:
     image: alpine
