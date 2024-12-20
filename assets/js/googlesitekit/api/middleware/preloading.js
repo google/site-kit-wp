@@ -45,7 +45,7 @@ function createPreloadingMiddleware( preloadedData ) {
 		}
 		setTimeout( () => {
 			cacheHasExpired = true;
-		}, 1000 );
+		}, 3000 );
 
 		const { parse = true } = options;
 		const uri = options.path;
