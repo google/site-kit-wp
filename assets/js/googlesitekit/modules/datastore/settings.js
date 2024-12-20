@@ -135,8 +135,12 @@ export const selectors = {
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'slug is required.' );
 			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			const moduleStore = select( storeName );
+			if ( ! moduleStore ) {
+				return undefined;
+			}
 			const areSettingsEditDependenciesLoaded =
-				select( storeName )?.areSettingsEditDependenciesLoaded?.();
+				moduleStore.areSettingsEditDependenciesLoaded?.();
 			return (
 				areSettingsEditDependenciesLoaded ||
 				areSettingsEditDependenciesLoaded === undefined

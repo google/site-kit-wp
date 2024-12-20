@@ -22,14 +22,10 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-import { createRegistrySelector } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	isValidAccountID,
@@ -72,10 +68,16 @@ export const INVARIANT_INVALID_CONTAINER_NAME =
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
 
-export const areSettingsEditDependenciesLoaded = createRegistrySelector(
-	( select ) => () =>
-		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
-);
+export const settings = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_TAGMANAGER ).hasFinishedResolution(
+					'getAccounts'
+				)
+		),
+	},
+};
 
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();

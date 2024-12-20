@@ -23,14 +23,10 @@ import invariant from 'invariant';
 import { isEqual, pick } from 'lodash';
 
 /**
- * WordPress dependencies
- */
-import { createRegistrySelector } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidPropertyID,
@@ -72,12 +68,16 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
 
-export const areSettingsEditDependenciesLoaded = createRegistrySelector(
-	( select ) => () =>
-		select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getAccountSummaries'
-		)
-);
+export const settings = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAccountSummaries'
+				)
+		),
+	},
+};
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -347,7 +347,7 @@ export function validateCanSubmitChanges( select ) {
 }
 
 export function validateHaveSettingsChanged( select, state, keys ) {
-	const { settings, savedSettings } = state;
+	const { settings: newSettings, savedSettings } = state;
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
@@ -356,7 +356,10 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 
 	if ( keys ) {
 		invariant(
-			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+			! isEqual(
+				pick( newSettings, keys ),
+				pick( savedSettings, keys )
+			) ||
 				haveConversionTrackingSettingsChanged ||
 				haveFirstPartyModeSettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
@@ -364,7 +367,7 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	}
 
 	invariant(
-		! isEqual( settings, savedSettings ) ||
+		! isEqual( newSettings, savedSettings ) ||
 			haveConversionTrackingSettingsChanged ||
 			haveFirstPartyModeSettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED

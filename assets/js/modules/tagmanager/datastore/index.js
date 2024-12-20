@@ -28,7 +28,7 @@ import containers from './containers';
 import tags from './tags';
 import versions from './versions';
 import service from './service';
-import { areSettingsEditDependenciesLoaded } from './settings';
+import { settings } from './settings';
 
 const store = combineStores(
 	baseModuleStore,
@@ -37,7 +37,7 @@ const store = combineStores(
 	tags,
 	versions,
 	createSnapshotStore( MODULES_TAGMANAGER ),
-	{ selectors: { areSettingsEditDependenciesLoaded } },
+	settings,
 	service
 );
 

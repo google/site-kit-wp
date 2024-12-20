@@ -25,13 +25,13 @@ import baseModuleStore from './base';
 import report from './report';
 import service from './service';
 import properties from './properties';
-import { areSettingsEditDependenciesLoaded } from './settings';
+import { settings } from './settings';
 
 const store = combineStores(
 	baseModuleStore,
 	report,
 	service,
-	{ selectors: { areSettingsEditDependenciesLoaded } },
+	settings,
 	properties
 );
 

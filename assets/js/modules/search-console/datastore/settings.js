@@ -22,14 +22,10 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-import { createRegistrySelector } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID } from '../util';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
@@ -39,12 +35,16 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
 	'a valid propertyID is required to submit changes';
 
-export const areSettingsEditDependenciesLoaded = createRegistrySelector(
-	( select ) => () =>
-		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
-			'getMatchedProperties'
-		)
-);
+export const settings = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+					'getMatchedProperties'
+				)
+		),
+	},
+};
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,

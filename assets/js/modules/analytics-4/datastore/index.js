@@ -38,7 +38,7 @@ import service from './service';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
-import { areSettingsEditDependenciesLoaded } from './settings';
+import { settings } from './settings';
 
 const store = combineStores(
 	accounts,
@@ -55,7 +55,7 @@ const store = combineStores(
 	pivotReport,
 	properties,
 	report,
-	{ selectors: { areSettingsEditDependenciesLoaded } },
+	settings,
 	service,
 	tags,
 	webdatastreams
