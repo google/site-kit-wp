@@ -84,7 +84,6 @@ export default {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [],
 					isWidgetHidden: false,
 				} );
 
@@ -96,8 +95,24 @@ export default {
 					purpose: {
 						values: [ 'publish_blog' ],
 						scope: 'site',
+						answeredBy: 1,
+					},
+					includeConversionEvents: {
+						values: [],
+						scope: 'site',
 					},
 				} );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetConversionReportingSettings( {
+						newEventsCalloutDismissedAt: 0,
+						lostEventsCalloutDismissedAt: 0,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
 			};
 
 			return (
