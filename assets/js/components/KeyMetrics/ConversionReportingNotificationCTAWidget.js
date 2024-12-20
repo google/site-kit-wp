@@ -115,6 +115,30 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const shouldShowCalloutForLostEvents =
 		haveLostConversionEvents && haveLostConversionEventsAfterDismiss;
 
+	const hasUserPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).haveConversionEventsWithDifferentMetrics()
+	);
+
+	// Build a common object to use as the first argument in conversionReportingDetectedEventsTracking().
+	const conversionReportingDetectedEventsTrackingArgs = useMemo( () => {
+		return {
+			shouldShowInitialCalloutForTailoredMetrics,
+			shouldShowCalloutForUserPickedMetrics,
+			haveConversionEventsWithDifferentMetrics,
+			hasUserPickedMetrics,
+			haveLostConversionEvents,
+		};
+	}, [
+		shouldShowInitialCalloutForTailoredMetrics,
+		shouldShowCalloutForUserPickedMetrics,
+		haveConversionEventsWithDifferentMetrics,
+		hasUserPickedMetrics,
+		haveLostConversionEvents,
+	] );
+
 	const { saveConversionReportingSettings } = useDispatch( CORE_USER );
 
 	const dismissCallout = useCallback(
@@ -141,7 +165,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				'dismiss_notification'
 			);
 		},
-		[ saveConversionReportingSettings ]
+		[
+			viewContext,
+			conversionReportingDetectedEventsTrackingArgs,
+			saveConversionReportingSettings,
+		]
 	);
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) =>
@@ -150,31 +178,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	const { setUserInputSetting, saveUserInputSettings } =
 		useDispatch( CORE_USER );
-
-	const hasUserPickedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
-
-	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsWithDifferentMetrics()
-	);
-
-	// Build a common object to use as the first argument in conversionReportingDetectedEventsTracking().
-	const conversionReportingDetectedEventsTrackingArgs = useMemo( () => {
-		return {
-			shouldShowInitialCalloutForTailoredMetrics,
-			shouldShowCalloutForUserPickedMetrics,
-			haveConversionEventsWithDifferentMetrics,
-			hasUserPickedMetrics,
-			haveLostConversionEvents,
-		};
-	}, [
-		shouldShowInitialCalloutForTailoredMetrics,
-		shouldShowCalloutForUserPickedMetrics,
-		haveConversionEventsWithDifferentMetrics,
-		hasUserPickedMetrics,
-		haveLostConversionEvents,
-	] );
 
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
@@ -216,7 +219,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			viewContext,
 			'confirm_select_new_conversion_metrics'
 		);
-	}, [ setValue ] );
+	}, [
+		viewContext,
+		conversionReportingDetectedEventsTrackingArgs,
+		setValue,
+	] );
 
 	const isSelectionPanelOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
@@ -225,6 +232,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isSavingConversionReportingSettings()
 	);
 
+	// Handle dismiss on opening of the selection panel.
 	useEffect( () => {
 		if ( isSelectionPanelOpen ) {
 			if (
@@ -249,7 +257,19 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				dismissCallout( 'lostEvents' );
 			}
 		}
+	}, [
+		isSelectionPanelOpen,
+		shouldShowCalloutForNewEvents,
+		shouldShowCalloutForUserPickedMetrics,
+		shouldShowInitialCalloutForTailoredMetrics,
+		isSavingConversionReportingSettings,
+		shouldShowCalloutForLostEvents,
+		conversionReportingDetectedEventsTrackingArgs,
+		dismissCallout,
+	] );
 
+	// Track when the notification is viewed.
+	useEffect( () => {
 		if ( ! isViewed && inView ) {
 			// Handle internal tracking.
 			conversionReportingDetectedEventsTracking(
@@ -261,17 +281,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			setIsViewed( true );
 		}
 	}, [
-		isSelectionPanelOpen,
-		shouldShowCalloutForNewEvents,
-		shouldShowCalloutForUserPickedMetrics,
-		shouldShowInitialCalloutForTailoredMetrics,
-		isSavingConversionReportingSettings,
-		shouldShowCalloutForLostEvents,
 		isViewed,
 		inView,
 		viewContext,
 		conversionReportingDetectedEventsTrackingArgs,
-		dismissCallout,
 	] );
 
 	if (
