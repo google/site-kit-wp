@@ -39,6 +39,7 @@ import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
+import conversionReportingSettings from './conversion-reporting-settings';
 
 const store = combineStores(
 	commonStore,
@@ -59,7 +60,8 @@ const store = combineStores(
 	surveys,
 	tracking,
 	userInfo,
-	userInputSettings
+	userInputSettings,
+	conversionReportingSettings
 );
 
 export const {
