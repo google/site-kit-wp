@@ -352,6 +352,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	google.accounts.id.initialize( {
 		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
 		callback: handleCredentialResponse,
+		library_name: 'Site-Kit',
 	} );
 
 	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
