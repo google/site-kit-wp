@@ -340,7 +340,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams( response )
-			});
+			} );
 			if ( res.ok && res.redirected ) {
 				location.assign( res.url );
 			}
