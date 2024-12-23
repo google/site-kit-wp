@@ -81,7 +81,7 @@ export const actions = {
 			viewContexts,
 			checkRequirements,
 			isDismissible,
-			dismissRetries,
+			dismissRetries = 0,
 		}
 	) {
 		invariant(
