@@ -24,7 +24,6 @@ import { useLifecycles, useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -32,6 +31,8 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+
+const { rootURL } = global._googlesitekitAPIFetchData || {};
 
 /**
  * Monitors the user's internet connection status.
@@ -53,15 +54,9 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			const connectionCheckResponse = await apiFetch( {
-				path: '/google-site-kit/v1/',
-			} );
+			await fetch( `${ rootURL }google-site-kit/v1/` );
 
-			// We are only interested if the request was successful, to
-			// confirm online status.
-			const canReachConnectionCheck = !! connectionCheckResponse;
-
-			setIsOnline( canReachConnectionCheck );
+			setIsOnline( true );
 		} catch ( err ) {
 			setIsOnline( false );
 		}

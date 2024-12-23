@@ -28,6 +28,8 @@ import {
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 
+const { rootURL } = global._googlesitekitAPIFetchData || {};
+
 describe( 'useMonitorInternetConnection', () => {
 	let registry;
 	let store;
@@ -40,7 +42,7 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 	};
 
-	const connectionCheckEndpoint = '/google-site-kit/v1/?_locale=user';
+	const connectionCheckEndpoint = `${ rootURL }google-site-kit/v1/`;
 
 	const connectionCheckResponse = {
 		namespace: 'google-site-kit/v1',
