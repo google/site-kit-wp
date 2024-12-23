@@ -33,9 +33,10 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '../user/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { isFeatureEnabled } from '../../../features';
-import { CORE_MODULES } from '../../modules/datastore/constants';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
 const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
@@ -123,11 +124,17 @@ const baseActions = {
 	 * @param {boolean} isEnabled First-party mode enabled status.
 	 * @return {Object} Redux-style action.
 	 */
-	setFirstPartyModeEnabled( isEnabled ) {
-		return {
+	*setFirstPartyModeEnabled( isEnabled ) {
+		const { dispatch } = yield commonActions.getRegistry();
+
+		const results = yield {
 			type: SET_FIRST_PARTY_MODE_ENABLED,
 			payload: { isEnabled },
 		};
+
+		dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+
+		return results;
 	},
 
 	/**
