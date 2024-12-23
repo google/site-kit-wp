@@ -194,7 +194,6 @@ export const actions = {
 	 * @param {Object} options                       Dismiss notification options.
 	 * @param {number} [options.expiresInSeconds]    Optional. An integer number of seconds for expiry. 0 denotes permanent dismissal. Default 0.
 	 * @param {number} [options.skipHidingFromQueue] Optional. A boolean value if notification should not be removed from the queue immediately.
-	 * @param {number} [options.dismissRetries]      Optional. An integer number denoting how many times a notification should be shown again on dismissal.
 	 * @return {Object} Generator instance.
 	 */
 	dismissNotification: createValidatedAction(
@@ -203,18 +202,14 @@ export const actions = {
 				id,
 				'A notification id is required to dismiss a notification.'
 			);
-			const { expiresInSeconds = 0, dismissRetries = 0 } = options;
+			const { expiresInSeconds = 0 } = options;
 			invariant(
 				Number.isInteger( expiresInSeconds ),
 				'expiresInSeconds must be an integer.'
 			);
-			invariant(
-				Number.isInteger( dismissRetries ),
-				'dismissRetries must be an integer.'
-			);
 		},
 		function* ( id, options = {} ) {
-			const { expiresInSeconds = 0, dismissRetries = 0 } = options;
+			const { expiresInSeconds = 0 } = options;
 			const registry = yield commonActions.getRegistry();
 
 			if ( ! options.skipHidingFromQueue ) {
@@ -236,13 +231,15 @@ export const actions = {
 
 			// Use prompts if a notification should be shown again until it
 			// is dismissed for a certain number of retries.
-			if ( dismissRetries > 0 ) {
+			if ( notification.dismissRetries > 0 ) {
 				const dismissCount = registry
 					.select( CORE_USER )
 					.getPromptDismissCount( id );
 
 				const expirationInSeconds =
-					dismissCount < dismissRetries ? expiresInSeconds : 0;
+					dismissCount < notification.dismissRetries
+						? expiresInSeconds
+						: 0;
 
 				return yield commonActions.await(
 					registry.dispatch( CORE_USER ).dismissPrompt( id, {
