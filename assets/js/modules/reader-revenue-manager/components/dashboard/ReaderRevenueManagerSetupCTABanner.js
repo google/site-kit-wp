@@ -54,6 +54,7 @@ import NotificationWithSVG from '../../../../googlesitekit/notifications/compone
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import { WEEK_IN_SECONDS } from '../../../../util';
 
 export default function ReaderRevenueManagerSetupCTABanner( {
 	id,
@@ -147,7 +148,9 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
+							dismissRetries: 1,
 						} }
+						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>
 				}
 				SVG={ getBannerSVG() }
