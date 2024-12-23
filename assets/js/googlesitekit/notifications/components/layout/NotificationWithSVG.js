@@ -81,7 +81,10 @@ export default function NotificationWithSVG( {
 										</Cell>
 										<Cell
 											alignBottom
-											className={ `googlesitekit-setup-cta-banner__svg-wrapper--${ id }` }
+											className={ classNames(
+												'googlesitekit-setup-cta-banner__svg-wrapper',
+												`googlesitekit-setup-cta-banner__svg-wrapper--${ id }`
+											) }
 											{ ...svgSizeProps }
 										>
 											<SVG />

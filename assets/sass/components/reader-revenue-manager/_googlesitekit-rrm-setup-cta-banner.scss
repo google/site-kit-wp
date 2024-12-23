@@ -17,7 +17,7 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-reader-revenue-manager-setup-cta-widget {
+	.googlesitekit-setup-cta-banner--rrm-setup-notification {
 		.googlesitekit-setup-cta-banner__primary-cell {
 			padding: $grid-gap-desktop - 4 $grid-gap-phone 0;
 
@@ -66,7 +66,7 @@
 			}
 		}
 
-		.googlesitekit-setup-cta-banner__svg-wrapper {
+		.googlesitekit-setup-cta-banner__svg-wrapper--rrm-setup-notification {
 
 			svg {
 				flex: 1;
