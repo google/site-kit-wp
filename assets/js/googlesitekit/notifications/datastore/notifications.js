@@ -440,7 +440,10 @@ export const selectors = {
 	 */
 	isNotificationDismissed: createRegistrySelector(
 		( select ) => ( state, id ) => {
-			return select( CORE_USER ).isItemDismissed( id );
+			return (
+				select( CORE_USER ).isItemDismissed( id ) ||
+				select( CORE_USER ).isPromptDismissed( id )
+			);
 		}
 	),
 };
