@@ -68,15 +68,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		READER_REVENUE_MANAGER_MODULE_SLUG
 	);
 
-	const onSetupCallback = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_rrm-setup-notification`,
-			'confirm_notification'
-		).finally( () => {
-			onSetupActivate();
-		} );
-	}, [ onSetupActivate, viewContext ] );
-
 	const showTooltip = useShowTooltip(
 		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
 	);
@@ -195,7 +186,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 							'Set up Reader Revenue Manager',
 							'google-site-kit'
 						) }
-						onCTAClick={ onSetupCallback }
+						onCTAClick={ onSetupActivate }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
 						dismissOptions={ {
