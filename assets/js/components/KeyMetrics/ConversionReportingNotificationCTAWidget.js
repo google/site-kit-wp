@@ -157,6 +157,13 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			if ( eventType === 'lostEvents' ) {
 				conversionReportingSettings.lostEventsCalloutDismissedAt =
 					timestamp;
+
+				// Handle internal tracking for lost events banner dismissal.
+				trackEvent(
+					`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+					'dismiss_notification',
+					'conversion_reporting'
+				);
 			}
 
 			if ( ! isSavingConversionReportingSettings ) {
@@ -218,30 +225,37 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const handleSelectMetricsClick = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+	const handleSelectMetricsClick = useCallback(
+		( clickContext = '' ) => {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 
-		// Handle internal tracking of lost events variant.
-		if ( shouldShowCalloutForLostEvents ) {
-			trackEvent(
-				`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
-				'confirm_get_select_metrics',
-				'conversion_reporting'
+			// Handle internal tracking of lost events variant.
+			if ( 'lostEvents' === clickContext ) {
+				if ( shouldShowCalloutForLostEvents ) {
+					trackEvent(
+						`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+						'confirm_get_select_metrics',
+						'conversion_reporting'
+					);
+				}
+
+				return;
+			}
+
+			// Handle internal tracking if not lost events variant.
+			conversionReportingDetectedEventsTracking(
+				conversionReportingDetectedEventsTrackingArgs,
+				viewContext,
+				'confirm_select_new_conversion_metrics'
 			);
-		}
-
-		// Handle internal tracking if not lost events variant.
-		conversionReportingDetectedEventsTracking(
-			conversionReportingDetectedEventsTrackingArgs,
+		},
+		[
 			viewContext,
-			'confirm_select_new_conversion_metrics'
-		);
-	}, [
-		viewContext,
-		conversionReportingDetectedEventsTrackingArgs,
-		setValue,
-		shouldShowCalloutForLostEvents,
-	] );
+			conversionReportingDetectedEventsTrackingArgs,
+			setValue,
+			shouldShowCalloutForLostEvents,
+		]
+	);
 
 	const isSelectionPanelOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
@@ -337,7 +351,9 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		<Widget noPadding fullWidth ref={ conversionReportingNotificationRef }>
 			{ shouldShowCalloutForLostEvents && (
 				<LostEventsSubtleNotification
-					onSelectMetricsCallback={ handleSelectMetricsClick }
+					onSelectMetricsCallback={ () => {
+						handleSelectMetricsClick( 'lostEvents' );
+					} }
 					onDismissCallback={ () => dismissCallout( 'lostEvents' ) }
 				/>
 			) }

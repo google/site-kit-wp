@@ -46,6 +46,8 @@ export function conversionReportingDetectedEventsTracking(
 			eventName,
 			'conversion_reporting'
 		);
+
+		return;
 	}
 
 	// Handle internal tracking for new events with tailored KMW selection.
@@ -58,6 +60,8 @@ export function conversionReportingDetectedEventsTracking(
 			eventName,
 			'conversion_reporting'
 		);
+
+		return;
 	}
 
 	// Handle internal tracking or the initial detection of events with tailored KMW selection.
@@ -67,6 +71,8 @@ export function conversionReportingDetectedEventsTracking(
 			eventName,
 			'conversion_reporting'
 		);
+
+		return;
 	}
 
 	// Handle internal tracking or the initial detection of events with manual KMW selection.
