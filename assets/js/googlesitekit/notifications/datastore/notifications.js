@@ -429,8 +429,8 @@ export const selectors = {
 	/**
 	 * Determines whether a notification is dismissed or not.
 	 *
-	 * Currently, this selector simply forwards the call to the dismissed items API.
-	 * We can potentially add more notification-specific logic here in the future.
+	 * If the notification should appear again for a certain number of times after dismissal,
+	 * then we store them as prompts. So we check for dismissed prompts instead of dismissed items.
 	 *
 	 * @since 1.132.0
 	 *
