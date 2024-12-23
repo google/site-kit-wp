@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Modules from 'googlesitekit-modules';
+import { combineStores } from 'googlesitekit-data';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -2184,6 +2186,95 @@ describe( 'core/modules modules', () => {
 					).length
 				).toEqual( Object.values( shareableModules ).length );
 				await waitForDefaultTimeouts();
+			} );
+		} );
+
+		describe( 'getDetailsLinkURL', () => {
+			it( 'should return undefined if module is not found', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.getDetailsLinkURL( 'unregistered-module' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined if module does not define homepage', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.getDetailsLinkURL( 'search-console' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return module homepage', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						homepage: 'https://example.com',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveUserInfo( { email: 'test@example.com' } );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.getDetailsLinkURL( 'search-console' )
+				).toEqual(
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com&Email=test%40example.com'
+				);
+			} );
+
+			it( 'should be overridden by module defined selector', () => {
+				const slug = 'test-module';
+				const moduleStoreName = `test/${ slug }`;
+
+				registry.registerStore(
+					moduleStoreName,
+					combineStores(
+						Modules.createModuleStore( slug, {
+							storeName: moduleStoreName,
+						} ),
+						{
+							selectors: {
+								getDetailsLinkURL: () =>
+									'https://example.com/custom-link',
+							},
+						}
+					)
+				);
+
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( slug, { storeName: moduleStoreName } );
+
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug,
+						name: 'Test Module',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_MODULES ).getDetailsLinkURL( slug )
+				).toEqual( 'https://example.com/custom-link' );
 			} );
 		} );
 	} );

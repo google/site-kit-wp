@@ -21,7 +21,7 @@
  */
 import memize from 'memize';
 import invariant from 'invariant';
-import { defaults, merge, isPlainObject } from 'lodash';
+import { defaults, merge, isEmpty, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -1414,6 +1414,40 @@ const baseSelectors = {
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
 	},
+
+	/**
+	 * Gets the details link URL for a module.
+	 *
+	 * Returns the module homepage by default. This can be overwritten by a
+	 * custom selector of the same name in the module store implementation.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(string|undefined)} Details link URL; `undefined` if not available.
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			const moduleSelectors = select( storeName );
+			if ( !! moduleSelectors?.getDetailsLinkURL?.() ) {
+				return moduleSelectors.getDetailsLinkURL?.();
+			}
+
+			const modules = select( CORE_MODULES ).getModules();
+			const module = modules?.[ slug ];
+
+			if (
+				modules === undefined ||
+				! module ||
+				isEmpty( module.homepage )
+			) {
+				return undefined;
+			}
+			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
+	),
 };
 
 const store = combineStores(
