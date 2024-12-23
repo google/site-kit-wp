@@ -46,7 +46,6 @@ import {
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import whenInactive from '../../../../util/when-inactive';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -128,16 +127,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget } ) {
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
 
-	const canActivateRRMModule = useSelect( ( select ) =>
-		select( CORE_MODULES ).canActivateModule(
-			READER_REVENUE_MANAGER_MODULE_SLUG
-		)
-	);
-
-	const showBanner =
-		isDismissed === false &&
-		canActivateRRMModule &&
-		dismissedPromptsLoaded === true;
+	const showBanner = isDismissed === false && dismissedPromptsLoaded === true;
 
 	useEffect( () => {
 		if ( showBanner ) {

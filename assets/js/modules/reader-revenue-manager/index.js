@@ -91,6 +91,17 @@ export const registerNotifications = ( notifications ) => {
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: async ( { resolveSelect } ) => {
+				const canActivateRRMModule = await resolveSelect(
+					CORE_MODULES
+				).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+				if ( canActivateRRMModule ) {
+					return true;
+				}
+
+				return false;
+			},
 			isDismissible: true,
 		} );
 		notifications.registerNotification( 'setup-success-notification-rrm', {
