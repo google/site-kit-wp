@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { compose } from '@wordpress/compose';
 import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -38,8 +37,6 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import whenInactive from '../../../../util/when-inactive';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -60,7 +57,10 @@ import Description from '../../../../googlesitekit/notifications/components/comm
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 
-function ReaderRevenueManagerSetupCTABanner( { id, Notification } ) {
+export default function ReaderRevenueManagerSetupCTABanner( {
+	id,
+	Notification,
+} ) {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 
@@ -210,13 +210,6 @@ function ReaderRevenueManagerSetupCTABanner( { id, Notification } ) {
 }
 
 ReaderRevenueManagerSetupCTABanner.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
 };
-
-export default compose(
-	whenInactive( {
-		moduleName: READER_REVENUE_MANAGER_MODULE_SLUG,
-	} ),
-	withWidgetComponentProps( 'readerRevenueManagerSetupCTABanner' )
-)( ReaderRevenueManagerSetupCTABanner );
