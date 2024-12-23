@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
 
-require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
-
-use Google\FirstPartyLibrary\RequestHelper;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
@@ -195,7 +192,16 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @return bool True if the endpoint is healthy, false otherwise.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
-		$request_helper = new RequestHelper();
+		if ( ! defined( 'IS_FIRST_PARTY_MODE_TEST' ) ) {
+			// TODO: This is a workaround to allow the measurement.php file to be loaded without making a
+			// request, in order to use the RequestHelper class that it defines. We should find a better
+			// solution in the future, but this will involve changes to the measurement.php file.
+			define( 'IS_FIRST_PARTY_MODE_TEST', true );
+		}
+
+		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
+
+		$request_helper = new \Google\FirstPartyLibrary\RequestHelper();
 
 		$response = $request_helper->sendRequest( $endpoint );
 
