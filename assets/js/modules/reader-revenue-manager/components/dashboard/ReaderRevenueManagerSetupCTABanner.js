@@ -25,19 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import {
-	createInterpolateElement,
-	Fragment,
-	useCallback,
-	useEffect,
-} from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -51,11 +45,9 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
-import { Cell, Grid, Row } from '../../../../material-components';
 import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
-import Link from '../../../../components/Link';
 import { trackEvent, WEEK_IN_SECONDS } from '../../../../util';
 import {
 	AdminMenuTooltip,
@@ -63,12 +55,14 @@ import {
 	useTooltipState,
 } from '../../../../components/AdminMenuTooltip';
 import useViewContext from '../../../../hooks/useViewContext';
+import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import Description from '../../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 
-function ReaderRevenueManagerSetupCTABanner( { Widget } ) {
+function ReaderRevenueManagerSetupCTABanner( { id, Notification } ) {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
-	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
 	const onSetupActivate = useActivateModuleCallback(
 		READER_REVENUE_MANAGER_MODULE_SLUG
@@ -158,121 +152,60 @@ function ReaderRevenueManagerSetupCTABanner( { Widget } ) {
 		);
 	}
 
-	return (
-		<div className="googlesitekit-widget-context">
-			<Grid className="googlesitekit-widget-area">
-				<Row>
-					<Cell size={ 12 }>
-						<Widget
-							noPadding
-							className="googlesitekit-setup-cta-banner googlesitekit-reader-revenue-manager-setup-cta-widget"
-						>
-							<Grid collapsed>
-								<Row>
-									<Cell
-										smSize={ 12 }
-										mdSize={ 8 }
-										lgSize={ 6 }
-										className="googlesitekit-setup-cta-banner__primary-cell"
-									>
-										<h4 className="googlesitekit-setup-cta-banner__title">
-											{ __(
-												'Grow your revenue and deepen reader engagement',
-												'google-site-kit'
-											) }
-										</h4>
-										<div className="googlesitekit-setup-cta-banner__description">
-											<p>
-												{ createInterpolateElement(
-													__(
-														'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
-														'google-site-kit'
-													),
-													{
-														a: (
-															<Link
-																href={
-																	readerRevenueManagerDocumentationURL
-																}
-																external
-																aria-label={ __(
-																	'Learn more about reader revenue manager',
-																	'google-site-kit'
-																) }
-															/>
-														),
-													}
-												) }
-												<br />
-												<br />
-												{ __(
-													'* Support for subscriptions coming soon',
-													'google-site-kit'
-												) }
-											</p>
-										</div>
+	const getBannerSVG = () => {
+		if ( breakpoint === BREAKPOINT_SMALL ) {
+			return SetupMobileSVG;
+		}
 
-										<div className="googlesitekit-setup-cta-banner__actions-wrapper">
-											<Button
-												className="googlesitekit-key-metrics-cta-button"
-												onClick={ onSetupCallback }
-											>
-												{ __(
-													'Set up Reader Revenue Manager',
-													'google-site-kit'
-												) }
-											</Button>
-											<Button
-												tertiary
-												onClick={ onDismiss }
-											>
-												{ dismissCount < 1
-													? __(
-															'Maybe later',
-															'google-site-kit'
-													  )
-													: __(
-															'Don’t show again',
-															'google-site-kit'
-													  ) }
-											</Button>
-										</div>
-									</Cell>
-									{ ! isMobileBreakpoint &&
-										! isTabletBreakpoint && (
-											<Cell
-												alignBottom
-												className="googlesitekit-setup-cta-banner__svg-wrapper"
-												mdSize={ 8 }
-												lgSize={ 6 }
-											>
-												<SetupSVG />
-											</Cell>
-										) }
-									{ isTabletBreakpoint && (
-										<Cell
-											className="googlesitekit-setup-cta-banner__svg-wrapper"
-											mdSize={ 8 }
-										>
-											<SetupTabletSVG />
-										</Cell>
-									) }
-									{ isMobileBreakpoint && (
-										<Cell
-											alignBottom
-											className="googlesitekit-setup-cta-banner__svg-wrapper"
-											smSize={ 12 }
-										>
-											<SetupMobileSVG />
-										</Cell>
-									) }
-								</Row>
-							</Grid>
-						</Widget>
-					</Cell>
-				</Row>
-			</Grid>
-		</div>
+		if ( breakpoint === BREAKPOINT_TABLET ) {
+			return SetupTabletSVG;
+		}
+
+		return SetupSVG;
+	};
+
+	return (
+		<Notification>
+			<NotificationWithSVG
+				id={ id }
+				title={ __(
+					'Get more comprehensive stats by collecting metrics via your own site',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						text={ __(
+							'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a><br><br>* Support for subscriptions coming soon',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ readerRevenueManagerDocumentationURL }
+							/>
+						}
+					/>
+				}
+				actions={
+					<ActionsCTALinkDismiss
+						id={ id }
+						className="googlesitekit-setup-cta-banner__actions-wrapper"
+						ctaLabel={ __(
+							'Set up Reader Revenue Manager',
+							'google-site-kit'
+						) }
+						onCTAClick={ onSetupCallback }
+						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+						onDismiss={ onDismiss }
+						dismissOptions={ {
+							skipHidingFromQueue: true,
+						} }
+					/>
+				}
+				SVG={ getBannerSVG() }
+			/>
+		</Notification>
 	);
 }
 
