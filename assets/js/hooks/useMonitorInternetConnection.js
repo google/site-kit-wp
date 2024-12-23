@@ -54,7 +54,7 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			await fetch( `${ rootURL }google-site-kit/v1/` );
+			await fetch( new URL( '/google-site-kit/v1/', rootURL ) );
 
 			setIsOnline( true );
 		} catch ( err ) {

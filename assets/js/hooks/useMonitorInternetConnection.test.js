@@ -42,7 +42,7 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 	};
 
-	const connectionCheckEndpoint = `${ rootURL }google-site-kit/v1/`;
+	const connectionCheckEndpoint = new URL( '/google-site-kit/v1/', rootURL );
 
 	const connectionCheckResponse = {
 		namespace: 'google-site-kit/v1',
