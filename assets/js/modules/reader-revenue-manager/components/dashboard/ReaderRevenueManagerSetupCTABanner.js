@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -50,6 +50,7 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../../../../components/AdminMenuTooltip';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
@@ -82,6 +83,14 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		triggerSurvey( 'view_reader_revenue_manager_cta' );
 	}, [ triggerSurvey ] );
 
+	// See TODO note below.
+	const isCTADismissed = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
+	);
+	const dismissedPromptsLoaded = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
+	);
+
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
@@ -98,6 +107,15 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 				/>
 			</Fragment>
 		);
+	}
+
+	// TODO Remove this hack
+	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
+	// This is because we don't want the component removed from the DOM as we have to still render
+	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
+	// checking for the dismissal state here.
+	if ( isCTADismissed || ! dismissedPromptsLoaded ) {
+		return null;
 	}
 
 	const getBannerSVG = () => {
