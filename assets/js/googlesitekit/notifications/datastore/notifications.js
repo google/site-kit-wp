@@ -450,6 +450,36 @@ export const selectors = {
 			return select( CORE_USER ).isItemDismissed( id );
 		}
 	),
+	/**
+	 * Determines whether a notification that can reappear again for a fixed number of times
+	 * on dismissal is at its final appearance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} id    Notification id.
+	 * @return {(boolean|undefined)} TRUE if notification is on its final retry, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	isNotificationRetryFinal: createRegistrySelector(
+		( select ) => ( state, id ) => {
+			const notification =
+				select( CORE_NOTIFICATIONS ).getNotification( id );
+
+			// If a notification does not have retries, it always will be on its final render.
+			if ( notification.dismissRetries === 0 ) {
+				return true;
+			}
+
+			const dismissCount =
+				select( CORE_USER ).getPromptDismissCount( id );
+
+			if ( dismissCount >= notification.dismissRetries ) {
+				return true;
+			}
+
+			return false;
+		}
+	),
 };
 
 export default {
