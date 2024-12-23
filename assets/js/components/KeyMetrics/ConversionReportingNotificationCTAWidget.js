@@ -50,6 +50,7 @@ import useViewContext from '../../hooks/useViewContext';
 import useDisplayNewEventsCalloutForTailoredMetrics from './hooks/useDisplayNewEventsCalloutForTailoredMetrics';
 import useDisplayNewEventsCalloutForUserPickedMetrics from './hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
 import useDisplayNewEventsCalloutAfterInitialDetection from './hooks/useDisplayNewEventsCalloutAfterInitialDetection';
+import { trackEvent } from '../../util';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -220,7 +221,16 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const handleSelectMetricsClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
 
-		// Handle internal tracking.
+		// Handle internal tracking of lost events variant.
+		if ( shouldShowCalloutForLostEvents ) {
+			trackEvent(
+				`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+				'confirm_get_select_metrics',
+				'conversion_reporting'
+			);
+		}
+
+		// Handle internal tracking if not lost events variant.
 		conversionReportingDetectedEventsTracking(
 			conversionReportingDetectedEventsTrackingArgs,
 			viewContext,
@@ -230,6 +240,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		viewContext,
 		conversionReportingDetectedEventsTrackingArgs,
 		setValue,
+		shouldShowCalloutForLostEvents,
 	] );
 
 	const isSelectionPanelOpen = useSelect( ( select ) =>
@@ -285,6 +296,15 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				'view_notification'
 			);
 
+			// Handle internal tracking for lost events banner.
+			if ( shouldShowCalloutForLostEvents ) {
+				trackEvent(
+					`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+					'view_notification',
+					'conversion_reporting'
+				);
+			}
+
 			setIsViewed( true );
 		}
 	}, [
@@ -292,6 +312,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		inView,
 		viewContext,
 		conversionReportingDetectedEventsTrackingArgs,
+		shouldShowCalloutForLostEvents,
 	] );
 
 	if (

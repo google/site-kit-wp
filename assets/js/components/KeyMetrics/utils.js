@@ -32,20 +32,10 @@ export function conversionReportingDetectedEventsTracking(
 		shouldShowCalloutForUserPickedMetrics,
 		haveConversionEventsWithDifferentMetrics,
 		userPickedMetrics,
-		haveLostConversionEvents,
 	},
 	viewContext,
 	eventName
 ) {
-	// Handle internal tracking for when lost events are detected.
-	if ( haveLostConversionEvents ) {
-		trackEvent(
-			`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
-			eventName,
-			'conversion_reporting'
-		);
-	}
-
 	// Handle internal tracking for new events with manual KMW selection.
 	if (
 		haveConversionEventsWithDifferentMetrics &&
