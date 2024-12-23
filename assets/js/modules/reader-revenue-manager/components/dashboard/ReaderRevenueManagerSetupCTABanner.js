@@ -24,13 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -45,13 +45,11 @@ import {
 import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
-import { trackEvent, WEEK_IN_SECONDS } from '../../../../util';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
 } from '../../../../components/AdminMenuTooltip';
-import useViewContext from '../../../../hooks/useViewContext';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
@@ -61,7 +59,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	id,
 	Notification,
 } ) {
-	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 
 	const onSetupActivate = useActivateModuleCallback(
@@ -75,29 +72,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
 	);
 
-	const dismissCount = useSelect( ( select ) =>
-		select( CORE_USER ).getPromptDismissCount(
-			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-		)
-	);
-
-	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
-
-	const onDismiss = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_rrm-setup-notification`,
-			'dismiss_notification'
-		).finally( () => {
-			const expirationInSeconds =
-				dismissCount < 1 ? 2 * WEEK_IN_SECONDS : 0;
-
-			showTooltip();
-
-			dismissPrompt( READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY, {
-				expiresInSeconds: expirationInSeconds,
-			} );
-		} );
-	}, [ dismissCount, dismissPrompt, showTooltip, viewContext ] );
+	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
@@ -169,7 +144,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						) }
 						onCTAClick={ onSetupActivate }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
+						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
