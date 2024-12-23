@@ -65,7 +65,7 @@ import {
 } from '../../../../components/AdminMenuTooltip';
 import useViewContext from '../../../../hooks/useViewContext';
 
-function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
+function ReaderRevenueManagerSetupCTABanner( { Widget } ) {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
@@ -153,7 +153,6 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
-				<WidgetNull />
 				<AdminMenuTooltip
 					title=""
 					content={ __(
@@ -167,10 +166,6 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 				/>
 			</Fragment>
 		);
-	}
-
-	if ( ! showBanner ) {
-		return <WidgetNull />;
 	}
 
 	return (
