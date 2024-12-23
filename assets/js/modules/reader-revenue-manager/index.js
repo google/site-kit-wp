@@ -39,6 +39,7 @@ import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -77,38 +78,45 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'setup-success-notification-rrm', {
-		Component: RRMSetupSuccessSubtleNotification,
-		priority: 10,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+	if ( isFeatureEnabled( 'rrmModule' ) ) {
+		notifications.registerNotification( 'setup-success-notification-rrm', {
+			Component: RRMSetupSuccessSubtleNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: async ( { select, resolveSelect } ) => {
+				const rrmConnected = await resolveSelect(
+					CORE_MODULES
+				).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
 
-			if ( ! rrmConnected ) {
+				if ( ! rrmConnected ) {
+					return false;
+				}
+
+				const notification = getQueryArg(
+					location.href,
+					'notification'
+				);
+				const slug = getQueryArg( location.href, 'slug' );
+
+				await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings();
+				const publicationOnboardingState = await select(
+					MODULES_READER_REVENUE_MANAGER
+				).getPublicationOnboardingState();
+
+				if (
+					notification === 'authentication_success' &&
+					slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+					publicationOnboardingState !== undefined
+				) {
+					return true;
+				}
+
 				return false;
-			}
-
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
-			const publicationOnboardingState = await select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPublicationOnboardingState();
-
-			if (
-				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
-				publicationOnboardingState !== undefined
-			) {
-				return true;
-			}
-
-			return false;
-		},
-		isDismissible: false,
-	} );
+			},
+			isDismissible: false,
+		} );
+	}
 };
