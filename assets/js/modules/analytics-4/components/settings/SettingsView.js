@@ -96,6 +96,10 @@ export default function SettingsView() {
 	);
 
 	const isFPMEnabled = useSelect( ( select ) => {
+		if ( ! fpmEnabled ) {
+			return false;
+		}
+
 		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
 			select( CORE_SITE );
 

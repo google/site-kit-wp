@@ -69,6 +69,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				const data = {
 					newEvents: [ 'purchase' ],
 					lostEvents: [],
+					newBadgeEvents: [ 'purchase' ],
 				};
 
 				await registry
@@ -77,51 +78,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				expect( store.getState().detectedEventsChange ).toMatchObject(
 					data
 				);
-			} );
-		} );
-		describe( 'dismissNewConversionReportingEvents', () => {
-			it( 'fetches clear new events endpoint', async () => {
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
-					),
-					true
-				);
-
-				const { response } = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.dismissNewConversionReportingEvents();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
-					)
-				);
-				expect( response ).toEqual( true );
-			} );
-		} );
-
-		describe( 'dismissLostConversionReportingEvents', () => {
-			it( 'fetches clear lost events endpoint', async () => {
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-lost-events'
-					),
-					true
-				);
-
-				const { response } = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.dismissLostConversionReportingEvents();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-lost-events'
-					)
-				);
-				expect( response ).toEqual( true );
 			} );
 		} );
 	} );
@@ -177,6 +133,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				const inlineData = {
 					newEvents: [ 'contact' ],
 					lostEvents: [],
+					newBadgeEvents: [ 'contact' ],
 				};
 
 				global._googlesitekitModulesData = {
@@ -302,6 +259,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'contact' ],
 						lostEvents: [],
+						newBadgeEvents: [],
 					} );
 
 				const haveConversionEventsForTailoredMetrics = registry
@@ -336,6 +294,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'add_to_cart' ],
 						lostEvents: [],
+						newBadgeEvents: [],
 					} );
 
 				const haveConversionEventsForTailoredMetrics = registry
@@ -394,7 +353,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
 					isWidgetHidden: false,
-					includeConversionTailoredMetrics: [ 'contact' ],
 				} );
 			} );
 
@@ -409,6 +367,10 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: { values: [ 'publish_blog' ] },
+					includeConversionEvents: {
+						values: [ 'contact' ],
+						scope: 'site',
+					},
 				} );
 
 				registry
@@ -420,6 +382,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'contact' ],
 						lostEvents: [ 'purchase' ],
+						newBadgeEvents: [],
 					} );
 
 				const haveLostEventsForCurrentMetrics = registry
@@ -433,12 +396,12 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( true );
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
-				} );
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: { values: [ 'publish_blog' ] },
+					includeConversionEvents: {
+						values: [ 'contact' ],
+						scope: 'site',
+					},
 				} );
 
 				registry
@@ -450,6 +413,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [],
 						lostEvents: [ 'contact' ],
+						newBadgeEvents: [],
 					} );
 
 				const haveLostEventsForCurrentMetrics = registry
@@ -477,6 +441,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'contact' ],
 						lostEvents: [ 'purchase' ],
+						newBadgeEvents: [],
 					} );
 
 				const haveLostEventsForCurrentMetrics = registry
@@ -505,6 +470,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'contact' ],
 						lostEvents: [ 'purchase' ],
+						newBadgeEvents: [],
 					} );
 
 				const haveLostEventsForCurrentMetrics = registry
@@ -533,6 +499,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'purchase' ],
 						lostEvents: [ 'contact' ],
+						newBadgeEvents: [],
 					} );
 
 				const haveLostEventsForCurrentMetrics = registry

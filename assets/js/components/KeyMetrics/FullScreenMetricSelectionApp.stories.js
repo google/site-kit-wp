@@ -21,10 +21,10 @@
  */
 import {
 	createTestRegistry,
-	provideKeyMetricsUserInputSettings,
 	provideSiteInfo,
 	WithTestRegistry,
 } from '../../../../tests/js/utils';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import FullScreenMetricsSelectionApp from './FullScreenMetricSelectionApp';
@@ -53,7 +53,8 @@ export default {
 		( Story, { args } ) => {
 			const registry = createTestRegistry();
 
-			provideKeyMetricsUserInputSettings( registry );
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+
 			provideSiteInfo( registry );
 
 			return (

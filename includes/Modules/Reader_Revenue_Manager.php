@@ -332,7 +332,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Reader Revenue Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', 'google-site-kit' ),
-			'order'       => 5,
 			'homepage'    => 'https://publishercenter.google.com',
 		);
 	}

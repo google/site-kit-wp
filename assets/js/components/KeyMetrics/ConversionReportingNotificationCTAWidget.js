@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * External dependencies
@@ -33,100 +33,112 @@ import PropTypes from 'prop-types';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import LostEventsSubtleNotification from './LostEventsSubtleNotification';
 import whenActive from '../../util/when-active';
+import useDisplayNewEventsCalloutForTailoredMetrics from './hooks/useDisplayNewEventsCalloutForTailoredMetrics';
+import useDisplayNewEventsCalloutForUserPickedMetrics from './hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
+import useDisplayNewEventsCalloutAfterInitialDetection from './hooks/useDisplayNewEventsCalloutAfterInitialDetection';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
-
-	const isUserInputCompleted = useSelect( ( select ) =>
-		select( CORE_USER ).isUserInputCompleted()
-	);
-
-	const hasUserPickedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getUserPickedMetrics()
-	);
 
 	const haveLostConversionEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).haveLostEventsForCurrentMetrics()
 	);
 
-	const haveConversionReportingEventsForTailoredMetrics = useSelect(
-		( select ) =>
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics()
+	const newConversionEventsLastUpdateAt = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getNewConversionEventsLastUpdateAt()
+	);
+	const lostConversionEventsLastUpdateAt = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getLostConversionEventsLastUpdateAt()
+	);
+	const haveNewConversionEventsAfterDismiss = useSelect( ( select ) =>
+		select( CORE_USER ).haveNewConversionEventsAfterDismiss(
+			newConversionEventsLastUpdateAt
+		)
+	);
+	const haveLostConversionEventsAfterDismiss = useSelect( ( select ) =>
+		select( CORE_USER ).haveLostConversionEventsAfterDismiss(
+			lostConversionEventsLastUpdateAt
+		)
 	);
 
 	// Initial callout is surfaced to the users with tailored metrics, if detectedEvents setting
 	// has a conversion event associated with the ACR key metrics matching the current site purpose answer.
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
-	// and have not been already included, which is determined by includeConversionTailoredMetrics setting, callout banner should be displayed.
+	// and have not been already included, which is determined by includeConversionEvents user input setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
-		! hasUserPickedMetrics?.length &&
-		isUserInputCompleted &&
-		haveConversionReportingEventsForTailoredMetrics;
-
-	const hasConversionEventsForUserPickedMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsForUserPickedMetrics(
-			true
-		)
-	);
-	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
-		select( CORE_SITE ).isKeyMetricsSetupCompleted()
-	);
+		useDisplayNewEventsCalloutForTailoredMetrics(
+			haveNewConversionEventsAfterDismiss
+		);
 
 	// If users have set up key metrics manually and ACR events are detected,
 	// we display the same callout banner, with a different call to action
 	// "Select metrics" which opens the metric selection panel.
 	const shouldShowCalloutForUserPickedMetrics =
-		hasUserPickedMetrics?.length &&
-		isKeyMetricsSetupCompleted &&
-		hasConversionEventsForUserPickedMetrics;
-
-	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsWithDifferentMetrics()
-	);
+		useDisplayNewEventsCalloutForUserPickedMetrics(
+			haveNewConversionEventsAfterDismiss
+		);
 
 	// If new events have been detected after initial set of events, we display
 	// the same callout banner, with a different call to action "View metrics"
 	// which opens the metric selection panel.
 	const shouldShowCalloutForNewEvents =
-		isKeyMetricsSetupCompleted && haveConversionEventsWithDifferentMetrics;
+		useDisplayNewEventsCalloutAfterInitialDetection(
+			haveNewConversionEventsAfterDismiss
+		);
+
+	const shouldShowCalloutForLostEvents =
+		haveLostConversionEvents && haveLostConversionEventsAfterDismiss;
+
+	const { saveConversionReportingSettings } = useDispatch( CORE_USER );
+
+	const dismissCallout = useCallback(
+		async ( eventType ) => {
+			// Dismissed callout settings times should rely on real times, not the reference date,
+			// so the timestamps are consistent even when changing the reference dates when developing/testing.
+			const timestamp = Math.round( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
+			const conversionReportingSettings = {
+				newEventsCalloutDismissedAt: timestamp,
+			};
+			if ( eventType === 'lostEvents' ) {
+				conversionReportingSettings.lostEventsCalloutDismissedAt =
+					timestamp;
+			}
+
+			await saveConversionReportingSettings(
+				conversionReportingSettings
+			);
+		},
+		[ saveConversionReportingSettings ]
+	);
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUserInputPurposeConversionEvents()
 	);
 
-	const { setKeyMetricsSetting, saveKeyMetricsSettings } =
+	const { setUserInputSetting, saveUserInputSettings } =
 		useDispatch( CORE_USER );
-	const {
-		dismissNewConversionReportingEvents,
-		dismissLostConversionReportingEvents,
-	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
-			setKeyMetricsSetting(
-				'includeConversionTailoredMetrics',
+			setUserInputSetting(
+				'includeConversionEvents',
 				userInputPurposeConversionEvents
 			);
-			saveKeyMetricsSettings( {
-				widgetSlugs: undefined,
-			} );
+			saveUserInputSettings();
 			setIsSaving( false );
 		}
 
-		dismissNewConversionReportingEvents();
+		dismissCallout();
 	}, [
-		setKeyMetricsSetting,
-		saveKeyMetricsSettings,
-		dismissNewConversionReportingEvents,
+		setUserInputSetting,
+		saveUserInputSettings,
+		dismissCallout,
 		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
 	] );
@@ -135,25 +147,52 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	const handleSelectMetricsClick = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ setValue ] );
 
-		if ( shouldShowCalloutForUserPickedMetrics ) {
-			dismissNewConversionReportingEvents();
-		}
+	const isSelectionPanelOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+	);
+	const isSavingConversionReportingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingConversionReportingSettings()
+	);
 
-		if ( haveLostConversionEvents ) {
-			dismissLostConversionReportingEvents();
+	useEffect( () => {
+		if ( isSelectionPanelOpen ) {
+			if (
+				// Dismiss the new events callout if shouldShowCalloutForNewEvents is true
+				// and settings are not being saved. This prevents duplicate requests, as after
+				// the first call, the settings enter the saving state. Once saving is complete,
+				// shouldShowCalloutForNewEvents will no longer be true.
+				( ! isSavingConversionReportingSettings &&
+					( shouldShowCalloutForNewEvents ||
+						shouldShowCalloutForUserPickedMetrics ) ) ||
+				// shouldShowInitialCalloutForTailoredMetrics is more specific because the "Add metrics"
+				// CTA does not open the panel; it directly adds metrics. We want to dismiss this callout
+				// only when the user opens the selection panel and saves their metrics selection. This marks
+				// the transition to manual selection, after which this callout should no longer be shown.
+				( shouldShowInitialCalloutForTailoredMetrics &&
+					isSavingConversionReportingSettings )
+			) {
+				dismissCallout();
+			}
+
+			if ( shouldShowCalloutForLostEvents ) {
+				dismissCallout( 'lostEvents' );
+			}
 		}
 	}, [
-		setValue,
+		isSelectionPanelOpen,
+		shouldShowCalloutForNewEvents,
 		shouldShowCalloutForUserPickedMetrics,
-		haveLostConversionEvents,
-		dismissNewConversionReportingEvents,
-		dismissLostConversionReportingEvents,
+		shouldShowInitialCalloutForTailoredMetrics,
+		isSavingConversionReportingSettings,
+		shouldShowCalloutForLostEvents,
+		dismissCallout,
 	] );
 
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
-		! haveLostConversionEvents &&
+		! shouldShowCalloutForLostEvents &&
 		! shouldShowCalloutForUserPickedMetrics &&
 		! shouldShowCalloutForNewEvents
 	) {
@@ -171,10 +210,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget noPadding fullWidth>
-			{ haveLostConversionEvents && (
+			{ shouldShowCalloutForLostEvents && (
 				<LostEventsSubtleNotification
 					onSelectMetricsCallback={ handleSelectMetricsClick }
-					onDismissCallback={ dismissLostConversionReportingEvents }
+					onDismissCallback={ () => dismissCallout( 'lostEvents' ) }
 				/>
 			) }
 			{ ( shouldShowInitialCalloutForTailoredMetrics ||
@@ -188,7 +227,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 							: handleSelectMetricsClick
 					}
 					isSaving={ isSaving }
-					onDismiss={ dismissNewConversionReportingEvents }
+					onDismiss={ dismissCallout }
 				/>
 			) }
 		</Widget>

@@ -570,24 +570,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	}
 
 	/**
-	 * Determines whether the authentication proxy is used.
-	 *
-	 * In order to streamline the setup and authentication flow, the plugin uses a proxy mechanism based on an external
-	 * service. This can be overridden by providing actual GCP credentials with the {@see 'googlesitekit_oauth_secret'}
-	 * filter.
-	 *
-	 * @since 1.0.0
-	 * @deprecated 1.9.0
-	 *
-	 * @return bool True if proxy authentication is used, false otherwise.
-	 */
-	public function using_proxy() {
-		_deprecated_function( __METHOD__, '1.9.0', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-		return $this->credentials->using_proxy();
-	}
-
-	/**
 	 * Determines whether the current owner ID must be changed or not.
 	 *
 	 * @since 1.16.0
