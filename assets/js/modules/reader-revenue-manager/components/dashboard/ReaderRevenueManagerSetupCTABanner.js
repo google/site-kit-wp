@@ -162,7 +162,14 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 							'google-site-kit'
 						) }
 						onCTAClick={ onSetupActivate }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+						dismissLabelInitial={ __(
+							'Maybe later',
+							'google-site-kit'
+						) }
+						dismissLabel={ __(
+							'Don’t show again',
+							'google-site-kit'
+						) }
 						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,

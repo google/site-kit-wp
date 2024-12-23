@@ -34,6 +34,7 @@ export default function ActionsCTALinkDismiss( {
 	ctaLabel,
 	onCTAClick,
 	onDismiss = () => {},
+	dismissLabelInitial,
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 	dismissOptions = {},
@@ -57,6 +58,7 @@ export default function ActionsCTALinkDismiss( {
 			<Dismiss
 				id={ id }
 				primary={ false }
+				dismissLabelInitial={ dismissLabelInitial }
 				dismissLabel={ dismissLabel }
 				dismissExpires={ dismissExpires }
 				disabled={ isNavigatingToCTALink }

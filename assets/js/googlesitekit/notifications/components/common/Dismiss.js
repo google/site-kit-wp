@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { Button } from 'googlesitekit-components';
@@ -35,6 +35,7 @@ import { Button } from 'googlesitekit-components';
 export default function Dismiss( {
 	id,
 	primary = true,
+	dismissLabelInitial,
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissExpires = 0,
 	disabled,
@@ -48,6 +49,10 @@ export default function Dismiss( {
 	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const isDismissalFinal = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationRetryFinal( id )
+	);
 
 	const handleDismiss = async ( event ) => {
 		await onDismiss?.( event );
@@ -67,7 +72,7 @@ export default function Dismiss( {
 			onClick={ handleDismiss }
 			disabled={ disabled }
 		>
-			{ dismissLabel }
+			{ isDismissalFinal ? dismissLabel : dismissLabelInitial }
 		</Button>
 	);
 }
