@@ -35,8 +35,14 @@ import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from './utils/validation';
-import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	ReaderRevenueManagerSetupCTABanner,
+	RRMSetupSuccessSubtleNotification,
+} from './components/dashboard';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { isFeatureEnabled } from '../../features';
@@ -79,6 +85,14 @@ export const registerModule = ( modules ) => {
 
 export const registerNotifications = ( notifications ) => {
 	if ( isFeatureEnabled( 'rrmModule' ) ) {
+		notifications.registerNotification( 'rrm-setup-notification', {
+			Component: ReaderRevenueManagerSetupCTABanner,
+			priority: 50,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			isDismissible: true,
+		} );
 		notifications.registerNotification( 'setup-success-notification-rrm', {
 			Component: RRMSetupSuccessSubtleNotification,
 			priority: 10,
