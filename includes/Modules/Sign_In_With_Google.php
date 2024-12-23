@@ -321,7 +321,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			// Purposely not translated as this is a technical comment.
 			//
 			// See: https://github.com/google/site-kit-wp/pull/9826#discussion_r1876026945.
-			'\n<!-- Sign in with Google button added by Site Kit -->\n'
+			"\n<!-- Sign in with Google button added by Site Kit -->\n"
 		);
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		ob_start();
