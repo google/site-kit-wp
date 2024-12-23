@@ -166,7 +166,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
-							dismissRetries: 1,
 						} }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>

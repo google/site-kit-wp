@@ -103,6 +103,7 @@ export const registerNotifications = ( notifications ) => {
 				return false;
 			},
 			isDismissible: true,
+			dismissRetries: 1,
 		} );
 		notifications.registerNotification( 'setup-success-notification-rrm', {
 			Component: RRMSetupSuccessSubtleNotification,
