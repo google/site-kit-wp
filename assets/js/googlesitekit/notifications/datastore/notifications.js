@@ -443,6 +443,10 @@ export const selectors = {
 			const notification =
 				select( CORE_NOTIFICATIONS ).getNotification( id );
 
+			if ( notification === undefined ) {
+				return undefined;
+			}
+
 			if ( notification.dismissRetries > 0 ) {
 				return select( CORE_USER ).isPromptDismissed( id );
 			}
@@ -464,6 +468,10 @@ export const selectors = {
 		( select ) => ( state, id ) => {
 			const notification =
 				select( CORE_NOTIFICATIONS ).getNotification( id );
+
+			if ( notification === undefined ) {
+				return undefined;
+			}
 
 			// If a notification does not have retries, it always will be on its final render.
 			if ( notification.dismissRetries === 0 ) {
