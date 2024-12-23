@@ -33,6 +33,7 @@ import {
 	useRef,
 	useState,
 } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -119,9 +120,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const userPickedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
 	);
-	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).haveConversionEventsWithDifferentMetrics()
-	);
 
 	// Build a common object to use as the first argument in conversionReportingDetectedEventsTracking().
 	const conversionReportingDetectedEventsTrackingArgs = useMemo( () => {
@@ -134,13 +132,15 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}, [
 		shouldShowInitialCalloutForTailoredMetrics,
 		shouldShowCalloutForUserPickedMetrics,
-		haveConversionEventsWithDifferentMetrics,
+		shouldShowCalloutForNewEvents,
 		userPickedMetrics,
-		haveLostConversionEvents,
 	] );
 
 	const isSavingConversionReportingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingConversionReportingSettings()
+	);
+	const isSavingKeyMetricsSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingKeyMetricsSettings()
 	);
 
 	const { saveConversionReportingSettings } = useDispatch( CORE_USER );
@@ -153,6 +153,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			const conversionReportingSettings = {
 				newEventsCalloutDismissedAt: timestamp,
 			};
+
 			if ( eventType === 'lostEvents' ) {
 				conversionReportingSettings.lostEventsCalloutDismissedAt =
 					timestamp;
@@ -163,13 +164,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 					'dismiss_notification',
 					'conversion_reporting'
 				);
-			}
-
-			if ( ! isSavingConversionReportingSettings ) {
-				await saveConversionReportingSettings(
-					conversionReportingSettings
-				);
-
+			} else {
 				// Handle internal tracking.
 				conversionReportingDetectedEventsTracking(
 					conversionReportingDetectedEventsTrackingArgs,
@@ -177,12 +172,15 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 					'dismiss_notification'
 				);
 			}
+
+			await saveConversionReportingSettings(
+				conversionReportingSettings
+			);
 		},
 		[
 			viewContext,
 			conversionReportingDetectedEventsTrackingArgs,
 			saveConversionReportingSettings,
-			isSavingConversionReportingSettings,
 		]
 	);
 
@@ -259,43 +257,55 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const isSelectionPanelOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
+	const prevIsSelectionPanelOpen = usePrevious( isSelectionPanelOpen );
 
-	// Handle dismiss on opening of the selection panel.
+	// Handle dismiss of new events callout on opening of the selection panel.
 	useEffect( () => {
-		if ( isSelectionPanelOpen ) {
-			if (
-				// Dismiss the new events callout if shouldShowCalloutForNewEvents is true
-				// and settings are not being saved. This prevents duplicate requests, as after
-				// the first call, the settings enter the saving state. Once saving is complete,
-				// shouldShowCalloutForNewEvents will no longer be true.
-				( ! isSavingConversionReportingSettings &&
-					( shouldShowCalloutForNewEvents ||
-						shouldShowCalloutForUserPickedMetrics ) ) ||
+		if (
+			! prevIsSelectionPanelOpen &&
+			isSelectionPanelOpen &&
+			// Dismiss the new events callout if shouldShowCalloutForNewEvents is true
+			// and settings are not being saved. This prevents duplicate requests, as after
+			// the first call, the settings enter the saving state. Once saving is complete,
+			// shouldShowCalloutForNewEvents will no longer be true.
+			( ( ! isSavingConversionReportingSettings &&
+				( shouldShowCalloutForNewEvents ||
+					shouldShowCalloutForUserPickedMetrics ) ) ||
 				// shouldShowInitialCalloutForTailoredMetrics is more specific because the "Add metrics"
 				// CTA does not open the panel; it directly adds metrics. We want to dismiss this callout
 				// only when the user opens the selection panel and saves their metrics selection. This marks
 				// the transition to manual selection, after which this callout should no longer be shown.
 				( shouldShowInitialCalloutForTailoredMetrics &&
-					isSavingConversionReportingSettings )
-			) {
-				dismissCallout();
-			}
-
-			if (
-				shouldShowCalloutForLostEvents &&
-				! isSavingConversionReportingSettings
-			) {
-				dismissCallout( 'lostEvents' );
-			}
+					isSavingKeyMetricsSettings ) )
+		) {
+			dismissCallout();
 		}
 	}, [
 		isSelectionPanelOpen,
+		prevIsSelectionPanelOpen,
 		shouldShowCalloutForNewEvents,
 		shouldShowCalloutForUserPickedMetrics,
 		shouldShowInitialCalloutForTailoredMetrics,
 		isSavingConversionReportingSettings,
+		isSavingKeyMetricsSettings,
+		dismissCallout,
+	] );
+
+	// Handle dismiss of lost events callout on opening of the selection panel.
+	useEffect( () => {
+		if (
+			! prevIsSelectionPanelOpen &&
+			isSelectionPanelOpen &&
+			shouldShowCalloutForLostEvents &&
+			! isSavingConversionReportingSettings
+		) {
+			dismissCallout( 'lostEvents' );
+		}
+	}, [
+		isSelectionPanelOpen,
+		prevIsSelectionPanelOpen,
+		isSavingConversionReportingSettings,
 		shouldShowCalloutForLostEvents,
-		conversionReportingDetectedEventsTrackingArgs,
 		dismissCallout,
 	] );
 

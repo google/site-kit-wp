@@ -58,7 +58,9 @@ export function conversionReportingDetectedEventsTracking(
 		category = `${ viewContext }_kmw-tailored-new-conversion-events-detected-notification`;
 	}
 
-	trackEvent( category, eventName, 'conversion_reporting' );
+	if ( category ) {
+		trackEvent( category, eventName, 'conversion_reporting' );
+	}
 }
 
 conversionReportingDetectedEventsTracking.propTypes = {
