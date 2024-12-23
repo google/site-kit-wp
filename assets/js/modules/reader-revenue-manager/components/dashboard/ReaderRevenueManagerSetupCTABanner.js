@@ -75,20 +75,10 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
 	);
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isPromptDismissed(
-			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-		)
-	);
-
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
 		)
-	);
-
-	const dismissedPromptsLoaded = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
 
 	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
@@ -112,18 +102,9 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
 
-	const showBanner = isDismissed === false && dismissedPromptsLoaded === true;
-
 	useEffect( () => {
-		if ( showBanner ) {
-			trackEvent(
-				`${ viewContext }_rrm-setup-notification`,
-				'view_notification'
-			);
-
-			triggerSurvey( 'view_reader_revenue_manager_cta' );
-		}
-	}, [ showBanner, triggerSurvey, viewContext ] );
+		triggerSurvey( 'view_reader_revenue_manager_cta' );
+	}, [ triggerSurvey ] );
 
 	if ( isTooltipVisible ) {
 		return (
