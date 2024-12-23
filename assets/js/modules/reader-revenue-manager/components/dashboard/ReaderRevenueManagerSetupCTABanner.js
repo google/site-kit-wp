@@ -116,7 +116,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 			<NotificationWithSVG
 				id={ id }
 				title={ __(
-					'Get more comprehensive stats by collecting metrics via your own site',
+					'Grow your revenue and deepen reader engagement',
 					'google-site-kit'
 				) }
 				description={
