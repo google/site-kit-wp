@@ -30,67 +30,42 @@ export function conversionReportingDetectedEventsTracking(
 	{
 		shouldShowInitialCalloutForTailoredMetrics,
 		shouldShowCalloutForUserPickedMetrics,
-		haveConversionEventsWithDifferentMetrics,
+		shouldShowCalloutForNewEvents,
 		userPickedMetrics,
 	},
 	viewContext,
 	eventName
 ) {
-	// Handle internal tracking for new events with manual KMW selection.
-	if (
-		haveConversionEventsWithDifferentMetrics &&
-		userPickedMetrics?.length
-	) {
-		trackEvent(
-			`${ viewContext }_kmw-manual-new-conversion-events-detected-notification`,
-			eventName,
-			'conversion_reporting'
-		);
-
-		return;
-	}
-
-	// Handle internal tracking for new events with tailored KMW selection.
-	if (
-		haveConversionEventsWithDifferentMetrics &&
-		! userPickedMetrics?.length
-	) {
-		trackEvent(
-			`${ viewContext }_kmw-tailored-new-conversion-events-detected-notification`,
-			eventName,
-			'conversion_reporting'
-		);
-
-		return;
-	}
+	let category = '';
 
 	// Handle internal tracking or the initial detection of events with tailored KMW selection.
 	if ( shouldShowInitialCalloutForTailoredMetrics ) {
-		trackEvent(
-			`${ viewContext }_kmw-tailored-conversion-events-detected-notification`,
-			eventName,
-			'conversion_reporting'
-		);
-
-		return;
+		category = `${ viewContext }_kmw-tailored-conversion-events-detected-notification`;
 	}
 
 	// Handle internal tracking or the initial detection of events with manual KMW selection.
 	if ( shouldShowCalloutForUserPickedMetrics ) {
-		trackEvent(
-			`${ viewContext }_kmw-manual-conversion-events-detected-notification`,
-			eventName,
-			'conversion_reporting'
-		);
+		category = `${ viewContext }_kmw-manual-conversion-events-detected-notification`;
 	}
+
+	// Handle internal tracking for new events with manual KMW selection.
+	if ( shouldShowCalloutForNewEvents && userPickedMetrics?.length ) {
+		category = `${ viewContext }_kmw-manual-new-conversion-events-detected-notification`;
+	}
+
+	// Handle internal tracking for new events with tailored KMW selection.
+	if ( shouldShowCalloutForNewEvents && ! userPickedMetrics?.length ) {
+		category = `${ viewContext }_kmw-tailored-new-conversion-events-detected-notification`;
+	}
+
+	trackEvent( category, eventName, 'conversion_reporting' );
 }
 
 conversionReportingDetectedEventsTracking.propTypes = {
 	shouldShowInitialCalloutForTailoredMetrics: propTypes.bool.isRequired,
 	shouldShowCalloutForUserPickedMetrics: propTypes.bool.isRequired,
-	haveConversionEventsWithDifferentMetrics: propTypes.bool.isRequired,
+	shouldShowCalloutForNewEvents: propTypes.bool.isRequired,
 	userPickedMetrics: propTypes.object.isRequired,
-	haveLostConversionEvents: propTypes.bool.isRequired,
 	viewContext: propTypes.string.isRequired,
 	eventName: propTypes.string.isRequired,
 };

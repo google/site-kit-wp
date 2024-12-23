@@ -116,7 +116,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const shouldShowCalloutForLostEvents =
 		haveLostConversionEvents && haveLostConversionEventsAfterDismiss;
 
-	const hasUserPickedMetrics = useSelect( ( select ) =>
+	const userPickedMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getUserPickedMetrics()
 	);
 	const haveConversionEventsWithDifferentMetrics = useSelect( ( select ) =>
@@ -128,15 +128,14 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		return {
 			shouldShowInitialCalloutForTailoredMetrics,
 			shouldShowCalloutForUserPickedMetrics,
-			haveConversionEventsWithDifferentMetrics,
-			hasUserPickedMetrics,
-			haveLostConversionEvents,
+			shouldShowCalloutForNewEvents,
+			userPickedMetrics,
 		};
 	}, [
 		shouldShowInitialCalloutForTailoredMetrics,
 		shouldShowCalloutForUserPickedMetrics,
 		haveConversionEventsWithDifferentMetrics,
-		hasUserPickedMetrics,
+		userPickedMetrics,
 		haveLostConversionEvents,
 	] );
 
