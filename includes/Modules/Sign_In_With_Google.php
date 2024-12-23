@@ -369,7 +369,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 } )();
 		<?php
 		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );
-		print( '\n<!-- End Sign in with Google button added by Site Kit -->\n' );
+		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
 	}
 
 	/**
