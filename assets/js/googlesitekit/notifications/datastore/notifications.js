@@ -473,6 +473,11 @@ export const selectors = {
 				return undefined;
 			}
 
+			invariant(
+				notification.isDismissible,
+				'Notification should be dismissible to check if a notification is on its final dismissal.'
+			);
+
 			// If a notification does not have retries, it always will be on its final render.
 			if ( notification.dismissRetries === 0 ) {
 				return true;
