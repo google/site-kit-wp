@@ -83,6 +83,10 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		triggerSurvey( 'view_reader_revenue_manager_cta' );
 	}, [ triggerSurvey ] );
 
+	const isDismissalFinal = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationRetryFinal( id )
+	);
+
 	// See TODO note below.
 	const isCTADismissed = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
@@ -162,14 +166,11 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 							'google-site-kit'
 						) }
 						onCTAClick={ onSetupActivate }
-						dismissLabelInitial={ __(
-							'Maybe later',
-							'google-site-kit'
-						) }
-						dismissLabel={ __(
-							'Don’t show again',
-							'google-site-kit'
-						) }
+						dismissLabel={
+							isDismissalFinal
+								? __( 'Don’t show again', 'google-site-kit' )
+								: __( 'Maybe later', 'google-site-kit' )
+						}
 						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
