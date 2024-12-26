@@ -122,16 +122,9 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		return null;
 	}
 
-	const getBannerSVG = () => {
-		if ( breakpoint === BREAKPOINT_SMALL ) {
-			return SetupMobileSVG;
-		}
-
-		if ( breakpoint === BREAKPOINT_TABLET ) {
-			return SetupTabletSVG;
-		}
-
-		return SetupSVG;
+	const breakpointSVGMap = {
+		[ BREAKPOINT_SMALL ]: SetupMobileSVG,
+		[ BREAKPOINT_TABLET ]: SetupTabletSVG,
 	};
 
 	return (
@@ -178,7 +171,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>
 				}
-				SVG={ getBannerSVG() }
+				SVG={ breakpointSVGMap[ breakpoint ] || SetupSVG }
 			/>
 		</Notification>
 	);
