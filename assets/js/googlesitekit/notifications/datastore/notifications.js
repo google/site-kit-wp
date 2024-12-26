@@ -464,7 +464,7 @@ export const selectors = {
 	 * @param {string} id    Notification id.
 	 * @return {(boolean|undefined)} TRUE if notification is on its final retry, otherwise FALSE, `undefined` if not resolved yet.
 	 */
-	isNotificationRetryFinal: createRegistrySelector(
+	isNotificationDismissalFinal: createRegistrySelector(
 		( select ) => ( state, id ) => {
 			const notification =
 				select( CORE_NOTIFICATIONS ).getNotification( id );

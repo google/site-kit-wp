@@ -84,7 +84,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	}, [ triggerSurvey ] );
 
 	const isDismissalFinal = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationRetryFinal( id )
+		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
 	// See TODO note below.
