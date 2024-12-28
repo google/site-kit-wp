@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	provideNotifications,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
@@ -576,30 +577,47 @@ describe( 'core/notifications Notifications', () => {
 		} );
 
 		describe( 'isNotificationDismissed', () => {
-			let isNotificationDismissed;
-			beforeEach( () => {
-				( { isNotificationDismissed } =
-					registry.select( CORE_NOTIFICATIONS ) );
-			} );
+			describe( 'when using dismissed items', () => {
+				let isNotificationDismissed;
+				beforeEach( () => {
+					// Register the Gathering Data Notification as a test
+					provideNotifications( registry );
 
-			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
-				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-				expect( isNotificationDismissed( 'foo' ) ).toBeUndefined();
-				await untilResolved( registry, CORE_USER ).getDismissedItems();
-			} );
+					( { isNotificationDismissed } =
+						registry.select( CORE_NOTIFICATIONS ) );
+				} );
 
-			it( 'should return TRUE if the notification is dismissed', () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [ 'foo', 'bar' ] );
-				expect( isNotificationDismissed( 'foo' ) ).toBe( true );
-			} );
+				it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
+					fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+					expect(
+						isNotificationDismissed( 'gathering-data-notification' )
+					).toBeUndefined();
+					await untilResolved(
+						registry,
+						CORE_USER
+					).getDismissedItems();
+				} );
 
-			it( 'should return FALSE if the notification is not dismissed', () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [ 'foo', 'bar' ] );
-				expect( isNotificationDismissed( 'baz' ) ).toBe( false );
+				it( 'should return TRUE if the notification is dismissed', () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedItems( [
+							'gathering-data-notification',
+							'some-other-notification',
+						] );
+					expect(
+						isNotificationDismissed( 'gathering-data-notification' )
+					).toBe( true );
+				} );
+
+				it( 'should return FALSE if the notification is not dismissed', () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedItems( [ 'foo', 'bar' ] );
+					expect(
+						isNotificationDismissed( 'gathering-data-notification' )
+					).toBe( false );
+				} );
 			} );
 		} );
 	} );
