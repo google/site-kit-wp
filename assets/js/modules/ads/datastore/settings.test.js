@@ -106,6 +106,17 @@ describe( 'modules/ads settings', () => {
 					FPM_SETUP_CTA_BANNER_NOTIFICATION,
 				] );
 
+			provideNotifications(
+				registry,
+				{
+					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+						DEFAULT_NOTIFICATIONS[
+							FPM_SETUP_CTA_BANNER_NOTIFICATION
+						],
+				},
+				{ overwrite: true }
+			);
+
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 				body: JSON.parse( opts.body )?.data,
 				status: 200,
