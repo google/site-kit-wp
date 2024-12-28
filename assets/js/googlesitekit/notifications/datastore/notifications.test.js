@@ -43,6 +43,9 @@ describe( 'core/notifications Notifications', () => {
 	const fetchDismissItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
+	const fetchGetDismissedPrompts = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-prompts'
+	);
 
 	let registry;
 	let store;
@@ -616,6 +619,64 @@ describe( 'core/notifications Notifications', () => {
 						.receiveGetDismissedItems( [ 'foo', 'bar' ] );
 					expect(
 						isNotificationDismissed( 'gathering-data-notification' )
+					).toBe( false );
+				} );
+			} );
+			describe( 'when using dismissed prompts', () => {
+				let isNotificationDismissed;
+				beforeEach( () => {
+					provideNotifications( registry, {
+						'test-notification-using-prompts': {
+							Component: () => {},
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							priority: 11,
+							checkRequirements: () => true,
+							isDismissible: false,
+							dismissRetries: 1,
+						},
+					} );
+
+					( { isNotificationDismissed } =
+						registry.select( CORE_NOTIFICATIONS ) );
+				} );
+
+				it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
+					fetchMock.getOnce( fetchGetDismissedPrompts, { body: [] } );
+					expect(
+						isNotificationDismissed(
+							'test-notification-using-prompts'
+						)
+					).toBeUndefined();
+					await untilResolved(
+						registry,
+						CORE_USER
+					).getDismissedPrompts();
+				} );
+
+				it( 'should return TRUE if the notification is dismissed', () => {
+					registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+						'test-notification-using-prompts': {
+							expires: 0,
+							count: 1,
+						},
+						'some-other-notification': { expires: 0, count: 2 },
+					} );
+					expect(
+						isNotificationDismissed(
+							'test-notification-using-prompts'
+						)
+					).toBe( true );
+				} );
+
+				it( 'should return FALSE if the notification is not dismissed', () => {
+					registry
+						.dispatch( CORE_USER )
+						.receiveGetDismissedPrompts( [ 'foo', 'bar' ] );
+					expect(
+						isNotificationDismissed(
+							'test-notification-using-prompts'
+						)
 					).toBe( false );
 				} );
 			} );
