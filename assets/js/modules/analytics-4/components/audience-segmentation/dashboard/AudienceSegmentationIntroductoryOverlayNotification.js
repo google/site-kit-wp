@@ -41,11 +41,12 @@ import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../hooks/useDashboardType';
+import whenActive from '../../../../../util/when-active';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
-export default function AudienceSegmentationIntroductoryOverlayNotification() {
+function AudienceSegmentationIntroductoryOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
@@ -178,3 +179,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 		</OverlayNotification>
 	);
 }
+
+export default whenActive( { moduleName: 'analytics-4' } )(
+	AudienceSegmentationIntroductoryOverlayNotification
+);

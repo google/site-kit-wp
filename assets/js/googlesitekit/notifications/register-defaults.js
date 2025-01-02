@@ -29,8 +29,11 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 } from './datastore/constants';
+import {
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+} from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
 import {
@@ -58,7 +61,6 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -237,30 +239,24 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			await Promise.all( [
-				// The getAdSenseLinked selector relies on the resolution
-				// of the getSettings() resolver.
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
+			const adSenseModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'adsense' );
 
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'adsense' );
+			const analyticsModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
-			const analyticsModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 
 			const isAdSenseLinked =
 				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
-			const analyticsAndAdsenseConnectedAndLinked =
-				adSenseModuleConnected &&
-				analyticsModuleConnected &&
-				isAdSenseLinked;
-
-			if ( ! analyticsAndAdsenseConnectedAndLinked ) {
+			if ( ! isAdSenseLinked ) {
 				return false;
 			}
 
@@ -297,10 +293,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			// we show them a different notification and should not show this one. Check
 			// to see if the user already has data and dismiss this notification without
 			// showing it.
-			if (
-				isZeroReport( report ) === false &&
-				analyticsAndAdsenseConnectedAndLinked
-			) {
+			if ( isZeroReport( report ) === false ) {
 				await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
 					'top-earning-pages-success-notification'
 				);

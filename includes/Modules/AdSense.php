@@ -748,7 +748,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
-			'order'       => 2,
 			'homepage'    => add_query_arg( $idenfifier_args, 'https://adsense.google.com/start' ),
 		);
 	}
