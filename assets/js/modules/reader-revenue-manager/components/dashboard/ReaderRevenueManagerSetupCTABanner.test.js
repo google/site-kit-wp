@@ -34,7 +34,7 @@ import {
 	waitFor,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
@@ -60,9 +60,10 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
 	let activateModuleMock;
 
-	const { Widget, WidgetNull } = getWidgetComponentProps(
-		'readerRevenueManagerSetupCTABanner'
-	);
+	const ReaderRevenueManagerSetupCTABannerComponent =
+		withNotificationComponentProps( 'rrm-setup-notification' )(
+			ReaderRevenueManagerSetupCTABanner
+		);
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -91,10 +92,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		mockSurveyEndpoints();
 
 		const { getByText, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -121,10 +119,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			},
 		} );
 		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -147,10 +142,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 
 		const { container, getByRole, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -202,10 +194,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 						Settings
 					</a>
 				</div>
-				<ReaderRevenueManagerSetupCTABanner
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
+				<ReaderRevenueManagerSetupCTABannerComponent />,
 			</div>,
 			{
 				registry,
@@ -254,10 +243,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		] );
 
 		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -276,10 +262,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			.startResolution( 'getDismissedPrompts', [] );
 
 		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 			}
@@ -313,10 +296,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 						Settings
 					</a>
 				</div>
-				<ReaderRevenueManagerSetupCTABanner
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
+				<ReaderRevenueManagerSetupCTABannerComponent />,
 			</div>,
 			{
 				registry,
@@ -382,10 +362,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 						Settings
 					</a>
 				</div>
-				<ReaderRevenueManagerSetupCTABanner
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
+				<ReaderRevenueManagerSetupCTABannerComponent />,
 			</div>,
 			{
 				registry,
@@ -419,10 +396,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		mockSurveyEndpoints();
 
 		const { waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
