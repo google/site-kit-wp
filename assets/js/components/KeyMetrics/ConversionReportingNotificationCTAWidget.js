@@ -17,15 +17,23 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-import { useCallback, useState, useEffect } from '@wordpress/element';
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -35,15 +43,30 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { conversionReportingDetectedEventsTracking } from './utils';
 import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
 import LostEventsSubtleNotification from './LostEventsSubtleNotification';
 import whenActive from '../../util/when-active';
+import useViewContext from '../../hooks/useViewContext';
 import useDisplayNewEventsCalloutForTailoredMetrics from './hooks/useDisplayNewEventsCalloutForTailoredMetrics';
 import useDisplayNewEventsCalloutForUserPickedMetrics from './hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
 import useDisplayNewEventsCalloutAfterInitialDetection from './hooks/useDisplayNewEventsCalloutAfterInitialDetection';
+import { trackEvent } from '../../util';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
+	const viewContext = useViewContext();
+
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ isViewed, setIsViewed ] = useState( false );
+
+	const conversionReportingNotificationRef = useRef();
+	const intersectionEntry = useIntersection(
+		conversionReportingNotificationRef,
+		{
+			threshold: 0.25,
+		}
+	);
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	const haveLostConversionEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).haveLostEventsForCurrentMetrics()
@@ -94,6 +117,32 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const shouldShowCalloutForLostEvents =
 		haveLostConversionEvents && haveLostConversionEventsAfterDismiss;
 
+	const userPickedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getUserPickedMetrics()
+	);
+
+	// Build a common object to use as the first argument in conversionReportingDetectedEventsTracking().
+	const conversionReportingDetectedEventsTrackingArgs = useMemo( () => {
+		return {
+			shouldShowInitialCalloutForTailoredMetrics,
+			shouldShowCalloutForUserPickedMetrics,
+			shouldShowCalloutForNewEvents,
+			userPickedMetrics,
+		};
+	}, [
+		shouldShowInitialCalloutForTailoredMetrics,
+		shouldShowCalloutForUserPickedMetrics,
+		shouldShowCalloutForNewEvents,
+		userPickedMetrics,
+	] );
+
+	const isSavingConversionReportingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingConversionReportingSettings()
+	);
+	const isSavingKeyMetricsSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingKeyMetricsSettings()
+	);
+
 	const { saveConversionReportingSettings } = useDispatch( CORE_USER );
 
 	const dismissCallout = useCallback(
@@ -104,16 +153,35 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			const conversionReportingSettings = {
 				newEventsCalloutDismissedAt: timestamp,
 			};
+
 			if ( eventType === 'lostEvents' ) {
 				conversionReportingSettings.lostEventsCalloutDismissedAt =
 					timestamp;
+
+				// Handle internal tracking for lost events banner dismissal.
+				trackEvent(
+					`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+					'dismiss_notification',
+					'conversion_reporting'
+				);
+			} else {
+				// Handle internal tracking.
+				conversionReportingDetectedEventsTracking(
+					conversionReportingDetectedEventsTrackingArgs,
+					viewContext,
+					'dismiss_notification'
+				);
 			}
 
 			await saveConversionReportingSettings(
 				conversionReportingSettings
 			);
 		},
-		[ saveConversionReportingSettings ]
+		[
+			viewContext,
+			conversionReportingDetectedEventsTrackingArgs,
+			saveConversionReportingSettings,
+		]
 	);
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) =>
@@ -134,6 +202,13 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			setIsSaving( false );
 		}
 
+		// Handle internal tracking.
+		conversionReportingDetectedEventsTracking(
+			conversionReportingDetectedEventsTrackingArgs,
+			viewContext,
+			'confirm_add_new_conversion_metrics'
+		);
+
 		dismissCallout();
 	}, [
 		setUserInputSetting,
@@ -141,53 +216,126 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		dismissCallout,
 		userInputPurposeConversionEvents,
 		shouldShowInitialCalloutForTailoredMetrics,
+		viewContext,
+		conversionReportingDetectedEventsTrackingArgs,
 	] );
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const handleSelectMetricsClick = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+	const handleSelectMetricsClick = useCallback(
+		( clickContext = '' ) => {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+			// Handle internal tracking of lost events variant.
+			if ( 'lostEvents' === clickContext ) {
+				if ( shouldShowCalloutForLostEvents ) {
+					trackEvent(
+						`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+						'confirm_get_select_metrics',
+						'conversion_reporting'
+					);
+				}
+
+				return;
+			}
+
+			// Handle internal tracking if not lost events variant.
+			conversionReportingDetectedEventsTracking(
+				conversionReportingDetectedEventsTrackingArgs,
+				viewContext,
+				'confirm_select_new_conversion_metrics'
+			);
+		},
+		[
+			viewContext,
+			conversionReportingDetectedEventsTrackingArgs,
+			setValue,
+			shouldShowCalloutForLostEvents,
+		]
+	);
 
 	const isSelectionPanelOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
-	const isSavingConversionReportingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingConversionReportingSettings()
-	);
+	const prevIsSelectionPanelOpen = usePrevious( isSelectionPanelOpen );
 
+	// Handle dismiss of new events callout on opening of the selection panel.
 	useEffect( () => {
-		if ( isSelectionPanelOpen ) {
-			if (
-				// Dismiss the new events callout if shouldShowCalloutForNewEvents is true
-				// and settings are not being saved. This prevents duplicate requests, as after
-				// the first call, the settings enter the saving state. Once saving is complete,
-				// shouldShowCalloutForNewEvents will no longer be true.
-				( ! isSavingConversionReportingSettings &&
-					( shouldShowCalloutForNewEvents ||
-						shouldShowCalloutForUserPickedMetrics ) ) ||
+		if (
+			! prevIsSelectionPanelOpen &&
+			isSelectionPanelOpen &&
+			// Dismiss the new events callout if shouldShowCalloutForNewEvents is true
+			// and settings are not being saved. This prevents duplicate requests, as after
+			// the first call, the settings enter the saving state. Once saving is complete,
+			// shouldShowCalloutForNewEvents will no longer be true.
+			( ( ! isSavingConversionReportingSettings &&
+				( shouldShowCalloutForNewEvents ||
+					shouldShowCalloutForUserPickedMetrics ) ) ||
 				// shouldShowInitialCalloutForTailoredMetrics is more specific because the "Add metrics"
 				// CTA does not open the panel; it directly adds metrics. We want to dismiss this callout
 				// only when the user opens the selection panel and saves their metrics selection. This marks
 				// the transition to manual selection, after which this callout should no longer be shown.
 				( shouldShowInitialCalloutForTailoredMetrics &&
-					isSavingConversionReportingSettings )
-			) {
-				dismissCallout();
-			}
-
-			if ( shouldShowCalloutForLostEvents ) {
-				dismissCallout( 'lostEvents' );
-			}
+					isSavingKeyMetricsSettings ) )
+		) {
+			dismissCallout();
 		}
 	}, [
 		isSelectionPanelOpen,
+		prevIsSelectionPanelOpen,
 		shouldShowCalloutForNewEvents,
 		shouldShowCalloutForUserPickedMetrics,
 		shouldShowInitialCalloutForTailoredMetrics,
 		isSavingConversionReportingSettings,
+		isSavingKeyMetricsSettings,
+		dismissCallout,
+	] );
+
+	// Handle dismiss of lost events callout on opening of the selection panel.
+	useEffect( () => {
+		if (
+			! prevIsSelectionPanelOpen &&
+			isSelectionPanelOpen &&
+			shouldShowCalloutForLostEvents &&
+			! isSavingConversionReportingSettings
+		) {
+			dismissCallout( 'lostEvents' );
+		}
+	}, [
+		isSelectionPanelOpen,
+		prevIsSelectionPanelOpen,
+		isSavingConversionReportingSettings,
 		shouldShowCalloutForLostEvents,
 		dismissCallout,
+	] );
+
+	// Track when the notification is viewed.
+	useEffect( () => {
+		if ( ! isViewed && inView ) {
+			// Handle internal tracking.
+			conversionReportingDetectedEventsTracking(
+				conversionReportingDetectedEventsTrackingArgs,
+				viewContext,
+				'view_notification'
+			);
+
+			// Handle internal tracking for lost events banner.
+			if ( shouldShowCalloutForLostEvents ) {
+				trackEvent(
+					`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
+					'view_notification',
+					'conversion_reporting'
+				);
+			}
+
+			setIsViewed( true );
+		}
+	}, [
+		isViewed,
+		inView,
+		viewContext,
+		conversionReportingDetectedEventsTrackingArgs,
+		shouldShowCalloutForLostEvents,
 	] );
 
 	if (
@@ -209,10 +357,12 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget noPadding fullWidth>
+		<Widget noPadding fullWidth ref={ conversionReportingNotificationRef }>
 			{ shouldShowCalloutForLostEvents && (
 				<LostEventsSubtleNotification
-					onSelectMetricsCallback={ handleSelectMetricsClick }
+					onSelectMetricsCallback={ () => {
+						handleSelectMetricsClick( 'lostEvents' );
+					} }
 					onDismissCallback={ () => dismissCallout( 'lostEvents' ) }
 				/>
 			) }
