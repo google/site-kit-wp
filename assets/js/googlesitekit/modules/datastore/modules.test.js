@@ -2274,7 +2274,7 @@ describe( 'core/modules modules', () => {
 
 				expect(
 					registry.select( CORE_MODULES ).getDetailsLinkURL( slug )
-				).toEqual( 'https://example.com/custom-link' );
+				).toBe( 'https://example.com/custom-link' );
 			} );
 		} );
 	} );
