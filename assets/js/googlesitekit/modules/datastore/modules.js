@@ -1414,6 +1414,46 @@ const baseSelectors = {
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
 	},
+
+	/**
+	 * Gets the details link URL for a module.
+	 *
+	 * Returns the module homepage by default. This can be overwritten by a
+	 * custom selector of the same name in the module store implementation.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(string|null|undefined)} Details link URL; `null` if module is not available, or does not have a homepage. `undefined` if data is still loading.
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			if ( module === null ) {
+				return null;
+			}
+
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+			const { getDetailsLinkURL } = select( storeName ) || {};
+
+			if ( typeof getDetailsLinkURL === 'function' ) {
+				return getDetailsLinkURL();
+			}
+
+			if ( ! module.homepage ) {
+				return null;
+			}
+
+			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
+	),
 };
 
 const store = combineStores(
