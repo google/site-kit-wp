@@ -86,9 +86,9 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		}
 	}, [ isTooltipVisible, viewContext ] );
 
-	const onCTAClick = () => {
+	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
-		saveFirstPartyModeSettings();
+		await saveFirstPartyModeSettings();
 
 		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
 		invalidateResolution( 'getQueuedNotifications', [

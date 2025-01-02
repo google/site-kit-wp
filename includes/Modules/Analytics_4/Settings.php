@@ -74,6 +74,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'availableAudiences',
 			'audienceSegmentationSetupCompletedBy',
 			'detectedEvents',
+			'newConversionEventsLastUpdateAt',
+			'lostConversionEventsLastUpdateAt',
 		);
 	}
 
@@ -110,6 +112,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'availableAudiencesLastSyncedAt'       => 0,
 			'audienceSegmentationSetupCompletedBy' => null,
 			'detectedEvents'                       => array(),
+			'newConversionEventsLastUpdateAt'      => 0,
+			'lostConversionEventsLastUpdateAt'     => 0,
 		);
 	}
 
@@ -211,6 +215,18 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['audienceSegmentationSetupCompletedBy'] ) ) {
 					if ( ! is_int( $option['audienceSegmentationSetupCompletedBy'] ) ) {
 						$option['audienceSegmentationSetupCompletedBy'] = null;
+					}
+				}
+
+				if ( isset( $option['newConversionEventsLastUpdateAt'] ) ) {
+					if ( ! is_int( $option['newConversionEventsLastUpdateAt'] ) ) {
+						$option['newConversionEventsLastUpdateAt'] = 0;
+					}
+				}
+
+				if ( isset( $option['lostConversionEventsLastUpdateAt'] ) ) {
+					if ( ! is_int( $option['lostConversionEventsLastUpdateAt'] ) ) {
+						$option['lostConversionEventsLastUpdateAt'] = 0;
 					}
 				}
 			}

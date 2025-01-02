@@ -28,6 +28,7 @@ import Footer from '../MetricsSelectionPanel/Footer';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -109,6 +110,9 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+	},
 	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
@@ -127,6 +131,7 @@ WithError.args = {
 		];
 
 		provideKeyMetrics( registry, { widgetSlugs: savedKeyMetrics } );
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
 		registry.dispatch( CORE_FORMS ).setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedKeyMetrics,
@@ -138,12 +143,31 @@ WithError.args = {
 			.receiveConversionReportingInlineData( {
 				newEvents: [],
 				lostEvents: [],
+				newBadgeEvents: [],
 			} );
 	},
 	features: [ 'conversionReporting' ],
 };
 WithError.scenario = {
 	label: 'Components/KeyMetrics/ChipTabGroup/WithError',
+};
+
+export const WithSuggestedGroup = Template.bind( {} );
+WithSuggestedGroup.storyName = 'With Suggested Group';
+WithSuggestedGroup.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+		provideKeyMetricsUserInputSettings( registry, {
+			purpose: {
+				values: [ 'sell_products' ],
+				scope: 'site',
+			},
+		} );
+	},
+	features: [ 'conversionReporting' ],
+};
+WithSuggestedGroup.scenario = {
+	label: 'Components/KeyMetrics/ChipTabGroup/WithSuggestedGroup',
 };
 
 export default {
@@ -202,6 +226,7 @@ export default {
 					.receiveConversionReportingInlineData( {
 						newEvents: [ 'contact' ],
 						lostEvents: [],
+						newBadgeEvents: [ 'contact' ],
 					} );
 
 				// Call story-specific setup.
