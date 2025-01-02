@@ -28,8 +28,6 @@ import {
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 
-const { rootURL } = global._googlesitekitAPIFetchData || {};
-
 describe( 'useMonitorInternetConnection', () => {
 	let registry;
 	let store;
@@ -42,7 +40,7 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 	};
 
-	const connectionCheckEndpoint = new URL( '/google-site-kit/v1/', rootURL );
+	const connectionCheckEndpoint = '/google-site-kit/v1/?_locale=user';
 
 	const connectionCheckResponse = {
 		namespace: 'google-site-kit/v1',
@@ -70,6 +68,10 @@ describe( 'useMonitorInternetConnection', () => {
 	} );
 
 	it( 'should set online status correctly', () => {
+		fetchMock.getOnce( connectionCheckEndpoint, {
+			body: connectionCheckResponse,
+		} );
+
 		renderHook( () => useMonitorInternetConnection(), { registry } );
 
 		expect( store.getState().isOnline ).toBe( true );
