@@ -25,10 +25,8 @@ import { isEqual } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import {
 	commonActions,
-	combineStores,
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
@@ -44,9 +42,11 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	CONVERSION_REPORTING_LEAD_EVENTS,
+	MODULES_ANALYTICS_4,
+} from './constants';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { negateDefined } from '../../../util/negate';
 import { safelySort } from '../../../util';
 
@@ -61,54 +61,6 @@ function hasConversionReportingEventsOfType( propName ) {
 		return negateDefined( negateDefined( inlineData[ propName ]?.length ) );
 	} );
 }
-
-const dismissNewConversionReportingEventsStore = createFetchStore( {
-	baseName: 'dismissNewConversionReportingEvents',
-	controlCallback: () => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'clear-conversion-reporting-new-events'
-		);
-	},
-	reducerCallback: ( state, values ) => {
-		if ( values === false ) {
-			return state;
-		}
-
-		return {
-			...state,
-			detectedEventsChange: {
-				...state.detectedEventsChange,
-				newEvents: [],
-			},
-		};
-	},
-} );
-
-const dismissLostConversionReportingEventsStore = createFetchStore( {
-	baseName: 'dismissLostConversionReportingEvents',
-	controlCallback: () => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'clear-conversion-reporting-lost-events'
-		);
-	},
-	reducerCallback: ( state, values ) => {
-		if ( values === false ) {
-			return state;
-		}
-
-		return {
-			...state,
-			detectedEventsChange: {
-				...state.detectedEventsChange,
-				lostEvents: [],
-			},
-		};
-	},
-} );
 
 // Actions.
 const RECEIVE_CONVERSION_REPORTING_INLINE_DATA =
@@ -135,39 +87,18 @@ export const resolvers = {
 			return;
 		}
 
-		const { newEvents, lostEvents } =
+		const { newEvents, lostEvents, newBadgeEvents } =
 			global._googlesitekitModulesData[ 'analytics-4' ];
 
 		yield actions.receiveConversionReportingInlineData( {
 			newEvents,
 			lostEvents,
+			newBadgeEvents,
 		} );
 	},
 };
 
 export const actions = {
-	/**
-	 * Dismiss new conversion reporting events.
-	 *
-	 * @since 1.138.0
-	 *
-	 * @return {boolean} Transient deletion response.
-	 */
-	dismissNewConversionReportingEvents() {
-		return dismissNewConversionReportingEventsStore.actions.fetchDismissNewConversionReportingEvents();
-	},
-
-	/**
-	 * Dismiss lost conversion reporting events.
-	 *
-	 * @since 1.138.0
-	 *
-	 * @return {boolean} Transient deletion response.
-	 */
-	dismissLostConversionReportingEvents() {
-		return dismissLostConversionReportingEventsStore.actions.fetchDismissLostConversionReportingEvents();
-	},
-
 	/**
 	 * Stores conversion reporting inline data in the datastore.
 	 *
@@ -190,9 +121,13 @@ export const actions = {
 export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
-			const { newEvents, lostEvents } = payload.data;
+			const { newEvents, lostEvents, newBadgeEvents } = payload.data;
 
-			state.detectedEventsChange = { newEvents, lostEvents };
+			state.detectedEventsChange = {
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+			};
 			break;
 		}
 
@@ -269,11 +204,24 @@ export const selectors = {
 		hasConversionReportingEventsOfType( 'lostEvents' ),
 
 	/**
+	 * Returns newBadgeEvents if present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array|undefined} `newBadgeEvents` array if events are present, `undefined` otherwise.
+	 */
+	getNewBadgeEvents: createRegistrySelector( ( select ) => () => {
+		const inlineData =
+			select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange();
+
+		return inlineData?.newBadgeEvents;
+	} ),
+
+	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
 	 *
 	 * @since 1.141.0
 	 *
-	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise, and undefined if metrics are not loaded.
 	 */
@@ -429,11 +377,6 @@ export const selectors = {
 	 */
 	haveConversionEventsWithDifferentMetrics: createRegistrySelector(
 		( select ) => () => {
-			const leadEvents = [
-				'contact',
-				'generate_lead',
-				'submit_lead_form',
-			];
 			const isGA4Connected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
@@ -468,15 +411,16 @@ export const selectors = {
 			}
 
 			const detectedLeadEvents = detectedEvents.filter( ( event ) =>
-				leadEvents.includes( event )
+				CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 			);
 			const newLeadEvents =
 				conversionReportingEventsChange.newEvents.filter( ( event ) =>
-					leadEvents.includes( event )
+					CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 				);
 			const newNonLeadEvents =
 				conversionReportingEventsChange.newEvents.filter(
-					( event ) => ! leadEvents.includes( event )
+					( event ) =>
+						! CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 				);
 
 			// If new events include only additional lead events return early.
@@ -537,14 +481,12 @@ export const selectors = {
 	),
 };
 
-export default combineStores(
-	dismissNewConversionReportingEventsStore,
-	dismissLostConversionReportingEventsStore,
-	{
-		initialState,
-		actions,
-		resolvers,
-		selectors,
-		reducer,
-	}
-);
+const store = {
+	initialState,
+	actions,
+	resolvers,
+	selectors,
+	reducer,
+};
+
+export default store;

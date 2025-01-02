@@ -186,22 +186,33 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 *
 	 * @since 1.141.0
 	 * @since 1.142.0 Relocated from REST_First_Party_Mode_Controller.
+	 * @since n.e.x.t Uses Google\FirstPartyLibrary\RequestHelper to send requests.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
-		try {
-			// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown,WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$response = file_get_contents( $endpoint );
-		} catch ( \Exception $e ) {
+		if ( ! defined( 'IS_FIRST_PARTY_MODE_TEST' ) ) {
+			// TODO: This is a workaround to allow the measurement.php file to be loaded without making a
+			// request, in order to use the RequestHelper class that it defines. We should find a better
+			// solution in the future, but this will involve changes to the measurement.php file.
+			define( 'IS_FIRST_PARTY_MODE_TEST', true );
+		}
+
+		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
+
+		$request_helper = new \Google\FirstPartyLibrary\RequestHelper();
+
+		$response = $request_helper->sendRequest( $endpoint );
+
+		if ( 200 !== $response['statusCode'] ) {
 			return false;
 		}
 
-		if ( 'ok' !== $response ) {
+		if ( 'ok' !== $response['body'] ) {
 			return false;
 		}
 
-		return strpos( $http_response_header[0], '200 OK' ) !== false;
+		return true;
 	}
 }

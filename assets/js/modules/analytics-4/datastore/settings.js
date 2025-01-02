@@ -26,6 +26,7 @@ import { isEqual, pick } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidPropertyID,
@@ -66,6 +67,18 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 	'a web data stream with the same name already exists';
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
+
+const store = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAccountSummaries'
+				)
+		),
+	},
+};
+export default store;
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();

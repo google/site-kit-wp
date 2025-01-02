@@ -709,23 +709,6 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertTrue( $google_client_mock->shouldDefer() );
 	}
 
-	public function test_using_proxy() {
-		$this->setExpectedDeprecated( OAuth_Client::class . '::using_proxy' );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$client  = new OAuth_Client( $context );
-
-		// Use proxy by default.
-		$this->assertTrue( $client->using_proxy() );
-
-		// Don't use proxy when regular OAuth client ID is used.
-		$this->fake_site_connection();
-		$this->assertFalse( $client->using_proxy() );
-
-		// Use proxy when proxy site ID is used.
-		$this->fake_proxy_site_connection();
-		$this->assertTrue( $client->using_proxy() );
-	}
-
 	public function test_get_proxy_permissions_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
