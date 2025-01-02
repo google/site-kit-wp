@@ -2235,7 +2235,7 @@ describe( 'core/modules modules', () => {
 					registry
 						.select( CORE_MODULES )
 						.getDetailsLinkURL( 'search-console' )
-				).toEqual(
+				).toBe(
 					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com&Email=test%40example.com'
 				);
 			} );
