@@ -83,7 +83,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		useActivateModuleCallback.mockImplementation( activateModuleMock );
 	} );
 
-	it( 'should render the Reader Revenue Manager setup CTA banner when not dismissed', async () => {
+	it( 'should render the Reader Revenue Manager setup CTA banner', async () => {
 		mockSurveyEndpoints();
 
 		const { getByText, waitForRegistry } = render(
