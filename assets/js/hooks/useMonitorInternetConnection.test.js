@@ -70,10 +70,6 @@ describe( 'useMonitorInternetConnection', () => {
 	} );
 
 	it( 'should set online status correctly', () => {
-		fetchMock.getOnce( connectionCheckEndpoint, {
-			body: connectionCheckResponse,
-		} );
-
 		renderHook( () => useMonitorInternetConnection(), { registry } );
 
 		expect( store.getState().isOnline ).toBe( true );
