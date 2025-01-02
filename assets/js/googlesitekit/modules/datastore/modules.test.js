@@ -2190,17 +2190,17 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'getDetailsLinkURL', () => {
-			it( 'should return undefined if module is not found', () => {
+			it( 'should return null if module is not found', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				expect(
 					registry
 						.select( CORE_MODULES )
 						.getDetailsLinkURL( 'unregistered-module' )
-				).toBeUndefined();
+				).toBeNull();
 			} );
 
-			it( 'should return undefined if module does not define homepage', () => {
+			it( 'should return null if module does not define homepage', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -2214,7 +2214,7 @@ describe( 'core/modules modules', () => {
 					registry
 						.select( CORE_MODULES )
 						.getDetailsLinkURL( 'search-console' )
-				).toBeUndefined();
+				).toBeNull();
 			} );
 
 			it( 'should return module homepage', () => {

@@ -21,7 +21,7 @@
  */
 import memize from 'memize';
 import invariant from 'invariant';
-import { defaults, merge, isEmpty, isPlainObject } from 'lodash';
+import { defaults, merge, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -1452,6 +1452,7 @@ const baseSelectors = {
 			}
 
 			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
 	),
 };
 
