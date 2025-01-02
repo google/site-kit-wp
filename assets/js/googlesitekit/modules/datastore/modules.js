@@ -1425,28 +1425,33 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(string|undefined)} Details link URL; `undefined` if not available.
+	 * @return {(string|null|undefined)} Details link URL; `null` if module is not available, or does not have a homepage. `undefined` if data is still loading.
 	 */
 	getDetailsLinkURL: createRegistrySelector(
 		( select ) => ( state, slug ) => {
-			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
-			const moduleSelectors = select( storeName );
-			if ( !! moduleSelectors?.getDetailsLinkURL?.() ) {
-				return moduleSelectors.getDetailsLinkURL?.();
-			}
+			const module = select( CORE_MODULES ).getModule( slug );
 
-			const modules = select( CORE_MODULES ).getModules();
-			const module = modules?.[ slug ];
-
-			if (
-				modules === undefined ||
-				! module ||
-				isEmpty( module.homepage )
-			) {
+			if ( module === undefined ) {
 				return undefined;
 			}
+
+			if ( module === null ) {
+				return null;
+			}
+
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+			const { getDetailsLinkURL } = select( storeName ) || {};
+
+			if ( typeof getDetailsLinkURL === 'function' ) {
+				return getDetailsLinkURL();
+			}
+
+			if ( ! module.homepage ) {
+				return null;
+			}
+
 			return select( CORE_USER ).getAccountChooserURL( module.homepage );
-		}
 	),
 };
 
