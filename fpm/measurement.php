@@ -7,7 +7,7 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @version   57f0a63
+ * @version   07651f2
  * 
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
  */
@@ -73,17 +73,15 @@ final class Measurement
 
         $fpsUrl = 'https://' . $tagId . '.fps.goog/' . self::FPS_PATH . $path;
 
-        if (self::isScriptRequest($path)) {
-            $response = $this->helper->sendRequest($fpsUrl);
+        $response = $this->helper->sendRequest($fpsUrl);
+        if (self::isScriptResponse($response['headers'])) {
             $response['body'] = str_replace(
                 '/' . self::FPS_PATH . '/',
                 $redirectorFile . self::TAG_ID_QUERY . $tagId . self::PATH_QUERY,
                 $response['body']
             );
-            return $response;
-        } else {
-            return $this->helper->sendRequest($fpsUrl);
         }
+        return $response;
     }
 
     private static function appendRequestIP($path)
@@ -107,11 +105,38 @@ final class Measurement
         }
     }
 
+    /**
+     * Use best effort for determing if a request path is a script request.
+     *
+     * @param string $requestPath
+     */
     private static function isScriptRequest($requestPath)
     {
         return substr($requestPath, 0, 7) === "/gtm.js"
         || substr($requestPath, 0, 8) === "/gtag.js"
         || substr($requestPath, 0, 8) === "/gtag/js";
+    }
+
+    /**
+     * @param string[] $headers
+     */
+    private static function isScriptResponse($headers)
+    {
+        if (empty($headers)) {
+            return false;
+        }
+
+        foreach ($headers as $header) {
+            if (empty($headers)) {
+                continue;
+            }
+
+            $normalizedHeader = strtolower(str_replace(' ', '', $header));
+            if (strpos($normalizedHeader, 'content-type:application/javascript') === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -169,7 +194,7 @@ class RequestHelper
     /**
      * Set the headers from a headers array.
      *
-     * @param array<string, string> $headers
+     * @param string[] $headers
      */
     public function setHeaders($headers): void
     {
@@ -186,7 +211,7 @@ class RequestHelper
      * @param string $url
      * @return array{
      *      body: string,
-     *      headers: array<string, string>,
+     *      headers: string[],
      *      statusCode: int,
      * }
      */
@@ -204,7 +229,7 @@ class RequestHelper
      * @param string $url
      * @return array{
      *      body: string,
-     *      headers: array<string, string>,
+     *      headers: string[],
      *      statusCode: int,
      * }
      */
@@ -222,6 +247,7 @@ class RequestHelper
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headersString = substr($result, 0, $headerSize);
         $headers = explode("\r\n", $headersString);
+        $headers = $this->normalizeHeaders($headers);
 
         $body = substr($result, $headerSize);
 
@@ -238,17 +264,17 @@ class RequestHelper
      * @param string $url
      * @return array{
      *      body: string,
-     *      headers: array<string, string>,
+     *      headers: string[],
      *      statusCode: int,
      * }
      */
     protected function sendFileGetContents($url): array
     {
-        $streamContext = array(
+        $streamContext = stream_context_create(array(
             "http" => array(
                 "method" => "GET",
             )
-        );
+        ));
 
         // Calling file_get_contents will set the variable $http_response_header
         // within the local scope.
@@ -264,8 +290,8 @@ class RequestHelper
             // value from the headers.
             preg_match('/HTTP\/\d\.\d\s+(\d+)/', $headers[0], $statusHeader);
             $statusCode = intval($statusHeader[1]) ?? 200;
-            array_shift($headers);
         }
+        $headers = $this->normalizeHeaders($headers);
 
         return array(
             'body' => $result,
@@ -277,6 +303,19 @@ class RequestHelper
     protected function isCurlInstalled(): bool
     {
         return extension_loaded('curl');
+    }
+
+    /** @param string[] $headers */
+    protected function normalizeHeaders($headers): array
+    {
+        if (empty($headers)) {
+            return $headers;
+        }
+
+        // The first element in the headers array will be the HTTP version
+        // and status code used, this value is not needed in the headers.
+        array_shift($headers);
+        return $headers;
     }
 }
 // REQUEST_HELPER_END
