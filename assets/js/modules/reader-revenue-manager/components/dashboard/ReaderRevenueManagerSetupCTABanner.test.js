@@ -49,6 +49,8 @@ import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATIONS } from '../..';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
@@ -60,6 +62,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		withNotificationComponentProps( 'rrm-setup-notification' )(
 			ReaderRevenueManagerSetupCTABanner
 		);
+
+	const notification = NOTIFICATIONS[ 'rrm-setup-notification' ];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -79,6 +83,10 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 				active: false,
 			},
 		] );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( 'rrm-setup-notification', notification );
 
 		useActivateModuleCallback.mockImplementation( activateModuleMock );
 	} );
@@ -124,6 +132,14 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
+			{
+				body: JSON.stringify( [ 'rrm-setup-notification' ] ),
+				status: 200,
+			}
+		);
+
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckRequirementsSuccess(
@@ -142,11 +158,14 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( container ).not.toBeEmptyDOMElement();
 
-		fireEvent.click(
-			getByRole( 'button', {
-				name: /Set up Reader Revenue Manager/i,
-			} )
-		);
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up Reader Revenue Manager/i,
+				} )
+			);
+		} );
 
 		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
 	} );
