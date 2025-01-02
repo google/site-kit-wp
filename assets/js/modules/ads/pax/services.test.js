@@ -301,7 +301,10 @@ describe( 'PAX partner services', () => {
 						);
 
 					expect( supportedTypes ).toMatchObject( {
-						conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
+						conversionTrackingTypes: [
+							'TYPE_CONVERSION_EVENT',
+							'TYPE_PAGE_VIEW',
+						],
 					} );
 				} );
 			} );
