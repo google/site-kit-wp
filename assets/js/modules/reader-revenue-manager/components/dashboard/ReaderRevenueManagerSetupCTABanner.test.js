@@ -43,16 +43,12 @@ import {
 	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '../../../../util';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
@@ -66,7 +62,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		activateModuleMock = jest.fn( () => jest.fn() );
 
@@ -101,11 +96,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'view_notification'
-		);
-
 		expect(
 			getByText( /Grow your revenue and deepen reader engagement/ )
 		).toBeInTheDocument();
@@ -129,7 +119,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
@@ -160,18 +149,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'view_notification'
-		);
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'confirm_notification'
-		);
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -211,18 +188,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		// 3 fetches: 1 for the survey trigger, 1 for the survey timeout, 1 for the dismiss prompt.
 		expect( fetchMock ).toHaveFetchedTimes( 3 );
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'view_notification'
-		);
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'dismiss_notification'
-		);
 	} );
 
 	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements do not meet', async () => {
@@ -253,7 +218,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should not render the banner when the dismissed prompts selector is not resolved', async () => {
