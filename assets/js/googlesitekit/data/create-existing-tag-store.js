@@ -108,11 +108,8 @@ export const createExistingTagStore = ( {
 				} );
 
 				for ( const url of existingTagURLs ) {
-					await registry
-						.dispatch( CORE_SITE )
-						.waitForHTMLForURL( url );
-					const html = registry
-						.select( CORE_SITE )
+					const html = await registry
+						.resolveSelect( CORE_SITE )
 						.getHTMLForURL( url );
 					const tagFound = extractExistingTag( html, tagMatchers );
 					if ( tagFound ) {
