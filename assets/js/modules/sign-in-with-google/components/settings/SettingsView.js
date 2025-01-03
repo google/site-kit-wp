@@ -73,6 +73,10 @@ export default function SettingsView() {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
 
+	const oneTapOnAllPages = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapOnAllPages()
+	);
+
 	// If Sign in with Google does not have a client ID, do not display the
 	// settings view.
 	if ( ! clientID ) {
@@ -132,13 +136,26 @@ export default function SettingsView() {
 						{ __( 'One Tap sign in', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting
-							value={
-								oneTapEnabled
-									? __( 'Enabled', 'google-site-kit' )
-									: __( 'Disabled', 'google-site-kit' )
-							}
-						/>
+						{ ! oneTapEnabled && (
+							<DisplaySetting
+								value={ __( 'Disabled', 'google-site-kit' ) }
+							/>
+						) }
+						{ !! oneTapEnabled && (
+							<DisplaySetting
+								value={
+									!! oneTapOnAllPages
+										? __(
+												'Enabled (on all pages)',
+												'google-site-kit'
+										  )
+										: __(
+												'Enabled (login pages only)',
+												'google-site-kit'
+										  )
+								}
+							/>
+						) }
 					</p>
 				</div>
 			</div>
