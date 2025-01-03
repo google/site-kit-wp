@@ -57,6 +57,7 @@ import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSe
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
+import InternalServerError from '../../components/notifications/InternalServerError';
 import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
@@ -227,6 +228,33 @@ export const DEFAULT_NOTIFICATIONS = {
 				select( CORE_SITE ).getSetupErrorMessage();
 
 			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+	},
+	'internal-server-error': {
+		Component: InternalServerError,
+		priority: 130,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The activateModule() action which is used to forward the errors
+			// to the `internalServerError` state value uses internally
+			// getAuthentication() resolver.
+			await resolveSelect( CORE_USER ).getAuthentication();
+
+			const error = select( CORE_SITE ).getInternalServerError();
+
+			if ( ! error ) {
+				return false;
+			}
+
+			return true;
 		},
 		isDismissible: false,
 	},
