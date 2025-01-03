@@ -98,7 +98,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -130,7 +129,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -174,7 +172,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			</div>,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -196,7 +193,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -223,7 +219,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
