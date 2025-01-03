@@ -25,14 +25,12 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import AuthError from './AuthError';
-import InternalServerError from './InternalServerError';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function ErrorNotifications() {
 	return (
 		<Fragment>
-			<InternalServerError />
 			<AuthError />
 			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>
