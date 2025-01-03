@@ -23,18 +23,11 @@ import AnalyticsIcon from './../../svg/graphics/analytics.svg';
 import PageHeader from './PageHeader';
 
 function Template( args ) {
-	return (
-		<div>
-			<p>
-				<PageHeader { ...args } />
-			</p>
-		</div>
-	);
+	return <PageHeader { ...args } />;
 }
 
 export const Connected = Template.bind( {} );
 Connected.storyName = 'Connected';
-Connected.scenario = {};
 Connected.args = {
 	title: 'Module Page Title',
 	status: 'connected',
@@ -43,7 +36,6 @@ Connected.args = {
 
 export const NotConnectedWithIcon = Template.bind( {} );
 NotConnectedWithIcon.storyName = 'Not Connected with Icon';
-NotConnectedWithIcon.scenario = {};
 NotConnectedWithIcon.args = {
 	title: 'Module Page Title with Icon',
 	icon: (
@@ -55,6 +47,24 @@ NotConnectedWithIcon.args = {
 	),
 	status: 'not-connected',
 	statusText: 'Analytics is not connected',
+};
+
+export function VRTStory() {
+	return (
+		<div>
+			<p>
+				<Connected { ...Connected.args } />
+			</p>
+			<p>
+				<NotConnectedWithIcon { ...NotConnectedWithIcon.args } />
+			</p>
+		</div>
+	);
+}
+
+VRTStory.storyName = 'All Page Headers VRT';
+VRTStory.scenario = {
+	label: 'Global/Page Headers',
 };
 
 export default {
