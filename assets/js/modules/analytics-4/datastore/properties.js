@@ -49,7 +49,6 @@ import {
 	isValidPropertyID,
 	isValidPropertySelection,
 } from '../utils/validation';
-import { actions as webDataStreamActions } from './webdatastreams';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
@@ -289,11 +288,11 @@ const baseActions = {
 				}
 			}
 
-			yield webDataStreamActions.waitForWebDataStreams( propertyID );
-
-			let webdatastream = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getMatchingWebDataStreamByPropertyID( propertyID );
+			let webdatastream = yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStreamByPropertyID( propertyID )
+			);
 
 			if ( ! webdatastream ) {
 				const webdatastreams = registry

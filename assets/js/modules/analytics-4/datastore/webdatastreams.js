@@ -27,7 +27,6 @@ import { pick, difference } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import {
-	createRegistryControl,
 	createRegistrySelector,
 	commonActions,
 	combineStores,
@@ -150,9 +149,6 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	},
 } );
 
-// Actions
-const WAIT_FOR_WEBDATASTREAMS = 'WAIT_FOR_WEBDATASTREAMS';
-
 const baseInitialState = {
 	webdatastreams: {},
 };
@@ -192,41 +188,16 @@ const baseActions = {
 	 * @return {Object|null} Matched web data stream object on success, otherwise NULL.
 	 */
 	*matchWebDataStream( propertyID ) {
-		yield baseActions.waitForWebDataStreams( propertyID );
-
 		const registry = yield commonActions.getRegistry();
-		return registry
-			.select( MODULES_ANALYTICS_4 )
-			.getMatchingWebDataStreamByPropertyID( propertyID );
-	},
-
-	/**
-	 * Waits for web data streams to be loaded for a property.
-	 *
-	 * @since 1.31.0
-	 *
-	 * @param {string} propertyID GA4 property ID.
-	 */
-	*waitForWebDataStreams( propertyID ) {
-		yield {
-			payload: { propertyID },
-			type: WAIT_FOR_WEBDATASTREAMS,
-		};
+		return yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getMatchingWebDataStreamByPropertyID( propertyID )
+		);
 	},
 };
 
-const baseControls = {
-	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl(
-		( { resolveSelect } ) => {
-			return async ( { payload } ) => {
-				const { propertyID } = payload;
-				await resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams(
-					propertyID
-				);
-			};
-		}
-	),
-};
+const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -235,6 +206,23 @@ const baseReducer = ( state, { type } ) => {
 		}
 	}
 };
+
+function* resolveGetWebDataStreams( propertyID ) {
+	if ( ! isValidPropertyID( propertyID ) ) {
+		return;
+	}
+
+	const { select, resolveSelect } = yield commonActions.getRegistry();
+
+	const webdatastreams =
+		select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+
+	if ( webdatastreams === undefined ) {
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
+		);
+	}
+}
 
 const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
@@ -277,6 +265,8 @@ const baseResolvers = {
 			}
 		}
 	},
+	getMatchingWebDataStreamByPropertyID: resolveGetWebDataStreams,
+	doesWebDataStreamExist: resolveGetWebDataStreams,
 };
 
 const baseSelectors = {
