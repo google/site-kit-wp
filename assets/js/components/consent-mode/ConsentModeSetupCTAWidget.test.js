@@ -30,14 +30,6 @@ import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 describe( 'ConsentModeSetupCTAWidget', () => {
 	let registry;
 
-	function Widget( { children } ) {
-		return <div>{ children }</div>;
-	}
-
-	function WidgetNull() {
-		return <div>NULL</div>;
-	}
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -59,10 +51,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 
 	it( 'should render the widget', async () => {
 		const { container, waitForRegistry } = render(
-			<ConsentModeSetupCTAWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ConsentModeSetupCTAWidget />,
 			{
 				registry,
 			}
@@ -76,10 +65,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 	it( 'should not render the widget when it is being dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.setPromptDimissingState(
-				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG,
-				true
-			);
+			.setIsPromptDimissing( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, true );
 
 		const { container, waitForRegistry } = render(
 			<ConsentModeSetupCTAWidget />,

@@ -87,7 +87,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 	it( 'should return false if the CTA widget is being dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.setItemDimissingState( KEY_METRICS_SETUP_CTA_WIDGET_SLUG, true );
+			.setIsItemDimissing( KEY_METRICS_SETUP_CTA_WIDGET_SLUG, true );
 
 		const { result } = await renderHook( () => useDisplayCTAWidget(), {
 			registry,

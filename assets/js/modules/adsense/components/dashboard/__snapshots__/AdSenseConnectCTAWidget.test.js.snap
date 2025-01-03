@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`AdSenseConnectCTA should render WidgetNull when the widget is being dismissed 1`] = `
-<div>
-  <div>
-    NULL
-  </div>
-</div>
-`;

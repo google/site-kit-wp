@@ -110,7 +110,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	if (
 		adSenseModuleConnected === false &&
 		hasDismissedWidget === false &&
-		! isDismissingItem
+		isDismissingItem === false
 	) {
 		return (
 			<Widget noPadding>

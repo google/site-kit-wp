@@ -379,7 +379,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.setPromptDimissingState(
+				.setIsPromptDimissing(
 					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 					true
 				);

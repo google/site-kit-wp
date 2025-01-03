@@ -101,9 +101,7 @@ const baseActions = {
 
 			const registry = yield commonActions.getRegistry();
 
-			registry
-				.dispatch( CORE_USER )
-				.setPromptDimissingState( slug, true );
+			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, true );
 
 			const { response, error } =
 				yield fetchDismissPromptStore.actions.fetchDismissPrompt(
@@ -111,17 +109,15 @@ const baseActions = {
 					expiresInSeconds
 				);
 
-			registry
-				.dispatch( CORE_USER )
-				.setPromptDimissingState( slug, false );
+			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, false );
 
 			return { response, error };
 		}
 	),
-	setPromptDimissingState( slug, state ) {
+	setIsPromptDimissing( slug, isDismissing ) {
 		return {
-			payload: { slug, state: !! state },
-			type: 'SET_PROMPT_DISMISSING_STATE',
+			payload: { slug, isDismissing },
+			type: 'SET_IS_PROMPT_DISMISSING',
 		};
 	},
 };
@@ -139,8 +135,8 @@ const baseResolvers = {
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case 'SET_PROMPT_DISMISSING_STATE':
-			const { slug, state: isDismissing } = payload;
+		case 'SET_IS_PROMPT_DISMISSING':
+			const { slug, isDismissing } = payload;
 			return {
 				...state,
 				isDismissingPrompts: {

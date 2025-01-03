@@ -320,7 +320,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	it( 'should not render the banner when the prompt is being dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.setItemDimissingState(
+			.setIsItemDimissing(
 				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 				true
 			);

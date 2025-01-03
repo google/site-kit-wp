@@ -197,9 +197,7 @@ describe( 'core/user dismissed-items', () => {
 			it( 'should set the dismissing state for an item', () => {
 				const slug = 'foo-bar';
 
-				registry
-					.dispatch( CORE_USER )
-					.setItemDimissingState( slug, true );
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingItem( slug )
@@ -207,7 +205,7 @@ describe( 'core/user dismissed-items', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.setItemDimissingState( slug, false );
+					.setIsItemDimissing( slug, false );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingItem( slug )
@@ -217,13 +215,13 @@ describe( 'core/user dismissed-items', () => {
 			it( 'should always set the boolean value', () => {
 				const slug = 'foo-bar';
 
-				registry.dispatch( CORE_USER ).setItemDimissingState( slug, 1 );
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, 1 );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingItem( slug )
 				).toBe( true );
 
-				registry.dispatch( CORE_USER ).setItemDimissingState( slug, 0 );
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, 0 );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingItem( slug )
@@ -255,9 +253,7 @@ describe( 'core/user dismissed-items', () => {
 				} );
 
 				// Explicitly set dismissing state to true.
-				registry
-					.dispatch( CORE_USER )
-					.setItemDimissingState( slug, true );
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
 
 				await registry.dispatch( CORE_USER ).dismissItem( slug );
 

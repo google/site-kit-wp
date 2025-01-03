@@ -126,7 +126,7 @@ const baseActions = {
 
 			const registry = yield commonActions.getRegistry();
 
-			registry.dispatch( CORE_USER ).setItemDimissingState( slug, true );
+			registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
 
 			const { response, error } =
 				yield fetchDismissItemStore.actions.fetchDismissItem(
@@ -134,7 +134,7 @@ const baseActions = {
 					expiresInSeconds
 				);
 
-			registry.dispatch( CORE_USER ).setItemDimissingState( slug, false );
+			registry.dispatch( CORE_USER ).setIsItemDimissing( slug, false );
 
 			return { response, error };
 		}
@@ -165,18 +165,18 @@ const baseActions = {
 			);
 		}
 	),
-	setItemDimissingState( slug, state ) {
+	setIsItemDimissing( slug, isDismissing ) {
 		return {
-			payload: { slug, state },
-			type: 'SET_ITEM_DISMISSING_STATE',
+			payload: { slug, isDismissing },
+			type: 'SET_IS_ITEM_DISMISSING',
 		};
 	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case 'SET_ITEM_DISMISSING_STATE':
-			const { slug, state: isDismissing } = payload;
+		case 'SET_IS_ITEM_DISMISSING':
+			const { slug, isDismissing } = payload;
 			return {
 				...state,
 				isDismissingItems: {
