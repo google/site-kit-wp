@@ -86,20 +86,16 @@ function TopCitiesWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = topCitiesReport || {};
 
-	const filteredCities = ( cityRows ) => {
-		const notSetRow = cityRows.find(
+	const filteredCities = ( cityRows ) =>
+		cityRows.some(
 			( { dimensionValues } ) =>
 				dimensionValues[ 0 ].value === '(not set)'
-		);
-		if ( notSetRow ) {
-			return cityRows.filter(
-				( { dimensionValues } ) =>
-					dimensionValues[ 0 ].value !== '(not set)'
-			);
-		}
-
-		return cityRows.slice( 0, 3 );
-	};
+		)
+			? cityRows.filter(
+					( { dimensionValues } ) =>
+						dimensionValues[ 0 ].value !== '(not set)'
+			  )
+			: cityRows.slice( 0, 3 );
 
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 

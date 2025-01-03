@@ -88,20 +88,16 @@ function TopCountriesWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = topCountriesReport || {};
 
-	const filteredCountries = ( countryRows ) => {
-		const notSetRow = countryRows.find(
+	const filteredCountries = ( countryRows ) =>
+		countryRows.some(
 			( { dimensionValues } ) =>
 				dimensionValues[ 0 ].value === '(not set)'
-		);
-		if ( notSetRow ) {
-			return countryRows.filter(
-				( { dimensionValues } ) =>
-					dimensionValues[ 0 ].value !== '(not set)'
-			);
-		}
-
-		return countryRows.slice( 0, 3 );
-	};
+		)
+			? countryRows.filter(
+					( { dimensionValues } ) =>
+						dimensionValues[ 0 ].value !== '(not set)'
+			  )
+			: countryRows.slice( 0, 3 );
 
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
