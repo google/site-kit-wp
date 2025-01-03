@@ -79,10 +79,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const readerRevenueManagerDocumentationURL =
 		'https://readerrevenue.withgoogle.com';
 
-	useEffect( () => {
-		triggerSurvey( 'view_reader_revenue_manager_cta' );
-	}, [ triggerSurvey ] );
-
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
@@ -94,6 +90,13 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const dismissedPromptsLoaded = useSelect( ( select ) =>
 		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
+	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
+
+	useEffect( () => {
+		if ( ! hideCTABanner ) {
+			triggerSurvey( 'view_reader_revenue_manager_cta' );
+		}
+	}, [ hideCTABanner, triggerSurvey ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -118,7 +121,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	// This is because we don't want the component removed from the DOM as we have to still render
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
 	// checking for the dismissal state here.
-	if ( isCTADismissed || ! dismissedPromptsLoaded ) {
+	if ( hideCTABanner ) {
 		return null;
 	}
 
