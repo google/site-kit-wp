@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../assets/js/material-components';
-import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
+import { Cell, Grid, Row } from '../material-components';
+import Widget from '../googlesitekit/widgets/components/Widget';
 import { Fragment } from '@wordpress/element';
 
 function TypeScaleWidget( { name, label, sizes } ) {
@@ -114,10 +114,12 @@ function Template() {
 }
 
 export const DefaultTypeScale = Template.bind( {} );
-DefaultTypeScale.scenario = {};
+DefaultTypeScale.scenario = {
+	label: 'Global/TypeScale/Default Type Scale',
+};
 
 export default {
-	title: 'Legacy/Global/TypeScale',
+	title: 'Type Scale',
 	decorators: [
 		( Story ) => {
 			return (

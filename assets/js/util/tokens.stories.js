@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../assets/js/material-components';
+import { Cell, Grid, Row } from '../material-components';
 import { Fragment } from '@wordpress/element';
 
 function TokenRow( { children } ) {
@@ -363,10 +363,12 @@ function Template() {
 }
 
 export const DefaultToken = Template.bind( {} );
-DefaultToken.scenario = {};
+DefaultToken.scenario = {
+	label: 'Global/Tokens/Default Token',
+};
 
 export default {
-	title: 'Legacy/Global/Tokens',
+	title: 'Color Palette (tokens)',
 	decorators: [
 		( Story ) => {
 			return (
