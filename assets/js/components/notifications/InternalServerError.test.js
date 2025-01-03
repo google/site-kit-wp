@@ -19,37 +19,53 @@
 /**
  * Internal dependencies
  */
-import InternalServerError from './InternalServerError';
-import { render, createTestRegistry } from '../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+} from '../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+
+const INTERNAL_SERVER_ERROR_NOTIFICATION = 'internal-server-error';
 
 describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();
 
-	it( 'should display the notification when the internal server error is set', () => {
-		const error = {
-			id: 'module-setup-error',
-			title: 'Test Error',
-			description: 'Error message',
-		};
+	const notification =
+		DEFAULT_NOTIFICATIONS[ INTERNAL_SERVER_ERROR_NOTIFICATION ];
 
-		registry.dispatch( CORE_SITE ).setInternalServerError( error );
+	describe( 'checkRequirements', () => {
+		beforeEach( () => {
+			provideUserAuthentication( registry );
 
-		const { getAllByText } = render( <InternalServerError />, {
-			registry,
+			registry.dispatch( CORE_SITE ).clearInternalServerError();
 		} );
 
-		const title = getAllByText( error.title );
-		expect( title[ 0 ] ).not.toBeUndefined();
+		it( 'is active', async () => {
+			const error = {
+				id: 'module-setup-error',
+				title: 'Test Error',
+				description: 'Error message',
+			};
 
-		const description = getAllByText( error.description );
-		expect( description[ 0 ] ).not.toBeUndefined();
-	} );
+			registry.dispatch( CORE_SITE ).setInternalServerError( error );
 
-	it( 'should render nothing if the internal server error is not set', () => {
-		registry.dispatch( CORE_SITE ).clearInternalServerError();
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
-		const { container } = render( <InternalServerError />, { registry } );
-		expect( container ).toBeEmptyDOMElement();
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when there is no internal server error', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
