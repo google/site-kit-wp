@@ -22,6 +22,7 @@
 import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -189,6 +190,76 @@ describe( 'core/user dismissed-items', () => {
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'setDismissedItems', () => {
+			it( 'should set the dismissing state for an item', () => {
+				const slug = 'foo-bar';
+
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_USER )
+					.setIsItemDimissing( slug, false );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+
+			it( 'should always set the boolean value', () => {
+				const slug = 'foo-bar';
+
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, 1 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+
+			it( 'should set dismissing state to true while dismissing item', () => {
+				const slug = 'foo-bar';
+
+				freezeFetch( fetchDismissItem );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+
+				registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+			} );
+
+			it( 'should set dismissing state to false after dismissing item', async () => {
+				const slug = 'foo-bar';
+
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ slug ],
+					status: 200,
+				} );
+
+				// Explicitly set dismissing state to true.
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
+
+				await registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
 			} );
 		} );
 	} );

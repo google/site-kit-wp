@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -50,6 +50,8 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -69,6 +71,10 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
 
+	const isDismissing = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem( id )
+	);
+
 	const { dismissNotification, invalidateResolution } =
 		useDispatch( CORE_NOTIFICATIONS );
 	const { setValue } = useDispatch( CORE_UI );
@@ -79,9 +85,15 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		);
 	} );
 
-	const onCTAClick = () => {
+	useEffect( () => {
+		if ( isTooltipVisible ) {
+			trackEvent( `${ viewContext }_fpm-setup-cta`, 'tooltip_view' );
+		}
+	}, [ isTooltipVisible, viewContext ] );
+
+	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
-		saveFirstPartyModeSettings();
+		await saveFirstPartyModeSettings();
 
 		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
 		invalidateResolution( 'getQueuedNotifications', [
@@ -106,13 +118,19 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ () => {
+						trackEvent(
+							`${ viewContext }_fpm-setup-cta`,
+							'tooltip_dismiss'
+						);
+					} }
 					tooltipStateKey={ id }
 				/>
 			</Fragment>
 		);
 	}
 
-	if ( isItemDismissed ) {
+	if ( isItemDismissed || isDismissing ) {
 		return null;
 	}
 

@@ -21,7 +21,7 @@
  */
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
-import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/datastore/constants';
+import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID
