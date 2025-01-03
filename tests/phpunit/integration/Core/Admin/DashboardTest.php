@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Dashboard;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -19,6 +20,24 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Admin
  */
 class DashboardTest extends TestCase {
+
+	/**
+	 * Admin user ID.
+	 *
+	 * @var int
+	 */
+	private $admin_id;
+
+	private $context;
+
+	/**
+	 * Set up the test.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		$this->admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+	}
 
 	public function test_register() {
 		global $wp_meta_boxes;
@@ -52,30 +71,17 @@ class DashboardTest extends TestCase {
 	}
 
 	/**
-	 * @group dashboard_widget
+	 * @group dashboard_widget1
 	 */
 	public function test_render_googlesitekit_wp_dashboard_only_search_console_connected() {
-		// Only set the search console module as connected.
-		$active_modules = array(
-			'search-console' => $this->getMockBuilder( 'Google\Site_Kit\Core\Modules' )
-				->disableOriginalConstructor()
-				->setMethods( array( 'get_active_modules' ) )
-				->getMock(),
+		$modules = new Modules( $this->context );
+		$modules->get_module( 'search-console' )->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
 		);
 
-		$active_modules['search-console']
-			->method( 'get_active_modules' )
-			->willReturn(
-				array(
-					'search-console' => (object) array(
-						'is_connected' => function () {
-							return true;
-						},
-					),
-				)
-			);
-
-		$output = $this->get_widget_markup();
+		$output = $this->get_widget_markup( $modules );
 
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
@@ -97,35 +103,18 @@ class DashboardTest extends TestCase {
 	 * @group dashboard_widget
 	 */
 	public function test_render_googlesitekit_wp_dashboard_only_analytics4_connected() {
-		// Only set the analytics-4 module as connected.
-		$active_modules = array(
-			'analytics-4' => $this->getMockBuilder( 'Google\Site_Kit\Core\Modules' )
-				->disableOriginalConstructor()
-				->setMethods( array( 'get_active_modules' ) )
-				->getMock(),
+		$modules = new Modules( $this->context );
+		$modules->get_module( 'analytics-4' )->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '12345678',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-123',
+				'ownerID'         => 2,
+			)
 		);
 
-		$active_modules['analytics-4']
-			->method( 'get_active_modules' )
-			->willReturn(
-				array(
-					'analytics-4' => (object) array(
-						'is_connected' => function () {
-							return true;
-						},
-					),
-				)
-			);
-
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-		$dashboard = new Dashboard( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$method    = new \ReflectionMethod( $dashboard, 'render_googlesitekit_wp_dashboard' );
-		$method->setAccessible( true );
-
-		ob_start();
-		$method->invoke( $dashboard );
-		$output = ob_get_clean();
+		$output = $this->get_widget_markup( $modules );
 
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
@@ -153,51 +142,23 @@ class DashboardTest extends TestCase {
 	 * @group dashboard_widget
 	 */
 	public function test_render_googlesitekit_wp_dashboard_analytics4_and_search_console_connected() {
-		// Set both the analytics-4 and search console modules as connected.
-		$active_modules = array(
-			'analytics-4'    => $this->getMockBuilder( 'Google\Site_Kit\Core\Modules' )
-				->disableOriginalConstructor()
-				->setMethods( array( 'get_active_modules' ) )
-				->getMock(),
-			'search-console' => $this->getMockBuilder( 'Google\Site_Kit\Core\Modules' )
-				->disableOriginalConstructor()
-				->setMethods( array( 'get_active_modules' ) )
-				->getMock(),
+		$modules = new Modules( $this->context );
+		$modules->get_module( 'analytics-4' )->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '12345678',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-123',
+				'ownerID'         => 2,
+			)
+		);
+		$modules->get_module( 'search-console' )->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
 		);
 
-		$active_modules['analytics-4']
-			->method( 'get_active_modules' )
-			->willReturn(
-				array(
-					'analytics-4' => (object) array(
-						'is_connected' => function () {
-							return true;
-						},
-					),
-				)
-			);
-
-		$active_modules['search-console']
-			->method( 'get_active_modules' )
-			->willReturn(
-				array(
-					'search-console' => (object) array(
-						'is_connected' => function () {
-							return true;
-						},
-					),
-				)
-			);
-
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-		$dashboard = new Dashboard( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$method    = new \ReflectionMethod( $dashboard, 'render_googlesitekit_wp_dashboard' );
-		$method->setAccessible( true );
-
-		ob_start();
-		$method->invoke( $dashboard );
-		$output = ob_get_clean();
+		$output = $this->get_widget_markup( $modules );
 
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
@@ -216,15 +177,17 @@ class DashboardTest extends TestCase {
 		$this->assertEquals( 0, $elements->length );
 	}
 
-	public function get_widget_markup() {
+	public function get_widget_markup( $modules = null ) {
 		global $wp_meta_boxes, $current_screen;
 		// Clear out any registered meta boxes
 		$wp_meta_boxes = array();
 		// Set the current screen to the dashboard
 		$current_screen = convert_to_screen( 'dashboard' );
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$admin_id       = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$dashboard      = new Dashboard( $context );
+		$dashboard      = new Dashboard(
+			$this->context,
+			null,
+			$modules,
+		);
 
 		$dashboard->register();
 
@@ -247,7 +210,7 @@ class DashboardTest extends TestCase {
 			2
 		);
 
-		wp_set_current_user( $admin_id );
+		wp_set_current_user( $this->admin_id );
 
 		require_once ABSPATH . 'wp-admin/includes/dashboard.php';
 		wp_dashboard_setup();
