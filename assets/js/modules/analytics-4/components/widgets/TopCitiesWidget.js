@@ -61,7 +61,7 @@ function TopCitiesWidget( { Widget } ) {
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
 	const topCitiesReport = useInViewSelect(
@@ -85,6 +85,21 @@ function TopCitiesWidget( { Widget } ) {
 	);
 
 	const { rows = [], totals = [] } = topCitiesReport || {};
+
+	const filteredCities = ( cityRows ) => {
+		const notSetRow = cityRows.find(
+			( { dimensionValues } ) =>
+				dimensionValues[ 0 ].value === '(not set)'
+		);
+		if ( notSetRow ) {
+			return cityRows.filter(
+				( { dimensionValues } ) =>
+					dimensionValues[ 0 ].value !== '(not set)'
+			);
+		}
+
+		return cityRows.slice( 0, 3 );
+	};
 
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
@@ -117,7 +132,7 @@ function TopCitiesWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_CITIES }
 			loading={ loading }
-			rows={ rows }
+			rows={ filteredCities( rows ) }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }

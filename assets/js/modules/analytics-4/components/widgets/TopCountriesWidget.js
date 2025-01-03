@@ -61,7 +61,7 @@ function TopCountriesWidget( { Widget } ) {
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
 	const topCountriesReport = useInViewSelect(
@@ -87,6 +87,21 @@ function TopCountriesWidget( { Widget } ) {
 	);
 
 	const { rows = [], totals = [] } = topCountriesReport || {};
+
+	const filteredCountries = ( countryRows ) => {
+		const notSetRow = countryRows.find(
+			( { dimensionValues } ) =>
+				dimensionValues[ 0 ].value === '(not set)'
+		);
+		if ( notSetRow ) {
+			return countryRows.filter(
+				( { dimensionValues } ) =>
+					dimensionValues[ 0 ].value !== '(not set)'
+			);
+		}
+
+		return countryRows.slice( 0, 3 );
+	};
 
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
@@ -119,7 +134,7 @@ function TopCountriesWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_COUNTRIES }
 			loading={ loading }
-			rows={ rows }
+			rows={ filteredCountries( rows ) }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
