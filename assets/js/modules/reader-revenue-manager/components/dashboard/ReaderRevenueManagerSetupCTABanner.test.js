@@ -40,7 +40,6 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
-	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
@@ -154,9 +153,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
-				body: JSON.stringify( [
-					READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-				] ),
+				body: 'rrm-setup-notification',
 				status: 200,
 			}
 		);

@@ -38,10 +38,7 @@ import {
 } from '../../../../hooks/useBreakpoint';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-} from '../../datastore/constants';
+import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../datastore/constants';
 import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
@@ -67,12 +64,8 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		READER_REVENUE_MANAGER_MODULE_SLUG
 	);
 
-	const showTooltip = useShowTooltip(
-		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-	);
-	const { isTooltipVisible } = useTooltipState(
-		READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-	);
+	const showTooltip = useShowTooltip( id );
+	const { isTooltipVisible } = useTooltipState( id );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
@@ -108,9 +101,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={
-						READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-					}
+					tooltipStateKey={ id }
 				/>
 			</Fragment>
 		);
