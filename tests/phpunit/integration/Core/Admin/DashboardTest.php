@@ -44,7 +44,7 @@ class DashboardTest extends TestCase {
 		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ) );
 
 		$xpath = new \DOMXPath( $dom );
-		$query = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-loading ")]';
+		$query = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 
 		$elements = $xpath->query( $query );
 
@@ -83,12 +83,12 @@ class DashboardTest extends TestCase {
 
 		// Ensure that "googlesitekit-wp-dashboard-search_console_active_and_connected" class exists.
 		$xpath    = new \DOMXPath( $dom );
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-loading ")]';
+		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 1, $elements->length );
 
 		// Ensure that "googlesitekit-wp-dashboard-analytics_active_and_connected" class does not exist.
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-analytics_active_and_connected ")]';
+		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-analytics_active_and_connected')]]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 0, $elements->length );
 	}
@@ -134,17 +134,17 @@ class DashboardTest extends TestCase {
 
 		// Ensure that "googlesitekit-wp-dashboard-analytics_active_and_connected" class exists.
 		$xpath    = new \DOMXPath( $dom );
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-loading ")]';
+		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 1, $elements->length );
 
 		// Ensure that "googlesitekit-wp-dashboard-search_console_active_and_connected" class does not exist.
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-search_console_active_and_connected ")]';
+		$query    = "//div[contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard ') and contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard-search_console_active_and_connected ')]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 0, $elements->length );
 
 		// Ensure that "googlesitekit-preview-block googlesitekit-wp-dashboard-stats__cta" exists.
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-preview-block ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-stats__cta ")]';
+		$query    = "//div[contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-preview-block ') and contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard-stats__cta ')]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 0, $elements->length );
 	}
@@ -206,12 +206,12 @@ class DashboardTest extends TestCase {
 
 		// Ensure that both "googlesitekit-wp-dashboard-analytics_active_and_connected" and "googlesitekit-wp-dashboard-search_console_active_and_connected" classes exist.
 		$xpath    = new \DOMXPath( $dom );
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-loading ")]';
+		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 1, $elements->length );
 
 		// Ensure that "googlesitekit-preview-block googlesitekit-wp-dashboard-stats__cta" exists.
-		$query    = '//div[contains(concat(" ", normalize-space(@class), " "), " googlesitekit-preview-block ") and contains(concat(" ", normalize-space(@class), " "), " googlesitekit-wp-dashboard-stats__cta ")]';
+		$query    = "//div[contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-preview-block ') and contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard-stats__cta ')]";
 		$elements = $xpath->query( $query );
 		$this->assertEquals( 0, $elements->length );
 	}
