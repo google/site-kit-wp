@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
-import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -42,7 +41,6 @@ import Link from '../../Link';
 import { trackEvent } from '../../../util';
 import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
 
 export default function Footer( props ) {
@@ -80,12 +78,9 @@ export default function Footer( props ) {
 		select( CORE_UI ).getValue( isSavingKey )
 	);
 
-	const moduleHomepage = useSelect( ( select ) => {
-		if ( ! module || isEmpty( module.homepage ) ) {
-			return undefined;
-		}
-		return select( CORE_USER ).getAccountChooserURL( module.homepage );
-	} );
+	const moduleHomepage = useSelect( ( select ) =>
+		select( CORE_MODULES ).getDetailsLinkURL( slug )
+	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { clearErrors } = useDispatch( module?.storeName ) || {};
