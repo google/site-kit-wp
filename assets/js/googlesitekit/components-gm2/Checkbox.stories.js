@@ -136,7 +136,10 @@ export function VRTStory() {
 				<Disabled { ...Disabled.args } />
 			</div>
 			<div>
-				<Loading { ...Loading.args } />
+				{ /* The loading spinner uses a GIF rather than CSS animation therefore we can't
+				     pause the animation for VRTs so we don't show this version of the checkbox
+					 in the VRT. */ }
+				{ /* <Loading { ...Loading.args } /> */ }
 			</div>
 			<div>
 				<ComplexLabel { ...ComplexLabel.args } />
