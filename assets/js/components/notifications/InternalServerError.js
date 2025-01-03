@@ -21,15 +21,19 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import BannerNotification from './BannerNotification';
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
 
-export default function InternalServerError() {
+export default function InternalServerError( { Notification } ) {
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
-	if ( ! error ) {
-		return null;
-	}
 
-	return <BannerNotification { ...error } />;
+	return (
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ error.title }
+				description={ error.description }
+			/>
+		</Notification>
+	);
 }
