@@ -41,6 +41,7 @@ import {
 } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { reportRowsWithSetValues } from '../../utils/report-rows-with-set-values';
 
 function TopCountriesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -87,18 +88,6 @@ function TopCountriesWidget( { Widget } ) {
 	);
 
 	const { rows = [], totals = [] } = topCountriesReport || {};
-
-	const filteredCountries = ( countryRows ) =>
-		countryRows.some(
-			( { dimensionValues } ) =>
-				dimensionValues[ 0 ].value === '(not set)'
-		)
-			? countryRows.filter(
-					( { dimensionValues } ) =>
-						dimensionValues[ 0 ].value !== '(not set)'
-			  )
-			: countryRows.slice( 0, 3 );
-
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
@@ -130,7 +119,7 @@ function TopCountriesWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_COUNTRIES }
 			loading={ loading }
-			rows={ filteredCountries( rows ) }
+			rows={ reportRowsWithSetValues( rows ) }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }

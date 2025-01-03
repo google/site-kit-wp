@@ -41,6 +41,7 @@ import {
 } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { reportRowsWithSetValues } from '../../utils/report-rows-with-set-values';
 
 function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -85,18 +86,6 @@ function TopCitiesWidget( { Widget } ) {
 	);
 
 	const { rows = [], totals = [] } = topCitiesReport || {};
-
-	const filteredCities = ( cityRows ) =>
-		cityRows.some(
-			( { dimensionValues } ) =>
-				dimensionValues[ 0 ].value === '(not set)'
-		)
-			? cityRows.filter(
-					( { dimensionValues } ) =>
-						dimensionValues[ 0 ].value !== '(not set)'
-			  )
-			: cityRows.slice( 0, 3 );
-
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
@@ -128,7 +117,7 @@ function TopCitiesWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_CITIES }
 			loading={ loading }
-			rows={ filteredCities( rows ) }
+			rows={ reportRowsWithSetValues( rows ) }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
