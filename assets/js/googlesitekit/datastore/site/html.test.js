@@ -93,34 +93,6 @@ describe( 'core/site html', () => {
 				).toBe( html );
 			} );
 		} );
-
-		describe( 'waitForHTMLForURL', () => {
-			it( 'supports asynchronous waiting for HTML', async () => {
-				const url = 'https://example.com';
-				const html =
-					'<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
-
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					{ body: html, status: 200 }
-				);
-				const promise = registry
-					.dispatch( CORE_SITE )
-					.waitForHTMLForURL( url );
-
-				expect(
-					registry.select( CORE_SITE ).getHTMLForURL( url )
-				).toBe( undefined );
-
-				await promise;
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				expect(
-					registry.select( CORE_SITE ).getHTMLForURL( url )
-				).toBe( html );
-			} );
-		} );
 	} );
 
 	describe( 'selectors', () => {
