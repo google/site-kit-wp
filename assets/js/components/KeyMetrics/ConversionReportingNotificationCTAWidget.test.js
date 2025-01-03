@@ -65,7 +65,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	);
 
 	const fetchDismissNotification = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
+		'^/google-site-kit/v1/core/user/data/conversion-reporting-settings'
 	);
 	const userInputSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
@@ -94,9 +94,22 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				lostEvents: [],
 			} );
 
+		registry.dispatch( CORE_USER ).receiveGetConversionReportingSettings( {
+			newEventsCalloutDismissedAt: 0,
+			lostEventsCalloutDismissedAt: 0,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ 'contact' ] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setNewConversionEventsLastUpdateAt( 0 );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setLostConversionEventsLastUpdateAt( 0 );
 	} );
 
 	afterAll( () => {
@@ -225,6 +238,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		it( 'does render when includeConversionEvents is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
 			const { waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
 					Widget={ Widget }
@@ -250,6 +267,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			} );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const { getByRole, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -305,6 +325,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			] );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const currentMetrics = registry
 				.select( CORE_USER )
@@ -466,6 +489,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
 			// The beforeEach sets a `contact` detected event, providing some but not
 			// all of the suggested metrics should show the banner.
 			provideKeyMetrics( registry, {
@@ -505,6 +532,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_ANALYTICS_NEW_VISITORS,
@@ -538,13 +569,20 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Select metrics CTA should open key metrics panel', async () => {
-			fetchMock.postOnce( fetchDismissNotification, {
-				body: true,
+			fetchMock.post( fetchDismissNotification, {
+				body: {
+					newConversionEventsLastUpdateAt: 1734531413,
+					lostConversionEventsLastUpdateAt: 0,
+				},
 			} );
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			// The beforeEach sets a `contact` detected event, providing some but not
 			// all of the suggested metrics should show the banner.
@@ -586,18 +624,25 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 			} );
 
+			await waitForRegistry();
+
 			expect(
 				registry
 					.select( CORE_UI )
 					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fetchDismissNotification );
 		} );
 	} );
 
 	describe( 'Existing user with previously detected conversion events', () => {
 		it( 'View metrics CTA should open key metrics panel', async () => {
-			fetchMock.postOnce( fetchDismissNotification, {
-				body: true,
+			fetchMock.post( fetchDismissNotification, {
+				body: {
+					newConversionEventsLastUpdateAt: 1734531413,
+					lostConversionEventsLastUpdateAt: 0,
+				},
 			} );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
@@ -606,7 +651,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'contact' ] );
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ 'contact', 'purchase' ] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -651,6 +700,8 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					.select( CORE_UI )
 					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fetchDismissNotification );
 		} );
 
 		describe( 'user with tailored metrics', () => {
@@ -760,7 +811,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						lostEvents: [],
 					} );
 
-				const { getByRole, waitForRegistry } = render(
+				const { container, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
@@ -772,9 +823,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 				await waitForRegistry();
 
-				expect(
-					getByRole( 'button', { name: 'Add metrics' } )
-				).toBeInTheDocument();
+				expect( container ).toBeEmptyDOMElement();
 			} );
 
 			it( 'does not render when newly detected events suggest metrics user does not have within same site purpose', async () => {
@@ -845,7 +894,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						lostEvents: [],
 					} );
 
-				const { getByRole, waitForRegistry } = render(
+				const { container, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
@@ -857,9 +906,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 				await waitForRegistry();
 
-				expect(
-					getByRole( 'button', { name: 'Add metrics' } )
-				).toBeInTheDocument();
+				expect( container ).toBeEmptyDOMElement();
 			} );
 
 			it( 'renders when newly detected events suggest metrics from different site purpose', async () => {
@@ -870,6 +917,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
@@ -980,6 +1031,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [ 'contact', 'purchase' ] );
 
 				registry
@@ -1022,6 +1077,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				registry
 					.dispatch( CORE_SITE )
 					.setKeyMetricsSetupCompletedBy( 1 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

@@ -226,7 +226,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Sign in with Google', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', 'google-site-kit' ),
-			'order'       => 10,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
 		);
 	}
@@ -341,7 +340,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams( response )
-			});
+			} );
 			if ( res.ok && res.redirected ) {
 				location.assign( res.url );
 			}
@@ -353,6 +352,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	google.accounts.id.initialize( {
 		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
 		callback: handleCredentialResponse,
+		library_name: 'Site-Kit',
 	} );
 
 	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
@@ -369,7 +369,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 } )();
 		<?php
 		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
+		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
 	}
 
 	/**
