@@ -31,11 +31,7 @@ import { createRegistrySelector } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	commonActions,
-	combineStores,
-	createRegistryControl,
-} from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -202,7 +198,6 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 } );
 
 // Actions
-const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
@@ -367,12 +362,12 @@ const baseActions = {
 	*matchAccountProperty( accountID ) {
 		const registry = yield commonActions.getRegistry();
 
-		yield baseActions.waitForPropertySummaries( accountID );
-
 		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const propertySummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertySummaries( accountID );
+		const propertySummaries = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getPropertySummaries( accountID )
+		);
 
 		const property = yield baseActions.matchPropertyByURL(
 			( propertySummaries || [] ).map( ( { _id } ) => _id ),
@@ -514,18 +509,6 @@ const baseActions = {
 		}
 
 		return null;
-	},
-
-	/**
-	 * Waits for property summaries to be loaded for an account.
-	 *
-	 * @since 1.118.0
-	 */
-	*waitForPropertySummaries() {
-		yield {
-			payload: {},
-			type: WAIT_FOR_PROPERTY_SUMMARIES,
-		};
 	},
 
 	/**
@@ -731,17 +714,7 @@ const baseActions = {
 	},
 };
 
-const baseControls = {
-	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
-		( { resolveSelect } ) => {
-			return async () => {
-				await resolveSelect(
-					MODULES_ANALYTICS_4
-				).getAccountSummaries();
-			};
-		}
-	),
-};
+const baseControls = {};
 
 function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
@@ -786,6 +759,20 @@ const baseResolvers = {
 			.getProperty( propertyID );
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
+		}
+	},
+	*getPropertySummaries( accountID ) {
+		const { select, resolveSelect } = yield commonActions.getRegistry();
+
+		const summaries =
+			select( MODULES_ANALYTICS_4 ).getAccountSummaries( accountID );
+
+		if ( summaries === undefined ) {
+			yield commonActions.await(
+				resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(
+					accountID
+				)
+			);
 		}
 	},
 	*getPropertyCreateTime() {
