@@ -344,6 +344,37 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				} )
 			);
 		} );
+
+		it( 'should not render when it is being dismissed', () => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...validSettings,
+				setupCompletedTimestamp: timestampThreeWeeksPrior,
+			} );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
+
+			registry
+				.dispatch( CORE_USER )
+				.setIsPromptDimissing(
+					AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+					true
+				);
+
+			const { container } = render(
+				<AdBlockingRecoverySetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
 	} );
 
 	describe( 'CTA actions', () => {
