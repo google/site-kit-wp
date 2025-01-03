@@ -39,6 +39,10 @@ export default function useDisplayCTAWidget() {
 			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 		);
 
+		const isDismissingItem = select( CORE_USER ).isDismissingItem(
+			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
+		);
+
 		// We call isGatheringData() within this hook for completeness as we do not want to rely
 		// on it being called in other components. This selector makes report requests which, if they return
 		// data, then the `data-available` transients are set. These transients are prefetched as a global on
@@ -57,6 +61,7 @@ export default function useDisplayCTAWidget() {
 
 		return (
 			isDismissed === false &&
+			isDismissingItem === false &&
 			searchConsoleDataAvailableOnLoad &&
 			analyticsDataAvailableOnLoad
 		);
