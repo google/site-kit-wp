@@ -62,11 +62,23 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			.setMeasurementID( measurementID );
 	} );
 
-	it( 'should not render when properties are not loaded yet', () => {
+	it( 'should not render when properties are not loaded yet', async () => {
+		/*
+		 * The `GET:account-summaries` request is made twice in the test, the second time is from
+		 * when the component is rerendered and the new `getPropertySummaries()` resolver is
+		 * triggered again due to it not yet being resolved because the first request is
+		 * still in flight.
+		 *
+		 * In the happy path in the browser, the request is only made once.
+		 *
+		 * TODO: Check if the component is also rerendered twice in the test on `develop`,
+		 * and also take a look in the browser with a delayed request.
+		 */
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
-			)
+			),
+			{ times: 2 }
 		);
 
 		registry
@@ -75,7 +87,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 				propertyIDs: [ propertyID ],
 			} );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess
 				isDisabled={ false }
@@ -84,6 +96,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 		);
 
 		expect( container ).toBeEmptyDOMElement();
+
+		await waitForRegistry();
 	} );
 
 	it( 'should not render when Web Data Streams are not loaded yet', async () => {
