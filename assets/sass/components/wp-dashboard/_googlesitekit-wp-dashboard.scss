@@ -113,18 +113,21 @@
 		@media (max-width: $bp-mobileOnly) {
 			min-height: 780px;
 		}
+
+		.googlesitekit-wp-dashboard-search_console_active_and_connected {
+			min-height: 1080px;
+
+			@media (max-width: $bp-mobileOnly) {
+				min-height: 870px;
+			}
+		}
 	}
 
 	.googlesitekit-wp-dashboard-search_console_active_and_connected.googlesitekit-wp-dashboard-analytics-activate-cta {
 		min-height: 420px;
 	}
 
-	/* stylelint-disable-next-line max-line-length */
-	.googlesitekit-wp-dashboard-analytics_active_and_connected.googlesitekit-wp-dashboard-search_console_active_and_connected {
-		min-height: 1080px;
-
-		@media (max-width: $bp-mobileOnly) {
-			min-height: 870px;
-		}
+	.googlesitekit-chart div[dir] {
+		width: 100% !important;
 	}
 }
