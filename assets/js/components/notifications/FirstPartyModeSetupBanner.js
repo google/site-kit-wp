@@ -70,8 +70,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
 
-	const { dismissNotification, invalidateResolution } =
-		useDispatch( CORE_NOTIFICATIONS );
+	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const learnMoreURL = useSelect( ( select ) => {
@@ -88,15 +87,17 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
-		await saveFirstPartyModeSettings();
+		const { error } = await saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
 
 		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
 		invalidateResolution( 'getQueuedNotifications', [
 			viewContext,
 			NOTIFICATION_GROUPS.DEFAULT,
 		] );
-
-		dismissNotification( id );
 	};
 
 	const onDismiss = () => {
@@ -173,6 +174,9 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 							'google-site-kit'
 						) }
 						onCTAClick={ onCTAClick }
+						ctaDismissOptions={ {
+							skipHidingFromQueue: false,
+						} }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
 						dismissOptions={ {
