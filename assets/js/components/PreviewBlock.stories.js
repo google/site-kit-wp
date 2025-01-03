@@ -25,9 +25,9 @@ function Template( args ) {
 	return <PreviewBlock { ...args } />;
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.args = {
+export const Rectangular = Template.bind( {} );
+Rectangular.storyName = 'Rectangular';
+Rectangular.args = {
 	width: '100px',
 	height: '100px',
 };

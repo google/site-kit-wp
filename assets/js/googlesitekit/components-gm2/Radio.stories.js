@@ -22,7 +22,8 @@
 import { Radio } from 'googlesitekit-components';
 
 function Template( args ) {
-	return <Radio { ...args } />;
+	const { description, ...rest } = args;
+	return <Radio { ...rest }>{ description }</Radio>;
 }
 
 export const Default = Template.bind( {} );
@@ -43,13 +44,13 @@ Disabled.args = {
 export function VRTStory() {
 	return (
 		<div>
-			<div style={ { marginBottom: '50px' } }>
+			<div>
 				<Default { ...Default.args } />
 			</div>
-			<div style={ { marginBottom: '50px' } }>
+			<div>
 				<Checked { ...Checked.args } />
 			</div>
-			<div style={ { marginBottom: '50px' } }>
+			<div>
 				<Disabled { ...Disabled.args } />
 			</div>
 		</div>
@@ -57,7 +58,9 @@ export function VRTStory() {
 }
 
 VRTStory.storyName = 'All Radios VRT';
-VRTStory.scenario = {};
+VRTStory.scenario = {
+	label: 'Global/Radios',
+};
 
 export default {
 	title: 'Components/Radio',

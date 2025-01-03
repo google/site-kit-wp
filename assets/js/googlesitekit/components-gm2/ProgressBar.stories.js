@@ -42,24 +42,26 @@ SmallCompress.args = {
 export function VRTStory() {
 	return (
 		<div>
-			<div style={ { marginBottom: '50px' } }>
-				<h2>Default</h2>
+			<p>
+				<p>Default</p>
 				<Default { ...Default.args } />
-			</div>
-			<div style={ { marginBottom: '50px' } }>
-				<h2>Small</h2>
+			</p>
+			<p>
+				<p>Small</p>
 				<Small { ...Small.args } />
-			</div>
-			<div style={ { marginBottom: '50px' } }>
-				<h2>Small Compress</h2>
+			</p>
+			<p>
+				<p>Small Compress</p>
 				<SmallCompress { ...SmallCompress.args } />
-			</div>
+			</p>
 		</div>
 	);
 }
 
 VRTStory.storyName = 'All Progress Bars VRT';
-VRTStory.scenario = {};
+VRTStory.scenario = {
+	label: 'Global/Progress Bars',
+};
 
 export default {
 	title: 'Components/ProgressBar',

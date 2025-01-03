@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import ImageRadio from './ImageRadio';
-
 /**
  * Internal dependencies
  */
+import ImageRadio from './ImageRadio';
 
 const image = (
 	<svg
@@ -74,8 +73,8 @@ function Template( args ) {
 	return <ImageRadio { ...args }>{ args.label }</ImageRadio>;
 }
 
-export const Default = Template.bind( {} );
-Default.args = {
+export const UnChecked = Template.bind( {} );
+UnChecked.args = {
 	id: 'image-radio-story',
 	name: 'image-radio-story',
 	value: 'story',

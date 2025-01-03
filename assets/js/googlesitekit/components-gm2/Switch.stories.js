@@ -50,20 +50,22 @@ HiddenLabel.args = {
 export function VRTStory() {
 	return (
 		<div>
-			<div style={ { marginBottom: '50px' } }>
+			<div>
 				<Unswitched { ...Unswitched.args } />
 			</div>
-			<div style={ { marginBottom: '50px' } }>
+			<div>
 				<Switched { ...Switched.args } />
 			</div>
-			<div style={ { marginBottom: '50px' } }>
+			<div>
 				<HiddenLabel { ...HiddenLabel.args } />
 			</div>
 		</div>
 	);
 }
 VRTStory.storyName = 'All Switches VRT';
-VRTStory.scenario = {};
+VRTStory.scenario = {
+	label: 'Global/Switches',
+};
 
 export default {
 	title: 'Components/Switch',

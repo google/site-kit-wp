@@ -55,7 +55,7 @@ function Template() {
 }
 
 export const DefaultAccordion = Template.bind( {} );
-DefaultAccordion.storyName = 'Default Accordion';
+DefaultAccordion.storyName = 'Accordion';
 
 export default {
 	title: 'Components/Accordion',

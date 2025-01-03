@@ -64,7 +64,9 @@ ConnectedServices.args = {
 		provideModuleRegistrations( registry );
 	},
 };
-ConnectedServices.scenario = {};
+ConnectedServices.scenario = {
+	label: 'Settings/Connected Services',
+};
 
 export const ConnectMoreServices = Template.bind( {} );
 ConnectMoreServices.args = {
@@ -85,7 +87,9 @@ ConnectMoreServices.args = {
 	},
 	route: '/connect-more-services',
 };
-ConnectMoreServices.scenario = {};
+ConnectMoreServices.scenario = {
+	label: 'Settings/Connect More Services',
+};
 
 export default {
 	title: 'Components/SettingsModules',

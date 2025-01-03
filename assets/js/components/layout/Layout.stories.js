@@ -20,16 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import Layout from './Layout';
 
 /**
  * Internal dependencies
  */
-
-export default {
-	title: 'Global/Layout',
-	component: Layout,
-};
+import Layout from './Layout';
 
 function Template( { ...args } ) {
 	return (
@@ -39,10 +34,12 @@ function Template( { ...args } ) {
 	);
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.scenario = {};
-Default.args = {
+export const WithHeaderFooterAndCTAs = Template.bind( {} );
+WithHeaderFooterAndCTAs.storyName = 'Layout with Header Footer and CTAs';
+WithHeaderFooterAndCTAs.scenario = {
+	label: 'Global/Layout/Layout with Header Footer and CTAs',
+};
+WithHeaderFooterAndCTAs.args = {
 	header: true,
 	footer: true,
 	title: __( 'Title', 'google-site-kit' ),
@@ -53,11 +50,18 @@ Default.args = {
 };
 
 export const WithHeaderAndFooter = Template.bind( {} );
-WithHeaderAndFooter.storyName = 'With Header and Footer';
-WithHeaderAndFooter.scenario = {};
+WithHeaderAndFooter.storyName = 'Layout with Header and Footer';
+WithHeaderAndFooter.scenario = {
+	label: 'Global/Layout/Layout with Header and Footer',
+};
 WithHeaderAndFooter.args = {
 	header: true,
 	footer: true,
 	title: __( 'Title', 'google-site-kit' ),
 	footerContent: __( 'Footer Content', 'google-site-kit' ),
+};
+
+export default {
+	title: 'Global/Layout',
+	component: Layout,
 };

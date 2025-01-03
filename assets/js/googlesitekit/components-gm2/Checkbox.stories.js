@@ -27,7 +27,12 @@ import { useState } from '@wordpress/element';
 import { Checkbox } from 'googlesitekit-components';
 import NewBadge from '../../components/NewBadge';
 
-function InteractiveCheckbox( props ) {
+function Template( args ) {
+	const { label, ...rest } = args;
+	return <Checkbox { ...rest }>{ label }</Checkbox>;
+}
+
+function InteractiveTemplate( props ) {
 	const [ checked, setChecked ] = useState( false );
 	return (
 		<Checkbox
@@ -43,120 +48,114 @@ function InteractiveCheckbox( props ) {
 	);
 }
 
-export function Checkboxes() {
+export const Default = Template.bind( {} );
+Default.args = {
+	id: 'googlesitekit-checkbox-1',
+	name: 'googlesitekit__checkbox',
+	value: 'value-1',
+	label: 'Default Checkbox',
+};
+
+export const Checked = Template.bind( {} );
+Checked.args = {
+	id: 'googlesitekit-checkbox-2',
+	name: 'googlesitekit__checkbox-2',
+	value: 'value-2',
+	label: 'Checked Checkbox',
+	checked: true,
+};
+
+export const Disabled = Template.bind( {} );
+Disabled.args = {
+	id: 'googlesitekit-checkbox-3',
+	name: 'googlesitekit__checkbox-3',
+	value: 'value-3',
+	label: 'Disabled Checkbox',
+	disabled: true,
+};
+
+export const Loading = Template.bind( {} );
+Loading.args = {
+	id: 'googlesitekit-checkbox-4',
+	name: 'googlesitekit__checkbox-4',
+	value: 'value-4',
+	label: 'Loading Checkbox',
+	loading: true,
+};
+
+export const ComplexLabel = Template.bind( {} );
+ComplexLabel.args = {
+	id: 'googlesitekit-checkbox-5',
+	name: 'googlesitekit__checkbox-5',
+	value: 'value-5',
+	label: (
+		<div>
+			<span>
+				Complex <span> Label</span>
+			</span>
+			<span>&nbsp;Checkbox</span>
+		</div>
+	),
+};
+
+export const Interactive = InteractiveTemplate.bind( {} );
+Interactive.args = {
+	id: 'googlesitekit-checkbox-6',
+	name: 'googlesitekit__checkbox-6',
+	value: 'value-6',
+};
+
+export const WithDescription = Template.bind( {} );
+WithDescription.args = {
+	id: 'googlesitekit-checkbox-7',
+	name: 'googlesitekit__checkbox-7',
+	value: 'value-7',
+	label: 'Checkbox with description',
+	description: 'This is a checkbox with a description.',
+};
+
+export const WithBadge = Template.bind( {} );
+WithBadge.args = {
+	id: 'googlesitekit-checkbox-8',
+	name: 'googlesitekit__checkbox-8',
+	value: 'value-8',
+	label: 'Checkbox with badge',
+	badge: <NewBadge />,
+};
+
+export function VRTStory() {
 	return (
 		<div>
 			<div>
-				<Checkbox
-					id="googlesitekit-checkbox-1"
-					name="googlesitekit__checkbox"
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-					value="value-1"
-				>
-					Default Checkbox
-				</Checkbox>
+				<Default { ...Default.args } />
 			</div>
-
 			<div>
-				<Checkbox
-					checked
-					name="googlesitekit__checkbox"
-					id="googlesitekit-checkbox-2"
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-					value="value-2"
-				>
-					Checked Checkbox
-				</Checkbox>
+				<Checked { ...Checked.args } />
 			</div>
-
 			<div>
-				<Checkbox
-					disabled
-					id="googlesitekit-checkbox-3"
-					name="googlesitekit__checkbox"
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-					value="value-3"
-				>
-					Disabled Checkbox
-				</Checkbox>
+				<Disabled { ...Disabled.args } />
 			</div>
-
 			<div>
-				<Checkbox
-					id="googlesitekit-checkbox-4"
-					name="googlesitekit__checkbox"
-					loading
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-					value="value-4"
-				>
-					Loading Checkbox
-				</Checkbox>
+				<Loading { ...Loading.args } />
 			</div>
-
 			<div>
-				<Checkbox
-					id="googlesitekit-checkbox-5"
-					name="googlesitekit__checkbox"
-					value="value-5"
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-				>
-					<div>
-						<span>
-							Complex <span> Label</span>
-						</span>
-						<span>&nbsp;Checkbox</span>
-					</div>
-				</Checkbox>
+				<ComplexLabel { ...ComplexLabel.args } />
 			</div>
-
 			<div>
-				<InteractiveCheckbox
-					id="googlesitekit-checkbox-6"
-					name="googlesitekit__checkbox"
-					value="value-6"
-				/>
+				<Interactive { ...Interactive.args } />
 			</div>
-
 			<div>
-				<Checkbox
-					id="googlesitekit-checkbox-7"
-					name="googlesitekit__checkbox"
-					value="value-7"
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-					description="This is a checkbox with a description."
-				>
-					Checkbox with description
-				</Checkbox>
+				<WithDescription { ...WithDescription.args } />
 			</div>
-
 			<div>
-				<Checkbox
-					id="googlesitekit-checkbox-8"
-					name="googlesitekit__checkbox"
-					onChange={ ( event ) => {
-						global.console.log( event.target.value );
-					} }
-					value="value-8"
-					badge={ <NewBadge /> }
-				>
-					Checkbox with Badge
-				</Checkbox>
+				<WithBadge { ...WithBadge.args } />
 			</div>
 		</div>
 	);
 }
+
+VRTStory.storyName = 'All Checkboxes VRT';
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/Material 2/Checkboxes',

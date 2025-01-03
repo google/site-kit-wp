@@ -46,7 +46,7 @@ Default.args = {
 export const DefaultLinkHovered = Template.bind( {} );
 DefaultLinkHovered.args = {
 	href: 'http://google.com',
-	children: 'Default Link Hovered',
+	children: 'VRT: Default Link Hovered',
 	className: 'googlesitekit-cta-link--hover',
 };
 
@@ -60,7 +60,7 @@ Secondary.args = {
 export const SecondaryLinkHovered = Template.bind( {} );
 SecondaryLinkHovered.args = {
 	href: 'http://google.com',
-	children: 'Secondary Link Hovered',
+	children: 'VRT: Secondary Link Hovered',
 	className: 'googlesitekit-cta-link--hover',
 	secondary: true,
 };
@@ -88,7 +88,7 @@ LinkButtonWithIconPrefix.args = {
 export const LinkButtonWithIconPrefixHovered = Template.bind( {} );
 LinkButtonWithIconPrefixHovered.args = {
 	onClick: () => {},
-	children: 'Default Link Button With Icon Prefix Hovered',
+	children: 'VRT: Default Link Button With Icon Prefix Hovered',
 	className: 'googlesitekit-cta-link--hover',
 	leadingIcon: <PencilIcon width={ 18 } height={ 18 } />,
 };
@@ -103,7 +103,7 @@ LinkButtonWithIconSuffix.args = {
 export const LinkButtonWithIconSuffixHovered = Template.bind( {} );
 LinkButtonWithIconSuffixHovered.args = {
 	onClick: () => {},
-	children: 'Default Link Button With Icon Suffix Hovered',
+	children: 'VRT: Default Link Button With Icon Suffix Hovered',
 	className: 'googlesitekit-cta-link--hover',
 	trailingIcon: <PencilIcon width={ 18 } height={ 18 } />,
 };
@@ -118,7 +118,7 @@ SecondaryLinkButton.args = {
 export const SecondaryLinkButtonHovered = Template.bind( {} );
 SecondaryLinkButtonHovered.args = {
 	onClick: () => {},
-	children: 'Secondary Link Button Hovered',
+	children: 'VRT: Secondary Link Button Hovered',
 	className: 'googlesitekit-cta-link--hover',
 	secondary: true,
 };
@@ -126,7 +126,7 @@ SecondaryLinkButtonHovered.args = {
 export const SecondaryLinkButtonWithIconPrefix = Template.bind( {} );
 SecondaryLinkButtonWithIconPrefix.args = {
 	onClick: () => {},
-	children: 'Secondary Link Button With Icon Prefix',
+	children: 'Secondary Link Button With Icon',
 	leadingIcon: <PencilIcon width={ 18 } height={ 18 } />,
 	secondary: true,
 };
@@ -134,7 +134,7 @@ SecondaryLinkButtonWithIconPrefix.args = {
 export const SecondaryLinkButtonWithIconPrefixHovered = Template.bind( {} );
 SecondaryLinkButtonWithIconPrefixHovered.args = {
 	onClick: () => {},
-	children: 'Secondary Link Button With Icon Prefix Hovered',
+	children: 'VRT: Secondary Link Button With Icon Hovered',
 	className: 'googlesitekit-cta-link--hover',
 	leadingIcon: <PencilIcon width={ 18 } height={ 18 } />,
 	secondary: true,
@@ -316,6 +316,7 @@ export function VRTStory() {
 }
 VRTStory.storyName = 'All Links VRT';
 VRTStory.scenario = {
+	label: 'Global/Links',
 	hoverSelector: '.googlesitekit-cta-link--hover',
 	postInteractionWait: 1000,
 	onReadyScript: 'mouse.js',

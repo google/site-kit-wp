@@ -86,8 +86,8 @@ OpenSelect.args = {
 	className: 'googlesitekit-story-select-click',
 	name: 'time_period',
 	label: '',
-	value: 'Open Select',
-	options: [ 'Last 7 days', 'Open Select', 'Demo Option 3' ],
+	value: 'VRT: Open Select',
+	options: [ 'Last 7 days', 'VRT: Open Select', 'Demo Option 3' ],
 };
 
 export const BasicSelect = Template.bind( {} );
@@ -117,7 +117,7 @@ export function VRTStory() {
 			<div style={ { marginBottom: '50px' } }>
 				<OpenSelect { ...OpenSelect.args } />
 			</div>
-			<div style={ { marginBottom: '50px' } }>
+			<div style={ { marginBottom: '250px' } }>
 				<BasicSelect { ...BasicSelect.args } />
 			</div>
 		</div>
@@ -125,6 +125,7 @@ export function VRTStory() {
 }
 VRTStory.storyName = 'All Selects VRT';
 VRTStory.scenario = {
+	label: 'Global/Selects',
 	delay: 3000, // Sometimes the click doesn't work, waiting for everything to load.
 	clickSelector: '.googlesitekit-story-select-click',
 	postInteractionWait: 3000, // Wait for overlay and selects to animate.
