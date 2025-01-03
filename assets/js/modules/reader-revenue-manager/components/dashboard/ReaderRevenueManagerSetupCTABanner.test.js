@@ -153,7 +153,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
-				body: 'rrm-setup-notification',
+				body: JSON.stringify( [ 'rrm-setup-notification' ] ),
 				status: 200,
 			}
 		);
