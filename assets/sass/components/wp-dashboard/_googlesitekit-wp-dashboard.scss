@@ -114,7 +114,7 @@
 			min-height: 780px;
 		}
 
-		.googlesitekit-wp-dashboard-search_console_active_and_connected {
+		&.googlesitekit-wp-dashboard-search_console_active_and_connected {
 			min-height: 1080px;
 
 			@media (max-width: $bp-mobileOnly) {

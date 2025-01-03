@@ -28,13 +28,18 @@ class DashboardTest extends TestCase {
 	 */
 	private $admin_id;
 
+	/**
+	 * Context object.
+	 *
+	 * @var Context
+	 */
 	private $context;
 
 	/**
 	 * Set up the test.
 	 */
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 		$this->admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 	}
@@ -71,7 +76,7 @@ class DashboardTest extends TestCase {
 	}
 
 	/**
-	 * @group dashboard_widget1
+	 * @group dashboard_widget
 	 */
 	public function test_render_googlesitekit_wp_dashboard_only_search_console_connected() {
 		$modules = new Modules( $this->context );
