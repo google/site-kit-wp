@@ -7,8 +7,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @version   07651f2
- * 
+ * @version   288a45a
+ *
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
  */
 
@@ -35,15 +35,14 @@ final class Measurement
     private const PATH_QUERY = '&s=';
     private const FPS_PATH = 'PHP_FPM_REPLACE_PATH';
 
-    /** @var RequestHelper */
-    private $helper;
+    private RequestHelper $helper;
 
     /**
      * Create the measurement request handler.
      *
      * @param RequestHelper $helper
      */
-    public function __construct($helper)
+    public function __construct(RequestHelper $helper)
     {
         $this->helper = $helper;
     }
@@ -106,28 +105,29 @@ final class Measurement
     }
 
     /**
-     * Use best effort for determing if a request path is a script request.
+     * Use best effort for determining if a request path is a script request.
      *
      * @param string $requestPath
+     * @return bool
      */
-    private static function isScriptRequest($requestPath)
+    private static function isScriptRequest(string $requestPath): bool
     {
         return substr($requestPath, 0, 7) === "/gtm.js"
-        || substr($requestPath, 0, 8) === "/gtag.js"
-        || substr($requestPath, 0, 8) === "/gtag/js";
+            || substr($requestPath, 0, 8) === "/gtag.js"
+            || substr($requestPath, 0, 8) === "/gtag/js";
     }
 
     /**
      * @param string[] $headers
      */
-    private static function isScriptResponse($headers)
+    private static function isScriptResponse(array $headers): bool
     {
         if (empty($headers)) {
             return false;
         }
 
         foreach ($headers as $header) {
-            if (empty($headers)) {
+            if (empty($header)) {
                 continue;
             }
 
@@ -139,19 +139,26 @@ final class Measurement
         return false;
     }
 
-
-    private static function extractParameters()
+    private static function extractParameters(): array
     {
         $get = $_GET;
         if (empty($get)) {
             return array(
-                "tag_id" =>  '',
+                "tag_id" => '',
                 "path" => '',
             );
         }
 
         $tagId = $get['id'] ?? '';
         $path = $get['s'] ?? '';
+
+        // Validate tagId
+        if (!preg_match('/^[A-Za-z0-9-]*$/', $tagId)) {
+            return array(
+                "tag_id" => '',
+                "path" => '',
+            );
+        }
 
         unset($get['id'], $get['s']);
 
@@ -162,7 +169,7 @@ final class Measurement
         }
 
         return array(
-            "tag_id" =>  $tagId,
+            "tag_id" => $tagId,
             "path" => $path,
         );
     }
@@ -185,9 +192,9 @@ class RequestHelper
      *
      * @param int $statusCode
      */
-    public function invalidRequest($statsCode): void
+    public function invalidRequest(int $statusCode): void
     {
-        http_response_code($statsCode);
+        http_response_code($statusCode);
         exit();
     }
 
@@ -196,7 +203,7 @@ class RequestHelper
      *
      * @param string[] $headers
      */
-    public function setHeaders($headers): void
+    public function setHeaders(array $headers): void
     {
         foreach ($headers as $header) {
             if (!empty($header)) {
@@ -215,7 +222,7 @@ class RequestHelper
      *      statusCode: int,
      * }
      */
-    public function sendRequest($url): array
+    public function sendRequest(string $url): array
     {
         if ($this->isCurlInstalled()) {
             $response = $this->sendCurlRequest($url);
@@ -233,7 +240,7 @@ class RequestHelper
      *      statusCode: int,
      * }
      */
-    protected function sendCurlRequest($url): array
+    protected function sendCurlRequest(string $url): array
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -268,11 +275,11 @@ class RequestHelper
      *      statusCode: int,
      * }
      */
-    protected function sendFileGetContents($url): array
+    protected function sendFileGetContents(string $url): array
     {
         $streamContext = stream_context_create(array(
-            "http" => array(
-                "method" => "GET",
+            'http' => array(
+                'method' => 'GET',
             )
         ));
 
@@ -306,7 +313,7 @@ class RequestHelper
     }
 
     /** @param string[] $headers */
-    protected function normalizeHeaders($headers): array
+    protected function normalizeHeaders(array $headers): array
     {
         if (empty($headers)) {
             return $headers;
