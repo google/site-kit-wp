@@ -33,6 +33,7 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 import PartnerAdsPAXWidget from './components/dashboard/PartnerAdsPAXWidget';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets/default-areas';
@@ -117,6 +118,20 @@ export const registerNotifications = ( notifications ) => {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The getSetupErrorMessage selector relies on the resolution
+			// of the getSiteInfo() resolver.
+			await resolveSelect( CORE_SITE ).getConsentModeSettings();
+
+			const isConsentModeEnabled =
+				select( CORE_SITE ).isConsentModeEnabled();
+
+			if ( isConsentModeEnabled !== false ) {
+				return false;
+			}
+
+			return resolveSelect( CORE_SITE ).isAdsConnected();
+		},
 		dismissRetries: 2,
 	} );
 	notifications.registerNotification( 'setup-success-notification-ads', {
