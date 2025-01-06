@@ -50,14 +50,9 @@ import LearnMoreLink from '../../googlesitekit/notifications/components/common/L
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 
 export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
-	const [ isSaving, setIsSaving ] = useState( false );
 	const [ saveError, setSaveError ] = useState( null );
 
 	const breakpoint = useBreakpoint();
-
-	const isConsentModeEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isConsentModeEnabled()
-	);
 
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -94,25 +89,13 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const shouldShowWidget = useSelect( ( select ) => {
-		if ( isSaving ) {
-			return true;
-		}
-
-		if ( isConsentModeEnabled !== false ) {
-			return false;
-		}
-
-		return select( CORE_SITE ).isAdsConnected();
-	} );
-
 	useEffect( () => {
-		if ( shouldShowWidget ) {
+		if ( ! hideCTABanner ) {
 			if ( usingProxy ) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
 		}
-	}, [ shouldShowWidget, triggerSurvey, usingProxy ] );
+	}, [ hideCTABanner, triggerSurvey, usingProxy ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -139,14 +122,8 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 		return null;
 	}
 
-	if ( ! shouldShowWidget ) {
-		return null;
-	}
-
 	const handleCTAClick = async () => {
 		setSaveError( null );
-		setIsSaving( true );
-
 		setConsentModeEnabled( true );
 
 		const promises = [ saveConsentModeSettings() ];
@@ -162,7 +139,6 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 		if ( error ) {
 			setSaveError( error );
 			setConsentModeEnabled( false );
-			setIsSaving( false );
 		} else {
 			await dismissPrompt( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG );
 			navigateTo( `${ settingsURL }#/admin-settings` );
