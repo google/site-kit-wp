@@ -179,7 +179,7 @@
       ],
       "rules": {
         "sitekit/no-direct-date": "off",
-        "sitekit/storybook-no-label": "off"
+        "sitekit/no-storybook-scenario-label": "off"
       }
     }
   ],

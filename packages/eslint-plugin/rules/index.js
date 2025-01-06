@@ -27,5 +27,5 @@ module.exports = {
 	'jsdoc-third-person': require( './jsdoc-third-person' ),
 	'no-yield-dispatch': require( './no-yield-dispatch' ),
 	'no-direct-date': require( './no-direct-date' ),
-	'storybook-no-label': require( './storybook-no-label' ),
+	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
 };
