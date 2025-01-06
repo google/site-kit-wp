@@ -85,12 +85,6 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	);
 	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
 
-	const dismissCount = useSelect( ( select ) =>
-		select( CORE_USER ).getPromptDismissCount(
-			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-		)
-	);
-
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
@@ -175,21 +169,6 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 		}
 	};
 
-	const handleDismissClick = async () => {
-		showTooltip();
-
-		// For the first two dismissals, we show the notification again in two weeks.
-		if ( dismissCount < 2 ) {
-			const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
-			await dismissPrompt( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, {
-				expiresInSeconds: twoWeeksInSeconds,
-			} );
-		} else {
-			// For the third dismissal, dismiss permanently.
-			await dismissPrompt( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG );
-		}
-	};
-
 	const breakpointSVGMap = {
 		[ BREAKPOINT_TABLET ]: BannerGraphicsTabletSVG,
 	};
@@ -233,7 +212,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 								? __( 'Don’t show again', 'google-site-kit' )
 								: __( 'Maybe later', 'google-site-kit' )
 						}
-						onDismiss={ handleDismissClick }
+						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
