@@ -21,10 +21,14 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
+import { CORE_USER } from '../user/constants';
 
 describe( 'core/site First-party Mode', () => {
 	let registry;
@@ -48,6 +52,15 @@ describe( 'core/site First-party Mode', () => {
 	describe( 'actions', () => {
 		describe( 'saveFirstPartyModeSettings', () => {
 			it( 'saves the settings and returns the response', async () => {
+				provideUserAuthentication( registry );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				const updatedSettings = {
 					isEnabled: true,
 					isFPMHealthy: false,
@@ -88,6 +101,8 @@ describe( 'core/site First-party Mode', () => {
 				);
 
 				expect( response ).toEqual( updatedSettings );
+
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'returns an error if the request fails', async () => {
