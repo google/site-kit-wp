@@ -88,10 +88,17 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 	},
 };
 
+export const ENUM_CONVERSION_EVENTS = {
+	ADD_TO_CART: 'add_to_cart',
+	PURCHASE: 'purchase',
+	SUBMIT_LEAD_FORM: 'submit_lead_form',
+	GENERATE_LEAD: 'generate_lead',
+	CONTACT: 'contact',
+};
 export const CONVERSION_REPORTING_LEAD_EVENTS = [
-	'contact',
-	'generate_lead',
-	'submit_lead_form',
+	ENUM_CONVERSION_EVENTS.CONTACT,
+	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+	ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 ];
 
 // Audience enums.
