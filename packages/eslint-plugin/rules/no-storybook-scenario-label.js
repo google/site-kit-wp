@@ -21,11 +21,11 @@ module.exports = {
 		type: 'problem',
 		docs: {
 			description:
-				'Disallow using label prop in Storybook stories scenario definitions.',
+				'Disallow defining the label property on scenario definitions for Storybook stories.',
 		},
 		messages: {
 			noLabelProp:
-				"The label prop is not allowed on a Story's VRT scenario definition.",
+				"The label property is not allowed on a story's VRT scenario definition.",
 		},
 	},
 	create( context ) {
