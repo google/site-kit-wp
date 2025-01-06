@@ -241,11 +241,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_SETTINGS,
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The getAuthError() selector relies on the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-			] );
-
+			await resolveSelect( CORE_USER ).getAuthentication();
 			const error = select( CORE_USER ).getAuthError();
 
 			return !! error;
