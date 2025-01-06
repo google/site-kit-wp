@@ -52,7 +52,7 @@ import {
 import ErrorText from '../ErrorText';
 import Link from '../Link';
 import useViewContext from '../../hooks/useViewContext';
-import { DAY_IN_SECONDS, WEEK_IN_SECONDS, trackEvent } from '../../util';
+import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import {
 	BREAKPOINT_SMALL,
@@ -138,11 +138,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView && shouldShowWidget ) {
-			trackEvent(
-				`${ viewContext }_CoMo-ads-setup-notification`,
-				'view_notification'
-			);
-
 			if ( usingProxy ) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
@@ -185,13 +180,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 
 		setConsentModeEnabled( true );
 
-		const promises = [
-			saveConsentModeSettings(),
-			trackEvent(
-				`${ viewContext }_CoMo-ads-setup-notification`,
-				'confirm_notification'
-			),
-		];
+		const promises = [ saveConsentModeSettings() ];
 
 		if ( usingProxy ) {
 			promises.push(
@@ -212,11 +201,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const handleDismissClick = async () => {
-		trackEvent(
-			`${ viewContext }_CoMo-ads-setup-notification`,
-			'dismiss_notification'
-		);
-
 		showTooltip();
 
 		// For the first two dismissals, we show the notification again in two weeks.
