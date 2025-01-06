@@ -76,17 +76,14 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isPromptDismissed(
-			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-		)
+	// See TODO note below.
+	const isCTADismissed = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
-
-	const isDismissingPrompt = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingPrompt(
-			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-		)
+	const dismissedPromptsLoaded = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
+	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
 
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
@@ -108,11 +105,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 			return true;
 		}
 
-		if (
-			isDismissed !== false ||
-			isDismissingPrompt ||
-			isConsentModeEnabled !== false
-		) {
+		if ( isConsentModeEnabled !== false ) {
 			return false;
 		}
 
@@ -141,6 +134,15 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 				/>
 			</Fragment>
 		);
+	}
+
+	// TODO Remove this hack
+	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
+	// This is because we don't want the component removed from the DOM as we have to still render
+	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
+	// checking for the dismissal state here.
+	if ( hideCTABanner ) {
+		return null;
 	}
 
 	if ( ! shouldShowWidget ) {
