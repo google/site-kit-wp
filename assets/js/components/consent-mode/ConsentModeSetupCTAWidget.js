@@ -52,7 +52,6 @@ import {
 import ErrorText from '../ErrorText';
 import Link from '../Link';
 import useViewContext from '../../hooks/useViewContext';
-import useViewOnly from '../../hooks/useViewOnly';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS, trackEvent } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import {
@@ -68,7 +67,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const breakpoint = useBreakpoint();
 
 	const viewContext = useViewContext();
-	const viewOnlyDashboard = useViewOnly();
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConsentModeEnabled()
@@ -123,10 +121,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const inView = !! intersectionEntry?.intersectionRatio;
 
 	const shouldShowWidget = useSelect( ( select ) => {
-		if ( viewOnlyDashboard ) {
-			return false;
-		}
-
 		if ( isSaving ) {
 			return true;
 		}
