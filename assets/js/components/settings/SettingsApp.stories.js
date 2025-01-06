@@ -19,18 +19,15 @@
 /**
  * Internal dependencies
  */
-import Layout from '../layout/Layout';
 import SettingsApp from './SettingsApp';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 
 function Template() {
 	return (
-		<Layout>
-			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<SettingsApp />
-			</ViewContextProvider>
-		</Layout>
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<SettingsApp />
+		</ViewContextProvider>
 	);
 }
 
