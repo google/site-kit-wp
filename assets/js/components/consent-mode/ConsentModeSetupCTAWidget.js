@@ -41,7 +41,6 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
-import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { BREAKPOINT_TABLET, useBreakpoint } from '../../hooks/useBreakpoint';
@@ -55,8 +54,6 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );
 
 	const breakpoint = useBreakpoint();
-
-	const viewContext = useViewContext();
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConsentModeEnabled()
@@ -128,7 +125,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
 		}
-	}, [ shouldShowWidget, triggerSurvey, usingProxy, viewContext ] );
+	}, [ shouldShowWidget, triggerSurvey, usingProxy ] );
 
 	if ( isTooltipVisible ) {
 		return (
