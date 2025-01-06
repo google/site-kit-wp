@@ -59,7 +59,10 @@ import {
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from './constants';
 import { CORE_SITE } from '../site/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 import { enabledFeatures } from '../../../features';
 
@@ -412,7 +415,11 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 					],
-					[ 'contact', 'generate_lead', 'submit_lead_form' ],
+					[
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				],
 				[
 					'publish_news',
@@ -426,7 +433,11 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 					],
-					[ 'contact', 'generate_lead', 'submit_lead_form' ],
+					[
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				],
 				[
 					'monetize_content',
@@ -440,7 +451,11 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
-					[ 'contact', 'generate_lead', 'submit_lead_form' ],
+					[
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				],
 				[
 					'sell_products_or_service',
@@ -454,7 +469,10 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
-					[ 'purchase', 'add_to_cart' ],
+					[
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					],
 				],
 				[
 					'sell_products',
@@ -468,7 +486,10 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
-					[ 'purchase', 'add_to_cart' ],
+					[
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					],
 				],
 				[
 					'provide_services',
@@ -482,7 +503,11 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_POPULAR_CONTENT,
 						KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 					],
-					[ 'contact', 'generate_lead', 'submit_lead_form' ],
+					[
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				],
 				[
 					'share_portfolio',
@@ -496,7 +521,11 @@ describe( 'core/user key metrics', () => {
 						KM_ANALYTICS_POPULAR_CONTENT,
 						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 					],
-					[ 'contact', 'generate_lead', 'submit_lead_form' ],
+					[
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				],
 			] )(
 				'should return the correct metrics for the %s purpose when conversionReporting is enabled',
@@ -520,14 +549,16 @@ describe( 'core/user key metrics', () => {
 						.receiveGetUserInputSettings( {
 							purpose: { values: [ purpose ] },
 							includeConversionEvents: {
-								values: [ 'contact' ],
+								values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 								scope: 'site',
 							},
 						} );
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setDetectedEvents( [ 'contact' ] );
+						.setDetectedEvents( [
+							ENUM_CONVERSION_EVENTS.CONTACT,
+						] );
 
 					if (
 						[
@@ -537,7 +568,10 @@ describe( 'core/user key metrics', () => {
 					) {
 						registry
 							.dispatch( MODULES_ANALYTICS_4 )
-							.setDetectedEvents( [ 'add_to_cart', 'purchase' ] );
+							.setDetectedEvents( [
+								ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+								ENUM_CONVERSION_EVENTS.PURCHASE,
+							] );
 					}
 
 					// Conversion Tailored Metrics should be included in the list if the
