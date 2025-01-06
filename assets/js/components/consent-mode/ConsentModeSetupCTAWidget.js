@@ -18,7 +18,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -28,7 +27,6 @@ import {
 	Fragment,
 	createInterpolateElement,
 	useEffect,
-	useRef,
 	useState,
 } from '@wordpress/element';
 
@@ -112,14 +110,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const trackingRef = useRef();
-
-	const intersectionEntry = useIntersection( trackingRef, {
-		threshold: 0.25,
-	} );
-	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-	const inView = !! intersectionEntry?.intersectionRatio;
-
 	const shouldShowWidget = useSelect( ( select ) => {
 		if ( isSaving ) {
 			return true;
@@ -137,21 +127,12 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	} );
 
 	useEffect( () => {
-		if ( inView && ! hasBeenInView && shouldShowWidget ) {
+		if ( shouldShowWidget ) {
 			if ( usingProxy ) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
-
-			setHasBeenInView( true );
 		}
-	}, [
-		hasBeenInView,
-		inView,
-		shouldShowWidget,
-		triggerSurvey,
-		usingProxy,
-		viewContext,
-	] );
+	}, [ shouldShowWidget, triggerSurvey, usingProxy, viewContext ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -224,10 +205,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 							noPadding
 							className="googlesitekit-setup-cta-banner googlesitekit-consent-mode-setup-cta-widget"
 						>
-							<div
-								ref={ trackingRef }
-								className="googlesitekit-setup-cta-banner__cells"
-							>
+							<div className="googlesitekit-setup-cta-banner__cells">
 								<div className="googlesitekit-setup-cta-banner__primary-cell">
 									<h3 className="googlesitekit-setup-cta-banner__title">
 										{ __(
