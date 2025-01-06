@@ -52,7 +52,6 @@ import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
@@ -270,7 +269,6 @@ export default function DashboardMainApp() {
 					{ audienceSegmentationEnabled && (
 						<AudienceSegmentationSetupCTAWidget />
 					) }
-					<ConsentModeSetupCTAWidget />
 				</Fragment>
 			) }
 
