@@ -40,12 +40,17 @@ import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
 } from './components/notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
+import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
 
 export { registerStore } from './datastore';
 
@@ -105,6 +110,15 @@ export const registerWidgets = ( widgets ) => {
 };
 
 export const registerNotifications = ( notifications ) => {
+	notifications.registerNotification( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, {
+		Component: ConsentModeSetupCTAWidget,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		dismissRetries: 2,
+	} );
 	notifications.registerNotification( 'setup-success-notification-ads', {
 		Component: SetupSuccessSubtleNotification,
 		priority: 10,
