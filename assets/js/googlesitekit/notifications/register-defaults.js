@@ -229,6 +229,29 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: false,
 	},
+	'auth-error': {
+		Component: AuthError,
+		priority: 130,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getAuthError() selector relies on the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+			] );
+
+			const error = select( CORE_USER ).getAuthError();
+
+			return !! error;
+		},
+		isDismissible: false,
+	},
 	'top-earning-pages-success-notification': {
 		Component: GA4AdSenseLinkedNotification,
 		priority: 10,
@@ -566,29 +589,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
 			);
 		},
-	},
-	'auth-error': {
-		Component: AuthError,
-		priority: 130,
-		areaSlug: NOTIFICATION_AREAS.ERRORS,
-		viewContexts: [
-			VIEW_CONTEXT_MAIN_DASHBOARD,
-			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			VIEW_CONTEXT_ENTITY_DASHBOARD,
-			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
-			VIEW_CONTEXT_SETTINGS,
-		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The getAuthError() selector relies on the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-			] );
-
-			const error = select( CORE_USER ).getAuthError();
-
-			return !! error;
-		},
-		isDismissible: false,
 	},
 };
 
