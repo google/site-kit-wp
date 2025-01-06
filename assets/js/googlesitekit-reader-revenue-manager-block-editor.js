@@ -20,12 +20,8 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useState } from '@wordpress-core/element';
-import {
-	PanelBody,
-	SelectControl,
-	ToggleControl,
-} from '@wordpress-core/components';
+import { Fragment } from '@wordpress-core/element';
+import { PanelBody, SelectControl } from '@wordpress-core/components';
 import {
 	PluginDocumentSettingPanel,
 	PluginSidebarMoreMenuItem,
@@ -41,45 +37,37 @@ import { CORE_MODULES } from './googlesitekit/modules/datastore/constants';
 import GoogleLogoIcon from '../svg/graphics/logo-g.svg';
 
 function SettingsForm() {
-	const [ useSnippet, setUseSnippet ] = useState( false );
-
 	return (
 		<Fragment>
-			<ToggleControl
-				label="Place snippet"
-				checked={ useSnippet }
-				onChange={ ( value ) => setUseSnippet( value ) }
+			<SelectControl
+				label={ __( 'Product ID Override', 'google-site-kit' ) }
+				options={ [
+					{
+						label: __( 'No change', 'google-site-kit' ),
+						value: '',
+					},
+					{
+						label: __( 'Off', 'google-site-kit' ),
+						value: 'none',
+					},
+					{
+						label: __( 'Open access', 'google-site-kit' ),
+						value: 'openaccess',
+					},
+					{
+						label: __( 'Product ID A', 'google-site-kit' ),
+						value: 'product-id-a',
+					},
+					{
+						label: __( 'Product ID B', 'google-site-kit' ),
+						value: 'product-id-b',
+					},
+				] }
+				help={ __(
+					'The snippet configuration will be inherited from a parent taxonomy term, or Site Kit settings.',
+					'google-site-kit'
+				) }
 			/>
-			{ useSnippet && (
-				<Fragment>
-					<br />
-					<SelectControl
-						label={ __( 'Product ID', 'google-site-kit' ) }
-						options={ [
-							{
-								label: __( 'Inherit', 'google-site-kit' ),
-								value: '',
-							},
-							{
-								label: __( 'Open access', 'google-site-kit' ),
-								value: 'openaccess',
-							},
-							{
-								label: __( 'Product ID A', 'google-site-kit' ),
-								value: 'openaccess',
-							},
-							{
-								label: __( 'Product ID B', 'google-site-kit' ),
-								value: 'openaccess',
-							},
-						] }
-						help={ __(
-							'The snippet configuration will be inherited from a parent taxonomy term, or Site Kit settings.',
-							'google-site-kit'
-						) }
-					/>
-				</Fragment>
-			) }
 		</Fragment>
 	);
 }
