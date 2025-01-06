@@ -22,6 +22,7 @@
 import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -91,6 +92,78 @@ describe( 'core/user dismissed-prompts', () => {
 				).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
+		} );
+
+		describe( 'setIsPromptDimissing', () => {
+			it( 'should set the dismissing state for a prompt', () => {
+				const slug = 'foo-bar';
+
+				registry
+					.dispatch( CORE_USER )
+					.setIsPromptDimissing( slug, true );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingPrompt( slug )
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_USER )
+					.setIsPromptDimissing( slug, false );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingPrompt( slug )
+				).toBe( false );
+			} );
+
+			it( 'should always set the boolean value', () => {
+				const slug = 'foo-bar';
+
+				registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, 1 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingPrompt( slug )
+				).toBe( true );
+
+				registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingPrompt( slug )
+				).toBe( false );
+			} );
+		} );
+
+		it( 'should set dismissing state to true while dismissing prompt', () => {
+			const slug = 'foo-bar';
+
+			freezeFetch( fetchDismissPrompt );
+
+			expect(
+				registry.select( CORE_USER ).isDismissingPrompt( slug )
+			).toBe( false );
+
+			registry.dispatch( CORE_USER ).dismissPrompt( slug );
+
+			expect(
+				registry.select( CORE_USER ).isDismissingPrompt( slug )
+			).toBe( true );
+		} );
+
+		it( 'should set dismissing state to false after dismissing prompt', async () => {
+			const slug = 'foo-bar';
+
+			fetchMock.postOnce( fetchDismissPrompt, {
+				body: [ slug ],
+				status: 200,
+			} );
+
+			// Explicitly set dismissing state to true.
+			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, true );
+
+			await registry.dispatch( CORE_USER ).dismissPrompt( slug );
+
+			expect(
+				registry.select( CORE_USER ).isDismissingPrompt( slug )
+			).toBe( false );
 		} );
 	} );
 
