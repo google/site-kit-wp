@@ -28,9 +28,9 @@ import {
 } from '@wordpress-core/components';
 import {
 	PluginDocumentSettingPanel,
-	PluginSidebar,
 	PluginSidebarMoreMenuItem,
-} from '@wordpress-core/edit-post';
+	PluginSidebar,
+} from '@wordpress-core/editor';
 import { registerPlugin } from '@wordpress-core/plugins';
 
 /**

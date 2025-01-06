@@ -274,7 +274,7 @@ const corePackages = [
 	'compose',
 	'data',
 	'dom-ready',
-	'edit-post',
+	'editor',
 	'element',
 	'icons',
 	'keycodes',
