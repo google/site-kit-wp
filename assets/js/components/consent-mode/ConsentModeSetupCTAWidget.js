@@ -23,23 +23,18 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	Fragment,
-	createInterpolateElement,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button, SpinnerButton } from 'googlesitekit-components';
+
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import { Cell, Grid, Row } from '../../material-components';
+
 import BannerGraphicsSVG from '../../../svg/graphics/consent-mode-setup.svg';
 import BannerGraphicsTabletSVG from '../../../svg/graphics/consent-mode-setup-tablet.svg';
 import {
@@ -47,18 +42,17 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
-import ErrorText from '../ErrorText';
-import Link from '../Link';
 import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_XLARGE,
-	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+import { BREAKPOINT_TABLET, useBreakpoint } from '../../hooks/useBreakpoint';
+import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
-function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
+function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ saveError, setSaveError ] = useState( null );
 
@@ -81,6 +75,10 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const showTooltip = useShowTooltip( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG );
 	const { isTooltipVisible } = useTooltipState(
 		CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+	);
+
+	const isDismissalFinal = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
 	const isDismissed = useSelect( ( select ) =>
@@ -137,7 +135,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
-				<WidgetNull />
 				<AdminMenuTooltip
 					title=""
 					content={ __(
@@ -152,7 +149,7 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	if ( ! shouldShowWidget ) {
-		return <WidgetNull />;
+		return null;
 	}
 
 	const handleCTAClick = async () => {
@@ -196,101 +193,65 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	};
 
-	return (
-		<div className="googlesitekit-widget-context">
-			<Grid className="googlesitekit-widget-area">
-				<Row>
-					<Cell size={ 12 }>
-						<Widget
-							noPadding
-							className="googlesitekit-setup-cta-banner googlesitekit-consent-mode-setup-cta-widget"
-						>
-							<div className="googlesitekit-setup-cta-banner__cells">
-								<div className="googlesitekit-setup-cta-banner__primary-cell">
-									<h3 className="googlesitekit-setup-cta-banner__title">
-										{ __(
-											'Enable Consent Mode to preserve tracking for your Ads campaigns',
-											'google-site-kit'
-										) }
-									</h3>
-									<div className="googlesitekit-setup-cta-banner__description">
-										<p>
-											{ createInterpolateElement(
-												__(
-													'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
-													'google-site-kit'
-												),
-												{
-													a: (
-														<Link
-															href={
-																consentModeDocumentationURL
-															}
-															external
-															aria-label={ __(
-																'Learn more about consent mode',
-																'google-site-kit'
-															) }
-														/>
-													),
-												}
-											) }
-										</p>
-									</div>
+	const breakpointSVGMap = {
+		[ BREAKPOINT_TABLET ]: BannerGraphicsTabletSVG,
+	};
 
-									{ saveError && (
-										<ErrorText
-											message={ saveError.message }
-										/>
-									) }
-									<div className="googlesitekit-setup-cta-banner__actions-wrapper">
-										<Fragment>
-											<SpinnerButton
-												onClick={ handleCTAClick }
-												isSaving={ isSaving }
-											>
-												{ __(
-													'Enable consent mode',
-													'google-site-kit'
-												) }
-											</SpinnerButton>
-											<Button
-												tertiary
-												onClick={ handleDismissClick }
-											>
-												{ dismissCount < 2
-													? __(
-															'Maybe later',
-															'google-site-kit'
-													  )
-													: __(
-															'Don’t show again',
-															'google-site-kit'
-													  ) }
-											</Button>
-										</Fragment>
-									</div>
-								</div>
-								<div className="googlesitekit-setup-cta-banner__svg-wrapper">
-									{ breakpoint !== BREAKPOINT_SMALL &&
-									breakpoint !== BREAKPOINT_XLARGE ? (
-										<BannerGraphicsTabletSVG />
-									) : (
-										<BannerGraphicsSVG />
-									) }
-								</div>
-							</div>
-						</Widget>
-					</Cell>
-				</Row>
-			</Grid>
-		</div>
+	return (
+		<Notification>
+			<NotificationWithSVG
+				id={ id }
+				title={ __(
+					'Enable Consent Mode to preserve tracking for your Ads campaigns',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						className="googlesitekit-setup-cta-banner__description"
+						text={ __(
+							'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ consentModeDocumentationURL }
+							/>
+						}
+						errorText={ saveError?.message }
+					/>
+				}
+				actions={
+					<ActionsCTALinkDismiss
+						id={ id }
+						className="googlesitekit-setup-cta-banner__actions-wrapper"
+						ctaLabel={ __(
+							'Enable consent mode',
+							'google-site-kit'
+						) }
+						onCTAClick={ handleCTAClick }
+						dismissLabel={
+							isDismissalFinal
+								? __( 'Don’t show again', 'google-site-kit' )
+								: __( 'Maybe later', 'google-site-kit' )
+						}
+						onDismiss={ handleDismissClick }
+						dismissOptions={ {
+							skipHidingFromQueue: true,
+						} }
+						dismissExpires={ 2 * WEEK_IN_SECONDS }
+					/>
+				}
+				SVG={ breakpointSVGMap[ breakpoint ] || BannerGraphicsSVG }
+			/>
+		</Notification>
 	);
 }
 
 ConsentModeSetupCTAWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType.isRequired,
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
 };
 
 export default withWidgetComponentProps( 'consent-mode-setup-cta' )(
