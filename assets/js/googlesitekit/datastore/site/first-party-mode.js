@@ -104,38 +104,39 @@ const baseActions = {
 	 * Saves the first-party mode settings.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveFirstPartyModeSettings() {
-		const { select } = yield commonActions.getRegistry();
+		const { select, dispatch } = yield commonActions.getRegistry();
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
-		return yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
-			settings
-		);
+		const results =
+			yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
+				settings
+			);
+
+		if ( results?.response?.isEnabled ) {
+			dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+		}
+
+		return results;
 	},
 
 	/**
 	 * Sets the first-party mode enabled status.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Added the survey trigger.
 	 *
 	 * @param {boolean} isEnabled First-party mode enabled status.
 	 * @return {Object} Redux-style action.
 	 */
-	*setFirstPartyModeEnabled( isEnabled ) {
-		const { dispatch } = yield commonActions.getRegistry();
-
-		const results = yield {
+	setFirstPartyModeEnabled( isEnabled ) {
+		return {
 			type: SET_FIRST_PARTY_MODE_ENABLED,
 			payload: { isEnabled },
 		};
-
-		dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
-
-		return results;
 	},
 
 	/**
