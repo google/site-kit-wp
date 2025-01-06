@@ -464,7 +464,7 @@ describe( 'modules/tagmanager containers', () => {
 		} );
 
 		describe( 'getWebContainers', () => {
-			it( 'uses the getContainers resolver to make a network request', async () => {
+			it( 'should use a resolver to make a network request', async () => {
 				const account = factories.accountBuilder();
 				const containers = factories.buildContainers( 3, {
 					// eslint-disable-next-line sitekit/acronym-case
@@ -490,7 +490,7 @@ describe( 'modules/tagmanager containers', () => {
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
-				).getContainers( accountID );
+				).getWebContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
