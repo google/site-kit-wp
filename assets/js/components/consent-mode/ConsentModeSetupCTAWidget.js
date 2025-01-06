@@ -33,8 +33,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import BannerGraphicsSVG from '../../../svg/graphics/consent-mode-setup.svg';
 import BannerGraphicsTabletSVG from '../../../svg/graphics/consent-mode-setup-tablet.svg';
 import {
@@ -50,9 +49,8 @@ import NotificationWithSVG from '../../googlesitekit/notifications/components/la
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
-function ConsentModeSetupCTAWidget( { id, Notification } ) {
+export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ saveError, setSaveError ] = useState( null );
 
@@ -253,7 +251,3 @@ ConsentModeSetupCTAWidget.propTypes = {
 	id: PropTypes.string,
 	Notification: PropTypes.elementType,
 };
-
-export default withWidgetComponentProps( 'consent-mode-setup-cta' )(
-	ConsentModeSetupCTAWidget
-);
