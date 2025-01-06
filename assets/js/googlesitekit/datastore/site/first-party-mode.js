@@ -120,6 +120,7 @@ const baseActions = {
 	 * Sets the first-party mode enabled status.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added the survey trigger.
 	 *
 	 * @param {boolean} isEnabled First-party mode enabled status.
 	 * @return {Object} Redux-style action.
