@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -49,7 +53,6 @@ import {
 } from '../../../../components/AdminMenuTooltip';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
-import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import { WEEK_IN_SECONDS } from '../../../../util';
@@ -130,19 +133,37 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					'google-site-kit'
 				) }
 				description={
-					<Description
-						text={ __(
-							'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a><br><br>* Support for subscriptions coming soon',
-							'google-site-kit'
-						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ readerRevenueManagerDocumentationURL }
-							/>
-						}
-					/>
+					<div className="googlesitekit-setup-cta-banner__description">
+						<p>
+							{ ' ' }
+							{ createInterpolateElement(
+								__(
+									'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<LearnMoreLink
+											id={ id }
+											label={ __(
+												'Learn more',
+												'google-site-kit'
+											) }
+											url={
+												readerRevenueManagerDocumentationURL
+											}
+										/>
+									),
+								}
+							) }
+							<br />
+							<br />
+							{ __(
+								'* Support for subscriptions coming soon',
+								'google-site-kit'
+							) }
+						</p>
+					</div>
 				}
 				actions={
 					<ActionsCTALinkDismiss
