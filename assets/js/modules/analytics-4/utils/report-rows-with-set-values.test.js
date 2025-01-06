@@ -1,7 +1,7 @@
 /**
- * Analytics-4 filter rows having (not set) values tests.
+ * Tests for utility to filter out Analytics report rows which don't have a value set.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,17 @@
 import { reportRowsWithSetValues } from './report-rows-with-set-values';
 
 describe( 'reportRowsWithSetValues', () => {
-	const mockRows = [
-		{ dimensionValues: [ { value: 'value1' } ] },
-		{ dimensionValues: [ { value: '(not set)' } ] },
-		{ dimensionValues: [ { value: 'value2' } ] },
-		{ dimensionValues: [ { value: 'value3' } ] },
-		{ dimensionValues: [ { value: 'value4' } ] },
-	];
+	let mockRows;
+
+	beforeEach( () => {
+		mockRows = [
+			{ dimensionValues: [ { value: 'value1' } ] },
+			{ dimensionValues: [ { value: '(not set)' } ] },
+			{ dimensionValues: [ { value: 'value2' } ] },
+			{ dimensionValues: [ { value: 'value3' } ] },
+			{ dimensionValues: [ { value: 'value4' } ] },
+		];
+	} );
 
 	it( 'should return rows with set dimension values only', () => {
 		const result = reportRowsWithSetValues( mockRows );

@@ -1,5 +1,5 @@
 /**
- * Analytics 4 filter rows having (not set) values.
+ * Utility to filter out Analytics report rows which don't have a value set.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
