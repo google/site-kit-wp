@@ -523,13 +523,11 @@ export const muteFetch = ( matcher, response = {} ) => {
  * @since 1.12.0
  * @private
  *
- * @param {(string|RegExp|Function|URL|Object)} matcher         Criteria for deciding which requests to mock.
- *                                                              (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
- * @param {Object}                              [options]       Optional. Additional options for the mock.
- * @param {number}                              [options.times] Optional. Number of times to mock the request. Defaults to 1.
+ * @param {(string|RegExp|Function|URL|Object)} matcher Criteria for deciding which requests to mock.
+ *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  */
-export const freezeFetch = ( matcher, { times = 1 } = {} ) => {
-	fetchMock.mock( matcher, new Promise( () => {} ), { repeat: times } );
+export const freezeFetch = ( matcher ) => {
+	fetchMock.once( matcher, new Promise( () => {} ) );
 };
 
 /**
