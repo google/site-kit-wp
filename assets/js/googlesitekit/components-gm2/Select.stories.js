@@ -28,8 +28,8 @@ import { __ } from '@wordpress/i18n';
 import { Option, Select } from 'googlesitekit-components';
 
 function Template( args ) {
-	const { children, ...other } = args;
-	return <Select { ...other }>{ children }</Select>;
+	const { children, ...rest } = args;
+	return <Select { ...rest }>{ children }</Select>;
 }
 
 export const Default = Template.bind( {} );

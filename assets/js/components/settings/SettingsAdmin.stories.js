@@ -72,4 +72,5 @@ export const Default = Template.bind( {} );
 export default {
 	title: 'Components/SettingsAdmin',
 	component: SettingsAdmin,
+	parameters: { padding: 0 },
 };

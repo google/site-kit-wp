@@ -29,10 +29,10 @@ import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
 
 function Template( args ) {
-	const { children, ...other } = args;
+	const { children, ...rest } = args;
 	return (
 		<p>
-			<Link { ...other }>{ children }</Link>
+			<Link { ...rest }>{ children }</Link>
 		</p>
 	);
 }
@@ -219,98 +219,40 @@ DisabledLink.args = {
 };
 
 export function VRTStory() {
+	const linkStories = [
+		Default,
+		DefaultLinkHovered,
+		Secondary,
+		SecondaryLinkHovered,
+		LinkButton,
+		LinkButtonHovered,
+		LinkButtonWithIconPrefix,
+		LinkButtonWithIconPrefixHovered,
+		LinkButtonWithIconSuffix,
+		LinkButtonWithIconSuffixHovered,
+		SecondaryLinkButton,
+		SecondaryLinkButtonHovered,
+		SecondaryLinkButtonWithIconPrefix,
+		SecondaryLinkButtonWithIconPrefixHovered,
+		SmallLink,
+		InverseLink,
+		BackLink,
+		ExternalLink,
+		ExternalLinkWithVisuallyHiddenContent,
+		AllCapsLink,
+		AllCapsLinkWithArrow,
+		InverseAllCapsLinkWithArrow,
+		DangerLink,
+		DisabledLink,
+	];
+
 	return (
 		<div>
-			<p>
-				<Default { ...Default.args } />
-			</p>
-			<p>
-				<DefaultLinkHovered { ...DefaultLinkHovered.args } />
-			</p>
-			<p>
-				<Secondary { ...Secondary.args } />
-			</p>
-			<p>
-				<SecondaryLinkHovered { ...SecondaryLinkHovered.args } />
-			</p>
-			<p>
-				<LinkButton { ...LinkButton.args } />
-			</p>
-			<p>
-				<LinkButtonHovered { ...LinkButtonHovered.args } />
-			</p>
-			<p>
-				<LinkButtonWithIconPrefix
-					{ ...LinkButtonWithIconPrefix.args }
-				/>
-			</p>
-			<p>
-				<LinkButtonWithIconPrefixHovered
-					{ ...LinkButtonWithIconPrefixHovered.args }
-				/>
-			</p>
-			<p>
-				<LinkButtonWithIconSuffix
-					{ ...LinkButtonWithIconSuffix.args }
-				/>
-			</p>
-			<p>
-				<LinkButtonWithIconSuffixHovered
-					{ ...LinkButtonWithIconSuffixHovered.args }
-				/>
-			</p>
-			<p>
-				<SecondaryLinkButton { ...SecondaryLinkButton.args } />
-			</p>
-			<p>
-				<SecondaryLinkButtonHovered
-					{ ...SecondaryLinkButtonHovered.args }
-				/>
-			</p>
-			<p>
-				<SecondaryLinkButtonWithIconPrefix
-					{ ...SecondaryLinkButtonWithIconPrefix.args }
-				/>
-			</p>
-			<p>
-				<SecondaryLinkButtonWithIconPrefixHovered
-					{ ...SecondaryLinkButtonWithIconPrefixHovered.args }
-				/>
-			</p>
-			<p>
-				<SmallLink { ...SmallLink.args } />
-			</p>
-			<p>
-				<InverseLink { ...InverseLink.args } />
-			</p>
-			<p>
-				<BackLink { ...BackLink.args } />
-			</p>
-			<p>
-				<ExternalLink { ...ExternalLink.args } />
-			</p>
-			<p>
-				<ExternalLinkWithVisuallyHiddenContent
-					{ ...ExternalLinkWithVisuallyHiddenContent.args }
-				/>
-			</p>
-			<p>
-				<AllCapsLink { ...AllCapsLink.args } />
-			</p>
-			<p>
-				<AllCapsLinkWithArrow { ...AllCapsLinkWithArrow.args } />
-			</p>
-			<p>
-				<InverseAllCapsLinkWithArrow
-					{ ...InverseAllCapsLinkWithArrow.args }
-				/>
-			</p>
-			<p>
-				<DangerLink { ...DangerLink.args } />
-			</p>
-			<p>
-				<DisabledLink { ...DisabledLink.args } />
-			</p>
+			{ linkStories.map( ( Story, index ) => (
+				<p key={ index }>
+					<Story { ...Story.args } />
+				</p>
+			) ) }
 		</div>
 	);
 }

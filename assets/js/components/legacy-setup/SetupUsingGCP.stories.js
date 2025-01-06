@@ -22,40 +22,47 @@
 import SetupUsingGCP from './../../components/legacy-setup/SetupUsingGCP';
 import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 import {
-	createTestRegistry,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	WithTestRegistry,
 } from './../../../../tests/js/utils';
 import { Provider as ViewContextProvider } from './../../components/Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from './../../googlesitekit/constants';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 function Template() {
-	const registry = createTestRegistry();
-	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
-
-	global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
-	global._googlesitekitLegacyData.setup.isAuthenticated = false;
-	global._googlesitekitLegacyData.setup.isVerified = false;
-	global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
-
-	provideUserAuthentication( registry, {
-		authenticated: false,
-	} );
-
-	provideUserCapabilities( registry );
-
-	return (
-		<WithTestRegistry registry={ registry }>
-			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<SetupUsingGCP />
-			</ViewContextProvider>
-		</WithTestRegistry>
-	);
+	return <SetupUsingGCP />;
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetTracking( { enabled: false } );
+
+			global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
+			global._googlesitekitLegacyData.setup.isAuthenticated = false;
+			global._googlesitekitLegacyData.setup.isVerified = false;
+			global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
+
+			provideUserAuthentication( registry, {
+				authenticated: false,
+			} );
+
+			provideUserCapabilities( registry );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+					<Story />
+				</ViewContextProvider>
+			</WithRegistrySetup>
+		);
+	},
+];
 Default.scenario = {
 	label: 'Setup / Using GCP/Step One',
 };

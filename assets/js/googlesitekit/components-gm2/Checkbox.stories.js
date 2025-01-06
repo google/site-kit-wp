@@ -51,7 +51,7 @@ function InteractiveTemplate( props ) {
 export const Default = Template.bind( {} );
 Default.args = {
 	id: 'googlesitekit-checkbox-1',
-	name: 'googlesitekit__checkbox',
+	name: 'googlesitekit__checkbox-1',
 	value: 'value-1',
 	label: 'Default Checkbox',
 };
@@ -124,35 +124,26 @@ WithBadge.args = {
 };
 
 export function VRTStory() {
+	// The loading spinner uses a GIF rather than CSS animation therefore we can't
+	// pause the animation for VRTs, so we don't include the `Loading` version of
+	// the checkbox in this list.
+	const checkboxStories = [
+		Default,
+		Checked,
+		Disabled,
+		ComplexLabel,
+		Interactive,
+		WithDescription,
+		WithBadge,
+	];
+
 	return (
 		<div>
-			<div>
-				<Default { ...Default.args } />
-			</div>
-			<div>
-				<Checked { ...Checked.args } />
-			</div>
-			<div>
-				<Disabled { ...Disabled.args } />
-			</div>
-			<div>
-				{ /* The loading spinner uses a GIF rather than CSS animation therefore we can't
-				     pause the animation for VRTs so we don't show this version of the checkbox
-					 in the VRT. */ }
-				{ /* <Loading { ...Loading.args } /> */ }
-			</div>
-			<div>
-				<ComplexLabel { ...ComplexLabel.args } />
-			</div>
-			<div>
-				<Interactive { ...Interactive.args } />
-			</div>
-			<div>
-				<WithDescription { ...WithDescription.args } />
-			</div>
-			<div>
-				<WithBadge { ...WithBadge.args } />
-			</div>
+			{ checkboxStories.map( ( CheckboxStory, index ) => (
+				<div key={ index }>
+					<CheckboxStory { ...CheckboxStory.args } />
+				</div>
+			) ) }
 		</div>
 	);
 }
@@ -161,6 +152,6 @@ VRTStory.storyName = 'All Checkboxes VRT';
 VRTStory.scenario = {};
 
 export default {
-	title: 'Components/Material 2/Checkboxes',
+	title: 'Components/Checkboxes',
 	component: Checkbox,
 };

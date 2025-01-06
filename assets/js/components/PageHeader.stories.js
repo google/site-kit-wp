@@ -68,6 +68,6 @@ VRTStory.scenario = {
 };
 
 export default {
-	title: 'Global/PageHeader',
+	title: 'Global/Page Headers',
 	component: PageHeader,
 };

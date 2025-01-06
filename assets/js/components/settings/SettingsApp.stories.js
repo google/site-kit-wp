@@ -17,37 +17,19 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { Tab, TabBar } from 'googlesitekit-components';
 import Layout from '../layout/Layout';
 import SettingsApp from './SettingsApp';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 
 function Template() {
 	return (
 		<Layout>
-			<TabBar activeIndex={ 0 } handleActiveIndexUpdate={ null }>
-				<Tab>
-					<span className="mdc-tab__text-label">
-						{ __( 'Connected Services', 'google-site-kit' ) }
-					</span>
-				</Tab>
-				<Tab>
-					<span className="mdc-tab__text-label">
-						{ __( 'Connect More Services', 'google-site-kit' ) }
-					</span>
-				</Tab>
-				<Tab>
-					<span className="mdc-tab__text-label">
-						{ __( 'Admin Settings', 'google-site-kit' ) }
-					</span>
-				</Tab>
-			</TabBar>
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+				<SettingsApp />
+			</ViewContextProvider>
 		</Layout>
 	);
 }
@@ -56,7 +38,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Settings/Settings Tabs',
-	delay: 3000,
+	delay: 3000, // Wait for tabs to animate.
 };
 
 export default {

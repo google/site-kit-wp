@@ -1,7 +1,7 @@
 /**
  * Button Component Stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,55 +126,34 @@ DisabledCalloutErrorButton.args = {
 };
 
 export function VRTStory() {
+	const buttonStories = [
+		DefaultButton,
+		LinkButton,
+		DangerButton,
+		DisabledButton,
+		TertiaryButton,
+		CalloutButton,
+		CalloutWarningButton,
+		CalloutErrorButton,
+		DisabledCalloutButton,
+		DisabledCalloutWarningButton,
+		DisabledCalloutErrorButton,
+		IconButton,
+	];
+
 	return (
 		<div>
-			<p>
-				<DefaultButton { ...DefaultButton.args } />
-			</p>
-			<p>
-				<LinkButton { ...LinkButton.args } />
-			</p>
-			<p>
-				<DangerButton { ...DangerButton.args } />
-			</p>
-			<p>
-				<DisabledButton { ...DisabledButton.args } />
-			</p>
-			<p>
-				<TertiaryButton { ...TertiaryButton.args } />
-			</p>
-			<p>
-				<CalloutButton { ...CalloutButton.args } />
-			</p>
-			<p>
-				<CalloutWarningButton { ...CalloutWarningButton.args } />
-			</p>
-			<p>
-				<CalloutErrorButton { ...CalloutErrorButton.args } />
-			</p>
-			<p>
-				<DisabledCalloutButton { ...DisabledCalloutButton.args } />
-			</p>
-			<p>
-				<DisabledCalloutWarningButton
-					{ ...DisabledCalloutWarningButton.args }
-				/>
-			</p>
-			<p>
-				<DisabledCalloutErrorButton
-					{ ...DisabledCalloutErrorButton.args }
-				/>
-			</p>
-			<p>
-				<IconButton { ...IconButton.args } />
-			</p>
+			{ buttonStories.map( ( ButtonStory, index ) => (
+				<p key={ index }>
+					<ButtonStory { ...ButtonStory.args } />
+				</p>
+			) ) }
 		</div>
 	);
 }
 VRTStory.storyName = 'All Buttons VRT';
 VRTStory.scenario = {
 	label: 'Global/Buttons',
-	delay: 3000,
 	hoverSelector: '.googlesitekit-button--icon',
 	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
