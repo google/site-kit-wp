@@ -29,8 +29,6 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
@@ -86,8 +84,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
-	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
 		if ( ! hideCTABanner ) {
@@ -139,9 +136,6 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 		if ( error ) {
 			setSaveError( error );
 			setConsentModeEnabled( false );
-		} else {
-			await dismissPrompt( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG );
-			navigateTo( `${ settingsURL }#/admin-settings` );
 		}
 	};
 
@@ -182,6 +176,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 							'Enable consent mode',
 							'google-site-kit'
 						) }
+						ctaLink={ `${ settingsURL }#/admin-settings` }
 						onCTAClick={ handleCTAClick }
 						dismissLabel={
 							isDismissalFinal
