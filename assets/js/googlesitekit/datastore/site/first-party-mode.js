@@ -109,7 +109,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveFirstPartyModeSettings() {
-		const { select, dispatch } = yield commonActions.getRegistry();
+		const { dispatch, select } = yield commonActions.getRegistry();
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
 		const results =
