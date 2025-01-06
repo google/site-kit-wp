@@ -97,7 +97,9 @@ Default.args = {
 		provideAdSenseMockReports( registry, storyReportOptions );
 	},
 };
-Default.scenario = {};
+Default.scenario = {
+	label: 'AdSense Module/Overview Widget',
+};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -112,7 +114,6 @@ Loading.args = {
 		} );
 	},
 };
-Loading.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -129,7 +130,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -154,7 +154,6 @@ Error.args = {
 		provideAdSenseMockReports( registry, remainingReportOptions );
 	},
 };
-Error.scenario = {};
 
 export default {
 	title: 'Modules/AdSense/Widgets/ModuleOverviewWidget',

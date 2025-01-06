@@ -47,8 +47,7 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {};
-Default.parameters = {};
+
 export default {
 	title: 'Modules/PageSpeed Insights/Settings/SettingsView',
 	decorators: [

@@ -71,7 +71,6 @@ Default.args = {
 		provideSearchConsoleMockReports( registry, reportOptions );
 	},
 };
-Default.scenario = {};
 
 export const ViewOnly = Template.bind( {} );
 ViewOnly.storyName = 'View-Only';
@@ -81,7 +80,6 @@ ViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -96,7 +94,6 @@ Loading.args = {
 		} );
 	},
 };
-Loading.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -115,7 +112,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -140,7 +136,6 @@ Error.args = {
 		provideSearchConsoleMockReports( registry, remainingReportOptions );
 	},
 };
-Error.scenario = {};
 
 export default {
 	title: 'Modules/SearchConsole/Widgets/DashboardPopularKeywordsWidget',

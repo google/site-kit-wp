@@ -37,7 +37,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {};
 
 export default {
 	title: 'Modules/Adsense/Components/UserProfile',

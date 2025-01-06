@@ -91,7 +91,6 @@ Default.args = {
 			.receiveGetSettings( defaultSettings );
 	},
 };
-Default.scenario = {};
 
 export const NoAccounts = Template.bind( {} );
 NoAccounts.storyName = 'No Accounts';
@@ -103,7 +102,6 @@ NoAccounts.args = {
 			.receiveGetSettings( defaultSettings );
 	},
 };
-NoAccounts.scenario = {};
 
 export const SetupNewAccount = Template.bind( {} );
 SetupNewAccount.storyName = 'Set Up New Account';
@@ -118,7 +116,6 @@ SetupNewAccount.args = {
 			.receiveGetSettings( defaultSettings );
 	},
 };
-SetupNewAccount.scenario = {};
 
 export default {
 	title: 'Modules/TagManager/Components/Settings/SettingsForm',

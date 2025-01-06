@@ -364,7 +364,7 @@ function Template() {
 
 export const DefaultToken = Template.bind( {} );
 DefaultToken.scenario = {
-	label: 'Global/Tokens/Default Token',
+	label: 'Global Tokens/undefined',
 };
 
 export default {

@@ -44,7 +44,6 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {};
 
 export default {
 	title: 'Modules/TagManager/Components/AMPContainerSelect',

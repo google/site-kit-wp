@@ -55,14 +55,12 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( {} );
 WithoutModuleAccess.storyName = 'Without Module Access';
 WithoutModuleAccess.args = {
 	hasModuleAccess: false,
 };
-WithoutModuleAccess.scenario = {};
 
 export default {
 	title: 'Modules/SearchConsole/Components/Settings/SettingsForm',

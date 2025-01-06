@@ -99,7 +99,6 @@ Default.args = {
 		setUpAdUnits( registry );
 	},
 };
-Default.scenario = {};
 
 export const ExistingTagSameAccount = Template.bind( {} );
 ExistingTagSameAccount.storyName = 'Existing Tag (Same Account)';
@@ -114,7 +113,6 @@ ExistingTagSameAccount.args = {
 		setUpAdUnits( registry );
 	},
 };
-ExistingTagSameAccount.scenario = {};
 
 export const ExistingTagDifferentAccount = Template.bind( {} );
 ExistingTagDifferentAccount.storyName = 'Existing Tag (Different Account)';
@@ -129,7 +127,6 @@ ExistingTagDifferentAccount.args = {
 		setUpAdUnits( registry );
 	},
 };
-ExistingTagDifferentAccount.scenario = {};
 
 export default {
 	title: 'Modules/AdSense/Components/Settings/SettingsForm',

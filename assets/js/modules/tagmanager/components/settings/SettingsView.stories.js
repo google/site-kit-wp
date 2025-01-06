@@ -70,7 +70,6 @@ Default.args = {
 		} );
 	},
 };
-Default.scenario = {};
 
 export const ExistingTag = Template.bind( {} );
 ExistingTag.storyName = 'Existing Tag';
@@ -89,7 +88,6 @@ ExistingTag.args = {
 			.receiveGetExistingTag( 'GTM-G000GL3' );
 	},
 };
-ExistingTag.scenario = {};
 
 export default {
 	title: 'Modules/TagManager/Components/Settings/SettingsView',

@@ -92,7 +92,6 @@ SetupIncomplete.args = {
 		} );
 	},
 };
-SetupIncomplete.scenario = {};
 
 export const SetupComplete = Template.bind( {} );
 SetupComplete.storyName = 'Setup Complete';
@@ -103,7 +102,6 @@ SetupComplete.args = {
 			.receiveGetSettings( completeSettings );
 	},
 };
-SetupComplete.scenario = {};
 
 export const AdBlockingRecoveryNotPlaced = Template.bind( {} );
 AdBlockingRecoveryNotPlaced.storyName = 'Ad Blocking Recovery Not Placed';
@@ -116,7 +114,6 @@ AdBlockingRecoveryNotPlaced.args = {
 		} );
 	},
 };
-AdBlockingRecoveryNotPlaced.scenario = {};
 
 export const AdBlockingRecoveryPlaced = Template.bind( {} );
 AdBlockingRecoveryPlaced.storyName = 'Ad Blocking Recovery Placed';
@@ -129,7 +126,6 @@ AdBlockingRecoveryPlaced.args = {
 		} );
 	},
 };
-AdBlockingRecoveryPlaced.scenario = {};
 
 export default {
 	title: 'Modules/AdSense/Components/Settings/SettingsView',
