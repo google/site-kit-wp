@@ -34,23 +34,6 @@ function Template() {
 
 export const AuthenticationError = Template.bind( {} );
 AuthenticationError.storyName = 'AuthError';
-AuthenticationError.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-
-		const authError = {
-			code: 'missing_delegation_consent',
-			status: 401,
-			message:
-				'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.',
-			data: {
-				reconnectURL: 'https://example.com/',
-			},
-		};
-
-		registry.dispatch( CORE_USER ).setAuthError( authError );
-	},
-};
 AuthenticationError.scenario = {
 	label: 'Components/Notifications/Banners/AuthError',
 };
@@ -58,9 +41,21 @@ AuthenticationError.scenario = {
 export default {
 	title: 'Components/Notifications/Banners',
 	decorators: [
-		( Story, { args } ) => {
+		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				args.setupRegistry( registry );
+				provideUserAuthentication( registry );
+
+				const authError = {
+					code: 'missing_delegation_consent',
+					status: 401,
+					message:
+						'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.',
+					data: {
+						reconnectURL: 'https://example.com/',
+					},
+				};
+
+				registry.dispatch( CORE_USER ).setAuthError( authError );
 			};
 
 			return (
