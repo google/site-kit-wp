@@ -65,7 +65,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 10, $this->module->order );
 	}
 
-	public function test_render_signin_button() {
+	public function test_render_signinwithgoogle() {
 		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
