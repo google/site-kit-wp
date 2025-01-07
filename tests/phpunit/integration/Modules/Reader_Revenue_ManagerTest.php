@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
@@ -484,6 +485,50 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertNotWPError( $access );
 		$this->assertEquals( false, $access );
+	}
+
+	public function test_block_editor_script_enqueued() {
+		Feature_Flags::set_features(
+			array(
+				'rrmModuleV2',
+			)
+		);
+		add_filter(
+			'googlesitekit_is_feature_enabled',
+			function ( $enabled, $feature_name ) {
+				return 'rrmModuleV2' === $feature_name;
+			},
+			10,
+			2
+		);
+
+		$registerable_scripts_with_feature = $this->reader_revenue_manager->get_assets();
+
+		$this->assertIsArray( $registerable_scripts_with_feature );
+
+		$rrm_block_editor_script = array_filter(
+			$registerable_scripts_with_feature,
+			function ( $script ) {
+				return 'googlesitekit-reader-revenue-manager-block-editor.js' === $script->get_handle();
+			}
+		);
+
+		$this->assertNotEmpty( $rrm_block_editor_script );
+	}
+
+	public function test_block_editor_script_not_enqueued() {
+		$registerable_scripts_without_feature = $this->reader_revenue_manager->get_assets();
+
+		$this->assertIsArray( $registerable_scripts_without_feature );
+
+		$rrm_block_editor_script = array_filter(
+			$registerable_scripts_without_feature,
+			function ( $script ) {
+				return 'googlesitekit-reader-revenue-manager-block-editor.js' === $script->get_handle();
+			}
+		);
+
+		$this->assertEmpty( $rrm_block_editor_script );
 	}
 
 	/**
