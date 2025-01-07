@@ -330,6 +330,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'shape' => $settings['shape'],
 		);
 
+		// Whether buttons will be rendered/transformed on this page.
+		$render_buttons = $is_wp_login || $is_woo_commerce_login;
+
 		// Render the Sign in with Google button and related inline styles.
 		print(
 			// Purposely not translated as this is a technical comment.
@@ -341,14 +344,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		ob_start();
 		?>
 ( () => {
-	const parent = document.createElement( 'div' );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const parent = document.createElement( 'div' );
 
-	<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
+		<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
@@ -372,17 +377,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		library_name: 'Site-Kit',
 	} );
 
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	google.accounts.id.prompt();
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.prompt();
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	const expires = new Date();
-	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $render_buttons && ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const expires = new Date();
+		expires.setTime( expires.getTime() + 1000 * 60 * 5 );
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
 		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );
