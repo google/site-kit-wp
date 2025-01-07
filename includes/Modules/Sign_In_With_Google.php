@@ -129,8 +129,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
-		// (Potentially) render the Sign in with Google button on all pages.
-		add_action( 'wp_footer', $this->get_method_proxy( 'render_signin_button' ) );
+		// (Potentially) render the Sign in with Google script tags/buttons.
+		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
+		// Output the Sign in with Google JS on the WordPress login page.
+		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
 
 		// Delete client ID stored from previous module connection on module reconnection.
 		add_action(
@@ -286,11 +288,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Renders the sign in button.
+	 * Renders the Sign in with Google JS script tags, One-tap code, and
+	 * buttons.
 	 *
 	 * @since 1.139.0
+	 * @since n.e.x.t Renamed to `render_signinwithgoogle` and conditionally
+	 *                rendered the code to replace buttons.
 	 */
-	private function render_signin_button() {
+	private function render_signinwithgoogle() {
 		global $wp;
 		$is_wp_login           = is_login();
 		$is_woo_commerce_login = 'my-account' === $wp->request;
