@@ -21,6 +21,11 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { ENUM_CONVERSION_EVENTS } from '../../../modules/analytics-4/datastore/constants';
+
 export const USER_INPUT_QUESTIONS_PURPOSE = 'purpose';
 export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';
 export const USER_INPUT_QUESTIONS_GOALS = 'goals';
@@ -46,13 +51,35 @@ export const USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY =
 	'user-input-legacy-site-purpose-dismissed-item';
 
 export const USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING = {
-	publish_blog: [ 'contact', 'generate_lead', 'submit_lead_form' ],
-	publish_news: [ 'contact', 'generate_lead', 'submit_lead_form' ],
+	publish_blog: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
+	publish_news: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
 	monetize_content: [],
-	sell_products_or_service: [ 'purchase', 'add_to_cart' ],
-	sell_products: [ 'purchase', 'add_to_cart' ],
-	provide_services: [ 'contact', 'generate_lead', 'submit_lead_form' ],
-	share_portfolio: [ 'contact', 'generate_lead', 'submit_lead_form' ],
+	sell_products_or_service: [
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	],
+	sell_products: [
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	],
+	provide_services: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
+	share_portfolio: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
 };
 
 /**
