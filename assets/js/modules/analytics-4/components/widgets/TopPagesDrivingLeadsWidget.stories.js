@@ -18,7 +18,10 @@
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../datastore/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -47,7 +50,7 @@ const reportOptions = {
 	dimensionFilters: {
 		eventName: {
 			filterType: 'inListFilter',
-			value: [ 'submit_lead_form' ],
+			value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 		},
 	},
 	metrics: [ { name: 'eventCount' } ],
@@ -239,7 +242,9 @@ export default {
 					.setWebDataStreamID( webDataStreamID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'submit_lead_form' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 

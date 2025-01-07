@@ -23,9 +23,9 @@ import {
 	createTestRegistry,
 	provideModules,
 	WithTestRegistry,
-} from '../tests/js/utils';
-import { createModuleStore } from '../assets/js/googlesitekit/modules/create-module-store';
-import ReportZero from '../assets/js/components/ReportZero';
+} from './../../../tests/js/utils';
+import { createModuleStore } from './../googlesitekit/modules/create-module-store';
+import ReportZero from './ReportZero';
 
 export function ReportZeroStory() {
 	return <ReportZero moduleSlug="test-module" />;
@@ -54,5 +54,5 @@ ReportZeroStory.decorators = [
 ];
 
 export default {
-	title: 'Global',
+	title: 'Components/ReportZero',
 };

@@ -20,6 +20,7 @@
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
+	color: $c-content-on-primary-container;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
@@ -37,7 +38,6 @@
 	}
 
 	.googlesitekit-subtle-notification__content {
-		color: $c-content-on-primary-container;
 		font-family: $f-primary;
 		font-size: $fs-title-md;
 		font-weight: $fw-medium;

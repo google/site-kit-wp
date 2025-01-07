@@ -1,7 +1,7 @@
 /**
- * ProgressBar Component Stories.
+ * Utility to filter out Analytics report rows which don't have a value set.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
+export function reportRowsWithSetValues( rows, maxRows = 3 ) {
+	const rowsWithSetValues = rows.filter(
+		( { dimensionValues } ) => dimensionValues[ 0 ].value !== '(not set)'
+	);
 
-/**
- * Internal dependencies
- */
-import { ProgressBar } from 'googlesitekit-components';
-
-storiesOf( 'Global', module ).add( 'Progress Bars', () => (
-	<div>
-		<p>Default</p>
-		<ProgressBar />
-		<p>Small</p>
-		<ProgressBar small />
-		<p>Small Compress</p>
-		<ProgressBar small compress />
-	</div>
-) );
+	return rowsWithSetValues.slice( 0, maxRows );
+}

@@ -38,7 +38,10 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../modules/analytics-4/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -90,7 +93,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveConversionReportingInlineData( {
-				newEvents: [ 'contact' ],
+				newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 				lostEvents: [],
 			} );
 
@@ -101,7 +104,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'contact' ] );
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -156,7 +159,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			// Current site purpose is `publish_blog` which includes KMW from `contact`, `generate_lead` and `submit_lead_form` events.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'add_to_cart' ] );
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
@@ -184,7 +187,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					scope: 'site',
 				},
 				includeConversionEvents: {
-					values: [ 'contact' ],
+					values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 					scope: 'site',
 				},
 			} );
@@ -218,7 +221,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			// other events will not add any ACR KMW, hence callout should not surface.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'purchase' ] );
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 			const { container, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -304,7 +307,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						scope: 'site',
 					},
 					includeConversionEvents: {
-						values: [ 'contact' ],
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						scope: 'site',
 					},
 				},
@@ -372,7 +375,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 2 );
 			expect(
 				userInputSettings?.includeConversionEvents?.values
-			).toEqual( [ 'contact' ] );
+			).toEqual( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
 			expect( newMetrics ).toEqual( [
 				KM_ANALYTICS_TOP_CATEGORIES,
@@ -655,12 +658,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'contact', 'purchase' ] );
+				.setDetectedEvents( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+				] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveConversionReportingInlineData( {
-					newEvents: [ 'purchase' ],
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 					lostEvents: [],
 				} );
 
@@ -721,7 +727,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						scope: 'site',
 					},
 					includeConversionEvents: {
-						values: [ 'contact' ],
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						scope: 'site',
 					},
 				} );
@@ -738,12 +744,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// are associated with either `contact`, `generate_lead` or `submit_lead_form` events.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'generate_lead' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'generate_lead' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
 						lostEvents: [],
 					} );
 
@@ -795,19 +804,22 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						scope: 'site',
 					},
 					includeConversionEvents: {
-						values: [ 'contact' ],
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						scope: 'site',
 					},
 				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						lostEvents: [],
 					} );
 
@@ -846,7 +858,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						scope: 'site',
 					},
 					includeConversionEvents: {
-						values: [ 'purchase' ],
+						values: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						scope: 'site',
 					},
 				} );
@@ -864,7 +876,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// user saving site purpose with `purchase`, or adding `purchase` metrics during initial events detection.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'purchase' ] );
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 				const currentMetrics = registry
 					.select( CORE_USER )
@@ -886,11 +898,14 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// After initial events, `add_to_cart` has been detected.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'purchase', 'add_to_cart' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'add_to_cart' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 						lostEvents: [],
 					} );
 
@@ -933,7 +948,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						scope: 'site',
 					},
 					includeConversionEvents: {
-						values: [ 'contact' ],
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						scope: 'site',
 					},
 				} );
@@ -948,12 +963,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						lostEvents: [],
 					} );
 
@@ -987,12 +1005,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'generate_lead' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'generate_lead' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
 						lostEvents: [],
 					} );
 
@@ -1035,12 +1056,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						lostEvents: [],
 					} );
 
@@ -1084,12 +1108,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'add_to_cart' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'contact' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						lostEvents: [],
 					} );
 
