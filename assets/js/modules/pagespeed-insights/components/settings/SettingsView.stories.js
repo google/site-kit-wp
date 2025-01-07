@@ -45,7 +45,7 @@ function Template() {
 	);
 }
 
-export const Default = Template.bind( null );
+export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 
 export default {
