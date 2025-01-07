@@ -27,9 +27,9 @@ import { useCallback } from '@wordpress/element';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 
-export default function useNotificationEvents( id ) {
+export default function useNotificationEvents( id, category ) {
 	const viewContext = useViewContext();
-	const eventCategory = `${ viewContext }_${ id }`;
+	const eventCategory = category ?? `${ viewContext }_${ id }`;
 
 	const view = useCallback(
 		( ...args ) => {

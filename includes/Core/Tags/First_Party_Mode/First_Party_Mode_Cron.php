@@ -29,14 +29,26 @@ class First_Party_Mode_Cron {
 	private $cron_callback;
 
 	/**
+	 * First_Party_Mode_Settings instance.
+	 *
+	 * @var First_Party_Mode_Settings
+	 */
+	private $first_party_mode_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.142.0
 	 *
-	 * @param callable $callback Function to call on the cron action.
+	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
+	 * @param callable                  $callback                  Function to call on the cron action.
 	 */
-	public function __construct( callable $callback ) {
-		$this->cron_callback = $callback;
+	public function __construct(
+		First_Party_Mode_Settings $first_party_mode_settings,
+		callable $callback
+	) {
+		$this->first_party_mode_settings = $first_party_mode_settings;
+		$this->cron_callback             = $callback;
 	}
 
 	/**
@@ -54,7 +66,14 @@ class First_Party_Mode_Cron {
 	 * @since 1.142.0
 	 */
 	public function maybe_schedule_cron() {
-		if ( ! wp_next_scheduled( self::CRON_ACTION ) && ! wp_installing() ) {
+		$settings    = $this->first_party_mode_settings->get();
+		$fpm_enabled = $settings['isEnabled'];
+
+		if (
+			$fpm_enabled &&
+			! wp_next_scheduled( self::CRON_ACTION ) &&
+			! wp_installing()
+		) {
 			wp_schedule_event( time(), 'hourly', self::CRON_ACTION );
 		}
 	}

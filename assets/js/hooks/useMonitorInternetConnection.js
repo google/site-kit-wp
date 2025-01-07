@@ -53,18 +53,16 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			const connectionCheckResponse = await apiFetch( {
-				path: '/google-site-kit/v1/',
-			} );
-
-			// We are only interested if the request was successful, to
-			// confirm online status.
-			const canReachConnectionCheck = !! connectionCheckResponse;
-
-			setIsOnline( canReachConnectionCheck );
+			await apiFetch( { path: '/google-site-kit/v1/' } );
 		} catch ( err ) {
-			setIsOnline( false );
+			if ( err?.code === 'fetch_error' ) {
+				setIsOnline( false );
+				return;
+			}
 		}
+		// If the request succeeded or failed for any other reason,
+		// we should still be online.
+		setIsOnline( true );
 	}, [ setIsOnline ] );
 
 	useLifecycles(

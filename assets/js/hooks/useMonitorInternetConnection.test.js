@@ -177,4 +177,21 @@ describe( 'useMonitorInternetConnection', () => {
 
 		expect( fetchMock ).toHaveFetchedTimes( 1 );
 	} );
+
+	it( 'should set offline status when a fetch_error occurs', async () => {
+		fetchMock.getOnce( connectionCheckEndpoint, {
+			throws: { code: 'fetch_error' },
+		} );
+
+		renderHook( () => useMonitorInternetConnection(), { registry } );
+		mockOnlineStatus( true );
+
+		await act( async () => {
+			global.window.dispatchEvent( new Event( 'online' ) );
+			await waitForTimeouts( 100 );
+		} );
+
+		expect( store.getState().isOnline ).toBe( false );
+		expect( fetchMock ).toHaveFetched( connectionCheckEndpoint );
+	} );
 } );

@@ -30,6 +30,10 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from './datastore/constants';
+import {
+	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+} from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
 import {
@@ -51,12 +55,13 @@ import GatheringDataNotification from '../../components/notifications/GatheringD
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
+import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
+import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { isFeatureEnabled } from '../../features';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from './constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -190,6 +195,41 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: false,
 	},
+	setup_plugin_error: {
+		Component: SetupErrorMessageNotification,
+		priority: 140,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const temporaryPersistedPermissionsError = select(
+				CORE_FORMS
+			).getValue(
+				FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+				'permissionsError'
+			);
+
+			if (
+				temporaryPersistedPermissionsError?.data
+					?.skipDefaultErrorNotifications
+			) {
+				return false;
+			}
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+	},
 	'top-earning-pages-success-notification': {
 		Component: GA4AdSenseLinkedNotification,
 		priority: 10,
@@ -199,30 +239,24 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			await Promise.all( [
-				// The getAdSenseLinked selector relies on the resolution
-				// of the getSettings() resolver.
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
+			const adSenseModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'adsense' );
 
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'adsense' );
+			const analyticsModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
-			const analyticsModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 
 			const isAdSenseLinked =
 				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
-			const analyticsAndAdsenseConnectedAndLinked =
-				adSenseModuleConnected &&
-				analyticsModuleConnected &&
-				isAdSenseLinked;
-
-			if ( ! analyticsAndAdsenseConnectedAndLinked ) {
+			if ( ! isAdSenseLinked ) {
 				return false;
 			}
 
@@ -259,10 +293,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			// we show them a different notification and should not show this one. Check
 			// to see if the user already has data and dismiss this notification without
 			// showing it.
-			if (
-				isZeroReport( report ) === false &&
-				analyticsAndAdsenseConnectedAndLinked
-			) {
+			if ( isZeroReport( report ) === false ) {
 				await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
 					'top-earning-pages-success-notification'
 				);
@@ -452,19 +483,52 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
 				return false;
 			}
 
-			const { isModuleConnected } = select( CORE_MODULES );
+			const isFPMModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
-			if (
-				! (
-					isModuleConnected( 'analytics-4' ) ||
-					isModuleConnected( 'ads' )
-				)
-			) {
+			if ( ! isFPMModuleConnected ) {
+				return false;
+			}
+
+			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+
+			const {
+				isFirstPartyModeEnabled,
+				isFPMHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
+
+			if ( isFirstPartyModeEnabled() ) {
+				return false;
+			}
+
+			const isHealthy = isFPMHealthy();
+			const isAccessEnabled = isScriptAccessEnabled();
+
+			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
+				dispatch( CORE_SITE ).fetchGetFPMServerRequirementStatus();
+				return false;
+			}
+
+			return isHealthy && isAccessEnabled;
+		},
+		isDismissible: true,
+	},
+	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
+		Component: FirstPartyModeWarningNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const isFPMModuleConnected =
+				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
+
+			if ( ! isFPMModuleConnected ) {
 				return false;
 			}
 
@@ -477,9 +541,8 @@ export const DEFAULT_NOTIFICATIONS = {
 			} = select( CORE_SITE );
 
 			return (
-				! isFirstPartyModeEnabled() &&
-				isFPMHealthy() &&
-				isScriptAccessEnabled()
+				isFirstPartyModeEnabled() &&
+				( ! isFPMHealthy() || ! isScriptAccessEnabled() )
 			);
 		},
 		isDismissible: true,

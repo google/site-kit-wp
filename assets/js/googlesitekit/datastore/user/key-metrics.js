@@ -60,6 +60,7 @@ import {
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_WIDGETS } from '../../widgets/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '../../../modules/analytics-4/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -102,16 +103,6 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	validateParams: ( settings ) => {
 		invariant( isPlainObject( settings ), 'Settings should be an object.' );
 	},
-} );
-
-const fetchResetKeyMetricsSelectionStore = createFetchStore( {
-	baseName: 'resetKeyMetricsSelection',
-	controlCallback: () =>
-		API.set( 'core', 'user', 'reset-key-metrics-selection' ),
-	reducerCallback: ( state, keyMetricsSettings ) => ( {
-		...state,
-		keyMetricsSettings,
-	} ),
 } );
 
 const baseActions = {
@@ -175,33 +166,6 @@ const baseActions = {
 				.setKeyMetricsSetupCompletedBy(
 					registry.select( CORE_USER ).getID()
 				);
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Resets key metrics selecton.
-	 *
-	 * @since 1.141.0
-	 *
-	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
-	 * @return {Object} Object with `response` and `error`.
-	 */
-	*resetKeyMetricsSelection( settings = {} ) {
-		invariant(
-			isPlainObject( settings ),
-			'key metric settings should be an object to save.'
-		);
-
-		yield clearError( 'resetKeyMetricsSelection', [] );
-
-		const { response, error } =
-			yield fetchResetKeyMetricsSelectionStore.actions.fetchResetKeyMetricsSelection();
-
-		if ( error ) {
-			// Store error manually since resetKeyMetricsSelection signature differs from fetchResetKeyMetricsSelectionStore.
-			yield receiveError( error, 'resetKeyMetricsSelection', [] );
 		}
 
 		return { response, error };
@@ -363,18 +327,15 @@ const baseSelectors = {
 			const hasProductPostType = postTypes.some(
 				( { slug } ) => slug === 'product'
 			);
-			const keyMetricSettings =
-				select( CORE_USER ).getKeyMetricsSettings();
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
 
 			const showConversionTailoredMetrics = ( events ) => {
 				return events.some(
 					( event ) =>
-						( Array.isArray(
-							keyMetricSettings?.includeConversionTailoredMetrics
-						) &&
-							keyMetricSettings?.includeConversionTailoredMetrics?.includes(
-								event
-							) ) ||
+						userInputSettings?.includeConversionEvents?.values?.includes(
+							event
+						) ||
 						( Array.isArray( includeConversionTailoredMetrics ) &&
 							includeConversionTailoredMetrics?.includes(
 								event
@@ -391,9 +352,9 @@ const baseSelectors = {
 					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					...( showConversionTailoredMetrics( [
-						'contact',
-						'generate_lead',
-						'submit_lead_form',
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 					] )
 						? [
 								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
@@ -409,9 +370,9 @@ const baseSelectors = {
 					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 					...( showConversionTailoredMetrics( [
-						'contact',
-						'generate_lead',
-						'submit_lead_form',
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 					] )
 						? [
 								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
@@ -433,14 +394,18 @@ const baseSelectors = {
 					hasProductPostType
 						? KM_ANALYTICS_POPULAR_PRODUCTS
 						: KM_ANALYTICS_POPULAR_CONTENT,
-					...( showConversionTailoredMetrics( [ 'purchase' ] )
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] )
 						? [
 								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 						  ]
 						: [] ),
-					...( showConversionTailoredMetrics( [ 'add_to_cart' ] )
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] )
 						? [
 								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 						  ]
@@ -453,14 +418,18 @@ const baseSelectors = {
 					hasProductPostType
 						? KM_ANALYTICS_POPULAR_PRODUCTS
 						: KM_ANALYTICS_POPULAR_CONTENT,
-					...( showConversionTailoredMetrics( [ 'purchase' ] )
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] )
 						? [
 								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 						  ]
 						: [] ),
-					...( showConversionTailoredMetrics( [ 'add_to_cart' ] )
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] )
 						? [
 								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 						  ]
@@ -471,9 +440,9 @@ const baseSelectors = {
 				],
 				provide_services: [
 					...( showConversionTailoredMetrics( [
-						'contact',
-						'generate_lead',
-						'submit_lead_form',
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 					] )
 						? [
 								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
@@ -492,9 +461,9 @@ const baseSelectors = {
 					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 					KM_ANALYTICS_POPULAR_AUTHORS,
 					...( showConversionTailoredMetrics( [
-						'contact',
-						'generate_lead',
-						'submit_lead_form',
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 					] )
 						? [
 								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
@@ -725,7 +694,6 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetKeyMetricsSettingsStore,
 	fetchSaveKeyMetricsSettingsStore,
-	fetchResetKeyMetricsSelectionStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

@@ -61,14 +61,14 @@ exports[`TopCitiesWidget renders correctly with the expected metrics 1`] = `
                 <p
                   class="googlesitekit-km-widget-tile__table-plain-text"
                 >
-                  (not set)
+                  New York
                 </p>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  466.7%
+                  433.3%
                 </strong>
               </div>
             </div>

@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,8 +36,17 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Badge from '../Badge';
 import SubtleNotification from '../notifications/SubtleNotification';
+import Link from '../Link';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
+import withIntersectionObserver from '../../util/withIntersectionObserver';
+
+const SubtleNotificationWithIntersectionObserver =
+	withIntersectionObserver( SubtleNotification );
 
 export default function FirstPartyModeToggle( { className } ) {
+	const viewContext = useViewContext();
+
 	const isFirstPartyModeEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isFirstPartyModeEnabled()
 	);
@@ -53,12 +62,32 @@ export default function FirstPartyModeToggle( { className } ) {
 	const { fetchGetFPMServerRequirementStatus, setFirstPartyModeEnabled } =
 		useDispatch( CORE_SITE );
 
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'first-party-mode-introduction'
+		);
+	} );
+
+	const serverRequirementsLearnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'first-party-mode-server-requirements'
+		);
+	} );
+
 	// Fetch the server requirement status on mount.
 	useMount( fetchGetFPMServerRequirementStatus );
 
 	const handleClick = useCallback( () => {
-		setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
-	}, [ isFirstPartyModeEnabled, setFirstPartyModeEnabled ] );
+		const action = isFirstPartyModeEnabled
+			? 'deactivate_first_party_mode'
+			: 'activate_first_party_mode';
+
+		trackEvent( `${ viewContext }_fpm-settings-toggle`, action ).finally(
+			() => {
+				setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
+			}
+		);
+	}, [ isFirstPartyModeEnabled, setFirstPartyModeEnabled, viewContext ] );
 
 	return (
 		<div
@@ -95,18 +124,64 @@ export default function FirstPartyModeToggle( { className } ) {
 				</div>
 			) }
 			<p className="googlesitekit-module-settings-group__helper-text">
-				{ __(
-					'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals.',
-					'google-site-kit'
+				{ createInterpolateElement(
+					__(
+						'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href={ learnMoreURL }
+								onClick={ () => {
+									trackEvent(
+										`${ viewContext }_fpm-settings-toggle`,
+										'click_learn_more_link'
+									);
+								} }
+								external
+								aria-label={ __(
+									'Learn more about first-party mode',
+									'google-site-kit'
+								) }
+							/>
+						),
+					}
 				) }
 			</p>
 			{ ! isLoading && ! hasMetServerRequirements && (
-				<SubtleNotification
-					title={ __(
-						'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.',
-						'google-site-kit'
+				<SubtleNotificationWithIntersectionObserver
+					title={ createInterpolateElement(
+						__(
+							'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ serverRequirementsLearnMoreURL }
+									onClick={ () => {
+										trackEvent(
+											`${ viewContext }_fpm-settings-toggle-disabled`,
+											'click_learn_more_link'
+										);
+									} }
+									external
+									aria-label={ __(
+										'Learn more about first-party mode server requirements',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
 					) }
 					variant="warning"
+					onInView={ () => {
+						trackEvent(
+							`${ viewContext }_fpm-settings-toggle-disabled`,
+							'view_notice'
+						);
+					} }
 				/>
 			) }
 		</div>

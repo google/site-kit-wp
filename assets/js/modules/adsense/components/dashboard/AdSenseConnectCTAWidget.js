@@ -64,6 +64,11 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 			ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY
 		)
 	);
+	const isDismissingItem = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem(
+			ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY
+		)
+	);
 
 	const showTooltip = useShowTooltip( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY );
 
@@ -102,7 +107,11 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 
 	// Check for `false` explicitly, as these variables will be `undefined`
 	// while loading.
-	if ( adSenseModuleConnected === false && hasDismissedWidget === false ) {
+	if (
+		adSenseModuleConnected === false &&
+		hasDismissedWidget === false &&
+		isDismissingItem === false
+	) {
 		return (
 			<Widget noPadding>
 				<AdSenseConnectCTA onDismissModule={ handleDismissModule } />

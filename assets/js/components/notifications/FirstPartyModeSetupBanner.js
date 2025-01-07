@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,6 +37,8 @@ import {
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import FPMSetupCTASVGDesktop from '../../../svg/graphics/first-party-mode-setup-banner-desktop.svg';
@@ -48,6 +50,8 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -67,13 +71,29 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
 
+	const isDismissing = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem( id )
+	);
+
 	const { dismissNotification, invalidateResolution } =
 		useDispatch( CORE_NOTIFICATIONS );
 	const { setValue } = useDispatch( CORE_UI );
 
-	const onCTAClick = () => {
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'first-party-mode-introduction'
+		);
+	} );
+
+	useEffect( () => {
+		if ( isTooltipVisible ) {
+			trackEvent( `${ viewContext }_fpm-setup-cta`, 'tooltip_view' );
+		}
+	}, [ isTooltipVisible, viewContext ] );
+
+	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
-		saveFirstPartyModeSettings();
+		await saveFirstPartyModeSettings();
 
 		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
 		invalidateResolution( 'getQueuedNotifications', [
@@ -98,13 +118,19 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ () => {
+						trackEvent(
+							`${ viewContext }_fpm-setup-cta`,
+							'tooltip_dismiss'
+						);
+					} }
 					tooltipStateKey={ id }
 				/>
 			</Fragment>
 		);
 	}
 
-	if ( isItemDismissed ) {
+	if ( isItemDismissed || isDismissing ) {
 		return null;
 	}
 
@@ -128,15 +154,21 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 					'Get more comprehensive stats by collecting metrics via your own site',
 					'google-site-kit'
 				) }
-				description={ createInterpolateElement(
-					__(
-						'Enable First-party mode (<emphasis>beta</emphasis>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
-						'google-site-kit'
-					),
-					{
-						emphasis: <em />,
-					}
-				) }
+				description={
+					<Description
+						text={ __(
+							'Enable First-party mode (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ learnMoreURL }
+							/>
+						}
+					/>
+				}
 				actions={
 					<ActionsCTALinkDismiss
 						id={ id }

@@ -38,7 +38,10 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../modules/analytics-4/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -65,10 +68,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	);
 
 	const fetchDismissNotification = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
+		'^/google-site-kit/v1/core/user/data/conversion-reporting-settings'
 	);
-	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+	const userInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
 	beforeEach( () => {
@@ -90,13 +93,26 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveConversionReportingInlineData( {
-				newEvents: [ 'contact' ],
+				newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 				lostEvents: [],
 			} );
 
+		registry.dispatch( CORE_USER ).receiveGetConversionReportingSettings( {
+			newEventsCalloutDismissedAt: 0,
+			lostEventsCalloutDismissedAt: 0,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'contact' ] );
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setNewConversionEventsLastUpdateAt( 0 );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setLostConversionEventsLastUpdateAt( 0 );
 	} );
 
 	afterAll( () => {
@@ -107,13 +123,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		beforeEach( () => {
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 				widgetSlugs: [],
-				includeConversionTailoredMetrics: [],
 				isWidgetHidden: false,
 			} );
 
 			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 				purpose: {
 					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+				includeConversionEvents: {
+					values: [],
 					scope: 'site',
 				},
 			} );
@@ -140,7 +159,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			// Current site purpose is `publish_blog` which includes KMW from `contact`, `generate_lead` and `submit_lead_form` events.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'add_to_cart' ] );
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
@@ -159,13 +178,18 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does not render when includeConversionTailoredMetrics contains existing events', async () => {
+		it( 'does not render when includeConversionEvents contains existing events', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
-			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-				widgetSlugs: [],
-				includeConversionTailoredMetrics: [ 'contact' ],
-				isWidgetHidden: false,
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+				includeConversionEvents: {
+					values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					scope: 'site',
+				},
 			} );
 
 			const { container, waitForRegistry } = render(
@@ -197,7 +221,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			// other events will not add any ACR KMW, hence callout should not surface.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'purchase' ] );
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 			const { container, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -214,8 +238,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does render when includeConversionTailoredMetrics is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
+		it( 'does render when includeConversionEvents is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const { waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -242,6 +270,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			} );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const { getByRole, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -269,11 +300,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			fetchMock.postOnce( fetchDismissNotification, {
 				body: true,
 			} );
-			fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+			fetchMock.postOnce( userInputSettingsEndpointRegExp, {
 				body: {
-					widgetSlugs: undefined,
-					includeConversionTailoredMetrics: [ 'contact' ],
-					isWidgetHidden: false,
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
 				},
 				status: 200,
 			} );
@@ -292,6 +328,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			] );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const currentMetrics = registry
 				.select( CORE_USER )
@@ -325,9 +364,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 			} );
 
-			const keyMetricSettings = registry
+			const userInputSettings = registry
 				.select( CORE_USER )
-				.getKeyMetricsSettings();
+				.getUserInputSettings();
 
 			const newMetrics = registry
 				.select( CORE_USER )
@@ -335,8 +374,8 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			expect( fetchMock ).toHaveFetchedTimes( 2 );
 			expect(
-				keyMetricSettings?.includeConversionTailoredMetrics
-			).toEqual( [ 'contact' ] );
+				userInputSettings?.includeConversionEvents?.values
+			).toEqual( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
 			expect( newMetrics ).toEqual( [
 				KM_ANALYTICS_TOP_CATEGORIES,
@@ -453,6 +492,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
 			// The beforeEach sets a `contact` detected event, providing some but not
 			// all of the suggested metrics should show the banner.
 			provideKeyMetrics( registry, {
@@ -492,6 +535,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_ANALYTICS_NEW_VISITORS,
@@ -525,13 +572,20 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Select metrics CTA should open key metrics panel', async () => {
-			fetchMock.postOnce( fetchDismissNotification, {
-				body: true,
+			fetchMock.post( fetchDismissNotification, {
+				body: {
+					newConversionEventsLastUpdateAt: 1734531413,
+					lostConversionEventsLastUpdateAt: 0,
+				},
 			} );
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			// The beforeEach sets a `contact` detected event, providing some but not
 			// all of the suggested metrics should show the banner.
@@ -573,18 +627,25 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 			} );
 
+			await waitForRegistry();
+
 			expect(
 				registry
 					.select( CORE_UI )
 					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fetchDismissNotification );
 		} );
 	} );
 
 	describe( 'Existing user with previously detected conversion events', () => {
 		it( 'View metrics CTA should open key metrics panel', async () => {
-			fetchMock.postOnce( fetchDismissNotification, {
-				body: true,
+			fetchMock.post( fetchDismissNotification, {
+				body: {
+					newConversionEventsLastUpdateAt: 1734531413,
+					lostConversionEventsLastUpdateAt: 0,
+				},
 			} );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
@@ -593,12 +654,19 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'contact' ] );
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+				] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveConversionReportingInlineData( {
-					newEvents: [ 'purchase' ],
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 					lostEvents: [],
 				} );
 
@@ -638,6 +706,8 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					.select( CORE_UI )
 					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fetchDismissNotification );
 		} );
 
 		describe( 'user with tailored metrics', () => {
@@ -648,13 +718,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						scope: 'site',
 					},
 				} );
@@ -671,12 +744,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// are associated with either `contact`, `generate_lead` or `submit_lead_form` events.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'generate_lead' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'generate_lead' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
 						lostEvents: [],
 					} );
 
@@ -719,7 +795,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				} );
 
@@ -728,20 +803,27 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						values: [ 'sell_products' ],
 						scope: 'site',
 					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
 				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						lostEvents: [],
 					} );
 
-				const { getByRole, waitForRegistry } = render(
+				const { container, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
@@ -753,9 +835,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 				await waitForRegistry();
 
-				expect(
-					getByRole( 'button', { name: 'Add metrics' } )
-				).toBeInTheDocument();
+				expect( container ).toBeEmptyDOMElement();
 			} );
 
 			it( 'does not render when newly detected events suggest metrics user does not have within same site purpose', async () => {
@@ -769,13 +849,16 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'purchase' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'sell_products' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						scope: 'site',
 					},
 				} );
@@ -793,7 +876,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// user saving site purpose with `purchase`, or adding `purchase` metrics during initial events detection.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'purchase' ] );
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 				const currentMetrics = registry
 					.select( CORE_USER )
@@ -815,15 +898,18 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				// After initial events, `add_to_cart` has been detected.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'purchase', 'add_to_cart' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'add_to_cart' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 						lostEvents: [],
 					} );
 
-				const { getByRole, waitForRegistry } = render(
+				const { container, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
 						Widget={ Widget }
 						WidgetNull={ WidgetNull }
@@ -835,9 +921,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 				await waitForRegistry();
 
-				expect(
-					getByRole( 'button', { name: 'Add metrics' } )
-				).toBeInTheDocument();
+				expect( container ).toBeEmptyDOMElement();
 			} );
 
 			it( 'renders when newly detected events suggest metrics from different site purpose', async () => {
@@ -849,15 +933,22 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( true );
 
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
-					includeConversionTailoredMetrics: [ 'contact' ],
 					isWidgetHidden: false,
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 					purpose: {
 						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						scope: 'site',
 					},
 				} );
@@ -872,12 +963,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						lostEvents: [],
 					} );
 
@@ -911,12 +1005,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'generate_lead' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'generate_lead' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
 						lostEvents: [],
 					} );
 
@@ -955,12 +1052,19 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'purchase' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 						lostEvents: [],
 					} );
 
@@ -1000,12 +1104,19 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'add_to_cart' ] );
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'contact' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						lostEvents: [],
 					} );
 
