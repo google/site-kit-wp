@@ -81,7 +81,6 @@
 	}
 
 	.googlesitekit-setup-cta-banner--single-column {
-
 		.googlesitekit-setup-cta-banner__cells {
 			display: grid;
 			grid-template-columns: 1fr;
@@ -101,31 +100,8 @@
 		}
 
 		.googlesitekit-setup-cta-banner__title {
-
 			@media (min-width: $width-tablet + px) {
-				font-size: $fs-headline-sm;
-				font-weight: $fw-normal;
 				letter-spacing: 0;
-				line-height: $lh-headline-sm;
-			}
-
-			@media (min-width: $width-xlarge + 1 + px) {
-				font-size: $fs-headline-md;
-				line-height: $lh-headline-md;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__description {
-			letter-spacing: $ls-xs;
-
-			@media (min-width: $width-tablet + px) {
-				font-size: $fs-body-md;
-				letter-spacing: $ls-s;
-				line-height: $lh-body-md;
-			}
-
-			@media (min-width: $width-xlarge + 1 + px) {
-				letter-spacing: $ls-m;
 			}
 		}
 	}
