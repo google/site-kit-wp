@@ -26,7 +26,7 @@ import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/cons
 /**
  * Determines whether the initial new events callout should be displayed.
  *
- * @since n.e.x.t
+ * @since 1.144.0
  *
  * @param {boolean} haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
  * @return {boolean} Whether the initial new events callout should be displayed.

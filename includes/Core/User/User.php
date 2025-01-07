@@ -32,7 +32,7 @@ class User {
 	/**
 	 * Conversion_Reporting instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @var Conversion_Reporting
 	 */
 	private $conversion_reporting;

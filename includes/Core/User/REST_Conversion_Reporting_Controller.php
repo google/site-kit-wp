@@ -21,7 +21,7 @@ use WP_REST_Server;
 /**
  * Class for handling conversion reporting settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.144.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class REST_Conversion_Reporting_Controller {
 	/**
 	 * Conversion_Reporting_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @var Conversion_Reporting_Settings
 	 */
 	private $conversion_reporting_settings;
@@ -38,7 +38,7 @@ class REST_Conversion_Reporting_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param Conversion_Reporting_Settings $conversion_reporting_settings Conversion_Reporting_Settings instance.
 	 */
@@ -49,7 +49,7 @@ class REST_Conversion_Reporting_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 */
 	public function register() {
 		add_filter(
@@ -79,7 +79,7 @@ class REST_Conversion_Reporting_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
