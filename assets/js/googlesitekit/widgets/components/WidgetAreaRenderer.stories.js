@@ -226,10 +226,12 @@ export default {
 	title: 'Components/WidgetAreaRenderer',
 	component: WidgetAreaRenderer,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideUserCapabilities( registry );
 				provideModules( registry );
+
+				args?.registerWidgetAreas?.( registry );
 			};
 
 			return (
