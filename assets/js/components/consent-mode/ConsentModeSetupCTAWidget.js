@@ -41,8 +41,12 @@ import {
 } from '../AdminMenuTooltip';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import { BREAKPOINT_TABLET, useBreakpoint } from '../../hooks/useBreakpoint';
-import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
+} from '../../hooks/useBreakpoint';
+import SingleColumnNotificationWithSVG from '../../googlesitekit/notifications/components/layout/SingleColumnNotificationWithSVG';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
@@ -139,13 +143,9 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 		}
 	};
 
-	const breakpointSVGMap = {
-		[ BREAKPOINT_TABLET ]: BannerGraphicsTabletSVG,
-	};
-
 	return (
 		<Notification>
-			<NotificationWithSVG
+			<SingleColumnNotificationWithSVG
 				id={ id }
 				title={ __(
 					'Enable Consent Mode to preserve tracking for your Ads campaigns',
@@ -190,7 +190,12 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>
 				}
-				SVG={ breakpointSVGMap[ breakpoint ] || BannerGraphicsSVG }
+				SVG={
+					breakpoint !== BREAKPOINT_SMALL &&
+					breakpoint !== BREAKPOINT_XLARGE
+						? BannerGraphicsTabletSVG
+						: BannerGraphicsSVG
+				}
 			/>
 		</Notification>
 	);
