@@ -26,9 +26,13 @@ import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 describe( 'ConsentModeSetupCTAWidget', () => {
 	let registry;
+	const ConsentModeSetupCTAWidgetComponent = withNotificationComponentProps(
+		CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+	)( ConsentModeSetupCTAWidget );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -50,8 +54,12 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 	} );
 
 	it( 'should render the widget', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.finishResolution( 'getDismissedPrompts', [] );
+
 		const { container, waitForRegistry } = render(
-			<ConsentModeSetupCTAWidget />,
+			<ConsentModeSetupCTAWidgetComponent />,
 			{
 				registry,
 			}
@@ -68,7 +76,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 			.setIsPromptDimissing( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, true );
 
 		const { container, waitForRegistry } = render(
-			<ConsentModeSetupCTAWidget />,
+			<ConsentModeSetupCTAWidgetComponent />,
 			{
 				registry,
 			}
