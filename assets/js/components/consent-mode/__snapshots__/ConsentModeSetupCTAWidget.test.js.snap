@@ -2,23 +2,23 @@
 
 exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
 <div>
-  <div
-    class="googlesitekit-widget-context"
+  <section
+    id="consent-mode-setup-cta-widget"
   >
     <div
-      class="mdc-layout-grid googlesitekit-widget-area"
+      class="googlesitekit-widget-context"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="mdc-layout-grid googlesitekit-widget-area"
       >
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid__inner"
         >
           <div
-            class="googlesitekit-widget googlesitekit-widget--consent-mode-setup-cta googlesitekit-widget--no-padding googlesitekit-setup-cta-banner googlesitekit-consent-mode-setup-cta-widget"
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
           >
             <div
-              class="googlesitekit-widget__body"
+              class="googlesitekit-widget googlesitekit-widget--no-padding googlesitekit-setup-cta-banner googlesitekit-setup-cta-banner--single-column googlesitekit-setup-cta-banner--consent-mode-setup-cta-widget"
             >
               <div
                 class="googlesitekit-setup-cta-banner__cells"
@@ -35,9 +35,12 @@ exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
                     class="googlesitekit-setup-cta-banner__description"
                   >
                     <p>
-                      Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. 
+                      <span>
+                        Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.
+                      </span>
+                       
                       <a
-                        aria-label="Learn more about consent mode (opens in a new tab)"
+                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=consent-mode"
                         rel="noopener noreferrer"
@@ -60,8 +63,10 @@ exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
                   <div
                     class="googlesitekit-setup-cta-banner__actions-wrapper"
                   >
-                    <button
-                      class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                    <a
+                      class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                      href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings"
+                      role="button"
                       target="_self"
                     >
                       <span
@@ -69,7 +74,7 @@ exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
                       >
                         Enable consent mode
                       </span>
-                    </button>
+                    </a>
                     <button
                       class="mdc-button mdc-button--tertiary"
                       target="_self"
@@ -83,7 +88,7 @@ exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
                   </div>
                 </div>
                 <div
-                  class="googlesitekit-setup-cta-banner__svg-wrapper"
+                  class="googlesitekit-setup-cta-banner__svg-wrapper--consent-mode-setup-cta-widget"
                 >
                   <svg />
                 </div>
@@ -93,6 +98,6 @@ exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 `;
