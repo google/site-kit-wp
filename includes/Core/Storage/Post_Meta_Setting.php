@@ -20,12 +20,6 @@ namespace Google\Site_Kit\Core\Storage;
 abstract class Post_Meta_Setting {
 
 	/**
-	 * The post meta key for this setting.
-	 * Override in a sub-class.
-	 */
-	const META_KEY = '';
-
-	/**
 	 * Post_Meta_Interface implementation.
 	 *
 	 * @since 1.33.0
@@ -52,7 +46,7 @@ abstract class Post_Meta_Setting {
 	public function register() {
 		register_meta(
 			'post',
-			static::META_KEY,
+			$this->get_meta_key(),
 			array(
 				'type'              => $this->get_type(),
 				'sanitize_callback' => $this->get_sanitize_callback(),
@@ -60,6 +54,18 @@ abstract class Post_Meta_Setting {
 				'show_in_rest'      => $this->get_show_in_rest(),
 			)
 		);
+	}
+
+	/**
+	 * The post meta key for this setting.
+	 * Override in a sub-class.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The meta key.
+	 */
+	protected function get_meta_key() {
+		return '';
 	}
 
 	/**
@@ -127,7 +133,7 @@ abstract class Post_Meta_Setting {
 	 * @return bool True if the meta key exists, otherwise false.
 	 */
 	public function has( $post_id ) {
-		return metadata_exists( 'post', $post_id, static::META_KEY );
+		return metadata_exists( 'post', $post_id, $this->get_meta_key() );
 	}
 
 	/**
@@ -143,7 +149,7 @@ abstract class Post_Meta_Setting {
 			return $this->get_default();
 		}
 
-		return $this->post_meta->get( $post_id, static::META_KEY, true );
+		return $this->post_meta->get( $post_id, $this->get_meta_key(), true );
 	}
 
 	/**
@@ -156,7 +162,7 @@ abstract class Post_Meta_Setting {
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
 	public function set( $post_id, $value ) {
-		return $this->post_meta->update( $post_id, static::META_KEY, $value );
+		return $this->post_meta->update( $post_id, $this->get_meta_key(), $value );
 	}
 
 	/**
@@ -168,6 +174,6 @@ abstract class Post_Meta_Setting {
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
 	public function delete( $post_id ) {
-		return $this->post_meta->delete( $post_id, static::META_KEY );
+		return $this->post_meta->delete( $post_id, $this->get_meta_key() );
 	}
 }

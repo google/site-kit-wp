@@ -31,9 +31,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
@@ -56,6 +58,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+
+	/**
+	 * Post_Product_ID instance.
+	 *
+	 * @var Post_Product_ID
+	 */
+	protected $post_product_id;
 
 	/**
 	 * Module slug name.
@@ -94,6 +103,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array( $this, 'add_edit_taxonomy_fields' )
 			);
 		}
+
+		$post_meta             = new Post_Meta();
+		$publication_id        = $this->get_settings()->get()['publicationID'];
+		$this->post_product_id = new Post_Product_ID(
+			$post_meta,
+			$publication_id
+		);
+		$this->post_product_id->register();
 	}
 
 	/**
