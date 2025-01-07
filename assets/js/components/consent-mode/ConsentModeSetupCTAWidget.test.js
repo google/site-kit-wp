@@ -27,6 +27,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'ConsentModeSetupCTAWidget', () => {
 	let registry;
@@ -54,6 +55,8 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 	} );
 
 	it( 'should render the widget', async () => {
+		mockSurveyEndpoints();
+
 		registry
 			.dispatch( CORE_USER )
 			.finishResolution( 'getDismissedPrompts', [] );
