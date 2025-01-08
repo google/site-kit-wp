@@ -292,7 +292,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * buttons.
 	 *
 	 * @since 1.139.0
-	 * @since n.e.x.t Renamed to `render_signinwithgoogle` and conditionally
+	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
 	 *                rendered the code to replace buttons.
 	 */
 	private function render_signinwithgoogle() {
