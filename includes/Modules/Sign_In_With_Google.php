@@ -126,12 +126,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, fn () => $this->handle_disconnect_user() );
 
-		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
-
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
-		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
+		// (Potentially) render the Sign in with Google script tags/buttons.
+		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
+		// Output the Sign in with Google JS on the WordPress login page.
+		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
 
 		// Delete client ID stored from previous module connection on module reconnection.
 		add_action(
@@ -287,16 +288,29 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Renders the sign in button.
+	 * Renders the Sign in with Google JS script tags, One-tap code, and
+	 * buttons.
 	 *
 	 * @since 1.139.0
+	 * @since n.e.x.t Renamed to `render_signinwithgoogle` and conditionally
+	 *                rendered the code to replace buttons.
 	 */
-	private function render_signin_button() {
+	private function render_signinwithgoogle() {
 		global $wp;
+		$is_wp_login           = is_login();
 		$is_woo_commerce_login = 'my-account' === $wp->request;
 
 		$settings = $this->get_settings()->get();
+
+		// If there's no client ID available, don't render the button.
 		if ( ! $settings['clientID'] ) {
+			return;
+		}
+
+		// If this is not the WordPress or WooCommerce login page, check to
+		// see if "One-tap enabled on all pages" is set first. If it isnt:
+		// don't render the Sign in with Google JS.
+		if ( ! $is_wp_login && ! $is_woo_commerce_login && ! $settings['oneTapOnAllPages'] ) {
 			return;
 		}
 
@@ -316,6 +330,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'shape' => $settings['shape'],
 		);
 
+		// Whether buttons will be rendered/transformed on this page.
+		$render_buttons = $is_wp_login || $is_woo_commerce_login;
+
 		// Render the Sign in with Google button and related inline styles.
 		print(
 			// Purposely not translated as this is a technical comment.
@@ -327,12 +344,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		ob_start();
 		?>
 ( () => {
-	const parent = document.createElement( 'div' );
-<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
-		<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const parent = document.createElement( 'div' );
+
+		<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+		<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
 		try {
@@ -355,17 +377,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		library_name: 'Site-Kit',
 	} );
 
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	google.accounts.id.prompt();
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.prompt();
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	const expires = new Date();
-	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $render_buttons && ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const expires = new Date();
+		expires.setTime( expires.getTime() + 1000 * 60 * 5 );
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
 		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );

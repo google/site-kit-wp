@@ -27,5 +27,12 @@ export default Modules.createModuleStore( 'sign-in-with-google', {
 	storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 	validateCanSubmitChanges,
 	ownedSettingsSlugs: [],
-	settingSlugs: [ 'clientID', 'shape', 'text', 'theme', 'oneTapEnabled' ],
+	settingSlugs: [
+		'clientID',
+		'shape',
+		'text',
+		'theme',
+		'oneTapEnabled',
+		'oneTapOnAllPages',
+	],
 } );
