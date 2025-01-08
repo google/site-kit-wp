@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../datastore/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -190,7 +193,9 @@ export default {
 					.setWebDataStreamID( webDataStreamID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'add_to_cart' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 

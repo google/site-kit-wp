@@ -17,16 +17,11 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import TableOverflowContainer from '../assets/js/components/TableOverflowContainer';
+import TableOverflowContainer from './/TableOverflowContainer';
 
-storiesOf( 'Global', module ).add( 'Table Overflow Container', () => {
+function Template() {
 	const columns = [];
 	const rows = [];
 
@@ -56,4 +51,11 @@ storiesOf( 'Global', module ).add( 'Table Overflow Container', () => {
 			</table>
 		</TableOverflowContainer>
 	);
-} );
+}
+
+export const Default = Template.bind( {} );
+
+export default {
+	title: 'Components/TableOverflowContainer',
+	component: TableOverflowContainer,
+};

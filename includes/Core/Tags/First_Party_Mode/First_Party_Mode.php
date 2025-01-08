@@ -186,7 +186,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 *
 	 * @since 1.141.0
 	 * @since 1.142.0 Relocated from REST_First_Party_Mode_Controller.
-	 * @since n.e.x.t Uses Google\FirstPartyLibrary\RequestHelper to send requests.
+	 * @since 1.144.0 Uses Google\FirstPartyLibrary\RequestHelper to send requests.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.

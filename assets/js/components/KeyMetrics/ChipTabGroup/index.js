@@ -51,6 +51,7 @@ import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
 import Null from '../../../components/Null';
 import {
+	ENUM_CONVERSION_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
@@ -138,15 +139,18 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		return select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 	} );
 	const hasGeneratingLeadsGroup = [
-		'submit_lead_form',
-		'contact',
-		'generate_lead',
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 	].filter(
 		( item ) =>
 			detectedEvents?.includes( item ) ||
 			currentlyActiveEvents?.includes( item )
 	);
-	const hasSellingProductsGroup = [ 'add_to_cart', 'purchase' ].filter(
+	const hasSellingProductsGroup = [
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+	].filter(
 		( item ) =>
 			detectedEvents?.includes( item ) ||
 			currentlyActiveEvents?.includes( item )

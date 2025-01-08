@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import ImageRadio from '../assets/js/components/ImageRadio';
+import ImageRadio from './ImageRadio';
 
 const image = (
 	<svg
@@ -74,57 +69,55 @@ const image = (
 	</svg>
 );
 
-storiesOf( 'Global', module ).add( 'Image Radios', () => (
-	<div>
-		<div>
-			<ImageRadio
-				id="image-radio-story"
-				name="image-radio-story"
-				value="story"
-				onChange={ ( e ) => e }
-				image={ image }
-				label="Image Radio"
-				description="This is a description"
-			>
-				Default
-			</ImageRadio>
-			<ImageRadio
-				id="image-radio-story"
-				name="image-radio-story"
-				value="story"
-				onChange={ ( e ) => e }
-				image={ image }
-				label="Image Radio"
-				description="This is a description"
-				checked
-			>
-				Checked
-			</ImageRadio>
-		</div>
-		<div>
-			<ImageRadio
-				id="image-radio-story"
-				name="image-radio-story"
-				value="story"
-				onChange={ ( e ) => e }
-				label="Image Radio"
-				description="This is a description"
-			>
-				Without image
-			</ImageRadio>
-		</div>
-		<div>
-			<ImageRadio
-				id="image-radio-story"
-				name="image-radio-story"
-				value="story"
-				onChange={ ( e ) => e }
-				label="Image Radio"
-				description="This is a description"
-				checked
-			>
-				Checked, without image
-			</ImageRadio>
-		</div>
-	</div>
-) );
+function Template( args ) {
+	return <ImageRadio { ...args }>{ args.label }</ImageRadio>;
+}
+
+export const Unchecked = Template.bind( {} );
+Unchecked.args = {
+	id: 'image-radio-story',
+	name: 'image-radio-story',
+	value: 'story',
+	onChange: ( e ) => e,
+	image,
+	label: 'Image Radio',
+	description: 'This is a description',
+};
+
+export const Checked = Template.bind( {} );
+Checked.args = {
+	id: 'image-radio-story',
+	name: 'image-radio-story',
+	value: 'story',
+	onChange: ( e ) => e,
+	image,
+	label: 'Image Radio',
+	description: 'This is a description',
+	checked: true,
+};
+
+export const WithoutImage = Template.bind( {} );
+WithoutImage.args = {
+	id: 'image-radio-story',
+	name: 'image-radio-story',
+	value: 'story',
+	onChange: ( e ) => e,
+	label: 'Image Radio',
+	description: 'This is a description',
+};
+
+export const CheckedWithoutImage = Template.bind( {} );
+CheckedWithoutImage.args = {
+	id: 'image-radio-story',
+	name: 'image-radio-story',
+	value: 'story',
+	onChange: ( e ) => e,
+	label: 'Image Radio',
+	description: 'This is a description',
+	checked: true,
+};
+
+export default {
+	title: 'Components/Image Radio',
+	component: ImageRadio,
+};
