@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling conversion reporting settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.144.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Conversion_Reporting {
 	/**
 	 * Conversion_Reporting_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @var Conversion_Reporting_Settings
 	 */
 	private $conversion_reporting_settings;
@@ -32,7 +32,7 @@ class Conversion_Reporting {
 	/**
 	 * REST_Conversion_Reporting_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @var REST_Conversion_Reporting_Controller
 	 */
 	private $rest_controller;
@@ -40,7 +40,7 @@ class Conversion_Reporting {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -52,7 +52,7 @@ class Conversion_Reporting {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 */
 	public function register() {
 		$this->conversion_reporting_settings->register();

@@ -206,7 +206,7 @@ export const selectors = {
 	/**
 	 * Returns newBadgeEvents if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @return {Array|undefined} `newBadgeEvents` array if events are present, `undefined` otherwise.
 	 */
