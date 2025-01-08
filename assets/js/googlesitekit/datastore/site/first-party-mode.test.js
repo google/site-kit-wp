@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { waitFor } from '@testing-library/react';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -148,6 +153,88 @@ describe( 'core/site First-party Mode', () => {
 				expect( error ).toEqual( errorResponse );
 
 				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should trigger the FPM setup completed survey when FPM setting is enabled', async () => {
+				provideUserAuthentication( registry );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: { triggerID: 'fpm_setup_completed' },
+				} );
+
+				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: {
+						isEnabled: true,
+						isFPMHealthy: false,
+						isScriptAccessEnabled: false,
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: false,
+						isScriptAccessEnabled: false,
+					} );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.saveFirstPartyModeSettings();
+
+				// Verify survey was triggered when FPM setting is set to true.
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+						body: {
+							data: { triggerID: 'fpm_setup_completed' },
+						},
+					} )
+				);
+			} );
+
+			it( 'should not trigger the FPM setup completed survey when FPM setting is disabled', async () => {
+				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: {
+						isEnabled: false,
+						isFPMHealthy: false,
+						isScriptAccessEnabled: false,
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: true,
+						isFPMHealthy: false,
+						isScriptAccessEnabled: false,
+					} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( false );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.saveFirstPartyModeSettings();
+
+				// Verify survey was not triggered when FPM setting is set to false.
+				await waitFor( () =>
+					expect( fetchMock ).not.toHaveFetched(
+						surveyTriggerEndpoint,
+						{
+							body: {
+								data: { triggerID: 'fpm_setup_completed' },
+							},
+						}
+					)
+				);
 			} );
 		} );
 
