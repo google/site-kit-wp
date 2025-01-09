@@ -36,7 +36,7 @@ export default function Notification( {
 	className,
 	gaTrackingEventArgs,
 	children,
-	onView = () => {},
+	onView,
 } ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
