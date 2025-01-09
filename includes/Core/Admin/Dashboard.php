@@ -189,7 +189,7 @@ final class Dashboard {
 	/**
 	 * Render the loading container when data is not available and being fetched.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @param string $class_names Class names to add to the container.
 	 * @return void
 	 */
