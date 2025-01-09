@@ -26,7 +26,10 @@ import {
 	provideNotifications,
 	provideUserAuthentication,
 	untilResolved,
+	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -504,6 +507,13 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
@@ -560,6 +570,8 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					},
 				} );
+
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
@@ -631,6 +643,13 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `true`', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				provideNotifications(
 					registry,
 					{
@@ -701,8 +720,17 @@ describe( 'modules/analytics-4 settings', () => {
 					},
 				} );
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
+
+				await waitForTimeouts( 30 );
 			} );
 			it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				provideNotifications(
 					registry,
 					{
@@ -768,6 +796,8 @@ describe( 'modules/analytics-4 settings', () => {
 
 				expect( submitChangesError ).toEqual( error );
 				expect( console ).toHaveErrored();
+
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
