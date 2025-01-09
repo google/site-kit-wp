@@ -220,6 +220,18 @@ const baseActions = {
 
 const baseControls = {};
 
+function* resolveGetContainers( accountID ) {
+	const { select, resolveSelect } = yield commonActions.getRegistry();
+
+	const containers = select( MODULES_TAGMANAGER ).getContainers( accountID );
+
+	if ( containers === undefined ) {
+		yield commonActions.await(
+			resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
+		);
+	}
+}
+
 const baseResolvers = {
 	*getContainers( accountID ) {
 		if ( ! isValidAccountID( accountID ) ) {
@@ -235,18 +247,8 @@ const baseResolvers = {
 		}
 	},
 
-	*getWebContainers( accountID ) {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
-
-		const containers =
-			select( MODULES_TAGMANAGER ).getContainers( accountID );
-
-		if ( containers === undefined ) {
-			yield commonActions.await(
-				resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
-			);
-		}
-	},
+	getWebContainers: resolveGetContainers,
+	getAMPContainers: resolveGetContainers,
 };
 
 const baseSelectors = {

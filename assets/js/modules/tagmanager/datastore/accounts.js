@@ -146,8 +146,11 @@ export const baseActions = {
 			}
 
 			if ( isAMP() ) {
-				const ampContainers =
-					select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
+				const ampContainers = yield commonActions.await(
+					resolveSelect( MODULES_TAGMANAGER ).getAMPContainers(
+						accountID
+					)
+				);
 
 				if ( ! ampContainers.length ) {
 					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
