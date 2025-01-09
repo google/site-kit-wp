@@ -613,7 +613,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	<h2>
 		<?php
 		/* translators: %s: Sign in with Google service name */
-		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
+		echo esc_html( sprintf( __( '%s (via Site Kit by Google)', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
 		?>
 	</h2>
 	<p>
