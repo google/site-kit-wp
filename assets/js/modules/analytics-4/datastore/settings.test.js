@@ -27,6 +27,7 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
@@ -720,7 +721,7 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
 
-				await waitForDefaultTimeouts();
+				await waitForTimeouts( 30 );
 			} );
 			it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
