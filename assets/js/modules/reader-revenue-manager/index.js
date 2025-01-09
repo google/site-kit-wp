@@ -30,6 +30,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -46,6 +47,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { isFeatureEnabled } from '../../features';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -90,12 +92,19 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// Check if the prompt with the legacy key used before the banner was refactored
+			// to use the `notification ID` as the dismissal key, is dismissed.
+			await resolveSelect( CORE_USER ).getDismissedPrompts();
+			const isDismissed = select( CORE_USER ).isPromptDismissed(
+				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+			);
+
 			const canActivateRRMModule = await resolveSelect(
 				CORE_MODULES
 			).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
 
-			if ( canActivateRRMModule ) {
+			if ( isDismissed === false && canActivateRRMModule ) {
 				return true;
 			}
 
