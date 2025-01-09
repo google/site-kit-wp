@@ -40,6 +40,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
@@ -368,6 +369,22 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 
 			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when the banner was dismissed with the legacy dismissal key', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+					expires: Date.now() / 1000 + WEEK_IN_SECONDS,
+					count: 1,
+				},
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
 		} );
 
 		it( 'is not active when the module requirements do not meet', async () => {
