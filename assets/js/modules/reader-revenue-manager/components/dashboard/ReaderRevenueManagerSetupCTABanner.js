@@ -132,7 +132,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 				description={
 					<div className="googlesitekit-setup-cta-banner__description">
 						<p>
-							{ ' ' }
 							{ createInterpolateElement(
 								__(
 									'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
