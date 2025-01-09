@@ -168,8 +168,8 @@ describe( 'core/site First-party Mode', () => {
 				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
 					body: {
 						isEnabled: true,
-						isFPMHealthy: false,
-						isScriptAccessEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				} );
@@ -178,8 +178,8 @@ describe( 'core/site First-party Mode', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
 						isEnabled: false,
-						isFPMHealthy: false,
-						isScriptAccessEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
 					} );
 
 				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
@@ -202,8 +202,8 @@ describe( 'core/site First-party Mode', () => {
 				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
 					body: {
 						isEnabled: false,
-						isFPMHealthy: false,
-						isScriptAccessEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				} );
@@ -212,8 +212,8 @@ describe( 'core/site First-party Mode', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
 						isEnabled: true,
-						isFPMHealthy: false,
-						isScriptAccessEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
 					} );
 
 				registry
