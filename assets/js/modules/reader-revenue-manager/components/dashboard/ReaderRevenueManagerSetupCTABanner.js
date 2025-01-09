@@ -97,12 +97,6 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const isDismissingPrompt = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingPrompt(
-			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
-		)
-	);
-
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
@@ -142,7 +136,6 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 
 	const showBanner =
 		isDismissed === false &&
-		! isDismissingPrompt &&
 		canActivateRRMModule &&
 		dismissedPromptsLoaded === true;
 

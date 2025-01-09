@@ -137,32 +137,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should not render the banner when it is being dismissed', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
-
-		registry
-			.dispatch( CORE_USER )
-			.setIsPromptDimissing(
-				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-				true
-			);
-
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
@@ -214,12 +188,9 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
-				body: {
-					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
-						expires: Date.now() / 1000 + WEEK_IN_SECONDS,
-						count: 1,
-					},
-				},
+				body: JSON.stringify( [
+					READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+				] ),
 				status: 200,
 			}
 		);
