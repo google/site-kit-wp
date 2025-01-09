@@ -85,6 +85,16 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		expect( container ).toBeEmptyDOMElement();
 
+		/*
+		 * We need to mock the GET:account-summaries request again here, as it will be called a
+		 * second time while resolvers are run post-render. This is due to the initial endpoint
+		 * response being frozen, meaning the `getAccountSummaries()` resolver is unable to resolve
+		 * itself the first time around, and will be called again when `getAccountSummaries()` is
+		 * re-selected by another resolver.
+		 *
+		 * In practice, this is not an issue because the `PropertyOrWebDataStreamNotAvailableError`
+		 * component is not rendered until the account summaries are already loaded.
+		 */
 		fetchMock.getOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
