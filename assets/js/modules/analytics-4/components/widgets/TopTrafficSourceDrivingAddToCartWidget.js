@@ -38,6 +38,7 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
@@ -55,7 +56,9 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 	const detectedEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
 	);
-	const hasDetectedEvent = detectedEvents?.includes( 'add_to_cart' );
+	const hasDetectedEvent = detectedEvents?.includes(
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART
+	);
 
 	const totalAddToCartReportOptions = {
 		...dates,

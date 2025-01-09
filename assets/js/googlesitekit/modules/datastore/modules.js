@@ -1421,7 +1421,7 @@ const baseSelectors = {
 	 * Returns the module homepage by default. This can be overwritten by a
 	 * custom selector of the same name in the module store implementation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

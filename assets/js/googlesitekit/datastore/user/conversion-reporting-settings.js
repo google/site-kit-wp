@@ -87,7 +87,7 @@ const baseActions = {
 	/**
 	 * Saves the conversion reporting settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -125,7 +125,7 @@ const baseSelectors = {
 	/**
 	 * Gets the conversion reporting settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Conversion reporting settings; `undefined` if not loaded.
@@ -137,7 +137,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the conversion reporting settings are being saved or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the key metrics settings are being saved, otherwise FALSE.
@@ -153,7 +153,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the new events callout should be shown or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @return {boolean} TRUE if the there were new events detected after the callout was dismissed, otherwise FALSE.
 	 */
@@ -181,7 +181,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the lost events callout should be shown or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @return {boolean} TRUE if the there were lost events detected after the callout was dismissed, otherwise FALSE.
 	 */

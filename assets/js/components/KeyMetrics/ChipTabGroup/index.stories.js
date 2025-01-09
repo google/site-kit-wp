@@ -48,7 +48,10 @@ import {
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../../modules/analytics-4/datastore/constants';
 import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
 
 function Template() {
@@ -219,14 +222,17 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveConversionReportingInlineData( {
-						newEvents: [ 'contact' ],
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 						lostEvents: [],
-						newBadgeEvents: [ 'contact' ],
+						newBadgeEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 					} );
 
 				// Call story-specific setup.

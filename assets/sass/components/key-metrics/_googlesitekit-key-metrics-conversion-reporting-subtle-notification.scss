@@ -20,6 +20,7 @@
 
 	.googlesitekit-acr-subtle-notification {
 		background-color: $c-violet-v-50;
+		color: $c-violet-v-600;
 		padding: $grid-gap-phone - 2px $grid-gap-desktop;
 
 		.mdc-button--raised:not(:disabled) {
@@ -29,7 +30,7 @@
 		.googlesitekit-subtle-notification__content,
 		.mdc-button--tertiary:not(:disabled),
 		p > a {
-			color: $c-violet-v-600;
+			color: inherit;
 		}
 
 		.googlesitekit-subtle-notification__action {
