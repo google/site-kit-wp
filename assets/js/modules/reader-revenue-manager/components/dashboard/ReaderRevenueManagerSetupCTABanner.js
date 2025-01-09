@@ -72,9 +72,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const readerRevenueManagerDocumentationURL =
-		'https://readerrevenue.withgoogle.com';
-
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
@@ -149,9 +146,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 												'Learn more',
 												'google-site-kit'
 											) }
-											url={
-												readerRevenueManagerDocumentationURL
-											}
+											url="https://readerrevenue.withgoogle.com"
 										/>
 									),
 								}
