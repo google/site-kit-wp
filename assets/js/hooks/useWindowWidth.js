@@ -1,3 +1,6 @@
+// Copied from https://github.com/jaredLunde/react-hook/blob/b8ac9515e26937e838a36a27001dc46c7f46a390/packages/window-size/throttled/src/index.tsx
+// Modified to use global.innerWidth and global.innerHeight instead of document.documentElement.clientWidth and document.documentElement.clientHeight.
+
 import { useThrottle } from '@react-hook/throttle';
 import useEvent from '@react-hook/event';
 
