@@ -105,10 +105,10 @@ const controls = {
 				homeURL,
 			} );
 
+			const { getHTMLForURL } = registry.resolveSelect( CORE_SITE );
+
 			for ( const url of existingTagURLs ) {
-				const html = await registry
-					.resolveSelect( CORE_SITE )
-					.getHTMLForURL( url );
+				const html = await getHTMLForURL( url );
 				const tagFound = extractExistingTag(
 					html,
 					adBlockingRecoveryTagMatcher
