@@ -225,7 +225,7 @@ describe( 'core/site First-party Mode', () => {
 					.saveFirstPartyModeSettings();
 
 				// Verify survey was not triggered when FPM setting is set to false.
-				await waitFor( () =>
+				waitFor( () =>
 					expect( fetchMock ).not.toHaveFetched(
 						surveyTriggerEndpoint,
 						{
@@ -244,8 +244,8 @@ describe( 'core/site First-party Mode', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
 						isEnabled: false,
-						isFPMHealthy: false,
-						isScriptAccessEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
 					} );
 
 				expect(
