@@ -22,7 +22,8 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useIntersection } from 'react-use';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
+// import { useWindowWidth } from '@react-hook/window-size/throttled';
+import { useWindowWidth } from '../../hooks/useWindowWidth';
 
 /**
  * WordPress dependencies
@@ -78,6 +79,17 @@ export default function KeyMetricsCTAContent( {
 			breakpoint === BREAKPOINT_TABLET && onlyWidth < 800;
 		isSmallDesktopBreakpoint = onlyWidth >= 800 && onlyWidth < 1280;
 	}
+
+	// eslint-disable-next-line no-console
+	console.log( {
+		breakpoint,
+		onlyWidth,
+		ga4Connected,
+		isMobileBreakpoint,
+		isTabletBreakpoint,
+		isSmallDesktopBreakpoint,
+		isDesktopBreakpoint,
+	} );
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,

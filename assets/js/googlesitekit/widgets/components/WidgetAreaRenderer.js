@@ -21,7 +21,8 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
+// import { useWindowWidth } from '@react-hook/window-size/throttled';
+import { useWindowWidth } from '../../../hooks/useWindowWidth';
 
 /**
  * WordPress dependencies

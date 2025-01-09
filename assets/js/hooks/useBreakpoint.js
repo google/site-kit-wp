@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { useWindowWidth } from '@react-hook/window-size/throttled';
+// import { useWindowWidth } from '@react-hook/window-size/throttled';
+import { useWindowWidth } from './useWindowWidth';
 
 export const BREAKPOINT_XLARGE = 'xlarge';
 export const BREAKPOINT_DESKTOP = 'desktop';
