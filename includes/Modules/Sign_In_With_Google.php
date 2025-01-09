@@ -381,7 +381,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( $settings['oneTapEnabled'] && ! is_user_logged_in() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $settings['oneTapEnabled'] && ( $is_wp_login || ! is_user_logged_in() ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		google.accounts.id.prompt();
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
