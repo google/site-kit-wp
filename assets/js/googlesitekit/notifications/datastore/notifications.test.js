@@ -681,5 +681,115 @@ describe( 'core/notifications Notifications', () => {
 				} );
 			} );
 		} );
+
+		describe( 'isNotificationDismissalFinal', () => {
+			let isNotificationDismissalFinal;
+			beforeEach( () => {
+				( { isNotificationDismissalFinal } =
+					registry.select( CORE_NOTIFICATIONS ) );
+			} );
+
+			it( 'should return undefined if notification is undefined', () => {
+				expect(
+					isNotificationDismissalFinal( 'test-notification' )
+				).toBeUndefined();
+			} );
+
+			it( 'requires notification to be dismissible', () => {
+				provideNotifications( registry, {
+					'test-notification': {
+						Component: () => {},
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						dismissRetries: 1,
+					},
+				} );
+
+				expect( () =>
+					isNotificationDismissalFinal( 'test-notification' )
+				).toThrow(
+					'Notification should be dismissible to check if a notification is on its final dismissal.'
+				);
+			} );
+
+			it( 'returns true if notification does not have retries', () => {
+				provideNotifications( registry, {
+					'test-notification': {
+						Component: () => {},
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: true,
+					},
+				} );
+
+				expect(
+					isNotificationDismissalFinal( 'test-notification' )
+				).toBe( true );
+			} );
+
+			it( 'returns true if notification is on the final retry', () => {
+				provideNotifications( registry, {
+					'test-notification': {
+						Component: () => {},
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: true,
+						dismissRetries: 2,
+					},
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+					'test-notification': {
+						expires: 0,
+						count: 2,
+					},
+					'some-other-notification': { expires: 0, count: 2 },
+				} );
+
+				expect(
+					isNotificationDismissalFinal( 'test-notification' )
+				).toBe( true );
+			} );
+
+			it( 'returns false if notification has never been dismissed', () => {
+				provideNotifications( registry, {
+					'test-notification': {
+						Component: () => {},
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: true,
+						dismissRetries: 1,
+					},
+				} );
+
+				expect(
+					isNotificationDismissalFinal( 'test-notification' )
+				).toBe( false );
+			} );
+
+			it( 'returns false if notification is not on the final retry', () => {
+				provideNotifications( registry, {
+					'test-notification': {
+						Component: () => {},
+						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: true,
+						dismissRetries: 2,
+					},
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+					'test-notification': {
+						expires: 0,
+						count: 1,
+					},
+					'some-other-notification': { expires: 0, count: 2 },
+				} );
+
+				expect(
+					isNotificationDismissalFinal( 'test-notification' )
+				).toBe( false );
+			} );
+		} );
 	} );
 } );
