@@ -225,16 +225,11 @@ describe( 'core/site First-party Mode', () => {
 					.saveFirstPartyModeSettings();
 
 				// Verify survey was not triggered when FPM setting is set to false.
-				waitFor( () =>
-					expect( fetchMock ).not.toHaveFetched(
-						surveyTriggerEndpoint,
-						{
-							body: {
-								data: { triggerID: 'fpm_setup_completed' },
-							},
-						}
-					)
-				);
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'fpm_setup_completed' },
+					},
+				} );
 			} );
 		} );
 
