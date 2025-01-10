@@ -285,11 +285,11 @@ const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
+exports.gutenbergExternals = gutenbergExternals;
+
 corePackages.forEach( ( name ) => {
 	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
 		'wp',
 		name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ),
 	];
 } );
-
-exports.gutenbergExternals = gutenbergExternals;

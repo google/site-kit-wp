@@ -18,7 +18,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
@@ -488,47 +487,32 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_block_editor_script_enqueued() {
-		Feature_Flags::set_features(
-			array(
-				'rrmModuleV2',
-			)
-		);
-		add_filter(
-			'googlesitekit_is_feature_enabled',
-			function ( $enabled, $feature_name ) {
-				return 'rrmModuleV2' === $feature_name;
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
 			},
-			10,
-			2
+			$this->reader_revenue_manager->get_assets()
 		);
-
-		$registerable_scripts_with_feature = $this->reader_revenue_manager->get_assets();
-
-		$this->assertIsArray( $registerable_scripts_with_feature );
-
-		$rrm_block_editor_script = array_filter(
-			$registerable_scripts_with_feature,
-			function ( $script ) {
-				return 'googlesitekit-reader-revenue-manager-block-editor.js' === $script->get_handle();
-			}
+		$this->assertContains(
+			'googlesitekit-reader-revenue-manager-block-editor',
+			$registerable_asset_handles
 		);
-
-		$this->assertNotEmpty( $rrm_block_editor_script );
 	}
 
 	public function test_block_editor_script_not_enqueued() {
-		$registerable_scripts_without_feature = $this->reader_revenue_manager->get_assets();
-
-		$this->assertIsArray( $registerable_scripts_without_feature );
-
-		$rrm_block_editor_script = array_filter(
-			$registerable_scripts_without_feature,
-			function ( $script ) {
-				return 'googlesitekit-reader-revenue-manager-block-editor.js' === $script->get_handle();
-			}
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
 		);
 
-		$this->assertEmpty( $rrm_block_editor_script );
+		$this->assertNotContains(
+			'googlesitekit-reader-revenue-manager-block-editor',
+			$registerable_asset_handles
+		);
 	}
 
 	/**

@@ -47,14 +47,6 @@ module.exports = ( mode ) => ( {
 			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
 		path: rootDir + '/dist/assets/js',
 		publicPath: '',
-		// If multiple webpack runtimes (from different compilations) are used on the
-		// same webpage, there is a risk of conflicts of on-demand chunks in the global
-		// namespace.
-		// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-		jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
-	},
-	performance: {
-		maxEntrypointSize: 175000,
 	},
 	module: {
 		rules: createRules( mode ),
