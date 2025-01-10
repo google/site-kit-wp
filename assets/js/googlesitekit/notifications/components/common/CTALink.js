@@ -31,9 +31,9 @@ import { useState } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../datastore/location/constants';
+import { CORE_SITE } from '../../../datastore/site/constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { SpinnerButton } from 'googlesitekit-components';
-import { CORE_SITE } from '../../../datastore/site/constants';
 
 export default function CTALink( {
 	id,
