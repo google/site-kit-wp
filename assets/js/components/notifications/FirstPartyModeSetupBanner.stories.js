@@ -26,6 +26,7 @@ import fetchMock from 'fetch-mock';
  */
 import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { WEEK_IN_SECONDS } from '../../util';
@@ -36,7 +37,6 @@ import {
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	FPM_SETUP_CTA_BANNER_NOTIFICATION
@@ -49,41 +49,12 @@ function Template() {
 export const Default = Template.bind();
 Default.storyName = 'FirstPartyModeSetupBanner';
 Default.scenario = {};
-Default.args = {
-	setupRegistry: () => {
-		fetchMock.post(
-			new RegExp( '^/google-site-kit/v1/core/site/data/fpm-settings' ),
-			{
-				body: JSON.stringify( {
-					isEnabled: true,
-					isFPMHealthy: true,
-					isScriptAccessEnabled: true,
-				} ),
-				status: 200,
-			}
-		);
-	},
-};
 
 export const ErrorOnCTAClick = Template.bind();
 ErrorOnCTAClick.storyName = 'ErrorOnCTAClick';
 ErrorOnCTAClick.scenario = {};
 ErrorOnCTAClick.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post(
-			new RegExp( '^/google-site-kit/v1/core/site/data/fpm-settings' ),
-			{
-				body: JSON.stringify( {
-					code: 'test_error',
-					message: 'Test Error',
-					data: {
-						reason: 'test_reason',
-					},
-				} ),
-				status: 500,
-			}
-		);
-
 		registry.dispatch( CORE_SITE ).receiveError(
 			{
 				code: 'test_error',
@@ -100,8 +71,6 @@ export default {
 	title: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupBanner',
 	decorators: [
 		( Story, { args } ) => {
-			fetchMock.restore();
-
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
