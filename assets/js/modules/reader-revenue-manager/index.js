@@ -96,19 +96,17 @@ export const NOTIFICATIONS = {
 			// Check if the prompt with the legacy key used before the banner was refactored
 			// to use the `notification ID` as the dismissal key, is dismissed.
 			await resolveSelect( CORE_USER ).getDismissedPrompts();
-			const isDismissed = select( CORE_USER ).isPromptDismissed(
+			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
 				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
 			);
 
-			const canActivateRRMModule = await resolveSelect(
-				CORE_MODULES
-			).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
-
-			if ( isDismissed === false && canActivateRRMModule ) {
-				return true;
+			if ( isLegacyDismissed ) {
+				return false;
 			}
 
-			return false;
+			return await resolveSelect( CORE_MODULES ).canActivateModule(
+				READER_REVENUE_MANAGER_MODULE_SLUG
+			);
 		},
 		isDismissible: true,
 		dismissRetries: 1,
