@@ -30,7 +30,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
-	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -97,7 +97,7 @@ export const NOTIFICATIONS = {
 			// to use the `notification ID` as the dismissal key, is dismissed.
 			await resolveSelect( CORE_USER ).getDismissedPrompts();
 			const isDismissed = select( CORE_USER ).isPromptDismissed(
-				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
 			);
 
 			const canActivateRRMModule = await resolveSelect(
