@@ -528,6 +528,17 @@ describe( 'modules/analytics-4 settings', () => {
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
+				provideNotifications(
+					registry,
+					{
+						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+							DEFAULT_NOTIFICATIONS[
+								FPM_SETUP_CTA_BANNER_NOTIFICATION
+							],
+					},
+					{ overwrite: true }
+				);
+
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
 					propertyID: fixtures.createProperty._id,

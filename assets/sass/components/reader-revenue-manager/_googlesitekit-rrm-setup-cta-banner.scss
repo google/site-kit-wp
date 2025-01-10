@@ -17,7 +17,7 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-reader-revenue-manager-setup-cta-widget {
+	.googlesitekit-setup-cta-banner--rrm-setup-notification {
 		.googlesitekit-setup-cta-banner__primary-cell {
 			padding: $grid-gap-desktop - 4 $grid-gap-phone 0;
 
@@ -27,10 +27,6 @@
 		}
 
 		.googlesitekit-setup-cta-banner__title {
-			@media (min-width: $width-tablet + 1 + px) {
-				font-weight: $fw-medium;
-			}
-
 			@media (min-width: $bp-nonMobile) {
 				font-size: $fs-headline-sm;
 				line-height: $lh-headline-sm;
@@ -66,7 +62,13 @@
 			}
 		}
 
-		.googlesitekit-setup-cta-banner__svg-wrapper {
+		.googlesitekit-setup-cta-banner__svg-wrapper--rrm-setup-notification {
+			align-items: center;
+			display: flex;
+			height: 100%;
+			justify-content: center;
+			overflow: hidden;
+			position: relative;
 
 			svg {
 				flex: 1;
@@ -75,12 +77,16 @@
 				// Increase the SVG size via scale in order to achieve the desired clipping effect
 				// in conjunction with the parent's overflow: hidden.
 				scale: 1;
+				transform-origin: center 2px;
 
 				@media (min-width: $bp-nonTablet) {
+					height: 100%;
 					max-height: 272px;
+					position: absolute;
 					right: 70px;
 					scale: 1.6;
 					top: 10px;
+					transform-origin: initial;
 					width: 65%;
 				}
 

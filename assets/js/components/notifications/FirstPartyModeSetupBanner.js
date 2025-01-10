@@ -147,16 +147,9 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		return null;
 	}
 
-	const getBannerSVG = () => {
-		if ( breakpoint === BREAKPOINT_SMALL ) {
-			return FPMSetupCTASVGMobile;
-		}
-
-		if ( breakpoint === BREAKPOINT_TABLET ) {
-			return FPMSetupCTASVGTablet;
-		}
-
-		return FPMSetupCTASVGDesktop;
+	const breakpointSVGMap = {
+		[ BREAKPOINT_SMALL ]: FPMSetupCTASVGMobile,
+		[ BREAKPOINT_TABLET ]: FPMSetupCTASVGTablet,
 	};
 
 	return (
@@ -201,7 +194,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 						} }
 					/>
 				}
-				SVG={ getBannerSVG() }
+				SVG={ breakpointSVGMap[ breakpoint ] || FPMSetupCTASVGDesktop }
 			/>
 		</Notification>
 	);
