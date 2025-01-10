@@ -33,9 +33,10 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '../user/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { isFeatureEnabled } from '../../../features';
-import { CORE_MODULES } from '../../modules/datastore/constants';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
 const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
@@ -103,16 +104,24 @@ const baseActions = {
 	 * Saves the first-party mode settings.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveFirstPartyModeSettings() {
-		const { select } = yield commonActions.getRegistry();
+		const { dispatch, select } = yield commonActions.getRegistry();
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
-		return yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
-			settings
-		);
+		const results =
+			yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
+				settings
+			);
+
+		if ( results?.response?.isEnabled ) {
+			dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+		}
+
+		return results;
 	},
 
 	/**

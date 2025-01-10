@@ -287,6 +287,7 @@
 	.googlesitekit-audience-selection-panel__success-notice {
 		align-items: center;
 		background-color: $c-content-primary-container;
+		color: $c-content-on-primary-container;
 		display: flex;
 		gap: 10px;
 		justify-content: flex-start;
@@ -294,7 +295,7 @@
 	}
 
 	p.googlesitekit-audience-selection-panel__success-notice-message {
-		color: $c-content-on-primary-container;
+		color: inherit;
 		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;

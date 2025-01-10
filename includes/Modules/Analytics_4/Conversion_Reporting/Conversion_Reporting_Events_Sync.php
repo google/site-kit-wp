@@ -75,7 +75,7 @@ class Conversion_Reporting_Events_Sync {
 	 *
 	 * @since 1.135.0
 	 * @since 1.139.0 Added $context param to constructor.
-	 * @since n.e.x.t Added $transients and $new_badge_events_sync params to constructor, and removed $context.
+	 * @since 1.144.0 Added $transients and $new_badge_events_sync params to constructor, and removed $context.
 	 *
 	 * @param Settings                                   $settings              Settings module settings instance.
 	 * @param Transients                                 $transients            Transients instance.
@@ -141,7 +141,7 @@ class Conversion_Reporting_Events_Sync {
 	/**
 	 * Saves new and lost events transients.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param array $detected_events       Currently detected events array.
 	 * @param array $saved_detected_events Previously saved detected events array.

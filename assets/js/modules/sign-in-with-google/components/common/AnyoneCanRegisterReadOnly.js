@@ -65,7 +65,7 @@ export default function AnyoneCanRegisterReadOnly() {
 						sprintf(
 							/* translators: %s: Sign in with Google service name */
 							__(
-								'Users can create new accounts on this site using %s. <br/>Visit <a>WP settings</a> page to manage this membership setting.',
+								'Users can create new accounts on this site using %s. <br/>Visit <a>WordPress settings</a> to manage this membership setting.',
 								'google-site-kit'
 							),
 							_x(

@@ -218,7 +218,7 @@ export const selectors = {
 	/**
 	 * Overrides the details link URL for this module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
 	 */

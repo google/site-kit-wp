@@ -65,32 +65,34 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 10, $this->module->order );
 	}
 
-	public function test_render_signin_button() {
+	public function test_render_signinwithgoogle() {
 		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
+		remove_action( 'wp_footer', 'the_block_template_skip_link' );
 
 		$this->module->register();
 		$this->module->get_settings()->register();
 
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->capture_action( 'login_form' );
-		$this->assertEmpty( $output );
+		$output = $this->capture_action( 'wp_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Update site URL to https.
-		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
 		update_option( 'siteurl', 'https://example.com/' );
 		update_option( 'home', 'https://example.com/' );
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->capture_action( 'login_form' );
-		$this->assertEmpty( $output );
+		$output = $this->capture_action( 'wp_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$output = $this->capture_action( 'login_form' );
-		$this->assertEmpty( $output );
+		$output = $this->capture_action( 'wp_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
 		$this->module->get_settings()->set(
@@ -103,7 +105,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 
 		// Render the button.
-		$output = $this->capture_action( 'login_form' );
+		$output = $this->capture_action( 'wp_footer' );
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
@@ -115,10 +117,37 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
 
+		// Try rendering the button when not on the login page.
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
+		$output                 = $this->capture_action( 'wp_footer' );
+
+		// The button shouldn't be rendered on a non-login page.
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
+
+		// Enable the Sign in with Google One-tap on all pages.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'         => '1234567890.googleusercontent.com',
+				'text'             => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'            => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled'    => true,
+				'oneTapOnAllPages' => true,
+			)
+		);
+
+		// Now the button should be rendered on a non-login page.
+		$output = $this->capture_action( 'wp_footer' );
+
+		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
 		update_option( 'siteurl', $reset_site_url );
 		unset( $_SERVER['HTTPS'] );
+		unset( $_SERVER['SCRIPT_NAME'] );
+		add_action( 'wp_footer', 'the_block_template_skip_link' );
 	}
 
 	public function test_handle_disconnect_user__bad_nonce() {
