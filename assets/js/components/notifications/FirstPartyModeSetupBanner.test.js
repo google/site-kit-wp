@@ -247,7 +247,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		} );
 	} );
 
-	it( 'should display the error when CTA is clicked', async () => {
+	it( 'should display the error message when the CTA button is clicked and the request fails', async () => {
 		fetchMock.postOnce( fpmSettingsEndpoint, {
 			body: JSON.stringify( {
 				code: 'test_error',
