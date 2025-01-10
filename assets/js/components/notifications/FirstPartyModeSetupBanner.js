@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,6 +36,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
@@ -50,8 +51,7 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { trackEvent } from '../../util';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -66,6 +66,10 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const showTooltip = useShowTooltip( id );
 
 	const { isTooltipVisible } = useTooltipState( id );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
 	const isItemDismissed = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
@@ -103,6 +107,13 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 		dismissNotification( id );
 	};
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+	const handleView = useCallback( () => {
+		if ( usingProxy ) {
+			triggerSurvey( 'view_fpm_setup_cta', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy ] );
 
 	const onDismiss = () => {
 		showTooltip();
@@ -147,7 +158,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	};
 
 	return (
-		<Notification>
+		<Notification onView={ handleView }>
 			<NotificationWithSVG
 				id={ id }
 				title={ __(

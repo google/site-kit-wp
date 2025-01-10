@@ -188,9 +188,12 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
-				body: JSON.stringify( [
-					READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-				] ),
+				body: {
+					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+						expires: Date.now() / 1000 + WEEK_IN_SECONDS,
+						count: 1,
+					},
+				},
 				status: 200,
 			}
 		);
@@ -290,6 +293,32 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
+	it( 'should not render the banner when it is being dismissed', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+
+		registry
+			.dispatch( CORE_USER )
+			.setIsPromptDimissing(
+				READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+				true
+			);
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABanner
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'should call dismiss prompt with the correct expiration time when dismissed once', async () => {
 		mockSurveyEndpoints();
 
@@ -298,7 +327,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			{
 				body: {
 					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
-						expires: 2 * WEEK_IN_SECONDS, // Expiry of 0 permanently dismisses the prompt.
+						expires: Date.now() / 1000 + 2 * WEEK_IN_SECONDS,
 						count: 1,
 					},
 				},

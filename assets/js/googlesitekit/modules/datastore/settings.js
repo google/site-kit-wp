@@ -126,7 +126,7 @@ export const selectors = {
 	/**
 	 * Checks whether settings edit dependencies are currently loading for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param {string} slug Module slug.
 	 * @return {boolean?} Whether or not settings edit dependencies are currently loading for the module,

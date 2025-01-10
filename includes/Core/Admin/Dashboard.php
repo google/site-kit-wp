@@ -138,11 +138,11 @@ final class Dashboard {
 
 		$class_names = array();
 
-		if ( $analytics_connected ) {
+		if ( $analytics_connected && $display_analytics_data ) {
 			$class_names[] = 'googlesitekit-wp-dashboard-analytics_active_and_connected';
 		}
 
-		if ( $search_console_connected ) {
+		if ( $search_console_connected && $display_search_console_data ) {
 			$class_names[] = 'googlesitekit-wp-dashboard-search_console_active_and_connected';
 		}
 
@@ -189,7 +189,7 @@ final class Dashboard {
 	/**
 	 * Render the loading container when data is not available and being fetched.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @param string $class_names Class names to add to the container.
 	 * @return void
 	 */
