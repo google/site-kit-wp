@@ -247,6 +247,47 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		} );
 	} );
 
+	it( 'should display the error message when the CTA button is clicked and the request fails', async () => {
+		fetchMock.postOnce( fpmSettingsEndpoint, {
+			body: JSON.stringify( {
+				code: 'test_error',
+				message: 'Test Error',
+				data: {
+					reason: 'test_reason',
+				},
+			} ),
+			status: 500,
+		} );
+
+		const { getByRole, getByText, waitForRegistry } = render(
+			<FPMBannerComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Enable First-party mode',
+			} )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
+			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+		} );
+
+		expect( getByText( 'Error: Test Error' ) ).toBeInTheDocument();
+	} );
+
 	it( 'should set FPM_SHOW_SETUP_SUCCESS_NOTIFICATION to true and invalidate the notifications queue resolution when the CTA button is clicked', async () => {
 		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
 			registry,
