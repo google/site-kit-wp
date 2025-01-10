@@ -495,6 +495,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			},
 			$this->reader_revenue_manager->get_assets()
 		);
+
 		$this->assertContains(
 			'googlesitekit-reader-revenue-manager-block-editor',
 			$registerable_asset_handles
