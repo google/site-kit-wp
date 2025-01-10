@@ -486,6 +486,56 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( false, $access );
 	}
 
+	public function test_product_id_setting_registered() {
+		$publication_id = 'ABCDEFGH';
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertTrue( $registered );
+	}
+
+	public function test_publication_id_empty_product_id_setting_not_registered() {
+		$publication_id = 'ABCDEFGH';
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => '',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertFalse( $registered );
+	}
+
+	public function test_feature_disabled_product_id_setting_not_registered() {
+		$publication_id = 'ABCDEFGH';
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertFalse( $registered );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
