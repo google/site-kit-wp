@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
+use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
@@ -30,9 +31,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
@@ -55,6 +58,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+
+	/**
+	 * Post_Product_ID instance.
+	 *
+	 * @var Post_Product_ID
+	 */
+	protected $post_product_id;
 
 	/**
 	 * Module slug name.
@@ -80,6 +90,27 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		$taxonomies = get_taxonomies();
+
+		foreach ( $taxonomies as $taxonomy ) {
+			add_action(
+				"{$taxonomy}_add_form_fields",
+				array( $this, 'add_create_taxonomy_fields' )
+			);
+			add_action(
+				"{$taxonomy}_edit_form_fields",
+				array( $this, 'add_edit_taxonomy_fields' )
+			);
+		}
+
+		$post_meta             = new Post_Meta();
+		$publication_id        = $this->get_settings()->get()['publicationID'];
+		$this->post_product_id = new Post_Product_ID(
+			$post_meta,
+			$publication_id
+		);
+		$this->post_product_id->register();
 	}
 
 	/**
@@ -399,6 +430,22 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					),
 				)
 			),
+			new Script(
+				'googlesitekit-reader-revenue-manager-block-editor.js',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-reader-revenue-manager-block-editor.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+						'wp-components',
+						'wp-editor',
+						'wp-element',
+						'wp-plugins',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			),
 		);
 	}
 
@@ -461,5 +508,55 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => $settings['publicationOnboardingState'],
 			),
 		);
+	}
+
+	/**
+	 * Adds fields to the taxonomy creation form.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return void
+	 */
+	public function add_create_taxonomy_fields() {
+		?>
+		<div class="form-field">
+			<label for="googlesitekit_rrm_product_id">Site Kit: Reader Revenue Manager Product ID Override</label>
+			<select name="googlesitekit_rrm_product_id" id="googlesitekit_rrm_product_id">
+				<option value="">No change</option>
+				<option value="none">Off</option>
+				<option value="openaccess">Open access</option>
+				<option value="product-id-a">Product ID A</option>
+				<option value="product-id-b">Product ID B</option>
+			</select>
+			<p class="description">The snippet configuration will be inherited from the individual post, or Site Kit settings.</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Adds fields to the taxonomy edit form.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return void
+	 */
+	public function add_edit_taxonomy_fields() {
+		?>
+		<tr class="form-field">
+			<th scope="row" valign="top">
+				<label for="googlesitekit_rrm_product_id">Site Kit: Reader Revenue Manager Product ID Override</label>
+			</th>
+			<td>
+				<select name="googlesitekit_rrm_product_id" id="googlesitekit_rrm_product_id">
+					<option value="">No change</option>
+					<option value="none">Off</option>
+					<option value="openaccess">Open access</option>
+					<option value="product-id-a">Product ID A</option>
+					<option value="product-id-b">Product ID B</option>
+				</select>
+				<p class="description">The snippet configuration will be inherited from the individual post, or Site Kit settings.</p>
+			</td>
+		</tr>
+		<?php
 	}
 }
