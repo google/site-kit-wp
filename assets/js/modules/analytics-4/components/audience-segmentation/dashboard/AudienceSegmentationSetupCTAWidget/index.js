@@ -40,10 +40,7 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
 } from '../../../../../../googlesitekit/notifications/datastore/constants';
-import {
-	MODULES_ANALYTICS_4,
-	AUDIENCE_SEGMENTATION_SETUP_FORM,
-} from '../../../../datastore/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import {
@@ -53,55 +50,48 @@ import {
 } from '../../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { trackEvent, WEEK_IN_SECONDS } from '../../../../../../util';
-import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import AudienceErrorModal from '../AudienceErrorModal';
-import SetupCTAContent from './SetupCTAContent';
+import NotificationWithSVG from '../../../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import ActionsCTALinkDismiss from '../../../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import BannerGraphicsSVGDesktop from '../../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
+import BannerGraphicsSVGTablet from '../../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
+import BannerGraphicsSVGMobile from '../../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../../hooks/useBreakpoint';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
 
-const SetupCTAContentWithIntersectionObserver =
-	withIntersectionObserver( SetupCTAContent );
-
-function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
+const breakpointSVGMap = {
+	[ BREAKPOINT_SMALL ]: BannerGraphicsSVGMobile,
+	[ BREAKPOINT_TABLET ]: BannerGraphicsSVGTablet,
+};
+function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const viewContext = useViewContext();
+	const breakpoint = useBreakpoint();
+	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
 	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const showTooltip = useShowTooltip(
-		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-	);
-	const { isTooltipVisible } = useTooltipState(
-		AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+	const showTooltip = useShowTooltip( id );
+	const { isTooltipVisible } = useTooltipState( id );
+
+	const isDismissalFinal = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isPromptDismissed(
-			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-		)
+	// See TODO note below.
+	const isCTADismissed = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
-
-	const isDismissingPrompt = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingPrompt(
-			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-		)
-	);
-
-	const dismissCount = useSelect( ( select ) =>
-		select( CORE_USER ).getPromptDismissCount(
-			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-		)
-	);
-
 	const dismissedPromptsLoaded = useSelect( ( select ) =>
 		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
-	);
-
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	const autoSubmit = useSelect( ( select ) =>
@@ -122,7 +112,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					viewContext,
 					NOTIFICATION_GROUPS.DEFAULT,
 				] );
-				dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
+				dismissPrompt( id, {
 					expiresInSeconds: 0,
 				} );
 				// Dismiss success notification in settings.
@@ -134,45 +124,6 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 				setShowErrorModal( true );
 			},
 		} );
-
-	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
-		// We should call isGatheringData() within this component for completeness
-		// as we do not want to rely on it being called in other components.
-		// This selector makes report requests which, if they return data, then the
-		// `data-available` transients are set. These transients are prefetched as
-		// a global on the next page load.
-		select( MODULES_ANALYTICS_4 ).isGatheringData();
-		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
-	} );
-
-	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
-	);
-
-	function handleDismissClick() {
-		showTooltip();
-
-		trackEvent(
-			`${ viewContext }_audiences-setup-cta-dashboard`,
-			'dismiss_notification'
-		).finally( async () => {
-			// For the first dismissal, we show the notification again in two weeks.
-			if ( dismissCount < 1 ) {
-				const twoWeeksInSeconds = WEEK_IN_SECONDS * 2;
-				await dismissPrompt(
-					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-					{
-						expiresInSeconds: twoWeeksInSeconds,
-					}
-				);
-			} else {
-				// For the second dismissal, dismiss the notification permanently.
-				await dismissPrompt(
-					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-				);
-			}
-		} );
-	}
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
@@ -194,17 +145,13 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( isTooltipVisible ) {
-			trackEvent(
-				`${ viewContext }_audiences-setup-cta-dashboard`,
-				'tooltip_view'
-			);
+			trackEvent( trackEventCategory, 'tooltip_view' );
 		}
-	}, [ isTooltipVisible, viewContext ] );
+	}, [ isTooltipVisible, trackEventCategory ] );
 
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
-				<WidgetNull />
 				<AdminMenuTooltip
 					title={ __(
 						'You can always enable groups from Settings later',
@@ -216,53 +163,78 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 					onDismiss={ () => {
-						trackEvent(
-							`${ viewContext }_audiences-setup-cta-dashboard`,
-							'tooltip_dismiss'
-						);
+						trackEvent( trackEventCategory, 'tooltip_dismiss' );
 					} }
-					tooltipStateKey={
-						AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-					}
+					tooltipStateKey={ id }
 				/>
 			</Fragment>
 		);
 	}
 
-	if (
-		audienceSegmentationSetupCompletedBy !== null ||
-		configuredAudiences === undefined ||
-		configuredAudiences?.length ||
-		! analyticsIsDataAvailableOnLoad ||
-		isDismissed ||
-		! dismissedPromptsLoaded ||
-		isDismissingPrompt
-	) {
+	const hideCTABanner =
+		( isCTADismissed || ! dismissedPromptsLoaded ) && ! isSaving;
+
+	// TODO Remove this hack
+	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
+	// This is because we don't want the component removed from the DOM as we have to still render
+	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
+	// checking for the dismissal state here.
+	if ( hideCTABanner && ! hasOAuthError && ! showErrorModal ) {
 		return null;
 	}
 
-	function handleEnableGroups() {
-		trackEvent(
-			`${ viewContext }_audiences-setup-cta-dashboard`,
-			'confirm_notification'
-		).finally( onEnableGroups );
-	}
+	const gaTrackingProps = {
+		gaTrackingEventArgs: {
+			category: trackEventCategory,
+		},
+	};
 
 	return (
 		<Fragment>
-			<SetupCTAContentWithIntersectionObserver
-				Widget={ Widget }
-				onEnableGroups={ handleEnableGroups }
-				isSaving={ isSaving }
-				dismissCount={ dismissCount }
-				handleDismissClick={ handleDismissClick }
-				onInView={ () => {
-					trackEvent(
-						`${ viewContext }_audiences-setup-cta-dashboard`,
-						'view_notification'
-					);
-				} }
-			/>
+			<Notification { ...gaTrackingProps }>
+				<NotificationWithSVG
+					id={ id }
+					title={ __(
+						'Learn how different types of visitors interact with your site',
+						'google-site-kit'
+					) }
+					description={ __(
+						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
+						'google-site-kit'
+					) }
+					actions={
+						<ActionsCTALinkDismiss
+							id={ id }
+							className="googlesitekit-setup-cta-banner__actions-wrapper"
+							ctaLabel={
+								isSaving
+									? __( 'Enabling groups', 'google-site-kit' )
+									: __( 'Enable groups', 'google-site-kit' )
+							}
+							onCTAClick={ onEnableGroups }
+							dismissOnCTAClick={ false }
+							dismissLabel={
+								isDismissalFinal
+									? __(
+											'Don’t show again',
+											'google-site-kit'
+									  )
+									: __( 'Maybe later', 'google-site-kit' )
+							}
+							onDismiss={ showTooltip }
+							dismissOptions={ {
+								skipHidingFromQueue: true,
+							} }
+							dismissExpires={ 2 * WEEK_IN_SECONDS }
+							{ ...gaTrackingProps }
+						/>
+					}
+					SVG={
+						breakpointSVGMap[ breakpoint ] ??
+						BannerGraphicsSVGDesktop
+					}
+				/>
+			</Notification>
 			{ ( showErrorModal || hasOAuthError ) && (
 				<AudienceErrorModal
 					hasOAuthError={ hasOAuthError }
@@ -282,8 +254,8 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 }
 
 AudienceSegmentationSetupCTAWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType,
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
 };
 
 export default compose(
