@@ -109,9 +109,15 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
+import AudienceSegmentationSetupCTAWidget, {
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
 
 export { registerStore } from './datastore';
 
@@ -685,33 +691,106 @@ export const registerWidgets = ( widgets ) => {
 	);
 };
 
-export const registerNotifications = ( notifications ) => {
-	if ( isFeatureEnabled( 'audienceSegmentation' ) ) {
-		notifications.registerNotification(
-			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-			{
-				Component: AudienceSegmentationSetupSuccessSubtleNotification,
-				priority: 10,
-				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-				checkRequirements: async ( { select, resolveSelect } ) => {
-					const analyticsConnected = await resolveSelect(
-						CORE_MODULES
-					).isModuleConnected( 'analytics-4' );
+export const ANALYTICS_4_NOTIFICATIONS = {
+	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
+		Component: AudienceSegmentationSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const analyticsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
-					if ( ! analyticsConnected ) {
-						return false;
-					}
-
-					await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-					const configuredAudiences =
-						select( CORE_USER ).getConfiguredAudiences();
-
-					// Only show this notification if the user has a set of configured audiences.
-					return Array.isArray( configuredAudiences );
-				},
-				isDismissible: true,
+			if ( ! analyticsConnected ) {
+				return false;
 			}
-		);
+
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+
+			// Only show this notification if the user has a set of configured audiences.
+			return Array.isArray( configuredAudiences );
+		},
+		isDismissible: true,
+		// Not officially part of the notifications API, just added here for the conditional
+		// inclusion based on the feature flag.
+		featureFlag: 'audienceSegmentation',
+	},
+	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+		Component: AudienceSegmentationSetupCTAWidget,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const analyticsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
+
+			if ( ! analyticsConnected ) {
+				return false;
+			}
+
+			await Promise.all( [
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					'analytics-4'
+				),
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				select( CORE_USER ).getAudienceSettings(),
+				select( MODULES_ANALYTICS_4 ).isGatheringData(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+			] );
+
+			const isDismissed = select( CORE_USER ).isPromptDismissed(
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+			);
+
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+
+			const analyticsIsDataAvailableOnLoad =
+				select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
+
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+
+			if (
+				audienceSegmentationSetupCompletedBy !== null ||
+				configuredAudiences === undefined ||
+				configuredAudiences?.length ||
+				! analyticsIsDataAvailableOnLoad ||
+				isDismissed
+			) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		dismissRetries: 1,
+		// Not officially part of the notifications API, just added here for the conditional
+		// inclusion based on the feature flag in the function bellow.
+		featureFlag: 'audienceSegmentation',
+	},
+};
+
+export const registerNotifications = ( notifications ) => {
+	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
+		if (
+			( ANALYTICS_4_NOTIFICATIONS[ notificationID ]?.featureFlag &&
+				isFeatureEnabled(
+					ANALYTICS_4_NOTIFICATIONS[ notificationID ]?.featureFlag
+				) ) ||
+			! ANALYTICS_4_NOTIFICATIONS[ notificationID ]?.featureFlag
+		) {
+			notifications.registerNotification(
+				notificationID,
+				ANALYTICS_4_NOTIFICATIONS[ notificationID ]
+			);
+		}
 	}
 };
