@@ -44,6 +44,7 @@ import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
+	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 import { isZeroReport } from '../../modules/analytics-4/utils';
@@ -62,6 +63,7 @@ import FirstPartyModeSetupBanner, {
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { isFeatureEnabled } from '../../features';
+import WebDataStreamNotAvailableNotification from '../../components/notifications/WebDataStreamNotAvailableNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -556,6 +558,54 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: ( { select } ) => {
 			return !! select( CORE_UI ).getValue(
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
+			);
+		},
+	},
+	'web-data-stream-not-available-notification': {
+		Component: WebDataStreamNotAvailableNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const viewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			await resolveSelect( CORE_MODULES ).getModules();
+
+			const ga4ModuleConnected = await select(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
+
+			const hasGTMScope = await select( CORE_USER ).hasScope( GTM_SCOPE );
+			const loggedInUserID = await select( CORE_USER ).getID();
+			const ga4OwnerID = await select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+			const isGA4ModuleOwner = () => {
+				// Bail early if we're in view-only dashboard or the GA4 module is not connected.
+				if ( viewOnly || ! ga4ModuleConnected ) {
+					return false;
+				}
+
+				if (
+					ga4OwnerID === undefined ||
+					loggedInUserID === undefined
+				) {
+					return undefined;
+				}
+
+				return ga4OwnerID === loggedInUserID;
+			};
+
+			const isWebDataStreamAvailable = await select(
+				MODULES_ANALYTICS_4
+			).isWebDataStreamAvailable();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				! isWebDataStreamAvailable
 			);
 		},
 	},
