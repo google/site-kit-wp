@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID
  *
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
- * @copyright 2024 Google LLC
+ * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
 
 /**
- * Class for a associating product ID to post meta.
+ * Class for associating product ID to post meta.
  *
  * @since n.e.x.t
  * @access private
