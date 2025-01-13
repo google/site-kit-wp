@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -68,12 +69,27 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
+		$defaults = array(
 			'ownerID'                           => 0,
 			'publicationID'                     => '',
 			'publicationOnboardingState'        => '',
 			'publicationOnboardingStateChanged' => false,
 		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$defaults = array_merge(
+				$defaults,
+				array(
+					'snippetMode'   => 'post_types',
+					'postTypes'     => array( 'post' ),
+					'productID'     => 'openaccess',
+					'productIDs'    => array(),
+					'paymentOption' => '',
+				)
+			);
+		}
+
+		return $defaults;
 	}
 
 	/**
