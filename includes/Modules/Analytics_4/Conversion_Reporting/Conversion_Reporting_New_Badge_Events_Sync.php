@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 /**
  * Class providing implementation of "new" badge for detected conversion reporting events.
  *
- * @since n.e.x.t
+ * @since 1.144.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 * @var Transients
 	 */
 	protected $transients;
@@ -37,7 +37,7 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param Transients $transients  Transients instance.
 	 */
@@ -50,7 +50,7 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 	/**
 	 * Saves new events badge to the expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param array $new_events New events array.
 	 */

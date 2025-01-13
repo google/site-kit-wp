@@ -36,6 +36,7 @@ export default function Notification( {
 	className,
 	gaTrackingEventArgs,
 	children,
+	onView,
 } ) {
 	const ref = useRef();
 	const viewed = useHasBeenViewed( id );
@@ -53,9 +54,12 @@ export default function Notification( {
 				gaTrackingEventArgs?.label,
 				gaTrackingEventArgs?.value
 			);
+
+			onView?.();
+
 			setIsViewedOnce( true );
 		}
-	}, [ viewed, trackEvents, isViewedOnce, gaTrackingEventArgs ] );
+	}, [ viewed, trackEvents, isViewedOnce, gaTrackingEventArgs, onView ] );
 
 	return (
 		<section id={ id } ref={ ref } className={ className }>
@@ -81,4 +85,5 @@ Notification.propTypes = {
 		value: PropTypes.string,
 	} ),
 	children: PropTypes.node,
+	onView: PropTypes.func,
 };

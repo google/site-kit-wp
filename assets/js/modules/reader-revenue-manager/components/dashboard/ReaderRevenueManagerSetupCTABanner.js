@@ -72,9 +72,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const readerRevenueManagerDocumentationURL =
-		'https://readerrevenue.withgoogle.com';
-
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
@@ -135,7 +132,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 				description={
 					<div className="googlesitekit-setup-cta-banner__description">
 						<p>
-							{ ' ' }
 							{ createInterpolateElement(
 								__(
 									'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
@@ -149,9 +145,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 												'Learn more',
 												'google-site-kit'
 											) }
-											url={
-												readerRevenueManagerDocumentationURL
-											}
+											url="https://readerrevenue.withgoogle.com"
 										/>
 									),
 								}

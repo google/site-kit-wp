@@ -28,6 +28,7 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import { Cell, Grid, Row } from '../../../../material-components';
+import Error from '../common/Error';
 
 export default function NotificationWithSVG( {
 	id,
@@ -77,13 +78,12 @@ export default function NotificationWithSVG( {
 
 											{ description }
 
+											<Error id={ id } />
 											{ actions }
 										</Cell>
 										<Cell
 											alignBottom
-											className={ classNames(
-												`googlesitekit-setup-cta-banner__svg-wrapper--${ id }`
-											) }
+											className={ `googlesitekit-setup-cta-banner__svg-wrapper--${ id }` }
 											{ ...svgSizeProps }
 										>
 											<SVG />
