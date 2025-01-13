@@ -93,29 +93,3 @@ export default function WebDataStreamNotAvailableNotification( {
 		</Notification>
 	);
 }
-
-/*
-ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
-			ctaLabel={ __( 'Update Analytics settings', 'google-site-kit' ) }
-			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			// This is arbitrarily set to 55 minutes to ensure that the notification
-			// will become ready to be displayed again in an hour.
-			dismissExpires={ MINUTE_IN_SECONDS * 55 }
- */
-
-/*
-* if ( measurementID === undefined ) {
-		// Wrap in the googlesitekit-publisher-win class to ensure the output is treated in the same way as BannerNotification,
-		// with only one instance visible on the screen at a time.
-		return (
-			<div className="googlesitekit-publisher-win">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<ProgressBar />
-						</Cell>
-					</Row>
-				</Grid>
-			</div>
-		);
-	}*/
