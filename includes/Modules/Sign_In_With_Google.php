@@ -39,6 +39,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
+use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
 use WP_Error;
 use WP_User;
 
@@ -118,7 +119,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				$settings = $this->get_settings();
 
 				$profile_reader = new Profile_Reader( $settings );
-				$authenticator  = new Authenticator( $this->user_options, $profile_reader );
+				$authenticator  = class_exists( 'woocommerce' )
+					? new WooCommerce_Authenticator( $this->user_options, $profile_reader )
+					: new Authenticator( $this->user_options, $profile_reader );
 
 				$this->handle_auth_callback( $authenticator );
 			}
