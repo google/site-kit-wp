@@ -137,6 +137,56 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				}
 			}
 
+			if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+				if ( isset( $option['snippetMode'] ) ) {
+					$valid_snippet_modes = array( 'post_types', 'per_post', 'sitewide' );
+					if ( ! in_array( $option['snippetMode'], $valid_snippet_modes, true ) ) {
+						$option['snippetMode'] = 'post_types';
+					}
+				}
+
+				if ( isset( $option['postTypes'] ) ) {
+					if ( ! is_array( $option['postTypes'] ) ) {
+						$option['postTypes'] = array( 'post' );
+					} else {
+						$filtered_post_types = array_values(
+							array_filter(
+								$option['postTypes'],
+								'is_string'
+							)
+						);
+						$option['postTypes'] = ! empty( $filtered_post_types )
+							? $filtered_post_types
+							: array( 'post' );
+					}
+				}
+
+				if ( isset( $option['productID'] ) ) {
+					if ( ! is_string( $option['productID'] ) ) {
+						$option['productID'] = 'openaccess';
+					}
+				}
+
+				if ( isset( $option['productIDs'] ) ) {
+					if ( ! is_array( $option['productIDs'] ) ) {
+						$option['productIDs'] = array();
+					} else {
+						$option['productIDs'] = array_values(
+							array_filter(
+								$option['productIDs'],
+								'is_string'
+							)
+						);
+					}
+				}
+
+				if ( isset( $option['paymentOption'] ) ) {
+					if ( ! is_string( $option['paymentOption'] ) ) {
+						$option['paymentOption'] = '';
+					}
+				}
+			}
+
 			return $option;
 		};
 	}
