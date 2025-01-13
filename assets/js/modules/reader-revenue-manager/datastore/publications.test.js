@@ -317,6 +317,43 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getPublicationOnboardingState()
 				).toEqual( onboardingState );
 			} );
+
+			it( 'should set the product IDs in state when products are provided', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [ 'product-1', 'product-2' ] );
+			} );
+
+			it( 'should set the payment option in state when a payment option is provided', () => {
+				const paymentOption = 'openaccess';
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOption,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( paymentOption );
+			} );
 		} );
 	} );
 
