@@ -338,21 +338,147 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( [ 'product-1', 'product-2' ] );
 			} );
 
-			it( 'should set the payment option in state when a payment option is provided', () => {
-				const paymentOption = 'openaccess';
+			it( 'should set empty product IDs array when products array is empty', () => {
+				const products = [];
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.selectPublication( {
 						publicationId: 'publication-id',
 						onboardingState: 'onboarding-state',
-						paymentOption,
+						products,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [] );
+			} );
+
+			it( 'should handle products with missing name property', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{}, // Missing name
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [ 'product-1', 'product-2' ] );
+			} );
+
+			it( 'should handle products with invalid name format', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'invalid-format' }, // No separator
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [ 'product-1', 'product-2' ] );
+			} );
+
+			it( 'should set the payment option in state when a payment option is provided', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions: {
+							contributions: null,
+							subscriptions: true,
+							noPayment: null,
+							thankStickers: null,
+						},
 					} );
 
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPaymentOption()
-				).toEqual( paymentOption );
+				).toEqual( 'subscriptions' );
+			} );
+
+			it( 'should set the first true payment option when multiple options are provided', () => {
+				const paymentOptions = {
+					subscriptions: null,
+					contributions: true,
+					noPayment: true,
+					thankStickers: null,
+				};
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( 'contributions' );
+			} );
+
+			it( 'should default to `openaccess` when all payment options are null', () => {
+				const paymentOptions = {
+					subscriptions: null,
+					contributions: null,
+					noPayment: null,
+					thankStickers: null,
+				};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( 'openaccess' );
+			} );
+
+			it( 'should default to `openaccess` when the payment options object is empty', () => {
+				const paymentOptions = {};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( 'openaccess' );
 			} );
 		} );
 	} );
