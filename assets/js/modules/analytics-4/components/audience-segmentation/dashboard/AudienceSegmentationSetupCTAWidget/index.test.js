@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
 import fetchMock from 'fetch-mock';
@@ -57,11 +52,14 @@ import {
 } from '../../../../datastore/__fixtures__';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import * as tracking from '../../../../../../util/tracking';
-import { getWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from '.';
+import { ANALYTICS_4_NOTIFICATIONS } from '../../../..';
+import { withNotificationComponentProps } from '../../../../../../googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
+import { mockSurveyEndpoints } from '../../../../../../../../tests/js/mock-survey-endpoints';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -74,9 +72,15 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	let registry;
 
-	const { Widget, WidgetNull } = getWidgetComponentProps(
-		'audienceSegmentationSetupCTA'
-	);
+	const notification =
+		ANALYTICS_4_NOTIFICATIONS[
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		];
+
+	const AudienceSegmentationSetupCTAComponent =
+		withNotificationComponentProps(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)( AudienceSegmentationSetupCTAWidget );
 
 	const audienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
@@ -101,12 +105,15 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	const testPropertyID = propertiesFixture[ 0 ]._id;
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
-
 		registry = createTestRegistry();
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+				notification
+			);
+
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
@@ -172,40 +179,25 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( null );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
 		jest.clearAllMocks();
 	} );
 
-	describe( 'widget rendering', () => {
-		it( 'should render the widget when the user has not permanently dismissed the prompt', () => {
-			const { queryByText, getByRole } = render(
-				<AudienceSegmentationSetupCTAWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>,
-				{
-					registry,
-				}
+	describe( 'checkRequirements', () => {
+		it( 'is active when user did not permanently dismissed the prompt', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 
-			expect(
-				queryByText(
-					/Learn how different types of visitors interact with your site/i
-				)
-			).toBeInTheDocument();
-
-			expect(
-				getByRole( 'button', { name: /Maybe later/i } )
-			).toBeInTheDocument();
-
-			expect(
-				queryByText( /Don’t show again/i )
-			).not.toBeInTheDocument();
+			expect( isActive ).toBe( true );
 		} );
 
-		it( 'should render the widget when no audience is configured and Google Analytics data is loaded on the page', async () => {
+		it( 'is active when no audience is configured and Google Analytics data is loaded on the page', async () => {
 			const settings = {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
@@ -220,60 +212,15 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
-			const { getByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 
-			// Wait for resolvers to finish to avoid an unhandled React state update.
-			await waitForRegistry();
-
-			expect(
-				getByText(
-					'Learn how different types of visitors interact with your site'
-				)
-			).toBeInTheDocument();
-
-			expect( getByText( 'Enable groups' ) ).toBeInTheDocument();
+			expect( isActive ).toBe( true );
 		} );
 
-		it( 'should track an event when the CTA is viewed', () => {
-			const { rerender } = render(
-				<AudienceSegmentationSetupCTAWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
-
-			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender(
-				<AudienceSegmentationSetupCTAWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
-			);
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_audiences-setup-cta-dashboard',
-				'view_notification'
-			);
-		} );
-
-		it( 'should not render the widget when no audience is configured and Google Analytics data is not loaded on the page', async () => {
+		it( 'is not active when no audience is configured and Google Analytics data is not loaded on the page', async () => {
 			const settings = {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
@@ -292,24 +239,15 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
-			const { queryByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 
-			// Wait for resolvers to finish to avoid an unhandled React state update.
-			await waitForRegistry();
-
-			expect(
-				queryByText(
-					/Learn how different types of visitors interact with your site/i
-				)
-			).not.toBeInTheDocument();
+			expect( isActive ).toBe( false );
 		} );
 
-		it( 'should not render the widget when configured audiences are present and Google Analytics data is loaded on the page', async () => {
+		it( 'is not active when configured audiences are present and Google Analytics data is loaded on the page', async () => {
 			const settings = {
 				configuredAudiences: [
 					audiencesFixture[ 0 ],
@@ -328,72 +266,25 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				.dispatch( CORE_USER )
 				.receiveGetAudienceSettings( settings );
 
-			const { queryByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 
-			// Wait for resolvers to finish to avoid an unhandled React state update.
-			await waitForRegistry();
-
-			expect(
-				queryByText(
-					/Learn how different types of visitors interact with your site/i
-				)
-			).not.toBeInTheDocument();
+			expect( isActive ).toBe( false );
 		} );
 
-		it( 'should not render the widget when the prompt dismiss count is not resolved', () => {
-			registry
-				.dispatch( CORE_USER )
-				.startResolution( 'getDismissedPrompts', [] );
-
-			const { container } = render(
-				<AudienceSegmentationSetupCTAWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>,
-				{
-					registry,
-				}
-			);
-			expect( container ).toBeEmptyDOMElement();
-		} );
-
-		it( 'should not render the widget when the prompt is being dismissed', async () => {
-			const settings = {
-				configuredAudiences: [],
-				isAudienceSegmentationWidgetHidden: false,
-			};
-
-			// Set the data availability on page load to true.
+		it( 'is not active when audienceSegmentationSetupCompletedBy has been set', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
+				.setAudienceSegmentationSetupCompletedBy( 1 );
 
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
-
-			registry
-				.dispatch( CORE_USER )
-				.setIsPromptDimissing(
-					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-					true
-				);
-
-			const { container, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
-				{
-					registry,
-				}
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 
-			await waitForRegistry();
-
-			expect( container ).toBeEmptyDOMElement();
+			expect( isActive ).toBe( false );
 		} );
 	} );
 
@@ -432,10 +323,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AudienceSegmentationSetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<AudienceSegmentationSetupCTAComponent />
 				</div>,
 				{
 					registry,
@@ -458,17 +346,14 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		} );
 
 		it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {
-			const { getByRole } = render(
+			const { getByRole, waitForRegistry } = render(
 				<div>
 					<div id="adminmenu">
 						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
 							Settings
 						</a>
 					</div>
-					<AudienceSegmentationSetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<AudienceSegmentationSetupCTAComponent />
 				</div>,
 				{
 					registry,
@@ -485,16 +370,21 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 			} );
 
+			await waitForRegistry();
+
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				1,
 				'mainDashboard_audiences-setup-cta-dashboard',
-				'dismiss_notification'
+				'tooltip_view'
 			);
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				2,
 				'mainDashboard_audiences-setup-cta-dashboard',
-				'tooltip_view'
+				'dismiss_notification',
+				// Since additional arguments are not passed, we need to mimick empty arguments to match the mocked call.
+				undefined,
+				undefined
 			);
 		} );
 
@@ -506,10 +396,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AudienceSegmentationSetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<AudienceSegmentationSetupCTAComponent />
 				</div>,
 				{
 					registry,
@@ -540,10 +427,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AudienceSegmentationSetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<AudienceSegmentationSetupCTAComponent />
 				</div>,
 				{
 					registry,
@@ -581,10 +465,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AudienceSegmentationSetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<AudienceSegmentationSetupCTAComponent />
 				</div>,
 				{
 					registry,
@@ -615,10 +496,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AudienceSegmentationSetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<AudienceSegmentationSetupCTAComponent />
 				</div>,
 				{
 					registry,
@@ -657,10 +535,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			} );
 
 			const { getByRole, queryByText, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>,
+				<AudienceSegmentationSetupCTAComponent />,
 				{
 					registry,
 				}
@@ -676,6 +551,8 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		} );
 
 		it( 'should initialise the list of configured audiences when CTA is clicked.', async () => {
+			mockSurveyEndpoints();
+
 			const settings = {
 				configuredAudiences: null,
 				isAudienceSegmentationWidgetHidden: false,
@@ -744,7 +621,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			muteFetch( expirableItemEndpoint );
 
 			const { container, getByRole, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				<AudienceSegmentationSetupCTAComponent />,
 				{
 					registry,
 				}
@@ -771,6 +648,8 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			expect(
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
+
+			await waitForDefaultTimeouts();
 
 			await waitFor( () => {
 				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
@@ -853,7 +732,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			muteFetch( expirableItemEndpoint );
 
 			const { getByRole } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				<AudienceSegmentationSetupCTAComponent />,
 				{
 					registry,
 				}
@@ -867,6 +746,8 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		} );
 
 		it( 'should track an event when the CTA is clicked', async () => {
+			mockSurveyEndpoints();
+
 			const settings = {
 				configuredAudiences: null,
 				isAudienceSegmentationWidgetHidden: false,
@@ -908,7 +789,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			muteFetch( expirableItemEndpoint );
 
 			const { getByRole, waitForRegistry } = render(
-				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				<AudienceSegmentationSetupCTAComponent />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -926,12 +807,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				);
 			} );
 
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_audiences-setup-cta-dashboard',
-				'confirm_notification'
-			);
-
 			// Dismiss prompt endpoint must be called when the CTA is clicked.
 			const dismissPromptEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismiss-prompt'
@@ -940,6 +815,11 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			await waitFor( () => {
 				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_audiences-setup-cta-dashboard',
+				'confirm_notification'
+			);
 		} );
 
 		describe( 'OAuth error modal', () => {
@@ -977,7 +857,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 					} );
 
 				( { getByRole, getByText } = render(
-					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					<AudienceSegmentationSetupCTAComponent />,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -1060,7 +940,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				} );
 
 				( { getByRole, getByText } = render(
-					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					<AudienceSegmentationSetupCTAComponent />,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -1154,7 +1034,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				} );
 
 				( { getByRole, getByText } = render(
-					<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+					<AudienceSegmentationSetupCTAComponent />,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
