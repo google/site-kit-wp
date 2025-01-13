@@ -1,5 +1,5 @@
 /**
- * Sign in with Google Common components.
+ * Reader Revenue Manager module's block editor entrypoint.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -15,12 +15,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { default as ButtonTextSelect } from './ButtonTextSelect';
-export { default as ButtonThemeSelect } from './ButtonThemeSelect';
-export { default as ButtonShapeSelect } from './ButtonShapeSelect';
-export { default as ClientIDTextField } from './ClientIDTextField';
-export { default as AnyoneCanRegisterReadOnly } from './AnyoneCanRegisterReadOnly';
-export { default as AnyoneCanRegisterDisabledNotice } from './AnyoneCanRegisterDisabledNotice';
-export { default as OneTapToggles } from './OneTapToggles';
-export { default as Preview } from './Preview';
