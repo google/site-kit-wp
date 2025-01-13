@@ -31,9 +31,11 @@ import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
 import { isValidConversionID } from '../utils/validation';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_CONVERSION_ID =
@@ -60,6 +62,35 @@ export async function submitChanges( { select, dispatch } ) {
 
 		if ( error ) {
 			return { error };
+		}
+	}
+
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+
+		if (
+			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				FPM_SETUP_CTA_BANNER_NOTIFICATION
+			)
+		) {
+			const { error: dismissError } =
+				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					FPM_SETUP_CTA_BANNER_NOTIFICATION
+				) ) || {};
+
+			if ( dismissError ) {
+				return { error: dismissError };
+			}
 		}
 	}
 
@@ -91,6 +122,7 @@ export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ADS ).haveSettingsChanged() ) {
 		dispatch( MODULES_ADS ).rollbackSettings();
 		dispatch( CORE_SITE ).resetConversionTrackingSettings();
+		dispatch( CORE_SITE ).resetFirstPartyModeSettings();
 	}
 }
 
@@ -98,18 +130,22 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	const { settings, savedSettings } = state;
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
 
 	if ( keys ) {
 		invariant(
 			isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
-				! haveConversionTrackingSettingsChanged,
+				! haveConversionTrackingSettingsChanged ||
+				haveFirstPartyModeSettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
 		);
 	}
 
 	invariant(
 		! isEqual( settings, savedSettings ) ||
-			haveConversionTrackingSettingsChanged,
+			haveConversionTrackingSettingsChanged ||
+			haveFirstPartyModeSettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 }

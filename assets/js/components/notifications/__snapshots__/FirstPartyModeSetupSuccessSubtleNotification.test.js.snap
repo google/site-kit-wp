@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FirstPartyModeSetupSuccessSubtleNotification should render correctly 1`] = `
+<div>
+  <section
+    id="setup-success-notification-fpm"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-subtle-notification googlesitekit-subtle-notification--success mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-subtle-notification__icon"
+          >
+            <svg />
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__content"
+          >
+            <p>
+              You successfully enabled First-party mode!
+            </p>
+            <p
+              class="googlesitekit-subtle-notification__secondary_description"
+            >
+              You can always disable it in Analytics or Ads settings
+            </p>
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__action"
+          >
+            <button
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Got it
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

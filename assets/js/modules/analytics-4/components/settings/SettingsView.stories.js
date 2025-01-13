@@ -28,7 +28,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const { accountSummaries, webDataStreamsBatch, googleTagSettings } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
@@ -40,7 +40,7 @@ const measurementID =
 function Template() {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics-4">
 				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 					<Grid>
 						<Row>
@@ -56,18 +56,38 @@ function Template() {
 }
 
 export const Default = Template.bind( null );
-Default.storyName = 'SettingsView';
+Default.storyName = 'Default';
+Default.scenario = {};
+Default.parameters = {
+	features: [ 'firstPartyMode' ],
+};
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'SettingsView ICE Enabled';
 IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
+IceEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
 
-export const IceDisabled = Template.bind( null );
-IceDisabled.storyName = 'SettingsView ICE Disabled';
-IceDisabled.args = {
+export const IceResolving = Template.bind( null );
+IceResolving.storyName = 'SettingsView ICE Resolving';
+IceResolving.args = {
+	enhancedConversionTracking: 'resolving',
+};
+IceResolving.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+
+export const FPMEnabled = Template.bind( null );
+FPMEnabled.storyName = 'SettingsView First-party Mode Enabled';
+FPMEnabled.args = {
 	enhancedConversionTracking: false,
+	firstPartyMode: true,
+};
+FPMEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
 };
 
 export default {
@@ -100,13 +120,21 @@ export default {
 						true
 					);
 
-				if ( args.hasOwnProperty( 'enhancedConversionTracking' ) ) {
+				if ( args.enhancedConversionTracking !== 'resolving' ) {
 					registry
 						.dispatch( CORE_SITE )
 						.setConversionTrackingEnabled(
-							args.enhancedConversionTracking
+							args.enhancedConversionTracking || false
 						);
 				}
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: args.firstPartyMode || false,
+						isFPMHealthy: args.firstPartyMode || false,
+						isScriptAccessEnabled: args.firstPartyMode || false,
+					} );
 			};
 
 			return (

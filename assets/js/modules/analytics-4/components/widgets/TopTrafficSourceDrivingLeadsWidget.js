@@ -38,6 +38,7 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
@@ -66,16 +67,19 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
 	);
 	const eventNames = [
-		'submit_lead_form',
-		'contact',
-		'generate_lead',
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 	].filter( ( item ) => detectedEvents?.includes( item ) );
 
 	if (
-		eventNames.includes( 'submit_lead_form' ) &&
-		eventNames.includes( 'contact' )
+		eventNames.includes( ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ) &&
+		eventNames.includes( ENUM_CONVERSION_EVENTS.CONTACT )
 	) {
-		eventNames.splice( eventNames.indexOf( 'contact' ), 1 );
+		eventNames.splice(
+			eventNames.indexOf( ENUM_CONVERSION_EVENTS.CONTACT ),
+			1
+		);
 	}
 
 	const totalLeadsReportOptions = {

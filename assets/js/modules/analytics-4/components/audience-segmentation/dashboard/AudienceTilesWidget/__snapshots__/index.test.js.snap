@@ -9,7 +9,7 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
       class="googlesitekit-widget__body"
     >
       <div
-        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
         dir="ltr"
         role="tablist"
       >
@@ -66,16 +66,11 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
             class="googlesitekit-widget__body"
           >
             <div
-              class="googlesitekit-audience-segmentation-tile googlesitekit-audience-segmentation-tile--partial-data"
+              class="googlesitekit-audience-segmentation-tile"
             >
               <div
                 class="googlesitekit-audience-segmentation-tile__metrics"
               >
-                <span
-                  class="googlesitekit-audience-segmentation-partial-data-notice"
-                >
-                  Still collecting full data for this timeframe, partial data is displayed for this group
-                </span>
                 <div
                   class="googlesitekit-audience-segmentation-tile-metric"
                 >
@@ -374,7 +369,7 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
       class="googlesitekit-widget__body"
     >
       <div
-        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
         dir="ltr"
         role="tablist"
       >
@@ -740,11 +735,6 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                           6
                         </div>
                       </div>
-                      <span
-                        class="googlesitekit-audience-segmentation-partial-data-notice"
-                      >
-                        Still collecting full data for this timeframe, partial data is displayed for this metric
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -920,7 +910,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
       class="googlesitekit-widget__body"
     >
       <div
-        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
         dir="ltr"
         role="tablist"
       >
@@ -1005,16 +995,11 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
             class="googlesitekit-widget__body"
           >
             <div
-              class="googlesitekit-audience-segmentation-tile googlesitekit-audience-segmentation-tile--partial-data"
+              class="googlesitekit-audience-segmentation-tile"
             >
               <div
                 class="googlesitekit-audience-segmentation-tile__metrics"
               >
-                <span
-                  class="googlesitekit-audience-segmentation-partial-data-notice"
-                >
-                  Still collecting full data for this timeframe, partial data is displayed for this group
-                </span>
                 <div
                   class="googlesitekit-audience-segmentation-tile-metric"
                 >
@@ -1313,7 +1298,7 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
       class="googlesitekit-widget__body"
     >
       <div
-        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs"
+        class="mdc-tab-bar googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
         dir="ltr"
         role="tablist"
       >
@@ -1370,16 +1355,11 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
             class="googlesitekit-widget__body"
           >
             <div
-              class="googlesitekit-audience-segmentation-tile googlesitekit-audience-segmentation-tile--partial-data"
+              class="googlesitekit-audience-segmentation-tile"
             >
               <div
                 class="googlesitekit-audience-segmentation-tile__metrics"
               >
-                <span
-                  class="googlesitekit-audience-segmentation-partial-data-notice"
-                >
-                  Still collecting full data for this timeframe, partial data is displayed for this group
-                </span>
                 <div
                   class="googlesitekit-audience-segmentation-tile-metric"
                 >

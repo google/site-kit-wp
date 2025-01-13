@@ -37,6 +37,7 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './AudienceSegmentationIntroductoryOverlayNotification';
 import * as scrollUtils from '../../../../../util/scroll';
+import * as tracking from '../../../../../util/tracking';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -49,6 +50,9 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 );
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	let registry;
 
@@ -56,26 +60,38 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
+
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
 				active: true,
+				connected: true,
 				setupComplete: true,
 			},
 		] );
-	} );
-
-	it( 'should render an introductory overlay notification', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const userID = registry.select( CORE_USER ).getID();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
+
+		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			configuredAudiences: [],
+			isAudienceSegmentationWidgetHidden: false,
+			didSetAudiences: true,
+		} );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
+	it( 'should render an introductory overlay notification', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByText, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
@@ -92,6 +108,12 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				'You can now learn more about your site visitor groups by comparing different metrics'
 			)
 		).toBeInTheDocument();
+
+		// Make sure that the component is tracking the view event.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'view_notification'
+		);
 	} );
 
 	it( 'should return null if the notification is dismissed', async () => {
@@ -112,9 +134,74 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should return null if the audiences widget area is hidden', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		registry
+			.dispatch( CORE_USER )
+			.setAudienceSegmentationWidgetHidden( true );
+
+		const { container, waitForRegistry } = render(
+			<AudienceSegmentationIntroductoryOverlayNotification />,
+			{
+				registry,
+				context: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { getByRole, waitForRegistry } = render(
+			<AudienceSegmentationIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'view_notification'
+		);
+
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: JSON.stringify( [
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+			] ),
+			status: 200,
+		} );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+		} );
+
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'dismiss_notification'
+		);
 	} );
 
 	it( 'should scroll to the traffic widget area and dismiss the notification when the notification is clicked', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
 		getNavigationalScrollTopSpy.mockImplementation(
 			( selector, breakpoint ) => {
 				if (
@@ -129,14 +216,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			}
 		);
 
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const userID = registry.select( CORE_USER ).getID();
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
-
 		const { getByRole, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
 			{
@@ -146,6 +225,12 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		);
 
 		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'view_notification'
+		);
 
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: JSON.stringify( [
@@ -164,16 +249,16 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			top: 12345,
 			behavior: 'smooth',
 		} );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
+			'confirm_notification'
+		);
 	} );
 
 	it( 'should not render if the dashboard is entity dashboard', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const userID = registry.select( CORE_USER ).getID();
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
 		const { container, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotification />,
@@ -186,5 +271,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 } );

@@ -38,6 +38,7 @@ import {
 	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'useEnableAudienceGroup', () => {
 	let registry;
@@ -57,6 +58,10 @@ describe( 'useEnableAudienceGroup', () => {
 	);
 	const expirableItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+	);
+
+	const syncAvailableCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 	);
 
 	beforeEach( () => {
@@ -171,6 +176,11 @@ describe( 'useEnableAudienceGroup', () => {
 			body: audiencesFixture,
 		} );
 
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
+		} );
+
 		fetchMock.postOnce( audienceSettingsEndpoint, {
 			status: 200,
 			body: {
@@ -184,6 +194,8 @@ describe( 'useEnableAudienceGroup', () => {
 
 		muteFetch( reportEndpoint );
 		muteFetch( expirableItemEndpoint );
+
+		mockSurveyEndpoints();
 
 		// Set autoSubmit to true.
 		registry
@@ -210,6 +222,11 @@ describe( 'useEnableAudienceGroup', () => {
 			body: audiencesFixture,
 		} );
 
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
+		} );
+
 		fetchMock.postOnce( audienceSettingsEndpoint, {
 			status: 200,
 			body: {
@@ -223,6 +240,8 @@ describe( 'useEnableAudienceGroup', () => {
 
 		muteFetch( reportEndpoint );
 		muteFetch( expirableItemEndpoint );
+
+		mockSurveyEndpoints();
 
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,

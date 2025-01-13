@@ -69,4 +69,32 @@
 			opacity: 1;
 		}
 	}
+
+	.googlesitekit-tab-bar--start-aligned-high-contrast {
+		border-bottom: 1px solid $c-utility-divider;
+
+		.mdc-tab-scroller__scroll-content {
+			.mdc-tab {
+				flex: none;
+				height: 56px;
+
+				.mdc-tab__content {
+					color: $c-surfaces-on-surface;
+					font-size: $fs-label-sm;
+					font-weight: $fw-medium;
+					letter-spacing: -0.1px;
+					line-height: $lh-label-sm;
+					padding-top: 2px;
+				}
+
+				&.mdc-tab--active .mdc-tab__content {
+					color: $c-content-primary;
+				}
+			}
+		}
+
+		.mdc-tab-indicator > .mdc-tab-indicator__content--underline {
+			height: 3px;
+		}
+	}
 }

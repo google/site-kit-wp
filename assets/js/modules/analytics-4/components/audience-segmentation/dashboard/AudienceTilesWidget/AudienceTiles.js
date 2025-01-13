@@ -53,7 +53,9 @@ import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
 import MaybePlaceholderTile from './MaybePlaceholderTile';
 import useAudienceTilesReports from '../../../../hooks/useAudienceTilesReports';
 import { isInvalidCustomDimensionError } from '../../../../utils/custom-dimensions';
+import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
+import { trackEvent } from '../../../../../../util';
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -64,6 +66,7 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 };
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
 	const isTabbedBreakpoint =
@@ -458,6 +461,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
+	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+	let audienceTileNumber = 0;
+
 	return (
 		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
 			{ allTilesError === false &&
@@ -467,7 +475,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 					<TabBar
 						// Force re-render when the number of audiences change, this is a workaround for a bug in TabBar which maintains an internal list of tabs but doesn't update it when the number of tabs is reduced.
 						key={ visibleAudiences.length }
-						className="googlesitekit-widget-audience-tiles__tabs"
+						className="googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
 						activeIndex={ activeTileIndex }
 						handleActiveIndexUpdate={ ( index ) =>
 							setActiveTile( visibleAudiences[ index ] )
@@ -508,6 +516,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 										<InfoTooltip
 											title={ tooltipMessage }
 											tooltipClassName="googlesitekit-info-tooltip__content--audience"
+											onOpen={ () => {
+												trackEvent(
+													`${ viewContext }_audiences-tile`,
+													'view_tile_tooltip',
+													audienceSlug
+												);
+											} }
 										/>
 									</Tab>
 								);
@@ -572,6 +587,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							return (
 								<AudienceTileError
 									key={ audienceResourceName }
+									audienceSlug={ audienceSlug }
 									errors={
 										individualTileErrors[
 											audienceResourceName
@@ -584,6 +600,8 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						return (
 							<AudienceTile
 								key={ audienceResourceName }
+								audienceTileNumber={ audienceTileNumber++ }
+								audienceSlug={ audienceSlug }
 								title={ audienceName }
 								infoTooltip={
 									<AudienceTooltipMessage

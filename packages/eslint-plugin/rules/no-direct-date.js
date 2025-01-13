@@ -53,7 +53,7 @@ module.exports = {
 			NewExpression( node ) {
 				if (
 					node.callee.name === 'Date' &&
-					node.arguments.length === 0
+					node.arguments.length <= 2
 				) {
 					report( node );
 				}

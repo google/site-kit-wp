@@ -82,16 +82,20 @@ class User_InputTest extends TestCase {
 		// If settings are not set, it returns empty default values.
 		$this->assertEquals(
 			array(
-				'purpose'       => array(
+				'purpose'                 => array(
 					'scope'  => 'site',
 					'values' => array(),
 				),
-				'postFrequency' => array(
+				'postFrequency'           => array(
 					'scope'  => 'user',
 					'values' => array(),
 				),
-				'goals'         => array(
+				'goals'                   => array(
 					'scope'  => 'user',
+					'values' => array(),
+				),
+				'includeConversionEvents' => array(
+					'scope'  => 'site',
 					'values' => array(),
 				),
 			),
@@ -113,19 +117,24 @@ class User_InputTest extends TestCase {
 				),
 			)
 		);
+
 		$this->assertEquals(
 			array(
-				'purpose'       => array(
+				'purpose'                 => array(
 					'values' => array(),
 					'scope'  => 'site',
 				),
-				'postFrequency' => array(
+				'postFrequency'           => array(
 					'values' => array( 'daily' ),
 					'scope'  => 'user',
 				),
-				'goals'         => array(
+				'goals'                   => array(
 					'values' => array( 'goal1', 'goal2' ),
 					'scope'  => 'user',
+				),
+				'includeConversionEvents' => array(
+					'scope'  => 'site',
+					'values' => array(),
 				),
 			),
 			$this->user_input->get_answers()
@@ -135,9 +144,14 @@ class User_InputTest extends TestCase {
 		update_option(
 			Site_Specific_Answers::OPTION,
 			array(
-				'purpose' => array(
+				'purpose'                 => array(
 					'values'     => array( 'purpose1' ),
 					'scope'      => 'site',
+					'answeredBy' => $this->user_id,
+				),
+				'includeConversionEvents' => array(
+					'scope'      => 'site',
+					'values'     => array( 'contact' ),
 					'answeredBy' => $this->user_id,
 				),
 			)
@@ -158,18 +172,23 @@ class User_InputTest extends TestCase {
 		);
 		$this->assertEquals(
 			array(
-				'purpose'       => array(
+				'postFrequency'           => array(
+					'scope'  => 'user',
+					'values' => array( 'daily' ),
+				),
+				'goals'                   => array(
+					'scope'  => 'user',
+					'values' => array( 'goal1', 'goal2' ),
+				),
+				'purpose'                 => array(
 					'scope'      => 'site',
 					'values'     => array( 'purpose1' ),
 					'answeredBy' => $this->user_id,
 				),
-				'postFrequency' => array(
-					'scope'  => 'user',
-					'values' => array( 'daily' ),
-				),
-				'goals'         => array(
-					'scope'  => 'user',
-					'values' => array( 'goal1', 'goal2' ),
+				'includeConversionEvents' => array(
+					'scope'      => 'site',
+					'values'     => array( 'contact' ),
+					'answeredBy' => $this->user_id,
 				),
 			),
 			$this->user_input->get_answers()
@@ -188,18 +207,22 @@ class User_InputTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'purpose'       => array(
+				'purpose'                 => array(
 					'scope'      => 'site',
 					'values'     => array( 'purpose1' ),
 					'answeredBy' => $this->user_id,
 				),
-				'postFrequency' => array(
+				'postFrequency'           => array(
 					'scope'  => 'user',
 					'values' => array( 'daily' ),
 				),
-				'goals'         => array(
+				'goals'                   => array(
 					'scope'  => 'user',
 					'values' => array( 'goal1', 'goal2' ),
+				),
+				'includeConversionEvents' => array(
+					'scope'  => 'site',
+					'values' => array(),
 				),
 			),
 			$response

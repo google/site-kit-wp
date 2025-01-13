@@ -12,8 +12,13 @@
 	}
 
 	svg {
-		color: $c-yellow-y-100;
 		flex-shrink: 0;
+	}
+}
+
+.googlesitekit-widget--InfoNoticeWidget {
+	svg {
+		color: $c-yellow-y-100;
 	}
 }
 

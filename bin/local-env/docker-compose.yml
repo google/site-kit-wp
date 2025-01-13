@@ -34,6 +34,7 @@ services:
     user: xfs
     volumes:
       - wordpress_data:/var/www/html
+      - ./wp-cli-php.ini:/usr/local/etc/php/conf.d/wp-cli-php.ini
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:

@@ -17,56 +17,53 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { Button } from 'googlesitekit-components';
-import SubtleNotification from '../../SubtleNotification';
+import SubtleNotification from '../../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
-import useDashboardType, {
-	DASHBOARD_TYPE_MAIN,
-} from '../../../../../hooks/useDashboardType';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+import Dismiss from '../../../../../googlesitekit/notifications/components/common/Dismiss';
+import CTALinkSubtle from '../../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
-	'audience_segmentation_setup_success_notification';
+	'setup-success-notification-audiences';
 
-export default function AudienceSegmentationSetupSuccessSubtleNotification() {
+export default function AudienceSegmentationSetupSuccessSubtleNotification( {
+	id,
+	Notification,
+} ) {
 	const breakpoint = useBreakpoint();
-	const dashboardType = useDashboardType();
-	const viewOnly = useViewOnly();
-
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const isAudienceSegmentationWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isAudienceSegmentationWidgetHidden()
 	);
 
-	const isDismissed = useSelect( ( select ) => {
-		if ( ! dashboardType || viewOnly ) {
-			return null;
+	useEffect( () => {
+		if ( isAudienceSegmentationWidgetHidden ) {
+			dismissNotification(
+				AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
+			);
 		}
-
-		return select( CORE_USER ).isItemDismissed(
-			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
-		);
-	} );
-
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	function dismissNotificationForUser() {
-		dismissItem( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
-	}
+	}, [ dismissNotification, isAudienceSegmentationWidgetHidden ] );
 
 	const scrollToWidgetArea = ( event ) => {
 		event.preventDefault();
 
-		dismissNotificationForUser();
+		dismissNotification( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
 
 		setTimeout( () => {
 			const widgetClass =
@@ -79,37 +76,41 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification() {
 		}, 50 );
 	};
 
-	const shouldShowNotification =
-		// Only show this notification on the main dashboard, where the Setup CTA Banner is shown.
-		dashboardType === DASHBOARD_TYPE_MAIN &&
-		// Don't show this notification on the view-only dashboard.
-		! viewOnly &&
-		// Don't show this notification if `isDismissed` call is still loading
-		// or the user has dismissed it.
-		! isDismissed &&
-		// Only show this notification if the user has a set of configured audiences.
-		Array.isArray( configuredAudiences );
-
-	if ( ! shouldShowNotification ) {
+	if ( isAudienceSegmentationWidgetHidden === undefined ) {
 		return null;
 	}
 
 	return (
-		<SubtleNotification
-			title={ __(
-				'Success! Visitor groups added to your dashboard',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
-				'google-site-kit'
-			) }
-			onDismiss={ dismissNotificationForUser }
-			additionalCTA={
-				<Button onClick={ scrollToWidgetArea }>
-					{ __( 'Show me', 'google-site-kit' ) }
-				</Button>
-			}
-		/>
+		<Notification>
+			<SubtleNotification
+				title={ __(
+					'Success! Visitor groups added to your dashboard',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
+					'google-site-kit'
+				) }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					/>
+				}
+				additionalCTA={
+					<CTALinkSubtle
+						id={ id }
+						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
+						onCTAClick={ scrollToWidgetArea }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }
+
+AudienceSegmentationSetupSuccessSubtleNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};

@@ -36,14 +36,11 @@ import { Button } from 'googlesitekit-components';
 import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import whenActive from '../../util/when-active';
 import {
 	AdminMenuTooltip,
@@ -52,37 +49,30 @@ import {
 } from '../AdminMenuTooltip';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { useFeature } from '../../hooks/useFeature';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const viewContext = useViewContext();
+	const displayCTAWidget = useDisplayCTAWidget();
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-
-	// We should call isGatheringData() within this component for completeness as we do not want to rely
-	// on it being called in other components. This selector makes report requests which, if they return
-	// data, then the `data-available` transients are set. These transients are prefetched as a global on
-	// the next page load.
-	const searchConsoleIsDataAvailableOnLoad = useSelect( ( select ) => {
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
-		return select( MODULES_SEARCH_CONSOLE ).isDataAvailableOnLoad();
-	} );
-	const analyticsIsDataAvailableOnLoad = useSelect( ( select ) => {
-		select( MODULES_ANALYTICS_4 ).isGatheringData();
-		return select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
-	} );
+	const fullScreenSelectionLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
+	);
 
 	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	const { isTooltipVisible } = useTooltipState(
 		KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 	);
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( KEY_METRICS_SETUP_CTA_WIDGET_SLUG )
-	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const dismissCallback = async () => {
 		await trackEvent(
@@ -97,13 +87,25 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		trackEvent( `${ viewContext }_kmw`, 'tooltip_dismiss' );
 	}, [ viewContext ] );
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const openMetricsSelectionPanel = useCallback( () => {
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+		if ( isConversionReportingEnabled ) {
+			navigateTo( fullScreenSelectionLink );
+		} else {
+			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+		}
+
 		trackEvent(
 			`${ viewContext }_kmw-cta-notification`,
 			'confirm_pick_own_metrics'
 		);
-	}, [ setValue, viewContext ] );
+	}, [
+		navigateTo,
+		fullScreenSelectionLink,
+		viewContext,
+		isConversionReportingEnabled,
+		setValue,
+	] );
 
 	const onGetTailoredMetricsClick = useCallback( () => {
 		trackEvent(
@@ -142,11 +144,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	if (
-		isDismissed !== false ||
-		! analyticsIsDataAvailableOnLoad ||
-		! searchConsoleIsDataAvailableOnLoad
-	) {
+	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;
 	}
 
@@ -154,16 +152,18 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => (
-				<KeyMetricsCTAFooter onActionClick={ dismissCallback } />
+				<KeyMetricsCTAFooter
+					onActionClick={ openMetricsSelectionPanel }
+				/>
 			) }
 		>
 			<KeyMetricsCTAContent
 				title={ __(
-					'Get metrics and suggestions tailored to your specific site goals',
+					'Get personalized suggestions for user interaction metrics based on your goals',
 					'google-site-kit'
 				) }
 				description={ __(
-					'Answer 3 questions to show relevant stats for your site',
+					'Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site.',
 					'google-site-kit'
 				) }
 				actions={
@@ -176,11 +176,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 						>
 							{ __( 'Get tailored metrics', 'google-site-kit' ) }
 						</Button>
-						<Button tertiary onClick={ openMetricsSelectionPanel }>
-							{ __(
-								'I’ll pick metrics myself',
-								'google-site-kit'
-							) }
+						<Button tertiary onClick={ dismissCallback }>
+							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 					</Fragment>
 				}

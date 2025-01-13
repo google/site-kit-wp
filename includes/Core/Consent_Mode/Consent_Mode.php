@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Plugin_Upgrader;
 use Plugin_Installer_Skin;
@@ -55,15 +57,25 @@ class Consent_Mode {
 	 * Constructor.
 	 *
 	 * @since 1.122.0
+	 * @since 1.142.0 Introduced Modules instance as an argument.
 	 *
 	 * @param Context $context Plugin context.
+	 * @param Modules $modules Modules instance.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct(
+		Context $context,
+		Modules $modules,
+		Options $options = null
+	) {
 		$this->context               = $context;
 		$options                     = $options ?: new Options( $context );
 		$this->consent_mode_settings = new Consent_Mode_Settings( $options );
-		$this->rest_controller       = new REST_Consent_Mode_Controller( $this->consent_mode_settings );
+		$this->rest_controller       = new REST_Consent_Mode_Controller(
+			$modules,
+			$this->consent_mode_settings,
+			$options
+		);
 	}
 
 	/**
@@ -231,16 +243,20 @@ class Consent_Mode {
 
 		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
 		// Only code that passes data from PHP to JS should be in this file.
-		?>
-<!-- <?php echo esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ); ?> -->
-<script id='google_gtagjs-js-consent-mode-data-layer'>
-window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', <?php echo wp_json_encode( $consent_defaults ); ?>);
-window._googlesitekitConsentCategoryMap = <?php	echo wp_json_encode( $consent_category_map ); ?>;
-window._googlesitekitConsents = <?php echo wp_json_encode( $consent_defaults ); ?>
-</script>
-<!-- <?php echo esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
+		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+		BC_Functions::wp_print_inline_script_tag(
+			join(
+				"\n",
+				array(
+					'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}',
+					sprintf( "gtag('consent', 'default', %s);", wp_json_encode( $consent_defaults ) ),
+					sprintf( 'window._googlesitekitConsentCategoryMap = %s;', wp_json_encode( $consent_category_map ) ),
+					sprintf( 'window._googlesitekitConsents = %s;', wp_json_encode( $consent_defaults ) ),
+				)
+			),
+			array( 'id' => 'google_gtagjs-js-consent-mode-data-layer' )
+		);
+		printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**

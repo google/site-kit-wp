@@ -30,6 +30,7 @@
 		.googlesitekit-setup-cta-banner__title {
 			@media (min-width: $width-tablet + 1 + px) {
 				font-size: $fs-headline-sm;
+				font-weight: $fw-medium;
 				line-height: $lh-headline-sm;
 			}
 
@@ -53,11 +54,11 @@
 		}
 
 		.googlesitekit-setup-cta-banner__actions-wrapper {
-			gap: 4px;
+			gap: $cta-gap-phone;
 			margin-bottom: 27px;
 
-			@media (min-width: $width-desktop + 1 + px) {
-				gap: 10px;
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 				margin-bottom: 0;
 				padding: 10px 0;
 			}

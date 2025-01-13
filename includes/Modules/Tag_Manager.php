@@ -173,22 +173,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		return array(
 			'tagmanager_account_id'       => array(
-				'label' => __( 'Tag Manager account ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'tagmanager_container_id'     => array(
-				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Container ID', 'google-site-kit' ),
 				'value' => $settings['containerID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['containerID'], 7 ),
 			),
 			'tagmanager_amp_container_id' => array(
-				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: AMP Container ID', 'google-site-kit' ),
 				'value' => $settings['ampContainerID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
 			),
 			'tagmanager_use_snippet'      => array(
-				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
@@ -445,11 +445,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Gets the configured TagManager service instance.
 	 *
 	 * @since 1.2.0
+	 * @since 1.142.0 Made method public.
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.
 	 */
-	private function get_tagmanager_service() {
+	public function get_tagmanager_service() {
 		return $this->get_service( 'tagmanager' );
 	}
 
@@ -465,7 +466,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
-			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
 		);
 	}

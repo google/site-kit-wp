@@ -34,13 +34,18 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
+import {
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+	UNSTAGED_SELECTION,
+} from '../constants';
 import { SelectionPanelItem } from '../../SelectionPanel';
 
 export default function MetricItem( {
 	slug,
 	title,
 	description,
+	isNewlyDetected,
 	savedItemSlugs = [],
 } ) {
 	const disconnectedModules = useSelect( ( select ) => {
@@ -74,12 +79,18 @@ export default function MetricItem( {
 				KEY_METRICS_SELECTION_FORM,
 				KEY_METRICS_SELECTED
 			);
+			const currentlySelectedMetrics = event.target.checked
+				? metrics.concat( [ slug ] )
+				: metrics.filter(
+						( selectedMetric ) => selectedMetric !== slug
+				  );
+
 			setValues( KEY_METRICS_SELECTION_FORM, {
-				[ KEY_METRICS_SELECTED ]: event.target.checked
-					? metrics.concat( [ slug ] )
-					: metrics.filter(
-							( selectedMetric ) => selectedMetric !== slug
-					  ),
+				[ KEY_METRICS_SELECTED ]: currentlySelectedMetrics,
+				// Unstaged list creates a copy of KM selected list, but unstaged
+				// is stored temporary to collect the final selection that will
+				// be transfered over to effective selection on tab change and then it is reset.
+				[ UNSTAGED_SELECTION ]: currentlySelectedMetrics,
 			} );
 		},
 		[ getValue, setValues, slug ]
@@ -97,6 +108,7 @@ export default function MetricItem( {
 			slug={ slug }
 			title={ title }
 			description={ description }
+			isNewlyDetected={ isNewlyDetected }
 			isItemSelected={ isMetricSelected }
 			isItemDisabled={ isMetricDisabled }
 			onCheckboxChange={ onCheckboxChange }
@@ -125,5 +137,6 @@ MetricItem.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
+	isNewlyDetected: PropTypes.bool,
 	savedItemSlugs: PropTypes.array,
 };

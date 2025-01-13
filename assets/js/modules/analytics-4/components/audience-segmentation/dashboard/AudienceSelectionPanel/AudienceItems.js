@@ -26,12 +26,12 @@ import { useDeepCompareEffect } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
@@ -44,11 +44,15 @@ import { WEEK_IN_SECONDS } from '../../../../../../util';
 import AudienceItem from './AudienceItem';
 import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
 import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
+import AddGroupNotice from './AddGroupNotice';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
+import AudienceCreationNotice from './AudienceCreationNotice';
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {
 	const [ firstView, setFirstView ] = useState( true );
 	const { setExpirableItemTimers } = useDispatch( CORE_USER );
 	const { syncAvailableAudiences } = useDispatch( MODULES_ANALYTICS_4 );
+	const viewOnlyDashboard = useViewOnly();
 
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
@@ -63,24 +67,15 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			return;
 		}
 
-		syncAvailableAudiences();
+		const syncAudiences = async () => {
+			await syncAvailableAudiences();
+		};
+
 		setFirstView( false );
+		syncAudiences();
 	}, [ firstView, isOpen, syncAvailableAudiences ] );
 
-	useEffect( () => {
-		// @TODO Explore more elegant option to re-establish the focus. After `syncAvailableAudiences`
-		// happens the focus is lost, even without preview block being shown.
-		if ( ! isLoading && isOpen ) {
-			const firstInput = document.querySelector(
-				'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-item input'
-			);
-			if ( firstInput ) {
-				firstInput.focus();
-			}
-		}
-	}, [ isLoading, isOpen ] );
-
-	const availableAudiences = useSelect( ( select ) => {
+	const availableAudiences = useInViewSelect( ( select ) => {
 		const {
 			getConfigurableAudiences,
 			getReport,
@@ -277,6 +272,12 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				isLoading ? AudienceItemPreviewBlock : AudienceItem
 			}
 			savedItemSlugs={ savedItemSlugs }
+			notice={
+				<Fragment>
+					<AddGroupNotice />
+					{ ! viewOnlyDashboard && <AudienceCreationNotice /> }
+				</Fragment>
+			}
 		/>
 	);
 }

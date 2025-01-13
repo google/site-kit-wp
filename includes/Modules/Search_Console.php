@@ -165,7 +165,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	public function get_debug_fields() {
 		return array(
 			'search_console_property' => array(
-				'label' => __( 'Search Console property', 'google-site-kit' ),
+				'label' => __( 'Search Console: Property', 'google-site-kit' ),
 				'value' => $this->get_property_id(),
 			),
 		);

@@ -25,7 +25,8 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useRef } from '@wordpress/element';
+import { Fragment, useEffect, useCallback, useRef } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,8 +41,11 @@ import { trackEvent } from '../../util';
 import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
 import {
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	getUserInputAnswersDescription,
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
@@ -49,15 +53,20 @@ import LoadingWrapper from '../LoadingWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
+import { useFeature } from '../../hooks/useFeature';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function UserInputPreviewGroup( {
 	slug,
 	title,
+	subtitle,
 	values,
 	options = {},
 	loading = false,
 	settingsView = false,
+	onChange,
 } ) {
+	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const viewContext = useViewContext();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
@@ -78,6 +87,37 @@ export default function UserInputPreviewGroup( {
 	const saveSettingsError = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
+	const savedPurposeAnswer = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_QUESTION_SNAPSHOT,
+			USER_INPUT_QUESTIONS_PURPOSE
+		)
+	);
+	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
+
+	useEffect( () => {
+		// If user purpose is opened currently saved value was snapshot
+		// and it will differ from previous value. Once modal is closed
+		// the edit button will be toggled, and snapshotted value will be undefined
+		// while previously it had value, that will mark that modal is closed and we should
+		// return focus to the edit button.
+		if (
+			isConversionReportingEnabled &&
+			slug === USER_INPUT_QUESTIONS_PURPOSE &&
+			previousPurposeAnswer !== savedPurposeAnswer &&
+			savedPurposeAnswer === undefined
+		) {
+			setTimeout( () => {
+				editButtonRef.current?.focus?.();
+			}, 100 );
+		}
+	}, [
+		isConversionReportingEnabled,
+		savedPurposeAnswer,
+		previousPurposeAnswer,
+		slug,
+	] );
+
 	const { setValues } = useDispatch( CORE_UI );
 	const { saveUserInputSettings, resetUserInputSettings } =
 		useDispatch( CORE_USER );
@@ -116,11 +156,19 @@ export default function UserInputPreviewGroup( {
 			return;
 		}
 
-		const response = await saveUserInputSettings();
+		if (
+			USER_INPUT_QUESTIONS_PURPOSE === slug &&
+			isConversionReportingEnabled &&
+			onChange
+		) {
+			onChange();
+		} else {
+			const response = await saveUserInputSettings();
 
-		if ( ! response.error ) {
-			trackEvent( gaEventCategory, 'question_update', slug );
-			toggleEditMode();
+			if ( ! response.error ) {
+				trackEvent( gaEventCategory, 'question_update', slug );
+				toggleEditMode();
+			}
 		}
 	}, [
 		answerHasError,
@@ -128,6 +176,8 @@ export default function UserInputPreviewGroup( {
 		saveUserInputSettings,
 		slug,
 		toggleEditMode,
+		onChange,
+		isConversionReportingEnabled,
 	] );
 
 	const handleOnEditClick = useCallback( async () => {
@@ -164,6 +214,12 @@ export default function UserInputPreviewGroup( {
 		toggleEditMode();
 	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
 
+	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
+
+	const {
+		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
+	} = getUserInputAnswersDescription();
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
@@ -172,7 +228,15 @@ export default function UserInputPreviewGroup( {
 					settingsView,
 			} ) }
 		>
-			<div className="googlesitekit-user-input__preview-group-title">
+			<div
+				className={ classnames(
+					'googlesitekit-user-input__preview-group-title',
+					{
+						'googlesitekit-user-input__preview-group-title-with-subtitle':
+							Subtitle || subtitle,
+					}
+				) }
+			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
 					<p>{ title }</p>
 				</LoadingWrapper>
@@ -200,6 +264,17 @@ export default function UserInputPreviewGroup( {
 					</Link>
 				</LoadingWrapper>
 			</div>
+
+			<LoadingWrapper>
+				<div className="googlesitekit-user-input__preview-group-subtitle">
+					{ Subtitle && (
+						<div className="googlesitekit-user-input__preview-group-subtitle-component">
+							<Subtitle />
+						</div>
+					) }
+					{ ! Subtitle && <p>{ subtitle }</p> }
+				</div>
+			</LoadingWrapper>
 
 			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
@@ -234,6 +309,7 @@ export default function UserInputPreviewGroup( {
 						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 						options={ options }
 						alignLeftOptions
+						descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
 					/>
 					{ errorMessage && (
 						<p className="googlesitekit-error-text">
@@ -284,8 +360,13 @@ export default function UserInputPreviewGroup( {
 UserInputPreviewGroup.propTypes = {
 	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
+	subtitle: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.elementType,
+	] ),
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
 	loading: PropTypes.bool,
 	settingsView: PropTypes.bool,
+	onChange: PropTypes.func,
 };

@@ -140,7 +140,7 @@ class Analytics_4Test extends TestCase {
 		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
-		( new GTag() )->register();
+		( new GTag( $this->options ) )->register();
 	}
 
 	public function test_register() {
@@ -551,6 +551,8 @@ class Analytics_4Test extends TestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -585,6 +587,8 @@ class Analytics_4Test extends TestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => false,
 				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -712,6 +716,8 @@ class Analytics_4Test extends TestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -840,6 +846,8 @@ class Analytics_4Test extends TestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -877,6 +885,8 @@ class Analytics_4Test extends TestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => false,
 				'detectedEvents'                       => array(),
+				'lostConversionEventsLastUpdateAt'     => 0,
+				'newConversionEventsLastUpdateAt'      => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -1280,6 +1290,37 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__conversionReporting() {
+		$this->enable_feature( 'conversionReporting' );
+
+		$this->assertEqualSets(
+			array(
+				'account-summaries',
+				'accounts',
+				'ads-links',
+				'adsense-links',
+				'container-lookup',
+				'container-destinations',
+				'google-tag-settings',
+				'conversion-events',
+				'create-property',
+				'create-webdatastream',
+				'pivot-report',
+				'properties',
+				'property',
+				'report',
+				'webdatastreams',
+				'webdatastreams-batch',
+				'create-account-ticket',
+				'enhanced-measurement-settings',
+				'create-custom-dimension',
+				'sync-custom-dimensions',
+				'custom-dimension-data-available',
+				'set-google-tag-id-mismatch',
+			),
+			$this->analytics->get_datapoints()
+		);
+	}
 	public function test_get_debug_fields() {
 		$this->assertEqualSets(
 			array(
@@ -2890,6 +2931,46 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
 	}
 
+	public function test_create_custom_dimension__without_optional_fields() {
+		$property_id = '123456789';
+
+		// Create a custom dimension with only the required fields present.
+		$raw_custom_dimension = array(
+			'displayName'   => 'Test Custom Dimension',
+			'parameterName' => 'googlesitekit_post_author',
+			'scope'         => 'EVENT',
+		);
+
+		$this->fake_handler_and_invoke_register_method(
+			$property_id,
+			function ( Request $request ) use ( $raw_custom_dimension, $property_id ) {
+				$url = parse_url( $request->getUri() );
+				if ( "/v1beta/properties/$property_id/customDimensions" === $url['path'] ) {
+					$custom_dimension = new GoogleAnalyticsAdminV1betaCustomDimension( $raw_custom_dimension );
+					return new Response(
+						200,
+						array(),
+						json_encode( $custom_dimension )
+					);
+				}
+				return new Response( 200 );
+			}
+		);
+
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data(
+			'create-custom-dimension',
+			array(
+				'propertyID'      => $property_id,
+				'customDimension' => $raw_custom_dimension,
+			)
+		);
+
+		$this->assertNotWPError( $response );
+		$this->assertEquals( $raw_custom_dimension, (array) $response->toSimpleObject() );
+	}
+
 	public function test_sync_custom_dimensions() {
 		$property_id = 'sync-custom-dimension-property-id';
 
@@ -4220,6 +4301,31 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_sync_audiences_unauthenticated() {
+		$this->enable_feature( 'audienceSegmentation' );
+
+		$property_id = '12345';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail with `missing_required_scopes` error.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$data = $this->analytics->set_data( 'sync-audiences', array() );
+		$this->assertWPError( $data );
+		$this->assertEquals( 'forbidden', $data->get_error_code() );
+		$this->assertEquals( 'User must be authenticated to sync audiences.', $data->get_error_message() );
+		$this->assertEquals( array( 'status' => 403 ), $data->get_error_data() );
+	}
+
 	/**
 	 * @dataProvider data_available_audiences
 	 */
@@ -4336,9 +4442,15 @@ class Analytics_4Test extends TestCase {
 
 		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
 
-		$this->assertEquals( 'Analytics site created audiences', $audience_field['label'] );
-		$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
-		$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
+		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'] );
+
+		if ( $this->authentication->is_authenticated() ) {
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
+		} else {
+			$this->assertEquals( 'None', $audience_field['value'] );
+			$this->assertEquals( 'none', $audience_field['debug'] );
+		}
 	}
 
 	public function test_register_template_redirect_amp() {

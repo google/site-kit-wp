@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	isValidAccountID,
@@ -66,6 +67,18 @@ export const INVARIANT_INVALID_CONTAINER_NAME =
 	'a valid container name is required to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
+
+const store = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_TAGMANAGER ).hasFinishedResolution(
+					'getAccounts'
+				)
+		),
+	},
+};
+export default store;
 
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();

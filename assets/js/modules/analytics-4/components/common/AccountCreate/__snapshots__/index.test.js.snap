@@ -238,7 +238,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       class="googlesitekit-setup-module__inputs"
     >
       <div
-        class="googlesitekit-analytics-enable-enhanced-measurement"
+        class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-margin-bottom-0"
       >
         <div
           aria-checked="true"
@@ -273,7 +273,9 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         >
           Enable enhanced measurement
         </label>
-        <p>
+        <p
+          class="googlesitekit-module-settings-group__helper-text"
+        >
           This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
           <a
             aria-label="Learn more (opens in a new tab)"

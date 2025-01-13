@@ -30,9 +30,11 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Higher-Order Component to render a wrapped component and trigger a callback when it becomes in view.
  *
- * This has been added to provide a workaround for a limitation with the `useIntersection` hook from `react-use`,
- * and can be removed once we've replaced the `useIntersection` hook with a version that doesn't have this limitation.
+ * This was initially added to provide a workaround for a limitation with the `useIntersection` hook from `react-use`.
+ * We should replace `useIntersection()` with a version that doesn't have this limitation.
  * See https://github.com/streamich/react-use/issues/2359.
+ *
+ * This HOC can however remain as an abstraction around `useIntersection()` to avoid repeating the same logic.
  *
  * @since 1.125.0
  *

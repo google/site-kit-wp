@@ -29,19 +29,22 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
-import * as tracking from '../../../../util/tracking';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../../../googlesitekit/notifications/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const {
 	ONBOARDING_COMPLETE,
@@ -49,6 +52,12 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 	UNSPECIFIED,
 } = PUBLICATION_ONBOARDING_STATES;
+
+const id = 'setup-success-notification-rrm';
+
+const NotificationWithComponentProps = withNotificationComponentProps( id )(
+	RRMSetupSuccessSubtleNotification
+);
 
 describe( 'RRMSetupSuccessSubtleNotification', () => {
 	let registry;
@@ -59,7 +68,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		[
 			ONBOARDING_COMPLETE,
 			'Customize settings',
-			'Maybe later',
+			'Got it',
 			'Your Reader Revenue Manager account was successfully set up!',
 		],
 		[
@@ -79,12 +88,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const publicationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+
+	const syncOnboardingStateEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
+	const setValueMock = jest.fn();
+
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 
 		provideModules( registry, [
@@ -96,7 +107,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		] );
 
 		useQueryArg.mockImplementation( ( arg ) => {
-			const setValueMock = jest.fn();
 			switch ( arg ) {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
@@ -110,32 +120,29 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	} );
 
 	afterEach( () => {
+		setValueMock.mockClear();
+		useQueryArg.mockClear();
 		global.open.mockClear();
 	} );
 
 	it.each( invalidPublicationOnboardingStates )(
-		'should not render a notification and not trigger view_notification event when the publication onboarding state is %s',
+		'should not render a notification when the publication onboarding state is %s',
 		( onboardingState ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
 
-			const { container } = render(
-				<RRMSetupSuccessSubtleNotification />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+			const { container } = render( <NotificationWithComponentProps />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
 
 			expect( container ).toBeEmptyDOMElement();
-
-			expect( mockTrackEvent ).not.toHaveBeenCalled();
 		}
 	);
 
 	it.each( publicationStatesData )(
-		'should render a notification and trigger confirm_notification event when the publication onboarding state is %s',
+		'should render a notification when the publication onboarding state is %s',
 		( onboardingState, ctaText, dismissText, message ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -146,7 +153,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.setPublicationID( 'ABCDEFGH' );
 
 			const { container, getByText } = render(
-				<RRMSetupSuccessSubtleNotification />,
+				<NotificationWithComponentProps />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -163,30 +170,12 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 			const dismissElement = getByText( dismissText );
 			expect( dismissElement ).toBeInTheDocument();
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'view_notification',
-				onboardingState
-			);
-
-			act( () => {
-				fireEvent.click( ctaElement );
-			} );
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'confirm_notification',
-				onboardingState
-			);
 		}
 	);
 
 	it.each( publicationStatesData )(
-		'should dismiss the notification and trigger dismiss_notification event when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
-		( onboardingState, ctaText, dismissText ) => {
+		'should dismiss the notification when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
+		async ( onboardingState, ctaText, dismissText ) => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
@@ -195,8 +184,24 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationID( 'ABCDEFGH' );
 
+			await registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( id, {
+					Component: NotificationWithComponentProps,
+					areaSlug: 'notification-area-banners-above-nav',
+					viewContexts: [ 'mainDashboard' ],
+					isDismissible: false,
+				} );
+
+			await registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.receiveQueuedNotifications(
+					[ { id } ],
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
 			const { container, getByText } = render(
-				<RRMSetupSuccessSubtleNotification />,
+				<NotificationWithComponentProps />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -208,33 +213,16 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			const dismissElement = getByText( dismissText );
 			expect( dismissElement ).toBeInTheDocument();
 
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'view_notification',
-				onboardingState
-			);
-
 			act( () => {
 				fireEvent.click( dismissElement );
 			} );
 
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_setup-success-notification-rrm`,
-				'dismiss_notification',
-				onboardingState
-			);
+			expect( setValueMock ).toHaveBeenCalledTimes( 2 );
+			expect( setValueMock ).toHaveBeenCalledWith( undefined );
 		}
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		const originalDateNow = Date.now;
-
-		// Mock the date to be an arbitrary time.
-		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
-		Date.now = jest.fn( () => mockNow );
-
 		jest.useFakeTimers();
 
 		registry
@@ -242,7 +230,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			.receiveGetSettings( {
 				publicationID: 'QRSTUVWX',
 				publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
-				publicationOnboardingStateLastSyncedAtMs: 0,
+				publicationOnboardingStateChanged: false,
 			} );
 
 		fetchMock.getOnce( publicationsEndpoint, {
@@ -250,15 +238,18 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
-			const { data } = JSON.parse( opts.body );
-
-			// Return the same settings passed to the API.
-			return { body: data, status: 200 };
+		fetchMock.postOnce( syncOnboardingStateEndpoint, () => {
+			return {
+				body: {
+					publicationID: 'QRSTUVWX',
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+				},
+				status: 200,
+			};
 		} );
 
 		const { getByText, queryByText } = render(
-			<RRMSetupSuccessSubtleNotification />,
+			<NotificationWithComponentProps />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -282,6 +273,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		).not.toBeInTheDocument();
 
 		act( () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue(
+						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+					)
+			).toBeUndefined();
+
 			fireEvent.click( getByText( 'Complete publication setup' ) );
 		} );
 
@@ -298,16 +297,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( publicationsEndpoint );
-			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
-				body: {
-					data: {
-						publicationID: 'QRSTUVWX',
-						publicationOnboardingState: ONBOARDING_COMPLETE,
-						publicationOnboardingStateLastSyncedAtMs: Date.now(),
-					},
-				},
-			} );
+			expect( fetchMock ).toHaveFetched( syncOnboardingStateEndpoint );
 		} );
 
 		// Verify that the onboarding state has been synced.
@@ -316,6 +306,15 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationOnboardingState()
 		).toBe( ONBOARDING_COMPLETE );
+
+		// Ensure that the UI key is set to true.
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue(
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+				)
+		).toBe( true );
 
 		// Verify that the message relevant to the ONBOARDING_COMPLETE
 		// state is displayed.
@@ -332,8 +331,5 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
 			)
 		).not.toBeInTheDocument();
-
-		// Restore Date.now method.
-		Date.now = originalDateNow;
 	} );
 } );

@@ -66,10 +66,12 @@ export default function AccountCreateLegacy() {
 		[ createAccountURL, viewContext ]
 	);
 
-	const { resetAccountSummaries } = useDispatch( MODULES_ANALYTICS_4 );
+	const { resetAccountSummaries, resetAccountSettings } =
+		useDispatch( MODULES_ANALYTICS_4 );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccountSummaries();
-	}, [ resetAccountSummaries ] );
+		resetAccountSettings();
+	}, [ resetAccountSettings, resetAccountSummaries ] );
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar />;

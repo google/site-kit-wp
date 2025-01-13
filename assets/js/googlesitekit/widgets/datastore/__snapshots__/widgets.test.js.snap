@@ -11,6 +11,7 @@ exports[`core/widgets Widgets actions registerWidget should register the compone
 exports[`core/widgets Widgets selectors getWidget returns a widget if one exists 1`] = `
 Object {
   "Component": [Function],
+  "hideOnBreakpoints": undefined,
   "isActive": undefined,
   "isPreloaded": undefined,
   "modules": Array [],

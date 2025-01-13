@@ -71,17 +71,19 @@ export const actions = {
 	 * Registers a widget with a given slug and settings.
 	 *
 	 * @since 1.9.0
-	 * @since 1.12.0 Added wrapWidget setting.
+	 * @since 1.12.0  Added wrapWidget setting.
+	 * @since 1.138.0 Added hideOnBreakpoints setting.
 	 *
-	 * @param {string}                slug                   Widget's slug.
-	 * @param {Object}                settings               Widget's settings.
-	 * @param {WPComponent}           settings.Component     React component used to display the contents of this widget.
-	 * @param {number}                [settings.priority]    Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
-	 * @param {string|Array.<string>} [settings.width]       Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {boolean}               [settings.wrapWidget]  Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
-	 * @param {string|Array.<string>} [settings.modules]     Optional. Widget's associated modules.
-	 * @param {Function}              [settings.isActive]    Optional. Callback function to determine if the widget is active.
-	 * @param {Function}              [settings.isPreloaded] Optional. Callback function to determine if the widget should be preloaded if not active (requires isActive).
+	 * @param {string}                slug                         Widget's slug.
+	 * @param {Object}                settings                     Widget's settings.
+	 * @param {WPComponent}           settings.Component           React component used to display the contents of this widget.
+	 * @param {number}                [settings.priority]          Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string|Array.<string>} [settings.width]             Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {boolean}               [settings.wrapWidget]        Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {string|Array.<string>} [settings.modules]           Optional. Widget's associated modules.
+	 * @param {Function}              [settings.isActive]          Optional. Callback function to determine if the widget is active.
+	 * @param {Function}              [settings.isPreloaded]       Optional. Callback function to determine if the widget should be preloaded if not active (requires isActive).
+	 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -94,6 +96,7 @@ export const actions = {
 			modules,
 			isActive,
 			isPreloaded,
+			hideOnBreakpoints,
 		} = {}
 	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
@@ -117,6 +120,7 @@ export const actions = {
 					modules: normalizeWidgetModules( modules ),
 					isActive,
 					isPreloaded,
+					hideOnBreakpoints,
 				},
 			},
 			type: REGISTER_WIDGET,

@@ -97,6 +97,12 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const isDismissingPrompt = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingPrompt(
+			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
+		)
+	);
+
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY
@@ -107,7 +113,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
 
-	const { dismissPrompt } = useDispatch( CORE_USER );
+	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 
 	const onDismiss = useCallback( () => {
 		trackEvent(
@@ -136,6 +142,7 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 
 	const showBanner =
 		isDismissed === false &&
+		! isDismissingPrompt &&
 		canActivateRRMModule &&
 		dismissedPromptsLoaded === true;
 
@@ -145,8 +152,10 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 				`${ viewContext }_rrm-setup-notification`,
 				'view_notification'
 			);
+
+			triggerSurvey( 'view_reader_revenue_manager_cta' );
 		}
-	}, [ showBanner, viewContext ] );
+	}, [ showBanner, triggerSurvey, viewContext ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -194,28 +203,36 @@ function ReaderRevenueManagerSetupCTABanner( { Widget, WidgetNull } ) {
 												'google-site-kit'
 											) }
 										</h4>
-										<p className="googlesitekit-setup-cta-banner__description">
-											{ createInterpolateElement(
-												__(
-													'Turn casual visitors into loyal readers and earn more from your content with contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
-													'google-site-kit'
-												),
-												{
-													a: (
-														<Link
-															href={
-																readerRevenueManagerDocumentationURL
-															}
-															external
-															aria-label={ __(
-																'Learn more about reader revenue manager',
-																'google-site-kit'
-															) }
-														/>
+										<div className="googlesitekit-setup-cta-banner__description">
+											<p>
+												{ createInterpolateElement(
+													__(
+														'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
+														'google-site-kit'
 													),
-												}
-											) }
-										</p>
+													{
+														a: (
+															<Link
+																href={
+																	readerRevenueManagerDocumentationURL
+																}
+																external
+																aria-label={ __(
+																	'Learn more about reader revenue manager',
+																	'google-site-kit'
+																) }
+															/>
+														),
+													}
+												) }
+												<br />
+												<br />
+												{ __(
+													'* Support for subscriptions coming soon',
+													'google-site-kit'
+												) }
+											</p>
+										</div>
 
 										<div className="googlesitekit-setup-cta-banner__actions-wrapper">
 											<Button

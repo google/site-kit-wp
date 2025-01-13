@@ -27,7 +27,10 @@ import {
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopTrafficSourceDrivingAddToCartWidget from './TopTrafficSourceDrivingAddToCartWidget';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -118,9 +121,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingAddToCartWidget/ZeroData',
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -146,9 +146,6 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingAddToCart/Error',
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -173,10 +170,6 @@ InsufficientPermissions.args = {
 			reportOptions[ 1 ],
 		] );
 	},
-};
-
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingAddToCart/InsufficientPermissions',
 };
 
 export default {
@@ -211,7 +204,9 @@ export default {
 					.setWebDataStreamID( webDataStreamID );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'add_to_cart' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 

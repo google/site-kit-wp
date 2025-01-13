@@ -36,6 +36,7 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
@@ -50,6 +51,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 	);
 
 	const registry = useRegistry();
+
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
 	 *
@@ -60,6 +62,8 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 */
 	const finishSetup = useCallbackOne(
 		async ( redirectURL ) => {
+			await deleteItem( 'module_setup' );
+
 			await trackEvent(
 				'moduleSetup',
 				'complete_module_setup',
@@ -83,6 +87,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 			navigateTo( adminURL );
 		},
 		[ registry, navigateTo, moduleSlug ]
+	);
+
+	const onCompleteSetup = module?.onCompleteSetup;
+	const onCompleteSetupCallback = useCallback(
+		() => onCompleteSetup( registry, finishSetup ),
+		[ onCompleteSetup, registry, finishSetup ]
 	);
 
 	const onCancelButtonClick = useCallback( async () => {
@@ -129,6 +139,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<ModuleSetupFooter
 									module={ module }
 									onCancel={ onCancelButtonClick }
+									onComplete={
+										typeof onCompleteSetup === 'function'
+											? onCompleteSetupCallback
+											: undefined
+									}
 								/>
 							</section>
 						</Cell>

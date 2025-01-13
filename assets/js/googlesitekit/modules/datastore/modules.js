@@ -80,6 +80,7 @@ const moduleDefaults = {
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
+	onCompleteSetup: undefined,
 	checkRequirements: () => true,
 	DashboardMainEffectComponent: null,
 	DashboardEntityEffectComponent: null,
@@ -98,7 +99,9 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 
 			return module;
 		} )
-		.sort( ( a, b ) => a.order - b.order )
+		.sort(
+			( a, b ) => a.order - b.order || a.name?.localeCompare( b.name )
+		)
 		.reduce( ( acc, module ) => {
 			return { ...acc, [ module.slug ]: module };
 		}, {} );
@@ -342,6 +345,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
 	 * @param {WPComponent}    [settings.DashboardEntityEffectComponent]   Optional. React component to render the effects on entity dashboard. Default none.
@@ -365,6 +369,7 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
+				onCompleteSetup,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
 			} = {}
@@ -380,6 +385,7 @@ const baseActions = {
 				SettingsEditComponent,
 				SettingsViewComponent,
 				SetupComponent,
+				onCompleteSetup,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
 				DashboardMainEffectComponent,
@@ -1408,6 +1414,46 @@ const baseSelectors = {
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
 	},
+
+	/**
+	 * Gets the details link URL for a module.
+	 *
+	 * Returns the module homepage by default. This can be overwritten by a
+	 * custom selector of the same name in the module store implementation.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(string|null|undefined)} Details link URL; `null` if module is not available, or does not have a homepage. `undefined` if data is still loading.
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			if ( module === null ) {
+				return null;
+			}
+
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+			const { getDetailsLinkURL } = select( storeName ) || {};
+
+			if ( typeof getDetailsLinkURL === 'function' ) {
+				return getDetailsLinkURL();
+			}
+
+			if ( ! module.homepage ) {
+				return null;
+			}
+
+			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
+	),
 };
 
 const store = combineStores(

@@ -20,47 +20,86 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
+import WarningSVG from '../../../../../svg/icons/warning.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
-export default function SubtleNotification( {
-	title,
-	description,
-	dismissCTA,
-	additionalCTA,
-} ) {
-	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className="googlesitekit-subtle-notification"
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						<CheckFill width={ 24 } height={ 24 } />
-					</div>
-					<div className="googlesitekit-subtle-notification__content">
-						<p>{ title }</p>
-						<p className="googlesitekit-subtle-notification__secondary_description">
-							{ description }
-						</p>
-					</div>
-					{ dismissCTA }
-					{ additionalCTA }
-				</Cell>
-			</Row>
-		</Grid>
-	);
-}
+const SubtleNotification = forwardRef(
+	(
+		{
+			className,
+			title,
+			description,
+			dismissCTA,
+			additionalCTA,
+			type = 'success',
+			icon,
+		},
+		ref
+	) => {
+		return (
+			<Grid ref={ ref }>
+				<Row>
+					<Cell
+						alignMiddle
+						size={ 12 }
+						className={ classnames(
+							'googlesitekit-subtle-notification',
+							className,
+							{
+								'googlesitekit-subtle-notification--success':
+									type === 'success',
+								'googlesitekit-subtle-notification--warning':
+									type === 'warning',
+							}
+						) }
+					>
+						<div className="googlesitekit-subtle-notification__icon">
+							{ icon }
+							{ type === 'success' && ! icon && (
+								<CheckFill width={ 24 } height={ 24 } />
+							) }
+							{ type === 'warning' && ! icon && (
+								<WarningSVG width={ 24 } height={ 24 } />
+							) }
+						</div>
+
+						<div className="googlesitekit-subtle-notification__content">
+							<p>{ title }</p>
+							<p className="googlesitekit-subtle-notification__secondary_description">
+								{ description }
+							</p>
+						</div>
+						<div className="googlesitekit-subtle-notification__action">
+							{ dismissCTA }
+
+							{ additionalCTA }
+						</div>
+					</Cell>
+				</Row>
+			</Grid>
+		);
+	}
+);
 
 SubtleNotification.propTypes = {
-	title: PropTypes.string.isRequired,
+	className: PropTypes.string,
+	title: PropTypes.node.isRequired,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
+	type: PropTypes.string,
+	icon: PropTypes.object,
 };
+
+export default SubtleNotification;

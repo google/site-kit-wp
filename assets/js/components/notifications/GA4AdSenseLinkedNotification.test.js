@@ -19,267 +19,126 @@
 /**
  * Internal dependencies
  */
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import {
-	render,
 	createTestRegistry,
 	provideModules,
-	muteFetch,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_SETTINGS,
-} from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import getMultiDimensionalObjectFromParams from '../../../../tests/e2e/utils/get-multi-dimensional-object-from-params';
+import { withConnected } from '../../googlesitekit/modules/datastore/__fixtures__';
 
 const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'top-earning-pages-success-notification';
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip( 'GA4AdSenseLinkedNotification', () => {
+describe( 'GA4AdSenseLinkedNotification', () => {
 	let registry;
 
-	const fetchDismissItem = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
 	const analyticsReport = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	const NotificationWithComponentProps = withNotificationComponentProps(
-		GA4_ADSENSE_LINKED_NOTIFICATION
-	)( GA4AdSenseLinkedNotification );
+	const fetchDismissItem = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
+
+	const notification =
+		DEFAULT_NOTIFICATIONS[ GA4_ADSENSE_LINKED_NOTIFICATION ];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideModules( registry );
+		// All the below conditions will trigger a successful notification.
+		// So each individual failing test case further below will overwrite one
+		// of the success criteria.
+		provideModules( registry, withConnected( 'analytics-4', 'adsense' ) );
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				GA4_ADSENSE_LINKED_NOTIFICATION,
+				notification
+			);
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adSenseLinked: true,
 		} );
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-	} );
-
-	it( 'does not render if AdSense module is not active', async () => {
-		muteFetch( analyticsReport );
-
-		fetchMock.postOnce( fetchDismissItem, {
-			body: JSON.stringify( [ GA4_ADSENSE_LINKED_NOTIFICATION ] ),
-			status: 200,
-		} );
-
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: false,
-				connected: false,
-				slug: 'adsense',
-			},
-		] );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'does not render if AdSense and Analytics are not linked', async () => {
-		muteFetch( analyticsReport );
-
-		fetchMock.postOnce( fetchDismissItem, {
-			body: JSON.stringify( [ GA4_ADSENSE_LINKED_NOTIFICATION ] ),
-			status: 200,
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			adSenseLinked: false,
-		} );
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: true,
-				connected: true,
-				slug: 'adsense',
-			},
-		] );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'does not render if report has data, and it is not already dismissed', async () => {
-		muteFetch( analyticsReport );
-
-		fetchMock.postOnce( fetchDismissItem, {
-			body: JSON.stringify( [ GA4_ADSENSE_LINKED_NOTIFICATION ] ),
-			status: 200,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'does not render if already dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GA4_ADSENSE_LINKED_NOTIFICATION ] );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( fetchMock ).not.toHaveFetched(
-			'/google-site-kit/v1/modules/analytics-4/data'
-		);
-
-		expect( container.childElementCount ).toBe( 0 );
-	} );
-
-	it( 'does not render when not on the main or entity dashboard', async () => {
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: true,
-				connected: true,
-				slug: 'adsense',
-			},
-		] );
-
+		// Mock report call for AdSense GA4 data.
 		fetchMock.getOnce( analyticsReport, {
 			body: {
 				rowCount: null,
 			},
 			status: 200,
 		} );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-			}
-		);
-		await waitForRegistry();
-
-		expect( fetchMock ).not.toHaveFetched(
-			'/google-site-kit/v1/modules/analytics-4/data'
-		);
-
-		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'renders when both Analytics and AdSense modules are active and linked', async () => {
-		fetchMock.getOnce( analyticsReport, {
-			body: {
-				rowCount: null,
-			},
-			status: 200,
+	describe( 'checkRequirements', () => {
+		it( 'is active', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
 		} );
 
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: true,
-				connected: true,
-				slug: 'adsense',
-			},
-		] );
+		it( 'is not active if AdSense module is not connected', async () => {
+			provideModules( registry, [
+				{ active: true, connected: true, slug: 'analytics-4' },
+				{
+					active: true,
+					connected: false,
+					slug: 'adsense',
+				},
+			] );
 
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
+			const isActive = await notification.checkRequirements(
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
-		expect( container ).toHaveTextContent(
-			'Your AdSense and Analytics accounts are linked'
-		);
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'renders when report has no data and it was not previously dismissed', async () => {
-		provideModules( registry, [
-			{
-				active: true,
-				connected: true,
-				slug: 'analytics-4',
-			},
-			{
-				active: true,
-				connected: true,
-				slug: 'adsense',
-			},
-		] );
-
-		fetchMock.getOnce( analyticsReport, {
-			body: {
-				rowCount: null,
-			},
-			status: 200,
+			expect( isActive ).toBe( false );
 		} );
 
-		const { container, waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
+		it( 'is not active if AdSense and Analytics are not linked', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				adSenseLinked: false,
+			} );
 
-		expect( container ).toHaveTextContent(
-			'Your AdSense and Analytics accounts are linked'
-		);
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active if report has data', async () => {
+			fetchMock.reset();
+			fetchMock.getOnce( analyticsReport, function ( req ) {
+				const paramsObject = Object.fromEntries(
+					new URL( req, 'http://example.com' ).searchParams.entries()
+				);
+				const multiDimensionalObjectParams =
+					getMultiDimensionalObjectFromParams( paramsObject );
+				return {
+					status: 200,
+					body: getAnalytics4MockResponse(
+						multiDimensionalObjectParams
+					),
+				};
+			} );
+			fetchMock.postOnce( fetchDismissItem, {
+				status: 200,
+				body: [],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );

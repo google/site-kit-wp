@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
@@ -60,6 +61,7 @@ class Uninstallation {
 		Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,
 		Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED,
 		Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY,
+		First_Party_Mode_Cron::CRON_ACTION,
 	);
 
 	/**
@@ -133,7 +135,11 @@ class Uninstallation {
 	 */
 	private function clear_scheduled_events() {
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
-			wp_clear_scheduled_hook( $event );
+			// Only clear scheduled events that are set, important in E2E
+			// testing.
+			if ( (bool) wp_next_scheduled( $event ) ) {
+				wp_unschedule_hook( $event );
+			}
 		}
 	}
 }

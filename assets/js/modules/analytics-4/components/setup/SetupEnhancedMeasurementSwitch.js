@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import { useMount } from 'react-use';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -108,17 +109,25 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );
+	const isAutoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
+	);
 
-	useMount( () => {
-		const autoSubmit = getValue( FORM_SETUP, 'autoSubmit' );
-		if ( ! autoSubmit ) {
+	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ENHANCED_MEASUREMENT_FORM,
+			ENHANCED_MEASUREMENT_ENABLED
+		)
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	useEffect( () => {
+		if ( ! isAutoSubmit && isEnhancedMeasurementEnabled === undefined ) {
 			setValues( ENHANCED_MEASUREMENT_FORM, {
 				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
 			} );
 		}
-	} );
+	}, [ isAutoSubmit, isEnhancedMeasurementEnabled, setValues ] );
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;

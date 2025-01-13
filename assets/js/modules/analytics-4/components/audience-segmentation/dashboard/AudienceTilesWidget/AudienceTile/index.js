@@ -50,15 +50,20 @@ import AudienceTilePagesMetric from './AudienceTilePagesMetric';
 import ChangeBadge from '../../../../../../../components/ChangeBadge';
 import InfoTooltip from '../../../../../../../components/InfoTooltip';
 import PartialDataNotice from './PartialDataNotice';
-import { numFmt } from '../../../../../../../util';
-import AudienceTileCollectingData from './AudienceTileCollectingData';
-import AudienceTileCollectingDataHideable from './AudienceTileCollectingDataHideable';
+import { numFmt, trackEvent } from '../../../../../../../util';
 import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
+import useViewContext from '../../../../../../../hooks/useViewContext';
+import AudienceTileZeroData from './AudienceTileZeroData';
 
 // TODO: as part of #8484 the report props should be updated to expect
 // the full report rows for the current tile to reduce data manipulation
 // in AudienceTiles.
 export default function AudienceTile( {
+	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
+	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
+	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
+	audienceTileNumber = 0,
+	audienceSlug,
 	title,
 	infoTooltip,
 	visitors,
@@ -78,6 +83,7 @@ export default function AudienceTile( {
 	onHideTile,
 } ) {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
 	const isPropertyPartialData = useInViewSelect( ( select ) => {
@@ -93,7 +99,7 @@ export default function AudienceTile( {
 	);
 	const isAudiencePartialData = useInViewSelect(
 		( select ) => {
-			if ( isSiteKitAudience ) {
+			if ( isSiteKitAudience || isPropertyPartialData === undefined ) {
 				return false;
 			}
 
@@ -108,11 +114,19 @@ export default function AudienceTile( {
 		[ isPropertyPartialData, isSiteKitAudience, audienceResourceName ]
 	);
 	const isTopContentPartialData = useInViewSelect(
-		( select ) =>
-			! isAudiencePartialData &&
-			select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
-				'googlesitekit_post_type'
-			),
+		( select ) => {
+			if ( isPropertyPartialData === undefined ) {
+				return false;
+			}
+
+			return (
+				! isPropertyPartialData &&
+				! isAudiencePartialData &&
+				select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
+					'googlesitekit_post_type'
+				)
+			);
+		},
 		[ isAudiencePartialData ]
 	);
 
@@ -130,33 +144,15 @@ export default function AudienceTile( {
 
 	if ( isPartialData && isZeroData ) {
 		return (
-			<Widget noPadding>
-				<div className="googlesitekit-audience-segmentation-tile">
-					<div className="googlesitekit-audience-segmentation-tile__zero-data-container">
-						{ ! isMobileBreakpoint && (
-							<div className="googlesitekit-audience-segmentation-tile__header">
-								<div className="googlesitekit-audience-segmentation-tile__header-title">
-									{ title }
-									{ infoTooltip && (
-										<InfoTooltip
-											title={ infoTooltip }
-											tooltipClassName="googlesitekit-info-tooltip__content--audience"
-										/>
-									) }
-								</div>
-							</div>
-						) }
-						<div className="googlesitekit-audience-segmentation-tile__zero-data-content">
-							<AudienceTileCollectingData />
-							{ isTileHideable && (
-								<AudienceTileCollectingDataHideable
-									onHideTile={ onHideTile }
-								/>
-							) }
-						</div>
-					</div>
-				</div>
-			</Widget>
+			<AudienceTileZeroData
+				Widget={ Widget }
+				audienceSlug={ audienceSlug }
+				title={ title }
+				infoTooltip={ infoTooltip }
+				isMobileBreakpoint={ isMobileBreakpoint }
+				isTileHideable={ isTileHideable }
+				onHideTile={ onHideTile }
+			/>
 		);
 	}
 
@@ -179,6 +175,13 @@ export default function AudienceTile( {
 								<InfoTooltip
 									title={ infoTooltip }
 									tooltipClassName="googlesitekit-info-tooltip__content--audience"
+									onOpen={ () =>
+										trackEvent(
+											`${ viewContext }_audiences-tile`,
+											'view_tile_tooltip',
+											audienceSlug
+										)
+									}
 								/>
 							) }
 						</div>
@@ -193,6 +196,13 @@ export default function AudienceTile( {
 									'Still collecting full data for this timeframe, partial data is displayed for this group',
 									'google-site-kit'
 								) }
+								onTooltipOpen={ () => {
+									trackEvent(
+										`${ viewContext }_audiences-tile`,
+										'view_tile_partial_data_tooltip',
+										audienceSlug
+									);
+								} }
 							/>
 						) }
 					</div>
@@ -278,6 +288,8 @@ export default function AudienceTile( {
 						( postTypeDimensionExists &&
 							! hasInvalidCustomDimensionError ) ) && (
 						<AudienceTilePagesMetric
+							audienceTileNumber={ audienceTileNumber }
+							audienceSlug={ audienceSlug }
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
 								'Top content by pageviews',
@@ -295,6 +307,8 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
+	audienceTileNumber: PropTypes.number,
+	audienceSlug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	visitors: PropTypes.object,

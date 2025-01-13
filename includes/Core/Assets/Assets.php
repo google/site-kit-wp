@@ -697,6 +697,16 @@ final class Assets {
 			),
 		);
 
+		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+			$assets[] = new Script(
+				'googlesitekit-metric-selection',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			);
+		}
+
 		/**
 		 * Filters the list of assets that Site Kit should register.
 		 *
@@ -730,22 +740,24 @@ final class Assets {
 		$site_url = $this->context->get_reference_site_url();
 
 		$inline_data = array(
-			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
-			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
-			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
-			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
-			'blogPrefix'       => $wpdb->get_blog_prefix(),
-			'ampMode'          => $this->context->get_amp_mode(),
-			'isNetworkMode'    => $this->context->is_network_mode(),
-			'timezone'         => get_option( 'timezone_string' ),
-			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
-			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
-			'postTypes'        => $this->get_post_types(),
-			'storagePrefix'    => $this->get_storage_prefix(),
-			'referenceDate'    => apply_filters( 'googlesitekit_reference_date', null ),
-			'productPostType'  => $this->get_product_post_type(),
+			'homeURL'           => trailingslashit( $this->context->get_canonical_home_url() ),
+			'referenceSiteURL'  => esc_url_raw( trailingslashit( $site_url ) ),
+			'adminURL'          => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'         => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'widgetsAdminURL'   => esc_url_raw( $this->get_widgets_admin_url() ),
+			'blogPrefix'        => $wpdb->get_blog_prefix(),
+			'ampMode'           => $this->context->get_amp_mode(),
+			'isNetworkMode'     => $this->context->is_network_mode(),
+			'timezone'          => get_option( 'timezone_string' ),
+			'siteName'          => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+			'enabledFeatures'   => Feature_Flags::get_enabled_features(),
+			'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
+			'postTypes'         => $this->get_post_types(),
+			'storagePrefix'     => $this->get_storage_prefix(),
+			'referenceDate'     => apply_filters( 'googlesitekit_reference_date', null ),
+			'productPostType'   => $this->get_product_post_type(),
+			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
+			'isMultisite'       => is_multisite(),
 		);
 
 		/**

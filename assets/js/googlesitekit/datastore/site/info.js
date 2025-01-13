@@ -185,6 +185,8 @@ export const reducer = ( state, { payload, type } ) => {
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupNew,
 				consentModeRegions,
+				anyoneCanRegister,
+				isMultisite,
 			} = payload.siteInfo;
 
 			return {
@@ -219,6 +221,8 @@ export const reducer = ( state, { payload, type } ) => {
 					keyMetricsSetupCompletedBy,
 					keyMetricsSetupNew,
 					consentModeRegions,
+					anyoneCanRegister,
+					isMultisite,
 				},
 			};
 		}
@@ -308,6 +312,8 @@ export const resolvers = {
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupNew,
 			consentModeRegions,
+			anyoneCanRegister,
+			isMultisite,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -347,6 +353,8 @@ export const resolvers = {
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupNew,
 			consentModeRegions,
+			anyoneCanRegister,
+			isMultisite,
 		} );
 	},
 };
@@ -891,6 +899,26 @@ export const selectors = {
 	 * @return {Array<string>} Array of consent mode regions.
 	 */
 	getConsentModeRegions: getSiteInfoProperty( 'consentModeRegions' ),
+
+	/**
+	 * Checks if user registrations are open on this WordPress site.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if registrations are open; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	getAnyoneCanRegister: getSiteInfoProperty( 'anyoneCanRegister' ),
+
+	/**
+	 * Checks if WordPress site is running in the multisite mode.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	isMultisite: getSiteInfoProperty( 'isMultisite' ),
 };
 
 export default {

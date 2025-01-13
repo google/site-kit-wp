@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { mapValues } from 'lodash';
+import { debounce, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -56,12 +56,15 @@ import {
 	PERMISSION_VIEW_MODULE_DETAILS,
 	PERMISSION_MANAGE_OPTIONS,
 	CORE_USER,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import InViewProvider from '../../assets/js/components/InViewProvider';
+import { DEFAULT_NOTIFICATIONS } from '../../assets/js/googlesitekit/notifications/register-defaults';
 
 const allCoreStores = [
 	coreForms,
@@ -256,6 +259,8 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		productPostType: 'product',
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
+		anyoneCanRegister: false,
+		isMultisite: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -418,13 +423,77 @@ export function provideTracking( registry, enabled = true ) {
  */
 export const provideKeyMetrics = ( registry, extraData = {} ) => {
 	const defaults = {
-		widgetSlugs: [ 'test-slug' ],
+		widgetSlugs: [
+			KM_ANALYTICS_NEW_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
+		],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 		...defaults,
 		...extraData,
 	} );
+};
+
+/**
+ * Provides key metrics user input settings data to the given registry.
+ *
+ * @since 1.140.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetricsUserInputSettings = (
+	registry,
+	extraData = {}
+) => {
+	const defaults = {
+		purpose: {
+			values: [ 'publish_news' ],
+			scope: 'site',
+		},
+		includeConversionEvents: {
+			values: [],
+			scope: 'site',
+		},
+	};
+	registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides notifications data to the given registry.
+ *
+ * @since 1.140.0
+ * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
+ *
+ * @param {Object}  registry            The registry to set up.
+ * @param {Object}  [extraData]         Extra data to merge with the default settings.
+ * @param {Object}  [options]           Options object.
+ * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
+ */
+export const provideNotifications = (
+	registry,
+	extraData,
+	{ overwrite = false } = {}
+) => {
+	const notificationsAPI = coreNotifications.createNotifications( registry );
+
+	let notifications = {};
+	if ( overwrite === false ) {
+		notifications[ 'gathering-data-notification' ] =
+			DEFAULT_NOTIFICATIONS[ 'gathering-data-notification' ];
+	}
+	notifications = { ...notifications, ...extraData };
+
+	for ( const notificationID in notifications ) {
+		notificationsAPI.registerNotification(
+			notificationID,
+			notifications[ notificationID ]
+		);
+	}
 };
 
 /**
@@ -571,24 +640,59 @@ export const waitForTimeouts = ( timeout ) => {
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
+ * @since 1.141.0 Reimplemented using debounced timer for reliability. Not compatible with fake timers.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
-	const updates = [];
-	const listener = () =>
-		updates.push( new Promise( ( resolve ) => resolve() ) );
-	const unsubscribe = registry.subscribe( listener );
+	if ( jest.isMockFunction( setTimeout ) ) {
+		// Fail if attempted to use.
+		return () => {
+			throw new Error(
+				'waitForRegistry cannot be used with fake timers!'
+			);
+		};
+	}
 
-	// Return a function that:
-	// - Waits until the next tick for updates.
-	// - Waits for all pending resolvers to resolve.
-	// We unsubscribe afterwards to allow for potential additions while
-	// Promise.all is resolving.
+	let unsubscribe;
+	const waitForRegistry = new Promise( ( resolve ) => {
+		const listener = debounce( resolve, 50, {
+			leading: false,
+			trailing: true,
+		} );
+		unsubscribe = registry.subscribe( listener );
+	} );
+
+	let stateDidUpdate;
+	// On the first state update, clear the fallback.
+	const unsubStateUpdateListener = registry.subscribe( () => {
+		stateDidUpdate = true;
+		unsubStateUpdateListener();
+	} );
 	return async () => {
-		await Promise.all( [ ...updates, waitForDefaultTimeouts() ] );
-		unsubscribe();
+		const promises = [ waitForRegistry ];
+
+		if ( ! stateDidUpdate ) {
+			// If no state update was observed yet, allow 50ms for it to still happen or reject the promise.
+			promises.push(
+				new Promise( ( resolve, reject ) => {
+					setTimeout( () => {
+						if ( stateDidUpdate ) {
+							resolve();
+							return;
+						}
+						reject(
+							new Error(
+								'waitForRegistry: No state changes were observed! Replace waitForRegistry with waitFor.'
+							)
+						);
+					}, 50 );
+				} )
+			);
+		}
+
+		await Promise.all( promises ).finally( unsubscribe );
 	};
 };
 

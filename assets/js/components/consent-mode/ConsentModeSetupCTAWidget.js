@@ -74,10 +74,6 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).isConsentModeEnabled()
 	);
 
-	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
-	);
-
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -96,6 +92,13 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
 		)
 	);
+
+	const isDismissingPrompt = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingPrompt(
+			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+		)
+	);
+
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
@@ -119,12 +122,25 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const inView = !! intersectionEntry?.intersectionRatio;
 
-	const shouldShowWidget =
-		! viewOnlyDashboard &&
-		( isSaving ||
-			( isDismissed === false &&
-				isConsentModeEnabled === false &&
-				isAdsConnected ) );
+	const shouldShowWidget = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return false;
+		}
+
+		if ( isSaving ) {
+			return true;
+		}
+
+		if (
+			isDismissed !== false ||
+			isDismissingPrompt ||
+			isConsentModeEnabled !== false
+		) {
+			return false;
+		}
+
+		return select( CORE_SITE ).isAdsConnected();
+	} );
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView && shouldShowWidget ) {
@@ -241,28 +257,31 @@ function ConsentModeSetupCTAWidget( { Widget, WidgetNull } ) {
 											'google-site-kit'
 										) }
 									</h3>
-									<p className="googlesitekit-setup-cta-banner__description">
-										{ createInterpolateElement(
-											__(
-												'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={
-															consentModeDocumentationURL
-														}
-														external
-														aria-label={ __(
-															'Learn more about consent mode',
-															'google-site-kit'
-														) }
-													/>
+									<div className="googlesitekit-setup-cta-banner__description">
+										<p>
+											{ createInterpolateElement(
+												__(
+													'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner. <a>Learn more</a>',
+													'google-site-kit'
 												),
-											}
-										) }
-									</p>
+												{
+													a: (
+														<Link
+															href={
+																consentModeDocumentationURL
+															}
+															external
+															aria-label={ __(
+																'Learn more about consent mode',
+																'google-site-kit'
+															) }
+														/>
+													),
+												}
+											) }
+										</p>
+									</div>
+
 									{ saveError && (
 										<ErrorText
 											message={ saveError.message }

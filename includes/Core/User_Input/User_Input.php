@@ -67,14 +67,17 @@ class User_Input {
 	 * @var array|ArrayAccess
 	 */
 	private static $questions = array(
-		'purpose'       => array(
+		'purpose'                 => array(
 			'scope' => 'site',
 		),
-		'postFrequency' => array(
+		'postFrequency'           => array(
 			'scope' => 'user',
 		),
-		'goals'         => array(
+		'goals'                   => array(
 			'scope' => 'user',
+		),
+		'includeConversionEvents' => array(
+			'scope' => 'site',
 		),
 	);
 
@@ -199,6 +202,12 @@ class User_Input {
 				return null;
 			}
 		}
+
+		// Conversion events may be empty during setup if no events have been detected.
+		// Since this setting does not affect whether user input is considered "set up",
+		// we are excluding it from this check. It relates to user input initially being
+		// set up with detected events or events added later.
+		unset( $settings['includeConversionEvents'] );
 
 		foreach ( $settings as $setting ) {
 			if ( empty( $setting['values'] ) ) {
