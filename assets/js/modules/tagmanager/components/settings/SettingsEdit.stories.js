@@ -1,5 +1,5 @@
 /**
- * Search Console SettingsView component stories.
+ * Tag Manager SettingsEdit component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,51 +19,56 @@
 /**
  * Internal dependencies
  */
-import SettingsView from './SettingsView';
+import SettingsEdit from './SettingsEdit';
 import { Cell, Grid, Row } from '../../../../material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { ACCOUNT_CREATE, MODULES_TAGMANAGER } from '../../datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template() {
+function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--search-console">
-				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								<SettingsView />
-							</Cell>
-						</Row>
-					</Grid>
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
+				<div className="googlesitekit-setup-module">
+					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
+									<SettingsEdit { ...args } />
+								</Cell>
+							</Row>
+						</Grid>
+					</div>
 				</div>
 			</div>
 		</div>
 	);
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+export const CreateAnAccount = Template.bind( {} );
+CreateAnAccount.storyName = 'Create An Account';
 
 export default {
-	title: 'Modules/SearchConsole/Settings/SettingsView',
-	component: SettingsView,
+	title: 'Modules/TagManager/Settings/SettingsEdit',
+	component: SettingsEdit,
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( {} );
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetExistingTag( null );
 
 				provideUserAuthentication( registry );
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 1 );
+
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: 'tagmanager',
+						storyName: MODULES_TAGMANAGER,
 						active: true,
 						connected: true,
 					},
@@ -71,10 +76,8 @@ export default {
 				provideModuleRegistrations( registry );
 
 				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( {
-						propertyID: 'http://example.com/',
-					} );
+					.dispatch( MODULES_TAGMANAGER )
+					.setAccountID( ACCOUNT_CREATE );
 			};
 
 			return (

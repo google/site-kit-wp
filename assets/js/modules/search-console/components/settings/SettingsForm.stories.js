@@ -63,7 +63,7 @@ WithoutModuleAccess.args = {
 };
 
 export default {
-	title: 'Modules/SearchConsole/Components/Settings/SettingsForm',
+	title: 'Modules/SearchConsole/Settings/SettingsForm',
 	component: SettingsForm,
 	decorators: [
 		( Story ) => {

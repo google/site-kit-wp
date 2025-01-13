@@ -37,29 +37,18 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 
-const defaultSettings = {
-	accountID: '',
-	adBlockingRecoverySetupStatus: '',
-	clientID: '',
-	accountStatus: '',
-	siteStatus: '',
-	useSnippet: true,
-	accountSetupComplete: false,
-	siteSetupComplete: false,
-	ownerID: 0,
-};
-
-const completeSettings = {
-	...defaultSettings,
+const adSenseSettings = {
 	accountID: fixtures.accounts[ 0 ]._id,
 	adBlockingRecoverySetupStatus: '',
 	clientID: fixtures.clients[ 0 ]._id,
 	accountStatus: ACCOUNT_STATUS_APPROVED,
 	siteStatus: SITE_STATUS_ADDED,
+	useSnippet: true,
 	accountSetupComplete: true,
 	siteSetupComplete: true,
 	webStoriesAdUnit: '0123456789',
 	webStoriesActive: true,
+	ownerID: 0,
 };
 
 function Template() {
@@ -85,7 +74,7 @@ SetupIncomplete.storyName = 'Setup Incomplete';
 SetupIncomplete.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-			...completeSettings,
+			...adSenseSettings,
 			accountStatus: ACCOUNT_STATUS_PENDING,
 			accountSetupComplete: false,
 			siteSetupComplete: false,
@@ -99,7 +88,7 @@ SetupComplete.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ADSENSE )
-			.receiveGetSettings( completeSettings );
+			.receiveGetSettings( adSenseSettings );
 	},
 };
 
@@ -108,7 +97,7 @@ AdBlockingRecoveryNotPlaced.storyName = 'Ad Blocking Recovery Not Placed';
 AdBlockingRecoveryNotPlaced.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-			...completeSettings,
+			...adSenseSettings,
 			adBlockingRecoverySetupStatus: 'setup-confirmed',
 			useAdBlockingRecoverySnippet: false,
 		} );
@@ -120,7 +109,7 @@ AdBlockingRecoveryPlaced.storyName = 'Ad Blocking Recovery Placed';
 AdBlockingRecoveryPlaced.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-			...completeSettings,
+			...adSenseSettings,
 			adBlockingRecoverySetupStatus: 'tag-placed',
 			useAdBlockingRecoverySnippet: true,
 		} );
@@ -128,7 +117,7 @@ AdBlockingRecoveryPlaced.args = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/Settings/SettingsView',
+	title: 'Modules/AdSense/Settings/SettingsView',
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {

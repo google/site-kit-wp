@@ -58,6 +58,9 @@ export default {
 					.receiveGetAccounts( fixtures.accounts );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
+					.finishResolution( 'getAccounts', [] );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetContainers( fixtures.getContainers.all, {
 						accountID,
 					} );

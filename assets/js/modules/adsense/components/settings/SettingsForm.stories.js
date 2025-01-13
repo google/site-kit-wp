@@ -33,29 +33,18 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../../util';
 
-const defaultSettings = {
-	accountID: '',
-	adBlockingRecoverySetupStatus: '',
-	clientID: '',
-	accountStatus: '',
-	siteStatus: '',
-	useSnippet: true,
-	accountSetupComplete: false,
-	siteSetupComplete: false,
-	ownerID: 0,
-};
-
-const completeSettings = {
-	...defaultSettings,
+const adSenseSettings = {
 	accountID: fixtures.accounts[ 0 ]._id,
 	adBlockingRecoverySetupStatus: '',
 	clientID: fixtures.clients[ 0 ]._id,
 	accountStatus: ACCOUNT_STATUS_APPROVED,
 	siteStatus: SITE_STATUS_ADDED,
+	useSnippet: true,
 	accountSetupComplete: true,
 	siteSetupComplete: true,
 	webStoriesAdUnit: '0123456789',
 	webStoriesActive: true,
+	ownerID: 0,
 };
 
 const setUpAdUnits = ( registry ) => {
@@ -95,7 +84,7 @@ Default.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ADSENSE )
-			.receiveGetSettings( completeSettings );
+			.receiveGetSettings( adSenseSettings );
 		setUpAdUnits( registry );
 	},
 };
@@ -106,10 +95,10 @@ ExistingTagSameAccount.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ADSENSE )
-			.receiveGetSettings( completeSettings );
+			.receiveGetSettings( adSenseSettings );
 		registry
 			.dispatch( MODULES_ADSENSE )
-			.receiveGetExistingTag( completeSettings.clientID );
+			.receiveGetExistingTag( adSenseSettings.clientID );
 		setUpAdUnits( registry );
 	},
 };
@@ -120,7 +109,7 @@ ExistingTagDifferentAccount.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ADSENSE )
-			.receiveGetSettings( completeSettings );
+			.receiveGetSettings( adSenseSettings );
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveGetExistingTag( 'ca-pub-12345678' );
@@ -128,8 +117,48 @@ ExistingTagDifferentAccount.args = {
 	},
 };
 
+export const ExistingAdBlockingRecoveryTagSameAccount = Template.bind( {} );
+ExistingAdBlockingRecoveryTagSameAccount.storyName =
+	'Existing Ad Blocking Recovery Tag (Same Account)';
+ExistingAdBlockingRecoveryTagSameAccount.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSettings( adSenseSettings );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag(
+				adSenseSettings.accountID
+			);
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.setAdBlockingRecoverySetupStatus( 'setup-confirmed' );
+		setUpAdUnits( registry );
+	},
+};
+
+export const ExistingAdBlockingRecoveryTagDifferentAccount = Template.bind(
+	{}
+);
+ExistingAdBlockingRecoveryTagDifferentAccount.storyName =
+	'Existing Ad Blocking Recovery Tag (Different Account)';
+ExistingAdBlockingRecoveryTagDifferentAccount.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSettings( adSenseSettings );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( 'pub-12345678' );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.setAdBlockingRecoverySetupStatus( 'setup-confirmed' );
+		setUpAdUnits( registry );
+	},
+};
+
 export default {
-	title: 'Modules/AdSense/Components/Settings/SettingsForm',
+	title: 'Modules/AdSense/Settings/SettingsForm',
 	component: SettingsForm,
 	decorators: [
 		( Story, { args } ) => {

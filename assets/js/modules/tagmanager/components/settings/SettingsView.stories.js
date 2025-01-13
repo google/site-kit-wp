@@ -90,7 +90,7 @@ ExistingTag.args = {
 };
 
 export default {
-	title: 'Modules/TagManager/Components/Settings/SettingsView',
+	title: 'Modules/TagManager/Settings/SettingsView',
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {

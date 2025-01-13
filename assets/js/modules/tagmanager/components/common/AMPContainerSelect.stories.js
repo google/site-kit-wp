@@ -66,6 +66,9 @@ export default {
 					} );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
+					.finishResolution( 'getAccounts', [] );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetExistingTag( null );
 				registry
 					.dispatch( CORE_SITE )

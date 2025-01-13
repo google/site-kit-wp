@@ -61,7 +61,7 @@ Default.scenario = {
 };
 
 export default {
-	title: 'Setup/Legacy/SetupUsingGCP',
+	title: 'Setup/SetupUsingGCP',
 	component: SetupUsingGCP,
 	parameters: { padding: 0 },
 };
