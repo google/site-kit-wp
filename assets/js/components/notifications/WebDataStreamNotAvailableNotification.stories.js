@@ -1,7 +1,7 @@
 /**
- * WebDataStreamNotAvailableNotification Component stories.
+ * AuthError Component Stories.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,48 +20,35 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { provideUserAuthentication } from '../../../../tests/js/utils';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
-function Template( { ...args } ) {
-	return <WebDataStreamNotAvailableNotification { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'web-data-stream-not-available-notification'
+)( WebDataStreamNotAvailableNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
-export const Loading = Template.bind( {} );
-Loading.storyName = 'Loading';
-
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setMeasurementID( 'G-2B7M8YQ1K6' );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-Default.scenario = {
-	label: 'Global/WebDataStreamNotAvailableNotification/Default',
+export const AuthenticationError = Template.bind( {} );
+AuthenticationError.storyName = 'WebDataStreamNotAvailableNotification';
+AuthenticationError.args = {
+	label: 'Components/Notifications/Banners/WebDataStreamNotAvailableNotification',
 };
 
 export default {
-	title: 'Components/WebDataStreamNotAvailableNotification',
-	component: WebDataStreamNotAvailableNotification,
+	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( false );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+					.setIsWebDataStreamAvailable( true );
 			};
 
 			return (
