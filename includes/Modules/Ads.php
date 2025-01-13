@@ -142,7 +142,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.0.12/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.0/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -208,7 +208,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			'slug'        => 'ads',
 			'name'        => _x( 'Ads', 'Service name', 'google-site-kit' ),
 			'description' => Feature_Flags::enabled( 'adsPax' ) ? __( 'Grow sales, leads or awareness for your business by advertising with Google Ads', 'google-site-kit' ) : __( 'Track conversions for your existing Google Ads campaigns', 'google-site-kit' ),
-			'order'       => 1,
 			'homepage'    => __( 'https://google.com/ads', 'google-site-kit' ),
 		);
 	}
@@ -316,7 +315,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			),
 		);
 
-		// Add fields from First-Party Mode.
+		// Add fields from First-party Mode.
 		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
 		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
 			$first_party_mode             = new First_Party_Mode( $this->context );

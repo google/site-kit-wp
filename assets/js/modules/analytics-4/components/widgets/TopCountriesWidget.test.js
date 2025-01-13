@@ -57,7 +57,7 @@ describe( 'TopCountriesWidget', () => {
 					desc: true,
 				},
 			],
-			limit: 3,
+			limit: 4,
 		} );
 		const { container, waitForRegistry } = render(
 			<TopCountriesWidget Widget={ Widget } />,

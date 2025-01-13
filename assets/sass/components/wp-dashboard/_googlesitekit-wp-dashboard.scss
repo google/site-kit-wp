@@ -63,4 +63,75 @@
 			}
 		}
 	}
+
+	.googlesitekit-wp-dashboard-loading {
+
+		.googlesitekit-wp-dashboard-stats {
+			display: block;
+		}
+
+		.googlesitekit-preview-block {
+			&.googlesitekit-wp-dashboard-loading {
+				min-height: 30px;
+			}
+
+			&.googlesitekit-wp-dashboard__cta {
+				min-height: 18px;
+			}
+
+			&.googlesitekit-wp-dashboard-loading__search_console_active_and_connected,
+			&.googlesitekit-wp-dashboard-loading__can_view_analytics {
+				min-height: 95px;
+			}
+
+			&.googlesitekit-wp-dashboard-stats__cta {
+				min-height: 300px;
+				width: 100%;
+			}
+
+			&.googlesitekit-unique-visitors-chart-widget {
+				min-height: 320px;
+			}
+
+			&.googlesitekit-search-console-widget {
+				min-height: 580px;
+
+				@media (max-width: $bp-mobileOnly) {
+					min-height: 330px;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-wp-dashboard-analytics-activate-cta {
+		min-height: 310px;
+	}
+
+	.googlesitekit-wp-dashboard-analytics_active_and_connected {
+		min-height: 935px;
+
+		@media (max-width: $bp-mobileOnly) {
+			min-height: 780px;
+		}
+
+		&.googlesitekit-wp-dashboard-search_console_active_and_connected {
+			min-height: 1080px;
+
+			@media (max-width: $bp-mobileOnly) {
+				min-height: 870px;
+			}
+		}
+	}
+
+	.googlesitekit-wp-dashboard-search_console_active_and_connected {
+		min-height: 125px;
+	}
+
+	.googlesitekit-wp-dashboard-search_console_active_and_connected.googlesitekit-wp-dashboard-analytics-activate-cta {
+		min-height: 420px;
+	}
+
+	.googlesitekit-chart div[dir] {
+		width: 100% !important;
+	}
 }

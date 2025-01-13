@@ -45,7 +45,7 @@ class REST_Consent_Mode_Controller {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -53,7 +53,7 @@ class REST_Consent_Mode_Controller {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @var Options
 	 */
 	protected $options;
@@ -62,7 +62,7 @@ class REST_Consent_Mode_Controller {
 		 * Constructor.
 		 *
 		 * @since 1.122.0
-		 * @since n.e.x.t Introduces Modules as an argument.
+		 * @since 1.142.0 Introduces Modules as an argument.
 		 *
 		 * @param Modules               $modules               Modules instance.
 		 * @param Consent_Mode_Settings $consent_mode_settings Consent_Mode_Settings instance.

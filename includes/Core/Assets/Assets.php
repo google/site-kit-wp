@@ -757,6 +757,7 @@ final class Assets {
 			'referenceDate'     => apply_filters( 'googlesitekit_reference_date', null ),
 			'productPostType'   => $this->get_product_post_type(),
 			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
+			'isMultisite'       => is_multisite(),
 		);
 
 		/**

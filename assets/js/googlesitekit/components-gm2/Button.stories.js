@@ -126,51 +126,32 @@ DisabledCalloutErrorButton.args = {
 };
 
 export function VRTStory() {
+	const buttonStories = [
+		DefaultButton,
+		LinkButton,
+		DangerButton,
+		DisabledButton,
+		TertiaryButton,
+		CalloutButton,
+		CalloutWarningButton,
+		CalloutErrorButton,
+		DisabledCalloutButton,
+		DisabledCalloutWarningButton,
+		DisabledCalloutErrorButton,
+		IconButton,
+	];
+
 	return (
 		<div>
-			<p>
-				<DefaultButton { ...DefaultButton.args } />
-			</p>
-			<p>
-				<LinkButton { ...LinkButton.args } />
-			</p>
-			<p>
-				<DangerButton { ...DangerButton.args } />
-			</p>
-			<p>
-				<DisabledButton { ...DisabledButton.args } />
-			</p>
-			<p>
-				<TertiaryButton { ...TertiaryButton.args } />
-			</p>
-			<p>
-				<CalloutButton { ...CalloutButton.args } />
-			</p>
-			<p>
-				<CalloutWarningButton { ...CalloutWarningButton.args } />
-			</p>
-			<p>
-				<CalloutErrorButton { ...CalloutErrorButton.args } />
-			</p>
-			<p>
-				<DisabledCalloutButton { ...DisabledCalloutButton.args } />
-			</p>
-			<p>
-				<DisabledCalloutWarningButton
-					{ ...DisabledCalloutWarningButton.args }
-				/>
-			</p>
-			<p>
-				<DisabledCalloutErrorButton
-					{ ...DisabledCalloutErrorButton.args }
-				/>
-			</p>
-			<p>
-				<IconButton { ...IconButton.args } />
-			</p>
+			{ buttonStories.map( ( ButtonStory, index ) => (
+				<p key={ index }>
+					<ButtonStory { ...ButtonStory.args } />
+				</p>
+			) ) }
 		</div>
 	);
 }
+VRTStory.storyName = 'All Buttons VRT';
 VRTStory.scenario = {
 	label: 'Global/Buttons',
 	hoverSelector: '.googlesitekit-button--icon',

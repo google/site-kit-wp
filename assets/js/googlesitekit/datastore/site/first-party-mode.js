@@ -33,7 +33,10 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '../user/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { isFeatureEnabled } from '../../../features';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
 const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
@@ -101,16 +104,24 @@ const baseActions = {
 	 * Saves the first-party mode settings.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveFirstPartyModeSettings() {
-		const { select } = yield commonActions.getRegistry();
+		const { dispatch, select } = yield commonActions.getRegistry();
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
-		return yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
-			settings
-		);
+		const results =
+			yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
+				settings
+			);
+
+		if ( results?.response?.isEnabled ) {
+			dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+		}
+
+		return results;
 	},
 
 	/**
@@ -131,7 +142,7 @@ const baseActions = {
 	/**
 	 * Returns the current settings back to the current saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -194,7 +205,7 @@ const baseSelectors = {
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =
@@ -236,7 +247,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current first-party mode settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.
@@ -246,6 +257,20 @@ const baseSelectors = {
 
 		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
 	},
+
+	isAnyFirstPartyModeModuleConnected: createRegistrySelector(
+		( select ) => () => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			return (
+				isModuleConnected( 'analytics-4' ) || isModuleConnected( 'ads' )
+			);
+		}
+	),
 };
 
 const store = combineStores(

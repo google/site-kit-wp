@@ -21,19 +21,27 @@
  */
 import {
 	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../modules/analytics-4/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -60,13 +68,15 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	);
 
 	const fetchDismissNotification = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
+		'^/google-site-kit/v1/core/user/data/conversion-reporting-settings'
 	);
-	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+	const userInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
 	beforeEach( () => {
+		enabledFeatures.add( 'conversionReporting' );
+
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -83,26 +93,46 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveConversionReportingInlineData( {
-				newEvents: [ 'contact' ],
+				newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 				lostEvents: [],
 			} );
 
+		registry.dispatch( CORE_USER ).receiveGetConversionReportingSettings( {
+			newEventsCalloutDismissedAt: 0,
+			lostEventsCalloutDismissedAt: 0,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'contact' ] );
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setNewConversionEventsLastUpdateAt( 0 );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setLostConversionEventsLastUpdateAt( 0 );
+	} );
+
+	afterAll( () => {
+		enabledFeatures.delete( 'conversionReporting' );
 	} );
 
 	describe( 'Existing users with tailored metrics', () => {
 		beforeEach( () => {
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 				widgetSlugs: [],
-				includeConversionTailoredMetrics: [],
 				isWidgetHidden: false,
 			} );
 
 			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 				purpose: {
 					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+				includeConversionEvents: {
+					values: [],
 					scope: 'site',
 				},
 			} );
@@ -129,7 +159,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			// Current site purpose is `publish_blog` which includes KMW from `contact`, `generate_lead` and `submit_lead_form` events.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'add_to_cart' ] );
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
@@ -148,13 +178,18 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does not render when includeConversionTailoredMetrics contains existing events', async () => {
+		it( 'does not render when includeConversionEvents contains existing events', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
-			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-				widgetSlugs: [],
-				includeConversionTailoredMetrics: [ 'contact' ],
-				isWidgetHidden: false,
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+				includeConversionEvents: {
+					values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					scope: 'site',
+				},
 			} );
 
 			const { container, waitForRegistry } = render(
@@ -186,7 +221,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			// other events will not add any ACR KMW, hence callout should not surface.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ 'purchase' ] );
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 			const { container, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -203,8 +238,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'does render when includeConversionTailoredMetrics is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
+		it( 'does render when includeConversionEvents is not set and there are new events connected to the ACR KMW matching the currently saved site purpose', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const { waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -231,6 +270,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			} );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const { getByRole, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
@@ -255,16 +297,19 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Add metrics CTA should add ACR metrics and dismiss notification', async () => {
-			enabledFeatures.add( 'conversionReporting' );
-
 			fetchMock.postOnce( fetchDismissNotification, {
 				body: true,
 			} );
-			fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+			fetchMock.postOnce( userInputSettingsEndpointRegExp, {
 				body: {
-					widgetSlugs: undefined,
-					includeConversionTailoredMetrics: [ 'contact' ],
-					isWidgetHidden: false,
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
 				},
 				status: 200,
 			} );
@@ -283,6 +328,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			] );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			const currentMetrics = registry
 				.select( CORE_USER )
@@ -316,9 +364,9 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 			} );
 
-			const keyMetricSettings = registry
+			const userInputSettings = registry
 				.select( CORE_USER )
-				.getKeyMetricsSettings();
+				.getUserInputSettings();
 
 			const newMetrics = registry
 				.select( CORE_USER )
@@ -326,8 +374,8 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			expect( fetchMock ).toHaveFetchedTimes( 2 );
 			expect(
-				keyMetricSettings?.includeConversionTailoredMetrics
-			).toEqual( [ 'contact' ] );
+				userInputSettings?.includeConversionEvents?.values
+			).toEqual( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
 			expect( newMetrics ).toEqual( [
 				KM_ANALYTICS_TOP_CATEGORIES,
@@ -343,15 +391,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	} );
 
 	describe( 'Existing user with manually selected metrics', () => {
-		beforeAll( () => {
-			enabledFeatures.add( 'conversionReporting' );
-		} );
-
-		afterAll( () => {
-			enabledFeatures.delete( 'conversionReporting' );
-		} );
-
-		it( 'Does not render when there are no metrics selected.', async () => {
+		it( 'does not render when there are no metrics selected.', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 
 			provideKeyMetrics( registry, {
@@ -383,7 +423,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'Does not render if new events would suggest metrics the user has already selected', async () => {
+		it( 'does not render if new events would suggest metrics the user has already selected', async () => {
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
@@ -421,7 +461,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'Does not render when key metrics setup is not completed', async () => {
+		it( 'does not render when key metrics setup is not completed', async () => {
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
 			provideKeyMetrics( registry, {
@@ -447,10 +487,14 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( container ).toBeEmptyDOMElement();
 		} );
 
-		it( 'Renders when there are new events with metrics the user has not already selected', async () => {
+		it( 'renders when there are new events with metrics the user has not already selected', async () => {
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			// The beforeEach sets a `contact` detected event, providing some but not
 			// all of the suggested metrics should show the banner.
@@ -486,10 +530,14 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'Renders if user input has been completed and the user switches to manual selection', async () => {
+		it( 'renders if user input has been completed and the user switches to manual selection', async () => {
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
@@ -524,13 +572,20 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 
 		it( 'Select metrics CTA should open key metrics panel', async () => {
-			fetchMock.postOnce( fetchDismissNotification, {
-				body: true,
+			fetchMock.post( fetchDismissNotification, {
+				body: {
+					newConversionEventsLastUpdateAt: 1734531413,
+					lostConversionEventsLastUpdateAt: 0,
+				},
 			} );
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
 
 			// The beforeEach sets a `contact` detected event, providing some but not
 			// all of the suggested metrics should show the banner.
@@ -572,11 +627,528 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				);
 			} );
 
+			await waitForRegistry();
+
 			expect(
 				registry
 					.select( CORE_UI )
 					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fetchDismissNotification );
+		} );
+	} );
+
+	describe( 'Existing user with previously detected conversion events', () => {
+		it( 'View metrics CTA should open key metrics panel', async () => {
+			fetchMock.post( fetchDismissNotification, {
+				body: {
+					newConversionEventsLastUpdateAt: 1734531413,
+					lostConversionEventsLastUpdateAt: 0,
+				},
+			} );
+
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+
+			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+				] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveConversionReportingInlineData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					lostEvents: [],
+				} );
+
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+				],
+				isWidgetHidden: false,
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ConversionReportingNotificationCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: 'View metrics' } )
+			).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'View metrics' } )
+				);
+			} );
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fetchDismissNotification );
+		} );
+
+		describe( 'user with tailored metrics', () => {
+			it( 'does not render when newly detected events suggest metrics user already has', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
+				} );
+
+				const inputSettings = registry
+					.select( CORE_USER )
+					.getUserInputSettings();
+
+				expect( inputSettings.purpose.values[ 0 ] ).toBe(
+					'publish_blog'
+				);
+
+				// Current saved purpose is 'publish_blog', ACR metrics included for that answer
+				// are associated with either `contact`, `generate_lead` or `submit_lead_form` events.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+						lostEvents: [],
+					} );
+
+				const newMetrics = registry
+					.select( CORE_USER )
+					.getAnswerBasedMetrics();
+
+				// Tailored metrics will already include leads metrics, which are getting data
+				// from either `contact`, `generate_lead` or `submit_lead_form` events.
+				expect( newMetrics ).toEqual( [
+					KM_ANALYTICS_TOP_CATEGORIES,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+				] );
+
+				const { container, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect( container ).toBeEmptyDOMElement();
+			} );
+
+			it( 'does not render when there is a new event matching the saved site purpose, which had no conversion events with previously detected events', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: {
+						values: [ 'sell_products' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						lostEvents: [],
+					} );
+
+				const { container, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect( container ).toBeEmptyDOMElement();
+			} );
+
+			it( 'does not render when newly detected events suggest metrics user does not have within same site purpose', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: {
+						values: [ 'sell_products' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						scope: 'site',
+					},
+				} );
+
+				const inputSettings = registry
+					.select( CORE_USER )
+					.getUserInputSettings();
+
+				expect( inputSettings.purpose.values[ 0 ] ).toBe(
+					'sell_products'
+				);
+
+				// Current saved purpose is 'sell_products', ACR metrics included for that answer
+				// are associated with `purchase` and `add_to_cart` events. Initially we will simulate
+				// user saving site purpose with `purchase`, or adding `purchase` metrics during initial events detection.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				const currentMetrics = registry
+					.select( CORE_USER )
+					.getAnswerBasedMetrics();
+
+				// Current metrics should include only `purchase` related metrics on the list.
+				const expectedMetrics = [
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				];
+
+				expect( currentMetrics ).toEqual( expectedMetrics );
+
+				// After initial events, `add_to_cart` has been detected.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
+						lostEvents: [],
+					} );
+
+				const { container, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect( container ).toBeEmptyDOMElement();
+			} );
+
+			it( 'renders when newly detected events suggest metrics from different site purpose', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
+				} );
+
+				const inputSettings = registry
+					.select( CORE_USER )
+					.getUserInputSettings();
+
+				expect( inputSettings.purpose.values[ 0 ] ).toBe(
+					'publish_blog'
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						lostEvents: [],
+					} );
+
+				const { getByRole, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect(
+					getByRole( 'button', { name: 'View metrics' } )
+				).toBeInTheDocument();
+			} );
+		} );
+
+		describe( 'user with manually-selected metrics', () => {
+			it( 'does not render when there are new events with metrics that are already selected', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+						lostEvents: [],
+					} );
+
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const { container, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect( container ).toBeEmptyDOMElement();
+			} );
+
+			it( 'renders when there are new events with metrics that are not selected', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						lostEvents: [],
+					} );
+
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const { getByRole, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect(
+					getByRole( 'button', { name: 'View metrics' } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'renders when there are new events having partialy unselected metrics', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setNewConversionEventsLastUpdateAt( 1734531413 );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						lostEvents: [],
+					} );
+
+				// There is a third leads metric that is not selected. This scenario simulates
+				// edge case in which user had 2 out of 3 leads metrics selected, then lost the `contact` event`
+				// in which case we will surface this variation of callout because 3rd leads metric would
+				// not be visible in selection panel after event was lost, but will re-appear after event is detected again,
+				// making it "new" again.
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+					],
+					isWidgetHidden: false,
+				} );
+
+				const { getByRole, waitForRegistry } = render(
+					<ConversionReportingNotificationCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>,
+					{
+						registry,
+						features: [ 'conversionReporting' ],
+					}
+				);
+				await waitForRegistry();
+
+				expect(
+					getByRole( 'button', { name: 'View metrics' } )
+				).toBeInTheDocument();
+			} );
 		} );
 	} );
 } );

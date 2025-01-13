@@ -154,15 +154,13 @@ class Key_Metrics_SettingsTest extends TestCase {
 
 	public function test_merge() {
 		$original_settings = array(
-			'widgetSlugs'                      => array( 'widgetA' ),
-			'isWidgetHidden'                   => false,
-			'includeConversionTailoredMetrics' => array(),
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => false,
 		);
 
 		$changed_settings = array(
-			'widgetSlugs'                      => array( 'widgetB' ),
-			'isWidgetHidden'                   => true,
-			'includeConversionTailoredMetrics' => array( 'contact' ),
+			'widgetSlugs'    => array( 'widgetB' ),
+			'isWidgetHidden' => true,
 		);
 
 		// Make sure settings can be updated even without having them set initially
@@ -178,9 +176,8 @@ class Key_Metrics_SettingsTest extends TestCase {
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => true ) );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'widgetSlugs'                      => $original_settings['widgetSlugs'],
-				'isWidgetHidden'                   => true,
-				'includeConversionTailoredMetrics' => array(),
+				'widgetSlugs'    => $original_settings['widgetSlugs'],
+				'isWidgetHidden' => true,
 			),
 			$this->key_metrics_settings->get()
 		);
@@ -198,11 +195,6 @@ class Key_Metrics_SettingsTest extends TestCase {
 		// Make sure that we can't set wrong format for the widgetSlugs property
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'widgetSlugs' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
-
-		// Make sure that we can't set wrong format for the includeConversionTailoredMetrics property
-		$this->key_metrics_settings->set( $original_settings );
-		$this->key_metrics_settings->merge( array( 'includeConversionTailoredMetrics' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 	}
 

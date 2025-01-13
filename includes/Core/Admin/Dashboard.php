@@ -127,11 +127,77 @@ final class Dashboard {
 	 * @since 1.120.0 Added the `data-view-only` attribute.
 	 */
 	private function render_googlesitekit_wp_dashboard() {
+		$active_modules                 = $this->modules->get_active_modules();
+		$analytics_connected            = isset( $active_modules['analytics-4'] ) && $active_modules['analytics-4']->is_connected();
+		$search_console_connected       = isset( $active_modules['search-console'] ) && $active_modules['search-console']->is_connected();
+		$is_view_only                   = ! $this->authentication->is_authenticated();
+		$can_view_shared_analytics      = current_user_can( Permissions::READ_SHARED_MODULE_DATA, 'analytics-4' );
+		$can_view_shared_search_console = current_user_can( Permissions::READ_SHARED_MODULE_DATA, 'search-console' );
+		$display_analytics_data         = ( ! $is_view_only && $analytics_connected ) || ( $is_view_only && $can_view_shared_analytics );
+		$display_search_console_data    = ( ! $is_view_only && $search_console_connected ) || ( $is_view_only && $can_view_shared_search_console );
+
+		$class_names = array();
+
+		if ( $analytics_connected && $display_analytics_data ) {
+			$class_names[] = 'googlesitekit-wp-dashboard-analytics_active_and_connected';
+		}
+
+		if ( $search_console_connected && $display_search_console_data ) {
+			$class_names[] = 'googlesitekit-wp-dashboard-search_console_active_and_connected';
+		}
+
+		if ( ! $analytics_connected && ! $is_view_only ) {
+			$class_names[] = 'googlesitekit-wp-dashboard-analytics-activate-cta';
+		}
+
+		$class_names = implode( ' ', $class_names );
 
 		$this->render_noscript_html();
-		$is_view_only = ! $this->authentication->is_authenticated();
 		?>
-		<div id="js-googlesitekit-wp-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-plugin"></div>
+		<div id="js-googlesitekit-wp-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-plugin <?php echo esc_attr( $class_names ); ?>">
+			<div class="googlesitekit-wp-dashboard googlesitekit-wp-dashboard-loading">
+			<?php
+
+				$this->render_loading_container( 'googlesitekit-wp-dashboard__cta' );
+			?>
+
+				<div class="googlesitekit-wp-dashboard-stats">
+				<?php
+				if ( $display_analytics_data ) {
+					$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__can_view_analytics' );
+				}
+
+				if ( $display_search_console_data ) {
+					$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__search_console_active_and_connected' );
+				}
+
+				if ( ! $analytics_connected && ! $is_view_only ) {
+					$this->render_loading_container( 'googlesitekit-wp-dashboard-stats__cta' );
+				}
+
+				if ( $display_analytics_data ) {
+					$this->render_loading_container( 'googlesitekit-unique-visitors-chart-widget' );
+					$this->render_loading_container( 'googlesitekit-search-console-widget' );
+				}
+				?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the loading container when data is not available and being fetched.
+	 *
+	 * @since 1.144.0
+	 * @param string $class_names Class names to add to the container.
+	 * @return void
+	 */
+	private function render_loading_container( $class_names ) {
+		?>
+		<div class="googlesitekit-preview-block <?php echo esc_attr( $class_names ); ?>">
+			<div class="googlesitekit-preview-block__wrapper"></div>
+		</div>
 		<?php
 	}
 }

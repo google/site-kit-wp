@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -72,8 +73,15 @@ class Conversion_Reporting_Provider {
 		$this->user_options = $user_options;
 		$this->analytics    = $analytics;
 
-		$this->events_sync = new Conversion_Reporting_Events_Sync( $context, $settings, $this->analytics );
-		$this->cron        = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
+		$transients            = new Transients( $context );
+		$new_badge_events_sync = new Conversion_Reporting_New_Badge_Events_Sync( $transients );
+		$this->events_sync     = new Conversion_Reporting_Events_Sync(
+			$settings,
+			$transients,
+			$this->analytics,
+			$new_badge_events_sync
+		);
+		$this->cron            = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
 	}
 
 	/**

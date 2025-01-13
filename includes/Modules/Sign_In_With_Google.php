@@ -10,8 +10,11 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -31,6 +34,7 @@ use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
@@ -68,6 +72,36 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	const ACTION_DISCONNECT = 'googlesitekit_auth_disconnect';
 
 	/**
+	 * Existing_Client_ID instance.
+	 *
+	 * @since 1.142.0
+	 * @var Existing_Client_ID
+	 */
+	protected $existing_client_id;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+		$this->existing_client_id = new Existing_Client_ID( $this->options );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.137.0
@@ -75,6 +109,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
+
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_existing_client_id' ), 10 );
 
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
@@ -90,12 +126,23 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, fn () => $this->handle_disconnect_user() );
 
-		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
-
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
-		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
+		// (Potentially) render the Sign in with Google script tags/buttons.
+		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
+		// Output the Sign in with Google JS on the WordPress login page.
+		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
+
+		// Delete client ID stored from previous module connection on module reconnection.
+		add_action(
+			'googlesitekit_save_settings_' . self::MODULE_SLUG,
+			function () {
+				if ( $this->is_connected() ) {
+					$this->existing_client_id->delete();
+				}
+			}
+		);
 	}
 
 	/**
@@ -137,7 +184,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		switch ( $error_code ) {
 			case Authenticator::ERROR_INVALID_REQUEST:
-				$error->add( self::MODULE_SLUG, __( 'Sign in with Google failed.', 'google-site-kit' ) );
+				/* translators: %s: Sign in with Google service name */
+				$error->add( self::MODULE_SLUG, sprintf( __( 'Login with %s failed.', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
 				break;
 			case Authenticator::ERROR_SIGNIN_FAILED:
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
@@ -152,9 +200,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
+	 * Persist the clientID on module disconnection, so it can be
+	 * reused if the module were to be reconnected.
+	 *
 	 * @since 1.137.0
 	 */
 	public function on_deactivation() {
+		$pre_deactivation_settings = $this->get_settings()->get();
+
+		if ( ! empty( $pre_deactivation_settings['clientID'] ) ) {
+			$this->existing_client_id->set( $pre_deactivation_settings['clientID'] );
+		}
+
 		$this->get_settings()->delete();
 	}
 
@@ -170,7 +227,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Sign in with Google', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', 'google-site-kit' ),
-			'order'       => 10,
 			'homepage'    => __( 'https://developers.google.com/identity/gsi/web/guides/overview', 'google-site-kit' ),
 		);
 	}
@@ -232,16 +288,29 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Renders the sign in button.
+	 * Renders the Sign in with Google JS script tags, One-tap code, and
+	 * buttons.
 	 *
 	 * @since 1.139.0
+	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
+	 *                rendered the code to replace buttons.
 	 */
-	private function render_signin_button() {
+	private function render_signinwithgoogle() {
 		global $wp;
+		$is_wp_login           = is_login();
 		$is_woo_commerce_login = 'my-account' === $wp->request;
 
 		$settings = $this->get_settings()->get();
+
+		// If there's no client ID available, don't render the button.
 		if ( ! $settings['clientID'] ) {
+			return;
+		}
+
+		// If this is not the WordPress or WooCommerce login page, check to
+		// see if "One-tap enabled on all pages" is set first. If it isnt:
+		// don't render the Sign in with Google JS.
+		if ( ! $is_wp_login && ! $is_woo_commerce_login && ! $settings['oneTapOnAllPages'] ) {
 			return;
 		}
 
@@ -261,18 +330,31 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'shape' => $settings['shape'],
 		);
 
+		// Whether buttons will be rendered/transformed on this page.
+		$render_buttons = $is_wp_login || $is_woo_commerce_login;
+
 		// Render the Sign in with Google button and related inline styles.
-		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
+		print(
+			// Purposely not translated as this is a technical comment.
+			//
+			// See: https://github.com/google/site-kit-wp/pull/9826#discussion_r1876026945.
+			"\n<!-- Sign in with Google button added by Site Kit -->\n"
+		);
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		ob_start();
 		?>
 ( () => {
-	const parent = document.createElement( 'div' );
-<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
-		<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const parent = document.createElement( 'div' );
+
+		<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+		<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	async function handleCredentialResponse( response ) {
 		try {
@@ -280,7 +362,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams( response )
-			});
+			} );
 			if ( res.ok && res.redirected ) {
 				location.assign( res.url );
 			}
@@ -292,23 +374,26 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	google.accounts.id.initialize( {
 		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
 		callback: handleCredentialResponse,
+		library_name: 'Site-Kit',
 	} );
 
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	google.accounts.id.prompt();
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $settings['oneTapEnabled'] && ( $is_wp_login || ! is_user_logged_in() ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.prompt();
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	const expires = new Date();
-	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $render_buttons && ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const expires = new Date();
+		expires.setTime( expires.getTime() + 1000 * 60 * 5 );
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
 		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
+		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
 	}
 
 	/**
@@ -344,32 +429,38 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		$debug_fields = array(
 			'sign_in_with_google_client_id'                => array(
-				'label' => __( 'Sign in with Google: Client ID', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Client ID', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'] ),
 			),
 			'sign_in_with_google_shape'                    => array(
-				'label' => __( 'Sign in with Google: Shape', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Shape', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'shape', $settings['shape'] ),
 				'debug' => $settings['shape'],
 			),
 			'sign_in_with_google_text'                     => array(
-				'label' => __( 'Sign in with Google: Text', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Text', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'text', $settings['text'] ),
 				'debug' => $settings['text'],
 			),
 			'sign_in_with_google_theme'                    => array(
-				'label' => __( 'Sign in with Google: Theme', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Theme', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $this->get_settings()->get_label( 'theme', $settings['theme'] ),
 				'debug' => $settings['theme'],
 			),
 			'sign_in_with_google_use_snippet'              => array(
-				'label' => __( 'Sign in with Google: One-tap Enabled', 'google-site-kit' ),
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: One-tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
-				'label' => __( 'Sign in with Google: Number of users who have authenticated using Sign in with Google', 'google-site-kit' ),
+				/* translators: %1$s: Sign in with Google service name */
+				'label' => sprintf( __( '%1$s: Number of users who have authenticated using %1$s', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $authenticated_user_count,
 				'debug' => $authenticated_user_count,
 			),
@@ -442,7 +533,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function has_placed_tag_in_content( $content ) {
 		$search_string              = 'Sign in with Google button added by Site Kit';
 		$search_translatable_string =
-			__( 'Sign in with Google button added by Site Kit', 'google-site-kit' );
+			/* translators: %s: Sign in with Google service name */
+			sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) );
 
 		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
 			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;
@@ -518,7 +610,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		?>
 <div id="googlesitekit-sign-in-with-google-disconnect">
-	<h2><?php esc_html_e( 'Sign in with Google via Site Kit by Google', 'google-site-kit' ); ?></h2>
+	<h2>
+		<?php
+		/* translators: %s: Sign in with Google service name */
+		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
+		?>
+	</h2>
 	<p>
 		<?php
 		if ( get_current_user_id() === $user->ID ) {
@@ -544,5 +641,27 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	</p>
 </div>
 		<?php
+	}
+
+	/**
+	 * Exposes an existing client ID from a previous connection
+	 * to JS via _googlesitekitModulesData.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	protected function inline_existing_client_id( $modules_data ) {
+		$existing_client_id = $this->existing_client_id->get();
+
+		if ( $existing_client_id ) {
+			// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
+			$modules_data['sign-in-with-google'] = array(
+				'existingClientID' => $existing_client_id,
+			);
+		}
+
+		return $modules_data;
 	}
 }

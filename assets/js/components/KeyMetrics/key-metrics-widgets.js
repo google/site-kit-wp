@@ -56,7 +56,10 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../modules/analytics-4/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 import { isFeatureEnabled } from '../../features';
 import {
@@ -343,7 +346,7 @@ const KEY_METRICS_WIDGETS = {
 			'Traffic source that generates the most add to cart events',
 			'google-site-kit'
 		),
-		requiredConversionEventName: [ 'add_to_cart' ],
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
@@ -360,9 +363,9 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
-			'submit_lead_form',
-			'contact',
-			'generate_lead',
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
@@ -379,7 +382,7 @@ const KEY_METRICS_WIDGETS = {
 			'Traffic source that generates the most purchases',
 			'google-site-kit'
 		),
-		requiredConversionEventName: [ 'purchase' ],
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
@@ -432,9 +435,9 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
-			'submit_lead_form',
-			'contact',
-			'generate_lead',
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
@@ -451,7 +454,7 @@ const KEY_METRICS_WIDGETS = {
 			'Cities where visitors most frequently add products to their carts',
 			'google-site-kit'
 		),
-		requiredConversionEventName: [ 'add_to_cart' ],
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
@@ -467,7 +470,7 @@ const KEY_METRICS_WIDGETS = {
 			'Cities driving the most purchases',
 			'google-site-kit'
 		),
-		requiredConversionEventName: [ 'purchase' ],
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
@@ -483,7 +486,7 @@ const KEY_METRICS_WIDGETS = {
 			'Top device driving the most purchases',
 			'google-site-kit'
 		),
-		requiredConversionEventName: [ 'purchase' ],
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
@@ -520,9 +523,9 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
-			'submit_lead_form',
-			'contact',
-			'generate_lead',
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),

@@ -18,7 +18,10 @@
 
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
 
@@ -44,12 +47,20 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Default',
+Default.scenario = {};
+
+export const NewUserAccountsEnabled = Template.bind( null );
+NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
+NewUserAccountsEnabled.args = {
+	anyoneCanRegister: true,
 };
+
 Default.decorators = [
-	( Story ) => {
+	( Story, { args } ) => {
 		const setupRegistry = ( registry ) => {
+			const { anyoneCanRegister = false } = args;
+			provideSiteInfo( registry, { anyoneCanRegister } );
+
 			registry
 				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 				.receiveGetSettings( {
@@ -60,6 +71,11 @@ Default.decorators = [
 					shape: 'rectangular',
 					OneTapEnabled: true,
 				} );
+
+			// Story-specific setup.
+			if ( args.setupRegistry ) {
+				args.setupRegistry( registry );
+			}
 		};
 
 		return (
@@ -72,12 +88,11 @@ Default.decorators = [
 
 export const InvalidClientID = Template.bind( null );
 InvalidClientID.storyName = 'Invalid Client ID';
-InvalidClientID.scenario = {
-	label: 'Modules/Sign in with Google/Settings/SettingsForm/Invalid Client ID',
-};
 InvalidClientID.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry, { anyoneCanRegister: true } );
+
 			registry
 				.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 				.receiveGetSettings( {
@@ -97,11 +112,15 @@ InvalidClientID.decorators = [
 	},
 ];
 
+export const Empty = Template.bind( null );
+Empty.storyName = 'Empty';
+
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry, { anyoneCanRegister: true } );
 				provideModules( registry, [
 					{
 						slug: 'sign-in-with-google',
@@ -118,10 +137,4 @@ export default {
 			);
 		},
 	],
-};
-
-export const Empty = Template.bind( null );
-Empty.storyName = 'Empty';
-Empty.scenario = {
-	label: 'Modules/SignInWithGoogle/Settings/SettingsForm/Empty',
 };

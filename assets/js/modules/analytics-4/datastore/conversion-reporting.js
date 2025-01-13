@@ -20,20 +20,16 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import {
 	commonActions,
-	combineStores,
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { negateDefined } from '../../../util/negate';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -45,7 +41,14 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import {
+	CONVERSION_REPORTING_LEAD_EVENTS,
+	MODULES_ANALYTICS_4,
+} from './constants';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
+import { negateDefined } from '../../../util/negate';
+import { safelySort } from '../../../util';
 
 function hasConversionReportingEventsOfType( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -58,54 +61,6 @@ function hasConversionReportingEventsOfType( propName ) {
 		return negateDefined( negateDefined( inlineData[ propName ]?.length ) );
 	} );
 }
-
-const dismissNewConversionReportingEventsStore = createFetchStore( {
-	baseName: 'dismissNewConversionReportingEvents',
-	controlCallback: () => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'clear-conversion-reporting-new-events'
-		);
-	},
-	reducerCallback: ( state, values ) => {
-		if ( values === false ) {
-			return state;
-		}
-
-		return {
-			...state,
-			detectedEventsChange: {
-				...state.detectedEventsChange,
-				newEvents: [],
-			},
-		};
-	},
-} );
-
-const dismissLostConversionReportingEventsStore = createFetchStore( {
-	baseName: 'dismissLostConversionReportingEvents',
-	controlCallback: () => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'clear-conversion-reporting-lost-events'
-		);
-	},
-	reducerCallback: ( state, values ) => {
-		if ( values === false ) {
-			return state;
-		}
-
-		return {
-			...state,
-			detectedEventsChange: {
-				...state.detectedEventsChange,
-				lostEvents: [],
-			},
-		};
-	},
-} );
 
 // Actions.
 const RECEIVE_CONVERSION_REPORTING_INLINE_DATA =
@@ -132,39 +87,18 @@ export const resolvers = {
 			return;
 		}
 
-		const { newEvents, lostEvents } =
+		const { newEvents, lostEvents, newBadgeEvents } =
 			global._googlesitekitModulesData[ 'analytics-4' ];
 
 		yield actions.receiveConversionReportingInlineData( {
 			newEvents,
 			lostEvents,
+			newBadgeEvents,
 		} );
 	},
 };
 
 export const actions = {
-	/**
-	 * Dismiss new conversion reporting events.
-	 *
-	 * @since 1.138.0
-	 *
-	 * @return {boolean} Transient deletion response.
-	 */
-	dismissNewConversionReportingEvents() {
-		return dismissNewConversionReportingEventsStore.actions.fetchDismissNewConversionReportingEvents();
-	},
-
-	/**
-	 * Dismiss lost conversion reporting events.
-	 *
-	 * @since 1.138.0
-	 *
-	 * @return {boolean} Transient deletion response.
-	 */
-	dismissLostConversionReportingEvents() {
-		return dismissLostConversionReportingEventsStore.actions.fetchDismissLostConversionReportingEvents();
-	},
-
 	/**
 	 * Stores conversion reporting inline data in the datastore.
 	 *
@@ -187,9 +121,13 @@ export const actions = {
 export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
-			const { newEvents, lostEvents } = payload.data;
+			const { newEvents, lostEvents, newBadgeEvents } = payload.data;
 
-			state.detectedEventsChange = { newEvents, lostEvents };
+			state.detectedEventsChange = {
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+			};
 			break;
 		}
 
@@ -266,11 +204,24 @@ export const selectors = {
 		hasConversionReportingEventsOfType( 'lostEvents' ),
 
 	/**
+	 * Returns newBadgeEvents if present.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @return {Array|undefined} `newBadgeEvents` array if events are present, `undefined` otherwise.
+	 */
+	getNewBadgeEvents: createRegistrySelector( ( select ) => () => {
+		const inlineData =
+			select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange();
+
+		return inlineData?.newBadgeEvents;
+	} ),
+
+	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
 	 *
 	 * @since 1.141.0
 	 *
-	 * @param {string}  purpose      Value of saved site purpose from user input settings.
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise, and undefined if metrics are not loaded.
 	 */
@@ -299,7 +250,7 @@ export const selectors = {
 	/**
 	 * Checks if there are key metrics widgets that rely on the conversion events that have been lost.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {boolean|undefined} TRUE if current metrics are depending on the conversion events that have been lost, FALSE otherwise, and undefined if event change data is not resolved.
 	 */
@@ -328,7 +279,7 @@ export const selectors = {
 	/**
 	 * Returns the conversion events associated with the current site purpose.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @return {Array|undefined} List of detected conversion events connected to the current site purpose, or undefined if data is not resolved.
 	 */
@@ -357,7 +308,7 @@ export const selectors = {
 	/**
 	 * Gets conversion events related metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 * @private
 	 *
 	 * @return {Object} Metrics list object.
@@ -388,7 +339,7 @@ export const selectors = {
 	/**
 	 * Checks if there are conversion events for the user picked metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.142.0
 	 *
 	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
@@ -416,16 +367,126 @@ export const selectors = {
 			);
 		}
 	),
+
+	/**
+	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @return {boolean} `true` if there are metrics related to the new conversion events that differ from already detected/selected ones, `false` otherwise.
+	 */
+	haveConversionEventsWithDifferentMetrics: createRegistrySelector(
+		( select ) => () => {
+			const isGA4Connected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			if ( ! isGA4Connected ) {
+				return false;
+			}
+
+			const {
+				getDetectedEvents,
+				getConversionReportingEventsChange,
+				haveConversionEventsForUserPickedMetrics,
+				haveConversionEventsForTailoredMetrics,
+				getKeyMetricsConversionEventWidgets,
+			} = select( MODULES_ANALYTICS_4 );
+
+			const detectedEvents = getDetectedEvents();
+			const conversionReportingEventsChange =
+				getConversionReportingEventsChange();
+
+			if (
+				! detectedEvents?.length ||
+				! conversionReportingEventsChange?.newEvents?.length ||
+				// If events in detectedEvents do not differ from the new ones it means
+				// it is the initial detection, since after initial detection newEvents will
+				// only contain the difference in events.
+				isEqual(
+					safelySort( conversionReportingEventsChange?.newEvents ),
+					safelySort( detectedEvents )
+				)
+			) {
+				return false;
+			}
+
+			const detectedLeadEvents = detectedEvents.filter( ( event ) =>
+				CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
+			);
+			const newLeadEvents =
+				conversionReportingEventsChange.newEvents.filter( ( event ) =>
+					CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
+				);
+			const newNonLeadEvents =
+				conversionReportingEventsChange.newEvents.filter(
+					( event ) =>
+						! CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
+				);
+
+			// If new events include only additional lead events return early.
+			if (
+				detectedLeadEvents.length > 1 &&
+				newLeadEvents.length > 0 &&
+				! newNonLeadEvents.length
+			) {
+				return false;
+			}
+
+			const { getUserPickedMetrics, getKeyMetrics } = select( CORE_USER );
+
+			const userPickedMetrics = getUserPickedMetrics();
+			const haveNewConversionEventsForUserPickedMetrics =
+				haveConversionEventsForUserPickedMetrics( true );
+
+			if (
+				userPickedMetrics?.length &&
+				! haveNewConversionEventsForUserPickedMetrics
+			) {
+				return false;
+			}
+
+			const keyMetricsConversionEventWidgets =
+				getKeyMetricsConversionEventWidgets();
+			const newConversionEventKeyMetrics = [];
+
+			// Pick all conversion event widgets associated with new events.
+			for ( const event in keyMetricsConversionEventWidgets ) {
+				if (
+					conversionReportingEventsChange.newEvents.includes( event )
+				) {
+					newConversionEventKeyMetrics.push(
+						...keyMetricsConversionEventWidgets[ event ]
+					);
+				}
+			}
+			const currentKeyMetrics = getKeyMetrics();
+			const haveAllConversionEventMetrics =
+				newConversionEventKeyMetrics.every( ( keyMetric ) =>
+					currentKeyMetrics?.includes( keyMetric )
+				);
+
+			// If the current site purpose has all conversion event metrics,
+			// or there are some metrics that can be added via "Add
+			// metrics CTA", don't show the "View metrics" variation.
+			if (
+				! userPickedMetrics?.length &&
+				( haveConversionEventsForTailoredMetrics( true ) ||
+					haveAllConversionEventMetrics )
+			) {
+				return false;
+			}
+
+			return true;
+		}
+	),
 };
 
-export default combineStores(
-	dismissNewConversionReportingEventsStore,
-	dismissLostConversionReportingEventsStore,
-	{
-		initialState,
-		actions,
-		resolvers,
-		selectors,
-		reducer,
-	}
-);
+const store = {
+	initialState,
+	actions,
+	resolvers,
+	selectors,
+	reducer,
+};
+
+export default store;
