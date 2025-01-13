@@ -56,6 +56,19 @@ export function isValidOnboardingState( onboardingState ) {
 }
 
 /**
+ * Validates if a value is one of the allowed snippet modes.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} mode Snippet mode to validate.
+ * @return {boolean} Whether the mode is valid.
+ */
+export function isValidSnippetMode( mode ) {
+	const validModes = [ 'post_types', 'per_post', 'sitewide' ];
+	return validModes.includes( mode );
+}
+
+/**
  * Checks if a given URL uses HTTPS.
  *
  * @since 1.131.0
