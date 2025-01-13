@@ -138,11 +138,11 @@ final class Dashboard {
 
 		$class_names = array();
 
-		if ( $analytics_connected ) {
+		if ( $analytics_connected && $display_analytics_data ) {
 			$class_names[] = 'googlesitekit-wp-dashboard-analytics_active_and_connected';
 		}
 
-		if ( $search_console_connected ) {
+		if ( $search_console_connected && $display_search_console_data ) {
 			$class_names[] = 'googlesitekit-wp-dashboard-search_console_active_and_connected';
 		}
 

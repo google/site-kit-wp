@@ -25,22 +25,19 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-} from '../../datastore/constants';
+import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '../../../../util';
 
-const WidgetWithComponentProps = withWidgetComponentProps(
-	'readerRevenueManagerSetupCTABanner'
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'rrm-setup-notification'
 )( ReaderRevenueManagerSetupCTABanner );
 
 function Template() {
-	return <WidgetWithComponentProps />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -60,6 +57,10 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getDismissedPrompts', [] );
 
 				fetchMock.postOnce(
 					new RegExp(
@@ -67,12 +68,10 @@ export default {
 					),
 					{
 						body: {
-							[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]:
-								{
-									expires:
-										Date.now() / 1000 + WEEK_IN_SECONDS,
-									count: 1,
-								},
+							'rrm-setup-notification': {
+								expires: Date.now() / 1000 + WEEK_IN_SECONDS,
+								count: 1,
+							},
 						},
 						status: 200,
 					}
