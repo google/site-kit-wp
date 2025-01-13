@@ -35,7 +35,7 @@ import { CORE_SITE } from './constants';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { CORE_USER } from '../user/constants';
 
-describe( 'core/site First-party Mode', () => {
+describe( 'core/site First-party mode', () => {
 	let registry;
 
 	const firstPartyModeSettingsEndpointRegExp = new RegExp(
