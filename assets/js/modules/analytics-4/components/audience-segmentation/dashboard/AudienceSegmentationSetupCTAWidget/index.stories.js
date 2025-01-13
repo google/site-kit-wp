@@ -25,19 +25,21 @@ import {
 } from '../../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from '.';
+import { withNotificationComponentProps } from '../../../../../../googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '../../../..';
 
-const WidgetWithComponentProps = withWidgetComponentProps(
-	'audienceSegmentationSetupCTA'
+const NotificationWithComponentProps = withNotificationComponentProps(
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 )( AudienceSegmentationSetupCTAWidget );
 
 function Template() {
-	return <WidgetWithComponentProps />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -48,6 +50,7 @@ Default.args = {
 	},
 };
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/Default',
 	delay: 250,
 };
@@ -56,6 +59,18 @@ export const DismissedOnce = Template.bind( {} );
 DismissedOnce.storyName = 'Dismissed Once';
 DismissedOnce.args = {
 	setupRegistry: ( registry ) => {
+		const notification =
+			ANALYTICS_4_NOTIFICATIONS[
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+			];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+				notification
+			);
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 				expires: 1000,
@@ -65,6 +80,7 @@ DismissedOnce.args = {
 	},
 };
 DismissedOnce.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/DismissedOnce',
 	delay: 250,
 };
@@ -122,6 +138,10 @@ export default {
 					.finishResolution( 'getReport', [ options ] );
 
 				args?.setupRegistry( registry );
+
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getDismissedPrompts', [] );
 			};
 
 			return (
