@@ -264,9 +264,6 @@ export default function DashboardMainApp() {
 
 			{ ! viewOnlyDashboard && (
 				<Fragment>
-					{ /* { audienceSegmentationEnabled && (
-						<AudienceSegmentationSetupCTAWidget />
-					) } */ }
 					<ConsentModeSetupCTAWidget />
 				</Fragment>
 			) }
