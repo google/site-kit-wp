@@ -88,6 +88,7 @@ export default function WebDataStreamNotAvailableNotification( {
 						/>
 					</div>
 				}
+				dismissExpires={ MINUTE_IN_SECONDS * 55 }
 			/>
 		</Notification>
 	);
