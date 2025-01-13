@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 20 ] */
-
 /**
  * External dependencies
  */
@@ -68,6 +66,7 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 	return totalUsers === 0;
 };
 
+// eslint-disable-next-line complexity
 export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
@@ -465,6 +464,48 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
+	// Avoid console.log in tests.
+	const log = process?.stdout
+		? ( ...args ) =>
+				process.stdout.write(
+					// eslint-disable-next-line sitekit/no-direct-date
+					[ Date.now(), ...args ].map( JSON.stringify ).join( ' ' ) +
+						'\n'
+				) // eslint-disable-next-line sitekit/no-direct-date
+		: ( ...args ) => global.console.log( Date.now(), ...args );
+
+	log( {
+		loading,
+		widgetLoading,
+		reportLoaded,
+		totalPageviewsReportLoaded,
+		topCitiesReportLoaded,
+		topContentReportLoaded,
+		topContentPageTitlesReportLoaded,
+	} );
+
+	const filterAndLogTruthyObjectValues = ( msg, obj ) => {
+		const truthyObj = Object.fromEntries(
+			Object.entries( obj ).filter( ( [ , value ] ) => value )
+		);
+		if ( Object.keys( truthyObj ).length ) {
+			log( msg, truthyObj );
+		} else {
+			log( msg, 'All good' );
+		}
+	};
+
+	filterAndLogTruthyObjectValues( 'AudienceTiles', {
+		'! loading': ! loading,
+		'! widgetLoading': ! widgetLoading,
+		'! reportLoaded': ! reportLoaded,
+		'! totalPageviewsReportLoaded': ! totalPageviewsReportLoaded,
+		'! topCitiesReportLoaded': ! topCitiesReportLoaded,
+		'! topContentReportLoaded': ! topContentReportLoaded,
+		'! topContentPageTitlesReportLoaded':
+			! topContentPageTitlesReportLoaded,
+	} );
+
 	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
 	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
 	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
@@ -575,12 +616,24 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							? reportRowsWithSetValues( topCities.rows )
 							: [];
 
+						filterAndLogTruthyObjectValues( 'AudienceTile', {
+							'isZeroData === undefined':
+								isZeroData === undefined,
+							'isPartialData === undefined':
+								isPartialData === undefined,
+							audienceResourceName,
+						} );
+
 						// Return loading tile if data is not yet loaded.
 						if (
 							loading ||
 							isZeroData === undefined ||
 							isPartialData === undefined
 						) {
+							log(
+								'AudienceTile: Loading... ',
+								audienceResourceName
+							);
 							return (
 								<Widget key={ audienceResourceName } noPadding>
 									<AudienceTileLoading />

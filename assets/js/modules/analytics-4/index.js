@@ -56,8 +56,8 @@ import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	// AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	// AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
@@ -94,7 +94,7 @@ import {
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain } from './components/setup';
 import {
-	DashboardAllTrafficWidgetGA4,
+	// DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
 	EnhancedMeasurementActivationBanner,
 } from './components/dashboard';
@@ -152,6 +152,7 @@ export const registerModule = ( modules ) => {
 
 export const registerWidgets = ( widgets ) => {
 	// Register Analytics 4 Widgets.
+	/*
 	widgets.registerWidget(
 		'analyticsAllTrafficGA4',
 		{
@@ -166,6 +167,7 @@ export const registerWidgets = ( widgets ) => {
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
 	);
+	*/
 
 	widgets.registerWidget(
 		'analyticsAudienceTiles',

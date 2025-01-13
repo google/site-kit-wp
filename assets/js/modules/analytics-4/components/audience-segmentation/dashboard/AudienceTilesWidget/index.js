@@ -61,10 +61,27 @@ function AudienceTilesWidget( { Widget } ) {
 		)
 	);
 
+	// Avoid console.log in tests.
+	const log = process?.stdout
+		? ( ...args ) =>
+				process.stdout.write(
+					// eslint-disable-next-line sitekit/no-direct-date
+					[ Date.now(), ...args ].map( JSON.stringify ).join( ' ' ) +
+						'\n'
+				) // eslint-disable-next-line sitekit/no-direct-date
+		: ( ...args ) => global.console.log( Date.now(), ...args );
+
 	useEffect( () => {
+		log( 'AudienceTilesWidget', {
+			availableAudiencesSynced,
+		} );
+
 		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
 			const syncAudiences = async () => {
 				await maybeSyncAvailableAudiences();
+				log(
+					'AudienceTilesWidget: setting availableAudiencesSynced to true'
+				);
 				setAvailableAudiencesSynced( true );
 			};
 
@@ -102,7 +119,15 @@ function AudienceTilesWidget( { Widget } ) {
 		availableAudiences?.includes( audience )
 	);
 
+	// log( 'AudienceTilesWidget', {
+	// 	availableAudiences,
+	// 	configuredAudiences,
+	// 	hasMatchingAudience,
+	// 	availableAudiencesSynced,
+	// } );
+
 	if ( ! hasMatchingAudience ) {
+		log( 'AudienceTilesWidget: No matching audience found' );
 		return availableAudiencesSynced ? (
 			<NoAudienceBannerWidget
 				Widget={ Widget }
@@ -121,6 +146,23 @@ function AudienceTilesWidget( { Widget } ) {
 			</Widget>
 		);
 	}
+
+	const filterAndLogTruthyObjectValues = ( msg, obj ) => {
+		const truthyObj = Object.fromEntries(
+			Object.entries( obj ).filter( ( [ , value ] ) => value )
+		);
+		if ( Object.keys( truthyObj ).length ) {
+			log( msg, truthyObj );
+		} else {
+			log( msg, 'All good' );
+		}
+	};
+
+	filterAndLogTruthyObjectValues( 'AudienceTilesWidget', {
+		'! availableAudiencesSynced': ! availableAudiencesSynced,
+		'! availableAudiences': ! availableAudiences,
+		'! configuredAudiences': ! configuredAudiences,
+	} );
 
 	return (
 		<AudienceTiles
