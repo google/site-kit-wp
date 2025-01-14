@@ -39,6 +39,8 @@ function autoload_classes() {
 					|| 0 === strpos( $class_instance, 'Google\\Site_Kit_Dependencies\\' )
 					|| file_exists( $class_map[ $class_instance ] )
 				)
+				// Only load files that exist.
+				&& file_exists( $class_map[ $class_instance ] )
 			) {
 				require_once $class_map[ $class_instance ];
 			}
