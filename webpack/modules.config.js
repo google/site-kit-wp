@@ -93,6 +93,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				'./assets/js/googlesitekit-components-gm2.js',
 			'googlesitekit-components-gm3':
 				'./assets/js/googlesitekit-components-gm3.js',
+			'googlesitekit-metric-selection':
+				'./assets/js/googlesitekit-metric-selection.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
@@ -115,7 +117,7 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			// If multiple webpack runtimes (from different compilations) are used on the
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
 			// namespace.
-			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+			// See: https://v4.webpack.js.org/configuration/output/#outputjsonpfunction.
 			jsonpFunction: '__googlesitekit_webpackJsonp',
 		},
 		performance: {

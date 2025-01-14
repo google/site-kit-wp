@@ -229,35 +229,35 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 
 		return array(
 			'adsense_account_id'                       => array(
-				'label' => __( 'AdSense account ID', 'google-site-kit' ),
+				'label' => __( 'AdSense: Account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
 			'adsense_client_id'                        => array(
-				'label' => __( 'AdSense client ID', 'google-site-kit' ),
+				'label' => __( 'AdSense: Client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
 			'adsense_account_status'                   => array(
-				'label' => __( 'AdSense account status', 'google-site-kit' ),
+				'label' => __( 'AdSense: Account status', 'google-site-kit' ),
 				'value' => $settings['accountStatus'],
 			),
 			'adsense_site_status'                      => array(
-				'label' => __( 'AdSense site status', 'google-site-kit' ),
+				'label' => __( 'AdSense: Site status', 'google-site-kit' ),
 				'value' => $settings['siteStatus'],
 			),
 			'adsense_use_snippet'                      => array(
-				'label' => __( 'AdSense snippet placed', 'google-site-kit' ),
+				'label' => __( 'AdSense: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 			'adsense_web_stories_adunit_id'            => array(
-				'label' => __( 'Web Stories Ad Unit ID', 'google-site-kit' ),
+				'label' => __( 'AdSense: Web Stories Ad Unit ID', 'google-site-kit' ),
 				'value' => $settings['webStoriesAdUnit'],
 				'debug' => $settings['webStoriesAdUnit'],
 			),
 			'adsense_setup_completed_timestamp'        => array(
-				'label' => __( 'AdSense setup completed at', 'google-site-kit' ),
+				'label' => __( 'AdSense: Setup completed at', 'google-site-kit' ),
 				'value' => $settings['setupCompletedTimestamp'] ? date_i18n(
 					get_option( 'date_format' ),
 					$settings['setupCompletedTimestamp']
@@ -266,7 +266,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			),
 			'adsense_abr_use_snippet'                  => array(
 				'label' => __(
-					'Ad Blocking Recovery snippet placed',
+					'AdSense: Ad Blocking Recovery snippet placed',
 					'google-site-kit'
 				),
 				'value' => $settings['useAdBlockingRecoverySnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
@@ -274,7 +274,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			),
 			'adsense_abr_use_error_protection_snippet' => array(
 				'label' => __(
-					'Ad Blocking Recovery error protection snippet placed',
+					'AdSense: Ad Blocking Recovery error protection snippet placed',
 					'google-site-kit'
 				),
 				'value' => $settings['useAdBlockingRecoveryErrorSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
@@ -282,7 +282,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			),
 			'adsense_abr_setup_status'                 => array(
 				'label' => __(
-					'Ad Blocking Recovery setup status',
+					'AdSense: Ad Blocking Recovery setup status',
 					'google-site-kit'
 				),
 				'value' => $this->get_ad_blocking_recovery_setup_status_label(
@@ -748,7 +748,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
-			'order'       => 2,
 			'homepage'    => add_query_arg( $idenfifier_args, 'https://adsense.google.com/start' ),
 		);
 	}

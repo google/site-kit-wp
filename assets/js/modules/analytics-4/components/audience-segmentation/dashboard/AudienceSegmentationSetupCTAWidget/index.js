@@ -36,7 +36,10 @@ import whenActive from '../../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../../../../../googlesitekit/notifications/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
@@ -80,6 +83,13 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
 		)
 	);
+
+	const isDismissingPrompt = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingPrompt(
+			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+		)
+	);
+
 	const dismissCount = useSelect( ( select ) =>
 		select( CORE_USER ).getPromptDismissCount(
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
@@ -110,6 +120,7 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 			onSuccess: () => {
 				invalidateResolution( 'getQueuedNotifications', [
 					viewContext,
+					NOTIFICATION_GROUPS.DEFAULT,
 				] );
 				dismissPrompt( AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION, {
 					expiresInSeconds: 0,
@@ -224,7 +235,8 @@ function AudienceSegmentationSetupCTAWidget( { Widget, WidgetNull } ) {
 		configuredAudiences?.length ||
 		! analyticsIsDataAvailableOnLoad ||
 		isDismissed ||
-		! dismissedPromptsLoaded
+		! dismissedPromptsLoaded ||
+		isDismissingPrompt
 	) {
 		return null;
 	}

@@ -48,15 +48,43 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '../user-input/util/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
 	handleDialog = null,
 } ) {
+	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
 
+	const includeConversionTailoredMetrics = useSelect( ( select ) => {
+		const isGA4Connected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ! isGA4Connected ) {
+			return false;
+		}
+
+		const haveConversionEventsForTailoredMetrics =
+			select(
+				MODULES_ANALYTICS_4
+			).haveConversionEventsForTailoredMetrics();
+
+		if ( haveConversionEventsForTailoredMetrics ) {
+			return select( MODULES_ANALYTICS_4 ).getDetectedEvents() || [];
+		}
+
+		return [];
+	} );
+
 	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getKeyMetrics();
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			null,
+			includeConversionTailoredMetrics
+		);
 	} );
 
 	const savedPurpose = useSelect( ( select ) =>
@@ -88,6 +116,14 @@ function ConfirmSitePurposeChangeModal( {
 		setUIValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 		} );
+
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+			'cancel_update_metrics_selection',
+			'conversion_reporting'
+		);
+
 		handleDialog();
 	}, [
 		handleDialog,
@@ -95,16 +131,54 @@ function ConfirmSitePurposeChangeModal( {
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
+		viewContext,
 	] );
 
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const userInputPurposeConversionEvents = useSelect( ( select ) => {
+		const isGA4Connected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getUserInputPurposeConversionEvents();
+	} );
+
+	const { setUserInputSetting, saveUserInputSettings } =
+		useDispatch( CORE_USER );
 
 	const saveChanges = useCallback( async () => {
 		setIsSaving( true );
+		// Update 'includeConversionEvents' setting with included conversion events,
+		// to mark that their respective metrics should be included in the
+		// list of tailored metrics and persist on the dashboard in case events are lost.
+		setUserInputSetting(
+			'includeConversionEvents',
+			userInputPurposeConversionEvents
+		);
 		await saveUserInputSettings();
+
 		setIsSaving( false );
+
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+			'confirm_update_metrics_selection',
+			'conversion_reporting'
+		);
+
 		onClose();
-	}, [ saveUserInputSettings, onClose, setIsSaving ] );
+	}, [
+		saveUserInputSettings,
+		onClose,
+		setIsSaving,
+		setUserInputSetting,
+		userInputPurposeConversionEvents,
+		viewContext,
+	] );
 
 	return (
 		<Dialog

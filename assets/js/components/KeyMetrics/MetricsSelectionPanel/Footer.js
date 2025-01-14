@@ -60,6 +60,7 @@ export default function Footer( {
 	closePanel,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
+	isFullScreen = false,
 } ) {
 	const viewContext = useViewContext();
 	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
@@ -126,6 +127,10 @@ export default function Footer( {
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
+	const conversionReportingSpecificKeyMetricsWidgets = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
+	);
 
 	const saveSettings = useCallback(
 		async ( widgetSlugs ) => {
@@ -140,49 +145,68 @@ export default function Footer( {
 		[ saveKeyMetricsSettings ]
 	);
 
-	const onSaveSuccess = useCallback( () => {
-		trackEvent( trackingCategory, 'metrics_sidebar_save' );
+	const onSaveSuccess = useCallback(
+		( selectedItemSlugs ) => {
+			const userSavedConversionReportingKeyMetricsList = Object.values(
+				conversionReportingSpecificKeyMetricsWidgets
+			)
+				.flat()
+				.some( ( slug ) => selectedItemSlugs.includes( slug ) );
 
-		if ( isGA4Connected && hasMissingCustomDimensions ) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				autoSubmit: true,
-			} );
-
-			if ( ! hasAnalytics4EditScope ) {
-				// Let parent component know that the user is navigating to OAuth URL
-				// so that the panel is kept open.
-				onNavigationToOAuthURL();
-
-				// Ensure the panel is closed, just in case the user navigates to
-				// the OAuth URL before the function is fully executed.
-				closePanel();
-
-				setPermissionScopeError( {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: __(
-						'Additional permissions are required to create new Analytics custom dimensions',
-						'google-site-kit'
-					),
-					data: {
-						status: 403,
-						scopes: [ EDIT_SCOPE ],
-						skipModal: true,
-						redirectURL,
-					},
-				} );
+			// Include the conversion_reporting tracking label if necessary.
+			if ( userSavedConversionReportingKeyMetricsList ) {
+				trackEvent(
+					trackingCategory,
+					'metrics_sidebar_save',
+					'conversion_reporting'
+				);
+			} else {
+				trackEvent( trackingCategory, 'metrics_sidebar_save' );
 			}
-		}
-	}, [
-		trackingCategory,
-		isGA4Connected,
-		hasMissingCustomDimensions,
-		setValues,
-		hasAnalytics4EditScope,
-		onNavigationToOAuthURL,
-		closePanel,
-		setPermissionScopeError,
-		redirectURL,
-	] );
+
+			if ( isGA4Connected && hasMissingCustomDimensions ) {
+				setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					autoSubmit: true,
+				} );
+
+				if ( ! hasAnalytics4EditScope ) {
+					// Let parent component know that the user is navigating to OAuth URL
+					// so that the panel is kept open.
+					onNavigationToOAuthURL();
+
+					// Ensure the panel is closed, just in case the user navigates to
+					// the OAuth URL before the function is fully executed.
+					closePanel();
+
+					setPermissionScopeError( {
+						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+						message: __(
+							'Additional permissions are required to create new Analytics custom dimensions',
+							'google-site-kit'
+						),
+						data: {
+							status: 403,
+							scopes: [ EDIT_SCOPE ],
+							skipModal: true,
+							redirectURL,
+						},
+					} );
+				}
+			}
+		},
+		[
+			trackingCategory,
+			isGA4Connected,
+			hasMissingCustomDimensions,
+			setValues,
+			hasAnalytics4EditScope,
+			onNavigationToOAuthURL,
+			closePanel,
+			setPermissionScopeError,
+			redirectURL,
+			conversionReportingSpecificKeyMetricsWidgets,
+		]
+	);
 
 	const onCancel = useCallback( () => {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
@@ -200,10 +224,13 @@ export default function Footer( {
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ maxSelectedMetricsLimit }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
-			onSaveSuccess={ onSaveSuccess }
+			onSaveSuccess={ () => {
+				onSaveSuccess( selectedMetrics );
+			} }
 			onCancel={ onCancel }
 			isOpen={ isOpen }
 			closePanel={ closePanel }
+			isFullScreen={ isFullScreen }
 		/>
 	);
 }
@@ -213,4 +240,5 @@ Footer.propTypes = {
 	closePanel: PropTypes.func.isRequired,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
+	isFullScreen: PropTypes.bool,
 };

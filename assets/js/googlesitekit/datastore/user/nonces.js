@@ -88,20 +88,11 @@ const baseResolvers = {
 	*getNonces() {
 		const registry = yield commonActions.getRegistry();
 
-		const existingNonces = yield registry.select( CORE_USER ).getNonces();
-
-		if ( existingNonces ) {
-			return existingNonces;
+		if ( registry.select( CORE_USER ).getNonces() ) {
+			return;
 		}
 
-		const { error, response } =
-			yield fetchGetNoncesStore.actions.fetchGetNonces();
-
-		if ( ! error ) {
-			yield fetchGetNoncesStore.actions.receiveGetNonces( {
-				...response,
-			} );
-		}
+		yield fetchGetNoncesStore.actions.fetchGetNonces();
 	},
 };
 

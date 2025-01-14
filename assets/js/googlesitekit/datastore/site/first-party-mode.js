@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isPlainObject } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 import invariant from 'invariant';
 
 /**
@@ -33,13 +33,18 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '../user/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { isFeatureEnabled } from '../../../features';
 
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
+const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
 
 const settingsReducerCallback = createReducer(
 	( state, firstPartyModeSettings ) => {
 		state.firstPartyModeSettings = firstPartyModeSettings;
+		state.firstPartyModeSavedSettings = firstPartyModeSettings;
 	}
 );
 
@@ -80,31 +85,49 @@ const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
+	baseName: 'getFPMServerRequirementStatus',
+	controlCallback: () =>
+		API.get( 'core', 'site', 'fpm-server-requirement-status', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: settingsReducerCallback,
+} );
+
 const baseInitialState = {
 	firstPartyModeSettings: undefined,
+	firstPartyModeSavedSettings: undefined,
 };
 
 const baseActions = {
 	/**
 	 * Saves the first-party mode settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
+	 * @since n.e.x.t Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveFirstPartyModeSettings() {
-		const { select } = yield commonActions.getRegistry();
+		const { dispatch, select } = yield commonActions.getRegistry();
 		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
 
-		return yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
-			settings
-		);
+		const results =
+			yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
+				settings
+			);
+
+		if ( results?.response?.isEnabled ) {
+			dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+		}
+
+		return results;
 	},
 
 	/**
 	 * Sets the first-party mode enabled status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {boolean} isEnabled First-party mode enabled status.
 	 * @return {Object} Redux-style action.
@@ -113,6 +136,20 @@ const baseActions = {
 		return {
 			type: SET_FIRST_PARTY_MODE_ENABLED,
 			payload: { isEnabled },
+		};
+	},
+
+	/**
+	 * Returns the current settings back to the current saved values.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetFirstPartyModeSettings() {
+		return {
+			payload: {},
+			type: RESET_FIRST_PARTY_MODE_SETTINGS,
 		};
 	},
 };
@@ -124,6 +161,11 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_FIRST_PARTY_MODE_ENABLED: {
 			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
 			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
+			break;
+		}
+
+		case RESET_FIRST_PARTY_MODE_SETTINGS: {
+			state.firstPartyModeSettings = state.firstPartyModeSavedSettings;
 			break;
 		}
 
@@ -148,7 +190,7 @@ const baseSelectors = {
 	/**
 	 * Gets the first-party mode settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} First-party mode settings, or undefined if not loaded.
@@ -160,10 +202,10 @@ const baseSelectors = {
 	/**
 	 * Checks if first-party mode is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =
@@ -175,7 +217,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the FPFE service is determined to be healthy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if the FPFE service is healthy, otherwise false. Returns undefined if the state is not loaded.
@@ -190,7 +232,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the GTag proxy script is accessible.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if the `fpm/measurement.php` proxy script is accessible, otherwise false. Returns undefined if the state is not loaded.
@@ -201,11 +243,40 @@ const baseSelectors = {
 
 		return isScriptAccessEnabled;
 	} ),
+
+	/**
+	 * Indicates whether the current first-party mode settings have changed from what is saved.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	haveFirstPartyModeSettingsChanged( state ) {
+		const { firstPartyModeSettings, firstPartyModeSavedSettings } = state;
+
+		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
+	},
+
+	isAnyFirstPartyModeModuleConnected: createRegistrySelector(
+		( select ) => () => {
+			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+				return false;
+			}
+
+			const { isModuleConnected } = select( CORE_MODULES );
+
+			return (
+				isModuleConnected( 'analytics-4' ) || isModuleConnected( 'ads' )
+			);
+		}
+	),
 };
 
 const store = combineStores(
 	fetchGetFirstPartyModeSettingsStore,
 	fetchSaveFirstPartyModeSettingsStore,
+	fetchGetFPMServerRequirementStatusStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

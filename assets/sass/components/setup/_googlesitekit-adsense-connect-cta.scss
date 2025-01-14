@@ -307,10 +307,10 @@
 		.googlesitekit-setup-module__action {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 8px 24px;
+			gap: $cta-gap-phone;
 
-			@media (min-width: $bp-desktop) {
-				column-gap: 48px;
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 			}
 		}
 

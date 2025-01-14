@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.140.0
+Stable tag:        1.144.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,41 +109,53 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.140.0 =
+= 1.144.0 =
 
 **Added**
 
-* Add Sign in with Google to Site Health. See [#9571](https://github.com/google/site-kit-wp/issues/9571).
-* Add new feature notification for Sign in with Google module. See [#9335](https://github.com/google/site-kit-wp/issues/9335).
+* Add `library_name` parameter to Sign in with Google button. See [#9924](https://github.com/google/site-kit-wp/issues/9924).
+* Add incremental ESLint rule to avoid defining `scenario.label` on stories. See [#9865](https://github.com/google/site-kit-wp/issues/9865).
+* Add option to enable "One-tap" sign-in across site when using Sign in with Google. See [#9861](https://github.com/google/site-kit-wp/issues/9861).
 
 **Enhanced**
 
-* Add a survey to be triggered when audience groups are set up. See [#9656](https://github.com/google/site-kit-wp/issues/9656).
-* Update styles for the admin settings. See [#9580](https://github.com/google/site-kit-wp/issues/9580).
-* Add GA event tracking for user interactions with the Audience Segmentation Setup in the Settings section. See [#9499](https://github.com/google/site-kit-wp/issues/9499).
-* Add opt-in event tracking for the Audience Segmentation introductory popup/banner. See [#9498](https://github.com/google/site-kit-wp/issues/9498).
-* Add GA event tracking for user interactions with the Audience Selection Panel. See [#9497](https://github.com/google/site-kit-wp/issues/9497).
-* Add opt-in user activity tracking in the audience tiles area. See [#9494](https://github.com/google/site-kit-wp/issues/9494).
-* Add opt-in user activity tracking in the audience setup CTA widget and related setting areas. See [#9493](https://github.com/google/site-kit-wp/issues/9493).
-* Don't unnecessarily render the Key Metrics Selection Panel into the DOM. See [#9468](https://github.com/google/site-kit-wp/issues/9468).
-* Add a stub survey trigger that is called when viewing the Reader Revenue Manager Setup CTA. See [#9447](https://github.com/google/site-kit-wp/issues/9447).
-* Update the widget area renderer to accept React components for subtitles. See [#9444](https://github.com/google/site-kit-wp/issues/9444).
-* Add modal of tailored metrics to User Input Questionnaire. See [#9439](https://github.com/google/site-kit-wp/issues/9439).
-* Add confirmation modal for users changing key metrics. See [#9438](https://github.com/google/site-kit-wp/issues/9438).
-* Add support for lost events to Conversion Reporting events datastore. See [#9379](https://github.com/google/site-kit-wp/issues/9379).
-* Add a new "Chip Tab Group" component. See [#9378](https://github.com/google/site-kit-wp/issues/9378).
-* Add new notification to Key Metrics Widget Settings Area. See [#9344](https://github.com/google/site-kit-wp/issues/9344).
-* Implement the Sign in with Google callback action. See [#9338](https://github.com/google/site-kit-wp/issues/9338).
-* Fix a bug that prevented the appearance of the Reader Revenue Manager setup banner graphic. See [#9329](https://github.com/google/site-kit-wp/issues/9329).
-* Include a "Learn more" link on the Reader Revenue Manager setup screen shown when the user doesn't have an existing publication. See [#9259](https://github.com/google/site-kit-wp/issues/9259).
+* Add the `rrmModuleV2` feature flag, this will be used for phase two of the Reader Revenue Manager module's development. See [#9948](https://github.com/google/site-kit-wp/issues/9948).
+* Update FPM health check to use the approach from the measurement script. See [#9916](https://github.com/google/site-kit-wp/issues/9916).
+* Improve Analytics Conversion Reporting new/lost events callouts experience for each Site Kit user. See [#9897](https://github.com/google/site-kit-wp/issues/9897).
+* Update subtle notification padding for consistency with the Figma design. See [#9860](https://github.com/google/site-kit-wp/issues/9860).
+* Add a loading spinner to the "Enable First-party mode" CTA button on the setup banner to indicate progress during the setup process. See [#9856](https://github.com/google/site-kit-wp/issues/9856).
+* Only run the periodic server requirement health checks for First-party mode when the mode is enabled. See [#9842](https://github.com/google/site-kit-wp/issues/9842).
+* Update Partner Ads Experience with knowledge of supported conversion events. See [#9816](https://github.com/google/site-kit-wp/issues/9816).
+* Improve logic for persisting badges in the Key Metrics selection panel. See [#9798](https://github.com/google/site-kit-wp/issues/9798).
+* Add the Suggested group to the key metrics selection panel. See [#9797](https://github.com/google/site-kit-wp/issues/9797).
+* Add a warning notification on the dashboard to alert users when First-party mode is disabled due to failed server requirement checks. See [#9767](https://github.com/google/site-kit-wp/issues/9767).
+* Update to the latest version of the First-party mode proxy script. See [#9710](https://github.com/google/site-kit-wp/issues/9710).
+* Add "Learn more" links for First-party mode. See [#9699](https://github.com/google/site-kit-wp/issues/9699).
+* Introduce GA4 tracking events for the First-party mode feature. See [#9669](https://github.com/google/site-kit-wp/issues/9669).
+* Add loading state with placeholder elements to Site Kit's WP dashboard widget. See [#9570](https://github.com/google/site-kit-wp/issues/9570).
+* Fix issues with Audience Creation Notice when browser viewport is very short. See [#9562](https://github.com/google/site-kit-wp/issues/9562).
+* Improve accuracy of periodic network connection check. See [#9485](https://github.com/google/site-kit-wp/issues/9485).
+* Add badge to new Analytics Conversion Reporting widget tiles and groups. See [#9386](https://github.com/google/site-kit-wp/issues/9386).
+* Update the Setup Error Banner notification to use the new Notifications API. See [#9283](https://github.com/google/site-kit-wp/issues/9283).
+* Move settings edit dependency loading state to module stores. See [#8730](https://github.com/google/site-kit-wp/issues/8730).
+* Improve the "See full details" link in AdSense settings, linking to the list of sites for the account where possible. See [#8076](https://github.com/google/site-kit-wp/issues/8076).
+* Ensure that cities and countries with unset values don't show up in the "Top cities driving traffic" and "Top countries driving traffic" Key Metric tiles. See [#7884](https://github.com/google/site-kit-wp/issues/7884).
+
+**Changed**
+
+* Remove the deprecated `OAuth_Client::using_proxy` method and its associated tests. See [#8366](https://github.com/google/site-kit-wp/issues/8366).
 
 **Fixed**
 
-* Only place the Reader Revenue Manager snippet on singular WordPress posts. See [#9670](https://github.com/google/site-kit-wp/issues/9670).
-* Fix typo in Key Metrics Widget. See [#9614](https://github.com/google/site-kit-wp/issues/9614).
-* Fix the issue where an extra "Failed to enable metric" modal appears when canceled in the Audience Segmentation "Top Content" custom dimension creation flow. See [#9563](https://github.com/google/site-kit-wp/issues/9563).
-* Fix dashboard error when selecting specific key metrics on the view-only dashboard. See [#9548](https://github.com/google/site-kit-wp/issues/9548).
-* Remove the “Temporarily hidden” badge when temporarily hidden tiles reappear with only a single tile visible. See [#9472](https://github.com/google/site-kit-wp/issues/9472).
-* Ensure "Add a metric" tiles are always visible on the view-only dashboard when fewer than 4 metrics are available or fewer than 8 metrics if the `conversionReporting` feature flag is enabled. See [#8712](https://github.com/google/site-kit-wp/issues/8712).
+* Ensure measurement tracking requests succeed when both the Analytics and Ads modules are connected and First-party mode is enabled. See [#9901](https://github.com/google/site-kit-wp/issues/9901).
+* Improve sort order in module list. See [#9877](https://github.com/google/site-kit-wp/issues/9877).
+* Ensure "Enhanced Measurement" setting is not activated when disabled during Analytics setup. See [#9827](https://github.com/google/site-kit-wp/issues/9827).
+* Fix a glitch where setup CTA banners would momentarily appear again when dismissing their admin settings tooltip. See [#9791](https://github.com/google/site-kit-wp/issues/9791).
+* Fix iPad 10 Safari inconsistencies. See [#9776](https://github.com/google/site-kit-wp/issues/9776).
+* Fix potential for PHP warning related to accessing a property `post_type` on null. See [#9762](https://github.com/google/site-kit-wp/issues/9762).
+* Ensure Site Kit's Google chart on the WordPress dashboard widget correctly adapts to viewport width changes. See [#9756](https://github.com/google/site-kit-wp/issues/9756).
+* Fix the deprecation error in the Ads module related to the creation of a dynamic property in the `Web_Tag` class. See [#9531](https://github.com/google/site-kit-wp/issues/9531).
+* Prevent unnecessary requests on dashboard. See [#9178](https://github.com/google/site-kit-wp/issues/9178).
+* Prevent PHP warnings when creating custom dimensions. See [#7801](https://github.com/google/site-kit-wp/issues/7801).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

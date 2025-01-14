@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,16 +32,22 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { TrackingExclusionSwitches } from '../common';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsControls from './SettingsControls';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
-import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import { isValidAccountID } from '../../utils/validation';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
+import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
 import Link from '../../../../components/Link';
+import SettingsGroup from '../../../../components/settings/SettingsGroup';
+import { isValidAccountID } from '../../utils/validation';
+import { useFeature } from '../../../../hooks/useFeature';
+import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const fpmEnabled = useFeature( 'firstPartyMode' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -62,26 +68,34 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
 			) }
 
-			<ConversionTrackingToggle>
-				{ createInterpolateElement(
-					__(
-						'Conversion tracking is used for tracking additional conversion-related events via Analytics. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<Link
-								href={ conversionTrackingDocumentationURL }
-								external
-								aria-label={ __(
-									'Learn more about conversion tracking',
-									'google-site-kit'
-								) }
-							/>
+			<SettingsGroup
+				title={ __( 'Improve your measurement', 'google-site-kit' ) }
+			>
+				<SettingsEnhancedMeasurementSwitch
+					hasModuleAccess={ hasModuleAccess }
+				/>
+				<ConversionTrackingToggle>
+					{ createInterpolateElement(
+						__(
+							'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+							'google-site-kit'
 						),
-					}
-				) }
-			</ConversionTrackingToggle>
+						{
+							a: (
+								<Link
+									href={ conversionTrackingDocumentationURL }
+									external
+									aria-label={ __(
+										'Learn more about conversion tracking',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
+					) }
+				</ConversionTrackingToggle>
+				{ fpmEnabled && <FirstPartyModeToggle /> }
+			</SettingsGroup>
 
 			{ isValidAccountID( accountID ) && (
 				<AdsConversionIDSettingsNotice />

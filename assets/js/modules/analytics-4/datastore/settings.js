@@ -26,6 +26,7 @@ import { isEqual, pick } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidPropertyID,
@@ -52,6 +53,8 @@ import {
 } from './constants';
 import { isValidConversionID } from '../../ads/utils/validation';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -64,6 +67,18 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 	'a web data stream with the same name already exists';
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
+
+const store = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAccountSummaries'
+				)
+		),
+	},
+};
+export default store;
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -191,6 +206,34 @@ async function saveSettings( select, dispatch ) {
 		}
 	}
 
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+
+		if (
+			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				FPM_SETUP_CTA_BANNER_NOTIFICATION
+			)
+		) {
+			const { error: dismissError } =
+				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					FPM_SETUP_CTA_BANNER_NOTIFICATION
+				) ) || {};
+
+			if ( dismissError ) {
+				return { error: dismissError };
+			}
+		}
+	}
+
 	return {};
 }
 
@@ -240,6 +283,7 @@ export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 		dispatch( CORE_SITE ).resetConversionTrackingSettings();
+		dispatch( CORE_SITE ).resetFirstPartyModeSettings();
 	}
 
 	dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
@@ -308,17 +352,22 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+
 	if ( keys ) {
 		invariant(
 			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
-				haveConversionTrackingSettingsChanged,
+				haveConversionTrackingSettingsChanged ||
+				haveFirstPartyModeSettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
 		);
 	}
 
 	invariant(
 		! isEqual( settings, savedSettings ) ||
-			haveConversionTrackingSettingsChanged,
+			haveConversionTrackingSettingsChanged ||
+			haveFirstPartyModeSettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 }

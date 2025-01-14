@@ -17,34 +17,51 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useRef, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
 import StarFill from '../../../svg/icons/star-fill.svg';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { ACR_SUBTLE_NOTIFICATION_SLUG } from './constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function ConversionReportingSettingsSubtleNotification() {
+	const viewContext = useViewContext();
 	const [ isNavigating, setIsNavigating ] = useState( false );
+	const [ isViewed, setIsViewed ] = useState( false );
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const notificationRef = useRef();
+	const intersectionEntry = useIntersection( notificationRef, {
+		threshold: 0.25,
+	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( ACR_SUBTLE_NOTIFICATION_SLUG )
-	);
+	// Track when the notification is viewed.
+	useEffect( () => {
+		if ( ! isViewed && inView ) {
+			// Handle internal tracking.
+			trackEvent(
+				`${ viewContext }_kmw-settings-change-from-manual-to-tailored`,
+				'view_notification',
+				'conversion_reporting'
+			);
 
-	const onDismiss = useCallback( async () => {
-		await dismissItem( ACR_SUBTLE_NOTIFICATION_SLUG );
-	}, [ dismissItem ] );
+			setIsViewed( true );
+		}
+	}, [ isViewed, inView, viewContext ] );
 
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -52,25 +69,24 @@ export default function ConversionReportingSettingsSubtleNotification() {
 
 	const handleCTAClick = useCallback( () => {
 		setIsNavigating( true );
-	}, [ setIsNavigating ] );
 
-	if ( isDismissed ) {
-		return null;
-	}
+		// Handle internal tracking.
+		trackEvent(
+			`${ viewContext }_kmw-settings-change-from-manual-to-tailored`,
+			'confirm_get_tailored_metrics',
+			'conversion_reporting'
+		);
+	}, [ setIsNavigating, viewContext ] );
 
 	return (
 		<SubtleNotification
+			ref={ notificationRef }
 			className="googlesitekit-acr-subtle-notification"
 			title={ __( 'Personalize your metrics', 'google-site-kit' ) }
 			description={ __(
 				'Set up your goals by answering 3 quick questions to help us show the most relevant data for your site',
 				'google-site-kit'
 			) }
-			dismissCTA={
-				<Button tertiary onClick={ onDismiss }>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
-			}
 			additionalCTA={
 				<SpinnerButton
 					onClick={ handleCTAClick }

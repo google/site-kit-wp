@@ -99,7 +99,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
 		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage );
 		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
-		$this->assertEquals( 5, $this->reader_revenue_manager->order );
+		$this->assertEquals( 10, $this->reader_revenue_manager->order ); // Since order is not set, it uses the default value.
 	}
 
 	public function test_get_scopes() {
@@ -484,6 +484,36 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertNotWPError( $access );
 		$this->assertEquals( false, $access );
+	}
+
+	public function test_block_editor_script_enqueued() {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$this->assertContains(
+			'googlesitekit-reader-revenue-manager-block-editor',
+			$registerable_asset_handles
+		);
+	}
+
+	public function test_block_editor_script_not_enqueued() {
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$this->assertNotContains(
+			'googlesitekit-reader-revenue-manager-block-editor',
+			$registerable_asset_handles
+		);
 	}
 
 	/**

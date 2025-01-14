@@ -15,9 +15,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,8 +39,12 @@ export default function ActionsCTALinkDismiss( {
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
+	ctaDismissOptions,
+	onDismiss = () => {},
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
+	dismissOnCTAClick = true,
 	dismissExpires = 0,
+	dismissOptions = {},
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -43,22 +53,42 @@ export default function ActionsCTALinkDismiss( {
 	} );
 
 	return (
-		<div className={ className }>
-			<CTALink
-				id={ id }
-				ctaLink={ ctaLink }
-				ctaLabel={ ctaLabel }
-				onCTAClick={ onCTAClick }
-				dismissExpires={ dismissExpires }
-			/>
+		<Fragment>
+			<div className={ className }>
+				<CTALink
+					id={ id }
+					ctaLink={ ctaLink }
+					ctaLabel={ ctaLabel }
+					onCTAClick={ onCTAClick }
+					dismissOnCTAClick={ dismissOnCTAClick }
+					dismissExpires={ dismissExpires }
+					dismissOptions={ ctaDismissOptions }
+				/>
 
-			<Dismiss
-				id={ id }
-				primary={ false }
-				dismissLabel={ dismissLabel }
-				dismissExpires={ dismissExpires }
-				disabled={ isNavigatingToCTALink }
-			/>
-		</div>
+				<Dismiss
+					id={ id }
+					primary={ false }
+					dismissLabel={ dismissLabel }
+					dismissExpires={ dismissExpires }
+					disabled={ isNavigatingToCTALink }
+					onDismiss={ onDismiss }
+					dismissOptions={ dismissOptions }
+				/>
+			</div>
+		</Fragment>
 	);
 }
+
+ActionsCTALinkDismiss.propTypes = {
+	id: PropTypes.string,
+	className: PropTypes.string,
+	ctaLink: PropTypes.string,
+	ctaLabel: PropTypes.string,
+	onCTAClick: PropTypes.func,
+	onDismiss: PropTypes.func,
+	ctaDismissOptions: PropTypes.object,
+	dismissLabel: PropTypes.string,
+	dismissOnCTAClick: PropTypes.bool,
+	dismissExpires: PropTypes.number,
+	dismissOptions: PropTypes.object,
+};

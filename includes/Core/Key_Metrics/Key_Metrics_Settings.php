@@ -47,9 +47,8 @@ class Key_Metrics_Settings extends User_Setting {
 	 */
 	protected function get_default() {
 		return array(
-			'widgetSlugs'                      => array(),
-			'isWidgetHidden'                   => false,
-			'includeConversionTailoredMetrics' => false,
+			'widgetSlugs'    => array(),
+			'isWidgetHidden' => false,
 		);
 	}
 
@@ -71,9 +70,8 @@ class Key_Metrics_Settings extends User_Setting {
 		);
 
 		$allowed_settings = array(
-			'widgetSlugs'                      => true,
-			'isWidgetHidden'                   => true,
-			'includeConversionTailoredMetrics' => true,
+			'widgetSlugs'    => true,
+			'isWidgetHidden' => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
@@ -102,10 +100,6 @@ class Key_Metrics_Settings extends User_Setting {
 
 			if ( isset( $settings['isWidgetHidden'] ) ) {
 				$sanitized_settings['isWidgetHidden'] = false !== $settings['isWidgetHidden'];
-			}
-
-			if ( isset( $settings['includeConversionTailoredMetrics'] ) ) {
-				$sanitized_settings['includeConversionTailoredMetrics'] = false !== $settings['includeConversionTailoredMetrics'];
 			}
 
 			return $sanitized_settings;

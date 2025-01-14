@@ -69,6 +69,8 @@
 					margin-top: 10px;
 				}
 
+				border-bottom: none;
+
 				.mdc-switch {
 					margin-left: 3px;
 				}
@@ -131,6 +133,32 @@
 					}
 				}
 			}
+		}
+
+		.googlesitekit-sign-in-with-google__preview {
+			background-color: $c-neutral-n-100;
+			border-radius: 4px;
+			display: flex;
+			flex-direction: column;
+			height: 145px;
+			justify-content: center;
+			padding: 0 10%;
+			position: relative;
+			width: 100%;
+		}
+
+		.googlesitekit-sign-in-with-google__preview--label {
+			margin: 0 0 1rem;
+			text-align: center;
+		}
+
+		.googlesitekit-sign-in-with-google__preview--protector {
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			z-index: 10;
 		}
 	}
 }

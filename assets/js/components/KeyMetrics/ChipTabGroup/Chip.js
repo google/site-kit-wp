@@ -26,25 +26,40 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG } from '../constants';
+import {
+	KEY_METRICS_GROUP_CURRENT,
+	KEY_METRICS_GROUP_SUGGESTED,
+} from '../constants';
 import CheckMark from '../../../../svg/icons/check-2.svg';
+import StarFill from '../../../../svg/icons/star-fill.svg';
+import Null from '../../../components/Null';
+
+const icons = {
+	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
+	[ KEY_METRICS_GROUP_SUGGESTED.SLUG ]: StarFill,
+};
 
 export default function Chip( {
 	slug,
 	label,
 	isActive,
 	onClick,
+	hasNewBadge = false,
 	selectedCount = 0,
 } ) {
+	const Icon = icons[ slug ] || Null;
+
 	return (
 		<Button
 			className={ classnames( 'googlesitekit-chip-tab-group__chip-item', {
 				'googlesitekit-chip-tab-group__chip-item--active': isActive,
 			} ) }
 			icon={
-				slug === KEY_METRICS_CURRENT_SELECTION_GROUP_SLUG ? (
-					<CheckMark width={ 12 } height={ 12 } />
-				) : null
+				<Icon
+					width={ 12 }
+					height={ 12 }
+					className={ `googlesitekit-chip-tab-group__chip-item-svg googlesitekit-chip-tab-group__chip-item-svg__${ slug }` }
+				/>
 			}
 			trailingIcon={
 				selectedCount > 0 ? (
@@ -56,6 +71,9 @@ export default function Chip( {
 			onClick={ () => onClick( slug ) }
 		>
 			{ label }
+			{ hasNewBadge && (
+				<span className="googlesitekit-chip-tab-group__chip-item-new-dot" />
+			) }
 		</Button>
 	);
 }
@@ -64,6 +82,7 @@ Chip.propTypes = {
 	slug: propTypes.string.isRequired,
 	label: propTypes.string.isRequired,
 	isActive: propTypes.bool,
+	hasNewBadge: propTypes.bool,
 	selectedCount: propTypes.number,
 	onClick: propTypes.func.isRequired,
 };

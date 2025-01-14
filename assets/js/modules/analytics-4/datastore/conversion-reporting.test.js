@@ -19,13 +19,24 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
 import {
 	createTestRegistry,
+	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
 	provideModules,
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+} from '../../../googlesitekit/datastore/user/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -56,8 +67,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 			it( 'receives and sets inline data', async () => {
 				const data = {
-					newEvents: [ 'purchase' ],
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 					lostEvents: [],
+					newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 				};
 
 				await registry
@@ -66,51 +78,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				expect( store.getState().detectedEventsChange ).toMatchObject(
 					data
 				);
-			} );
-		} );
-		describe( 'dismissNewConversionReportingEvents', () => {
-			it( 'fetches clear new events endpoint', async () => {
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
-					),
-					true
-				);
-
-				const { response } = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.dismissNewConversionReportingEvents();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-new-events'
-					)
-				);
-				expect( response ).toEqual( true );
-			} );
-		} );
-
-		describe( 'dismissLostConversionReportingEvents', () => {
-			it( 'fetches clear lost events endpoint', async () => {
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-lost-events'
-					),
-					true
-				);
-
-				const { response } = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.dismissLostConversionReportingEvents();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/clear-conversion-reporting-lost-events'
-					)
-				);
-				expect( response ).toEqual( true );
 			} );
 		} );
 	} );
@@ -164,8 +131,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 		describe( 'getConversionReportingEventsChange', () => {
 			it( 'uses a resolver to load conversion reporting inline data from a global variable by default', async () => {
 				const inlineData = {
-					newEvents: [ 'contact' ],
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 					lostEvents: [],
+					newBadgeEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 				};
 
 				global._googlesitekitModulesData = {
@@ -208,7 +176,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			[
 				'hasNewConversionReportingEvents',
 				'newEvents',
-				[ 'submit_lead_form' ],
+				[ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 				true,
 			],
 			[ 'hasNewConversionReportingEvents', 'newEvents', [], false ],
@@ -221,7 +189,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			[
 				'hasLostConversionReportingEvents',
 				'lostEvents',
-				[ 'contact' ],
+				[ ENUM_CONVERSION_EVENTS.CONTACT ],
 				true,
 			],
 			[ 'hasLostConversionReportingEvents', 'lostEvents', [], false ],
@@ -246,6 +214,301 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					[ selector ]();
 
 				expect( data ).toEqual( expectedReturn );
+			} );
+		} );
+
+		describe( 'haveConversionEventsForTailoredMetrics', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'conversionReporting' );
+
+				provideKeyMetricsUserInputSettings( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'conversionReporting' );
+			} );
+
+			it( 'should return true when detectedEvents have an event associated with ACR KWM for the current purpose', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				// Default purpose answer provided by provideKeyMetricsUserInputSettings is "publish_blog", which
+				// has metrics related to the "contact" event, so selector should return true.
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					true
+				);
+			} );
+
+			it( 'should return true when new detected events have an event associated with ACR KWM for the passed purpose when useNewEvents is passed', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						lostEvents: [],
+						newBadgeEvents: [],
+					} );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics(
+						'publish_blog',
+						true
+					);
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					true
+				);
+			} );
+
+			it( 'should return false when detectedEvents do not have an event associated with ACR KWM for the current purpose', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					false
+				);
+			} );
+
+			it( 'should return false when new detected events do not have an event associated with ACR KWM for the passed purpose when useNewEvents is passed', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
+						lostEvents: [],
+						newBadgeEvents: [],
+					} );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics(
+						'publish_blog',
+						true
+					);
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					false
+				);
+			} );
+		} );
+
+		describe( 'getUserInputPurposeConversionEvents', () => {
+			it( 'should return detected conversion events associated with the current site purpose', () => {
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'publish_blog' ] },
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				const userInputPurposeConversionEvents = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getUserInputPurposeConversionEvents();
+
+				expect( userInputPurposeConversionEvents ).toEqual( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+				] );
+			} );
+
+			it( 'should return empty array if there are no conversion events associated with the current site purpose', () => {
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'sell_products' ] },
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				const userInputPurposeConversionEvents = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getUserInputPurposeConversionEvents();
+
+				expect( userInputPurposeConversionEvents ).toEqual( [] );
+			} );
+		} );
+
+		describe( 'haveLostEventsForCurrentMetrics', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'conversionReporting' );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'conversionReporting' );
+			} );
+
+			it( 'should return false if no events associated with the current site purpose have been lost', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'publish_blog' ] },
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						newBadgeEvents: [],
+					} );
+
+				const haveLostEventsForCurrentMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveLostEventsForCurrentMetrics();
+
+				expect( haveLostEventsForCurrentMetrics ).toEqual( false );
+			} );
+
+			it( 'should return true if events associated with the current site purpose have been lost', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( true );
+				registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+					purpose: { values: [ 'publish_blog' ] },
+					includeConversionEvents: {
+						values: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						scope: 'site',
+					},
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [],
+						lostEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						newBadgeEvents: [],
+					} );
+
+				const haveLostEventsForCurrentMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveLostEventsForCurrentMetrics();
+
+				expect( haveLostEventsForCurrentMetrics ).toEqual( true );
+			} );
+
+			it( 'should return false if no events associated with the current manual selection have been lost', () => {
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					],
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						newBadgeEvents: [],
+					} );
+
+				const haveLostEventsForCurrentMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveLostEventsForCurrentMetrics();
+
+				expect( haveLostEventsForCurrentMetrics ).toEqual( false );
+			} );
+
+			it( 'should return false if no events associated with the current manual selection including conversion reporting metrics have been lost', () => {
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART, // Conversion reporting metric for add_to_cart event.
+					],
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						newBadgeEvents: [],
+					} );
+
+				const haveLostEventsForCurrentMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveLostEventsForCurrentMetrics();
+
+				expect( haveLostEventsForCurrentMetrics ).toEqual( false );
+			} );
+
+			it( 'should return true if there is at least one conversion event related metrics in manual selection', () => {
+				provideKeyMetrics( registry, {
+					widgetSlugs: [
+						KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+						KM_ANALYTICS_NEW_VISITORS,
+						KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+						KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS, // Conversion reporting metric for contact event.
+					],
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						lostEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						newBadgeEvents: [],
+					} );
+
+				const haveLostEventsForCurrentMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveLostEventsForCurrentMetrics();
+
+				expect( haveLostEventsForCurrentMetrics ).toEqual( true );
 			} );
 		} );
 	} );

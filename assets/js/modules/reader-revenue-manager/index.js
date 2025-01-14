@@ -30,14 +30,24 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from './utils/validation';
-import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	ReaderRevenueManagerSetupCTABanner,
+	RRMSetupSuccessSubtleNotification,
+} from './components/dashboard';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../features';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 export { registerStore } from './datastore';
 
@@ -75,13 +85,46 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
-export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'setup-success-notification-rrm', {
+export const NOTIFICATIONS = {
+	'rrm-setup-notification': {
+		Component: ReaderRevenueManagerSetupCTABanner,
+		priority: 50,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// Check if the prompt with the legacy key used before the banner was refactored
+			// to use the `notification ID` as the dismissal key, is dismissed.
+			await resolveSelect( CORE_USER ).getDismissedPrompts();
+			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
+				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
+			);
+
+			if ( isLegacyDismissed ) {
+				return false;
+			}
+
+			return await resolveSelect( CORE_MODULES ).canActivateModule(
+				READER_REVENUE_MANAGER_MODULE_SLUG
+			);
+		},
+		isDismissible: true,
+		dismissRetries: 1,
+	},
+	'setup-success-notification-rrm': {
 		Component: RRMSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 
@@ -101,5 +144,16 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 		isDismissible: false,
-	} );
+	},
+};
+
+export const registerNotifications = ( notificationsAPI ) => {
+	if ( isFeatureEnabled( 'rrmModule' ) ) {
+		for ( const notificationID in NOTIFICATIONS ) {
+			notificationsAPI.registerNotification(
+				notificationID,
+				NOTIFICATIONS[ notificationID ]
+			);
+		}
+	}
 };
