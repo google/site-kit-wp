@@ -127,7 +127,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			}
 		);
 
-		add_action( 'admin_action_' . self::ACTION_DISCONNECT, fn () => $this->handle_disconnect_user() );
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, array( $this, 'handle_disconnect_user' ) );
 
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
@@ -146,6 +146,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				}
 			}
 		);
+
+		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
 	}
 
 	/**
@@ -198,6 +200,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		return $error;
+	}
+
+	/**
+	 * Adds custom errors if Google auth flow failed on WooCommerce login.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function handle_woocommerce_errors() {
+		$err = $this->handle_login_errors( new WP_Error() );
+		if ( is_wp_error( $err ) && $err->has_errors() ) {
+			wc_add_notice( $err->get_error_message(), 'error' );
+		}
 	}
 
 	/**

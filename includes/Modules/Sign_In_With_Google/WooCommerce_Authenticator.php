@@ -23,7 +23,7 @@ use WP_User;
  * @access private
  * @ignore
  */
-class WooCommerce_Authenticator implements Authenticator {
+class WooCommerce_Authenticator extends Authenticator {
 
 	/**
 	 * Gets the redirect URL for the error page.
@@ -34,10 +34,8 @@ class WooCommerce_Authenticator implements Authenticator {
 	 * @return string Redirect URL.
 	 */
 	protected function get_error_redirect_url( $code ) {
-		wc_add_notice( apply_filters( 'login_errors', $code ), 'error' );
 		do_action( 'woocommerce_login_failed' );
-
-		return wc_get_page_permalink( 'myaccount' );
+		return add_query_arg( 'error', $code, wc_get_page_permalink( 'myaccount' ) );
 	}
 
 	/**
