@@ -138,8 +138,7 @@ jobs:
           cache: 'npm'
 
       - name: npm install
-        run: npm ci --force
-        # TODO: remove --force once versions diverge.
+        run: npm ci
         working-directory: ./tests/e2e
 
       - name: Run the tests
