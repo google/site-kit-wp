@@ -41,16 +41,9 @@ describe( 'SetupForm', () => {
 
 		provideModules( registry );
 
-		// Populate default settings.
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				snippetMode: 'post_types',
-				postTypes: [ 'post' ],
-				productID: 'openaccess',
-				productIDs: [],
-				paymentOption: '',
-			} );
+			.receiveGetSettings( {} );
 	} );
 
 	it( 'should render the form correctly', async () => {

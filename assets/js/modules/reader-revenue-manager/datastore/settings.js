@@ -80,11 +80,6 @@ export function validateCanSubmitChanges( select ) {
 
 	const publicationID = getPublicationID();
 	const onboardingState = getPublicationOnboardingState();
-	const snippetMode = getSnippetMode();
-	const postTypes = getPostTypes();
-	const productID = getProductID();
-	const productIDs = getProductIDs();
-	const paymentOption = getPaymentOption();
 
 	invariant(
 		isValidPublicationID( publicationID ),
@@ -97,6 +92,12 @@ export function validateCanSubmitChanges( select ) {
 	);
 
 	if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+		const snippetMode = getSnippetMode();
+		const postTypes = getPostTypes();
+		const productID = getProductID();
+		const productIDs = getProductIDs();
+		const paymentOption = getPaymentOption();
+
 		invariant(
 			isValidSnippetMode( snippetMode ),
 			INVARIANT_INVALID_SNIPPET_MODE
