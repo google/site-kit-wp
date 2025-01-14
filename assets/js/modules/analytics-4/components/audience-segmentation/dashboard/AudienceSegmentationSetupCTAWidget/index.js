@@ -243,7 +243,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 					} }
 					SVGCellSizes={ {
 						lg: 5,
-						md: 3,
 					} }
 				/>
 			</Notification>
