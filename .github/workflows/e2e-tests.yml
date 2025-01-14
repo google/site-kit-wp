@@ -131,14 +131,15 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
-      - name: Switch to Node.js 18 (/tests/e2e/.nvmrc)
+      - name: Switch node version (/tests/e2e/.nvmrc)
         uses: actions/setup-node@v4
         with:
           node-version-file: './tests/e2e/.nvmrc'
           cache: 'npm'
 
       - name: npm install
-        run: npm ci
+        run: npm ci --force
+        # TODO: remove --force once versions diverge.
         working-directory: ./tests/e2e
 
       - name: Run the tests
