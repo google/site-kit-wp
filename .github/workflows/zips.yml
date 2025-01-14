@@ -226,6 +226,10 @@ jobs:
     needs: build-zips
     timeout-minutes: 20
     steps:
+      - name: Install SVN ( Subversion )
+        run: |
+          sudo apt-get update
+          sudo apt-get install subversion
       - uses: actions/download-artifact@v4
         with:
           name: zip-files
