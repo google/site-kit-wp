@@ -19,6 +19,14 @@
 .googlesitekit-plugin {
 	.googlesitekit-setup-cta-banner--audience_segmentation_setup_cta-notification {
 		.googlesitekit-setup-cta-banner__primary-cell {
+			@media (max-width: $bp-mobileOnly) {
+				padding-left: 24px;
+				padding-right: 24px;
+			}
+
+			@media (min-width: $bp-tablet) {
+				padding: 24px;
+			}
 
 			@media (max-width: $bp-mobileOnly) {
 				padding-bottom: 0;
