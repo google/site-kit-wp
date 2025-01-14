@@ -108,6 +108,17 @@ export default {
 				] );
 				provideModuleRegistrations( registry );
 
+				// Populate default settings.
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						snippetMode: 'post_types',
+						postTypes: [ 'post' ],
+						productID: 'openaccess',
+						productIDs: [],
+						paymentOption: '',
+					} );
+
 				// Call story-specific setup.
 				args?.setupRegistry?.( registry );
 			}
