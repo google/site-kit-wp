@@ -17,17 +17,15 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-audience-segmentation-setup-cta-widget {
-		.googlesitekit-widget-audience-segmentation-primary-cell {
-			padding: 0 24px 24px;
+	.googlesitekit-setup-cta-banner--audience_segmentation_setup_cta-notification {
+		.googlesitekit-setup-cta-banner__primary-cell {
 
 			@media (max-width: $bp-mobileOnly) {
 				padding-bottom: 0;
 			}
-		}
 
-		.googlesitekit-widget-audience-segmentation-text__wrapper {
-			.googlesitekit-publisher-win__title {
+			.googlesitekit-setup-cta-banner__title {
+
 				@media (max-width: $bp-mobileOnly) {
 					font-size: 16px;
 					font-weight: 500;
@@ -39,6 +37,9 @@
 				}
 
 				@media (min-width: $bp-desktop) {
+					font-size: $fs-headline-sm;
+					font-weight: $fw-normal;
+					line-height: $lh-headline-sm;
 					margin-bottom: 25px;
 				}
 			}
@@ -55,7 +56,7 @@
 			}
 		}
 
-		.googlesitekit-widget-audience-segmentation-actions__wrapper {
+		.googlesitekit-setup-cta-banner__actions-wrapper {
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
@@ -79,7 +80,7 @@
 		}
 	}
 
-	.googlesitekit-widget-audience-segmentation-svg__wrapper {
+	.googlesitekit-setup-cta-banner__svg-wrapper--audience_segmentation_setup_cta-notification {
 		bottom: -5px;
 		position: relative;
 	}
