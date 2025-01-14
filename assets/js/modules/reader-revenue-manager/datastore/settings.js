@@ -30,6 +30,7 @@ import {
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { isFeatureEnabled } from '../../../features';
 import {
 	isValidPublicationID,
 	isValidOnboardingState,
@@ -95,29 +96,32 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE
 	);
 
-	invariant(
-		isValidSnippetMode( snippetMode ),
-		INVARIANT_INVALID_SNIPPET_MODE
-	);
+	if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+		invariant(
+			isValidSnippetMode( snippetMode ),
+			INVARIANT_INVALID_SNIPPET_MODE
+		);
 
-	invariant(
-		Array.isArray( postTypes ) &&
-			postTypes.every( ( item ) => typeof item === 'string' ),
-		INVARIANT_INVALID_POST_TYPES
-	);
+		invariant(
+			Array.isArray( postTypes ) &&
+				postTypes.every( ( item ) => typeof item === 'string' ),
+			INVARIANT_INVALID_POST_TYPES
+		);
 
-	invariant( typeof productID === 'string', INVARIANT_INVALID_PRODUCT_ID );
+		invariant(
+			typeof productID === 'string',
+			INVARIANT_INVALID_PRODUCT_ID
+		);
 
-	invariant(
-		Array.isArray( productIDs ) &&
-			productIDs.every( ( item ) => typeof item === 'string' ),
-		INVARIANT_INVALID_PRODUCT_IDS
-	);
+		invariant(
+			Array.isArray( productIDs ) &&
+				productIDs.every( ( item ) => typeof item === 'string' ),
+			INVARIANT_INVALID_PRODUCT_IDS
+		);
 
-	invariant(
-		typeof paymentOption === 'string',
-		INVARIANT_INVALID_PAYMENT_OPTION
-	);
-
-	return true;
+		invariant(
+			typeof paymentOption === 'string',
+			INVARIANT_INVALID_PAYMENT_OPTION
+		);
+	}
 }

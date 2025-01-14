@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../features';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_PAYMENT_OPTION,
@@ -106,6 +107,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid snippet mode', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				snippetMode: 'invalid-mode',
@@ -121,6 +124,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid post types', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				postTypes: 'not-an-array',
@@ -136,6 +141,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for post types with non-string elements', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				postTypes: [ 'post', 123, true ],
@@ -151,6 +158,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid product ID', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				productID: [ 'not-a-string' ],
@@ -166,6 +175,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid product IDs', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				productIDs: 'not-an-array',
@@ -181,6 +192,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for product IDs with non-string elements', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				productIDs: [ 'valid', 123, true ],
@@ -196,6 +209,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid payment option', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
 			const settings = {
 				...validSettings,
 				paymentOption: [ 'not-a-string' ],
