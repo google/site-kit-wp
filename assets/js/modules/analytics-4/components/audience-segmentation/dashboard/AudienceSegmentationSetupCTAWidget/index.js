@@ -198,10 +198,14 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 						'Learn how different types of visitors interact with your site',
 						'google-site-kit'
 					) }
-					description={ __(
-						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
-						'google-site-kit'
-					) }
+					description={
+						<p>
+							{ __(
+								'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
+								'google-site-kit'
+							) }
+						</p>
+					}
 					actions={
 						<ActionsCTALinkDismiss
 							id={ id }
@@ -233,6 +237,14 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 						breakpointSVGMap[ breakpoint ] ??
 						BannerGraphicsSVGDesktop
 					}
+					primaryCellSizes={ {
+						lg: 7,
+						md: 8,
+					} }
+					SVGCellSizes={ {
+						lg: 5,
+						md: 3,
+					} }
 				/>
 			</Notification>
 			{ ( showErrorModal || hasOAuthError ) && (
