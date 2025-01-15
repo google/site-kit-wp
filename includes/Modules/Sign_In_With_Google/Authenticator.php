@@ -80,7 +80,7 @@ class Authenticator implements Authenticator_Interface {
 		if ( ! is_wp_error( $payload ) ) {
 			$user = $this->find_user( $payload );
 			if ( ! $user instanceof WP_User ) {
-				// We haven't found the user using their google user id and email. Thus we need to create
+				// We haven't found the user using their Google user id and email. Thus we need to create
 				// a new user. But if the registration is closed, we need to return an error to identify
 				// that the sign in process failed.
 				if ( ! $this->is_registration_open() ) {

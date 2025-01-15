@@ -16,8 +16,8 @@ use WP_Error;
 use WP_User;
 
 /**
- * The authenticator class that processes SiwG callback requests to authenticate
- * users when WooCommerce is activated.
+ * The authenticator class that processes Sign in with Google callback
+ * requests to authenticate users when WooCommerce is activated.
  *
  * @since n.e.x.t
  * @access private
