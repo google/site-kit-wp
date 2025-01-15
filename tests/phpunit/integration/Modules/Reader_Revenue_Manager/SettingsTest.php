@@ -52,14 +52,21 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_get_default() {
+		$this->enable_feature( 'rrmModuleV2' );
+
 		$this->settings->register();
 
 		$this->assertEqualSetsWithIndex(
 			array(
+				'ownerID'                           => 0,
 				'publicationID'                     => '',
 				'publicationOnboardingState'        => '',
 				'publicationOnboardingStateChanged' => false,
-				'ownerID'                           => 0,
+				'snippetMode'                       => 'post_types',
+				'postTypes'                         => array( 'post' ),
+				'productID'                         => 'openaccess',
+				'productIDs'                        => array(),
+				'paymentOption'                     => '',
 			),
 			get_option( Settings::OPTION )
 		);
@@ -70,7 +77,7 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_view_only_keys() );
 	}
 
-	public function data_publication_settings() {
+	public function data_revenue_manager_settings() {
 		return array(
 			'publicationID is valid string'                => array( 'publicationID', 'ABCD_123-4', 'ABCD_123-4' ),
 			'publicationOnboardingState is valid string'   => array( 'publicationOnboardingState', 'PENDING_VERIFICATION', 'PENDING_VERIFICATION' ),
@@ -78,13 +85,49 @@ class SettingsTest extends SettingsTestCase {
 			'publicationID is invalid string'              => array( 'publicationID', 'ABCD_123-4&^##', '' ),
 			'publicationOnboardingState is invalid string' => array( 'publicationOnboardingState', 'INVALID_STATE', '' ),
 			'publicationOnboardingStateChanged is invalid' => array( 'publicationOnboardingStateChanged', 'invalid', false ),
+
+			// Validate snippetMode.
+			'snippetMode with post_types'                  => array( 'snippetMode', 'post_types', 'post_types' ),
+			'snippetMode with per_post'                    => array( 'snippetMode', 'per_post', 'per_post' ),
+			'snippetMode with sitewide'                    => array( 'snippetMode', 'sitewide', 'sitewide' ),
+			'snippetMode with invalid value'               => array( 'snippetMode', 'invalid-mode', 'post_types' ),
+			'snippetMode with invalid type'                => array( 'snippetMode', array(), 'post_types' ),
+
+			// Validate postTypes.
+			'postTypes with valid strings'                 => array( 'postTypes', array( 'post', 'page' ), array( 'post', 'page' ) ),
+			'postTypes with empty array'                   => array( 'postTypes', array(), array( 'post' ) ),
+			'postTypes with invalid type'                  => array( 'postTypes', 'not-an-array', array( 'post' ) ),
+			'postTypes with mixed types'                   => array( 'postTypes', array( 'post', 123, true, 'page' ), array( 'post', 'page' ) ),
+			'postTypes with all invalid'                   => array( 'postTypes', array( 123, true, array() ), array( 'post' ) ),
+
+			// Validate productID.
+			'productID with valid string'                  => array( 'productID', 'premium', 'premium' ),
+			'productID with empty string'                  => array( 'productID', '', '' ),
+			'productID with invalid type'                  => array( 'productID', array(), 'openaccess' ),
+			'productID with number'                        => array( 'productID', 123, 'openaccess' ),
+			'productID with boolean'                       => array( 'productID', true, 'openaccess' ),
+
+			// Validate productIDs.
+			'productIDs with valid strings'                => array( 'productIDs', array( 'basic', 'premium' ), array( 'basic', 'premium' ) ),
+			'productIDs with empty array'                  => array( 'productIDs', array(), array() ),
+			'productIDs with invalid type'                 => array( 'productIDs', 'not-an-array', array() ),
+			'productIDs with mixed types'                  => array( 'productIDs', array( 'valid', 123, true, 'also-valid' ), array( 'valid', 'also-valid' ) ),
+			'productIDs with all invalid'                  => array( 'productIDs', array( 123, true, array() ), array() ),
+
+			// Validate paymentOption.
+			'paymentOption with valid string'              => array( 'paymentOption', 'some-option', 'some-option' ),
+			'paymentOption with empty string'              => array( 'paymentOption', '', '' ),
+			'paymentOption with invalid type'              => array( 'paymentOption', array(), '' ),
+			'paymentOption with number'                    => array( 'paymentOption', 123, '' ),
+			'paymentOption with boolean'                   => array( 'paymentOption', true, '' ),
 		);
 	}
 
 	/**
-	 * @dataProvider data_publication_settings
+	 * @dataProvider data_revenue_manager_settings
 	 */
 	public function test_reader_revenue_manager_settings_sanitization( $setting, $value, $expected_value ) {
+		$this->enable_feature( 'rrmModuleV2' );
 		$this->settings->register();
 
 		$options_key = $this->get_option_name();
