@@ -115,10 +115,17 @@
 		}
 
 		&.googlesitekit-wp-dashboard-search_console_active_and_connected {
-			min-height: 1080px;
+			min-height: 650px;
 
-			@media (max-width: $bp-mobileOnly) {
-				min-height: 870px;
+			.googlesitekit-search-console-widget {
+
+				&:not(.googlesitekit-search-console-widget--empty-data) {
+					min-height: 430px;
+
+					@media (max-width: $bp-mobileOnly) {
+						min-height: 220px;
+					}
+				}
 			}
 		}
 	}
