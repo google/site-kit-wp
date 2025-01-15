@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\Post_Meta_Setting
+ * Class Google\Site_Kit\Core\Storage\Meta_Setting_Trait
  *
  * @package   Google\Site_Kit\Core\Storage
  * @copyright 2021 Google LLC
@@ -11,32 +11,20 @@
 namespace Google\Site_Kit\Core\Storage;
 
 /**
- * Base class for a single post meta setting.
+ * Base class for a single object meta setting.
  *
  * @since 1.33.0
  * @access private
  * @ignore
  */
-abstract class Post_Meta_Setting {
-
+trait Meta_Setting_Trait {
 	/**
-	 * Post_Meta_Interface implementation.
+	 * Meta_Interface implementation.
 	 *
 	 * @since 1.33.0
-	 * @var Post_Meta_Interface
+	 * @var Meta_Interface
 	 */
-	protected $post_meta;
-
-	/**
-	 * Post_Meta_Setting constructor.
-	 *
-	 * @since 1.33.0
-	 *
-	 * @param Post_Meta_Interface $post_meta Post_Meta_Interface instance.
-	 */
-	public function __construct( Post_Meta_Interface $post_meta ) {
-		$this->post_meta = $post_meta;
-	}
+	protected $meta;
 
 	/**
 	 * Gets the meta key for the setting.
@@ -48,13 +36,22 @@ abstract class Post_Meta_Setting {
 	abstract protected function get_meta_key(): string;
 
 	/**
-	 * Registers the post setting in WordPress.
+	 * Gets the object type like `post`, `term`, etc.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Object type.
+	 */
+	abstract protected function get_object_type(): string;
+
+	/**
+	 * Registers the object setting in WordPress.
 	 *
 	 * @since 1.33.0
 	 */
 	public function register() {
 		register_meta(
-			'post',
+			$this->get_object_type(),
 			$this->get_meta_key(),
 			array(
 				'type'              => $this->get_type(),
@@ -111,7 +108,7 @@ abstract class Post_Meta_Setting {
 	}
 
 	/**
-	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 * Gets the `show_in_rest` value for this meta setting value.
 	 *
 	 * @since 1.37.0
 	 *
@@ -122,15 +119,15 @@ abstract class Post_Meta_Setting {
 	}
 
 	/**
-	 * Checks whether a post meta exists or not.
+	 * Checks whether meta exists for a given object or not.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int $object_id Object ID.
 	 * @return bool True if the meta key exists, otherwise false.
 	 */
-	public function has( $post_id ) {
-		return metadata_exists( 'post', $post_id, $this->get_meta_key() );
+	public function has( $object_id ) {
+		return metadata_exists( $this->get_object_type(), $object_id, $this->get_meta_key() );
 	}
 
 	/**
@@ -138,39 +135,39 @@ abstract class Post_Meta_Setting {
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int $object_id Object ID.
 	 * @return mixed Value set for the setting, or default if not set.
 	 */
-	public function get( $post_id ) {
-		if ( ! $this->has( $post_id ) ) {
+	public function get( $object_id ) {
+		if ( ! $this->has( $object_id ) ) {
 			return $this->get_default();
 		}
 
-		return $this->post_meta->get( $post_id, $this->get_meta_key(), true );
+		return $this->meta->get( $object_id, $this->get_meta_key(), true );
 	}
 
 	/**
-	 * Updates the post setting for the given post ID.
+	 * Updates the setting for the given object ID.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int   $post_id Post ID.
+	 * @param int   $object_id Object ID.
 	 * @param mixed $value   Metadata value.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
-	public function set( $post_id, $value ) {
-		return $this->post_meta->update( $post_id, $this->get_meta_key(), $value );
+	public function set( $object_id, $value ) {
+		return $this->meta->update( $object_id, $this->get_meta_key(), $value );
 	}
 
 	/**
-	 * Deletes the post setting for the given post ID.
+	 * Deletes the setting for the given object ID.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int $object_id Object ID.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
-	public function delete( $post_id ) {
-		return $this->post_meta->delete( $post_id, $this->get_meta_key() );
+	public function delete( $object_id ) {
+		return $this->meta->delete( $object_id, $this->get_meta_key() );
 	}
 }

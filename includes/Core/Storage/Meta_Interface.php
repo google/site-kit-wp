@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\Post_Meta
+ * Interface Google\Site_Kit\Core\Storage\Meta_Interface
  *
  * @package   Google\Site_Kit\Core\Storage
  * @copyright 2021 Google LLC
@@ -11,69 +11,61 @@
 namespace Google\Site_Kit\Core\Storage;
 
 /**
- * Post metadata storage class.
+ * Interface for Object_Meta implementations.
  *
  * @since 1.33.0
  * @access private
  * @ignore
  */
-final class Post_Meta implements Meta_Interface {
+interface Meta_Interface {
 
 	/**
-	 * Gets post meta.
+	 * Gets object meta.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int    $post_id Post ID.
+	 * @param int    $object_id Object ID.
 	 * @param string $key     Metadata key.
 	 * @param bool   $single  Whether to return a single value.
-	 * @return mixed Post meta value.
+	 * @return mixed Object meta value.
 	 */
-	public function get( $post_id, $key, $single = false ) {
-		return get_post_meta( $post_id, $key, $single );
-	}
+	public function get( $object_id, $key, $single = false );
 
 	/**
-	 * Updates a post meta field based on the given post ID.
+	 * Updates a object meta field based on the given Object ID.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int    $post_id    Post ID.
+	 * @param int    $object_id    Object ID.
 	 * @param string $key        Metadata key.
 	 * @param mixed  $value      Metadata value.
 	 * @param mixed  $prev_value Previous value to check before updating. If specified, only update existing metadata entries with this value. Otherwise, update all entries.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
-	public function update( $post_id, $key, $value, $prev_value = '' ) {
-		return update_post_meta( $post_id, $key, $value, $prev_value );
-	}
+	public function update( $object_id, $key, $value, $prev_value = '' );
 
 	/**
-	 * Adds a meta field to the given post.
+	 * Adds a meta field to the given object.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int    $post_id Post ID.
+	 * @param int    $object_id Object ID.
 	 * @param string $key     Metadata key.
 	 * @param mixed  $value   Metadata value.
 	 * @param bool   $unique  Whether the same key should not be added.
 	 * @return int|bool Meta id on success, otherwise FALSE.
 	 */
-	public function add( $post_id, $key, $value, $unique = false ) {
-		return add_post_meta( $post_id, $key, $value, $unique );
-	}
+	public function add( $object_id, $key, $value, $unique = false );
 
 	/**
-	 * Deletes a post meta field for the given post ID.
+	 * Deletes a object meta field for the given Object ID.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int    $post_id Post ID.
+	 * @param int    $object_id Object ID.
 	 * @param string $key     Metadata key.
 	 * @param mixed  $value   Metadata value. If provided, rows will only be removed that match the value.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
-	public function delete( $post_id, $key, $value = '' ) {
-		return delete_post_meta( $post_id, $key, $value );
-	}
+	public function delete( $object_id, $key, $value = '' );
 }
