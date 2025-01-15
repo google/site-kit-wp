@@ -110,8 +110,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
-		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
-		$this->assertStringContainsString( "fetch( 'https://example.com/wp-login.php?action=googlesitekit_auth'", $output );
+		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output );
+		$this->assertStringContainsString( "fetch('https://example.com/wp-login.php?action=googlesitekit_auth'", $output );
 
 		$this->assertStringContainsString( sprintf( '"text":"%s"', Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
