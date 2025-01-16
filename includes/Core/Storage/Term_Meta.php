@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Storage\Term_Meta
  *
  * @package   Google\Site_Kit\Core\Storage
- * @copyright 2021 Google LLC
+ * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
