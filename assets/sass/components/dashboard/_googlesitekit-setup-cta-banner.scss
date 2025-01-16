@@ -103,7 +103,6 @@
 			}
 		}
 
-		// For the title and description:
 		// Tablet styles apply to both tablet and desktop viewports.
 		// Desktop styles only apply to xlarge screens and above.
 		.googlesitekit-setup-cta-banner__title {
@@ -118,20 +117,6 @@
 				font-size: $fs-headline-md;
 				font-weight: $fw-normal;
 				line-height: $lh-headline-md;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__description p {
-			@media (min-width: $width-tablet + 1 + px) {
-				font-size: $fs-body-md;
-				letter-spacing: $ls-s;
-				line-height: $lh-body-md;
-			}
-
-			@media (min-width: $width-xlarge + 1 + px) {
-				font-size: $fs-body-lg;
-				letter-spacing: $ls-m;
-				line-height: $lh-body-lg;
 			}
 		}
 	}
