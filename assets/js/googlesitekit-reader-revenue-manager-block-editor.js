@@ -26,7 +26,7 @@ import {
 	PluginDocumentSettingPanel,
 	PluginSidebarMoreMenuItem,
 	PluginSidebar,
-} from '@wordpress-core/editor';
+} from '@wordpress-core/edit-post'; // The @wordpress-core/editor package should've been used here as these packages are deprecated in WP 6.6 and upwards. However, since we'll have to support upto WP 5.2, we should still use the @wordpress-core/edit-post package.
 import { registerPlugin } from '@wordpress-core/plugins';
 
 /**
@@ -67,6 +67,8 @@ function SettingsForm() {
 					'The snippet configuration will be inherited from a parent taxonomy term, or Site Kit settings.',
 					'google-site-kit'
 				) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
 			/>
 		</Fragment>
 	);
@@ -131,6 +133,10 @@ function SiteKitSettingPanel() {
 		</Fragment>
 	);
 }
+
+// Since we need to check if the module is connected, we need to resolve the modules first.
+// There is probably a better way to do this, but this should suffice for the PoC.
+select( CORE_MODULES ).getModules();
 
 registerPlugin( 'google-site-kit', {
 	render: SiteKitSettingPanel,

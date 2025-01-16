@@ -124,6 +124,7 @@
 		"@wordpress/compose": "^3.25.3",
 		"@wordpress/data": "^4.27.3",
 		"@wordpress/dom-ready": "^2.10.0",
+		"@wordpress/edit-post": "^3.27.3",
 		"@wordpress/editor": "^14.15.1",
 		"@wordpress/element": "^2.20.3",
 		"@wordpress/i18n": "^3.14.0",
