@@ -15,6 +15,7 @@
 namespace Google\Site_Kit\Tests\E2E\Modules\Analytics;
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Destination;
 
 const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
@@ -262,6 +263,31 @@ add_action(
 					$webdatastreams = filter_webdatastream_by_property_ids( $ga4_webdatastreams, array( $request->get_param( 'propertyID' ) ) );
 
 					return $webdatastreams;
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/container-destinations',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_webdatastreams ) {
+					$account_id   = $request->get_param( 'accountID' );
+					$container_id = $request->get_param( 'containerID' );
+					$destination  = new Destination();
+					$destination->setPath( "accounts/$account_id/containers/$container_id/destinations/1" );
+					$destination->setAccountId( $account_id );
+					$destination->setContainerId( $container_id );
+					$destination->setDestinationLinkId( '1' );
+					$destination->setDestinationId( 'G-000' ); // Matches nothing here currently.
+					$destination->setName( 'Non-existent destination' );
+
+					return array(
+						$destination,
+					);
 				},
 				'permission_callback' => '__return_true',
 			),
