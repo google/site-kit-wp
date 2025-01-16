@@ -95,6 +95,7 @@ add_action(
 				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property',
+						'parent'      => 'account/' . ACCOUNT_ID_A,
 						'property'    => 'properties/' . GA4_PROPERTY_ID_X,
 						'_id'         => GA4_PROPERTY_ID_X,
 					),
@@ -108,6 +109,7 @@ add_action(
 				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property',
+						'parent'      => 'account/' . ACCOUNT_ID_B,
 						'property'    => 'properties/' . GA4_PROPERTY_ID_Y,
 						'_id'         => GA4_PROPERTY_ID_Y,
 					),
@@ -121,6 +123,7 @@ add_action(
 				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property Z',
+						'parent'      => 'account/' . ACCOUNT_ID_C,
 						'property'    => 'properties/' . GA4_PROPERTY_ID_Z,
 						'_id'         => GA4_PROPERTY_ID_Z,
 					),
