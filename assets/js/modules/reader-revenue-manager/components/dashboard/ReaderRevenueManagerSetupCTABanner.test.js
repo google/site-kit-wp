@@ -34,25 +34,23 @@ import {
 	waitFor,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
-	READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import * as tracking from '../../../../util/tracking';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '../../../../util';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATIONS } from '../..';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
@@ -60,12 +58,14 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
 	let activateModuleMock;
 
-	const { Widget, WidgetNull } = getWidgetComponentProps(
-		'readerRevenueManagerSetupCTABanner'
-	);
+	const ReaderRevenueManagerSetupCTABannerComponent =
+		withNotificationComponentProps( 'rrm-setup-notification' )(
+			ReaderRevenueManagerSetupCTABanner
+		);
+
+	const notification = NOTIFICATIONS[ 'rrm-setup-notification' ];
 
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		activateModuleMock = jest.fn( () => jest.fn() );
 
@@ -84,61 +84,40 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			},
 		] );
 
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( 'rrm-setup-notification', notification );
+
 		useActivateModuleCallback.mockImplementation( activateModuleMock );
 	} );
 
-	it( 'should render the Reader Revenue Manager setup CTA banner when not dismissed', async () => {
+	it( 'should render the Reader Revenue Manager setup CTA banner', async () => {
 		mockSurveyEndpoints();
 
 		const { getByText, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'view_notification'
-		);
 
 		expect(
 			getByText( /Grow your revenue and deepen reader engagement/ )
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not render the Reader Revenue Manager setup CTA banner when dismissed', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-			[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
-				expires: Date.now() / 1000 + WEEK_IN_SECONDS,
-				count: 1,
-			},
-		} );
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
-	} );
-
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
+
+		fetchMock.postOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
+			{
+				body: JSON.stringify( [ 'rrm-setup-notification' ] ),
+				status: 200,
+			}
+		);
 
 		registry
 			.dispatch( CORE_MODULES )
@@ -147,13 +126,9 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 
 		const { container, getByRole, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -161,25 +136,16 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( container ).not.toBeEmptyDOMElement();
 
-		fireEvent.click(
-			getByRole( 'button', {
-				name: /Set up Reader Revenue Manager/i,
-			} )
-		);
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up Reader Revenue Manager/i,
+				} )
+			);
+		} );
 
 		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'view_notification'
-		);
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'confirm_notification'
-		);
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -188,9 +154,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		fetchMock.postOnce(
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
-				body: JSON.stringify( [
-					READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
-				] ),
+				body: JSON.stringify( [ 'rrm-setup-notification' ] ),
 				status: 200,
 			}
 		);
@@ -202,14 +166,10 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 						Settings
 					</a>
 				</div>
-				<ReaderRevenueManagerSetupCTABanner
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
+				<ReaderRevenueManagerSetupCTABannerComponent />,
 			</div>,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -222,52 +182,47 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		// 3 fetches: 1 for the survey trigger, 1 for the survey timeout, 1 for the dismiss prompt.
 		expect( fetchMock ).toHaveFetchedTimes( 3 );
+	} );
 
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'view_notification'
+	it( 'should trigger a survey when the banner is displayed', async () => {
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+			}
 		);
 
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-setup-notification`,
-			'dismiss_notification'
+		await waitForRegistry();
+
+		// The survey trigger endpoint should be called with the correct trigger ID.
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: { triggerID: 'view_reader_revenue_manager_cta' },
+				},
+			} )
 		);
 	} );
 
-	it( 'should not render the Reader Revenue Manager setup CTA banner when the module requirements do not meet', async () => {
-		// Throw error from checkRequirements to simulate non-HTTPS site error.
-		provideModules( registry, [
-			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
-				active: false,
-				checkRequirements: () => {
-					throw {
-						code: ERROR_CODE_NON_HTTPS_SITE,
-						message:
-							'The site should use HTTPS to set up Reader Revenue Manager',
-						data: null,
-					};
-				},
+	it( 'should not render the Reader Revenue Manager setup CTA banner when dismissed', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			'rrm-setup-notification': {
+				expires: Date.now() / 1000 + WEEK_IN_SECONDS,
+				count: 1,
 			},
-		] );
-
+		} );
 		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should not render the banner when the dismissed prompts selector is not resolved', async () => {
@@ -276,10 +231,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			.startResolution( 'getDismissedPrompts', [] );
 
 		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
 			}
@@ -297,8 +249,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
 				body: {
-					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
-						expires: 2 * WEEK_IN_SECONDS, // Expiry of 0 permanently dismisses the prompt.
+					'rrm-setup-notification': {
+						expires: 2 * WEEK_IN_SECONDS,
 						count: 1,
 					},
 				},
@@ -313,10 +265,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 						Settings
 					</a>
 				</div>
-				<ReaderRevenueManagerSetupCTABanner
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
+				<ReaderRevenueManagerSetupCTABannerComponent />,
 			</div>,
 			{
 				registry,
@@ -337,7 +286,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
 				body: {
 					data: {
-						slug: READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+						slug: 'rrm-setup-notification',
 						expiration: WEEK_IN_SECONDS * 2,
 					},
 				},
@@ -359,7 +308,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
 			{
 				body: {
-					[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+					'rrm-setup-notification': {
 						expires: 0, // Expiry of 0 permanently dismisses the prompt.
 						count: 2,
 					},
@@ -369,7 +318,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-			[ READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY ]: {
+			'rrm-setup-notification': {
 				expires: Date.now() / 1000 - 2 * WEEK_IN_SECONDS + 1,
 				count: 1,
 			},
@@ -382,10 +331,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 						Settings
 					</a>
 				</div>
-				<ReaderRevenueManagerSetupCTABanner
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
+				<ReaderRevenueManagerSetupCTABannerComponent />,
 			</div>,
 			{
 				registry,
@@ -406,7 +352,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
 				body: {
 					data: {
-						slug: READER_REVENUE_MANAGER_SETUP_BANNER_DISMISSED_KEY,
+						slug: 'rrm-setup-notification',
 						expiration: 0,
 					},
 				},
@@ -415,29 +361,55 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		} );
 	} );
 
-	it( 'should trigger a survey when the banner is displayed', async () => {
-		mockSurveyEndpoints();
-
-		const { waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABanner
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
+	describe( 'checkRequirements', () => {
+		it( 'is active when all required conditions are met', async () => {
+			const isActive = await notification.checkRequirements(
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
-		await waitForRegistry();
+			expect( isActive ).toBe( true );
+		} );
 
-		// The survey trigger endpoint should be called with the correct trigger ID.
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_reader_revenue_manager_cta' },
+		it( 'is not active when the banner was dismissed with the legacy dismissal key', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				[ LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY ]: {
+					expires: Date.now() / 1000 + WEEK_IN_SECONDS,
+					count: 1,
 				},
-			} )
-		);
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the module requirements do not meet', async () => {
+			// Throw error from checkRequirements to simulate non-HTTPS site error.
+			provideModules( registry, [
+				{
+					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					active: false,
+					checkRequirements: () => {
+						throw {
+							code: ERROR_CODE_NON_HTTPS_SITE,
+							message:
+								'The site should use HTTPS to set up Reader Revenue Manager',
+							data: null,
+						};
+					},
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );

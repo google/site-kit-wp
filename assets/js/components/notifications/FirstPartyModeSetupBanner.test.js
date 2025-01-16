@@ -37,6 +37,7 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
@@ -44,17 +45,20 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import * as tracking from '../../util/tracking';
 import { enabledFeatures } from '../../features';
 
-const FPM_SETUP_BANNER_NOTIFICATION = 'first-party-mode-setup-cta-banner';
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FirstPartyModeSetupBanner', () => {
 	let registry;
 
-	const notification = DEFAULT_NOTIFICATIONS[ FPM_SETUP_BANNER_NOTIFICATION ];
+	const notification =
+		DEFAULT_NOTIFICATIONS[ FPM_SETUP_CTA_BANNER_NOTIFICATION ];
 
 	const FPMBannerComponent = withNotificationComponentProps(
-		FPM_SETUP_BANNER_NOTIFICATION
+		FPM_SETUP_CTA_BANNER_NOTIFICATION
 	)( FirstPartyModeSetupBanner );
 
 	const fpmSettingsEndpoint = new RegExp(
@@ -94,11 +98,15 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
-				FPM_SETUP_BANNER_NOTIFICATION,
+				FPM_SETUP_CTA_BANNER_NOTIFICATION,
 				notification
 			);
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	} );
+
+	afterEach( () => {
+		jest.clearAllMocks();
 	} );
 
 	describe( 'checkRequirements', () => {
@@ -186,7 +194,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 	it( 'should not render the banner if dismissed', () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ FPM_SETUP_BANNER_NOTIFICATION ] );
+			.receiveGetDismissedItems( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] );
 
 		const { container } = render( <FPMBannerComponent />, {
 			registry,
@@ -218,7 +226,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		).toBe( false );
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -239,6 +247,47 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		} );
 	} );
 
+	it( 'should display the error message when the CTA button is clicked and the request fails', async () => {
+		fetchMock.postOnce( fpmSettingsEndpoint, {
+			body: JSON.stringify( {
+				code: 'test_error',
+				message: 'Test Error',
+				data: {
+					reason: 'test_reason',
+				},
+			} ),
+			status: 500,
+		} );
+
+		const { getByRole, getByText, waitForRegistry } = render(
+			<FPMBannerComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Enable First-party mode',
+			} )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
+			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+		} );
+
+		expect( getByText( 'Error: Test Error' ) ).toBeInTheDocument();
+	} );
+
 	it( 'should set FPM_SHOW_SETUP_SUCCESS_NOTIFICATION to true and invalidate the notifications queue resolution when the CTA button is clicked', async () => {
 		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
 			registry,
@@ -250,7 +299,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		muteFetch( fpmSettingsEndpoint );
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -287,5 +336,133 @@ describe( 'FirstPartyModeSetupBanner', () => {
 					NOTIFICATION_GROUPS.DEFAULT,
 				] )
 		).toBe( false );
+	} );
+
+	it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<FPMBannerComponent />
+			</div>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			'mainDashboard_fpm-setup-cta',
+			'tooltip_view'
+		);
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			'mainDashboard_fpm-setup-cta',
+			'dismiss_notification',
+			undefined,
+			undefined
+		);
+	} );
+
+	it( 'should track an event when the tooltip is closed by clicking the `X` button', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<FPMBannerComponent />
+			</div>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			3,
+			'mainDashboard_fpm-setup-cta',
+			'tooltip_dismiss'
+		);
+	} );
+
+	it( 'should track an event when the tooltip is closed by clicking the `Got it` button', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<div>
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<FPMBannerComponent />
+			</div>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			status: 200,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			3,
+			'mainDashboard_fpm-setup-cta',
+			'tooltip_dismiss'
+		);
 	} );
 } );

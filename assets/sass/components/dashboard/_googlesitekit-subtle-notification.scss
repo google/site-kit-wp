@@ -20,16 +20,17 @@
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
+	color: $c-content-on-primary-container;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: $grid-gap-phone;
+	padding: 14px $grid-gap-phone;
 
 	@media (min-width: $bp-tablet) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
-		padding: 18px $grid-gap-desktop;
+		padding: 14px $grid-gap-desktop;
 	}
 
 	.googlesitekit-subtle-notification__icon {
@@ -37,7 +38,6 @@
 	}
 
 	.googlesitekit-subtle-notification__content {
-		color: $c-content-on-primary-container;
 		font-family: $f-primary;
 		font-size: $fs-title-md;
 		font-weight: $fw-medium;
@@ -86,7 +86,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: $grid-gap-phone;
-		justify-content: center;
+		justify-content: end;
 		width: 100%;
 
 		@media (min-width: $bp-tablet) {

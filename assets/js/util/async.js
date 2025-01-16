@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import { isPromiseResolved } from 'promise-status-async';
-
-/**
  * Defines async task.
  *
  * @since 1.142.0
@@ -83,4 +78,28 @@ export async function racePrioritizedAsyncTasks( tasks ) {
 		// Move on to the next priority group.
 	}
 	return null;
+}
+
+/**
+ * Checks if the given promise is resolved.
+ *
+ * A resolved promise is either settled or rejected, but not pending.
+ *
+ * @since 1.144.0
+ *
+ * @param {Promise} promise Promise to test.
+ * @return {boolean} True if resolved, otherwise false.
+ */
+async function isPromiseResolved( promise ) {
+	const CONTROL = 'SECRETVALUETHATNOPROMISESHOULDEVERRESOLVETO';
+	// If the given value isn't a Promise, wrap it in one.
+	if ( ! ( promise instanceof Promise ) ) {
+		promise = Promise.resolve( promise );
+	}
+	// Important: while Promise.race works with non-promises, it doesn't work
+	// consistently in some environments with client-side instrumentation tooling.
+	return (
+		CONTROL !==
+		( await Promise.race( [ promise, Promise.resolve( CONTROL ) ] ) )
+	);
 }

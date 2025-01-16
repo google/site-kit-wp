@@ -26,7 +26,10 @@ import {
 	provideNotifications,
 	provideUserAuthentication,
 	untilResolved,
+	waitForDefaultTimeouts,
+	waitForTimeouts,
 } from '../../../../../tests/js/utils';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -504,6 +507,13 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
@@ -517,6 +527,17 @@ describe( 'modules/analytics-4 settings', () => {
 					.receiveGetDismissedItems( [
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
+
+				provideNotifications(
+					registry,
+					{
+						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
+							DEFAULT_NOTIFICATIONS[
+								FPM_SETUP_CTA_BANNER_NOTIFICATION
+							],
+					},
+					{ overwrite: true }
+				);
 
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -560,6 +581,8 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					},
 				} );
+
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
@@ -631,6 +654,13 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `true`', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				provideNotifications(
 					registry,
 					{
@@ -701,8 +731,17 @@ describe( 'modules/analytics-4 settings', () => {
 					},
 				} );
 				expect( fetchMock ).toHaveFetchedTimes( 3 );
+
+				await waitForTimeouts( 30 );
 			} );
 			it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				provideNotifications(
 					registry,
 					{
@@ -768,6 +807,8 @@ describe( 'modules/analytics-4 settings', () => {
 
 				expect( submitChangesError ).toEqual( error );
 				expect( console ).toHaveErrored();
+
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
@@ -972,6 +1013,32 @@ describe( 'modules/analytics-4 settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'areSettingsEditDependenciesLoaded', () => {
+			it( 'should return false if getAccountSummaries selector has not resolved', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getAccountSummaries', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( false );
+			} );
+
+			it( 'should return true if getAccountSummaries selector has resolved', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getAccountSummaries', [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'canSubmitChanges', () => {
 			const propertyID = '1000';
 			const webDataStreamID = '2000';

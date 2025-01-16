@@ -26,7 +26,7 @@ import {
 	ButtonTextSelect,
 	ButtonThemeSelect,
 	ClientIDTextField,
-	OneTapToggle,
+	OneTapToggles,
 	Preview,
 } from '../common';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
@@ -77,7 +77,7 @@ export default function SettingsForm() {
 				</Row>
 				<Row>
 					<Cell size={ 12 }>
-						<OneTapToggle />
+						<OneTapToggles />
 					</Cell>
 					<Cell size={ 12 }>
 						<AnyoneCanRegisterReadOnly />

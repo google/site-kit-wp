@@ -75,7 +75,7 @@ class Conversion_Reporting_Events_Sync {
 	 *
 	 * @since 1.135.0
 	 * @since 1.139.0 Added $context param to constructor.
-	 * @since n.e.x.t Added $transients and $new_badge_events_sync params to constructor, and removed $context.
+	 * @since 1.144.0 Added $transients and $new_badge_events_sync params to constructor, and removed $context.
 	 *
 	 * @param Settings                                   $settings              Settings module settings instance.
 	 * @param Transients                                 $transients            Transients instance.
@@ -127,31 +127,39 @@ class Conversion_Reporting_Events_Sync {
 		foreach ( $report->rows as $row ) {
 			$detected_events[] = $row['dimensionValues'][0]['value'];
 		}
+		$settings_partial = array( 'detectedEvents' => $detected_events );
 
-		$this->maybe_update_new_and_lost_events( $detected_events, $saved_detected_events );
+		$this->maybe_update_new_and_lost_events(
+			$detected_events,
+			$saved_detected_events,
+			$settings_partial
+		);
 
-		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
+		$this->settings->merge( $settings_partial );
 	}
 
 	/**
 	 * Saves new and lost events transients.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @param array $detected_events       Currently detected events array.
 	 * @param array $saved_detected_events Previously saved detected events array.
+	 * @param array $settings_partial      Analaytics settings partial.
 	 */
-	protected function maybe_update_new_and_lost_events( $detected_events, $saved_detected_events ) {
+	protected function maybe_update_new_and_lost_events( $detected_events, $saved_detected_events, &$settings_partial ) {
 		$new_events  = array_diff( $detected_events, $saved_detected_events );
 		$lost_events = array_diff( $saved_detected_events, $detected_events );
 
 		if ( ! empty( $new_events ) ) {
 			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
 			$this->new_badge_events_sync->sync_new_badge_events( $new_events );
+			$settings_partial['newConversionEventsLastUpdateAt'] = time();
 		}
 
 		if ( ! empty( $lost_events ) ) {
 			$this->transients->set( self::LOST_EVENTS_TRANSIENT, array_values( $lost_events ) );
+			$settings_partial['lostConversionEventsLastUpdateAt'] = time();
 		}
 
 		if ( empty( $saved_detected_events ) ) {

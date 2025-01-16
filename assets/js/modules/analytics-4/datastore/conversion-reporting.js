@@ -25,10 +25,8 @@ import { isEqual } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import {
 	commonActions,
-	combineStores,
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
@@ -49,7 +47,6 @@ import {
 	MODULES_ANALYTICS_4,
 } from './constants';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { negateDefined } from '../../../util/negate';
 import { safelySort } from '../../../util';
 
@@ -64,54 +61,6 @@ function hasConversionReportingEventsOfType( propName ) {
 		return negateDefined( negateDefined( inlineData[ propName ]?.length ) );
 	} );
 }
-
-const dismissNewConversionReportingEventsStore = createFetchStore( {
-	baseName: 'dismissNewConversionReportingEvents',
-	controlCallback: () => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'clear-conversion-reporting-new-events'
-		);
-	},
-	reducerCallback: ( state, values ) => {
-		if ( values === false ) {
-			return state;
-		}
-
-		return {
-			...state,
-			detectedEventsChange: {
-				...state.detectedEventsChange,
-				newEvents: [],
-			},
-		};
-	},
-} );
-
-const dismissLostConversionReportingEventsStore = createFetchStore( {
-	baseName: 'dismissLostConversionReportingEvents',
-	controlCallback: () => {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'clear-conversion-reporting-lost-events'
-		);
-	},
-	reducerCallback: ( state, values ) => {
-		if ( values === false ) {
-			return state;
-		}
-
-		return {
-			...state,
-			detectedEventsChange: {
-				...state.detectedEventsChange,
-				lostEvents: [],
-			},
-		};
-	},
-} );
 
 // Actions.
 const RECEIVE_CONVERSION_REPORTING_INLINE_DATA =
@@ -150,28 +99,6 @@ export const resolvers = {
 };
 
 export const actions = {
-	/**
-	 * Dismiss new conversion reporting events.
-	 *
-	 * @since 1.138.0
-	 *
-	 * @return {boolean} Transient deletion response.
-	 */
-	dismissNewConversionReportingEvents() {
-		return dismissNewConversionReportingEventsStore.actions.fetchDismissNewConversionReportingEvents();
-	},
-
-	/**
-	 * Dismiss lost conversion reporting events.
-	 *
-	 * @since 1.138.0
-	 *
-	 * @return {boolean} Transient deletion response.
-	 */
-	dismissLostConversionReportingEvents() {
-		return dismissLostConversionReportingEventsStore.actions.fetchDismissLostConversionReportingEvents();
-	},
-
 	/**
 	 * Stores conversion reporting inline data in the datastore.
 	 *
@@ -279,7 +206,7 @@ export const selectors = {
 	/**
 	 * Returns newBadgeEvents if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.144.0
 	 *
 	 * @return {Array|undefined} `newBadgeEvents` array if events are present, `undefined` otherwise.
 	 */
@@ -554,14 +481,12 @@ export const selectors = {
 	),
 };
 
-export default combineStores(
-	dismissNewConversionReportingEventsStore,
-	dismissLostConversionReportingEventsStore,
-	{
-		initialState,
-		actions,
-		resolvers,
-		selectors,
-		reducer,
-	}
-);
+const store = {
+	initialState,
+	actions,
+	resolvers,
+	selectors,
+	reducer,
+};
+
+export default store;
