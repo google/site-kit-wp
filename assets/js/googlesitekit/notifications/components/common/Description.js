@@ -15,26 +15,36 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { sanitizeHTML } from '../../../../util';
+import ErrorText from '../../../../components/ErrorText';
 
 export default function Description( {
 	className = 'googlesitekit-publisher-win__desc',
 	text,
 	learnMoreLink,
+	errorText,
 } ) {
 	return (
-		<div className={ className }>
-			<p>
-				<span
-					dangerouslySetInnerHTML={ sanitizeHTML( text, {
-						ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-						ALLOWED_ATTR: [ 'href' ],
-					} ) }
-				/>{ ' ' }
-				{ learnMoreLink }
-			</p>
-		</div>
+		<Fragment>
+			<div className={ className }>
+				<p>
+					<span
+						dangerouslySetInnerHTML={ sanitizeHTML( text, {
+							ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+							ALLOWED_ATTR: [ 'href' ],
+						} ) }
+					/>{ ' ' }
+					{ learnMoreLink }
+				</p>
+			</div>
+			{ errorText && <ErrorText message={ errorText } /> }
+		</Fragment>
 	);
 }
