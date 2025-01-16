@@ -77,7 +77,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			),
-			{ times: 2 }
+			{ repeat: 2 }
 		);
 
 		registry

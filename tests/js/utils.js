@@ -521,16 +521,16 @@ export const muteFetch = ( matcher, response = {} ) => {
  * Useful for simulating a loading state.
  *
  * @since 1.12.0
- * @since n.e.x.t Added `times` option.
+ * @since n.e.x.t Added `repeat` option.
  * @private
  *
- * @param {(string|RegExp|Function|URL|Object)} matcher         Criteria for deciding which requests to mock.
- *                                                              (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
- * @param {Object}                              [options]       Optional. Additional options for the mock.
- * @param {number}                              [options.times] Optional. Number of times to mock the request. Defaults to 1.
+ * @param {(string|RegExp|Function|URL|Object)} matcher          Criteria for deciding which requests to mock.
+ *                                                               (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {Object}                              [options]        Optional. Additional options for the mock.
+ * @param {number}                              [options.repeat] Optional. Number of times to mock the request. Defaults to 1.
  */
-export const freezeFetch = ( matcher, { times = 1 } = {} ) => {
-	fetchMock.mock( matcher, new Promise( () => {} ), { repeat: times } );
+export const freezeFetch = ( matcher, { repeat = 1 } = {} ) => {
+	fetchMock.mock( matcher, new Promise( () => {} ), { repeat } );
 };
 
 /**
