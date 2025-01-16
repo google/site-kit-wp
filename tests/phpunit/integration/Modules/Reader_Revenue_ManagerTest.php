@@ -483,7 +483,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
 
-		// Set snippetMode to `per_post`.
+		// Set `snippetMode` to `per_post`.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'snippetMode' => 'per_post',
