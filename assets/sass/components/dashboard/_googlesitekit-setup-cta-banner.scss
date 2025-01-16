@@ -80,6 +80,10 @@
 		}
 	}
 
+	// These styles allowed the Consent Mode setup CTA banner to be displayed similar
+	// to the tablet view layout (single-column) even on large screens. This layout
+	// switches to the usual double-column layout for xlarge and above.
+	// See issue #8376.
 	.googlesitekit-setup-cta-banner--single-column {
 		.googlesitekit-setup-cta-banner__cells {
 			display: grid;
@@ -99,9 +103,35 @@
 			}
 		}
 
+		// For the title and description:
+		// Tablet styles apply to both tablet and desktop viewports.
+		// Desktop styles only apply to xlarge screens and above.
 		.googlesitekit-setup-cta-banner__title {
-			@media (min-width: $width-tablet + px) {
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-headline-sm;
+				font-weight: $fw-normal;
 				letter-spacing: 0;
+				line-height: $lh-headline-sm;
+			}
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				font-size: $fs-headline-md;
+				font-weight: $fw-normal;
+				line-height: $lh-headline-md;
+			}
+		}
+
+		.googlesitekit-setup-cta-banner__description p {
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
+
+			@media (min-width: $width-xlarge + 1 + px) {
+				font-size: $fs-body-lg;
+				letter-spacing: $ls-m;
+				line-height: $lh-body-lg;
 			}
 		}
 	}
