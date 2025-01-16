@@ -208,24 +208,19 @@ const baseReducer = ( state, { type } ) => {
 };
 
 function* resolveGetWebDataStreams( propertyID ) {
-	if ( ! isValidPropertyID( propertyID ) ) {
-		return;
-	}
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	const { select, resolveSelect } = yield commonActions.getRegistry();
-
-	const webdatastreams =
-		select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-
-	if ( webdatastreams === undefined ) {
-		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
-		);
-	}
+	yield commonActions.await(
+		resolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
+	);
 }
 
 const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
+
 		const registry = yield commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
 		const webdatastreams = registry

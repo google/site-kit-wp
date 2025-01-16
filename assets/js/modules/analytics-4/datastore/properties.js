@@ -761,18 +761,13 @@ const baseResolvers = {
 		}
 	},
 	*getPropertySummaries( accountID ) {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
+		const { resolveSelect } = yield commonActions.getRegistry();
 
-		const summaries =
-			select( MODULES_ANALYTICS_4 ).getAccountSummaries( accountID );
-
-		if ( summaries === undefined ) {
-			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(
-					accountID
-				)
-			);
-		}
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(
+				accountID
+			)
+		);
 	},
 	*getPropertyCreateTime() {
 		const registry = yield commonActions.getRegistry();

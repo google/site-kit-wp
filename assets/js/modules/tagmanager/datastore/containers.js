@@ -221,15 +221,11 @@ const baseActions = {
 const baseControls = {};
 
 function* resolveGetContainers( accountID ) {
-	const { select, resolveSelect } = yield commonActions.getRegistry();
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	const containers = select( MODULES_TAGMANAGER ).getContainers( accountID );
-
-	if ( containers === undefined ) {
-		yield commonActions.await(
-			resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
-		);
-	}
+	yield commonActions.await(
+		resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
+	);
 }
 
 const baseResolvers = {
