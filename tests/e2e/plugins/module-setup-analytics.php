@@ -85,25 +85,6 @@ function filter_webdatastream_by_property_ids( $items, $property_ids ) {
 add_action(
 	'rest_api_init',
 	function () {
-		$accounts = array(
-			array(
-				'id'          => ACCOUNT_ID_A,
-				'kind'        => 'analytics#account',
-				'name'        => 'Test Account A',
-				'permissions' => array(
-					'effective' => array( 'COLLABORATE', 'EDIT', 'MANAGE_USERS', 'READ_AND_ANALYZE' ),
-				),
-			),
-			array(
-				'id'          => ACCOUNT_ID_B,
-				'kind'        => 'analytics#account',
-				'name'        => 'Test Account B',
-				'permissions' => array(
-					'effective' => array( 'COLLABORATE', 'EDIT', 'MANAGE_USERS', 'READ_AND_ANALYZE' ),
-				),
-			),
-		);
-
 		$account_summaries = array(
 			array(
 				'account'           => 'accounts/' . ACCOUNT_ID_A,
@@ -204,25 +185,6 @@ add_action(
 
 		register_rest_route(
 			REST_Routes::REST_ROOT,
-			'modules/analytics/data/accounts-properties-profiles',
-			array(
-				'methods'             => 'GET',
-				'callback'            => function () use ( $accounts ) {
-					$response = array(
-						'accounts'   => $accounts,
-						'properties' => array(),
-						'profiles'   => array(),
-					);
-
-					return $response;
-				},
-				'permission_callback' => '__return_true',
-			),
-			true
-		);
-
-		register_rest_route(
-			REST_Routes::REST_ROOT,
 			'modules/analytics-4/data/account-summaries',
 			array(
 				'methods'             => 'GET',
@@ -231,37 +193,6 @@ add_action(
 						'accountSummaries' => $account_summaries,
 						'nextPageToken'    => null,
 					);
-				},
-				'permission_callback' => '__return_true',
-			),
-			true
-		);
-
-		// Called when switching accounts
-		register_rest_route(
-			REST_Routes::REST_ROOT,
-			'modules/analytics/data/properties-profiles',
-			array(
-				'methods'             => 'GET',
-				'callback'            => function () {
-					return array(
-						'properties' => array(),
-						'profiles'   => array(),
-					);
-				},
-				'permission_callback' => '__return_true',
-			),
-			true
-		);
-
-		// Called when switching properties
-		register_rest_route(
-			REST_Routes::REST_ROOT,
-			'modules/analytics/data/profiles',
-			array(
-				'methods'             => 'GET',
-				'callback'            => function () {
-					return array();
 				},
 				'permission_callback' => '__return_true',
 			),
