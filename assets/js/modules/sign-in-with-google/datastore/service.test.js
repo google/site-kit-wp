@@ -102,7 +102,7 @@ describe( 'module/sign-in-with-google service store', () => {
 					.getServiceClientIDProvisioningURL();
 
 				expect( clientIDURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Fappname%3DMy%2520Site%2520Name%26sitename%3DMy%2520Site%2520Name%26siteorigin%3Dhttp%253A%252F%252Fexample.com%26supportemail%3Dadmin%2540example.com&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Fappname%3DMy%2520Site%2520Name%26sitename%3DMy%2520Site%2520Name%26siteorigin%3Dhttp%253A%252F%252Fexample.com&Email=admin%40example.com"'
 				);
 			} );
 		} );
