@@ -36,20 +36,20 @@ async function goToWordPressDashboard() {
 	await visitAdminPage( 'index.php' );
 }
 
-async function googleSiteKitAPIgetTime( options ) {
+async function googleSiteKitAPIGetTime() {
 	await page.waitForFunction(
 		() =>
 			window.googlesitekit !== undefined &&
 			window.googlesitekit.api !== undefined
 	);
 
-	return await page.evaluate(
-		( d, o ) => {
-			return window.googlesitekit.api.get( 'e2e', 'util', 'time', d, o );
-		},
-		null, // data/params
-		options
-	);
+	return await page.evaluate( () => {
+		// `useCache` is enabled by default for `get` calls,
+		// but we'll be explicit here for the sake of the test.
+		return window.googlesitekit.api.get( 'e2e', 'util', 'time', null, {
+			useCache: true,
+		} );
+	} );
 }
 
 describe( 'API cache', () => {
@@ -74,23 +74,25 @@ describe( 'API cache', () => {
 	it( 'isolates client storage between sessions', async () => {
 		await goToWordPressDashboard();
 
-		const initialTimeData = await googleSiteKitAPIgetTime();
+		const initialTimeData = await googleSiteKitAPIGetTime();
 		expect( initialTimeData ).toMatchObject( {
 			time: expect.any( Number ),
 		} );
 
 		// Show that the data is cached when fetching again.
-		const timeData = await googleSiteKitAPIgetTime();
+		const timeData = await googleSiteKitAPIGetTime();
 		expect( timeData ).toEqual( initialTimeData );
 
-		// delete auth cookie to sign out the current user
+		// Delete auth cookie to sign out the current user.
 		await deleteAuthCookie();
 
 		await safeLoginUser( 'admin', 'password' );
 
 		await goToWordPressDashboard();
 
-		const newTimeData = await googleSiteKitAPIgetTime();
+		// Now that we're in a new session, we expect the API cache to be clear
+		// so the request should hit the backend and produce a new (greater) value.
+		const newTimeData = await googleSiteKitAPIGetTime();
 		expect( initialTimeData ).toMatchObject( {
 			time: expect.any( Number ),
 		} );
