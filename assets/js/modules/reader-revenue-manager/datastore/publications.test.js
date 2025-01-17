@@ -344,7 +344,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					).toEqual( [ 'product-1', 'product-2' ] );
 				} );
 
-				it( 'should set empty product IDs array when products array is empty', () => {
+				it( 'should set an empty product IDs array when products array is empty', () => {
 					const products = [];
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -361,7 +361,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					).toEqual( [] );
 				} );
 
-				it( 'should handle products with missing name property', () => {
+				it( 'should handle products with a missing name property', () => {
 					const products = [
 						{ name: 'ABC:product-1' },
 						{}, // Missing name
