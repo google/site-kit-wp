@@ -277,7 +277,7 @@ add_action(
 			'modules/analytics-4/data/container-destinations',
 			array(
 				'methods'             => 'GET',
-				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_webdatastreams ) {
+				'callback'            => function ( \WP_REST_Request $request ) {
 					$account_id   = $request->get_param( 'accountID' );
 					$container_id = $request->get_param( 'containerID' );
 					$destination  = new Destination();
