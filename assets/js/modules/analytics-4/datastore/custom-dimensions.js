@@ -340,7 +340,10 @@ const baseSelectors = {
 			const availableCustomDimensions =
 				select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions();
 
-			if ( availableCustomDimensions === undefined ) {
+			if (
+				availableCustomDimensions === undefined ||
+				availableCustomDimensions === null
+			) {
 				return undefined;
 			}
 
