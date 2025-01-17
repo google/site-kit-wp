@@ -39,6 +39,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { isFeatureEnabled } from '../../../features';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -248,33 +249,45 @@ const baseActions = {
 			const settings = {
 				publicationID,
 				publicationOnboardingState: onboardingState,
-				productIDs: [],
-				paymentOption: 'openaccess', // This is the default payment option if no payment options are provided.
 			};
 
-			if ( paymentOptions ) {
-				const paymentOption = Object.keys( paymentOptions ).find(
-					( key ) => !! paymentOptions[ key ]
-				);
+			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+				settings.productIDs = [];
+				settings.paymentOption = 'openaccess'; // This is the default payment option if no payment options are provided.
 
-				if ( paymentOption ) {
-					settings.paymentOption = paymentOption;
-				}
-			}
+				if ( paymentOptions ) {
+					const paymentOption = Object.keys( paymentOptions ).find(
+						( key ) => !! paymentOptions[ key ]
+					);
 
-			if ( products ) {
-				settings.productIDs = products.reduce( ( ids, { name } ) => {
-					const productIDSeparatorIndex = name?.indexOf( ':' );
-
-					if ( productIDSeparatorIndex ) {
-						return [
-							...ids,
-							name.substring( productIDSeparatorIndex + 1 ),
-						];
+					if ( paymentOption ) {
+						settings.paymentOption = paymentOption;
 					}
+				}
 
-					return ids;
-				}, [] );
+				if ( products ) {
+					settings.productIDs = products.reduce(
+						( ids, { name } ) => {
+							if ( ! name ) {
+								return ids;
+							}
+
+							const productIDSeparatorIndex = name.indexOf( ':' );
+
+							if ( productIDSeparatorIndex !== -1 ) {
+								return [
+									...ids,
+									name.substring(
+										productIDSeparatorIndex + 1
+									),
+								];
+							}
+
+							return ids;
+						},
+						[]
+					);
+				}
 			}
 
 			return registry
