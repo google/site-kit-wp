@@ -68,7 +68,7 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 			__(
-				'sers will not be able to create an account on your site using their Google Account (if account creation is enabled).',
+				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled).',
 				'google-site-kit'
 			),
 			__(
