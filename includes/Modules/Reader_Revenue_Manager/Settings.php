@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -68,12 +69,27 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
+		$defaults = array(
 			'ownerID'                           => 0,
 			'publicationID'                     => '',
 			'publicationOnboardingState'        => '',
 			'publicationOnboardingStateChanged' => false,
 		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$defaults = array_merge(
+				$defaults,
+				array(
+					'snippetMode'   => 'post_types',
+					'postTypes'     => array( 'post' ),
+					'productID'     => 'openaccess',
+					'productIDs'    => array(),
+					'paymentOption' => '',
+				)
+			);
+		}
+
+		return $defaults;
 	}
 
 	/**
@@ -118,6 +134,56 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 
 				if ( ! in_array( $option['publicationOnboardingState'], $valid_onboarding_states, true ) ) {
 					$option['publicationOnboardingState'] = '';
+				}
+			}
+
+			if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+				if ( isset( $option['snippetMode'] ) ) {
+					$valid_snippet_modes = array( 'post_types', 'per_post', 'sitewide' );
+					if ( ! in_array( $option['snippetMode'], $valid_snippet_modes, true ) ) {
+						$option['snippetMode'] = 'post_types';
+					}
+				}
+
+				if ( isset( $option['postTypes'] ) ) {
+					if ( ! is_array( $option['postTypes'] ) ) {
+						$option['postTypes'] = array( 'post' );
+					} else {
+						$filtered_post_types = array_values(
+							array_filter(
+								$option['postTypes'],
+								'is_string'
+							)
+						);
+						$option['postTypes'] = ! empty( $filtered_post_types )
+							? $filtered_post_types
+							: array( 'post' );
+					}
+				}
+
+				if ( isset( $option['productID'] ) ) {
+					if ( ! is_string( $option['productID'] ) ) {
+						$option['productID'] = 'openaccess';
+					}
+				}
+
+				if ( isset( $option['productIDs'] ) ) {
+					if ( ! is_array( $option['productIDs'] ) ) {
+						$option['productIDs'] = array();
+					} else {
+						$option['productIDs'] = array_values(
+							array_filter(
+								$option['productIDs'],
+								'is_string'
+							)
+						);
+					}
+				}
+
+				if ( isset( $option['paymentOption'] ) ) {
+					if ( ! is_string( $option['paymentOption'] ) ) {
+						$option['paymentOption'] = '';
+					}
 				}
 			}
 
