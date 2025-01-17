@@ -72,6 +72,8 @@ describe( 'API cache', () => {
 	} );
 
 	it( 'isolates client storage between sessions', async () => {
+		// Navigate to WP dashboard to use SK APIs
+		// while minimizing side-effects from reporting, etc.
 		await goToWordPressDashboard();
 
 		const initialTimeData = await googleSiteKitAPIGetTime();
