@@ -248,3 +248,55 @@
 @import "utilities/padding";
 @import "utilities/text-align";
 @import "utilities/width";
+
+#breakpointdebug {
+	background: white;
+	border: 1px solid black;
+	bottom: 0;
+	display: "flex";
+	flex-direction: "column";
+	padding: 16px;
+	position: fixed;
+	width: "100%";
+	z-index: 100;
+
+	.breakpoints {
+		display: flex;
+		gap: 10px;
+	}
+
+	[data-breakpoint] {
+		padding: 4px 8px;
+	}
+
+	@media screen and (max-width: ($width-xsmall - 1 + px)) {
+		[data-breakpoint="xsmall"] {
+			background: #80dba3;
+		}
+	}
+	@media screen and (min-width: ($width-tablet + px)) and (max-width: ($width-desktop - 1 + px)) {
+		[data-breakpoint="tablet"] {
+			background: #80dba3;
+		}
+	}
+	@media screen and (max-width: ($width-wpAdminBarTablet - 1 + px)) {
+		[data-breakpoint="wpAdminBarTablet"] {
+			background: #80dba3;
+		}
+	}
+	@media screen and (min-width: ($bp-desktop + px)) and (max-width: ($width-xlarge - 1 + px)) {
+		[data-breakpoint="desktop"] {
+			background: #80dba3;
+		}
+	}
+	@media screen and (min-width: ($bp-xlarge + px)) and (max-width: ($width-xxlarge - 1 + px)) {
+		[data-breakpoint="xlarge"] {
+			background: #80dba3;
+		}
+	}
+	@media screen and (min-width: ($bp-xxlarge + px)) {
+		[data-breakpoint="xxlarge"] {
+			background: #80dba3;
+		}
+	}
+}

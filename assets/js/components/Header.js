@@ -47,6 +47,7 @@ import Link from './Link';
 import SubtleNotifications from './notifications/SubtleNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
+import BreakpointDebug from './BreakpointDebug';
 
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
@@ -120,6 +121,7 @@ function Header( { children, subHeader, showNavigation } ) {
 			{ isDashboard && <SubtleNotifications /> }
 
 			<EntityHeader />
+			<BreakpointDebug />
 		</Fragment>
 	);
 }

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowWidth } from '@react-hook/window-size/throttled';
+import { useWindowSize } from 'react-use';
 
 export const BREAKPOINT_XLARGE = 'xlarge';
 export const BREAKPOINT_DESKTOP = 'desktop';
@@ -34,17 +34,17 @@ export const BREAKPOINT_SMALL = 'small';
  * @return {string} The current breakpoint according to the window size.
  */
 export function useBreakpoint() {
-	const onlyWidth = useWindowWidth();
+	const { width: onlyWidth } = useWindowSize();
 
-	if ( onlyWidth > 1280 ) {
+	if ( onlyWidth >= 1280 ) {
 		return BREAKPOINT_XLARGE;
 	}
 
-	if ( onlyWidth > 960 ) {
+	if ( onlyWidth >= 960 ) {
 		return BREAKPOINT_DESKTOP;
 	}
 
-	if ( onlyWidth > 600 ) {
+	if ( onlyWidth >= 600 ) {
 		return BREAKPOINT_TABLET;
 	}
 

@@ -262,22 +262,28 @@ $grid-gap-desktop: 24px;
 
 // Width Variables (breakpoints)
 $width-xsmall: 450;
+$bp-xsmall: $width-xsmall + px;
+
 $width-tablet: 600;
+$bp-tablet: $width-tablet + px;
+
 $width-wpAdminBarTablet: 783;
+$bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
+
 $width-desktop: 960;
+$bp-desktop: $width-desktop + px;
+
 $width-xlarge: 1280;
+$bp-xlarge: $width-xlarge + px;
+
 $width-xxlarge: 1440;
+$bp-xxlarge: $width-xxlarge + px;
 
 // Custom Media Breakpoints
 $bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;
-$bp-tablet: $width-tablet + px;
 $bp-nonMobile: $width-tablet + 1 + px;
 $bp-nonTablet: $width-desktop + 1 + px;
-$bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
-$bp-desktop: $width-desktop + px;
-$bp-xlarge: $width-xlarge + px;
-$bp-xxlarge: $width-xxlarge + px;
 
 // Specific for WP Dashboard
 $bp-wpdb1: 800px;
