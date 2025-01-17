@@ -479,7 +479,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
-		priority: 320,
+		priority: 30,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
