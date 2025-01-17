@@ -117,10 +117,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
-	const onDismiss = () => {
-		showTooltip();
-	};
-
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
@@ -188,7 +184,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 							skipHidingFromQueue: false,
 						} }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
+						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
