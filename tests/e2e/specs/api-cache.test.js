@@ -84,6 +84,10 @@ describe( 'API cache', () => {
 		expect( timeData ).toEqual( initialTimeData );
 
 		// Delete auth cookie to sign out the current user.
+		// This was needed in the past due to cache clearing
+		// that was hooked into the logout action.
+		// Deleting cookies makes it more clear that the observed
+		// result is due to a new session only. It's also faster.
 		await deleteAuthCookie();
 
 		await safeLoginUser( 'admin', 'password' );
