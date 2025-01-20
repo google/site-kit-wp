@@ -115,7 +115,9 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
-import WebDataStreamNotAvailableNotification from '../../components/notifications/WebDataStreamNotAvailableNotification';
+import WebDataStreamNotAvailableNotification, {
+	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
+} from '../../components/notifications/WebDataStreamNotAvailableNotification';
 
 export { registerStore } from './datastore';
 
@@ -720,7 +722,7 @@ export const registerNotifications = ( notifications ) => {
 	}
 
 	notifications.registerNotification(
-		'web-data-stream-not-available-notification',
+		WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 		{
 			Component: WebDataStreamNotAvailableNotification,
 			priority: 10,

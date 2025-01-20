@@ -93,3 +93,6 @@ export default function WebDataStreamNotAvailableNotification( {
 		</Notification>
 	);
 }
+
+export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
+	'web-data-stream-not-available-notification';
