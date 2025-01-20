@@ -761,13 +761,6 @@ export const registerNotifications = ( notifications ) => {
 						return false;
 					}
 
-					if (
-						ga4OwnerID === undefined ||
-						loggedInUserID === undefined
-					) {
-						return undefined;
-					}
-
 					return ga4OwnerID === loggedInUserID;
 				};
 
