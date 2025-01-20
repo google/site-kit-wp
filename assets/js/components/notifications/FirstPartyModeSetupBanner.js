@@ -117,10 +117,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
-	const onDismiss = () => {
-		showTooltip();
-	};
-
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
@@ -143,6 +139,11 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		);
 	}
 
+	// TODO Remove this hack
+	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
+	// This is because we don't want the component removed from the DOM as we have to still render
+	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
+	// checking for the dismissal state here.
 	if ( isItemDismissed || isDismissing ) {
 		return null;
 	}
@@ -188,7 +189,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 							skipHidingFromQueue: false,
 						} }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
+						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }

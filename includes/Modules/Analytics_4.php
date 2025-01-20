@@ -596,7 +596,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			);
 		}
 
-		// Add fields from First-party Mode.
+		// Add fields from First-party mode.
 		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
 		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
 			$first_party_mode             = new First_Party_Mode( $this->context );
