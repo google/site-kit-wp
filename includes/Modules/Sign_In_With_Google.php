@@ -637,8 +637,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <div id="googlesitekit-sign-in-with-google-disconnect">
 	<h2>
 		<?php
-		/* translators: %s: Sign in with Google service name */
-		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
+		/* translators: %1$s: Sign in with Google service name, %2$s: Plugin name */
+		echo esc_html( sprintf( __( '%1$s (via %2$s)', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ), __( 'Site Kit by Google', 'google-site-kit' ) ) );
 		?>
 	</h2>
 	<p>
