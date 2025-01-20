@@ -136,6 +136,14 @@ SetupNewContainer.args = {
 			.dispatch( MODULES_TAGMANAGER )
 			.setContainerID( CONTAINER_CREATE );
 		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			containerName: 'example.com',
+		} );
+
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
 	},
 };
 
