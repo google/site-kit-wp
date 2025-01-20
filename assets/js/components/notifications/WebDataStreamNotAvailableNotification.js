@@ -64,21 +64,16 @@ export default function WebDataStreamNotAvailableNotification( {
 					/>
 				}
 				actions={
-					<div>
-						<ActionsCTALinkDismiss
-							id={ id }
-							ctaLabel={ __(
-								'Update Analytics settings',
-								'google-site-kit'
-							) }
-							ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
-							dismissLabel={ __(
-								'Maybe later',
-								'google-site-kit'
-							) }
-							dismissExpires={ MINUTE_IN_SECONDS * 55 }
-						/>
-					</div>
+					<ActionsCTALinkDismiss
+						id={ id }
+						ctaLabel={ __(
+							'Update Analytics settings',
+							'google-site-kit'
+						) }
+						ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
+						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
+						dismissExpires={ MINUTE_IN_SECONDS * 55 }
+					/>
 				}
 			/>
 		</Notification>
