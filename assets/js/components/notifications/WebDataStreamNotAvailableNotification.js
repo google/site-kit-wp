@@ -36,8 +36,6 @@ export default function WebDataStreamNotAvailableNotification( {
 	id,
 	Notification,
 } ) {
-	const isWebDataStreamAvailable = false;
-
 	const measurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
@@ -45,11 +43,6 @@ export default function WebDataStreamNotAvailableNotification( {
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-
-	// If the data stream is available, we don't have to show a warning to the user.
-	if ( isWebDataStreamAvailable ) {
-		return null;
-	}
 
 	return (
 		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
@@ -70,7 +63,6 @@ export default function WebDataStreamNotAvailableNotification( {
 						) }
 					/>
 				}
-				ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
 				actions={
 					<div>
 						<ActionsCTALinkDismiss
@@ -88,7 +80,6 @@ export default function WebDataStreamNotAvailableNotification( {
 						/>
 					</div>
 				}
-				dismissExpires={ MINUTE_IN_SECONDS * 55 }
 			/>
 		</Notification>
 	);
