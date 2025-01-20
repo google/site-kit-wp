@@ -100,7 +100,7 @@ export default function TourTooltip( {
 					text
 					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
-					{ ...closeProps }
+					onClick={ closeProps.onClick }
 				/>
 			</Card>
 		</div>
