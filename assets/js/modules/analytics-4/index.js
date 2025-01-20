@@ -53,7 +53,7 @@ import {
 	TopPagesDrivingLeadsWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
-import { MODULES_ANALYTICS_4 } from './datastore/constants';
+import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -110,8 +110,12 @@ import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	SITE_KIT_VIEW_ONLY_CONTEXTS,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
+import WebDataStreamNotAvailableNotification from '../../components/notifications/WebDataStreamNotAvailableNotification';
 
 export { registerStore } from './datastore';
 
@@ -714,4 +718,63 @@ export const registerNotifications = ( notifications ) => {
 			}
 		);
 	}
+
+	notifications.registerNotification(
+		'web-data-stream-not-available-notification',
+		{
+			Component: WebDataStreamNotAvailableNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			isDismissible: true,
+			checkRequirements: async (
+				{ select, resolveSelect },
+				viewContext
+			) => {
+				const viewOnly =
+					SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+				await resolveSelect( CORE_MODULES ).getModules();
+
+				const ga4ModuleConnected = await select(
+					CORE_MODULES
+				).isModuleConnected( 'analytics-4' );
+
+				const hasGTMScope = await select( CORE_USER ).hasScope(
+					GTM_SCOPE
+				);
+				const loggedInUserID = await select( CORE_USER ).getID();
+				const ga4OwnerID = await select(
+					MODULES_ANALYTICS_4
+				).getOwnerID();
+
+				const isGA4ModuleOwner = () => {
+					// Bail early if we're in view-only dashboard or the GA4 module is not connected.
+					if ( viewOnly || ! ga4ModuleConnected ) {
+						return false;
+					}
+
+					if (
+						ga4OwnerID === undefined ||
+						loggedInUserID === undefined
+					) {
+						return undefined;
+					}
+
+					return ga4OwnerID === loggedInUserID;
+				};
+
+				const isWebDataStreamAvailable = await select(
+					MODULES_ANALYTICS_4
+				).isWebDataStreamAvailable();
+
+				return (
+					ga4ModuleConnected &&
+					hasGTMScope &&
+					isGA4ModuleOwner &&
+					! isWebDataStreamAvailable
+				);
+			},
+		}
+	);
 };
