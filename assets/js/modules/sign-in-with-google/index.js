@@ -101,7 +101,7 @@ export const registerNotifications = ( notifications ) => {
 	if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
 		notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 			Component: SignInWithGoogleSetupCTABanner,
-			priority: 330,
+			priority: 40,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
