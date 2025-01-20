@@ -115,6 +115,7 @@ import { isFeatureEnabled } from '../../features';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export { registerStore } from './datastore';
 
@@ -727,9 +728,20 @@ export const registerNotifications = ( notifications ) => {
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			isDismissible: true,
 			checkRequirements: async ( { select, resolveSelect } ) => {
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				await resolveSelect( CORE_MODULES ).getModules();
+				await Promise.all( [
+					// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
+					// rely on the resolution of getAuthentication().
+					resolveSelect( CORE_USER ).getAuthentication(),
+					// The isModuleConnected() selector relies on the resolution
+					// of the getModules() resolver.
+					resolveSelect( CORE_MODULES ).getModules(),
+					// The hasScope() selector relies on the resolution
+					// of the getUser() resolver.
+					resolveSelect( CORE_USER ).getUser(),
+					// The getOwnerID() selector relies on the resolution
+					// of the getConnection() resolver.
+					resolveSelect( CORE_SITE ).getConnection(),
+				] );
 
 				const ga4ModuleConnected = await select(
 					CORE_MODULES
