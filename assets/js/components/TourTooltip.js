@@ -101,6 +101,7 @@ export default function TourTooltip( {
 					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
 					onClick={ closeProps.onClick }
+					aria-label="Close"
 				/>
 			</Card>
 		</div>
