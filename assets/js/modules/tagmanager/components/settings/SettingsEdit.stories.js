@@ -125,6 +125,9 @@ SetupNewContainer.args = {
 
 		registry
 			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetAccounts( fixtures.accounts );
 		registry
 			.dispatch( MODULES_TAGMANAGER )
@@ -141,9 +144,6 @@ SetupNewContainer.args = {
 		} );
 
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetSettings( defaultSettings );
 	},
 };
 
@@ -156,6 +156,9 @@ NonUniqueContainer.args = {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = webContainerVersion.accountId;
 
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
 		registry
 			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetAccounts( fixtures.accounts );
@@ -256,6 +259,10 @@ export const PrimaryAMP = Template.bind( {} );
 PrimaryAMP.storyName = 'Primary AMP';
 PrimaryAMP.args = {
 	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
+
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
@@ -286,6 +293,10 @@ export const SecondaryAMP = Template.bind( {} );
 SecondaryAMP.storyName = 'Secondary AMP';
 SecondaryAMP.args = {
 	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
+
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
@@ -328,6 +339,10 @@ SecondaryAMPSetupNewContainer.storyName =
 	'Secondary AMP - Set Up New Container';
 SecondaryAMPSetupNewContainer.args = {
 	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
+
 		const webContainerVersion =
 			fixtures.liveContainerVersions.web.gaWithVariable;
 		// eslint-disable-next-line sitekit/acronym-case
@@ -359,6 +374,10 @@ SecondaryAMPNonUniqueContainer.storyName =
 	'Secondary AMP - Non-Unique Container';
 SecondaryAMPNonUniqueContainer.args = {
 	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
+
 		const webContainerVersion =
 			fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
