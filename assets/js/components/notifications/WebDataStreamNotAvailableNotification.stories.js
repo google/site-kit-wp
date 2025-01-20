@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideUserAuthentication } from '../../../../tests/js/utils';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
@@ -44,11 +43,19 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				provideUserAuthentication( registry );
+				const currentMeasurementID = 'G-2B7M8YQ1K6';
+				const currentAnalyticsSettingsMock = {
+					ownerID: 0,
+					propertyID: '1000',
+					webDataStreamID: '2000',
+					measurementID: currentMeasurementID,
+					googleTagID: 'GT-12345',
+					googleTagLastSyncedAtMs: 0,
+				};
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( true );
+					.setSettings( currentAnalyticsSettingsMock );
 			};
 
 			return (
