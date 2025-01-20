@@ -78,7 +78,7 @@ describe( 'Module Features', () => {
 			[
 				'Users will no longer be able to sign in to your WordPress site using their Google Accounts.',
 				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled).',
-				"Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress' “Reset my password” to set a password for their account.",
+				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress’ “Reset my password” to set a password for their account.',
 			],
 		],
 		[
