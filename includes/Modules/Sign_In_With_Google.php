@@ -358,7 +358,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		?>
 ( () => {
 	async function handleCredentialResponse( response ) {
-		<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php if ( $is_woocommerce_login && ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		try {
