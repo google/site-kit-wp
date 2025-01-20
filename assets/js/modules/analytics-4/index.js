@@ -110,10 +110,7 @@ import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import {
-	SITE_KIT_VIEW_ONLY_CONTEXTS,
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-} from '../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { isFeatureEnabled } from '../../features';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
@@ -729,13 +726,9 @@ export const registerNotifications = ( notifications ) => {
 			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			isDismissible: true,
-			checkRequirements: async (
-				{ select, resolveSelect },
-				viewContext
-			) => {
-				const viewOnly =
-					SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
-
+			checkRequirements: async ( { select, resolveSelect } ) => {
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
 				await resolveSelect( CORE_MODULES ).getModules();
 
 				const ga4ModuleConnected = await select(
@@ -752,7 +745,7 @@ export const registerNotifications = ( notifications ) => {
 
 				const isGA4ModuleOwner = () => {
 					// Bail early if we're in view-only dashboard or the GA4 module is not connected.
-					if ( viewOnly || ! ga4ModuleConnected ) {
+					if ( ! ga4ModuleConnected ) {
 						return false;
 					}
 
