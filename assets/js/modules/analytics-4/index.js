@@ -730,7 +730,7 @@ export const registerNotifications = ( notifications ) => {
 			checkRequirements: async ( { select, resolveSelect } ) => {
 				await Promise.all( [
 					// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
-					// rely on the resolution of getAuthentication().
+					// rely on the resolution of the getAuthentication() resolver.
 					resolveSelect( CORE_USER ).getAuthentication(),
 					// The isModuleConnected() selector relies on the resolution
 					// of the getModules() resolver.
