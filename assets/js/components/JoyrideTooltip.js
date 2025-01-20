@@ -101,7 +101,7 @@ export default function JoyrideTooltip( props ) {
 
 	// Provides button content as well as aria-label & title attribute values.
 	const joyrideLocale = {
-		last: dismissLabel,
+		close: dismissLabel,
 	};
 
 	const callback = ( { type } ) => {
