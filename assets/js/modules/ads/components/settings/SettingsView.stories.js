@@ -61,7 +61,7 @@ IceEnabled.parameters = {
 };
 
 export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'With First-party Mode Enabled';
+FPMEnabled.storyName = 'With First-party mode Enabled';
 FPMEnabled.args = {
 	firstPartyMode: true,
 };
@@ -112,9 +112,7 @@ export default {
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
-PaxConnected.scenario = {
-	label: 'Modules/Ads/Settings/SettingsView/PAX',
-};
+PaxConnected.scenario = {};
 PaxConnected.parameters = {
 	features: [ 'adsPax', 'firstPartyMode' ],
 };
