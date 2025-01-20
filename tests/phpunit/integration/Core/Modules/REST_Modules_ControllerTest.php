@@ -263,6 +263,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		// TODO: As Site Kit doesn't have any dependent modules at this moment,
 		// update this test case so that a dependency relationship can be
 		// mocked without referencing an actual module, e.g. using FakeModule.
+		$this->markTestSkipped( 'TODO' );
 	}
 
 	public function test_activation_rest_endpoint__activate_module() {
@@ -732,7 +733,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/accounts-properties-profiles' );
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/settings' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
