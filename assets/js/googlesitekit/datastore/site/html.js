@@ -129,22 +129,6 @@ const baseActions = {
 			type: CHECK_FOR_SETUP_TAG,
 		};
 	},
-
-	/**
-	 * Waits for HTML for to be resolved for the given URL.
-	 *
-	 * @since 1.13.0
-	 * @private
-	 *
-	 * @param {string} url URL for which to fetch HTML.
-	 * @yield {Object} Redux-style action.
-	 */
-	*waitForHTMLForURL( url ) {
-		yield {
-			payload: { url },
-			type: WAIT_FOR_HTML_FOR_URL,
-		};
-	},
 };
 
 const baseControls = {
