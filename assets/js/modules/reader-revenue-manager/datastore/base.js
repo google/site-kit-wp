@@ -32,5 +32,10 @@ export default Modules.createModuleStore( 'reader-revenue-manager', {
 		'publicationID',
 		'publicationOnboardingState',
 		'publicationOnboardingStateChanged',
+		'snippetMode',
+		'postTypes',
+		'productID',
+		'productIDs',
+		'paymentOption',
 	],
 } );

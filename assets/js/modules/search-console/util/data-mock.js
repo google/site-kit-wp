@@ -138,3 +138,17 @@ export function provideSearchConsoleMockReport( registry, options ) {
 			options,
 		} );
 }
+
+/**
+ * Generates multiple mock response for Search Console reports.
+ *
+ * @since n.e.x.t
+ *
+ * @param {wp.data.registry} registry     Registry with all available stores registered.
+ * @param {Array.<Object>}   optionsArray Array of report options.
+ */
+export function provideSearchConsoleMockReports( registry, optionsArray ) {
+	optionsArray.forEach( ( options ) => {
+		provideSearchConsoleMockReport( registry, options );
+	} );
+}

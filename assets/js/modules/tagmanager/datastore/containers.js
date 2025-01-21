@@ -27,7 +27,6 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import {
 	createRegistrySelector,
-	createRegistryControl,
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
@@ -41,9 +40,6 @@ import {
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-
-// Actions
-const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
@@ -181,7 +177,8 @@ const baseActions = {
 			);
 		},
 		function* ( containerID ) {
-			const { select, dispatch } = yield commonActions.getRegistry();
+			const { select, dispatch, resolveSelect } =
+				yield commonActions.getRegistry();
 			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
 			if ( ! isValidAccountID( accountID ) ) {
@@ -192,7 +189,9 @@ const baseActions = {
 			// and no selections are done in the getContainers resolver, so we wait here.
 			// This will not guarantee that containers exist, as an account may also have no containers
 			// it will simply wait for `getContainers` to be resolved for this account ID.
-			yield baseActions.waitForContainers( accountID );
+			yield commonActions.await(
+				resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
+			);
 
 			const container = select( MODULES_TAGMANAGER ).getContainerByID(
 				accountID,
@@ -217,62 +216,17 @@ const baseActions = {
 			}
 		}
 	),
-
-	/**
-	 * Waits for containers to be resolved for the given account ID.
-	 *
-	 * @since 1.12.0
-	 * @private
-	 *
-	 * @param {string} accountID Google Tag Manager account ID to await containers for.
-	 * @return {Object} Redux-style action.
-	 */
-	waitForContainers: createValidatedAction(
-		( accountID ) => {
-			invariant(
-				isValidAccountID( accountID ),
-				'A valid accountID is required to wait for containers.'
-			);
-		},
-		function* ( accountID ) {
-			return {
-				payload: { accountID },
-				type: WAIT_FOR_CONTAINERS,
-			};
-		}
-	),
 };
 
-const baseControls = {
-	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
-		( registry ) =>
-			( { payload: { accountID } } ) => {
-				// Select first to ensure resolution is always triggered.
-				registry
-					.select( MODULES_TAGMANAGER )
-					.getContainers( accountID );
-				const areContainersLoaded = () =>
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasFinishedResolution( 'getContainers', [
-							accountID,
-						] );
+const baseControls = {};
 
-				if ( areContainersLoaded() ) {
-					return;
-				}
+function* resolveGetContainers( accountID ) {
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-				return new Promise( ( resolve ) => {
-					const unsubscribe = registry.subscribe( () => {
-						if ( areContainersLoaded() ) {
-							unsubscribe();
-							resolve();
-						}
-					} );
-				} );
-			}
-	),
-};
+	yield commonActions.await(
+		resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
+	);
+}
 
 const baseResolvers = {
 	*getContainers( accountID ) {
@@ -288,6 +242,9 @@ const baseResolvers = {
 			);
 		}
 	},
+
+	getWebContainers: resolveGetContainers,
+	getAMPContainers: resolveGetContainers,
 };
 
 const baseSelectors = {

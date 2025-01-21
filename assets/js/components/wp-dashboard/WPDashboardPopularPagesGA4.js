@@ -21,6 +21,7 @@
  */
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -148,7 +149,12 @@ export default function WPDashboardPopularPagesGA4( {
 
 	return (
 		/* TODO: decouple the styles from search-console class */
-		<div className="googlesitekit-search-console-widget">
+		<div
+			className={ classnames( 'googlesitekit-search-console-widget', {
+				'googlesitekit-search-console-widget--empty-data':
+					isGatheringData || ! rows?.length,
+			} ) }
+		>
 			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
 			</h3>

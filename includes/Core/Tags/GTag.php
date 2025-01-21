@@ -214,7 +214,7 @@ class GTag {
 	 * Returns the gtag source URL.
 	 *
 	 * @since 1.124.0
-	 * @since 1.142.0 Provides support for first-party mode.
+	 * @since 1.142.0 Provides support for First-party mode.
 	 *
 	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
@@ -228,7 +228,7 @@ class GTag {
 		// of which is used to load the source.
 		$tag_id = rawurlencode( $this->tags[0]['tag_id'] );
 
-		// If first-party mode is active, use the proxy URL to load the GTag script.
+		// If First-party mode is active, use the proxy URL to load the GTag script.
 		if ( Feature_Flags::enabled( 'firstPartyMode' ) && $this->is_first_party_mode_active() ) {
 			return add_query_arg(
 				array(
@@ -243,11 +243,11 @@ class GTag {
 	}
 
 	/**
-	 * Checks if first-party mode is active.
+	 * Checks if First-party mode is active.
 	 *
 	 * @since 1.142.0
 	 *
-	 * @return bool True if first-party mode is active, false otherwise.
+	 * @return bool True if First-party mode is active, false otherwise.
 	 */
 	protected function is_first_party_mode_active() {
 		$first_party_mode_settings = new First_Party_Mode_Settings( $this->options );

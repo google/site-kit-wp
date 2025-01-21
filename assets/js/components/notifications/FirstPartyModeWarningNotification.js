@@ -66,7 +66,7 @@ export default function FirstPartyModeWarningNotification( {
 								} }
 								external
 								aria-label={ __(
-									'Learn more about first-party mode server requirements',
+									'Learn more about First-party mode server requirements',
 									'google-site-kit'
 								) }
 							/>
