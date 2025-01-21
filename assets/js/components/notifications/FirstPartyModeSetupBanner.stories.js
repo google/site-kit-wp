@@ -26,6 +26,7 @@ import fetchMock from 'fetch-mock';
  */
 import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { WEEK_IN_SECONDS } from '../../util';
@@ -49,10 +50,27 @@ export const Default = Template.bind();
 Default.storyName = 'FirstPartyModeSetupBanner';
 Default.scenario = {};
 
+export const ErrorOnCTAClick = Template.bind();
+ErrorOnCTAClick.storyName = 'ErrorOnCTAClick';
+ErrorOnCTAClick.scenario = {};
+ErrorOnCTAClick.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveError(
+			{
+				code: 'test_error',
+				message: 'Test Error',
+				data: {},
+			},
+			'notificationAction',
+			[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]
+		);
+	},
+};
+
 export default {
 	title: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupBanner',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -87,6 +105,8 @@ export default {
 						status: 200,
 					}
 				);
+
+				args.setupRegistry?.( registry );
 			};
 
 			return (

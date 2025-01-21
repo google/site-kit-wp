@@ -39,11 +39,13 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { enabledFeatures } from '../../features';
-import {
-	CORE_NOTIFICATIONS,
-	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
-} from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
+import * as tracking from '../../util/tracking';
 import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'FirstPartyModeWarningNotification', () => {
 	let registry;
@@ -99,6 +101,10 @@ describe( 'FirstPartyModeWarningNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
+	afterEach( () => {
+		jest.clearAllMocks();
+	} );
+
 	describe( 'checkRequirements', () => {
 		it( 'is active when all required conditions are met', async () => {
 			const isActive = await notification.checkRequirements(
@@ -150,6 +156,27 @@ describe( 'FirstPartyModeWarningNotification', () => {
 				/First-party mode has been disabled due to server configuration issues/i
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should track an event when the `Learn more` link is clicked', () => {
+		const { getByRole } = render( <FPMWarningNotificationComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		const learnMoreLink = getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		learnMoreLink.click();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_warning-notification-fpm',
+			'click_learn_more_link'
+		);
 	} );
 
 	it( 'should dismiss the notification when dismiss button is clicked', async () => {

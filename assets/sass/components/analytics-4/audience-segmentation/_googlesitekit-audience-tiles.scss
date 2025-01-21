@@ -41,6 +41,10 @@
 						// Remove pointer events from the button so that the tooltip inside can be hovered upon
 						pointer-events: none;
 
+						.googlesitekit-info-tooltip {
+							color: $c-teal-t-500;
+						}
+
 						.mdc-tab__content {
 							// Add back the pointer events within the button so that the tooltip can be hovered
 							// upon and the tabs can still be clicked.

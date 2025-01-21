@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,6 +36,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
@@ -50,6 +51,7 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
+import { DAY_IN_SECONDS, trackEvent } from '../../util';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -65,12 +67,20 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 	const { isTooltipVisible } = useTooltipState( id );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
 	const isItemDismissed = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
 
-	const { dismissNotification, invalidateResolution } =
-		useDispatch( CORE_NOTIFICATIONS );
+	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
+
+	const isDismissing = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem( id )
+	);
+
 	const { setValue } = useDispatch( CORE_UI );
 
 	const learnMoreURL = useSelect( ( select ) => {
@@ -79,18 +89,33 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		);
 	} );
 
-	const onCTAClick = () => {
+	useEffect( () => {
+		if ( isTooltipVisible ) {
+			trackEvent( `${ viewContext }_fpm-setup-cta`, 'tooltip_view' );
+		}
+	}, [ isTooltipVisible, viewContext ] );
+
+	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
-		saveFirstPartyModeSettings();
+		const { error } = await saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
 
 		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
 		invalidateResolution( 'getQueuedNotifications', [
 			viewContext,
 			NOTIFICATION_GROUPS.DEFAULT,
 		] );
-
-		dismissNotification( id );
 	};
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+	const handleView = useCallback( () => {
+		if ( usingProxy ) {
+			triggerSurvey( 'view_fpm_setup_cta', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy ] );
 
 	const onDismiss = () => {
 		showTooltip();
@@ -106,30 +131,29 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					onDismiss={ () => {
+						trackEvent(
+							`${ viewContext }_fpm-setup-cta`,
+							'tooltip_dismiss'
+						);
+					} }
 					tooltipStateKey={ id }
 				/>
 			</Fragment>
 		);
 	}
 
-	if ( isItemDismissed ) {
+	if ( isItemDismissed || isDismissing ) {
 		return null;
 	}
 
-	const getBannerSVG = () => {
-		if ( breakpoint === BREAKPOINT_SMALL ) {
-			return FPMSetupCTASVGMobile;
-		}
-
-		if ( breakpoint === BREAKPOINT_TABLET ) {
-			return FPMSetupCTASVGTablet;
-		}
-
-		return FPMSetupCTASVGDesktop;
+	const breakpointSVGMap = {
+		[ BREAKPOINT_SMALL ]: FPMSetupCTASVGMobile,
+		[ BREAKPOINT_TABLET ]: FPMSetupCTASVGTablet,
 	};
 
 	return (
-		<Notification>
+		<Notification onView={ handleView }>
 			<NotificationWithSVG
 				id={ id }
 				title={ __(
@@ -160,6 +184,9 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 							'google-site-kit'
 						) }
 						onCTAClick={ onCTAClick }
+						ctaDismissOptions={ {
+							skipHidingFromQueue: false,
+						} }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
 						dismissOptions={ {
@@ -167,7 +194,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 						} }
 					/>
 				}
-				SVG={ getBannerSVG() }
+				SVG={ breakpointSVGMap[ breakpoint ] || FPMSetupCTASVGDesktop }
 			/>
 		</Notification>
 	);

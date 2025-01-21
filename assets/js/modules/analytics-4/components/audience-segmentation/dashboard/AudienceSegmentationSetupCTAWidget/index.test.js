@@ -361,6 +361,40 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			);
 			expect( container ).toBeEmptyDOMElement();
 		} );
+
+		it( 'should not render the widget when the prompt is being dismissed', async () => {
+			const settings = {
+				configuredAudiences: [],
+				isAudienceSegmentationWidgetHidden: false,
+			};
+
+			// Set the data availability on page load to true.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetAudienceSettings( settings );
+
+			registry
+				.dispatch( CORE_USER )
+				.setIsPromptDimissing(
+					AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+					true
+				);
+
+			const { container, waitForRegistry } = render(
+				<AudienceSegmentationSetupCTAWidget Widget={ Widget } />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).toBeEmptyDOMElement();
+		} );
 	} );
 
 	describe( 'CTA actions', () => {

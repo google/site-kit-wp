@@ -119,6 +119,70 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$this->assertEquals( $transient_lost_events, $lost_events );
 	}
 
+	public function test_sync__newConversionEventsLastUpdateAt() {
+		$this->setup_fake_handler_and_analytics(
+			array(
+				array(
+					'dimensionValues' => array(
+						array(
+							'value' => 'contact',
+						),
+					),
+				),
+			)
+		);
+
+		$event_check = $this->get_instance();
+		$this->settings->merge(
+			array(
+				'detectedEvents' => array(),
+			)
+		);
+
+		$this->assertEquals( 0, $this->settings->get()['newConversionEventsLastUpdateAt'] );
+
+		$event_check->sync_detected_events();
+
+		$transient_detected_events = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+
+		$this->assertSame( $transient_detected_events, array( 'contact' ) );
+
+		// Verify that newConversionEventsLastUpdateAt is updated.
+		$this->assertEqualsWithDelta( time(), $this->settings->get()['newConversionEventsLastUpdateAt'], 2 );
+	}
+
+	public function test_sync__lostConversionEventsLastUpdateAt() {
+		$this->setup_fake_handler_and_analytics(
+			array(
+				array(
+					'dimensionValues' => array(
+						array(
+							'value' => 'contact',
+						),
+					),
+				),
+			)
+		);
+
+		$event_check = $this->get_instance();
+		$this->settings->merge(
+			array(
+				'detectedEvents' => array( 'purchase' ),
+			)
+		);
+
+		$this->assertEquals( 0, $this->settings->get()['lostConversionEventsLastUpdateAt'] );
+
+		$event_check->sync_detected_events();
+
+		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+
+		$this->assertSame( $transient_lost_events, array( 'purchase' ) );
+
+		// Verify that lostConversionEventsLastUpdateAt is updated.
+		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
+	}
+
 	public function get_instance() {
 		return new Conversion_Reporting_Events_Sync(
 			$this->settings,

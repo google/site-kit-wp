@@ -30,11 +30,15 @@ import Link from '../Link';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { useSelect } from 'googlesitekit-data';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function FirstPartyModeWarningNotification( {
 	id,
 	Notification,
 } ) {
+	const viewContext = useViewContext();
+
 	const serverRequirementsLearnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'first-party-mode-server-requirements'
@@ -54,6 +58,12 @@ export default function FirstPartyModeWarningNotification( {
 						a: (
 							<Link
 								href={ serverRequirementsLearnMoreURL }
+								onClick={ () => {
+									trackEvent(
+										`${ viewContext }_warning-notification-fpm`,
+										'click_learn_more_link'
+									);
+								} }
 								external
 								aria-label={ __(
 									'Learn more about first-party mode server requirements',

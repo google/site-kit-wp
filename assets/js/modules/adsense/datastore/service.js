@@ -214,6 +214,18 @@ export const selectors = {
 			return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 		}
 	),
+
+	/**
+	 * Overrides the details link URL for this module.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => () =>
+			select( MODULES_ADSENSE ).getServiceAccountManageSitesURL()
+	),
 };
 
 const store = {

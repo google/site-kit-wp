@@ -46,7 +46,7 @@ const reportOptions = {
 			desc: true,
 		},
 	],
-	limit: 3,
+	limit: 4,
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

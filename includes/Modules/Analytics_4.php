@@ -707,15 +707,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			);
 		}
 
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			$datapoints['POST:clear-conversion-reporting-new-events']  = array(
-				'service' => '',
-			);
-			$datapoints['POST:clear-conversion-reporting-lost-events'] = array(
-				'service' => '',
-			);
-		}
-
 		return $datapoints;
 	}
 
@@ -1692,14 +1683,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				return function () use ( $data ) {
 					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 				};
-			case 'POST:clear-conversion-reporting-new-events':
-				return function () {
-					return $this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
-				};
-			case 'POST:clear-conversion-reporting-lost-events':
-				return function () {
-					return $this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -1839,7 +1822,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
-			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
 		);
 	}
