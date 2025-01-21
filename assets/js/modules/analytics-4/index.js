@@ -729,13 +729,13 @@ export const registerNotifications = ( notifications ) => {
 			isDismissible: true,
 			checkRequirements: async ( { select, resolveSelect } ) => {
 				await Promise.all( [
-					// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
-					// rely on the resolution of the getAuthentication() resolver.
+					// The hasScope() selector relies on the resolution of
+					// the getAuthentication() resolver.
 					resolveSelect( CORE_USER ).getAuthentication(),
 					// The isModuleConnected() selector relies on the resolution
 					// of the getModules() resolver.
 					resolveSelect( CORE_MODULES ).getModules(),
-					// The hasScope() selector relies on the resolution
+					// The getID() selector relies on the resolution
 					// of the getUser() resolver.
 					resolveSelect( CORE_USER ).getUser(),
 					// The getOwnerID() selector relies on the resolution
