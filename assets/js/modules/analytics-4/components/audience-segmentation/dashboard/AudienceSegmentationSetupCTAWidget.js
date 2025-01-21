@@ -1,7 +1,7 @@
 /**
  * AudienceSegmentationSetupCTAWidget component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	// See TODO note below.
 	const isCTADismissed = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
 	);
@@ -174,7 +173,9 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const hideCTABanner =
 		( isCTADismissed || ! dismissedPromptsLoaded ) && ! isSaving;
 
-	// TODO Remove this hack
+	// TODO: Don't use `skipHidingFromQueue` and remove the need to check
+	// if this component should output anything.
+	//
 	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
 	// This is because we don't want the component removed from the DOM as we have to still render
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
@@ -201,7 +202,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 					description={
 						<p>
 							{ __(
-								'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
+								'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like “new“ and “returning“. To set up these new groups, Site Kit needs to update your Google Analytics property.',
 								'google-site-kit'
 							) }
 						</p>
