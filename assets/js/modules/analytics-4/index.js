@@ -755,14 +755,8 @@ export const registerNotifications = ( notifications ) => {
 
 				const loggedInUserID = select( CORE_USER ).getID();
 				const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-				const isGA4ModuleOwner = () => {
-					// Bail early if we're in view-only dashboard or the GA4 module is not connected.
-					if ( ! ga4ModuleConnected ) {
-						return false;
-					}
-
-					return ga4OwnerID === loggedInUserID;
-				};
+				const isGA4ModuleOwner =
+					ga4ModuleConnected && ga4OwnerID === loggedInUserID;
 
 				const isWebDataStreamAvailable =
 					select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
