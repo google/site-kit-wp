@@ -237,13 +237,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
-			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
-			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( CORE_USER ).getAuthentication();
+		checkRequirements: ( { select } ) => {
 			const error = select( CORE_USER ).getAuthError();
 
 			return !! error;
