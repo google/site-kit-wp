@@ -1,7 +1,7 @@
 /**
- * AuthError Component Stories.
+ * WebDataStreamNotAvailableNotification Component stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,23 +32,19 @@ function Template() {
 	return <NotificationWithComponentProps />;
 }
 
-export const AuthenticationError = Template.bind( {} );
-AuthenticationError.storyName = 'WebDataStreamNotAvailableNotification';
-AuthenticationError.args = {
-	label: 'Components/Notifications/Banners/WebDataStreamNotAvailableNotification',
-};
+export const Default = Template.bind( {} );
+Default.storyName = 'WebDataStreamNotAvailableNotification';
 
 export default {
 	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const currentMeasurementID = 'G-2B7M8YQ1K6';
 				const currentAnalyticsSettingsMock = {
 					ownerID: 0,
 					propertyID: '1000',
 					webDataStreamID: '2000',
-					measurementID: currentMeasurementID,
+					measurementID: 'G-2B7M8YQ1K6',
 					googleTagID: 'GT-12345',
 					googleTagLastSyncedAtMs: 0,
 				};
