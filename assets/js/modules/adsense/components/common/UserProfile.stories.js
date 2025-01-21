@@ -1,7 +1,7 @@
 /**
- * Feature Tours for desktop viewports.
+ * AdSense UserProfile Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,28 @@
  */
 
 /**
- * External dependencies
- */
-import { useWindowWidth } from '@react-hook/window-size/throttled';
-
-/**
  * Internal dependencies
  */
-import FeatureTours from './FeatureTours';
+import UserProfile from './UserProfile';
 
-// TODO: Remove this once tour conflicts in smaller viewports are resolved.
-// @see https://github.com/google/site-kit-wp/issues/3003
-export function FeatureToursDesktop( props ) {
-	const windowWidth = useWindowWidth();
-	if ( windowWidth < 783 ) {
-		return null;
-	}
-	return <FeatureTours { ...props } />;
+function Template() {
+	return (
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<div className="googlesitekit-setup-module">
+					<div className="googlesitekit-setup-module__inputs">
+						<UserProfile />
+					</div>
+				</div>
+			</section>
+		</div>
+	);
 }
 
-FeatureToursDesktop.propTypes = {
-	...FeatureTours.propTypes,
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+
+export default {
+	title: 'Modules/Adsense/Components/UserProfile',
+	component: UserProfile,
 };

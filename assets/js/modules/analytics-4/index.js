@@ -124,9 +124,14 @@ export const registerModule = ( modules ) => {
 		DashboardMainEffectComponent,
 		Icon: AnalyticsIcon,
 		features: [
-			__( 'Audience overview', 'google-site-kit' ),
-			__( 'Top pages', 'google-site-kit' ),
-			__( 'Top acquisition channels', 'google-site-kit' ),
+			__(
+				'Your site will no longer send data to Google Analytics.',
+				'google-site-kit'
+			),
+			__(
+				'Analytics reports in Site Kit will be disabled.',
+				'google-site-kit'
+			),
 		],
 	} );
 };
