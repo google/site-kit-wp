@@ -131,19 +131,6 @@ export default function ConfirmDisconnect( { slug } ) {
 		name
 	);
 
-	const hasFeatures = features?.length > 0;
-
-	const subtitle = hasFeatures
-		? sprintf(
-				/* translators: %s: module name */
-				__(
-					'By disconnecting the %s module from Site Kit, you will no longer have access to:',
-					'google-site-kit'
-				),
-				name
-		  )
-		: null;
-
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
 		dependentModulesText = sprintf(
@@ -163,7 +150,6 @@ export default function ConfirmDisconnect( { slug } ) {
 			dialogActive
 			handleDialog={ handleDialog }
 			title={ title }
-			subtitle={ subtitle }
 			provides={ features }
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
