@@ -743,18 +743,12 @@ export const registerNotifications = ( notifications ) => {
 					resolveSelect( CORE_SITE ).getConnection(),
 				] );
 
-				const ga4ModuleConnected = await select(
-					CORE_MODULES
-				).isModuleConnected( 'analytics-4' );
+				const ga4ModuleConnected =
+					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+				const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
 
-				const hasGTMScope = await select( CORE_USER ).hasScope(
-					GTM_SCOPE
-				);
-				const loggedInUserID = await select( CORE_USER ).getID();
-				const ga4OwnerID = await select(
-					MODULES_ANALYTICS_4
-				).getOwnerID();
-
+				const loggedInUserID = select( CORE_USER ).getID();
+				const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
 				const isGA4ModuleOwner = () => {
 					// Bail early if we're in view-only dashboard or the GA4 module is not connected.
 					if ( ! ga4ModuleConnected ) {
@@ -764,9 +758,8 @@ export const registerNotifications = ( notifications ) => {
 					return ga4OwnerID === loggedInUserID;
 				};
 
-				const isWebDataStreamAvailable = await select(
-					MODULES_ANALYTICS_4
-				).isWebDataStreamAvailable();
+				const isWebDataStreamAvailable =
+					select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
 
 				return (
 					ga4ModuleConnected &&
