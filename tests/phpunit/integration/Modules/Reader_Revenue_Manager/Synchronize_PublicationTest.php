@@ -25,6 +25,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 
 /**
  * @group Modules
@@ -110,11 +111,13 @@ class Synchronize_PublicationTest extends TestCase {
 					$response    = new ListPublicationsResponse();
 					$publication = new Publication();
 
-					$basic_product = new Product();
-					$basic_product->setName( 'testpubID:basic' );
+					$payment_options = new PaymentOptions();
 
 					$advanced_product = new Product();
-					$advanced_product->setName( 'testpubID:subscriptions' );
+					$advanced_product->setName( 'testpubID:advanced' );
+
+					$basic_product = new Product();
+					$basic_product->setName( 'testpubID:basic' );
 
 					$publication->setPublicationId( $publication_id );
 					$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
@@ -124,6 +127,10 @@ class Synchronize_PublicationTest extends TestCase {
 							$advanced_product,
 						)
 					);
+
+					$payment_options->subscriptions = true;
+					$publication->setPaymentOptions( $payment_options );
+
 					$response->setPublications( array( $publication ) );
 
 					return new Response(
@@ -145,7 +152,7 @@ class Synchronize_PublicationTest extends TestCase {
 		$this->assertEquals( 10, has_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ) );
 	}
 
-	public function test_cron_synchronize_publication_data() {
+	public function test_get_new_onboarding_state() {
 		$this->fake_sync_onboarding_state();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
@@ -159,6 +166,100 @@ class Synchronize_PublicationTest extends TestCase {
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertTrue( $settings['publicationOnboardingStateChanged'] );
+	}
+
+	public function test_get_new_onboarding_state_with_no_publications() {
+		$this->fake_sync_onboarding_state();
+
+		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->synchronize_onboarding_state->register();
+
+		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => '987654321',
+			),
+		);
+
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
+	}
+
+	public function test_get_new_publication_product_ids() {
+		$this->enable_feature( 'rrmModuleV2' );
+		$this->fake_sync_onboarding_state();
+
+		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->synchronize_onboarding_state->register();
+
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->assertEquals( array( 'advanced', 'basic' ), $settings['productIDs'] );
+	}
+
+	public function test_get_new_publication_product_ids_with_no_products() {
+		$this->enable_feature( 'rrmModuleV2' );
+		$this->fake_sync_onboarding_state();
+
+		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->synchronize_onboarding_state->register();
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => '987654321',
+			),
+		);
+
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->assertEmpty( $settings['productIDs'] );
+	}
+
+	public function test_get_new_publication_payment_option() {
+		$this->enable_feature( 'rrmModuleV2' );
+		$this->fake_sync_onboarding_state();
+
+		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->synchronize_onboarding_state->register();
+
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->assertEquals( 'subscriptions', $settings['paymentOption'] );
+	}
+
+	public function test_get_new_publication_payment_option_with_no_payment_options() {
+		$this->enable_feature( 'rrmModuleV2' );
+		$this->fake_sync_onboarding_state();
+
+		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->synchronize_onboarding_state->register();
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => '987654321',
+			),
+		);
+
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->assertEmpty( $settings['paymentOption'] );
 	}
 
 	public function test_maybe_schedule_synchronize_onboarding_state() {
