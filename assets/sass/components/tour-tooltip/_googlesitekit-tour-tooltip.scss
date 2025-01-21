@@ -123,6 +123,10 @@
 		outline: 1px dotted $c-interactive-inverse-focus;
 		outline-offset: 6px;
 	}
+
+	.mdc-button__label {
+		display: none;
+	}
 }
 
 .mdc-card__actions.googlesitekit-tooltip-actions {

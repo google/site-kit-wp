@@ -15,18 +15,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import { waitFor } from '@testing-library/react';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
+import { CORE_USER } from '../user/constants';
 
-describe( 'core/site First-party Mode', () => {
+describe( 'core/site First-party mode', () => {
 	let registry;
 
 	const firstPartyModeSettingsEndpointRegExp = new RegExp(
@@ -48,6 +57,15 @@ describe( 'core/site First-party Mode', () => {
 	describe( 'actions', () => {
 		describe( 'saveFirstPartyModeSettings', () => {
 			it( 'saves the settings and returns the response', async () => {
+				provideUserAuthentication( registry );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
 				const updatedSettings = {
 					isEnabled: true,
 					isFPMHealthy: false,
@@ -88,6 +106,8 @@ describe( 'core/site First-party Mode', () => {
 				);
 
 				expect( response ).toEqual( updatedSettings );
+
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'returns an error if the request fails', async () => {
@@ -134,6 +154,83 @@ describe( 'core/site First-party Mode', () => {
 
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'should trigger the FPM setup completed survey when FPM setting is enabled', async () => {
+				provideUserAuthentication( registry );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: { triggerID: 'fpm_setup_completed' },
+				} );
+
+				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: {
+						isEnabled: true,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.saveFirstPartyModeSettings();
+
+				// Verify survey was triggered when FPM setting is set to true.
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+						body: {
+							data: { triggerID: 'fpm_setup_completed' },
+						},
+					} )
+				);
+			} );
+
+			it( 'should not trigger the FPM setup completed survey when FPM setting is disabled', async () => {
+				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+					body: {
+						isEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: true,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setFirstPartyModeEnabled( false );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.saveFirstPartyModeSettings();
+
+				// Verify survey was not triggered when FPM setting is set to false.
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'fpm_setup_completed' },
+					},
+				} );
+			} );
 		} );
 
 		describe( 'setFirstPartyModeEnabled', () => {
@@ -142,8 +239,8 @@ describe( 'core/site First-party Mode', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetFirstPartyModeSettings( {
 						isEnabled: false,
-						isFPMHealthy: false,
-						isScriptAccessEnabled: false,
+						isFPMHealthy: true,
+						isScriptAccessEnabled: true,
 					} );
 
 				expect(

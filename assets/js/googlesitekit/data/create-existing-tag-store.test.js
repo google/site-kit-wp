@@ -118,30 +118,6 @@ describe( 'createExistingTagStore store', () => {
 				expect( store.getState().existingTag ).toBe( existingTag );
 			} );
 		} );
-
-		describe( 'waitForExistingTag', () => {
-			it( 'supports asynchronous waiting for tag', async () => {
-				const expectedTag = 'test-tag-value';
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
-				);
-
-				const promise = registry
-					.dispatch( TEST_STORE )
-					.waitForExistingTag();
-				expect( registry.select( TEST_STORE ).getExistingTag() ).toBe(
-					undefined
-				);
-
-				await promise;
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( TEST_STORE ).getExistingTag() ).toBe(
-					expectedTag
-				);
-			} );
-		} );
 	} );
 
 	describe( 'selectors', () => {

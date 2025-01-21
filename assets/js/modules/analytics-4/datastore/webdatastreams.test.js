@@ -411,6 +411,31 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( webDataStreamsEndpoint, {
+					body: fixtures.webDataStreams,
+					status: 200,
+				} );
+
+				const initialDataStreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStreamByPropertyID( propertyID );
+				expect( initialDataStreams ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getMatchingWebDataStreamByPropertyID( propertyID );
+
+				expect( fetchMock ).toHaveFetched( webDataStreamsEndpoint, {
+					body: {
+						data: {
+							propertyID,
+						},
+					},
+				} );
+			} );
+
 			it( 'should return undefined if web data streams arent loaded yet', () => {
 				jest.useFakeTimers();
 
@@ -921,6 +946,37 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 		describe( 'doesWebDataStreamExist', () => {
 			const propertyID = '12345';
+
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( webDataStreamsEndpoint, {
+					body: fixtures.webDataStreams,
+					status: 200,
+				} );
+
+				const initialDataStreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Test GA4 WebDataStream'
+					);
+				expect( initialDataStreams ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).doesWebDataStreamExist(
+					propertyID,
+					'Test GA4 WebDataStream'
+				);
+
+				expect( fetchMock ).toHaveFetched( webDataStreamsEndpoint, {
+					body: {
+						data: {
+							propertyID,
+						},
+					},
+				} );
+			} );
 
 			it( 'should return undefined if web data streams are not loaded yet', () => {
 				jest.useFakeTimers();

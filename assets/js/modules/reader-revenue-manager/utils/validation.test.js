@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { isValidPublicationID, isURLUsingHTTPS } from './validation';
+import {
+	isValidPublicationID,
+	isValidSnippetMode,
+	isURLUsingHTTPS,
+} from './validation';
 
 describe( 'utility functions', () => {
 	describe( 'isValidPublicationID', () => {
@@ -65,5 +69,26 @@ describe( 'utility functions', () => {
 				expect( console ).not.toHaveWarned();
 			}
 		);
+	} );
+
+	describe( 'isValidSnippetMode', () => {
+		it( 'should return TRUE when a valid snippet mode is passed', () => {
+			expect( isValidSnippetMode( 'post_types' ) ).toBe( true );
+			expect( isValidSnippetMode( 'per_post' ) ).toBe( true );
+			expect( isValidSnippetMode( 'sitewide' ) ).toBe( true );
+		} );
+
+		it.each( [
+			[ 'false', false ],
+			[ 'an integer', 12345 ],
+			[ 'an empty string', '' ],
+			[ 'an invalid mode string', 'invalid-mode' ],
+			[ 'null', null ],
+			[ 'undefined', undefined ],
+			[ 'an array', [] ],
+			[ 'an object', {} ],
+		] )( 'should return FALSE when %s is passed', ( _, snippetMode ) => {
+			expect( isValidSnippetMode( snippetMode ) ).toBe( false );
+		} );
 	} );
 } );

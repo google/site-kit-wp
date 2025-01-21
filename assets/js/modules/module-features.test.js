@@ -43,34 +43,48 @@ describe( 'Module Features', () => {
 		[
 			'ads',
 			[
-				'Tagging necessary for your ads campaigns to work',
-				'Conversion tracking for your ads campaigns',
+				'Tagging necessary for your ads campaigns to work will be disabled.',
+				'Conversion tracking for your ads campaigns will be disabled.',
 			],
 		],
 		[
 			'adsense',
 			[
-				'Intelligent, automatic ad placement',
-				'Revenue from ads placed on your site',
-				'AdSense insights through Site Kit',
+				'Intelligent, automatic ad placement will be disabled.',
+				'You will miss out on revenue from ads placed on your site.',
+				'You will lose access to AdSense insights through Site Kit.',
 			],
 		],
 		[
 			'analytics-4',
-			[ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
+			[
+				'Your site will no longer send data to Google Analytics.',
+				'Analytics reports in Site Kit will be disabled.',
+			],
 		],
 		[
 			'pagespeed-insights',
-			[ 'Website performance reports for mobile and desktop' ],
+			[
+				'Website performance reports for mobile and desktop will be disabled.',
+			],
 		],
 		[
 			'reader-revenue-manager',
-			[
-				'Reader Revenue Manager publication tracking (your Reader Revenue Manager account will still remain active)',
-			],
+			[ 'Reader Revenue Manager publication tracking will be disabled.' ],
 		],
 		[ 'search-console', [] ],
-		[ 'tagmanager', [ 'Create tags without updating code' ] ],
+		[
+			'sign-in-with-google',
+			[
+				'Users will no longer be able to sign in to your WordPress site using their Google Accounts.',
+				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled).',
+				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress’ “Reset my password” to set a password for their account.',
+			],
+		],
+		[
+			'tagmanager',
+			[ 'You will not be able to create tags without updating code.' ],
+		],
 	] )(
 		'should return the correct features for %s module.',
 		( moduleSlug, expectedFeatures ) => {
