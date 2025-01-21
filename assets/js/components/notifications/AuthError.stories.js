@@ -34,6 +34,7 @@ function Template() {
 
 export const AuthenticationError = Template.bind( {} );
 AuthenticationError.storyName = 'AuthError';
+AuthenticationError.scenario = {};
 
 export default {
 	title: 'Components/Notifications/Banners',
