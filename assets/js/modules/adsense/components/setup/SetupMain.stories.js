@@ -67,6 +67,7 @@ function createSetupAccountStory( variation, args = {} ) {
 		sites = fixtures.sites,
 		referenceSiteURL = 'https://example.com',
 		existingTag = false,
+		existingTagID = 'ca-pub-2833782679114991',
 	} = args;
 
 	const story = Template.bind( {} );
@@ -94,7 +95,7 @@ function createSetupAccountStory( variation, args = {} ) {
 			setAccountID( accountID );
 
 			if ( existingTag ) {
-				receiveGetExistingTag( 'ca-pub-2833782679114991' );
+				receiveGetExistingTag( existingTagID );
 			}
 		},
 	};
@@ -150,6 +151,15 @@ export const SetupAccountSiteReadyWithTag = createSetupAccountStory(
 		existingTag: true,
 	}
 );
+export const SetupAccountSiteReadyWithTagWithoutPermission =
+	createSetupAccountStory(
+		'Site - Ready w Ads Enabled + Existing Tag - Without Permission',
+		{
+			referenceSiteURL: 'https://some-other-tld.ie',
+			existingTag: true,
+			existingTagID: 'ca-pub-123456789',
+		}
+	);
 export const SetupAccountSiteReadyAdsDisabled = createSetupAccountStory(
 	'Site - Ready w Ads Disabled',
 	{
@@ -255,6 +265,7 @@ export default {
 			provideModules( registry, [
 				{
 					slug: 'adsense',
+					storeName: MODULES_ADSENSE,
 					active: true,
 					connected: true,
 				},

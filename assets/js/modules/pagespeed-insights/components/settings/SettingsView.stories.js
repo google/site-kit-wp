@@ -1,7 +1,7 @@
 /**
- * AdBlockingRecoverySetupCTANotice component Stories.
+ * PageSpeed Insights SettingsView component stories.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,51 +19,48 @@
 /**
  * Internal dependencies
  */
+import SettingsView from './SettingsView';
+import { Cell, Grid, Row } from '../../../../material-components';
 import {
+	provideModuleRegistrations,
 	provideModules,
-	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
 function Template() {
-	return <AdBlockingRecoverySetupCTANotice />;
+	return (
+		<div className="googlesitekit-layout">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
+				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SettingsView />
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			</div>
+		</div>
+	);
 }
 
-const validSettings = {
-	accountID: 'pub-12345678',
-	clientID: 'ca-pub-12345678',
-	useSnippet: false,
-	accountStatus: ACCOUNT_STATUS_READY,
-	siteStatus: SITE_STATUS_READY,
-	adBlockingRecoverySetupStatus: '',
-};
-
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Ready';
-Ready.scenario = {
-	label: 'Global/AdBlockingRecoverySetupCTANotice/Ready',
-};
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
 export default {
-	title: ' Modules/AdSense/Settings/AdBlockingRecoverySetupCTANotice',
+	title: 'Modules/PageSpeed Insights/Settings/SettingsView',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
+						slug: 'pagespeed-insights',
 						active: true,
 						connected: true,
-						slug: 'adsense',
 					},
 				] );
-				provideSiteInfo( registry );
-
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetSettings( validSettings );
+				provideModuleRegistrations( registry );
 			};
 
 			return (
