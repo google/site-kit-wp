@@ -38,7 +38,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
@@ -73,7 +73,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function register() {
 		$this->register_scopes_hook();
 
-		$synchronize_onboarding_state = new Synchronize_OnboardingState(
+		$synchronize_onboarding_state = new Synchronize_Publication(
 			$this,
 			$this->user_options
 		);

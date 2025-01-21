@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -24,18 +24,19 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
 
 /**
  * @group Modules
  * @group Reader_Revenue_Manager
  */
-class Synchronize_OnboardingStateTest extends TestCase {
+class Synchronize_PublicationTest extends TestCase {
 
 		use Fake_Site_Connection_Trait;
 		use ModulesHelperTrait;
 
 		/**
-		* @var Synchronize_OnboardingState
+		* @var Synchronize_Publication
 		*/
 		protected $synchronize_onboarding_state;
 
@@ -87,11 +88,14 @@ class Synchronize_OnboardingStateTest extends TestCase {
 				'publicationID'                     => '123456789',
 				'publicationOnboardingState'        => 'ONBOARDING_ACTION_REQUIRED',
 				'publicationOnboardingStateChanged' => false,
+				'productID'                         => 'openaccess',
+				'productIDs'                        => array(),
+				'paymentOption'                     => '',
 				'ownerID'                           => $user_id,
 			),
 		);
 
-		$this->synchronize_onboarding_state = new Synchronize_OnboardingState( $this->reader_revenue_manager, $this->user_options );
+		$this->synchronize_onboarding_state = new Synchronize_Publication( $this->reader_revenue_manager, $this->user_options );
 	}
 
 	public function fake_sync_onboarding_state() {
@@ -105,8 +109,21 @@ class Synchronize_OnboardingStateTest extends TestCase {
 				if ( '/v1/publications' === $url['path'] ) {
 					$response    = new ListPublicationsResponse();
 					$publication = new Publication();
+
+					$basic_product = new Product();
+					$basic_product->setName( 'testpubID:basic' );
+
+					$advanced_product = new Product();
+					$advanced_product->setName( 'testpubID:subscriptions' );
+
 					$publication->setPublicationId( $publication_id );
 					$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
+					$publication->setProducts(
+						array(
+							$basic_product,
+							$advanced_product,
+						)
+					);
 					$response->setPublications( array( $publication ) );
 
 					return new Response(
@@ -122,10 +139,10 @@ class Synchronize_OnboardingStateTest extends TestCase {
 	}
 
 	public function test_register() {
-		remove_all_actions( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE );
+		remove_all_actions( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 		$this->synchronize_onboarding_state->register();
 
-		$this->assertEquals( 10, has_action( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE ) );
+		$this->assertEquals( 10, has_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ) );
 	}
 
 	public function test_cron_synchronize_publication_data() {
@@ -138,18 +155,18 @@ class Synchronize_OnboardingStateTest extends TestCase {
 
 		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
 
-		do_action( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE );
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertTrue( $settings['publicationOnboardingStateChanged'] );
 	}
 
 	public function test_maybe_schedule_synchronize_onboarding_state() {
-		$this->assertFalse( wp_next_scheduled( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE ) );
+		$this->assertFalse( wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ) );
 		$this->synchronize_onboarding_state->maybe_schedule_synchronize_onboarding_state();
 
 		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_OnboardingState::CRON_SYNCHRONIZE_ONBOARDING_STATE )
+			(bool) wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION )
 		);
 	}
 }
