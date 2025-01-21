@@ -722,7 +722,7 @@ export const registerNotifications = ( notifications ) => {
 		WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 		{
 			Component: WebDataStreamNotAvailableNotification,
-			priority: 10,
+			priority: 290,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			isDismissible: true,
