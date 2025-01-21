@@ -115,7 +115,6 @@ import { isFeatureEnabled } from '../../features';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export { registerStore } from './datastore';
 
@@ -739,8 +738,8 @@ export const registerNotifications = ( notifications ) => {
 					// of the getUser() resolver.
 					resolveSelect( CORE_USER ).getUser(),
 					// The getOwnerID() selector relies on the resolution
-					// of the getConnection() resolver.
-					resolveSelect( CORE_SITE ).getConnection(),
+					// of the getSettings() resolver.
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 				] );
 
 				const ga4ModuleConnected =
