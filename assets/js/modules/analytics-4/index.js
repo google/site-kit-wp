@@ -726,7 +726,11 @@ export const registerNotifications = ( notifications ) => {
 			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			isDismissible: true,
-			checkRequirements: async ( { select, resolveSelect } ) => {
+			checkRequirements: async ( {
+				select,
+				resolveSelect,
+				dispatch,
+			} ) => {
 				await Promise.all( [
 					// The hasScope() selector relies on the resolution of
 					// the getAuthentication() resolver.
@@ -740,6 +744,9 @@ export const registerNotifications = ( notifications ) => {
 					// The getOwnerID() selector relies on the resolution
 					// of the getSettings() resolver.
 					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					// The isWebDataStreamAvailable property is set within the
+					// syncGoogleTagSettings() action.
+					dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
 				] );
 
 				const ga4ModuleConnected =
