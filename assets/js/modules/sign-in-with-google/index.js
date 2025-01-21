@@ -64,15 +64,15 @@ export function registerModule( modules ) {
 		Icon,
 		features: [
 			__(
-				'Users will no longer be able to sign in to your WordPress site using their Google Accounts',
+				'Users will no longer be able to sign in to your WordPress site using their Google Accounts.',
 				'google-site-kit'
 			),
 			__(
-				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled)',
+				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled).',
 				'google-site-kit'
 			),
 			__(
-				'Existing users who have only used Sign in with Google to sign in to your site will need to use WordPress\' "Reset my password" to set a password for their account',
+				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress’ “Reset my password” to set a password for their account.',
 				'google-site-kit'
 			),
 		],
@@ -101,7 +101,7 @@ export const registerNotifications = ( notifications ) => {
 	if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
 		notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 			Component: SignInWithGoogleSetupCTABanner,
-			priority: 330,
+			priority: 40,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],

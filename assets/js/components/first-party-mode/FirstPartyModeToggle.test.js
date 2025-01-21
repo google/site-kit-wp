@@ -146,7 +146,7 @@ describe( 'FirstPartyModeToggle', () => {
 		expect( getByLabelText( 'First-party mode' ) ).toBeDisabled();
 
 		expect( container ).toHaveTextContent(
-			'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+			'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 		);
 
 		expect( container ).toMatchSnapshot();
@@ -174,7 +174,7 @@ describe( 'FirstPartyModeToggle', () => {
 
 		expect(
 			queryByText(
-				'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+				'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 			)
 		).not.toBeInTheDocument();
 
@@ -213,7 +213,7 @@ describe( 'FirstPartyModeToggle', () => {
 
 		expect(
 			getByText(
-				'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+				'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 			)
 		).toBeInTheDocument();
 
@@ -255,7 +255,7 @@ describe( 'FirstPartyModeToggle', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		const learnMoreLink = getByRole( 'link', {
-			name: 'Learn more about first-party mode (opens in a new tab)',
+			name: 'Learn more about First-party mode (opens in a new tab)',
 		} );
 
 		learnMoreLink.click();
@@ -290,7 +290,7 @@ describe( 'FirstPartyModeToggle', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		const learnMoreLink = getByRole( 'link', {
-			name: 'Learn more about first-party mode server requirements (opens in a new tab)',
+			name: 'Learn more about First-party mode server requirements (opens in a new tab)',
 		} );
 
 		learnMoreLink.click();

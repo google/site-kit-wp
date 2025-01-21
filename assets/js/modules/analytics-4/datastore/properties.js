@@ -31,11 +31,7 @@ import { createRegistrySelector } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	commonActions,
-	combineStores,
-	createRegistryControl,
-} from 'googlesitekit-data';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -53,7 +49,6 @@ import {
 	isValidPropertyID,
 	isValidPropertySelection,
 } from '../utils/validation';
-import { actions as webDataStreamActions } from './webdatastreams';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
@@ -202,7 +197,6 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 } );
 
 // Actions
-const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
@@ -294,11 +288,11 @@ const baseActions = {
 				}
 			}
 
-			yield webDataStreamActions.waitForWebDataStreams( propertyID );
-
-			let webdatastream = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getMatchingWebDataStreamByPropertyID( propertyID );
+			let webdatastream = yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStreamByPropertyID( propertyID )
+			);
 
 			if ( ! webdatastream ) {
 				const webdatastreams = registry
@@ -367,12 +361,12 @@ const baseActions = {
 	*matchAccountProperty( accountID ) {
 		const registry = yield commonActions.getRegistry();
 
-		yield baseActions.waitForPropertySummaries( accountID );
-
 		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const propertySummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertySummaries( accountID );
+		const propertySummaries = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getPropertySummaries( accountID )
+		);
 
 		const property = yield baseActions.matchPropertyByURL(
 			( propertySummaries || [] ).map( ( { _id } ) => _id ),
@@ -514,18 +508,6 @@ const baseActions = {
 		}
 
 		return null;
-	},
-
-	/**
-	 * Waits for property summaries to be loaded for an account.
-	 *
-	 * @since 1.118.0
-	 */
-	*waitForPropertySummaries() {
-		yield {
-			payload: {},
-			type: WAIT_FOR_PROPERTY_SUMMARIES,
-		};
 	},
 
 	/**
@@ -731,17 +713,7 @@ const baseActions = {
 	},
 };
 
-const baseControls = {
-	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
-		( { resolveSelect } ) => {
-			return async () => {
-				await resolveSelect(
-					MODULES_ANALYTICS_4
-				).getAccountSummaries();
-			};
-		}
-	),
-};
+const baseControls = {};
 
 function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
@@ -787,6 +759,15 @@ const baseResolvers = {
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
+	},
+	*getPropertySummaries( accountID ) {
+		const { resolveSelect } = yield commonActions.getRegistry();
+
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(
+				accountID
+			)
+		);
 	},
 	*getPropertyCreateTime() {
 		const registry = yield commonActions.getRegistry();

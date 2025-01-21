@@ -97,7 +97,7 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 				sprintf(
 					/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 					__(
-						'Enable the %1$s setting to allow your visitors to create an account using the %2$s button. <br/>Visit <a>WordPress Settings</a> to manage this setting.',
+						'Enable the %1$s setting to allow your visitors to create an account using the %2$s button. <br/>Visit <a>WordPress settings</a> to manage this setting.',
 						'google-site-kit'
 					),
 					isMultisite
