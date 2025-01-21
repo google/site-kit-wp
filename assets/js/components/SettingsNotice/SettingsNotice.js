@@ -92,8 +92,11 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 					<Button
 						tertiary
 						onClick={ () => {
-							dismissItem( dismiss );
-							dismissCallback();
+							if ( typeof dismiss === 'string' ) {
+								dismissItem( dismiss );
+							}
+
+							dismissCallback?.();
 						} }
 					>
 						{ dismissLabel }
@@ -119,6 +122,7 @@ SettingsNotice.propTypes = {
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
+	dismiss: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
 	dismissLabel: PropTypes.string,
 	dismissCallback: PropTypes.func,
 };
