@@ -49,6 +49,7 @@ import {
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
@@ -227,6 +228,22 @@ export const DEFAULT_NOTIFICATIONS = {
 				select( CORE_SITE ).getSetupErrorMessage();
 
 			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+	},
+	'auth-error': {
+		Component: AuthError,
+		priority: 130,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: ( { select } ) => {
+			const error = select( CORE_USER ).getAuthError();
+
+			return !! error;
 		},
 		isDismissible: false,
 	},
