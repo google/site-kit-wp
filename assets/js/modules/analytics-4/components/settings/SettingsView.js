@@ -245,7 +245,7 @@ export default function SettingsView() {
 						? [
 								{
 									label: __(
-										'First-party Mode',
+										'First-party mode',
 										'google-site-kit'
 									),
 									status: isFPMEnabled,
