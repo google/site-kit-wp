@@ -60,7 +60,7 @@ export const registerModule = ( modules ) => {
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
-				'Reader Revenue Manager publication tracking will be disabled.',
+				'Reader Revenue Manager publication tracking will be disabled',
 				'google-site-kit'
 			),
 		],
