@@ -446,7 +446,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					).toEqual( 'contributions' );
 				} );
 
-				it( 'should default to `openaccess` when all payment options are null', () => {
+				it( 'should default to an empty string when all payment options are null', () => {
 					const paymentOptions = {
 						subscriptions: null,
 						contributions: null,
@@ -466,10 +466,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						registry
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getPaymentOption()
-					).toEqual( 'openaccess' );
+					).toEqual( '' );
 				} );
 
-				it( 'should default to `openaccess` when the payment options object is empty', () => {
+				it( 'should default to an empty string when the payment options object is empty', () => {
 					const paymentOptions = {};
 
 					registry
@@ -484,7 +484,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						registry
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getPaymentOption()
-					).toEqual( 'openaccess' );
+					).toEqual( '' );
 				} );
 			} );
 		} );
