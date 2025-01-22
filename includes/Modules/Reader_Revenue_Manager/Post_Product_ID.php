@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
 /**
  * Class for associating product ID to post meta.
  *
- * @since n.e.x.t
+ * @since 1.145.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Post_Product_ID extends Post_Meta_Setting {
 	/**
 	 * Publication ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @var string
 	 */
@@ -33,7 +33,7 @@ class Post_Product_ID extends Post_Meta_Setting {
 	/**
 	 * Post_Product_ID constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param Post_Meta $post_meta Post_Meta instance.
 	 * @param string    $publication_id Publication ID.
@@ -47,7 +47,7 @@ class Post_Product_ID extends Post_Meta_Setting {
 	/**
 	 * Gets the meta key for the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return string Meta key.
 	 */
@@ -58,7 +58,7 @@ class Post_Product_ID extends Post_Meta_Setting {
 	/**
 	 * Gets the `show_in_rest` value for this postmeta setting value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return bool|Array Any valid value for the `show_in_rest`
 	 */

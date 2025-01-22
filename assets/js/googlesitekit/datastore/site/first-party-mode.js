@@ -104,7 +104,7 @@ const baseActions = {
 	 * Saves the First-party mode settings.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Added the survey trigger.
+	 * @since 1.145.0 Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */

@@ -19,7 +19,7 @@ use WP_User;
  * The authenticator class that processes Sign in with Google callback
  * requests to authenticate users when WooCommerce is activated.
  *
- * @since n.e.x.t
+ * @since 1.145.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class WooCommerce_Authenticator extends Authenticator {
 	/**
 	 * Gets the redirect URL for the error page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param string $code Error code.
 	 * @return string Redirect URL.
@@ -41,7 +41,7 @@ class WooCommerce_Authenticator extends Authenticator {
 	/**
 	 * Gets the redirect URL after the user signs in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param WP_User $user User object.
 	 * @param Input   $input Input instance.
