@@ -72,7 +72,7 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 			__(
-				'Existing users who have only used Sign in With Google to sign in to your site will need to use WordPress’ “Reset my password” to set a password for their account',
+				'Existing users who have only used Sign in with Google to sign in to your site will need to use WordPress’ “Reset my password” to set a password for their account',
 				'google-site-kit'
 			),
 		],
