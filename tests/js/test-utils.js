@@ -208,8 +208,11 @@ const customRenderHook = ( callback, options = {} ) => {
 		);
 	}
 
+	const waitForRegistry = createWaitForRegistry( registry );
+
 	return {
 		...renderHook( callback, { wrapper: Wrapper, ...renderHookOptions } ),
+		waitForRegistry: () => actHook( waitForRegistry ),
 		setInView,
 		registry,
 	};

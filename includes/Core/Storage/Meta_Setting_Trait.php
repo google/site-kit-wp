@@ -31,7 +31,7 @@ trait Meta_Setting_Trait {
 	/**
 	 * Gets the meta key for the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return string Meta key.
 	 */
