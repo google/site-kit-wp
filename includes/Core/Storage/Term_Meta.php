@@ -36,7 +36,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Updates a term meta field based on the given term ID.
 	 *
-	 * @since 1.33.0
+	 * @since n.e.x.t
 	 *
 	 * @param int    $term_id    Term ID.
 	 * @param string $key        Metadata key.
@@ -51,7 +51,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Adds a meta field to the given term.
 	 *
-	 * @since 1.33.0
+	 * @since n.e.x.t
 	 *
 	 * @param int    $term_id Term ID.
 	 * @param string $key     Metadata key.
@@ -66,7 +66,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Deletes a term meta field for the given term ID.
 	 *
-	 * @since 1.33.0
+	 * @since n.e.x.t
 	 *
 	 * @param int    $term_id Term ID.
 	 * @param string $key     Metadata key.

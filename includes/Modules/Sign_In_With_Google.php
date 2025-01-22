@@ -317,6 +317,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	private function render_signinwithgoogle() {
 		$is_wp_login          = is_login();
+		$is_woocommerce       = class_exists( 'woocommerce' );
 		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
 		$settings = $this->get_settings()->get();
@@ -358,7 +359,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		?>
 ( () => {
 	async function handleCredentialResponse( response ) {
-		<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php if ( $is_woocommerce && ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		try {
@@ -389,6 +390,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 		<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			parent.classList.add( 'woocommerce-form-row', 'form-row' );
 			for ( const login of document.getElementsByClassName( 'login' ) ) {
 				login.insertBefore( parent, login.firstChild );
 			}
@@ -636,8 +638,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <div id="googlesitekit-sign-in-with-google-disconnect">
 	<h2>
 		<?php
-		/* translators: %s: Sign in with Google service name */
-		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
+		/* translators: %1$s: Sign in with Google service name, %2$s: Plugin name */
+		echo esc_html( sprintf( __( '%1$s (via %2$s)', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ), __( 'Site Kit by Google', 'google-site-kit' ) ) );
 		?>
 	</h2>
 	<p>

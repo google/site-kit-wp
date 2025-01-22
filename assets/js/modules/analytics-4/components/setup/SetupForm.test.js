@@ -513,7 +513,8 @@ describe( 'SetupForm', () => {
 				triggerChange( getByRole );
 			} );
 
-			await waitForRegistry();
+			// An additional wait is required in order for all resolvers to finish.
+			await act( waitForDefaultTimeouts );
 		} );
 
 		it( 'should revert the enhanced measurement from off to on', () => {

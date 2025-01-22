@@ -21,7 +21,7 @@ class Term_MetaTest extends TestCase {
 	public function test_get() {
 		global $wpdb;
 
-		$Term_Meta  = new Term_Meta();
+		$term_meta  = new Term_Meta();
 		$term_id    = $this->factory()->term->create();
 		$meta_key   = 'test_meta';
 		$meta_value = 'test_value';
@@ -37,17 +37,17 @@ class Term_MetaTest extends TestCase {
 
 		$this->assertEquals(
 			$meta_value,
-			$Term_Meta->get( $term_id, $meta_key, true )
+			$term_meta->get( $term_id, $meta_key, true )
 		);
 	}
 
 	public function test_add() {
-		$Term_Meta  = new Term_Meta();
+		$term_meta  = new Term_Meta();
 		$term_id    = $this->factory()->term->create();
 		$meta_key   = 'test_meta';
 		$meta_value = 'test_value';
 
-		$meta_id = $Term_Meta->add( $term_id, $meta_key, $meta_value );
+		$meta_id = $term_meta->add( $term_id, $meta_key, $meta_value );
 		$meta    = $this->queryTermMeta( $term_id, $meta_key );
 
 		$this->assertGreaterThan( 0, $meta_id );
@@ -57,7 +57,7 @@ class Term_MetaTest extends TestCase {
 	public function test_update() {
 		global $wpdb;
 
-		$Term_Meta      = new Term_Meta();
+		$term_meta      = new Term_Meta();
 		$term_id        = $this->factory()->term->create();
 		$meta_key       = 'test_meta';
 		$meta_value     = 'test_value';
@@ -72,7 +72,7 @@ class Term_MetaTest extends TestCase {
 			)
 		);
 
-		$updated = $Term_Meta->update( $term_id, $meta_key, $meta_value );
+		$updated = $term_meta->update( $term_id, $meta_key, $meta_value );
 		$meta    = $this->queryTermMeta( $term_id, $meta_key );
 
 		$this->assertTrue( $updated );
@@ -82,7 +82,7 @@ class Term_MetaTest extends TestCase {
 	public function test_delete() {
 		global $wpdb;
 
-		$Term_Meta  = new Term_Meta();
+		$term_meta  = new Term_Meta();
 		$term_id    = $this->factory()->term->create();
 		$meta_key   = 'test_meta';
 		$meta_value = 'test_value';
@@ -96,7 +96,7 @@ class Term_MetaTest extends TestCase {
 			)
 		);
 
-		$deleted = $Term_Meta->delete( $term_id, $meta_key );
+		$deleted = $term_meta->delete( $term_id, $meta_key );
 
 		$this->assertTrue( $deleted );
 		$this->assertPostMetaNotExists( $term_id, $meta_key );

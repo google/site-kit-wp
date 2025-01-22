@@ -117,6 +117,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
 
+		$this->assertStringNotContainsString( 'woocommerce-form-row', $output );
+
 		// Try rendering the button when not on the login page.
 		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$output                 = $this->capture_action( 'wp_footer' );
@@ -141,6 +143,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
+		// Render the button in the WooCommerce form.
+		do_action( 'woocommerce_login_form_start' );
+		$output = $this->capture_action( 'wp_footer' );
+
+		// CHeck the render button contains the expected class name.
+		$this->assertStringContainsString( 'woocommerce-form-row', $output );
 
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
