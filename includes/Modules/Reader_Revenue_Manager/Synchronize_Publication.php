@@ -153,10 +153,12 @@ class Synchronize_Publication {
 			$product_ids = array_map(
 				function ( $product ) {
 					$name = $product->getName();
-					return substr( $name, strpos( $name, ':' ) + 1 );
+					return strpos( $name, ':' ) !== false ? substr( $name, strpos( $name, ':' ) + 1 ) : false;
 				},
 				$products
 			);
+
+			$product_ids = array_filter( $product_ids );
 
 			// Sort the array alphabetically in ascending order.
 			sort( $product_ids );
