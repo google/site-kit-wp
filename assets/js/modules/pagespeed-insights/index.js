@@ -42,7 +42,7 @@ export const registerModule = ( modules ) => {
 		Icon: PageSpeedInsightsIcon,
 		features: [
 			__(
-				'Website performance reports for mobile and desktop will be disabled.',
+				'Website performance reports for mobile and desktop will be disabled',
 				'google-site-kit'
 			),
 		],
