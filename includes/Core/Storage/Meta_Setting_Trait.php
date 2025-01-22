@@ -14,6 +14,8 @@ namespace Google\Site_Kit\Core\Storage;
  * Base class for a single object meta setting.
  *
  * @since 1.33.0
+ * @since n.e.x.t Changed from Post_Meta_Setting to Meta_Setting_Trait.
+ *
  * @access private
  * @ignore
  */
@@ -122,6 +124,7 @@ trait Meta_Setting_Trait {
 	 * Checks whether meta exists for a given object or not.
 	 *
 	 * @since 1.33.0
+	 * @since n.e.x.t Changed `$post_id` parameter to `$object_id`.
 	 *
 	 * @param int $object_id Object ID.
 	 * @return bool True if the meta key exists, otherwise false.
@@ -134,6 +137,7 @@ trait Meta_Setting_Trait {
 	 * Gets the value of the setting.
 	 *
 	 * @since 1.33.0
+	 * @since n.e.x.t Changed `$post_id` parameter to `$object_id`.
 	 *
 	 * @param int $object_id Object ID.
 	 * @return mixed Value set for the setting, or default if not set.
@@ -150,9 +154,10 @@ trait Meta_Setting_Trait {
 	 * Updates the setting for the given object ID.
 	 *
 	 * @since 1.33.0
+	 * @since n.e.x.t Changed `$post_id` parameter to `$object_id`.
 	 *
 	 * @param int   $object_id Object ID.
-	 * @param mixed $value   Metadata value.
+	 * @param mixed $value     Metadata value.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
 	public function set( $object_id, $value ) {
@@ -163,6 +168,7 @@ trait Meta_Setting_Trait {
 	 * Deletes the setting for the given object ID.
 	 *
 	 * @since 1.33.0
+	 * @since n.e.x.t Changed `$post_id` parameter to `$object_id`.
 	 *
 	 * @param int $object_id Object ID.
 	 * @return bool TRUE on success, otherwise FALSE.

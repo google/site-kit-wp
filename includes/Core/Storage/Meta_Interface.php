@@ -11,9 +11,11 @@
 namespace Google\Site_Kit\Core\Storage;
 
 /**
- * Interface for Object_Meta implementations.
+ * Interface for object meta implementations.
  *
  * @since 1.33.0
+ * @since n.e.x.t Renamed from Post_Meta_Interface to Meta_Interface.
+ *
  * @access private
  * @ignore
  */
@@ -25,20 +27,20 @@ interface Meta_Interface {
 	 * @since 1.33.0
 	 *
 	 * @param int    $object_id Object ID.
-	 * @param string $key     Metadata key.
-	 * @param bool   $single  Whether to return a single value.
+	 * @param string $key       Metadata key.
+	 * @param bool   $single    Whether to return a single value.
 	 * @return mixed Object meta value.
 	 */
 	public function get( $object_id, $key, $single = false );
 
 	/**
-	 * Updates a object meta field based on the given Object ID.
+	 * Updates an object meta field based on the given object ID.
 	 *
 	 * @since 1.33.0
 	 *
-	 * @param int    $object_id    Object ID.
-	 * @param string $key        Metadata key.
-	 * @param mixed  $value      Metadata value.
+	 * @param int    $object_id Object ID.
+	 * @param string $key       Metadata key.
+	 * @param mixed  $value     Metadata value.
 	 * @param mixed  $prev_value Previous value to check before updating. If specified, only update existing metadata entries with this value. Otherwise, update all entries.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
@@ -50,21 +52,21 @@ interface Meta_Interface {
 	 * @since 1.33.0
 	 *
 	 * @param int    $object_id Object ID.
-	 * @param string $key     Metadata key.
-	 * @param mixed  $value   Metadata value.
-	 * @param bool   $unique  Whether the same key should not be added.
+	 * @param string $key       Metadata key.
+	 * @param mixed  $value     Metadata value.
+	 * @param bool   $unique    Whether the same key should not be added.
 	 * @return int|bool Meta id on success, otherwise FALSE.
 	 */
 	public function add( $object_id, $key, $value, $unique = false );
 
 	/**
-	 * Deletes a object meta field for the given Object ID.
+	 * Deletes an object meta field for the given object ID.
 	 *
 	 * @since 1.33.0
 	 *
 	 * @param int    $object_id Object ID.
-	 * @param string $key     Metadata key.
-	 * @param mixed  $value   Metadata value. If provided, rows will only be removed that match the value.
+	 * @param string $key       Metadata key.
+	 * @param mixed  $value     Metadata value. If provided, rows will only be removed that match the value.
 	 * @return bool TRUE on success, otherwise FALSE.
 	 */
 	public function delete( $object_id, $key, $value = '' );
