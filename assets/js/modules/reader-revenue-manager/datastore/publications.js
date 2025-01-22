@@ -236,8 +236,8 @@ const baseActions = {
 				);
 			} );
 		},
-		// `publicationId` is the identifier used by the API.
 		function* ( {
+			// `publicationId` is the identifier used by the API.
 			// eslint-disable-next-line sitekit/acronym-case
 			publicationId: publicationID,
 			onboardingState,
@@ -253,7 +253,7 @@ const baseActions = {
 
 			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
 				settings.productIDs = [];
-				settings.paymentOption = 'openaccess'; // This is the default payment option if no payment options are provided.
+				settings.paymentOption = '';
 
 				if ( paymentOptions ) {
 					const paymentOption = Object.keys( paymentOptions ).find(
