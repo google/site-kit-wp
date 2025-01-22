@@ -62,6 +62,7 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
+import InternalServerError from '../../components/notifications/InternalServerError';
 import { isFeatureEnabled } from '../../features';
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -244,6 +245,33 @@ export const DEFAULT_NOTIFICATIONS = {
 			const error = select( CORE_USER ).getAuthError();
 
 			return !! error;
+		},
+		isDismissible: false,
+	},
+	'internal-server-error': {
+		Component: InternalServerError,
+		priority: 120,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The activateModule() action which is used to forward the errors
+			// to the `internalServerError` state value uses internally
+			// getAuthentication() resolver.
+			await resolveSelect( CORE_USER ).getAuthentication();
+
+			const error = select( CORE_SITE ).getInternalServerError();
+
+			if ( ! error ) {
+				return false;
+			}
+
+			return true;
 		},
 		isDismissible: false,
 	},
