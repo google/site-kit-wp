@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Term_Product_ID_Test
+ * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Term_Product_IDTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Storage\Term_Meta;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Term_Product_ID;
 use Google\Site_Kit\Tests\TestCase;
 
-class Term_Product_ID_Test extends TestCase {
+class Term_Product_IDTest extends TestCase {
 
 	/**
 	 * @var Term_Product_ID
