@@ -32,6 +32,9 @@ import { MINUTE_IN_SECONDS } from '../../util';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 
+export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
+	'web-data-stream-not-available-notification';
+
 export default function WebDataStreamNotAvailableNotification( {
 	id,
 	Notification,
@@ -54,7 +57,7 @@ export default function WebDataStreamNotAvailableNotification( {
 				description={
 					<Description
 						text={ sprintf(
-							/* translators: 1: Google Analytics Measurement ID. */
+							/* translators: %1$s: Google Analytics Measurement ID. */
 							__(
 								'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
 								'google-site-kit'
@@ -79,6 +82,3 @@ export default function WebDataStreamNotAvailableNotification( {
 		</Notification>
 	);
 }
-
-export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
-	'web-data-stream-not-available-notification';
