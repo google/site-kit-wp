@@ -24,14 +24,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import InternalServerError from './InternalServerError';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function ErrorNotifications() {
 	return (
 		<Fragment>
-			<InternalServerError />
 			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>
 	);
