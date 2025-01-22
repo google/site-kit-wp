@@ -117,6 +117,11 @@ module.exports = async ( { config } ) => {
 					},
 				},
 			],
+		},
+		{
+			test: /\.mjs$/,
+			include: /node_modules/,
+			type: 'javascript/auto',
 		}
 	);
 

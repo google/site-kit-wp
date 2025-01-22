@@ -38,3 +38,65 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
 		minimums: report.minimums?.map( toEmptyObject ),
 	};
 }
+
+/**
+ * Returns an AdSense report with zeroed data.
+ *
+ * @since 1.78.0
+ * @since n.e.x.t Moved from `stories/utils/adsense-data-zeroing.js`.
+ *
+ * @param {Object} report AdSense report data.
+ * @return {Object} AdSense report data with zeroed data.
+ */
+export const replaceValuesInAdSenseReportWithZeroData = ( report ) => {
+	const zeroValue = ( cell ) => ( { ...cell, value: 0 } );
+
+	let clonedReport = { ...report };
+
+	const { totals, rows } = clonedReport;
+	const { cells } = totals;
+
+	clonedReport = {
+		...clonedReport,
+		totals: {
+			cells: cells.map( zeroValue ),
+		},
+		rows: rows.map( ( row ) => ( {
+			...row,
+			cells: row.cells.map( ( cell, index ) => {
+				if ( index !== 0 ) {
+					return zeroValue( cell );
+				}
+				return cell;
+			} ),
+		} ) ),
+	};
+
+	return clonedReport;
+};
+
+/**
+ * Returns an Search Console report with zeroed data.
+ *
+ * @since n.e.x.t Moved from `stories/module-search-console-components.stories.js`.
+ *
+ * @param {Object} report  Search Console report data.
+ * @param {Object} options Search Console report options.
+ * @return {Object} Search Console report data with zeroed data.
+ */
+export const replaceValuesInSearchConsoleReportWithZeroData = (
+	report,
+	options
+) => {
+	if ( options.dimensions === 'query' ) {
+		return [];
+	}
+
+	return report.map( ( row ) => ( {
+		...row,
+		clicks: 0,
+		ctr: 0,
+		impressions: 0,
+		position: 0,
+	} ) );
+};

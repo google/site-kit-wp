@@ -81,7 +81,7 @@ IceResolving.parameters = {
 };
 
 export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'SettingsView First-party Mode Enabled';
+FPMEnabled.storyName = 'SettingsView First-party mode Enabled';
 FPMEnabled.args = {
 	enhancedConversionTracking: false,
 	firstPartyMode: true,

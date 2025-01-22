@@ -465,6 +465,43 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
+
+		$this->enable_feature( 'rrmModuleV2' );
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Verify `postTypes` field appears when the `snippetMode` is `post_types`.
+		$this->assertEqualSets(
+			array(
+				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_snippet_mode',
+				'reader_revenue_manager_post_types',
+				'reader_revenue_manager_product_id',
+				'reader_revenue_manager_available_product_ids',
+				'reader_revenue_manager_payment_option',
+			),
+			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+
+		// Set `snippetMode` to `per_post`.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'snippetMode' => 'per_post',
+			)
+		);
+
+		// Verify `postTypes` field does not appear when the `snippetMode` is not `post_types`.
+		$this->assertEqualSets(
+			array(
+				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_snippet_mode',
+				'reader_revenue_manager_product_id',
+				'reader_revenue_manager_available_product_ids',
+				'reader_revenue_manager_payment_option',
+			),
+			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
 	}
 
 	public function test_check_service_entity_access_no_access_unavailable_publication() {
@@ -484,6 +521,86 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertNotWPError( $access );
 		$this->assertEquals( false, $access );
+	}
+
+	public function test_product_id_setting_registered() {
+		$publication_id = 'ABCDEFGH';
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertTrue( $registered );
+	}
+
+	public function test_publication_id_empty_product_id_setting_not_registered() {
+		$publication_id = 'ABCDEFGH';
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => '',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertFalse( $registered );
+	}
+
+	public function test_feature_disabled_product_id_setting_not_registered() {
+		$publication_id = 'ABCDEFGH';
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertFalse( $registered );
+	}
+
+	public function test_block_editor_script_enqueued() {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$this->assertContains(
+			'googlesitekit-reader-revenue-manager-block-editor',
+			$registerable_asset_handles
+		);
+	}
+
+	public function test_block_editor_script_not_enqueued() {
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$this->assertNotContains(
+			'googlesitekit-reader-revenue-manager-block-editor',
+			$registerable_asset_handles
+		);
 	}
 
 	/**
