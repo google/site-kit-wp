@@ -125,11 +125,11 @@ export const registerModule = ( modules ) => {
 		Icon: AnalyticsIcon,
 		features: [
 			__(
-				'Your site will no longer send data to Google Analytics.',
+				'Your site will no longer send data to Google Analytics',
 				'google-site-kit'
 			),
 			__(
-				'Analytics reports in Site Kit will be disabled.',
+				'Analytics reports in Site Kit will be disabled',
 				'google-site-kit'
 			),
 		],
