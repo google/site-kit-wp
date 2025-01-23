@@ -17,20 +17,11 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function ErrorNotifications() {
-	return (
-		<Fragment>
-			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
-		</Fragment>
-	);
+	return <Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />;
 }
