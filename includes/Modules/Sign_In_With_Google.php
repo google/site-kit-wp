@@ -39,6 +39,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
+use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
 use WP_Error;
 use WP_User;
 
@@ -115,23 +116,29 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
 			function () {
-				$settings = $this->get_settings();
-
+				$settings       = $this->get_settings();
 				$profile_reader = new Profile_Reader( $settings );
-				$authenticator  = new Authenticator( $this->user_options, $profile_reader );
 
-				$this->handle_auth_callback( $authenticator );
+				$integration = $this->context->input()->filter( INPUT_POST, 'integration' );
+
+				$authenticator_class = Authenticator::class;
+				if ( 'woocommerce' === $integration && class_exists( 'woocommerce' ) ) {
+					$authenticator_class = WooCommerce_Authenticator::class;
+				}
+
+				$this->handle_auth_callback( new $authenticator_class( $this->user_options, $profile_reader ) );
 			}
 		);
 
-		add_action( 'admin_action_' . self::ACTION_DISCONNECT, fn () => $this->handle_disconnect_user() );
-
-		add_action( 'login_form', $this->get_method_proxy( 'render_signin_button' ) );
+		add_action( 'admin_action_' . self::ACTION_DISCONNECT, array( $this, 'handle_disconnect_user' ) );
 
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
-		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signin_button' ) );
+		// (Potentially) render the Sign in with Google script tags/buttons.
+		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
+		// Output the Sign in with Google JS on the WordPress login page.
+		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
 
 		// Delete client ID stored from previous module connection on module reconnection.
 		add_action(
@@ -142,6 +149,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				}
 			}
 		);
+
+		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
 	}
 
 	/**
@@ -194,6 +203,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		return $error;
+	}
+
+	/**
+	 * Adds custom errors if Google auth flow failed on WooCommerce login.
+	 *
+	 * @since 1.145.0
+	 */
+	public function handle_woocommerce_errors() {
+		$err = $this->handle_login_errors( new WP_Error() );
+		if ( is_wp_error( $err ) && $err->has_errors() ) {
+			wc_add_notice( $err->get_error_message(), 'error' );
+		}
 	}
 
 	/**
@@ -287,16 +308,29 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Renders the sign in button.
+	 * Renders the Sign in with Google JS script tags, One-tap code, and
+	 * buttons.
 	 *
 	 * @since 1.139.0
+	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
+	 *                rendered the code to replace buttons.
 	 */
-	private function render_signin_button() {
-		global $wp;
-		$is_woo_commerce_login = 'my-account' === $wp->request;
+	private function render_signinwithgoogle() {
+		$is_wp_login          = is_login();
+		$is_woocommerce       = class_exists( 'woocommerce' );
+		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
 		$settings = $this->get_settings()->get();
+
+		// If there's no client ID available, don't render the button.
 		if ( ! $settings['clientID'] ) {
+			return;
+		}
+
+		// If this is not the WordPress or WooCommerce login page, check to
+		// see if "One-tap enabled on all pages" is set first. If it isnt:
+		// don't render the Sign in with Google JS.
+		if ( ! $is_wp_login && ! $is_woocommerce_login && ! $settings['oneTapOnAllPages'] ) {
 			return;
 		}
 
@@ -316,25 +350,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'shape' => $settings['shape'],
 		);
 
-		// Render the Sign in with Google button and related inline styles.
-		print(
-			// Purposely not translated as this is a technical comment.
-			//
-			// See: https://github.com/google/site-kit-wp/pull/9826#discussion_r1876026945.
-			"\n<!-- Sign in with Google button added by Site Kit -->\n"
-		);
-		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
+		// Whether buttons will be rendered/transformed on this page.
+		$render_buttons = $is_wp_login || $is_woocommerce_login;
+
+		// Render the Sign in with Google script.
 		ob_start();
+
 		?>
 ( () => {
-	const parent = document.createElement( 'div' );
-<?php if ( $is_woo_commerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	document.getElementsByClassName( 'login' )[0]?.insertBefore( parent, document.getElementsByClassName( 'woocommerce-form-row' )[0] );
-		<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-
 	async function handleCredentialResponse( response ) {
+		<?php if ( $is_woocommerce && ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		response.integration = 'woocommerce';
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		try {
 			const res = await fetch( '<?php echo esc_js( $login_uri ); ?>', {
 				method: 'POST',
@@ -352,23 +379,46 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	google.accounts.id.initialize( {
 		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
 		callback: handleCredentialResponse,
-		library_name: 'Site-Kit',
+		library_name: 'Site-Kit'
 	} );
 
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const parent = document.createElement( 'div' );
 
-<?php if ( $settings['oneTapEnabled'] ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	google.accounts.id.prompt();
+		<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-	const expires = new Date();
-	expires.setTime( expires.getTime() + 1000 * 60 * 5 );
-	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+		<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			parent.classList.add( 'woocommerce-form-row', 'form-row' );
+			for ( const login of document.getElementsByClassName( 'login' ) ) {
+				login.insertBefore( parent, login.firstChild );
+			}
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+
+		<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			const expires = new Date();
+			expires.setTime( expires.getTime() + 300000 );<?php // 5 minutes ?>
+			document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+	<?php if ( ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		google.accounts.id.prompt();
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
-		BC_Functions::wp_print_inline_script_tag( ob_get_clean() );
+
+		// Strip all whitespace and unnecessary spaces.
+		$inline_script = preg_replace( '/\s+/', ' ', ob_get_clean() );
+		$inline_script = preg_replace( '/\s*([{};\(\)\+:,=])\s*/', '$1', $inline_script );
+
+		// Output the Sign in with Google script.
+		print( "\n<!-- Sign in with Google button added by Site Kit -->\n" );
+		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
+		BC_Functions::wp_print_inline_script_tag( $inline_script );
 		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
 	}
 
@@ -588,8 +638,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 <div id="googlesitekit-sign-in-with-google-disconnect">
 	<h2>
 		<?php
-		/* translators: %s: Sign in with Google service name */
-		esc_html( sprintf( __( '%s via Site Kit by Google', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ) );
+		/* translators: %1$s: Sign in with Google service name, %2$s: Plugin name */
+		echo esc_html( sprintf( __( '%1$s (via %2$s)', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ), __( 'Site Kit by Google', 'google-site-kit' ) ) );
 		?>
 	</h2>
 	<p>

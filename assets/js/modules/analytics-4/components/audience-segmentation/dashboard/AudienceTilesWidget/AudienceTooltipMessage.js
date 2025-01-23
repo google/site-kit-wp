@@ -39,7 +39,7 @@ export default function AudienceTooltipMessage( {
 	audienceName,
 } ) {
 	const documentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-group-insights' )
 	);
 
 	const tooltipMessage = useMemo( () => {

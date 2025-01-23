@@ -78,13 +78,11 @@ export const selectors = {
 		( select ) => () => {
 			const siteName = select( CORE_SITE ).getSiteName();
 			const homeURL = select( CORE_SITE ).getHomeURL();
-			const supportEmail = select( CORE_USER ).getEmail();
 
 			const query = {
 				appname: siteName,
 				sitename: siteName,
 				siteorigin: homeURL ? new URL( homeURL ).origin : homeURL,
-				supportemail: supportEmail,
 			};
 
 			return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( {

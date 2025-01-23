@@ -64,10 +64,13 @@
 				}
 			}
 
-			.googlesitekit-settings-module__one-tap {
+			.googlesitekit-settings-module__one-tap,
+			.googlesitekit-settings-module__one-tap-on-all-pages {
 				@media (min-width: $bp-xlarge) {
 					margin-top: 10px;
 				}
+
+				border-bottom: none;
 
 				.mdc-switch {
 					margin-left: 3px;

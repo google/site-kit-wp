@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.142.0
+Stable tag:        1.145.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,49 +109,29 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.142.0 =
-
-**Added**
-
-* Add Analytics events to Sign in with Google. See [#9747](https://github.com/google/site-kit-wp/issues/9747).
+= 1.145.0 =
 
 **Enhanced**
 
-* Fix the "improve your measurement" section's layout in mobile viewports. See [#9830](https://github.com/google/site-kit-wp/issues/9830).
-* Update the default value of the First-party mode `isEnabled` setting to `false`. See [#9828](https://github.com/google/site-kit-wp/issues/9828).
-* Add periodic server requirement health checks for first-party mode. See [#9768](https://github.com/google/site-kit-wp/issues/9768).
-* Always display the "Anyone can register" WordPress setting in Sign in with Google settings. See [#9735](https://github.com/google/site-kit-wp/issues/9735).
-* Update learn more link in Sign in with Google module settings. See [#9734](https://github.com/google/site-kit-wp/issues/9734).
-* Update copy in Sign in with Google "Connect more services" UI. See [#9733](https://github.com/google/site-kit-wp/issues/9733).
-* Update Sign in with Google setup success notification UI. See [#9724](https://github.com/google/site-kit-wp/issues/9724).
-* Automatically dismiss the First-Party Mode setup banner notification when the toggle is enabled from the settings screen, preventing redundant notifications. See [#9698](https://github.com/google/site-kit-wp/issues/9698).
-* Add a selector to detect changes and an action to reset First-party mode settings, integrated with Analytics and Ads rollback and validation processes. See [#9688](https://github.com/google/site-kit-wp/issues/9688).
-* Add FPFE health check and script access statuses to Site Kit’s Site Health section, displaying whether these checks are enabled or disabled. See [#9668](https://github.com/google/site-kit-wp/issues/9668).
-* Add First-Party Mode status to Site Kit’s Site Health section, displaying whether the feature is enabled or not when either the Analytics or Ads modules are connected and the `firstPartyMode` feature flag is active. See [#9667](https://github.com/google/site-kit-wp/issues/9667).
-* Add support for gtag to load in first-party mode when enabled. See [#9664](https://github.com/google/site-kit-wp/issues/9664).
-* Display the First-party mode enabled status in the Ads settings view. See [#9659](https://github.com/google/site-kit-wp/issues/9659).
-* Display the First-party mode enabled status in the Analytics settings view. See [#9658](https://github.com/google/site-kit-wp/issues/9658).
-* Integrate the First-party mode toggle into the Ads module’s settings form, allowing users to enable or disable First-party mode. See [#9655](https://github.com/google/site-kit-wp/issues/9655).
-* Integrate the First-party mode toggle into the Analytics module’s settings form, allowing users to enable or disable First-party mode. See [#9654](https://github.com/google/site-kit-wp/issues/9654).
-* Group measurement toggles together on the settings screen in the Ads and Analytics module edit sections. See [#9651](https://github.com/google/site-kit-wp/issues/9651).
-* Add a "Beta" badge to the First-party mode toggle. See [#9650](https://github.com/google/site-kit-wp/issues/9650).
-* Implement the First-party mode toggle as a component which is presented in Storybook. See [#9649](https://github.com/google/site-kit-wp/issues/9649).
-* Add first-party mode setup success notification. See [#9648](https://github.com/google/site-kit-wp/issues/9648).
-* Add the First-party mode setup banner to let users know about the feature and enable it from the dashboard. See [#9647](https://github.com/google/site-kit-wp/issues/9647).
-* Update spacing between CTA actions for consistency. See [#9600](https://github.com/google/site-kit-wp/issues/9600).
-* Add notification banner when event data has been missing for ninety days. See [#9578](https://github.com/google/site-kit-wp/issues/9578).
-* Improve notifications rendering performance. See [#9488](https://github.com/google/site-kit-wp/issues/9488).
-* Add full size selection panel on the new screen. See [#9375](https://github.com/google/site-kit-wp/issues/9375).
-* Update Analytics Conversion Report notifications to be more context-aware. See [#9373](https://github.com/google/site-kit-wp/issues/9373).
-* Ensure Analytics Conversion Reports notification appears for users who set up Key Metrics manually. See [#9372](https://github.com/google/site-kit-wp/issues/9372).
-* Ensure that the setup flow for a module is automatically continued when clicking the "Redo setup" CTA on the "Site Kit can’t access necessary data" unsatisfied scopes notification. See [#9261](https://github.com/google/site-kit-wp/issues/9261).
-* Extend Consent Mode conditions logic. See [#9147](https://github.com/google/site-kit-wp/issues/9147).
+* Add Site Health information for Reader Revenue Manager expansions. See [#9974](https://github.com/google/site-kit-wp/issues/9974).
+* Add an empty RRM V2 JavaScript entry point for the WordPress block editor, with functionality to be added in subsequent issues. See [#9957](https://github.com/google/site-kit-wp/issues/9957).
+* Add mechanism to store post-level Reader Revenue Manager settings. See [#9955](https://github.com/google/site-kit-wp/issues/9955).
+* Update Reader Revenue Manager module settings infrastructure. See [#9951](https://github.com/google/site-kit-wp/issues/9951).
+* Add a trigger for a survey when the user sees the FPM setup banner, and one when the user enables FPM, in order to help track usage of the feature. See [#9940](https://github.com/google/site-kit-wp/issues/9940).
+* Update copy on disconnect module modal. See [#9935](https://github.com/google/site-kit-wp/issues/9935).
+* Standardize the capitalization of "First-party mode" across the plugin for consistency. See [#9902](https://github.com/google/site-kit-wp/issues/9902).
+* Ensure the Reader Revenue Manager Setup CTA does not appear alongside other CTAs. See [#9889](https://github.com/google/site-kit-wp/issues/9889).
+* Add error handling to the First-party mode setup banner to display errors and prevent premature dismissal when saving settings fail. See [#9846](https://github.com/google/site-kit-wp/issues/9846).
+* Update auth error notification to use new notifications infrastructure. See [#9284](https://github.com/google/site-kit-wp/issues/9284).
+* Update tooltip tours to display on smaller screen sizes. See [#3003](https://github.com/google/site-kit-wp/issues/3003).
+
+**Changed**
+
+* Update the service provisioning URL not to contain the `supportemail` query param. See [#10024](https://github.com/google/site-kit-wp/issues/10024).
 
 **Fixed**
 
-* Update the Sign in with Google module to suggest using the previous client ID when re-connecting the module. See [#9744](https://github.com/google/site-kit-wp/issues/9744).
-* Ensure Sign in with Google translations are consistent. See [#9738](https://github.com/google/site-kit-wp/issues/9738).
-* Add Sign in with Google live preview in settings. See [#9718](https://github.com/google/site-kit-wp/issues/9718).
-* Update layout of Top Content widget in smaller viewports to use a tab per metric column. See [#7563](https://github.com/google/site-kit-wp/issues/7563).
+* Fix custom dimension metric tiles error when loaded on the KMW widget with the ACR feature flag enabled. See [#9967](https://github.com/google/site-kit-wp/issues/9967).
+* Improve redirects when Sign in with Google login fails on WooCommerce pages. See [#9780](https://github.com/google/site-kit-wp/issues/9780).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

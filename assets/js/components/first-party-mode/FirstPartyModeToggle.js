@@ -141,7 +141,7 @@ export default function FirstPartyModeToggle( { className } ) {
 								} }
 								external
 								aria-label={ __(
-									'Learn more about first-party mode',
+									'Learn more about First-party mode',
 									'google-site-kit'
 								) }
 							/>
@@ -153,7 +153,7 @@ export default function FirstPartyModeToggle( { className } ) {
 				<SubtleNotificationWithIntersectionObserver
 					title={ createInterpolateElement(
 						__(
-							'Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
+							'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -168,7 +168,7 @@ export default function FirstPartyModeToggle( { className } ) {
 									} }
 									external
 									aria-label={ __(
-										'Learn more about first-party mode server requirements',
+										'Learn more about First-party mode server requirements',
 										'google-site-kit'
 									) }
 								/>

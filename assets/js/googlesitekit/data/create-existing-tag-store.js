@@ -35,7 +35,6 @@ import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
 // Actions
 const FETCH_GET_EXISTING_TAG = 'FETCH_GET_EXISTING_TAG';
 const RECEIVE_GET_EXISTING_TAG = 'RECEIVE_GET_EXISTING_TAG';
-const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
 
 /**
  * Creates a store object that includes actions and selectors for getting existing tags.
@@ -89,12 +88,6 @@ export const createExistingTagStore = ( {
 				type: RECEIVE_GET_EXISTING_TAG,
 			};
 		},
-		*waitForExistingTag() {
-			yield {
-				payload: {},
-				type: WAIT_FOR_EXISTING_TAG,
-			};
-		},
 	};
 
 	const controls = {
@@ -107,13 +100,10 @@ export const createExistingTagStore = ( {
 					ampMode,
 				} );
 
+				const { getHTMLForURL } = registry.resolveSelect( CORE_SITE );
+
 				for ( const url of existingTagURLs ) {
-					await registry
-						.dispatch( CORE_SITE )
-						.waitForHTMLForURL( url );
-					const html = registry
-						.select( CORE_SITE )
-						.getHTMLForURL( url );
+					const html = await getHTMLForURL( url );
 					const tagFound = extractExistingTag( html, tagMatchers );
 					if ( tagFound ) {
 						return tagFound;
@@ -121,25 +111,6 @@ export const createExistingTagStore = ( {
 				}
 
 				return null;
-			}
-		),
-		[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl(
-			( registry ) => () => {
-				const isExistingTagLoaded = () =>
-					registry.select( STORE_NAME ).getExistingTag() !==
-					undefined;
-				if ( isExistingTagLoaded() ) {
-					return true;
-				}
-
-				return new Promise( ( resolve ) => {
-					const unsubscribe = registry.subscribe( () => {
-						if ( isExistingTagLoaded() ) {
-							unsubscribe();
-							resolve();
-						}
-					} );
-				} );
 			}
 		),
 	};

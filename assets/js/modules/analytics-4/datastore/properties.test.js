@@ -1372,6 +1372,36 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'getPropertySummaries', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				const accountSummariesEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+				);
+
+				fetchMock.get( accountSummariesEndpoint, {
+					body: fixtures.accountSummaries,
+					status: 200,
+				} );
+
+				const accountID = '12345';
+				const initialPropertySummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertySummaries( accountID );
+				expect( initialPropertySummaries ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertySummaries( accountID );
+
+				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint, {
+					body: {
+						data: {
+							nextPageToken: '',
+						},
+					},
+				} );
+			} );
+
 			it( 'should return an empty array if no properties are present for the account', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
