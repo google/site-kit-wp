@@ -163,7 +163,7 @@ function provideAudienceTilesMockReport(
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
 	const topContentReportOptions = {
