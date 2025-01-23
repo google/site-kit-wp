@@ -570,7 +570,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						// Filter (not set) value from the top countries report if present.
 						const filteredTopCitiesRows = topCities?.rows
 							? reportRowsWithSetValues( topCities.rows )
-							: {};
+							: [];
 
 						// Return loading tile if data is not yet loaded.
 						if (
