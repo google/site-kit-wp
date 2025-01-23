@@ -42,10 +42,7 @@ import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
-import {
-	AudienceSegmentationSetupCTAWidget,
-	AudienceSelectionPanel,
-} from '../modules/analytics-4/components/audience-segmentation/dashboard';
+import { AudienceSelectionPanel } from '../modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -263,14 +260,6 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-
-			{ ! viewOnlyDashboard && (
-				<Fragment>
-					{ audienceSegmentationEnabled && (
-						<AudienceSegmentationSetupCTAWidget />
-					) }
-				</Fragment>
-			) }
 
 			<Notifications
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }

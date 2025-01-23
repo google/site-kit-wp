@@ -458,7 +458,7 @@ export const selectors = {
 	 * Determines whether a notification that can reappear again for a fixed number of times
 	 * on dismissal is at its final appearance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} id    Notification id.

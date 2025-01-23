@@ -11,20 +11,23 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Storage\Post_Meta;
-use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
+use Google\Site_Kit\Core\Storage\Meta_Setting_Trait;
 
 /**
  * Class for associating product ID to post meta.
  *
- * @since n.e.x.t
+ * @since 1.145.0
  * @access private
  * @ignore
  */
-class Post_Product_ID extends Post_Meta_Setting {
+class Post_Product_ID {
+
+	use Meta_Setting_Trait;
+
 	/**
 	 * Publication ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @var string
 	 */
@@ -33,21 +36,20 @@ class Post_Product_ID extends Post_Meta_Setting {
 	/**
 	 * Post_Product_ID constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param Post_Meta $post_meta Post_Meta instance.
 	 * @param string    $publication_id Publication ID.
 	 */
 	public function __construct( Post_Meta $post_meta, string $publication_id ) {
-		parent::__construct( $post_meta );
-
+		$this->meta           = $post_meta;
 		$this->publication_id = $publication_id;
 	}
 
 	/**
 	 * Gets the meta key for the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return string Meta key.
 	 */
@@ -56,9 +58,20 @@ class Post_Product_ID extends Post_Meta_Setting {
 	}
 
 	/**
-	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 * Returns the object type.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return string Object type.
+	 */
+	protected function get_object_type(): string {
+		return 'post';
+	}
+
+	/**
+	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 *
+	 * @since 1.145.0
 	 *
 	 * @return bool|Array Any valid value for the `show_in_rest`
 	 */

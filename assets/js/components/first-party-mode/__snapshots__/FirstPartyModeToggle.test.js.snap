@@ -56,7 +56,7 @@ exports[`FirstPartyModeToggle should render in default state 1`] = `
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
-        aria-label="Learn more about first-party mode (opens in a new tab)"
+        aria-label="Learn more about First-party mode (opens in a new tab)"
         class="googlesitekit-cta-link"
         href="undefined?doc=first-party-mode-introduction"
         rel="noopener noreferrer"
@@ -136,7 +136,7 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
-        aria-label="Learn more about first-party mode (opens in a new tab)"
+        aria-label="Learn more about First-party mode (opens in a new tab)"
         class="googlesitekit-cta-link"
         href="undefined?doc=first-party-mode-introduction"
         rel="noopener noreferrer"
@@ -167,9 +167,9 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
         class="googlesitekit-subtle-notification__content"
       >
         <p>
-          Your server’s current settings prevent first-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
+          Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
           <a
-            aria-label="Learn more about first-party mode server requirements (opens in a new tab)"
+            aria-label="Learn more about First-party mode server requirements (opens in a new tab)"
             class="googlesitekit-cta-link"
             href="undefined?doc=first-party-mode-server-requirements"
             rel="noopener noreferrer"
@@ -232,7 +232,7 @@ exports[`FirstPartyModeToggle should render in loading state if the server requi
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
-        aria-label="Learn more about first-party mode (opens in a new tab)"
+        aria-label="Learn more about First-party mode (opens in a new tab)"
         class="googlesitekit-cta-link"
         href="undefined?doc=first-party-mode-introduction"
         rel="noopener noreferrer"

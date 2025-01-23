@@ -73,43 +73,62 @@ class Authenticator implements Authenticator_Interface {
 	 * @return string Redirect URL.
 	 */
 	public function authenticate_user( Input $input ) {
-		$login_url = wp_login_url();
-
 		$credential = $input->filter( INPUT_POST, 'credential' );
 
 		$user    = null;
 		$payload = $this->profile_reader->get_profile_data( $credential );
 		if ( ! is_wp_error( $payload ) ) {
-			$user = $this->find_or_create_user( $payload );
-		}
-
-		// Redirect to the error page if the user is not found.
-		if ( is_wp_error( $user ) ) {
-			return add_query_arg( 'error', $user->get_error_code(), $login_url );
-		} elseif ( ! $user instanceof WP_User ) {
-			return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
-		}
-
-		// Redirect to the error page if the user is not a member of the current blog in multisite.
-		if ( is_multisite() ) {
-			$blog_id = get_current_blog_id();
-			if ( ! is_user_member_of_blog( $user->ID, $blog_id ) ) {
-				if ( get_option( 'users_can_register' ) ) {
-					add_user_to_blog( $blog_id, $user->ID, $this->get_default_role() );
+			$user = $this->find_user( $payload );
+			if ( ! $user instanceof WP_User ) {
+				// We haven't found the user using their Google user id and email. Thus we need to create
+				// a new user. But if the registration is closed, we need to return an error to identify
+				// that the sign in process failed.
+				if ( ! $this->is_registration_open() ) {
+					return $this->get_error_redirect_url( self::ERROR_SIGNIN_FAILED );
 				} else {
-					return add_query_arg( 'error', self::ERROR_INVALID_REQUEST, $login_url );
+					$user = $this->create_user( $payload );
 				}
 			}
 		}
 
-		// Set the user to be the current user.
-		wp_set_current_user( $user->ID, $user->user_login );
+		// Redirect to the error page if the user is not found.
+		if ( is_wp_error( $user ) ) {
+			return $this->get_error_redirect_url( $user->get_error_code() );
+		} elseif ( ! $user instanceof WP_User ) {
+			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+		}
 
-		// Set the authentication cookies and trigger the wp_login action.
-		wp_set_auth_cookie( $user->ID );
-		/** This filter is documented in wp-login.php */
-		do_action( 'wp_login', $user->user_login, $user );
+		// Sign in the user.
+		$err = $this->sign_in_user( $user );
+		if ( is_wp_error( $err ) ) {
+			return $this->get_error_redirect_url( $err->get_error_code() );
+		}
 
+		return $this->get_redirect_url( $user, $input );
+	}
+
+	/**
+	 * Gets the redirect URL for the error page.
+	 *
+	 * @since 1.145.0
+	 *
+	 * @param string $code Error code.
+	 * @return string Redirect URL.
+	 */
+	protected function get_error_redirect_url( $code ) {
+		return add_query_arg( 'error', $code, wp_login_url() );
+	}
+
+	/**
+	 * Gets the redirect URL after the user signs in with Google.
+	 *
+	 * @since 1.145.0
+	 *
+	 * @param WP_User $user User object.
+	 * @param Input   $input Input instance.
+	 * @return string Redirect URL.
+	 */
+	protected function get_redirect_url( $user, $input ) {
 		// Use the admin dashboard URL as the redirect URL by default.
 		$redirect_to = admin_url();
 
@@ -147,18 +166,49 @@ class Authenticator implements Authenticator_Interface {
 	}
 
 	/**
-	 * Tries to find a user using user ID or email recieved from Google. If the user is not found,
-	 * attempts to create a new one.
+	 * Signs in the user.
 	 *
-	 * @since 1.141.0
+	 * @since 1.145.0
+	 *
+	 * @param WP_User $user User object.
+	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
+	 */
+	protected function sign_in_user( $user ) {
+		// Redirect to the error page if the user is not a member of the current blog in multisite.
+		if ( is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			if ( ! is_user_member_of_blog( $user->ID, $blog_id ) ) {
+				if ( $this->is_registration_open() ) {
+					add_user_to_blog( $blog_id, $user->ID, $this->get_default_role() );
+				} else {
+					return new WP_Error( self::ERROR_INVALID_REQUEST );
+				}
+			}
+		}
+
+		// Set the user to be the current user.
+		wp_set_current_user( $user->ID, $user->user_login );
+
+		// Set the authentication cookies and trigger the wp_login action.
+		wp_set_auth_cookie( $user->ID );
+		/** This filter is documented in wp-login.php */
+		do_action( 'wp_login', $user->user_login, $user );
+
+		return null;
+	}
+
+	/**
+	 * Finds an existing user using the Google user ID and email.
+	 *
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
-	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
+	 * @return WP_User|null User object if found, null otherwise.
 	 */
-	private function find_or_create_user( $payload ) {
+	protected function find_user( $payload ) {
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
-		$g_user_hid = md5( $payload['sub'] );
+		$g_user_hid = $this->get_hashed_google_user_id( $payload );
 		$users      = get_users(
 			array(
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
@@ -183,15 +233,19 @@ class Authenticator implements Authenticator_Interface {
 			return $user;
 		}
 
-		// We haven't found the user using their google user id and email. Thus we need to create
-		// a new user. But if the registration is closed, we need to return an error to identify
-		// that the sign in process failed.
-		//
-		// No need to check the multisite settings because it is already incorporated in the following
-		// users_can_register check. See: https://github.com/WordPress/WordPress/blob/505b7c55f5363d51e7e28d512ce7dcb2d5f45894/wp-includes/ms-default-filters.php#L20.
-		if ( ! get_option( 'users_can_register' ) ) {
-			return new WP_Error( self::ERROR_SIGNIN_FAILED );
-		}
+		return null;
+	}
+
+	/**
+	 * Create a new user using the Google auth payload.
+	 *
+	 * @since 1.145.0
+	 *
+	 * @param array $payload Google auth payload.
+	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
+	 */
+	protected function create_user( $payload ) {
+		$g_user_hid = $this->get_hashed_google_user_id( $payload );
 
 		// Get the default role for new users.
 		$default_role = $this->get_default_role();
@@ -228,13 +282,40 @@ class Authenticator implements Authenticator_Interface {
 	}
 
 	/**
+	 * Gets the hashed Google user ID from the provided payload.
+	 *
+	 * @since 1.145.0
+	 *
+	 * @param array $payload Google auth payload.
+	 * @return string Hashed Google user ID.
+	 */
+	private function get_hashed_google_user_id( $payload ) {
+		return md5( $payload['sub'] );
+	}
+
+	/**
+	 * Checks if the registration is open.
+	 *
+	 * @since 1.145.0
+	 *
+	 * @return bool True if registration is open, false otherwise.
+	 */
+	protected function is_registration_open() {
+		// No need to check the multisite settings because it is already incorporated in the following
+		// users_can_register check.
+		// See: https://github.com/WordPress/WordPress/blob/505b7c55f5363d51e7e28d512ce7dcb2d5f45894/wp-includes/ms-default-filters.php#L20.
+		return get_option( 'users_can_register' );
+	}
+
+	/**
 	 * Gets the default role for new users.
 	 *
 	 * @since 1.141.0
+	 * @since 1.145.0 Updated the function visibility to protected.
 	 *
 	 * @return string Default role.
 	 */
-	private function get_default_role() {
+	protected function get_default_role() {
 		$default_role = get_option( 'default_role' );
 		if ( empty( $default_role ) ) {
 			$default_role = 'subscriber';

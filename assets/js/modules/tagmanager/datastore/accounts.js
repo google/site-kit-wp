@@ -33,7 +33,6 @@ import {
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
-import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics-4/datastore/constants';
@@ -97,7 +96,8 @@ export const baseActions = {
 			);
 		},
 		function* ( accountID ) {
-			const { select, dispatch } = yield commonActions.getRegistry();
+			const { dispatch, select, resolveSelect } =
+				yield commonActions.getRegistry();
 
 			// Do nothing if the accountID to select is the same as the current.
 			if ( accountID === select( MODULES_TAGMANAGER ).getAccountID() ) {
@@ -119,16 +119,14 @@ export const baseActions = {
 				return;
 			}
 
-			// Containers may not be loaded yet for this account,
-			// and no selections are done in the getContainers resolver, so we wait here.
-			// This will not guarantee that containers exist, as an account may also have no containers
-			// it will simply wait for `getContainers` to be resolved for this account ID.
-			yield containerActions.waitForContainers( accountID );
 			// Trigger cascading selections.
 			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 			if ( ! isAMP() || isSecondaryAMP() ) {
-				const webContainers =
-					select( MODULES_TAGMANAGER ).getWebContainers( accountID );
+				const webContainers = yield commonActions.await(
+					resolveSelect( MODULES_TAGMANAGER ).getWebContainers(
+						accountID
+					)
+				);
 
 				if ( ! webContainers.length ) {
 					dispatch( MODULES_TAGMANAGER ).setContainerID(
@@ -148,8 +146,11 @@ export const baseActions = {
 			}
 
 			if ( isAMP() ) {
-				const ampContainers =
-					select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
+				const ampContainers = yield commonActions.await(
+					resolveSelect( MODULES_TAGMANAGER ).getAMPContainers(
+						accountID
+					)
+				);
 
 				if ( ! ampContainers.length ) {
 					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(

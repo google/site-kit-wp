@@ -26,7 +26,6 @@ function Template( args ) {
 }
 
 export const Default = Template.bind( {} );
-Default.args = {};
 
 export const Small = Template.bind( {} );
 Small.args = {
@@ -60,6 +59,7 @@ export function VRTStory() {
 
 VRTStory.storyName = 'All Progress Bars VRT';
 VRTStory.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/Progress Bars',
 };
 

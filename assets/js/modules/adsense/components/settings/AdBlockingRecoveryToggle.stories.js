@@ -115,7 +115,7 @@ WithExistingAdBlockingRecoveryTagDifferentAccount.args = {
 };
 
 export default {
-	title: 'Modules/AdSense/Components/Settings/AdBlockingRecoveryToggle',
+	title: 'Modules/AdSense/Settings/AdBlockingRecoveryToggle',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
