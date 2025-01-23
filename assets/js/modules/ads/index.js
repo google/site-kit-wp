@@ -58,11 +58,11 @@ export const registerModule = ( modules ) => {
 		Icon: AdsIcon,
 		features: [
 			__(
-				'Tagging necessary for your ads campaigns to work will be disabled.',
+				'Tagging necessary for your ads campaigns to work will be disabled',
 				'google-site-kit'
 			),
 			__(
-				'Conversion tracking for your ads campaigns will be disabled.',
+				'Conversion tracking for your ads campaigns will be disabled',
 				'google-site-kit'
 			),
 		],

@@ -78,7 +78,7 @@ describe( 'API cache', () => {
 
 		const initialTimeData = await googleSiteKitAPIGetTime();
 		expect( initialTimeData ).toMatchObject( {
-			time: expect.any( Number ),
+			microtime: expect.any( Number ),
 		} );
 
 		// Show that the data is cached when fetching again.
@@ -99,9 +99,12 @@ describe( 'API cache', () => {
 		// Now that we're in a new session, we expect the API cache to be clear
 		// so the request should hit the backend and produce a new (greater) value.
 		const newTimeData = await googleSiteKitAPIGetTime();
+		expect( newTimeData ).not.toEqual( initialTimeData );
 		expect( initialTimeData ).toMatchObject( {
-			time: expect.any( Number ),
+			microtime: expect.any( Number ),
 		} );
-		expect( newTimeData.time ).toBeGreaterThan( initialTimeData.time );
+		expect( newTimeData.microtime ).toBeGreaterThan(
+			initialTimeData.microtime
+		);
 	} );
 } );

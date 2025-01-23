@@ -1,5 +1,30 @@
 == Changelog ==
 
+= 1.145.0 =
+
+**Enhanced**
+
+* Add Site Health information for Reader Revenue Manager expansions. See [#9974](https://github.com/google/site-kit-wp/issues/9974).
+* Add an empty RRM V2 JavaScript entry point for the WordPress block editor, with functionality to be added in subsequent issues. See [#9957](https://github.com/google/site-kit-wp/issues/9957).
+* Add mechanism to store post-level Reader Revenue Manager settings. See [#9955](https://github.com/google/site-kit-wp/issues/9955).
+* Update Reader Revenue Manager module settings infrastructure. See [#9951](https://github.com/google/site-kit-wp/issues/9951).
+* Add a trigger for a survey when the user sees the FPM setup banner, and one when the user enables FPM, in order to help track usage of the feature. See [#9940](https://github.com/google/site-kit-wp/issues/9940).
+* Update copy on disconnect module modal. See [#9935](https://github.com/google/site-kit-wp/issues/9935).
+* Standardize the capitalization of "First-party mode" across the plugin for consistency. See [#9902](https://github.com/google/site-kit-wp/issues/9902).
+* Ensure the Reader Revenue Manager Setup CTA does not appear alongside other CTAs. See [#9889](https://github.com/google/site-kit-wp/issues/9889).
+* Add error handling to the First-party mode setup banner to display errors and prevent premature dismissal when saving settings fail. See [#9846](https://github.com/google/site-kit-wp/issues/9846).
+* Update auth error notification to use new notifications infrastructure. See [#9284](https://github.com/google/site-kit-wp/issues/9284).
+* Update tooltip tours to display on smaller screen sizes. See [#3003](https://github.com/google/site-kit-wp/issues/3003).
+
+**Changed**
+
+* Update the service provisioning URL not to contain the `supportemail` query param. See [#10024](https://github.com/google/site-kit-wp/issues/10024).
+
+**Fixed**
+
+* Fix custom dimension metric tiles error when loaded on the KMW widget with the ACR feature flag enabled. See [#9967](https://github.com/google/site-kit-wp/issues/9967).
+* Improve redirects when Sign in with Google login fails on WooCommerce pages. See [#9780](https://github.com/google/site-kit-wp/issues/9780).
+
 = 1.144.0 =
 
 **Added**
