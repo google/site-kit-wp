@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Term_Product_ID
  *
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -10,46 +10,46 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
-use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\Term_Meta;
 use Google\Site_Kit\Core\Storage\Meta_Setting_Trait;
 
 /**
- * Class for associating product ID to post meta.
+ * Class for associating product ID to term meta.
  *
- * @since 1.145.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Post_Product_ID {
+class Term_Product_ID {
 
 	use Meta_Setting_Trait;
 
 	/**
 	 * Publication ID.
 	 *
-	 * @since 1.145.0
+	 * @since n.e.x.t
 	 *
 	 * @var string
 	 */
 	private string $publication_id;
 
 	/**
-	 * Post_Product_ID constructor.
+	 * Term_Product_ID constructor.
 	 *
-	 * @since 1.145.0
+	 * @since n.e.x.t
 	 *
-	 * @param Post_Meta $post_meta Post_Meta instance.
+	 * @param Term_Meta $term_meta Term_Meta instance.
 	 * @param string    $publication_id Publication ID.
 	 */
-	public function __construct( Post_Meta $post_meta, string $publication_id ) {
-		$this->meta           = $post_meta;
+	public function __construct( Term_Meta $term_meta, string $publication_id ) {
+		$this->meta           = $term_meta;
 		$this->publication_id = $publication_id;
 	}
 
 	/**
 	 * Gets the meta key for the setting.
 	 *
-	 * @since 1.145.0
+	 * @since n.e.x.t
 	 *
 	 * @return string Meta key.
 	 */
@@ -65,13 +65,13 @@ class Post_Product_ID {
 	 * @return string Object type.
 	 */
 	protected function get_object_type(): string {
-		return 'post';
+		return 'term';
 	}
 
 	/**
-	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 * Gets the `show_in_rest` value for this termmeta setting value.
 	 *
-	 * @since 1.145.0
+	 * @since n.e.x.t
 	 *
 	 * @return bool|Array Any valid value for the `show_in_rest`
 	 */

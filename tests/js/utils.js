@@ -521,7 +521,7 @@ export const muteFetch = ( matcher, response = {} ) => {
  * Useful for simulating a loading state.
  *
  * @since 1.12.0
- * @since n.e.x.t Added `repeat` option.
+ * @since 1.145.0 Added `repeat` option.
  * @private
  *
  * @param {(string|RegExp|Function|URL|Object)} matcher          Criteria for deciding which requests to mock.

@@ -208,7 +208,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Adds custom errors if Google auth flow failed on WooCommerce login.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 */
 	public function handle_woocommerce_errors() {
 		$err = $this->handle_login_errors( new WP_Error() );
