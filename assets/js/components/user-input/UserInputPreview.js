@@ -118,11 +118,16 @@ export default function UserInputPreview( props ) {
 	);
 
 	const currentMetrics = useSelect( ( select ) => {
-		if ( savedPurpose === undefined ) {
+		if (
+			savedPurpose === undefined ||
+			! savedPurpose?.purpose?.values?.length
+		) {
 			return [];
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			savedPurpose?.purpose?.values?.[ 0 ]
+		);
 	} );
 
 	const newMetrics = useSelect( ( select ) => {
