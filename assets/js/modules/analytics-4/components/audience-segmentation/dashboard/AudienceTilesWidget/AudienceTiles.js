@@ -69,6 +69,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
+
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 

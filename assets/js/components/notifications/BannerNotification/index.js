@@ -22,7 +22,6 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useMount, useMountedState, useIntersection } from 'react-use';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /*
  * WordPress dependencies
@@ -53,6 +52,7 @@ import {
 import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import BannerDescription from './BannerDescription';
+import { useWindowWidth } from '../../../hooks/useWindowSize';
 
 export * from './constants';
 
