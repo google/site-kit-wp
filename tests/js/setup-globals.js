@@ -85,3 +85,7 @@ global.PointerEvent = function () {};
 
 // Provide a stub for scrollTo, as it's not implemented by JSDOM. See https://github.com/jsdom/jsdom/pull/2626.
 global.scrollTo = () => {};
+
+// Provide the desktop viewport as default because SK is not mobile-first app.
+global.innerWidth = 1024;
+global.innerHeight = 768;

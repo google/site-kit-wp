@@ -40,6 +40,10 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import AudienceSegmentationErrorWidget from '.';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import * as tracking from '../../../../../../util/tracking';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../../tests/js/viewport-width-utils';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -51,6 +55,7 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationErrorWidget', () => {
 	let registry;
+	let originalViewportWidth;
 
 	beforeEach( () => {
 		mockUseIntersection.mockImplementation( () => ( {
@@ -69,10 +74,14 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		provideModuleRegistrations( registry );
 		provideUserInfo( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
