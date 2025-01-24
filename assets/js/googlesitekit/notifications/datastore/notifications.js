@@ -69,6 +69,7 @@ export const actions = {
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
 	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
+	 * @param {boolean}        [settings.isOnDemand]        Optional. A boolean denoting if notification should be treated as on-demand notification.
 	 * @return {Object} Redux-style action.
 	 */
 	registerNotification(
@@ -82,6 +83,7 @@ export const actions = {
 			checkRequirements,
 			isDismissible,
 			dismissRetries = 0,
+			isOnDemand,
 		}
 	) {
 		invariant(
@@ -120,6 +122,7 @@ export const actions = {
 					checkRequirements,
 					isDismissible,
 					dismissRetries,
+					isOnDemand,
 				},
 			},
 			type: REGISTER_NOTIFICATION,
@@ -391,6 +394,50 @@ export const selectors = {
 	getNotifications: ( state ) => {
 		return state.notifications;
 	},
+	/**
+	 * Retrieves all on-demand notifications that are currently valid for showing.
+	 *
+	 * On-demand notifications are those with `isOnDemand` set to `true`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state       Data store's state.
+	 * @param {string} viewContext The current view context.
+	 * @param {string} groupID     The notification group identifier.
+	 * @return {Array} An array of on-demand notifications that are valid; empty if none match.
+	 */
+	getOnDemandNotifications: createRegistrySelector(
+		( select ) => ( state, viewContext, groupID ) => {
+			const { isNotificationDismissed } = select( CORE_NOTIFICATIONS );
+			const notifications =
+				select( CORE_NOTIFICATIONS ).getNotifications();
+
+			// Only include on-demand notifications (where isOnDemand is set to true) within the
+			// given group and viewContext that haven’t been dismissed. We expect `checkRequirements`
+			// to be a synchronous function for on-demand notifications, since they trigger
+			// immediately on state changes rather than waiting for async data resolution.
+			const onDemandNotifications = Object.values( notifications )
+				.filter( ( notification ) => notification?.isOnDemand )
+				.filter( ( notification ) => notification.groupID === groupID )
+				.filter( ( notification ) =>
+					notification.viewContexts.includes( viewContext )
+				)
+				.filter( ( { isDismissible, id } ) =>
+					isDismissible ? ! isNotificationDismissed( id ) : true
+				)
+				.filter( ( { checkRequirements } ) => {
+					if ( ! checkRequirements ) {
+						return false;
+					}
+
+					return checkRequirements( {
+						select,
+					} );
+				} );
+
+			return onDemandNotifications;
+		}
+	),
 	/**
 	 * Fetches a registered notification by ID from state.
 	 *
