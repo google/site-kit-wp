@@ -259,20 +259,12 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The activateModule() action which is used to forward the errors
-			// to the `internalServerError` state value uses internally
-			// getAuthentication() resolver.
-			await resolveSelect( CORE_USER ).getAuthentication();
-
+		checkRequirements: ( { select } ) => {
 			const error = select( CORE_SITE ).getInternalServerError();
 
-			if ( ! error ) {
-				return false;
-			}
-
-			return true;
+			return !! error;
 		},
+		isOnDemand: true,
 		isDismissible: false,
 	},
 	'top-earning-pages-success-notification': {
