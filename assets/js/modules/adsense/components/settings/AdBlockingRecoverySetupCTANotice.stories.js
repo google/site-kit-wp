@@ -44,7 +44,6 @@ const validSettings = {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/AdBlockingRecoverySetupCTANotice/Ready',
 };
 

@@ -115,7 +115,6 @@ function Template() {
 
 export const DefaultTypeScale = Template.bind( {} );
 DefaultTypeScale.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/TypeScale/undefined',
 };
 

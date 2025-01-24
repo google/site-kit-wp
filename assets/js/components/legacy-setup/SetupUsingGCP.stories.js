@@ -64,7 +64,6 @@ Default.decorators = [
 	},
 ];
 Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Setup / Using GCP/Step One',
 };
 

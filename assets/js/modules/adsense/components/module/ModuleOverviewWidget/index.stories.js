@@ -98,7 +98,6 @@ Default.args = {
 	},
 };
 Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'AdSense Module/Overview Widget',
 };
 

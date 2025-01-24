@@ -364,7 +364,6 @@ function Template() {
 
 export const DefaultToken = Template.bind( {} );
 DefaultToken.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global Tokens/undefined',
 };
 
