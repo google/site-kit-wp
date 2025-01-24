@@ -20,17 +20,25 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { usePrevious } from 'react-use';
+import { isEqual } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import useViewContext from '../../hooks/useViewContext';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { safelySort } from '../../util';
 
 export default function Notifications( {
 	areaSlug,
@@ -43,6 +51,43 @@ export default function Notifications( {
 			groupID
 		)
 	);
+
+	const onDemandNotifications = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).getOnDemandNotifications(
+			viewContext,
+			groupID
+		)
+	);
+	const previousOnDemandNotifications = usePrevious( onDemandNotifications );
+
+	const { queueNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	useEffect( () => {
+		if (
+			// Only run this block when the set of on-demand notifications actually changes.
+			// If new notifications appear, we queue them (unless they're already queued).
+			! isEqual(
+				safelySort( previousOnDemandNotifications ),
+				safelySort( onDemandNotifications )
+			)
+		) {
+			for ( const notification of onDemandNotifications ) {
+				const alreadyQueued = queuedNotifications.find(
+					( queuedNotification ) =>
+						queuedNotification.id === notification.id
+				);
+
+				if ( ! alreadyQueued ) {
+					queueNotification( notification );
+				}
+			}
+		}
+	}, [
+		onDemandNotifications,
+		previousOnDemandNotifications,
+		queuedNotifications,
+		queueNotification,
+	] );
 
 	if (
 		queuedNotifications?.[ 0 ] === undefined ||
