@@ -113,6 +113,13 @@ export default function UserInputPreview( props ) {
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 
+	const savedPurposeSnapshot = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_QUESTION_SNAPSHOT,
+			USER_INPUT_QUESTIONS_PURPOSE
+		)
+	);
+
 	const savedPurpose = useSelect( ( select ) =>
 		select( CORE_USER ).getSavedUserInputSettings()
 	);
@@ -148,7 +155,7 @@ export default function UserInputPreview( props ) {
 		} else {
 			await saveUserInputSettings();
 
-			if ( savedPurpose?.length ) {
+			if ( savedPurposeSnapshot?.length ) {
 				await resetUserInputSettings();
 				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 					[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
