@@ -1,0 +1,28 @@
+{
+  "name": "googlesitekit-e2e",
+  "description": "E2E testing infrastructure for Google Site Kit",
+  "main": "script.js",
+  "private": true,
+  "devDependencies": {
+  },
+  "scripts": {
+    "pretest:e2e": "./../../bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
+    "test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./script.js",
+    "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
+    "test:e2e:watch": "npm run test:e2e -- --watch",
+    "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
+    "env:start": "./../../bin/local-env/start.sh",
+    "env:stop": "./../../bin/local-env/stop.sh",
+    "env:reset-site": "./../../bin/local-env/install-wordpress.sh --reset-site"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/google/site-kit-wp.git"
+  },
+  "author": "Google",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/google/site-kit-wp/issues"
+  },
+  "homepage": "https://github.com/google/site-kit-wp#readme"
+}

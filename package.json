@@ -30,11 +30,11 @@
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
 		"test:storybook": "npm run test:js -- --testMatch '<rootDir>/.storybook/*.test.js'",
-		"pretest:e2e": "./bin/local-env/env-check.sh && ./tests/e2e/bin/test-docker-connectivity",
-		"test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./tests/e2e/script.js",
-		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
-		"test:e2e:watch": "npm run test:e2e -- --watch",
-		"test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
+		"pretest:e2e": "npm run pretest:e2e -w ./tests/e2e",
+		"test:e2e": "npm run test:e2e -w ./tests/e2e",
+		"test:e2e:interactive": "npm run test:e2e:interactive -w ./tests/e2e",
+		"test:e2e:watch": "npm run test:e2e:watch -w ./tests/e2e",
+		"test:e2e:watch:interactive": "npm run test:e2e:watch:interactive -w ./tests/e2e",
 		"storybook": "start-storybook -p 9001 -c .storybook --no-version-updates",
 		"storybook:vrt": "npm run storybook -- --ci --quiet",
 		"backstopjs": "./bin/backstop",
@@ -43,9 +43,9 @@
 		"lint:js-fix": "prettier --write --config .prettierrc.js --ignore-path .prettierignore \"**/*.{js,jsx,ts,tsx,.yml,.yaml}\"",
 		"lint:css": "stylelint ./assets/sass ./.storybook/assets/sass",
 		"lint:css-fix": "stylelint ./assets/sass ./.storybook/assets/sass --fix",
-		"env:start": "./bin/local-env/start.sh",
-		"env:stop": "./bin/local-env/stop.sh",
-		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site",
+		"env:start": "npm run env:start -w ./tests/e2e",
+		"env:stop": "npm run env:stop -w ./tests/e2e",
+		"env:reset-site": "npm run env:reset-site -w ./tests/e2e",
 		"postinstall": "patch-package"
 	},
 	"browserslist": [
@@ -260,5 +260,8 @@
 		"webpack-manifest-plugin": "^2.2.0",
 		"webpack-stream": "^5.2.1",
 		"webpackbar": "^4.0.0"
-	}
+	},
+	"workspaces": [
+		"tests/e2e"
+	]
 }

@@ -6,9 +6,6 @@ set -e
 # Include useful functions
 . "$(dirname "$0")/includes.sh"
 
-# Change to the expected directory
-cd "$(dirname "$0")/../.."
-
 # Check whether Docker is installed and running
 . "$(dirname "$0")/launch-containers.sh"
 
