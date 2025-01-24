@@ -115,6 +115,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 		);
 
 		await waitForRegistry();
+
 		expect( result.current ).toBe( false );
 	} );
 
