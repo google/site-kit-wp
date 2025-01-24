@@ -50,11 +50,17 @@ import SingleColumnNotificationWithSVG from '../../googlesitekit/notifications/c
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );
 
 	const breakpoint = useBreakpoint();
+
+	const viewContext = useViewContext();
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_CoMo-ads-setup-notification`,
+	};
 
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -144,7 +150,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	};
 
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<SingleColumnNotificationWithSVG
 				id={ id }
 				title={ __(
@@ -188,6 +194,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 							skipHidingFromQueue: true,
 						} }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
+						gaTrackingEventArgs={ gaTrackingEventArgs }
 					/>
 				}
 				SVG={
