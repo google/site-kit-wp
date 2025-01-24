@@ -105,6 +105,16 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: JSON.stringify( fixtures.googleTagSettings ),
 					status: 200,
 				} );
+			} else if ( url.match( 'user/data/audience-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [
+							fixtures.availableAudiences[ 2 ].name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					} ),
+				} );
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {

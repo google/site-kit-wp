@@ -43,7 +43,7 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
  * Returns an AdSense report with zeroed data.
  *
  * @since 1.78.0
- * @since n.e.x.t Moved from `stories/utils/adsense-data-zeroing.js`.
+ * @since 1.145.0 Moved from `stories/utils/adsense-data-zeroing.js`.
  *
  * @param {Object} report AdSense report data.
  * @return {Object} AdSense report data with zeroed data.
@@ -78,7 +78,7 @@ export const replaceValuesInAdSenseReportWithZeroData = ( report ) => {
 /**
  * Returns an Search Console report with zeroed data.
  *
- * @since n.e.x.t Moved from `stories/module-search-console-components.stories.js`.
+ * @since 1.145.0 Moved from `stories/module-search-console-components.stories.js`.
  *
  * @param {Object} report  Search Console report data.
  * @param {Object} options Search Console report options.

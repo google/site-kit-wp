@@ -62,15 +62,15 @@ export const registerModule = ( modules ) => {
 		Icon: AdSenseIcon,
 		features: [
 			__(
-				'Intelligent, automatic ad placement will be disabled.',
+				'Intelligent, automatic ad placement will be disabled',
 				'google-site-kit'
 			),
 			__(
-				'You will miss out on revenue from ads placed on your site.',
+				'You will miss out on revenue from ads placed on your site',
 				'google-site-kit'
 			),
 			__(
-				'You will lose access to AdSense insights through Site Kit.',
+				'You will lose access to AdSense insights through Site Kit',
 				'google-site-kit'
 			),
 		],

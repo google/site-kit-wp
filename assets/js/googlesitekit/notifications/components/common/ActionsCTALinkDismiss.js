@@ -45,6 +45,7 @@ export default function ActionsCTALinkDismiss( {
 	dismissOnCTAClick = true,
 	dismissExpires = 0,
 	dismissOptions = {},
+	gaTrackingEventArgs = {},
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -63,6 +64,7 @@ export default function ActionsCTALinkDismiss( {
 					dismissOnCTAClick={ dismissOnCTAClick }
 					dismissExpires={ dismissExpires }
 					dismissOptions={ ctaDismissOptions }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 				/>
 
 				<Dismiss
@@ -73,6 +75,7 @@ export default function ActionsCTALinkDismiss( {
 					disabled={ isNavigatingToCTALink }
 					onDismiss={ onDismiss }
 					dismissOptions={ dismissOptions }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 				/>
 			</div>
 		</Fragment>
@@ -91,4 +94,5 @@ ActionsCTALinkDismiss.propTypes = {
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
 	dismissOptions: PropTypes.object,
+	gaTrackingEventArgs: PropTypes.object,
 };
