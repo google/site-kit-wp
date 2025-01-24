@@ -119,8 +119,8 @@ export const registerNotifications = ( notifications ) => {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The getSetupErrorMessage selector relies on the resolution
-			// of the getSiteInfo() resolver.
+			// The isConsentModeEnabled selector relies on the resolution
+			// of the getConsentModeSettings() resolver.
 			await resolveSelect( CORE_SITE ).getConsentModeSettings();
 
 			const isConsentModeEnabled =
