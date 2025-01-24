@@ -321,13 +321,13 @@ export const selectors = {
 				return [];
 			}
 
-			const haveConversionEventsForTailoredMetrics =
-				select(
-					MODULES_ANALYTICS_4
-				).haveConversionEventsForTailoredMetrics();
+			const {
+				haveConversionEventsForTailoredMetrics,
+				getDetectedEvents,
+			} = select( MODULES_ANALYTICS_4 );
 
-			if ( haveConversionEventsForTailoredMetrics ) {
-				return select( MODULES_ANALYTICS_4 ).getDetectedEvents() || [];
+			if ( haveConversionEventsForTailoredMetrics() ) {
+				return getDetectedEvents() || [];
 			}
 
 			return [];
