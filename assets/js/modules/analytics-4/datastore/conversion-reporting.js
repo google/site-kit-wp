@@ -318,7 +318,7 @@ export const selectors = {
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
 			if ( ! isGA4Connected ) {
-				return false;
+				return [];
 			}
 
 			const haveConversionEventsForTailoredMetrics =
