@@ -40,7 +40,7 @@ exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
                       </span>
                        
                       <a
-                        aria-label="Learn more (opens in a new tab)"
+                        aria-label="Learn more about consent mode (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=consent-mode"
                         rel="noopener noreferrer"
