@@ -169,6 +169,10 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 								id={ id }
 								label={ __( 'Learn more', 'google-site-kit' ) }
 								url={ consentModeDocumentationURL }
+								ariaLabel={ __(
+									'Learn more about consent mode',
+									'google-site-kit'
+								) }
 							/>
 						}
 						errorText={ saveError?.message }
