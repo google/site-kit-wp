@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -48,3 +53,10 @@ export default function Description( {
 		</Fragment>
 	);
 }
+
+Description.propTypes = {
+	className: PropTypes.string,
+	text: PropTypes.string,
+	learnMoreLink: PropTypes.node,
+	errorText: PropTypes.string,
+};
