@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Link from '../../../../components/Link';
@@ -39,3 +44,10 @@ export default function LearnMoreLink( { id, label, url, ariaLabel } ) {
 		</Link>
 	);
 }
+
+LearnMoreLink.propTypes = {
+	id: PropTypes.string,
+	label: PropTypes.string,
+	url: PropTypes.string,
+	ariaLabel: PropTypes.string,
+};
