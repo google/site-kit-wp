@@ -4,6 +4,8 @@
   "main": "script.js",
   "private": true,
   "devDependencies": {
+    "expect-puppeteer": "^4.4.0",
+    "jest-puppeteer": "^4.4.0"
   },
   "scripts": {
     "pretest:e2e": "./../../bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
