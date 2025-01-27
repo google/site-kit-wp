@@ -41,6 +41,7 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../datastore/constants';
 import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
@@ -62,6 +63,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	Notification,
 } ) {
 	const breakpoint = useBreakpoint();
+	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
 
 	const onSetupActivate = useActivateModuleCallback(
 		READER_REVENUE_MANAGER_MODULE_SLUG
@@ -133,10 +135,15 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					<div className="googlesitekit-setup-cta-banner__description">
 						<p>
 							{ createInterpolateElement(
-								__(
-									'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
-									'google-site-kit'
-								),
+								isRRMv2Enabled
+									? __(
+											'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
+											'google-site-kit'
+									  )
+									: __(
+											'Turn casual visitors into loyal readers and earn more from your content with voluntary contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
+											'google-site-kit'
+									  ),
 								{
 									a: (
 										<LearnMoreLink
@@ -150,11 +157,15 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 									),
 								}
 							) }
-							<br />
-							<br />
-							{ __(
-								'* Support for subscriptions coming soon',
-								'google-site-kit'
+							{ ! isRRMv2Enabled && (
+								<Fragment>
+									<br />
+									<br />
+									{ __(
+										'* Support for subscriptions coming soon',
+										'google-site-kit'
+									) }
+								</Fragment>
 							) }
 						</p>
 					</div>
