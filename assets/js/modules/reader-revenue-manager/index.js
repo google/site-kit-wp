@@ -60,7 +60,7 @@ export const registerModule = ( modules ) => {
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
-				'Reader Revenue Manager publication tracking (your Reader Revenue Manager account will still remain active)',
+				'Reader Revenue Manager publication tracking will be disabled',
 				'google-site-kit'
 			),
 		],
@@ -93,20 +93,41 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isPromptDismissed selector relies on the resolution
+				// of the getDismissedPrompts() resolver.
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					READER_REVENUE_MANAGER_MODULE_SLUG
+				),
+				resolveSelect( CORE_MODULES ).canActivateModule(
+					READER_REVENUE_MANAGER_MODULE_SLUG
+				),
+			] );
+
 			// Check if the prompt with the legacy key used before the banner was refactored
 			// to use the `notification ID` as the dismissal key, is dismissed.
-			await resolveSelect( CORE_USER ).getDismissedPrompts();
 			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
 				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
 			);
 
-			if ( isLegacyDismissed ) {
-				return false;
+			const isRRMModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			const canActivateRRMModule = select(
+				CORE_MODULES
+			).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if (
+				isLegacyDismissed === false &&
+				isRRMModuleConnected === false &&
+				canActivateRRMModule
+			) {
+				return true;
 			}
 
-			return await resolveSelect( CORE_MODULES ).canActivateModule(
-				READER_REVENUE_MANAGER_MODULE_SLUG
-			);
+			return false;
 		},
 		isDismissible: true,
 		dismissRetries: 1,

@@ -92,37 +92,6 @@ export default function SettingsView() {
 				<AdBlockerWarning moduleSlug="ads" />
 			</div>
 
-			<SettingsStatuses
-				statuses={
-					fpmEnabled
-						? [
-								{
-									label: __(
-										'Enhanced Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
-								{
-									label: __(
-										'First-party mode',
-										'google-site-kit'
-									),
-									status: isFPMEnabled,
-								},
-						  ]
-						: [
-								{
-									label: __(
-										'Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
-						  ]
-				}
-			/>
-
 			{ ! isAdBlockerActive && (
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -154,6 +123,37 @@ export default function SettingsView() {
 					</p>
 				</div>
 			) }
+
+			<SettingsStatuses
+				statuses={
+					fpmEnabled
+						? [
+								{
+									label: __(
+										'Enhanced Conversion Tracking',
+										'google-site-kit'
+									),
+									status: isConversionTrackingEnabled,
+								},
+								{
+									label: __(
+										'First-party mode',
+										'google-site-kit'
+									),
+									status: isFPMEnabled,
+								},
+						  ]
+						: [
+								{
+									label: __(
+										'Conversion Tracking',
+										'google-site-kit'
+									),
+									status: isConversionTrackingEnabled,
+								},
+						  ]
+				}
+			/>
 		</div>
 	);
 }

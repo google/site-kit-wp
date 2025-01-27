@@ -32,11 +32,13 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\Term_Meta;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Term_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
@@ -84,6 +86,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$publication_id  = $this->get_settings()->get()['publicationID'];
 			$post_product_id = new Post_Product_ID( $post_meta, $publication_id );
 			$post_product_id->register();
+
+			$term_meta       = new Term_Meta();
+			$term_product_id = new Term_Product_ID( $term_meta, $publication_id );
+			$term_product_id->register();
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
@@ -473,7 +479,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$debug_fields = array(
 			'reader_revenue_manager_publication_id' => array(
 				'label' => __( 'Reader Revenue Manager: Publication ID', 'google-site-kit' ),
 				'value' => $settings['publicationID'],
@@ -485,5 +491,47 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => $settings['publicationOnboardingState'],
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$snippet_mode_values = array(
+				'post_types' => __( 'Post types', 'google-site-kit' ),
+				'per_post'   => __( 'Per post', 'google-site-kit' ),
+				'sitewide'   => __( 'Sitewide', 'google-site-kit' ),
+			);
+
+			$debug_fields['reader_revenue_manager_snippet_mode'] = array(
+				'label' => __( 'Reader Revenue Manager: Snippet placement', 'google-site-kit' ),
+				'value' => $snippet_mode_values[ $settings['snippetMode'] ],
+				'debug' => $settings['snippetMode'],
+			);
+
+			if ( 'post_types' === $settings['snippetMode'] ) {
+				$debug_fields['reader_revenue_manager_post_types'] = array(
+					'label' => __( 'Reader Revenue Manager: Post types', 'google-site-kit' ),
+					'value' => implode( ', ', $settings['postTypes'] ),
+					'debug' => implode( ', ', $settings['postTypes'] ),
+				);
+			}
+
+			$debug_fields['reader_revenue_manager_product_id'] = array(
+				'label' => __( 'Reader Revenue Manager: Product ID', 'google-site-kit' ),
+				'value' => $settings['productID'],
+				'debug' => $settings['productID'],
+			);
+
+			$debug_fields['reader_revenue_manager_available_product_ids'] = array(
+				'label' => __( 'Reader Revenue Manager: Available product IDs', 'google-site-kit' ),
+				'value' => implode( ', ', $settings['productIDs'] ),
+				'debug' => implode( ', ', $settings['productIDs'] ),
+			);
+
+			$debug_fields['reader_revenue_manager_payment_option'] = array(
+				'label' => __( 'Reader Revenue Manager: Payment option', 'google-site-kit' ),
+				'value' => $settings['paymentOption'],
+				'debug' => $settings['paymentOption'],
+			);
+		}
+
+		return $debug_fields;
 	}
 }

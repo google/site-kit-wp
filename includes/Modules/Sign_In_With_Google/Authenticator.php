@@ -110,7 +110,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the redirect URL for the error page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param string $code Error code.
 	 * @return string Redirect URL.
@@ -122,7 +122,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the redirect URL after the user signs in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param WP_User $user User object.
 	 * @param Input   $input Input instance.
@@ -168,7 +168,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Signs in the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param WP_User $user User object.
 	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
@@ -200,7 +200,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Finds an existing user using the Google user ID and email.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|null User object if found, null otherwise.
@@ -239,7 +239,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Create a new user using the Google auth payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
@@ -284,7 +284,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the hashed Google user ID from the provided payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return string Hashed Google user ID.
@@ -296,7 +296,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Checks if the registration is open.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return bool True if registration is open, false otherwise.
 	 */
@@ -311,7 +311,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Gets the default role for new users.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Updated the function visibility to protected.
+	 * @since 1.145.0 Updated the function visibility to protected.
 	 *
 	 * @return string Default role.
 	 */

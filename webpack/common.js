@@ -236,6 +236,11 @@ exports.createRules = ( mode ) => [
 		],
 		...noAMDParserRule,
 	},
+	{
+		test: /\.mjs$/,
+		include: /node_modules/,
+		type: 'javascript/auto',
+	},
 ];
 
 exports.createMinimizerRules = ( mode ) => [

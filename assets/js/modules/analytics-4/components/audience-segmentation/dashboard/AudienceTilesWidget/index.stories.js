@@ -75,7 +75,7 @@ const topCitiesReportOptions = {
 			desc: true,
 		},
 	],
-	limit: 3,
+	limit: 4,
 };
 
 const topContentReportOptions = {
@@ -127,9 +127,7 @@ Default.args = {
 		'properties/12345/audiences/4', // Returning visitors
 	],
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/Default',
-};
+Default.scenario = {};
 
 export const DefaultWithMissingCustomDimension = Template.bind( {} );
 DefaultWithMissingCustomDimension.storyName =
@@ -146,9 +144,7 @@ DefaultWithMissingCustomDimension.args = {
 		} );
 	},
 };
-DefaultWithMissingCustomDimension.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/DefaultWithMissingCustomDimension',
-};
+DefaultWithMissingCustomDimension.scenario = {};
 
 export const DefaultViewOnlyWithCustomDimensionError = Template.bind( {} );
 DefaultViewOnlyWithCustomDimensionError.storyName =
@@ -245,9 +241,7 @@ DefaultWithZeroTile.args = {
 			} );
 	},
 };
-DefaultWithZeroTile.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/DefaultWithZeroTile',
-};
+DefaultWithZeroTile.scenario = {};
 
 export const TwoTiles = Template.bind( {} );
 TwoTiles.storyName = 'Two Tiles';
@@ -257,9 +251,7 @@ TwoTiles.args = {
 		'properties/12345/audiences/3', // New visitors
 	],
 };
-TwoTiles.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTiles',
-};
+TwoTiles.scenario = {};
 
 export const TwoTilesWithMissingCustomDimension = Template.bind( {} );
 TwoTilesWithMissingCustomDimension.storyName =
@@ -367,9 +359,7 @@ TwoTilesWithZeroTile.args = {
 			} );
 	},
 };
-TwoTilesWithZeroTile.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/TwoTilesWithZeroTile',
-};
+TwoTilesWithZeroTile.scenario = {};
 
 export const ZeroTileWithPlaceholder = Template.bind( {} );
 ZeroTileWithPlaceholder.storyName = 'ZeroTileWithPlaceholder';
@@ -426,9 +416,7 @@ ZeroTileWithPlaceholder.args = {
 			} );
 	},
 };
-ZeroTileWithPlaceholder.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget/ZeroTileWithPlaceholder',
-};
+ZeroTileWithPlaceholder.scenario = {};
 
 export const DefaultAudiencesPartialData = Template.bind( {} );
 DefaultAudiencesPartialData.storyName = 'DefaultAudiencesPartialData';
@@ -625,7 +613,7 @@ SingleTileErrored.args = {
 					desc: true,
 				},
 			],
-			limit: 3,
+			limit: 4,
 		};
 
 		const errorReport = {

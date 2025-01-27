@@ -318,3 +318,17 @@ export function provideAdSenseMockReport( registry, options ) {
 			options,
 		} );
 }
+
+/**
+ * Provides multiple mock reports for AdSense.
+ *
+ * @since 1.145.0
+ *
+ * @param {wp.data.registry} registry     Registry with all available stores registered.
+ * @param {Array.<Object>}   optionsArray Array of report options.
+ */
+export function provideAdSenseMockReports( registry, optionsArray ) {
+	optionsArray.forEach( ( options ) => {
+		provideAdSenseMockReport( registry, options );
+	} );
+}

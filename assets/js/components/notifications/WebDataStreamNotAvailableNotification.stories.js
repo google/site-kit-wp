@@ -20,48 +20,38 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
-function Template( { ...args } ) {
-	return <WebDataStreamNotAvailableNotification { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'web-data-stream-not-available-notification'
+)( WebDataStreamNotAvailableNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
-export const Loading = Template.bind( {} );
-Loading.storyName = 'Loading';
-
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setMeasurementID( 'G-2B7M8YQ1K6' );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-Default.scenario = {
-	label: 'Global/WebDataStreamNotAvailableNotification/Default',
-};
+Default.storyName = 'WebDataStreamNotAvailableNotification';
 
 export default {
-	title: 'Components/WebDataStreamNotAvailableNotification',
-	component: WebDataStreamNotAvailableNotification,
+	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				const currentAnalyticsSettingsMock = {
+					ownerID: 0,
+					propertyID: '1000',
+					webDataStreamID: '2000',
+					measurementID: 'G-2B7M8YQ1K6',
+					googleTagID: 'GT-12345',
+					googleTagLastSyncedAtMs: 0,
+				};
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( false );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+					.setSettings( currentAnalyticsSettingsMock );
 			};
 
 			return (

@@ -49,6 +49,7 @@ import {
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
@@ -227,6 +228,22 @@ export const DEFAULT_NOTIFICATIONS = {
 				select( CORE_SITE ).getSetupErrorMessage();
 
 			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+	},
+	'auth-error': {
+		Component: AuthError,
+		priority: 130,
+		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+			VIEW_CONTEXT_SETTINGS,
+		],
+		checkRequirements: ( { select } ) => {
+			const error = select( CORE_USER ).getAuthError();
+
+			return !! error;
 		},
 		isDismissible: false,
 	},
@@ -479,15 +496,11 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
-		priority: 320,
+		priority: 30,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
-				return false;
-			}
-
 			const isFPMModuleConnected =
 				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
 
@@ -518,6 +531,9 @@ export const DEFAULT_NOTIFICATIONS = {
 			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
+		// Not officially part of the notifications API, just added here for the conditional
+		// registration of this notification based on the feature flag.
+		featureFlag: 'firstPartyMode',
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
@@ -546,6 +562,9 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
+		// Not officially part of the notifications API, just added here for the conditional
+		// registration of this notification based on the feature flag.
+		featureFlag: 'firstPartyMode',
 	},
 	'setup-success-notification-fpm': {
 		Component: FirstPartyModeSetupSuccessSubtleNotification,
@@ -558,6 +577,9 @@ export const DEFAULT_NOTIFICATIONS = {
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
 			);
 		},
+		// Not officially part of the notifications API, just added here for the conditional
+		// registration of this notification based on the feature flag.
+		featureFlag: 'firstPartyMode',
 	},
 };
 
@@ -570,6 +592,15 @@ export const DEFAULT_NOTIFICATIONS = {
  */
 export function registerDefaults( notificationsAPI ) {
 	for ( const notificationID in DEFAULT_NOTIFICATIONS ) {
+		if (
+			DEFAULT_NOTIFICATIONS[ notificationID ]?.featureFlag &&
+			! isFeatureEnabled(
+				DEFAULT_NOTIFICATIONS[ notificationID ]?.featureFlag
+			)
+		) {
+			continue;
+		}
+
 		notificationsAPI.registerNotification(
 			notificationID,
 			DEFAULT_NOTIFICATIONS[ notificationID ]
