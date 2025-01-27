@@ -25,7 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -162,13 +163,6 @@ function ConfirmSitePurposeChangeModal( {
 		);
 		await saveUserInputSettings();
 
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'confirm_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		onClose();
 	}, [
 		saveUserInputSettings,
@@ -176,8 +170,29 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving,
 		setUserInputSetting,
 		userInputPurposeConversionEvents,
-		viewContext,
 	] );
+
+	const prevDialogActive = usePrevious( dialogActive );
+
+	useEffect( () => {
+		if ( true === prevDialogActive && false === dialogActive ) {
+			if ( true === isSaving ) {
+				// Handle internal tracking.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'confirm_update_metrics_selection',
+					'conversion_reporting'
+				);
+			} else {
+				// Handle internal tracking.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'cancel_update_metrics_selection',
+					'conversion_reporting'
+				);
+			}
+		}
+	}, [ dialogActive, isSaving, prevDialogActive, viewContext ] );
 
 	return (
 		<Dialog
