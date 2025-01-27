@@ -101,6 +101,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      # nvm@7 is the minimum version required for npm workspace support.
+      # This can be removed once our node base version comes with nvm@7 or greater.
+      - name: Install npm v7
+        run: npm install -g npm@7.24.2
+
       - name: npm install
         run: npm ci
 
@@ -127,11 +132,6 @@ jobs:
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
-
-      # nvm@7 is the minimum version required for npm workspace support.
-      # This can be removed once our node base version comes with nvm@7 or greater.
-      - name: Install npm v7
-        run: npm install -g npm@7.24.2
 
       - name: Start environment
         run: npm run env:start
