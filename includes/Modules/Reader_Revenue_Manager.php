@@ -75,11 +75,11 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function register() {
 		$this->register_scopes_hook();
 
-		$synchronize_onboarding_state = new Synchronize_Publication(
+		$synchronize_publication = new Synchronize_Publication(
 			$this,
 			$this->user_options
 		);
-		$synchronize_onboarding_state->register();
+		$synchronize_publication->register();
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$post_meta       = new Post_Meta();
@@ -92,8 +92,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$term_product_id->register();
 		}
 
-		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
-		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
+		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
 
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );

@@ -20,7 +20,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptio
 /**
  * Class for synchronizing the onboarding state.
  *
- * @since 1.141.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -47,7 +47,7 @@ class Synchronize_Publication {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.141.0
+	 * @since n.e.x.t
 	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
 	 * @param User_Options           $user_options           User_Options instance.
@@ -60,7 +60,7 @@ class Synchronize_Publication {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.141.0
+	 * @since n.e.x.t
 	 *
 	 * @return void
 	 */
@@ -76,7 +76,7 @@ class Synchronize_Publication {
 	/**
 	 * Cron callback for synchronizing the publication.
 	 *
-	 * @since 1.141.0
+	 * @since n.e.x.t
 	 *
 	 * @return void
 	 */
@@ -92,14 +92,15 @@ class Synchronize_Publication {
 				return;
 			}
 
-			$settings       = $this->reader_revenue_manager->get_settings()->get();
-			$publication_id = $settings['publicationID'];
-			$publications   = $this->reader_revenue_manager->get_data( 'publications' );
+			$publications = $this->reader_revenue_manager->get_data( 'publications' );
 
 			// If publications is empty, return early.
 			if ( empty( $publications ) ) {
 				return;
 			}
+
+			$settings       = $this->reader_revenue_manager->get_settings()->get();
+			$publication_id = $settings['publicationID'];
 
 			$filtered_publications = array_filter(
 				$publications,
@@ -116,121 +117,89 @@ class Synchronize_Publication {
 			// Re-index the filtered array to ensure sequential keys.
 			$filtered_publications = array_values( $filtered_publications );
 			$publication           = $filtered_publications[0];
-			$new_product_ids       = array();
-			$new_payment_options   = array();
-			$new_onboarding_state  = $this->get_new_onboarding_state( $publication );
+
+			$onboarding_state     = $settings['publicationOnboardingState'];
+			$new_onboarding_state = $publication->getOnboardingState();
+
+			$new_settings = array(
+				'publicationOnboardingState' => $new_onboarding_state,
+			);
+
+			// Let the client know if the onboarding state has changed.
+			if ( $new_onboarding_state !== $onboarding_state ) {
+				$new_settings['publicationOnboardingStateChanged'] = true;
+			}
 
 			if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-				$new_product_ids     = $this->get_new_product_ids( $publication );
-				$new_payment_options = $this->get_new_payment_options( $publication );
+				$new_settings['productIDs']    = $this->get_product_ids( $publication );
+				$new_settings['paymentOption'] = $this->get_payment_option( $publication );
 			}
 
-			$new_settings = array_merge( $new_onboarding_state, $new_product_ids, $new_payment_options );
-
-			if ( ! empty( $new_settings ) ) {
-				$this->reader_revenue_manager->get_settings()->merge( $new_settings );
-			}
+			$this->reader_revenue_manager->get_settings()->merge( $new_settings );
 		}
 
 		$restore_user();
 	}
 
 	/**
-	 * Returns the updated products IDs for the publication.
+	 * Returns the products IDs for the given publication.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Publication $publication Publication object.
-	 * @return array New product IDs.
+	 * @return array Product IDs.
 	 */
-	protected function get_new_product_ids( Publication $publication ) {
-		$new_product_ids = array();
-		$settings        = $this->reader_revenue_manager->get_settings()->get();
-		$product_ids     = $settings['productIDs'];
-		$products        = $publication->getProducts();
+	protected function get_product_ids( Publication $publication ) {
+		$products    = $publication->getProducts();
+		$product_ids = array();
 
 		if ( ! empty( $products ) ) {
-			$product_ids = array_map(
-				function ( $product ) {
-					$name = $product->getName();
-					return strpos( $name, ':' ) !== false ? substr( $name, strpos( $name, ':' ) + 1 ) : false;
-				},
-				$products
-			);
+			foreach ( $products as $product ) {
+				$name = $product->getName();
 
-			$product_ids = array_filter( $product_ids );
-
-			// Sort the array alphabetically in ascending order.
-			sort( $product_ids );
-			$product_ids = array_values( $product_ids );
-
-			if ( ( count( $product_ids ) !== count( $settings['productIDs'] ) ) || ( $product_ids !== $settings['productIDs'] ) ) {
-				$new_product_ids = array(
-					'productIDs' => $product_ids,
-				);
-			}
-		}
-
-		return $new_product_ids;
-	}
-
-	/**
-	 * Returns the new payment option for the publication.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return string New payment option.
-	 */
-	protected function get_new_payment_options( Publication $publication ) {
-		$settings                = $this->reader_revenue_manager->get_settings()->get();
-		$saved_payment_option    = $settings['paymentOption'];
-		$current_payment_options = $publication->getPaymentOptions();
-
-		if ( $current_payment_options instanceof PaymentOptions ) {
-			foreach ( $current_payment_options as $property => $value ) {
-				if ( true === $value && $property !== $saved_payment_option ) {
-					return array(
-						'paymentOption' => $property,
-					);
+				// Extract the product ID from the name, which is in
+				// the format of `publicationID:productID`.
+				if ( strpos( $name, ':' ) !== false ) {
+					$product_ids[] = substr( $name, strpos( $name, ':' ) + 1 );
 				}
 			}
 		}
 
-		return array();
+		return $product_ids;
 	}
 
 	/**
-	 * Returns the new onboarding state data.
+	 * Returns the payment option for the given publication.
 	 *
-	 * @since 1.141.0
+	 * @since n.e.x.t
 	 *
 	 * @param Publication $publication Publication object.
-	 * @return array New onboarding state data.
+	 * @return string Payment option.
 	 */
-	protected function get_new_onboarding_state( Publication $publication ) {
-		$new_onboarding_state = array();
-		$settings             = $this->reader_revenue_manager->get_settings()->get();
-		$onboarding_state     = $settings['publicationOnboardingState'];
+	protected function get_payment_option( Publication $publication ) {
+		$payment_options = $publication->getPaymentOptions();
+		$payment_option  = '';
 
-		if ( $publication->getOnboardingState() !== $onboarding_state ) {
-			$new_onboarding_state = array(
-				'publicationOnboardingState'        => $publication->getOnboardingState(),
-				'publicationOnboardingStateChanged' => true,
-			);
+		if ( $payment_options instanceof PaymentOptions ) {
+			foreach ( $payment_options as $option => $value ) {
+				if ( true === $value ) {
+					$payment_option = $option;
+					break;
+				}
+			}
 		}
 
-		return $new_onboarding_state;
+		return $payment_option;
 	}
 
 	/**
 	 * Maybe schedule the synchronize onboarding state cron event.
 	 *
-	 * @since 1.141.0
+	 * @since n.e.x.t
 	 *
 	 * @return void
 	 */
-	public function maybe_schedule_synchronize_onboarding_state() {
+	public function maybe_schedule_synchronize_publication() {
 		$connected              = $this->reader_revenue_manager->is_connected();
 		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_PUBLICATION );
 

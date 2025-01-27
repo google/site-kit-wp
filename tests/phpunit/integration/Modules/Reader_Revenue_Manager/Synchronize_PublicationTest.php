@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Synchronize_OnboardingStateTest
+ * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Synchronize_PublicationTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -13,19 +13,19 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 
 /**
  * @group Modules
@@ -37,28 +37,28 @@ class Synchronize_PublicationTest extends TestCase {
 		use ModulesHelperTrait;
 
 		/**
-		* @var Synchronize_Publication
-		*/
-		protected $synchronize_onboarding_state;
+		 * @var Synchronize_Publication
+		 */
+		protected $synchronize_publication;
 
 		/**
-		* @var Reader_Revenue_Manager
-		*/
+		 * @var Reader_Revenue_Manager
+		 */
 		protected $reader_revenue_manager;
 
 		/**
-		* @var User_Options
-		*/
+		 * @var User_Options
+		 */
 		protected $user_options;
 
 		/**
-		* @var Options
-		*/
+		 * @var Options
+		 */
 		protected $options;
 
 		/**
-		* @var Authentication
-		*/
+		 * @var Authentication
+		 */
 		protected $authentication;
 
 	public function set_up() {
@@ -96,10 +96,10 @@ class Synchronize_PublicationTest extends TestCase {
 			),
 		);
 
-		$this->synchronize_onboarding_state = new Synchronize_Publication( $this->reader_revenue_manager, $this->user_options );
+		$this->synchronize_publication = new Synchronize_Publication( $this->reader_revenue_manager, $this->user_options );
 	}
 
-	public function fake_sync_onboarding_state() {
+	public function fake_sync_publication() {
 		$publication_id = $this->reader_revenue_manager->get_settings()->get()['publicationID'];
 
 		FakeHttp::fake_google_http_handler(
@@ -108,17 +108,16 @@ class Synchronize_PublicationTest extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( '/v1/publications' === $url['path'] ) {
-					$response    = new ListPublicationsResponse();
-					$publication = new Publication();
-
-					$payment_options = new PaymentOptions();
+					$basic_product = new Product();
+					$basic_product->setName( 'testpubID:basic' );
 
 					$advanced_product = new Product();
 					$advanced_product->setName( 'testpubID:advanced' );
 
-					$basic_product = new Product();
-					$basic_product->setName( 'testpubID:basic' );
+					$payment_options                = new PaymentOptions();
+					$payment_options->subscriptions = true;
 
+					$publication = new Publication();
 					$publication->setPublicationId( $publication_id );
 					$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
 					$publication->setProducts(
@@ -127,10 +126,9 @@ class Synchronize_PublicationTest extends TestCase {
 							$advanced_product,
 						)
 					);
-
-					$payment_options->subscriptions = true;
 					$publication->setPaymentOptions( $payment_options );
 
+					$response = new ListPublicationsResponse();
 					$response->setPublications( array( $publication ) );
 
 					return new Response(
@@ -147,35 +145,48 @@ class Synchronize_PublicationTest extends TestCase {
 
 	public function test_register() {
 		remove_all_actions( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
 
 		$this->assertEquals( 10, has_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ) );
 	}
 
-	public function test_get_new_onboarding_state() {
-		$this->fake_sync_onboarding_state();
+	public function test_synchronize_onboarding_state() {
+		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
 
+		$this->assertEquals(
+			'ONBOARDING_ACTION_REQUIRED',
+			$settings['publicationOnboardingState']
+		);
 		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
+
+		$this->assertEquals(
+			'ONBOARDING_COMPLETE',
+			$settings['publicationOnboardingState']
+		);
 		$this->assertTrue( $settings['publicationOnboardingStateChanged'] );
 	}
 
-	public function test_get_new_onboarding_state_with_no_publications() {
-		$this->fake_sync_onboarding_state();
+	public function test_synchronize_onboarding_state_with_non_existent_publication() {
+		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
 
+		$this->assertEquals(
+			'ONBOARDING_ACTION_REQUIRED',
+			$settings['publicationOnboardingState']
+		);
 		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
 
 		$this->reader_revenue_manager->get_settings()->merge(
@@ -187,38 +198,47 @@ class Synchronize_PublicationTest extends TestCase {
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
+
+		$this->assertEquals(
+			'ONBOARDING_ACTION_REQUIRED',
+			$settings['publicationOnboardingState']
+		);
 		$this->assertFalse( $settings['publicationOnboardingStateChanged'] );
 	}
 
-	public function test_get_new_publication_product_ids() {
+	public function test_synchronize_product_ids() {
 		$this->enable_feature( 'rrmModuleV2' );
-		$this->fake_sync_onboarding_state();
+		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
+
+		$this->assertEmpty( $settings['productIDs'] );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEquals( array( 'advanced', 'basic' ), $settings['productIDs'] );
+		$this->assertEquals( array( 'basic', 'advanced' ), $settings['productIDs'] );
 	}
 
-	public function test_get_new_publication_product_ids_with_no_products() {
+	public function test_synchronize_product_ids_with_non_existent_publication() {
 		$this->enable_feature( 'rrmModuleV2' );
-		$this->fake_sync_onboarding_state();
+		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
 
 		$this->reader_revenue_manager->get_settings()->merge(
 			array(
 				'publicationID' => '987654321',
 			),
 		);
+
+		$this->assertEmpty( $settings['productIDs'] );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
@@ -226,14 +246,16 @@ class Synchronize_PublicationTest extends TestCase {
 		$this->assertEmpty( $settings['productIDs'] );
 	}
 
-	public function test_get_new_publication_payment_option() {
+	public function test_synchronize_payment_option() {
 		$this->enable_feature( 'rrmModuleV2' );
-		$this->fake_sync_onboarding_state();
+		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
+
+		$this->assertEmpty( $settings['paymentOption'] );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
@@ -241,14 +263,14 @@ class Synchronize_PublicationTest extends TestCase {
 		$this->assertEquals( 'subscriptions', $settings['paymentOption'] );
 	}
 
-	public function test_get_new_publication_payment_option_with_no_payment_options() {
+	public function test_synchronize_payment_option_with_non_existent_publication() {
 		$this->enable_feature( 'rrmModuleV2' );
-		$this->fake_sync_onboarding_state();
+		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_onboarding_state->register();
+		$this->synchronize_publication->register();
 
 		$this->reader_revenue_manager->get_settings()->merge(
 			array(
@@ -256,15 +278,17 @@ class Synchronize_PublicationTest extends TestCase {
 			),
 		);
 
+		$this->assertEmpty( $settings['paymentOption'] );
+
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEmpty( $settings['paymentOption'] );
 	}
 
-	public function test_maybe_schedule_synchronize_onboarding_state() {
+	public function test_maybe_schedule_synchronize_publication() {
 		$this->assertFalse( wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ) );
-		$this->synchronize_onboarding_state->maybe_schedule_synchronize_onboarding_state();
+		$this->synchronize_publication->maybe_schedule_synchronize_publication();
 
 		$this->assertTrue(
 			(bool) wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION )
