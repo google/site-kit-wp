@@ -61,6 +61,7 @@ import { hasErrorForAnswer } from './util/validation';
 import Portal from '../Portal';
 import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChangeModal';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
 
 export default function UserInputPreview( props ) {
@@ -137,9 +138,15 @@ export default function UserInputPreview( props ) {
 		);
 	} );
 
-	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getKeyMetrics();
-	} );
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
+	);
+	const newMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics(
+			null,
+			includeConversionTailoredMetrics
+		)
+	);
 
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
