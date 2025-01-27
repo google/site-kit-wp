@@ -125,6 +125,7 @@ function ConfirmSitePurposeChangeModal( {
 		);
 
 		handleDialog();
+		setIsSaving( false );
 	}, [
 		handleDialog,
 		savedPurpose,
@@ -160,8 +161,6 @@ function ConfirmSitePurposeChangeModal( {
 			userInputPurposeConversionEvents
 		);
 		await saveUserInputSettings();
-
-		setIsSaving( false );
 
 		// Handle internal tracking.
 		trackEvent(
