@@ -33,33 +33,33 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  */
 class Synchronize_PublicationTest extends TestCase {
 
-		use Fake_Site_Connection_Trait;
-		use ModulesHelperTrait;
+	use Fake_Site_Connection_Trait;
+	use ModulesHelperTrait;
 
-		/**
-		 * @var Synchronize_Publication
-		 */
-		protected $synchronize_publication;
+	/**
+	 * @var Synchronize_Publication
+	 */
+	protected $synchronize_publication;
 
-		/**
-		 * @var Reader_Revenue_Manager
-		 */
-		protected $reader_revenue_manager;
+	/**
+	 * @var Reader_Revenue_Manager
+	 */
+	protected $reader_revenue_manager;
 
-		/**
-		 * @var User_Options
-		 */
-		protected $user_options;
+	/**
+	 * @var User_Options
+	 */
+	protected $user_options;
 
-		/**
-		 * @var Options
-		 */
-		protected $options;
+	/**
+	 * @var Options
+	 */
+	protected $options;
 
-		/**
-		 * @var Authentication
-		 */
-		protected $authentication;
+	/**
+	 * @var Authentication
+	 */
+	protected $authentication;
 
 	public function set_up() {
 		parent::set_up();
