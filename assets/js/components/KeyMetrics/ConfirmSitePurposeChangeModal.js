@@ -126,7 +126,6 @@ function ConfirmSitePurposeChangeModal( {
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
-		viewContext,
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
@@ -170,14 +169,15 @@ function ConfirmSitePurposeChangeModal( {
 	useEffect( () => {
 		if ( prevDialogActive === true && dialogActive === false ) {
 			if ( isSaving ) {
-				// Handle internal tracking.
+				// Handle internal tracking when confirmation CTA is clicked.
 				trackEvent(
 					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
 					'confirm_update_metrics_selection',
 					'conversion_reporting'
 				);
 			} else {
-				// Handle internal tracking.
+				// Handle internal tracking when keep existing metrics CTA is clicked
+				// or the modal is closed via other means.
 				trackEvent(
 					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
 					'cancel_update_metrics_selection',
@@ -185,7 +185,7 @@ function ConfirmSitePurposeChangeModal( {
 				);
 			}
 		}
-	}, [ prevDialogActive, dialogActive, isSaving ] );
+	}, [ prevDialogActive, dialogActive, isSaving, viewContext ] );
 
 	return (
 		<Dialog
