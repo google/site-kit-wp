@@ -118,13 +118,6 @@ function ConfirmSitePurposeChangeModal( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 		} );
 
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'cancel_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		handleDialog();
 		setIsSaving( false );
 	}, [
@@ -175,8 +168,8 @@ function ConfirmSitePurposeChangeModal( {
 	const prevDialogActive = usePrevious( dialogActive );
 
 	useEffect( () => {
-		if ( true === prevDialogActive && false === dialogActive ) {
-			if ( true === isSaving ) {
+		if ( prevDialogActive === true && dialogActive === false ) {
+			if ( isSaving ) {
 				// Handle internal tracking.
 				trackEvent(
 					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
@@ -192,7 +185,7 @@ function ConfirmSitePurposeChangeModal( {
 				);
 			}
 		}
-	}, [ dialogActive, isSaving, prevDialogActive, viewContext ] );
+	}, [ prevDialogActive, dialogActive, isSaving ] );
 
 	return (
 		<Dialog
