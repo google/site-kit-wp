@@ -24,12 +24,7 @@ import useEvent from '@react-hook/event';
 const emptyObj = {};
 
 const win = typeof global === 'undefined' ? null : global;
-const getSize = () => [
-	// document.documentElement.clientWidth,
-	// document.documentElement.clientHeight,
-	global.innerWidth,
-	global.innerHeight,
-];
+const getSize = () => [ global.innerWidth, global.innerHeight ];
 
 export const useWindowSize = ( options = emptyObj ) => {
 	const { fps, leading, initialWidth = 0, initialHeight = 0 } = options;
