@@ -305,7 +305,7 @@ export default function useAudienceTilesReports( {
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4, // Limit is set to 4 so that (not set) can be filtered out and 3 cities remain to display.
 	};
 
 	const topCitiesReport = useInViewSelect( ( select ) =>
