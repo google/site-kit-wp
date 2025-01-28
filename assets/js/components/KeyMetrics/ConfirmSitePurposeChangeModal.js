@@ -25,7 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -117,21 +118,14 @@ function ConfirmSitePurposeChangeModal( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 		} );
 
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'cancel_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		handleDialog();
+		setIsSaving( false );
 	}, [
 		handleDialog,
 		savedPurpose,
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
-		viewContext,
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
@@ -161,15 +155,6 @@ function ConfirmSitePurposeChangeModal( {
 		);
 		await saveUserInputSettings();
 
-		setIsSaving( false );
-
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'confirm_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		onClose();
 	}, [
 		saveUserInputSettings,
@@ -177,8 +162,30 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving,
 		setUserInputSetting,
 		userInputPurposeConversionEvents,
-		viewContext,
 	] );
+
+	const prevDialogActive = usePrevious( dialogActive );
+
+	useEffect( () => {
+		if ( prevDialogActive === true && dialogActive === false ) {
+			if ( isSaving ) {
+				// Handle internal tracking when confirmation CTA is clicked.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'confirm_update_metrics_selection',
+					'conversion_reporting'
+				);
+			} else {
+				// Handle internal tracking when keep existing metrics CTA is clicked
+				// or the modal is closed via other means.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'cancel_update_metrics_selection',
+					'conversion_reporting'
+				);
+			}
+		}
+	}, [ prevDialogActive, dialogActive, isSaving, viewContext ] );
 
 	return (
 		<Dialog
