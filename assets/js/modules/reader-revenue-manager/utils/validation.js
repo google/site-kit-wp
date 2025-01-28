@@ -80,7 +80,7 @@ export const isURLUsingHTTPS = ( url ) => {
 /**
  * Validates if a value is one of the allowed snippet modes.
  *
- * @since n.e.x.t
+ * @since 1.145.0
  *
  * @param {string} mode Snippet mode to validate.
  * @return {boolean} Whether the mode is valid.

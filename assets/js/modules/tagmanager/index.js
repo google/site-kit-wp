@@ -40,7 +40,7 @@ export const registerModule = ( modules ) => {
 		Icon: TagManagerIcon,
 		features: [
 			__(
-				'You will not be able to create tags without updating code.',
+				'You will not be able to create tags without updating code',
 				'google-site-kit'
 			),
 		],

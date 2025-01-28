@@ -26,7 +26,7 @@ add_action(
 				'callback'            => function () {
 					return array(
 						'time'      => time(),
-						'microtime' => microtime(),
+						'microtime' => microtime( true ),
 					);
 				},
 				'permission_callback' => '__return_true',

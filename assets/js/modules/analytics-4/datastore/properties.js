@@ -697,7 +697,7 @@ const baseActions = {
 		) || []; // Fallback used in the event of an error.
 
 		const googleTagContainerDestinationIDs =
-			googleTagContainerDestinations.map(
+			googleTagContainerDestinations?.map(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { destinationId } ) => destinationId
 			);
