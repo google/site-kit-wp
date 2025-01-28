@@ -129,6 +129,38 @@ describe( 'ChipTabGroup', () => {
 	} );
 
 	describe( 'suggested group', () => {
+		it( 'does not show in the groups tab if user input is not completed', async () => {
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+
+			const savedItemSlugs = registry.select( CORE_USER ).getKeyMetrics();
+			const { queryByText, waitForRegistry } = render(
+				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( queryByText( /suggested/i ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'does show in the groups tab when user input is completed', async () => {
+			const savedItemSlugs = registry.select( CORE_USER ).getKeyMetrics();
+			const { getByText, waitForRegistry } = render(
+				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
+				{
+					registry,
+					features: [ 'conversionReporting' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( /suggested/i ) ).toBeInTheDocument();
+		} );
+
 		it( 'doesn not include conversion reporting metrics in suggested group if events are not detected', async () => {
 			const savedItemSlugs = registry.select( CORE_USER ).getKeyMetrics();
 			const { queryByText, getByRole, waitForRegistry } = render(
