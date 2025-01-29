@@ -50,8 +50,8 @@ function Template( { initialSelectedChips = {} } ) {
 				Pages
 			</ChipMultiSelectItem>
 			<ChipMultiSelectItem
-				id="custom-post-type"
-				selected={ selectedChips[ 'custom-post-type' ] }
+				id="customPostType"
+				selected={ selectedChips.customPostType }
 			>
 				Custom Post Type
 			</ChipMultiSelectItem>
@@ -69,7 +69,7 @@ WithSelectedChips.args = {
 	initialSelectedChips: {
 		posts: true,
 		pages: false,
-		'custom-post-type': true,
+		customPostType: true,
 	},
 };
 WithSelectedChips.scenario = {};
