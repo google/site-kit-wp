@@ -3,84 +3,55 @@
 exports[`ChipMultiSelect renders correctly 1`] = `
 <div>
   <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="channels"
-    tabindex="0"
+    class="googlesitekit-chip-multi-select"
   >
     <div
-      class="mdc-chip__checkmark"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="channels"
+      tabindex="0"
     >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
-    </div>
-    <div
-      class="mdc-chip__text"
-    >
-      Channels
-    </div>
-  </div>
-  <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="locations"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        Channels
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="locations"
+      tabindex="0"
     >
-      Locations
-    </div>
-  </div>
-  <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="devices"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Locations
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="devices"
+      tabindex="0"
     >
-      Devices
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Devices
+      </div>
     </div>
   </div>
 </div>
@@ -89,84 +60,55 @@ exports[`ChipMultiSelect renders correctly 1`] = `
 exports[`ChipMultiSelect toggles chips 1`] = `
 <div>
   <div
-    class="mdc-chip mdc-chip--selected googlesitekit-chip"
-    data-chip-id="channels"
-    tabindex="0"
+    class="googlesitekit-chip-multi-select"
   >
     <div
-      class="mdc-chip__checkmark"
+      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="channels"
+      tabindex="0"
     >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
-    </div>
-    <div
-      class="mdc-chip__text"
-    >
-      Channels
-    </div>
-  </div>
-  <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="locations"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        Channels
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="locations"
+      tabindex="0"
     >
-      Locations
-    </div>
-  </div>
-  <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="devices"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Locations
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="devices"
+      tabindex="0"
     >
-      Devices
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Devices
+      </div>
     </div>
   </div>
 </div>
@@ -175,84 +117,55 @@ exports[`ChipMultiSelect toggles chips 1`] = `
 exports[`ChipMultiSelect toggles chips 2`] = `
 <div>
   <div
-    class="mdc-chip mdc-chip--selected googlesitekit-chip"
-    data-chip-id="channels"
-    tabindex="0"
+    class="googlesitekit-chip-multi-select"
   >
     <div
-      class="mdc-chip__checkmark"
+      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="channels"
+      tabindex="0"
     >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
-    </div>
-    <div
-      class="mdc-chip__text"
-    >
-      Channels
-    </div>
-  </div>
-  <div
-    class="mdc-chip mdc-chip--selected googlesitekit-chip"
-    data-chip-id="locations"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        Channels
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="locations"
+      tabindex="0"
     >
-      Locations
-    </div>
-  </div>
-  <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="devices"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Locations
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="devices"
+      tabindex="0"
     >
-      Devices
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Devices
+      </div>
     </div>
   </div>
 </div>
@@ -261,84 +174,55 @@ exports[`ChipMultiSelect toggles chips 2`] = `
 exports[`ChipMultiSelect toggles chips 3`] = `
 <div>
   <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="channels"
-    tabindex="0"
+    class="googlesitekit-chip-multi-select"
   >
     <div
-      class="mdc-chip__checkmark"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="channels"
+      tabindex="0"
     >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
-    </div>
-    <div
-      class="mdc-chip__text"
-    >
-      Channels
-    </div>
-  </div>
-  <div
-    class="mdc-chip mdc-chip--selected googlesitekit-chip"
-    data-chip-id="locations"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        Channels
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="locations"
+      tabindex="0"
     >
-      Locations
-    </div>
-  </div>
-  <div
-    class="mdc-chip googlesitekit-chip"
-    data-chip-id="devices"
-    tabindex="0"
-  >
-    <div
-      class="mdc-chip__checkmark"
-    >
-      <svg
-        class="mdc-chip__checkmark-svg"
-        focusable="false"
-        viewBox="-2 -3 30 30"
+      <div
+        class="mdc-chip__checkmark"
       >
-        <path
-          class="mdc-chip__checkmark-path"
-          d="M1.73,12.91 8.1,19.28 22.79,4.59"
-          fill="none"
-          stroke="black"
-        />
-      </svg>
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Locations
+      </div>
     </div>
     <div
-      class="mdc-chip__text"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="devices"
+      tabindex="0"
     >
-      Devices
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Devices
+      </div>
     </div>
   </div>
 </div>
