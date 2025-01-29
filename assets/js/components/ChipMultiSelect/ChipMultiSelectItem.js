@@ -46,6 +46,7 @@ export default function ChipMultiSelectItem( {
 			className="googlesitekit-chip-multi-select__item"
 			CheckMark={ ChipCheckmark }
 			onClick={ () => {
+				// Indicate the desired state of the chip.
 				onToggleChip( id, ! selected );
 			} }
 			id={ id }
