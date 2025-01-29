@@ -81,6 +81,7 @@ Notification.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
 	gaTrackingEventArgs: PropTypes.shape( {
+		category: PropTypes.string,
 		label: PropTypes.string,
 		value: PropTypes.string,
 	} ),
