@@ -23,10 +23,12 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'ConsentModeSetupCTAWidget', () => {
@@ -34,6 +36,9 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 	const ConsentModeSetupCTAWidgetComponent = withNotificationComponentProps(
 		CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
 	)( ConsentModeSetupCTAWidget );
+
+	const notification =
+		DEFAULT_NOTIFICATIONS[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -88,5 +93,63 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when consent mode is not enabled and ads is connected', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
+				enabled: false,
+				adsConnected: true,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when consent mode is already enabled and ads is connected', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
+				enabled: true,
+				adsConnected: true,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when consent mode is not enabled but ads is not connected', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
+				enabled: false,
+				adsConnected: false,
+			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetAdsMeasurementStatus( { connected: false } );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when consent mode is enabled and ads is not connected', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
+				enabled: true,
+				adsConnected: false,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
