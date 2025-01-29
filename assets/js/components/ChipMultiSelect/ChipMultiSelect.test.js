@@ -30,12 +30,10 @@ describe( 'ChipMultiSelect', () => {
 				<ChipMultiSelectItem id="channels">
 					Channels
 				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="locations">
+				<ChipMultiSelectItem id="locations" selected>
 					Locations
 				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="devices" selected>
-					Devices
-				</ChipMultiSelectItem>
+				<ChipMultiSelectItem id="devices">Devices</ChipMultiSelectItem>
 			</ChipMultiSelect>
 		);
 
@@ -67,20 +65,18 @@ describe( 'ChipMultiSelect', () => {
 
 		const { getByText } = render(
 			<ChipMultiSelect onToggleChip={ onToggleChip }>
-				<ChipMultiSelectItem id="channels" selected>
+				<ChipMultiSelectItem id="channels">
 					Channels
 				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="locations">
+				<ChipMultiSelectItem id="locations" selected>
 					Locations
 				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="devices" selected>
-					Devices
-				</ChipMultiSelectItem>
+				<ChipMultiSelectItem id="devices">Devices</ChipMultiSelectItem>
 			</ChipMultiSelect>
 		);
 
-		fireEvent.click( getByText( 'Devices' ) );
+		fireEvent.click( getByText( 'Locations' ) );
 
-		expect( onToggleChip ).toHaveBeenCalledWith( 'devices', false );
+		expect( onToggleChip ).toHaveBeenCalledWith( 'locations', false );
 	} );
 } );
