@@ -358,6 +358,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$redirect_to = wp_strip_all_tags( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 		}
 
+		// Set the cookie time to live to 5 minutes. If the redirect_to is empty,
+		// set the cookie to expire immediately.
+		$cookie_expire_time = 300000;
+		if ( empty( $redirect_to ) ) {
+			$cookie_expire_time *= -1;
+		}
+
 		// Render the Sign in with Google script.
 		ob_start();
 
@@ -408,11 +415,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		google.accounts.id.prompt();
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		const expires = new Date();
-		expires.setTime( expires.getTime() + 300000 );<?php // 5 minutes ?>
-		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	const expires = new Date();
+	expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
+	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
 } )();
 		<?php
 
