@@ -31,7 +31,16 @@ import { useContext } from '@wordpress/element';
  * Internal dependencies
  */
 import { Chip } from 'googlesitekit-components';
+import CheckMark from '../../../svg/icons/check-2.svg';
 import ChipMultiSelectContext from './ChipMultiSelectContext';
+
+function ChipCheckmark() {
+	return (
+		<div className="mdc-chip__checkmark">
+			<CheckMark className="mdc-chip__checkmark-svg" />
+		</div>
+	);
+}
 
 export default function ChipMultiSelectItem( { children, id, ...props } ) {
 	const { selectedChips, setSelectedChips, onToggleChip } = useContext(
@@ -40,6 +49,8 @@ export default function ChipMultiSelectItem( { children, id, ...props } ) {
 
 	return (
 		<Chip
+			className="googlesitekit-chip-multi-select__item"
+			CheckMark={ ChipCheckmark }
 			onClick={ () => {
 				const newSelectedChips = selectedChips.includes( id )
 					? selectedChips.filter( ( item ) => item !== id )
@@ -61,4 +72,10 @@ ChipMultiSelectItem.propTypes = {
 	children: PropTypes.string.isRequired,
 	id: PropTypes.string.isRequired,
 	...omit( Chip.propTypes, 'label' ),
+};
+
+ChipMultiSelectItem.defaultProps = {
+	handleSelect: () => {},
+	handleRemove: () => {},
+	handleInteraction: () => {},
 };
