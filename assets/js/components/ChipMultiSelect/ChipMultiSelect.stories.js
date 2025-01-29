@@ -43,4 +43,11 @@ Default.scenario = {};
 export default {
 	title: 'Components/ChipMultiSelect',
 	component: ChipMultiSelect,
+	decorators: [
+		( Story ) => (
+			<div className="googlesitekit-layout" style={ { padding: '24px' } }>
+				<Story />
+			</div>
+		),
+	],
 };

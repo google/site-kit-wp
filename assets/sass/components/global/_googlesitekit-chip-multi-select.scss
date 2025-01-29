@@ -21,20 +21,41 @@
 	.googlesitekit-chip-multi-select {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: 12px;
 	}
 
 	.googlesitekit-chip-multi-select__item {
 		&.googlesitekit-chip {
+			background-color: $c-surfaces-surface-1;
+			border: none;
+			border-radius: 100px;
 			flex-direction: row;
+			padding: 6px 14px;
 
-			&.mdc-chip--selected .mdc-chip__checkmark svg {
-				height: 12px;
-				width: 12px;
+			.mdc-chip__checkmark {
+				display: none;
+			}
+
+			&.mdc-chip--selected {
+				background-color: $c-content-primary-container;
+				border: none;
+				gap: 10px;
+
+				.mdc-chip__checkmark {
+					display: block;
+				}
+
+				.mdc-chip__checkmark,
+				.mdc-chip__checkmark svg {
+					height: 12px;
+					width: 12px;
+				}
 			}
 
 			.mdc-chip__text {
-				padding: 0 9px;
+				padding: 0 11px;
+				text-align: center;
+				text-wrap: inherit;
 			}
 
 			&.mdc-chip--selected .mdc-chip__text {
