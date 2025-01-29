@@ -17,21 +17,42 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import ChipMultiSelect from './ChipMultiSelect';
 import ChipMultiSelectItem from './ChipMultiSelectItem';
 
-function Template() {
+function Template( { initialSelectedChips = {} } ) {
+	const [ selectedChips, setSelectedChips ] =
+		useState( initialSelectedChips );
+
 	return (
 		<ChipMultiSelect
 			onToggleChip={ ( id, isSelected ) => {
 				global.console.log( 'onToggleChip', id, isSelected );
+
+				const newSelectedChips = selectedChips[ id ]
+					? { ...selectedChips, [ id ]: ! selectedChips[ id ] }
+					: { ...selectedChips, [ id ]: true };
+
+				setSelectedChips( newSelectedChips );
 			} }
 		>
-			<ChipMultiSelectItem id="posts">Posts</ChipMultiSelectItem>
-			<ChipMultiSelectItem id="pages">Pages</ChipMultiSelectItem>
-			<ChipMultiSelectItem id="custom-post-type">
+			<ChipMultiSelectItem id="posts" selected={ selectedChips.posts }>
+				Posts
+			</ChipMultiSelectItem>
+			<ChipMultiSelectItem id="pages" selected={ selectedChips.pages }>
+				Pages
+			</ChipMultiSelectItem>
+			<ChipMultiSelectItem
+				id="custom-post-type"
+				selected={ selectedChips[ 'custom-post-type' ] }
+			>
 				Custom Post Type
 			</ChipMultiSelectItem>
 		</ChipMultiSelect>
@@ -41,6 +62,17 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+
+export const WithSelectedChips = Template.bind( {} );
+WithSelectedChips.storyName = 'With Selected Chips';
+WithSelectedChips.args = {
+	initialSelectedChips: {
+		posts: true,
+		pages: false,
+		'custom-post-type': true,
+	},
+};
+WithSelectedChips.scenario = {};
 
 export default {
 	title: 'Components/ChipMultiSelect',

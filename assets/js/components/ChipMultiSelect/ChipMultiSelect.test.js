@@ -33,56 +33,16 @@ describe( 'ChipMultiSelect', () => {
 				<ChipMultiSelectItem id="locations">
 					Locations
 				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="devices">Devices</ChipMultiSelectItem>
+				<ChipMultiSelectItem id="devices" selected>
+					Devices
+				</ChipMultiSelectItem>
 			</ChipMultiSelect>
 		);
 
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'toggles chips', () => {
-		const { container, getByText } = render(
-			<ChipMultiSelect>
-				<ChipMultiSelectItem id="channels">
-					Channels
-				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="locations">
-					Locations
-				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="devices">Devices</ChipMultiSelectItem>
-			</ChipMultiSelect>
-		);
-
-		fireEvent.click( getByText( 'Channels' ) );
-
-		expect( getByText( 'Channels' ).parentElement ).toHaveClass(
-			'mdc-chip--selected'
-		);
-
-		expect( container ).toMatchSnapshot();
-
-		fireEvent.click( getByText( 'Locations' ) );
-
-		expect( getByText( 'Locations' ).parentElement ).toHaveClass(
-			'mdc-chip--selected'
-		);
-
-		expect( container ).toMatchSnapshot();
-
-		fireEvent.click( getByText( 'Channels' ) );
-
-		expect( getByText( 'Channels' ).parentElement ).not.toHaveClass(
-			'mdc-chip--selected'
-		);
-
-		expect( getByText( 'Locations' ).parentElement ).toHaveClass(
-			'mdc-chip--selected'
-		);
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'calls `onToggleChip()` when a chip is toggled', () => {
+	it( 'calls `onToggleChip()` when a chip is selected', () => {
 		const onToggleChip = jest.fn();
 
 		const { getByText } = render(
@@ -90,7 +50,7 @@ describe( 'ChipMultiSelect', () => {
 				<ChipMultiSelectItem id="channels">
 					Channels
 				</ChipMultiSelectItem>
-				<ChipMultiSelectItem id="locations">
+				<ChipMultiSelectItem id="locations" selected>
 					Locations
 				</ChipMultiSelectItem>
 				<ChipMultiSelectItem id="devices">Devices</ChipMultiSelectItem>
@@ -99,17 +59,28 @@ describe( 'ChipMultiSelect', () => {
 
 		fireEvent.click( getByText( 'Channels' ) );
 
-		// The first call is when the `channels` chip is selected.
 		expect( onToggleChip ).toHaveBeenCalledWith( 'channels', true );
+	} );
 
-		fireEvent.click( getByText( 'Locations' ) );
+	it( 'calls `onToggleChip()` when a chip is unselected', () => {
+		const onToggleChip = jest.fn();
 
-		// The second call is when the `locations` chip is selected.
-		expect( onToggleChip ).toHaveBeenCalledWith( 'locations', true );
+		const { getByText } = render(
+			<ChipMultiSelect onToggleChip={ onToggleChip }>
+				<ChipMultiSelectItem id="channels" selected>
+					Channels
+				</ChipMultiSelectItem>
+				<ChipMultiSelectItem id="locations">
+					Locations
+				</ChipMultiSelectItem>
+				<ChipMultiSelectItem id="devices" selected>
+					Devices
+				</ChipMultiSelectItem>
+			</ChipMultiSelect>
+		);
 
-		fireEvent.click( getByText( 'Channels' ) );
+		fireEvent.click( getByText( 'Devices' ) );
 
-		// The third call is when the `channels` chip is unselected.
-		expect( onToggleChip ).toHaveBeenCalledWith( 'channels', false );
+		expect( onToggleChip ).toHaveBeenCalledWith( 'devices', false );
 	} );
 } );

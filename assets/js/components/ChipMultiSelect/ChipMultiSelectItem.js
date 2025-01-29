@@ -33,27 +33,24 @@ import { useContext } from '@wordpress/element';
 import { Chip } from 'googlesitekit-components';
 import ChipMultiSelectContext from './ChipMultiSelectContext';
 import { ChipCheckmark } from './ChipCheckmark';
-export default function ChipMultiSelectItem( { children, id, ...props } ) {
-	const { selectedChips, setSelectedChips, onToggleChip } = useContext(
-		ChipMultiSelectContext
-	);
+export default function ChipMultiSelectItem( {
+	children,
+	id,
+	selected,
+	...props
+} ) {
+	const { onToggleChip } = useContext( ChipMultiSelectContext );
 
 	return (
 		<Chip
 			className="googlesitekit-chip-multi-select__item"
 			CheckMark={ ChipCheckmark }
 			onClick={ () => {
-				const newSelectedChips = selectedChips.includes( id )
-					? selectedChips.filter( ( item ) => item !== id )
-					: [ ...selectedChips, id ];
-
-				setSelectedChips( newSelectedChips );
-
-				onToggleChip( id, newSelectedChips.includes( id ) );
+				onToggleChip( id, ! selected );
 			} }
 			id={ id }
 			label={ children }
-			selected={ selectedChips.includes( id ) }
+			selected={ selected }
 			{ ...props }
 		/>
 	);

@@ -22,11 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { useState } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { Provider } from './ChipMultiSelectContext';
@@ -35,10 +30,8 @@ export default function ChipMultiSelect( {
 	children,
 	onToggleChip = () => {},
 } ) {
-	const [ selectedChips, setSelectedChips ] = useState( [] );
-
 	return (
-		<Provider value={ { selectedChips, setSelectedChips, onToggleChip } }>
+		<Provider value={ { onToggleChip } }>
 			<div className="googlesitekit-chip-multi-select">{ children }</div>
 		</Provider>
 	);
