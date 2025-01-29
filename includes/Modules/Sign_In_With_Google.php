@@ -352,6 +352,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Whether buttons will be rendered/transformed on this page.
 		$render_buttons = $is_wp_login || $is_woocommerce_login;
+		$render_one_tap = ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() );
+
+		if ( empty( $redirect_to ) && ! $render_buttons && $render_one_tap && isset( $_SERVER['REQUEST_URI'] ) ) {
+			$redirect_to = wp_strip_all_tags( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		}
 
 		// Render the Sign in with Google script.
 		ob_start();
@@ -397,16 +402,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
-
-		<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-			const expires = new Date();
-			expires.setTime( expires.getTime() + 300000 );<?php // 5 minutes ?>
-			document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		google.accounts.id.prompt();
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+	<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const expires = new Date();
+		expires.setTime( expires.getTime() + 300000 );<?php // 5 minutes ?>
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires="  + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
