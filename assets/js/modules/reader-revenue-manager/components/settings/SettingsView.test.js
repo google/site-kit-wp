@@ -148,4 +148,56 @@ describe( 'SettingsView', () => {
 			)
 		).not.toBeInTheDocument();
 	} );
+
+	describe( 'with the rrmModuleV2 feature flag enabled', () => {
+		it( 'should display settings for product ID, snippet placement, and post types', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					ownerID: 1,
+					publicationID,
+					publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+					productID: 'openaccess',
+					snippetMode: 'post_types',
+					postTypes: [ 'post' ],
+				} );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmModuleV2' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
+			expect( getByText( 'Display CTAs' ) ).toBeInTheDocument();
+			expect(
+				getByText( 'Content type to display CTAs' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display setting for post types if snippet placement is set otherwise', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					ownerID: 1,
+					publicationID,
+					publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+					productID: 'openaccess',
+					snippetMode: 'per_post',
+					postTypes: [ 'post' ],
+				} );
+
+			const { queryByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmModuleV2' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				queryByText( 'Content type to display CTAs' )
+			).not.toBeInTheDocument();
+		} );
+	} );
 } );
