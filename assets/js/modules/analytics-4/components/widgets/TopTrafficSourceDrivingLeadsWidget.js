@@ -46,13 +46,19 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 function getDateRangeIndex( reportRows, dateRangeSlug ) {
-	const dateRange = reportRows?.[ 0 ]?.dimensionValues?.find(
-		( dimension ) => dimension.value === dateRangeSlug
-	);
-	const dateRangeIndex =
-		reportRows?.[ 0 ]?.dimensionValues?.indexOf( dateRange );
+	for ( let rowIndex = 0; rowIndex < reportRows.length; rowIndex++ ) {
+		const dimensionValues = reportRows?.[ rowIndex ]?.dimensionValues;
 
-	return dateRangeIndex;
+		const dimensionIndex = dimensionValues.findIndex(
+			( dimensionValue ) => dimensionValue.value === dateRangeSlug
+		);
+
+		if ( dimensionIndex !== -1 ) {
+			return dimensionIndex;
+		}
+	}
+
+	return 0;
 }
 
 function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
