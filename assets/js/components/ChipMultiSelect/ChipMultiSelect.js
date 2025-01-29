@@ -24,51 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useContext, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import ChipMultiSelectContext, { Provider } from './ChipMultiSelectContext';
-
-import { omit } from 'lodash';
-import { ChipSet, Chip } from '@material/react-chips';
-
-function MultiSelectItem( { children, id, ...props } ) {
-	const { selectedChips, setSelectedChips, onToggleChip } = useContext(
-		ChipMultiSelectContext
-	);
-
-	return (
-		<Chip
-			className="googlesitekit-chip-multi-select__item"
-			onClick={ () => {
-				const newSelectedChips = selectedChips.includes( id )
-					? selectedChips.filter( ( item ) => item !== id )
-					: [ ...selectedChips, id ];
-
-				setSelectedChips( newSelectedChips );
-
-				onToggleChip( id, newSelectedChips.includes( id ) );
-			} }
-			id={ id }
-			label={ children }
-			selected={ selectedChips.includes( id ) }
-			{ ...props }
-		/>
-	);
-}
-MultiSelectItem.propTypes = {
-	children: PropTypes.string.isRequired,
-	id: PropTypes.string.isRequired,
-	...omit( Chip.propTypes, 'label' ),
-};
-
-MultiSelectItem.defaultProps = {
-	handleSelect: () => {},
-	handleRemove: () => {},
-	handleInteraction: () => {},
-};
+import { Provider } from './ChipMultiSelectContext';
 
 export default function ChipMultiSelect( {
 	children,
@@ -77,31 +38,9 @@ export default function ChipMultiSelect( {
 	const [ selectedChips, setSelectedChips ] = useState( [] );
 
 	return (
-		<div>
-			<Provider
-				value={ { selectedChips, setSelectedChips, onToggleChip } }
-			>
-				<div className="googlesitekit-chip-multi-select">
-					{ children }
-				</div>
-			</Provider>
-
-			<Provider
-				value={ { selectedChips, setSelectedChips, onToggleChip } }
-			>
-				<ChipSet
-					filter
-					selectedChipIds={ selectedChips }
-					handleSelect={ ( selectedChipIds ) => {
-						setSelectedChips( selectedChipIds );
-					} }
-				>
-					<MultiSelectItem id="1">Item 1</MultiSelectItem>
-					<MultiSelectItem id="2">Item 2</MultiSelectItem>
-					<MultiSelectItem id="3">Item 3</MultiSelectItem>
-				</ChipSet>
-			</Provider>
-		</div>
+		<Provider value={ { selectedChips, setSelectedChips, onToggleChip } }>
+			<div className="googlesitekit-chip-multi-select">{ children }</div>
+		</Provider>
 	);
 }
 
