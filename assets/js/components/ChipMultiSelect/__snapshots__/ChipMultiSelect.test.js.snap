@@ -22,7 +22,7 @@ exports[`ChipMultiSelect renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
       data-chip-id="locations"
       tabindex="0"
     >
@@ -38,7 +38,7 @@ exports[`ChipMultiSelect renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
       data-chip-id="devices"
       tabindex="0"
     >
