@@ -29,9 +29,11 @@ function Template() {
 				global.console.log( 'onToggleChip', id, isSelected );
 			} }
 		>
-			<ChipMultiSelectItem id="channels">Channels</ChipMultiSelectItem>
-			<ChipMultiSelectItem id="locations">Locations</ChipMultiSelectItem>
-			<ChipMultiSelectItem id="devices">Devices</ChipMultiSelectItem>
+			<ChipMultiSelectItem id="posts">Posts</ChipMultiSelectItem>
+			<ChipMultiSelectItem id="pages">Pages</ChipMultiSelectItem>
+			<ChipMultiSelectItem id="custom-post-type">
+				Custom Post Type
+			</ChipMultiSelectItem>
 		</ChipMultiSelect>
 	);
 }
