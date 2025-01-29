@@ -122,7 +122,7 @@ SettingsNotice.propTypes = {
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
-	dismiss: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
+	dismiss: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	dismissCallback: PropTypes.func,
 };
