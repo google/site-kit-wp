@@ -81,6 +81,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	protected $existing_client_id;
 
 	/**
+	 * WooCommerce instance.
+	 *
+	 * @since n.e.x.t
+	 * @var WooCommerce
+	 */
+	protected $woocommerce;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.142.0
@@ -100,6 +108,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->existing_client_id = new Existing_Client_ID( $this->options );
+		$this->woocommerce        = new WooCommerce( $this->context );
 	}
 
 	/**
@@ -111,7 +120,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function register() {
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_existing_client_id' ), 10 );
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_module_data' ), 10 );
 
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
@@ -530,8 +539,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_content_url() {
 		$wp_login_url = wp_login_url();
 
-		$woo_commerce = new WooCommerce( $this->context );
-		if ( $woo_commerce->is_active() ) {
+		if ( $this->woocommerce->is_active() ) {
 			$wc_login_page_id = wc_get_page_id( 'myaccount' );
 			$wc_login_url     = get_permalink( $wc_login_page_id );
 			return array(
@@ -678,15 +686,21 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	protected function inline_existing_client_id( $modules_data ) {
-		$existing_client_id = $this->existing_client_id->get();
+	protected function inline_module_data( $modules_data ) {
+		$inline_data = array();
 
+		$existing_client_id = $this->existing_client_id->get();
 		if ( $existing_client_id ) {
-			// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
-			$modules_data['sign-in-with-google'] = array(
-				'existingClientID' => $existing_client_id,
-			);
+			$inline_data['existingClientID'] = $existing_client_id;
 		}
+
+		$woocommerce_registration_enabled = get_option( 'woocommerce_enable_myaccount_registration' );
+
+		$inline_data['isWooCommerceActive']              = $this->woocommerce->is_active();
+		$inline_data['isWooCommerceRegistrationEnabled'] = $this->woocommerce->is_active() && 'yes' === $woocommerce_registration_enabled ? true : false;
+
+		// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
+		$modules_data['sign-in-with-google'] = $inline_data;
 
 		return $modules_data;
 	}
