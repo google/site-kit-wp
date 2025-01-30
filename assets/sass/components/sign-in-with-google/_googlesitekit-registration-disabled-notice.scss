@@ -48,7 +48,21 @@
 			}
 		}
 
-		&:not(.googlesitekit-anyone-can-register-disabled-notice) {
+		&.googlesitekit-registration-disabled-notice--with-outer-cta {
+			flex-direction: column;
+
+			@media (min-width: $bp-tablet) {
+				flex-direction: initial;
+			}
+
+			.googlesitekit-settings-notice__text {
+				margin: 6px 0 $grid-gap-phone 0;
+
+				@media (min-width: $bp-desktop) {
+					margin: 0 $grid-gap-desktop 0 0;
+					max-width: 718px;
+				}
+			}
 
 			.mdc-button {
 				background-color: $c-utility-on-warning-container;
