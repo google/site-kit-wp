@@ -146,7 +146,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} List of supported conversion events.
 	 */
-	isWooCommerceRegistrationEnabled: getModuleDataProperty(
+	getIsWooCommerceRegistrationEnabled: getModuleDataProperty(
 		'isWooCommerceRegistrationEnabled'
 	),
 };
