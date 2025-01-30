@@ -36,10 +36,7 @@ import whenActive from '../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
-} from '../../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
@@ -62,6 +59,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from './AudienceSegmentationSetupSuccessSubtleNotification';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -75,7 +73,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
+	const { stackNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -107,10 +105,9 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onSuccess: () => {
-				invalidateResolution( 'getQueuedNotifications', [
-					viewContext,
-					NOTIFICATION_GROUPS.SETUP_CTAS,
-				] );
+				stackNotification(
+					AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
+				);
 				dismissPrompt( id, {
 					expiresInSeconds: 0,
 				} );

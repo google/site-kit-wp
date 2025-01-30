@@ -44,6 +44,7 @@ const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 const QUEUE_NOTIFICATION = 'QUEUE_NOTIFICATION';
+const STACK_NOTIFICATION = 'STACK_NOTIFICATION';
 const RESET_QUEUE = 'RESET_QUEUE';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
@@ -180,6 +181,12 @@ export const actions = {
 				notification,
 			},
 			type: QUEUE_NOTIFICATION,
+		};
+	},
+	stackNotification( id ) {
+		return {
+			payload: { id },
+			type: STACK_NOTIFICATION,
 		};
 	},
 	/**
@@ -343,6 +350,22 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			state.queuedNotifications[ groupID ] =
 				state.queuedNotifications[ groupID ] || [];
 			state.queuedNotifications[ groupID ].push( payload.notification );
+			break;
+		}
+
+		case STACK_NOTIFICATION: {
+			const { id } = payload;
+
+			const notification = state.notifications?.[ id ];
+
+			if ( notification ) {
+				state.queuedNotifications[ notification.groupID ] =
+					state.queuedNotifications[ notification.groupID ] || [];
+				state.queuedNotifications[ notification.groupID ].unshift(
+					notification
+				);
+			}
+
 			break;
 		}
 
