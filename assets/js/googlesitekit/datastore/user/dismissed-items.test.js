@@ -89,6 +89,16 @@ describe( 'core/user dismissed-items', () => {
 				).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'should dispatch an error if the slug is not a string', async () => {
+				try {
+					await registry.dispatch( CORE_USER ).dismissItem( true );
+				} catch ( error ) {
+					expect( error.message ).toMatch(
+						'A slug must be a string.'
+					);
+				}
+			} );
 		} );
 
 		describe( 'removeDismissItems', () => {

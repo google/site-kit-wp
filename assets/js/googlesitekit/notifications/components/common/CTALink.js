@@ -40,6 +40,7 @@ export default function CTALink( {
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
+	isSaving,
 	dismissOnCTAClick = false,
 	dismissExpires = 0,
 	dismissOptions = { skipHidingFromQueue: true },
@@ -110,7 +111,9 @@ export default function CTALink( {
 			href={ ctaLink }
 			onClick={ handleCTAClick }
 			disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
-			isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
+			isSaving={
+				isAwaitingCTAResponse || isNavigatingToCTALink || isSaving
+			}
 		>
 			{ ctaLabel }
 		</SpinnerButton>

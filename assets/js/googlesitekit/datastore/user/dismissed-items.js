@@ -115,7 +115,8 @@ const baseActions = {
 	dismissItem: createValidatedAction(
 		( slug, options = {} ) => {
 			const { expiresInSeconds = 0 } = options;
-			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+			invariant( slug, 'A slug is required to dismiss an item.' );
+			invariant( typeof slug === 'string', 'A slug must be a string.' );
 			invariant(
 				Number.isInteger( expiresInSeconds ),
 				'expiresInSeconds must be an integer.'

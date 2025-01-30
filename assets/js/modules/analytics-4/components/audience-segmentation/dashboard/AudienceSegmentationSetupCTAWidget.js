@@ -217,6 +217,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 									: __( 'Enable groups', 'google-site-kit' )
 							}
 							onCTAClick={ onEnableGroups }
+							isSaving={ isSaving }
 							dismissOnCTAClick={ false }
 							dismissLabel={
 								isDismissalFinal
