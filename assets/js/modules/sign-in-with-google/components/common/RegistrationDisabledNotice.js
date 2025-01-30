@@ -22,7 +22,6 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -36,15 +35,8 @@ import SettingsNotice, {
 } from '../../../../components/SettingsNotice';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import InfoIcon from '../../../../../svg/icons/info-circle.svg';
-import {
-	BREAKPOINT_DESKTOP,
-	BREAKPOINT_XLARGE,
-	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
 
 export default function RegistrationDisabledNotice( { className } ) {
-	const breakpoint = useBreakpoint();
-
 	const isMultisite = useSelect( ( select ) =>
 		select( CORE_SITE ).isMultisite()
 	);
@@ -60,36 +52,21 @@ export default function RegistrationDisabledNotice( { className } ) {
 	return (
 		<SettingsNotice
 			className={ classnames(
-				'googlesitekit-registration-disabled-notice',
+				'googlesitekit-registration-disabled-notice googlesitekit-registration-disabled-notice--with-outer-cta',
 				className
 			) }
 			Icon={ InfoIcon }
 			type={ TYPE_WARNING }
-			notice={ createInterpolateElement(
-				sprintf(
-					/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
-					__(
-						'Using "One Tap sign in on all pages" will cause errors for users without an account. Enable %1$s. <br/>Visit WordPress settings to allow anyone to use %2$s.',
-						'google-site-kit'
-					),
-					isMultisite
-						? __( '“Allow new registrations”', 'google-site-kit' )
-						: __( '“Anyone can register”', 'google-site-kit' ),
-					_x(
-						'Sign in with Google',
-						'Service name',
-						'google-site-kit'
-					)
+			notice={ sprintf(
+				/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
+				__(
+					'Using "One Tap sign in on all pages" will cause errors for users without an account. Enable %1$s. Visit WordPress settings to allow anyone to use %2$s.',
+					'google-site-kit'
 				),
-				{
-					br:
-						breakpoint === BREAKPOINT_XLARGE ||
-						breakpoint === BREAKPOINT_DESKTOP ? (
-							<br />
-						) : (
-							<Fragment />
-						),
-				}
+				isMultisite
+					? __( '“Allow new registrations”', 'google-site-kit' )
+					: __( '“Anyone can register”', 'google-site-kit' ),
+				_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
 			) }
 			OuterCTA={ () => (
 				<Button
