@@ -27,11 +27,11 @@ import {
 	ClientIDTextField,
 	OneTapToggles,
 	Preview,
+	SettingsNotice,
 } from '../common';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { Cell, Grid, Row } from '../../../../material-components';
-import SettingsNotice from '../common/SettingsNotice';
 
 export default function SettingsForm() {
 	return (
