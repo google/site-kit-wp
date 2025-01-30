@@ -65,9 +65,6 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 			).href
 	);
 
-	const anyoneCanRegister = useSelect( ( select ) =>
-		select( CORE_SITE ).getAnyoneCanRegister()
-	);
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ANYONE_CAN_REGISTER_DISABLED_NOTICE
@@ -76,7 +73,7 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	if ( isDismissed === true || anyoneCanRegister === true ) {
+	if ( isDismissed === true ) {
 		return null;
 	}
 
