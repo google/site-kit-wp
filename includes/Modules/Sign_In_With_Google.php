@@ -403,8 +403,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			parent.classList.add( 'woocommerce-form-row', 'form-row' );
-			for ( const login of document.getElementsByClassName( 'login' ) ) {
-				login.insertBefore( parent, login.firstChild );
+			const form = document.querySelector( '.woocommerce-form.login' );
+			if ( form ) {
+				form.insertBefore( parent, login.firstChild );
 			}
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
