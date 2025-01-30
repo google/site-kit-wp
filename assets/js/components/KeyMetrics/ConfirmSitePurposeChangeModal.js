@@ -72,6 +72,13 @@ function ConfirmSitePurposeChangeModal( {
 		)
 	);
 
+	const savedPurposeSnapshot = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_QUESTION_SNAPSHOT,
+			USER_INPUT_QUESTIONS_PURPOSE
+		)
+	);
+
 	const savedPurpose = useSelect( ( select ) =>
 		select( CORE_USER ).getSavedUserInputSettings()
 	);
@@ -94,7 +101,7 @@ function ConfirmSitePurposeChangeModal( {
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const onClose = useCallback( async () => {
-		if ( savedPurpose?.length ) {
+		if ( savedPurposeSnapshot?.length ) {
 			await resetUserInputSettings();
 			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
@@ -108,7 +115,7 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving( false );
 	}, [
 		handleDialog,
-		savedPurpose,
+		savedPurposeSnapshot,
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
