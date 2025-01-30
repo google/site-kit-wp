@@ -61,46 +61,32 @@ function ConfirmSitePurposeChangeModal( {
 	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const includeConversionTailoredMetrics = useSelect( ( select ) => {
-		const isGA4Connected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
+	);
 
-		if ( ! isGA4Connected ) {
-			return false;
-		}
-
-		const haveConversionEventsForTailoredMetrics =
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics();
-
-		if ( haveConversionEventsForTailoredMetrics ) {
-			return select( MODULES_ANALYTICS_4 ).getDetectedEvents() || [];
-		}
-
-		return [];
-	} );
-
-	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getAnswerBasedMetrics(
+	const newMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics(
 			null,
 			includeConversionTailoredMetrics
-		);
-	} );
-
-	const savedPurpose = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
 		)
 	);
 
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_USER ).getSavedUserInputSettings()
+	);
+
 	const currentMetrics = useSelect( ( select ) => {
-		if ( savedPurpose === undefined ) {
+		if (
+			savedPurpose === undefined ||
+			! savedPurpose?.purpose?.values?.length
+		) {
 			return [];
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			savedPurpose?.purpose?.values?.[ 0 ]
+		);
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );

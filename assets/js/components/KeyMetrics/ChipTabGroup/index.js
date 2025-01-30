@@ -99,9 +99,6 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-	const answerBasedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getAnswerBasedMetrics()
-	);
 
 	const currentlyActiveEvents = useSelect( ( select ) => {
 		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
@@ -138,6 +135,14 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 
 		return select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 	} );
+
+	const answerBasedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics( null, [
+			...( currentlyActiveEvents || [] ),
+			...( detectedEvents || [] ),
+		] )
+	);
+
 	const hasGeneratingLeadsGroup = [
 		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 		ENUM_CONVERSION_EVENTS.CONTACT,

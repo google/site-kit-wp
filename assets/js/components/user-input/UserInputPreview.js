@@ -61,6 +61,7 @@ import { hasErrorForAnswer } from './util/validation';
 import Portal from '../Portal';
 import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChangeModal';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
 
 export default function UserInputPreview( props ) {
@@ -113,24 +114,39 @@ export default function UserInputPreview( props ) {
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 
-	const savedPurpose = useSelect( ( select ) =>
+	const savedPurposeSnapshot = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_USER_INPUT_QUESTION_SNAPSHOT,
 			USER_INPUT_QUESTIONS_PURPOSE
 		)
 	);
 
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_USER ).getSavedUserInputSettings()
+	);
+
 	const currentMetrics = useSelect( ( select ) => {
-		if ( savedPurpose === undefined ) {
+		if (
+			savedPurpose === undefined ||
+			! savedPurpose?.purpose?.values?.length
+		) {
 			return [];
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			savedPurpose?.purpose?.values?.[ 0 ]
+		);
 	} );
 
-	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getKeyMetrics();
-	} );
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
+	);
+	const newMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics(
+			null,
+			includeConversionTailoredMetrics
+		)
+	);
 
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -146,7 +162,7 @@ export default function UserInputPreview( props ) {
 		} else {
 			await saveUserInputSettings();
 
-			if ( savedPurpose?.length ) {
+			if ( savedPurposeSnapshot?.length ) {
 				await resetUserInputSettings();
 				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 					[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,

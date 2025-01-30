@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { useWindowWidth } from '@react-hook/window-size/throttled';
+import { useWindowWidth } from './useWindowSize';
 
 export const BREAKPOINT_XLARGE = 'xlarge';
 export const BREAKPOINT_DESKTOP = 'desktop';

@@ -35,6 +35,10 @@ import { EDIT_SCOPE, MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import { properties } from '../../../datastore/__fixtures__';
 import SetupBanner from './SetupBanner';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-width-utils';
 
 describe( 'SetupBanner', () => {
 	const propertyID = '1000';
@@ -43,6 +47,7 @@ describe( 'SetupBanner', () => {
 	let enabledSettingsMock;
 	let disabledSettingsMock;
 	let registry;
+	let originalViewportWidth;
 
 	beforeEach( () => {
 		enabledSettingsMock = {
@@ -99,6 +104,13 @@ describe( 'SetupBanner', () => {
 				status: 200,
 			}
 		);
+
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
+	} );
+
+	afterEach( () => {
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render correctly when the user does have the edit scope granted', async () => {
