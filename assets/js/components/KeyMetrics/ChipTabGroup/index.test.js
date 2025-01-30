@@ -182,7 +182,7 @@ describe( 'ChipTabGroup', () => {
 		it( 'does include conversion reporting metrics in suggested group if events matching the saved site purpose are detected', async () => {
 			// Default includeConversionEvents sertting is empty array.
 			// Here we simulate new events being detected afterwards, which will not include
-			// conversion reporting metrics to the tailore metrics list automatically.
+			// conversion reporting metrics to the tailored metrics list automatically.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
