@@ -170,7 +170,7 @@ describe( 'ChipTabGroup', () => {
 				}
 			);
 
-			fireEvent.click( getByRole( 'tab', { name: /suggested/i } ) );
+			fireEvent.click( getByRole( 'button', { name: /suggested/i } ) );
 
 			await waitForRegistry();
 
@@ -196,7 +196,7 @@ describe( 'ChipTabGroup', () => {
 				}
 			);
 
-			fireEvent.click( getByRole( 'tab', { name: /suggested/i } ) );
+			fireEvent.click( getByRole( 'button', { name: /suggested/i } ) );
 
 			await waitForRegistry();
 
