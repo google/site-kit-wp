@@ -95,14 +95,14 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getModuleData() {
-		const moduleDataAds =
+		const moduleData =
 			global._googlesitekitModulesData?.[ 'sign-in-with-google' ];
 
-		if ( ! moduleDataAds ) {
+		if ( ! moduleData ) {
 			return;
 		}
 
-		yield actions.receiveModuleData( moduleDataAds );
+		yield actions.receiveModuleData( moduleData );
 	},
 };
 
