@@ -48,16 +48,19 @@
 			}
 		}
 
-		.mdc-button {
-			background-color: $c-utility-on-warning-container;
-			border-radius: 100px;
-			color: #fff;
-			font-weight: $fw-medium;
-			min-height: 32px;
-			padding: 6px 16px;
+		&:not(.googlesitekit-anyone-can-register-disabled-notice) {
 
-			svg {
-				margin-left: 6px;
+			.mdc-button {
+				background-color: $c-utility-on-warning-container;
+				border-radius: 100px;
+				color: #fff;
+				font-weight: $fw-medium;
+				min-height: 32px;
+				padding: 6px 16px;
+
+				svg {
+					margin-left: 6px;
+				}
 			}
 		}
 	}
