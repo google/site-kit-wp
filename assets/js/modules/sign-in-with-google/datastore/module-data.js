@@ -40,7 +40,6 @@ const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
 
 export const initialState = {
 	moduleData: {
-		supportedConversionEvents: undefined,
 		isWooCommerceActive: undefined,
 		isWooCommerceRegistrationEnabled: undefined,
 	},
@@ -74,14 +73,10 @@ export const controls = {};
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const {
-				supportedConversionEvents,
-				isWooCommerceActive,
-				isWooCommerceRegistrationEnabled,
-			} = payload;
+			const { isWooCommerceActive, isWooCommerceRegistrationEnabled } =
+				payload;
 
 			const moduleData = {
-				supportedConversionEvents,
 				isWooCommerceActive,
 				isWooCommerceRegistrationEnabled,
 			};
