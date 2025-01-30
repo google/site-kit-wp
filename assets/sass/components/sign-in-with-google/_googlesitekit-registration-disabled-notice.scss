@@ -20,6 +20,15 @@
 
 	.googlesitekit-registration-disabled-notice {
 
+		&.googlesitekit-anyone-can-register-disabled-notice {
+			padding: $fs-body-sm $grid-gap-desktop;
+
+			@media (min-width: $bp-desktop) {
+				padding-bottom: $fs-body-md;
+				padding-top: $fs-body-md;
+			}
+		}
+
 		.googlesitekit-settings-notice__icon {
 			margin-right: 16px;
 
