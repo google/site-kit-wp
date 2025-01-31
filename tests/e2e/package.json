@@ -1,8 +1,4 @@
 {
-  "name": "googlesitekit-e2e",
-  "description": "E2E testing infrastructure for Google Site Kit",
-  "main": "script.js",
-  "private": true,
   "devDependencies": {
     "expect-puppeteer": "^4.4.0",
     "jest-puppeteer": "^4.4.0"
@@ -17,14 +13,4 @@
     "env:stop": "./../../bin/local-env/stop.sh",
     "env:reset-site": "./../../bin/local-env/install-wordpress.sh --reset-site"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/google/site-kit-wp.git"
-  },
-  "author": "Google",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/google/site-kit-wp/issues"
-  },
-  "homepage": "https://github.com/google/site-kit-wp#readme"
 }
