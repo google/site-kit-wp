@@ -704,9 +704,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		// @TODO remove groupID. This notification has been put into the SETUP_CTAS group temporarily
-		// until on demand infrastructure is put in place (#9453), then we can remove it from the group.
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const analyticsConnected = await resolveSelect(
@@ -740,7 +737,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				CORE_MODULES
 			).isModuleConnected( 'analytics-4' );
 
-			if ( ! analyticsConnected ) {
+			if (
+				! analyticsConnected ||
+				! isFeatureEnabled( 'audienceSegmentation' )
+			) {
 				return false;
 			}
 
@@ -774,8 +774,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				configuredAudiences === undefined ||
 				configuredAudiences?.length ||
 				! analyticsIsDataAvailableOnLoad ||
-				isDismissed ||
-				! isFeatureEnabled( 'audienceSegmentation' )
+				isDismissed
 			) {
 				return false;
 			}
