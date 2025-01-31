@@ -156,7 +156,7 @@ export default function SettingsView() {
 
 			{ isRRMv2Enabled && (
 				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item googlesitekit-margin-bottom-0">
+					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Display CTAs', 'google-site-kit' ) }
 						</h5>
@@ -170,7 +170,7 @@ export default function SettingsView() {
 					</div>
 
 					{ 'post_types' === snippetMode && (
-						<div className="googlesitekit-settings-module__meta-item googlesitekit-margin-bottom-0">
+						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __(
 									'Content type to display CTAs',
