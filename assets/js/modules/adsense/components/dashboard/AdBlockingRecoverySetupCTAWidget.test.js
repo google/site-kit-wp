@@ -254,7 +254,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			}
 		);
 
-		it( 'should render the widget for the existing site without the setup completion time', () => {
+		it( 'should render the widget for the existing site without the setup completion time', async () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
@@ -263,7 +263,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 
-			const { container } = render(
+			const { container, waitForRegistry } = render(
 				<AdBlockingRecoverySetupCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
@@ -273,6 +273,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
+
+			await waitForRegistry();
+
 			expect( container ).toHaveTextContent(
 				'Recover revenue lost to ad blockers'
 			);
