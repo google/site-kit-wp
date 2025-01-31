@@ -133,21 +133,23 @@ export default function SettingsView() {
 					</div>
 				) }
 
-				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
-						<Link href={ serviceURL } external>
-							{ createInterpolateElement(
-								__(
-									'Edit <VisuallyHidden>publication </VisuallyHidden>in Reader Revenue Manager',
-									'google-site-kit'
-								),
-								{
-									VisuallyHidden: <VisuallyHidden />,
-								}
-							) }
-						</Link>
-					</p>
-				</div>
+				{ ! isRRMv2Enabled && (
+					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
+						<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+							<Link href={ serviceURL } external>
+								{ createInterpolateElement(
+									__(
+										'Edit <VisuallyHidden>publication </VisuallyHidden>in Reader Revenue Manager',
+										'google-site-kit'
+									),
+									{
+										VisuallyHidden: <VisuallyHidden />,
+									}
+								) }
+							</Link>
+						</p>
+					</div>
+				) }
 			</div>
 
 			{ hasModuleAccess && <PublicationOnboardingStateNotice /> }
