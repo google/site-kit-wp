@@ -346,6 +346,96 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 		} );
 
+		describe( 'shouldIncludeConversionTailoredMetrics', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'conversionReporting' );
+
+				provideKeyMetricsUserInputSettings( registry );
+
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'analytics-4',
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'conversionReporting' );
+			} );
+
+			it( 'should return empty array if Analytics module is not connected', () => {
+				provideModules( registry, [
+					{
+						active: true,
+						connected: false,
+						slug: 'analytics-4',
+					},
+				] );
+
+				const shouldIncludeConversionTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.shouldIncludeConversionTailoredMetrics();
+
+				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [] );
+			} );
+
+			it( 'should return empty array if haveConversionEventsForTailoredMetrics is false', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				// Since by default site purpose is `publish_blog` and we have no events detected
+				// (or detected events are not matching this site purpose), haveConversionEventsForTailoredMetrics
+				// will be false.
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					false
+				);
+
+				const shouldIncludeConversionTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.shouldIncludeConversionTailoredMetrics();
+
+				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [] );
+			} );
+
+			it( 'should return detected events haveConversionEventsForTailoredMetrics is true and there are detected events', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					true
+				);
+
+				const shouldIncludeConversionTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.shouldIncludeConversionTailoredMetrics();
+
+				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+				] );
+			} );
+		} );
+
 		describe( 'haveLostEventsForCurrentMetrics', () => {
 			beforeEach( () => {
 				enabledFeatures.add( 'conversionReporting' );

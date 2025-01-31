@@ -18,72 +18,39 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-consent-mode-setup-cta-widget {
+	.googlesitekit-setup-cta-banner__svg-wrapper--consent-mode-setup-cta-widget {
+		align-items: center;
+		display: flex;
+		height: 100%;
+		justify-content: center;
+		min-height: 136px;
+		overflow: hidden;
+		position: relative;
 
-		.googlesitekit-setup-cta-banner__primary-cell {
-			padding: $grid-gap-phone + 4px $grid-gap-phone 0;
-
-			@media (min-width: $width-tablet + px) {
-				padding: $grid-gap-desktop;
-			}
+		@media (min-width: $width-xsmall + 1 + px) {
+			min-height: 158px;
 		}
 
-		.googlesitekit-setup-cta-banner__cells {
-			display: grid;
-			grid-template-columns: 1fr;
+		svg {
+			max-height: 136px;
 
-			@media (min-width: $width-xlarge + 1 + px) {
-				gap: 48px;
-				grid-template-columns: 1fr 1fr;
-			}
-		}
+			// Increase the SVG size via scale in order to achieve the desired clipping effect
+			// in conjunction with the parent's overflow: hidden.
+			scale: 1.26;
+			transform-origin: center 2px;
 
-		.googlesitekit-setup-cta-banner__title {
-
-			@media (min-width: $width-tablet + px) {
-				font-size: $fs-headline-sm;
-				font-weight: $fw-normal;
-				letter-spacing: 0;
-				line-height: $lh-headline-sm;
-			}
-
-			@media (min-width: $width-xlarge + 1 + px) {
-				font-size: $fs-headline-md;
-				line-height: $lh-headline-md;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__description {
-			letter-spacing: $ls-xs;
-
-			@media (min-width: $width-tablet + px) {
-				font-size: $fs-body-md;
-				letter-spacing: $ls-s;
-				line-height: $lh-body-md;
+			@media (min-width: $width-desktop + 1 + px) {
+				height: 100%;
+				max-height: 346px;
+				position: absolute;
+				scale: 1;
+				top: 0;
+				transform-origin: initial;
 			}
 
 			@media (min-width: $width-xlarge + 1 + px) {
-				letter-spacing: $ls-m;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__svg-wrapper {
-			min-height: 136px;
-
-			@media (min-width: $width-xsmall + 1 + px) {
-				min-height: 158px;
-			}
-
-			svg {
-				@media (min-width: $width-desktop + 1 + px) {
-					scale: 1;
-					top: 0;
-				}
-
-				@media (min-width: $width-xlarge + 1 + px) {
-					scale: 1.31;
-					top: 18px;
-				}
+				scale: 1.31;
+				top: 18px;
 			}
 		}
 	}

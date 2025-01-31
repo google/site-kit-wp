@@ -25,7 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -60,46 +61,32 @@ function ConfirmSitePurposeChangeModal( {
 	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const includeConversionTailoredMetrics = useSelect( ( select ) => {
-		const isGA4Connected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
+	);
 
-		if ( ! isGA4Connected ) {
-			return false;
-		}
-
-		const haveConversionEventsForTailoredMetrics =
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics();
-
-		if ( haveConversionEventsForTailoredMetrics ) {
-			return select( MODULES_ANALYTICS_4 ).getDetectedEvents() || [];
-		}
-
-		return [];
-	} );
-
-	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getAnswerBasedMetrics(
+	const newMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics(
 			null,
 			includeConversionTailoredMetrics
-		);
-	} );
-
-	const savedPurpose = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
 		)
 	);
 
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_USER ).getSavedUserInputSettings()
+	);
+
 	const currentMetrics = useSelect( ( select ) => {
-		if ( savedPurpose === undefined ) {
+		if (
+			savedPurpose === undefined ||
+			! savedPurpose?.purpose?.values?.length
+		) {
 			return [];
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			savedPurpose?.purpose?.values?.[ 0 ]
+		);
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -117,21 +104,14 @@ function ConfirmSitePurposeChangeModal( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 		} );
 
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'cancel_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		handleDialog();
+		setIsSaving( false );
 	}, [
 		handleDialog,
 		savedPurpose,
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
-		viewContext,
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
@@ -161,15 +141,6 @@ function ConfirmSitePurposeChangeModal( {
 		);
 		await saveUserInputSettings();
 
-		setIsSaving( false );
-
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'confirm_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		onClose();
 	}, [
 		saveUserInputSettings,
@@ -177,8 +148,30 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving,
 		setUserInputSetting,
 		userInputPurposeConversionEvents,
-		viewContext,
 	] );
+
+	const prevDialogActive = usePrevious( dialogActive );
+
+	useEffect( () => {
+		if ( prevDialogActive === true && dialogActive === false ) {
+			if ( isSaving ) {
+				// Handle internal tracking when confirmation CTA is clicked.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'confirm_update_metrics_selection',
+					'conversion_reporting'
+				);
+			} else {
+				// Handle internal tracking when keep existing metrics CTA is clicked
+				// or the modal is closed via other means.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'cancel_update_metrics_selection',
+					'conversion_reporting'
+				);
+			}
+		}
+	}, [ prevDialogActive, dialogActive, isSaving, viewContext ] );
 
 	return (
 		<Dialog

@@ -40,6 +40,7 @@ export default function ActionsCTALinkDismiss( {
 	ctaLabel,
 	onCTAClick,
 	ctaDismissOptions,
+	isSaving = false,
 	onDismiss = () => {},
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissOnCTAClick = true,
@@ -65,6 +66,7 @@ export default function ActionsCTALinkDismiss( {
 					dismissExpires={ dismissExpires }
 					dismissOptions={ ctaDismissOptions }
 					gaTrackingEventArgs={ gaTrackingEventArgs }
+					isSaving={ isSaving }
 				/>
 
 				<Dismiss
@@ -88,6 +90,7 @@ ActionsCTALinkDismiss.propTypes = {
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
+	isSaving: PropTypes.bool,
 	onDismiss: PropTypes.func,
 	ctaDismissOptions: PropTypes.object,
 	dismissLabel: PropTypes.string,
