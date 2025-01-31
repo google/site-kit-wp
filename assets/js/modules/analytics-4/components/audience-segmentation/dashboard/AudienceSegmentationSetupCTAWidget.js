@@ -109,7 +109,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 			onSuccess: () => {
 				invalidateResolution( 'getQueuedNotifications', [
 					viewContext,
-					NOTIFICATION_GROUPS.SETUP_CTAS,
+					NOTIFICATION_GROUPS.DEFAULT,
 				] );
 				dismissPrompt( id, {
 					expiresInSeconds: 0,
