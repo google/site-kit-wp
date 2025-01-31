@@ -17,13 +17,13 @@
     "jest-puppeteer": "^4.4.0"
   },
   "scripts": {
-    "pretest:e2e": "./../../bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
+    "pretest:e2e": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
     "test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./script.js",
     "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
     "test:e2e:watch": "npm run test:e2e -- --watch",
     "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
-    "env:start": "./../../bin/local-env/start.sh",
-    "env:stop": "./../../bin/local-env/stop.sh",
-    "env:reset-site": "./../../bin/local-env/install-wordpress.sh --reset-site"
+    "env:start": "./bin/local-env/start.sh",
+    "env:stop": "./bin/local-env/stop.sh",
+    "env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
   }
 }
