@@ -704,6 +704,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		// @TODO remove groupID. This notification has be put into the SETUP_CTAS group temporarily
+		// until on demand infrastructure is put in place, then we can remove it from the group.
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const analyticsConnected = await resolveSelect(
