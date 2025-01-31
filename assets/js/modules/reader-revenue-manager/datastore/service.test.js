@@ -40,11 +40,11 @@ describe( 'modules/reader-revenue-manager service store', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getServiceURL', () => {
-			beforeEach( () => {
-				registry.dispatch( CORE_USER ).receiveUserInfo( userData );
-			} );
+		beforeEach( () => {
+			registry.dispatch( CORE_USER ).receiveUserInfo( userData );
+		} );
 
+		describe( 'getServiceURL', () => {
 			it( 'should retrieve the correct URL with no arguments', () => {
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
@@ -99,6 +99,35 @@ describe( 'modules/reader-revenue-manager service store', () => {
 						...query,
 						utm_source: 'sitekit',
 					}
+				);
+			} );
+		} );
+
+		describe( 'getDetailsLinkURL', () => {
+			it( 'should return the service URL that navigates to the Reader Revenue Manager screen of the publication', () => {
+				const publicationID = 'ABCDEFG';
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID,
+					} );
+
+				const detailsLinkURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getDetailsLinkURL();
+
+				const expectedURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL( {
+						path: 'reader-revenue-manager',
+						query: {
+							publication: publicationID,
+						},
+					} );
+
+				expect( new URL( decodeServiceURL( detailsLinkURL ) ) ).toEqual(
+					new URL( decodeServiceURL( expectedURL ) )
 				);
 			} );
 		} );
