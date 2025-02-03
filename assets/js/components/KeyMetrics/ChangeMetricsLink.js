@@ -31,7 +31,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
-import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
@@ -69,7 +68,6 @@ export default function ChangeMetricsLink() {
 			>
 				{ __( 'Change metrics', 'google-site-kit' ) }
 			</Link>
-			<SetupCompletedSurveyTrigger />
 		</Fragment>
 	);
 }
