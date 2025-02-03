@@ -9,6 +9,9 @@ set -e
 # Check whether Docker is installed and running
 . "$(dirname "$0")/launch-containers.sh"
 
+# Change to the expected directory
+cd "$(dirname "$0")/../.."
+
 # Set up WordPress Development site.
 # Note: we don't bother installing the test site right now, because that's
 # done on every time `npm run test-e2e` is run.

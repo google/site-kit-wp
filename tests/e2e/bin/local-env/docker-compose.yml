@@ -17,9 +17,9 @@ services:
         define( 'WP_AUTO_UPDATE_CORE', false );
     volumes:
       - wordpress_data:/var/www/html
-      - ../../:/var/www/html/wp-content/plugins/google-site-kit
-      - ../../tests/e2e/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
-      - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ../../../../:/var/www/html/wp-content/plugins/google-site-kit
+      - ./plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:
       - mysql
 
@@ -35,8 +35,9 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./wp-cli-php.ini:/usr/local/etc/php/conf.d/wp-cli-php.ini
-      - ../../:/var/www/html/wp-content/plugins/google-site-kit
-      - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
+      # TODO: since moving the code this no longer maps correcly.
+      - ../../../../:/var/www/html/wp-content/plugins/google-site-kit
+      - ./mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:
       - mysql
       - wordpress
