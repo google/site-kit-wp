@@ -90,7 +90,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @param Assets|null         $assets         Assets object.
 	 */
 	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
-		$this->conversion_tracking = new Conversion_Tracking( $this->context );
+		$this->conversion_tracking = new Conversion_Tracking( $context );
 
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 	}
