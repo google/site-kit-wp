@@ -74,17 +74,38 @@ export default function ChangeMetricsLink() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
+	const isKeyMetricsSetupCompletedBy = useSelect( ( select ) =>
+		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+	);
+
+	const currentUserID = useSelect( ( select ) =>
+		select( CORE_USER ).getID()
+	);
+
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
 			if ( usingProxy ) {
-				triggerSurvey( 'view_kmw_setup_completed', {
+				triggerSurvey( 'view_kmw', {
 					ttl: WEEK_IN_SECONDS,
 				} );
+				if ( isKeyMetricsSetupCompletedBy === currentUserID ) {
+					triggerSurvey( 'view_kmw_setup_completed', {
+						ttl: WEEK_IN_SECONDS,
+					} );
+				}
 			}
 
 			setHasBeenInView( true );
 		}
-	}, [ inView, viewContext, hasBeenInView, usingProxy, triggerSurvey ] );
+	}, [
+		inView,
+		viewContext,
+		hasBeenInView,
+		usingProxy,
+		triggerSurvey,
+		currentUserID,
+		isKeyMetricsSetupCompletedBy,
+	] );
 
 	if ( ! renderChangeMetricLink ) {
 		return null;
