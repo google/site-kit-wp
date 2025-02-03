@@ -28,7 +28,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -74,8 +74,6 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 		)
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
-
 	if ( isDismissed === true || anyoneCanRegister === true ) {
 		return null;
 	}
@@ -88,10 +86,7 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 			) }
 			type={ TYPE_INFO }
 			Icon={ InfoIcon }
-			dismiss
-			dismissCallback={ () =>
-				dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE )
-			}
+			dismiss={ ANYONE_CAN_REGISTER_DISABLED_NOTICE }
 			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 			notice={ createInterpolateElement(
 				sprintf(

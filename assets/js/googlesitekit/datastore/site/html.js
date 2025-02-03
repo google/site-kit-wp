@@ -89,7 +89,6 @@ const fetchHTMLForURLStore = createFetchStore( {
 
 // Actions
 const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
-const WAIT_FOR_HTML_FOR_URL = 'WAIT_FOR_HTML_FOR_URL';
 const CHECK_FOR_SETUP_TAG = 'CHECK_FOR_SETUP_TAG';
 
 // Errors
@@ -132,11 +131,6 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl(
-		( registry ) =>
-			( { payload: { url } } ) =>
-				registry.resolveSelect( CORE_SITE ).getHTMLForURL( url )
-	),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl(
 		( registry ) => async () => {
 			let error;
