@@ -32,11 +32,11 @@ import { __ } from '@wordpress/i18n';
  * @return {string} Formatted string of post types.
  */
 export function getPostTypesString( postTypes, allPostTypes ) {
-	if ( ! postTypes ) {
+	if ( ! Array.isArray( postTypes ) || postTypes.length === 0 ) {
 		return '';
 	}
 
-	if ( ! allPostTypes || allPostTypes.length === 0 ) {
+	if ( ! Array.isArray( allPostTypes ) || allPostTypes.length === 0 ) {
 		return postTypes.join( ', ' );
 	}
 
