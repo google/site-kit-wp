@@ -166,10 +166,19 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @return array Inline modules data.
 	 */
 	private function inline_modules_data( $modules_data ) {
-		if ( $this->is_connected() && Feature_Flags::enabled( 'adsPax' ) ) {
+		if ( Feature_Flags::enabled( 'adsPax' ) ) {
 			// Add the data under the `ads` key to make it clear it's scoped to this module.
 			$modules_data['ads'] = array(
 				'supportedConversionEvents' => array(),
+				'plugins' => array(
+					'woocommerce' => array(
+						'active'  => true,
+					),
+					'google-listings-and-ads' => array(
+						'active'       => false,
+						'adsConnected' => false,
+					),
+				),
 			);
 		}
 

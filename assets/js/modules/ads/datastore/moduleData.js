@@ -41,6 +41,7 @@ const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
 export const initialState = {
 	moduleData: {
 		supportedConversionEvents: undefined,
+		plugins: undefined,
 	},
 };
 
@@ -70,8 +71,8 @@ export const actions = {
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { supportedConversionEvents } = payload;
-			const moduleData = { supportedConversionEvents };
+			const { supportedConversionEvents, plugins } = payload;
+			const moduleData = { supportedConversionEvents, plugins };
 
 			return {
 				...state,
@@ -124,6 +125,65 @@ export const selectors = {
 	 */
 	getSupportedConversionEvents: getModuleDataProperty(
 		'supportedConversionEvents'
+	),
+
+	/**
+	 * Checks if woocommerce is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if it is, false if not.
+	 */
+	isWooCommerceActive: createRegistrySelector( ( select ) => () => {
+		const moduleData = select( MODULES_ADS ).getModuleData() || [];
+
+		return moduleData?.plugins?.woocommerce?.active;
+	} ),
+
+	/**
+	 * Checks if Google for WooCommerce is present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if it is, false if not.
+	 */
+	isGoogleForWooCommercePresent: createRegistrySelector( ( select ) => () => {
+		const moduleData = select( MODULES_ADS ).getModuleData() || [];
+
+		return moduleData?.plugins?.hasOwnProperty( 'google-listings-and-ads' );
+	} ),
+
+	/**
+	 * Checks if Google for WooCommerce is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if it is, false if not.
+	 */
+	isGoogleForWooCommerceActive: createRegistrySelector( ( select ) => () => {
+		const moduleData = select( MODULES_ADS ).getModuleData() || [];
+
+		return moduleData?.plugins?.[ 'google-listings-and-ads' ]?.active;
+	} ),
+
+	/**
+	 * Checks if an Ads account is linked via Google for WooCommerce.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if it is, false if not.
+	 */
+	isGoogleForWooCommerceAdsAccountLinked: createRegistrySelector(
+		( select ) => () => {
+			const moduleData = select( MODULES_ADS ).getModuleData() || [];
+
+			return moduleData?.plugins?.[ 'google-listings-and-ads' ]
+				?.adsConnected;
+		}
 	),
 };
 

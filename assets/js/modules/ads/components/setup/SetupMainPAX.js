@@ -30,6 +30,7 @@ import {
 	useCallback,
 	useEffect,
 	useRef,
+	useState,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -59,12 +60,45 @@ import {
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
 import { useFeature } from '../../../../hooks/useFeature';
+import WooCommerceRedirectModal from '../woocommerce/WooCommerceRedirectModal';
+import Portal from '../../../../components/Portal';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
+
+	const registry = useRegistry();
+
+	const [
+		shouldShowWooCommerceRedirectModal,
+		setShouldShowWooCommerceRedirectModal,
+	] = useState( true );
+
+	const wooCommerceRedirectContinueWithSiteKitCallback = useCallback( () => {
+		setShouldShowWooCommerceRedirectModal( false );
+	} );
+
+	const showWooCommerceRedirectModal = useSelect( ( select ) => {
+		const isWooCommerceActive = select( MODULES_ADS ).isWooCommerceActive();
+
+		if ( undefined === isWooCommerceActive ) {
+			return undefined;
+		}
+
+		return (
+			!! isWooCommerceActive &&
+			isWooCommerceActive &&
+			shouldShowWooCommerceRedirectModal
+		);
+	} );
+
+	const handleModal = useCallback( () => {
+		setShouldShowWooCommerceRedirectModal( false );
+	}, [ setShouldShowWooCommerceRedirectModal ] );
+
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
+
 	const paxAppRef = useRef();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -130,7 +164,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		await submitChanges();
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
-	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
 		// Encapsulate dependencies to avoid function changing after launch.
 		const { select, resolveSelect } = registry;
@@ -178,10 +211,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
-
-				{ isAdsPaxEnabled && ! showPaxAppStep && <ProgressBar /> }
+				{ isAdsPaxEnabled &&
+					! isAdBlockerActive &&
+					( ! showPaxAppStep || showWooCommerceRedirectModal ) && (
+						<ProgressBar />
+					) }
 
 				{ ! isAdBlockerActive &&
+					false === showWooCommerceRedirectModal &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
 					hasAdwordsScope && (
 						<PAXEmbeddedApp
@@ -191,7 +228,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 							onFinishAndCloseSignUpFlow={ onCompleteSetup }
 						/>
 					) }
-
 				{ ! isAdsPaxEnabled &&
 					! isAdBlockerActive &&
 					( ! showPaxAppStep || ! hasAdwordsScope ) && (
@@ -248,6 +284,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 								}
 							/>
 						</Fragment>
+					) }
+				{ isAdsPaxEnabled &&
+					! isAdBlockerActive &&
+					showWooCommerceRedirectModal && (
+						<Portal>
+							<WooCommerceRedirectModal
+								dialogActive={ showWooCommerceRedirectModal }
+								handleDialog={ handleModal }
+								onDismiss={
+									wooCommerceRedirectContinueWithSiteKitCallback
+								}
+							/>
+						</Portal>
 					) }
 			</div>
 		</div>
