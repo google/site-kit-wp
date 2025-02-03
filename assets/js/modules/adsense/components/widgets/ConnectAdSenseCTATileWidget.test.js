@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
 	render,
@@ -33,17 +34,18 @@ describe( 'ConnectAdSenseCTATileWidget', () => {
 	)( ConnectAdSenseCTATileWidget );
 
 	it( 'should render the Connect AdSense CTA tile', () => {
-		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) => {
-				provideUserCapabilities( registry );
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: false,
-						connected: false,
-					},
-				] );
+		const registry = createTestRegistry();
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: false,
+				connected: false,
 			},
+		] );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
 		} );
 
 		expect( container ).toMatchSnapshot();

@@ -19,11 +19,17 @@
 /**
  * Internal dependencies
  */
-import { provideModules, render } from '../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModules,
+	render,
+} from '../../../../../tests/js/test-utils';
 import WPDashboardReportError from './WPDashboardReportError';
 
 describe( 'WPDashboardReportError', () => {
 	it( 'should only render one error per module when there are multiple instances with same error', () => {
+		const registry = createTestRegistry();
+
 		const error = {
 			code: 'test_error',
 			message: 'Test error message',
@@ -55,10 +61,10 @@ describe( 'WPDashboardReportError', () => {
 			);
 		}
 
+		provideModules( registry );
+
 		const { container } = render( <TestRender />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry );
-			},
+			registry,
 		} );
 
 		expect(
