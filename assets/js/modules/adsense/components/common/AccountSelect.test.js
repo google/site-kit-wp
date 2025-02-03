@@ -24,37 +24,44 @@ import {
 	fireEvent,
 	render,
 	freezeFetch,
+	createTestRegistry,
 } from '../../../../../../tests/js/test-utils';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
-const setupRegistry = ( registry ) => {
-	registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
-	registry
-		.dispatch( MODULES_ADSENSE )
-		.receiveGetAccounts( fixtures.accountsMultiple );
-	registry.dispatch( MODULES_ADSENSE ).finishResolution( 'getAccounts', [] );
-};
-
-const setupLoadingRegistry = ( registry ) => {
-	registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
-};
-
 describe( 'AccountSelect', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetAccounts( fixtures.accountsMultiple );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.finishResolution( 'getAccounts', [] );
+	} );
+
 	it( 'should render an option for each AdSense account', () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( fixtures.accountsMultiple.length );
 	} );
 
 	it( 'should render a loading state when accounts are undefined', () => {
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.startResolution( 'getAccounts', [] );
+
 		freezeFetch(
 			new RegExp( '^/google-site-kit/v1/modules/adsense/data/accounts' )
 		);
 
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
-			setupRegistry: setupLoadingRegistry,
+			registry,
 		} );
 
 		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
@@ -64,8 +71,8 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', () => {
-		const { getByText, container, registry } = render( <AccountSelect />, {
-			setupRegistry,
+		const { getByText, container } = render( <AccountSelect />, {
+			registry,
 		} );
 		const originalAccountID = registry
 			.select( MODULES_ADSENSE )

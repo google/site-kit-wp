@@ -29,11 +29,12 @@ export default function Chip( {
 	onClick,
 	selected,
 	className,
+	CheckMark = ChipCheckmark,
 	...props
 } ) {
 	return (
 		<MuiChip
-			chipCheckmark={ <ChipCheckmark /> }
+			chipCheckmark={ <CheckMark /> }
 			data-chip-id={ id }
 			id={ id }
 			label={ label }
@@ -51,4 +52,5 @@ Chip.propTypes = {
 	onClick: PropTypes.func,
 	selected: PropTypes.bool,
 	className: PropTypes.string,
+	CheckMark: PropTypes.elementType,
 };

@@ -32,9 +32,14 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import SearchFunnelWidgetGA4 from '.';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-width-utils';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	let registry;
+	let originalViewport;
 
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
 
@@ -74,6 +79,13 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				'^/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
+
+		originalViewport = getViewportWidth();
+		setViewportWidth( 450 );
+	} );
+
+	afterEach( () => {
+		setViewportWidth( originalViewport );
 	} );
 
 	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
