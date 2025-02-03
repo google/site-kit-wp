@@ -1,4 +1,9 @@
 {
+  "name": "googlesitekit-e2e",
+  "description": "E2E testing infrastructure for Google Site Kit",
+  "main": "script.js",
+  "version": "1.0.0",
+  "private": true,
   "dependencies": {
 		"@babel/core": "^7.14.8",
 		"@wordpress/babel-preset-default": "^4.17.0",
