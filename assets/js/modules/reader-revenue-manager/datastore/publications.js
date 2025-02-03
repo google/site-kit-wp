@@ -249,11 +249,13 @@ const baseActions = {
 			const settings = {
 				publicationID,
 				publicationOnboardingState: onboardingState,
+				publicationOnboardingStateChanged: false,
 			};
 
 			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
 				settings.productIDs = [];
 				settings.paymentOption = '';
+				settings.productID = 'openaccess';
 
 				if ( paymentOptions ) {
 					const paymentOption = Object.keys( paymentOptions ).find(
