@@ -26,7 +26,7 @@ import { camelCaseToPascalCase } from './transform-case';
 const MODULE_SLUG = 'test-module';
 const STORE_NAME = `modules/${ MODULE_SLUG }`;
 
-describe( 'modules/sign-in-with-google inline module data', () => {
+describe( 'createModuleDataStore store', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const inlineData = {
 		dataProp1: 'test-string',
