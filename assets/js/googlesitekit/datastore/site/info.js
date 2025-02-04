@@ -608,6 +608,10 @@ export const selectors = {
 		const adminURL = select( CORE_SITE ).getAdminURL();
 		const isMultisite = select( CORE_SITE ).isMultisite();
 
+		if ( adminURL === undefined || isMultisite === undefined ) {
+			return undefined;
+		}
+
 		return new URL(
 			isMultisite === true
 				? 'network/settings.php'
