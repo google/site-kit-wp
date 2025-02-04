@@ -1,34 +1,16 @@
 {
-  "name": "googlesitekit-e2e",
-  "description": "E2E testing infrastructure for Google Site Kit",
-  "main": "script.js",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@babel/core": "^7.14.8",
-    "@wordpress/babel-preset-default": "^4.17.0",
-    "@wordpress/e2e-test-utils": "^4.11.0",
-    "@wordpress/jest-console": "^3.9.0",
-    "amphtml-validator": "^1.0.35",
-    "babel-jest": "^26.6.3",
-    "dockerode": "^4.0.2",
-    "expect-puppeteer": "^4.4.0",
-    "jest": "^26.6.3",
-    "jest-puppeteer": "^6.0.1",
-    "jsdom": "^16.5.0",
-    "puppeteer": "^10.4.0"
-  },
   "devDependencies": {
-    "npm": "^7.24.2"
+    "expect-puppeteer": "^4.4.0",
+    "jest-puppeteer": "^4.4.0"
   },
   "scripts": {
-    "pretest:e2e": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
+    "pretest:e2e": "./../../bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
     "test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./script.js",
     "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
     "test:e2e:watch": "npm run test:e2e -- --watch",
     "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
-    "env:start": "./bin/local-env/start.sh",
-    "env:stop": "./bin/local-env/stop.sh",
-    "env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
+    "env:start": "./../../bin/local-env/start.sh",
+    "env:stop": "./../../bin/local-env/stop.sh",
+    "env:reset-site": "./../../bin/local-env/install-wordpress.sh --reset-site"
   }
 }
