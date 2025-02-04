@@ -18,6 +18,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -80,3 +81,7 @@ export default function RegistrationDisabledNotice( { className } ) {
 		/>
 	);
 }
+
+RegistrationDisabledNotice.propTypes = {
+	className: PropTypes.string,
+};
