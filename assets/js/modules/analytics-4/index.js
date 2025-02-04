@@ -725,6 +725,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			return Array.isArray( configuredAudiences );
 		},
 		isDismissible: true,
+		featureFlag: 'audienceSegmentation',
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
@@ -771,8 +772,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				configuredAudiences === undefined ||
 				configuredAudiences?.length ||
 				! analyticsIsDataAvailableOnLoad ||
-				isDismissed ||
-				! isFeatureEnabled( 'audienceSegmentation' )
+				isDismissed
 			) {
 				return false;
 			}
@@ -781,6 +781,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
+		featureFlag: 'audienceSegmentation',
 	},
 };
 
