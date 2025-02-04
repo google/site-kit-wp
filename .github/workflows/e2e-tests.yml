@@ -102,7 +102,7 @@ jobs:
           cache: 'npm'
 
       - name: npm install
-        run: npm ci && npx npm ci -w tests/e2e
+        run: npm ci && cd tests/e2e && npx npm ci
 
       - name: Build
         run: npm run build:test
