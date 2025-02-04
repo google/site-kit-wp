@@ -57,12 +57,8 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 	const isMultisite = useSelect( ( select ) =>
 		select( CORE_SITE ).isMultisite()
 	);
-	const generalSettingsURL = useSelect(
-		( select ) =>
-			new URL(
-				isMultisite ? 'network/settings.php' : 'options-general.php',
-				select( CORE_SITE ).getAdminURL()
-			).href
+	const generalSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminSettingsURL()
 	);
 
 	const isDismissed = useSelect( ( select ) =>
