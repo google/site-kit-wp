@@ -26,7 +26,10 @@ import apiFetchMock from '@wordpress/api-fetch';
  */
 import UseSnippetSwitch from './UseSnippetSwitch';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
-import { subscribeUntil } from '../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	subscribeUntil,
+} from '../../../../../../tests/js/utils';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 
 // Mock apiFetch so we know if it's called.
@@ -36,20 +39,22 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 	console.warn( 'apiFetch', ...args );
 } );
 
-const getSetupRegistry = ( useSnippetValue ) => {
-	return ( registry ) => {
-		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-			useSnippet: useSnippetValue,
-		} );
-	};
-};
-
 describe( 'UseSnippetSwitch', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
 	afterEach( () => apiFetchMock.mockClear() );
 
 	it( 'should update useSnippet in the store when toggled', () => {
-		const { container, registry } = render( <UseSnippetSwitch />, {
-			setupRegistry: getSetupRegistry( false ),
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			useSnippet: false,
+		} );
+
+		const { container } = render( <UseSnippetSwitch />, {
+			registry,
 		} );
 		const originalUseSnippet = registry
 			.select( MODULES_ADSENSE )
@@ -69,18 +74,24 @@ describe( 'UseSnippetSwitch', () => {
 	} );
 
 	it( 'should render nothing when useSnippet is undefined', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			useSnippet: undefined,
+		} );
 		const { container } = render( <UseSnippetSwitch />, {
-			setupRegistry: getSetupRegistry( undefined ),
+			registry,
 		} );
 
 		expect( container.firstChild ).toEqual( null );
 	} );
 
 	it( 'should persist useSnippet when saveOnChange prop is enabled', async () => {
-		const { container, registry } = render(
-			<UseSnippetSwitch saveOnChange />,
-			{ setupRegistry: getSetupRegistry( false ) }
-		);
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			useSnippet: false,
+		} );
+
+		const { container } = render( <UseSnippetSwitch saveOnChange />, {
+			registry,
+		} );
 		const originalUseSnippet = registry
 			.select( MODULES_ADSENSE )
 			.getUseSnippet();
