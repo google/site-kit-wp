@@ -39,12 +39,12 @@ export default function Chip( {
 			data-chip-id={ id }
 			id={ id }
 			label={ label }
-			onClick={ () => {
+			onClick={ ( event ) => {
 				if ( disabled ) {
 					return;
 				}
 
-				onClick?.();
+				onClick?.( event );
 			} }
 			selected={ selected }
 			className={ classnames( 'googlesitekit-chip', className, {
