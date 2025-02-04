@@ -154,9 +154,15 @@ const baseActions = {
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
 			const { select, resolveSelect } = yield commonActions.getRegistry();
+			const {
+				isAuthenticated,
+				isSurveyTimedOut,
+				isSurveyTriggerLocked,
+				getSurveyTimeouts,
+			} = select( CORE_USER );
 
 			// The lock prevents multiple concurrent triggers for the same ID.
-			if ( select( CORE_USER ).isSurveyTriggerLocked( triggerID ) ) {
+			if ( isSurveyTriggerLocked( triggerID ) ) {
 				return {};
 			}
 			yield lockSurveyTrigger( triggerID );
@@ -167,7 +173,7 @@ const baseActions = {
 					resolveSelect( CORE_USER ).getAuthentication()
 				);
 
-				if ( ! select( CORE_USER ).isAuthenticated() ) {
+				if ( ! isAuthenticated() ) {
 					return {};
 				}
 
@@ -177,7 +183,7 @@ const baseActions = {
 
 				// Check if persistent timeout for this trigger is set
 				// or if an in-memory timeout is present (see below).
-				if ( select( CORE_USER ).isSurveyTimedOut( triggerID ) ) {
+				if ( isSurveyTimedOut( triggerID ) ) {
 					return { response: {}, error: false };
 				}
 
@@ -192,7 +198,7 @@ const baseActions = {
 				}
 
 				if ( ttl > 0 ) {
-					const timeouts = select( CORE_USER ).getSurveyTimeouts();
+					const timeouts = getSurveyTimeouts();
 					// Add the trigger to the list of timeouts directly (next time it will come from server side).
 					yield fetchGetSurveyTimeoutsStore.actions.receiveGetSurveyTimeouts(
 						[ ...timeouts, triggerID ]
