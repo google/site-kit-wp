@@ -49,7 +49,8 @@ export default function RegistrationDisabledNotice( { className } ) {
 	return (
 		<SettingsNotice
 			className={ classnames(
-				'googlesitekit-registration-disabled-notice googlesitekit-registration-disabled-notice--with-outer-cta',
+				'googlesitekit-registration-disabled-notice',
+				'googlesitekit-registration-disabled-notice--with-outer-cta',
 				className
 			) }
 			Icon={ InfoIcon }
