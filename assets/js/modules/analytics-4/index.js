@@ -725,8 +725,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			return Array.isArray( configuredAudiences );
 		},
 		isDismissible: true,
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'audienceSegmentation',
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
@@ -783,23 +781,12 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'audienceSegmentation',
 	},
 };
 
 export const registerNotifications = ( notifications ) => {
 	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
-		if (
-			ANALYTICS_4_NOTIFICATIONS[ notificationID ]?.featureFlag &&
-			! isFeatureEnabled(
-				ANALYTICS_4_NOTIFICATIONS[ notificationID ]?.featureFlag
-			)
-		) {
-			continue;
-		}
-
 		notifications.registerNotification(
 			notificationID,
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
