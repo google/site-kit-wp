@@ -30,6 +30,7 @@ export default function Chip( {
 	selected,
 	className,
 	CheckMark = ChipCheckmark,
+	disabled,
 	...props
 } ) {
 	return (
@@ -38,9 +39,17 @@ export default function Chip( {
 			data-chip-id={ id }
 			id={ id }
 			label={ label }
-			onClick={ onClick }
+			onClick={ () => {
+				if ( disabled ) {
+					return;
+				}
+
+				onClick?.();
+			} }
 			selected={ selected }
-			className={ classnames( 'googlesitekit-chip', className ) }
+			className={ classnames( 'googlesitekit-chip', className, {
+				'googlesitekit-chip--disabled': disabled,
+			} ) }
 			{ ...props }
 		/>
 	);
