@@ -689,10 +689,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Exposes an existing client ID from a previous connection
-	 * to JS via _googlesitekitModulesData.
+	 * Exposes inline module data to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.142.0
+	 * @since n.e.x.t Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
@@ -709,7 +709,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$woocommerce_registration_enabled = $is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
 
 		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
-		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled ? true : false;
+		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
 
 		// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
 		$modules_data['sign-in-with-google'] = $inline_data;
