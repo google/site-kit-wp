@@ -20,8 +20,26 @@
 
 	.googlesitekit-settings-module--reader-revenue-manager {
 		// Ensure that the style only applies to the settings view screen.
-		.googlesitekit-settings-module__meta-items + .googlesitekit-publication-onboarding-state-notice {
-			margin-top: $grid-gap-desktop;
+
+		.googlesitekit-settings-module__meta-items:last-child {
+
+			.googlesitekit-settings-module__meta-item:last-child {
+				margin-bottom: 0;
+			}
+
+			@media (min-width: $bp-tablet) {
+				.googlesitekit-settings-module__meta-item {
+					margin-bottom: 0;
+				}
+			}
+		}
+
+		.googlesitekit-publication-onboarding-state-notice + .googlesitekit-settings-module__meta-items {
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
 		}
 	}
 }
