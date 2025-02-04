@@ -39,6 +39,7 @@ import {
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';
+import { isFeatureEnabled } from '../../../features';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
@@ -69,6 +70,7 @@ export const actions = {
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
 	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
+	 * @param {string}         [settings.featureFlag]       Optional. Feature flag guard passed to skip registering the notification when feature flag is not enabled.
 	 * @return {Object} Redux-style action.
 	 */
 	registerNotification(
@@ -82,6 +84,7 @@ export const actions = {
 			checkRequirements,
 			isDismissible,
 			dismissRetries = 0,
+			featureFlag = '',
 		}
 	) {
 		invariant(
@@ -120,6 +123,7 @@ export const actions = {
 					checkRequirements,
 					isDismissible,
 					dismissRetries,
+					featureFlag,
 				},
 			},
 			type: REGISTER_NOTIFICATION,
@@ -272,6 +276,11 @@ export const controls = {
 				await registry.resolveSelect( CORE_USER ).getDismissedItems();
 
 				let potentialNotifications = Object.values( notifications )
+					.filter( ( notification ) =>
+						notification?.featureFlag
+							? isFeatureEnabled( notification.featureFlag )
+							: true
+					)
 					.filter(
 						( notification ) => notification.groupID === groupID
 					)
