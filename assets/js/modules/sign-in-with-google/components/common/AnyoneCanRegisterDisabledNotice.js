@@ -57,30 +57,24 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 	const isMultisite = useSelect( ( select ) =>
 		select( CORE_SITE ).isMultisite()
 	);
-	const generalSettingsURL = useSelect(
-		( select ) =>
-			new URL(
-				isMultisite ? 'network/settings.php' : 'options-general.php',
-				select( CORE_SITE ).getAdminURL()
-			).href
+	const generalSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminSettingsURL()
 	);
 
-	const anyoneCanRegister = useSelect( ( select ) =>
-		select( CORE_SITE ).getAnyoneCanRegister()
-	);
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ANYONE_CAN_REGISTER_DISABLED_NOTICE
 		)
 	);
 
-	if ( isDismissed === true || anyoneCanRegister === true ) {
+	if ( isDismissed === true ) {
 		return null;
 	}
 
 	return (
 		<SettingsNotice
 			className={ classnames(
+				'googlesitekit-registration-disabled-notice',
 				'googlesitekit-anyone-can-register-disabled-notice',
 				className
 			) }

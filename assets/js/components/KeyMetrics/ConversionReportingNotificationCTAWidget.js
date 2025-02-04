@@ -248,12 +248,14 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				);
 			}
 
-			// Handle internal tracking for new events detection - after initial events were detected.
-			conversionReportingDetectedEventsTracking(
-				conversionReportingDetectedEventsTrackingArgs,
-				viewContext,
-				'confirm_view_new_conversion_metrics'
-			);
+			if ( shouldShowCalloutForNewEvents ) {
+				// Handle internal tracking for new events detection - after initial events were detected.
+				conversionReportingDetectedEventsTracking(
+					conversionReportingDetectedEventsTrackingArgs,
+					viewContext,
+					'confirm_view_new_conversion_metrics'
+				);
+			}
 		},
 		[
 			viewContext,
