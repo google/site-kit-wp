@@ -39,6 +39,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { isFeatureEnabled } from '../../../features';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -235,17 +236,65 @@ const baseActions = {
 				);
 			} );
 		},
-		// `publicationId` is the identifier used by the API.
-		// eslint-disable-next-line sitekit/acronym-case
-		function* ( { publicationId: publicationID, onboardingState } ) {
+		function* ( {
+			// `publicationId` is the identifier used by the API.
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationId: publicationID,
+			onboardingState,
+			paymentOptions,
+			products,
+		} ) {
 			const registry = yield commonActions.getRegistry();
+
+			const settings = {
+				publicationID,
+				publicationOnboardingState: onboardingState,
+				publicationOnboardingStateChanged: false,
+			};
+
+			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+				settings.productIDs = [];
+				settings.paymentOption = '';
+				settings.productID = 'openaccess';
+
+				if ( paymentOptions ) {
+					const paymentOption = Object.keys( paymentOptions ).find(
+						( key ) => !! paymentOptions[ key ]
+					);
+
+					if ( paymentOption ) {
+						settings.paymentOption = paymentOption;
+					}
+				}
+
+				if ( products ) {
+					settings.productIDs = products.reduce(
+						( ids, { name } ) => {
+							if ( ! name ) {
+								return ids;
+							}
+
+							const productIDSeparatorIndex = name.indexOf( ':' );
+
+							if ( productIDSeparatorIndex !== -1 ) {
+								return [
+									...ids,
+									name.substring(
+										productIDSeparatorIndex + 1
+									),
+								];
+							}
+
+							return ids;
+						},
+						[]
+					);
+				}
+			}
 
 			return registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.setSettings( {
-					publicationID,
-					publicationOnboardingState: onboardingState,
-				} );
+				.setSettings( settings );
 		}
 	),
 };

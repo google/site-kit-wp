@@ -24,7 +24,7 @@
  * @return {number} The current viewport width.
  */
 export function getViewportWidth() {
-	return global.window.document.documentElement.clientWidth;
+	return global.innerWidth;
 }
 
 /**
@@ -35,12 +35,8 @@ export function getViewportWidth() {
  * @param {number} viewportWidth The viewport width to set.
  */
 export function setViewportWidth( viewportWidth ) {
-	Object.defineProperty(
-		global.window.document.documentElement,
-		'clientWidth',
-		{
-			configurable: true,
-			value: viewportWidth,
-		}
-	);
+	Object.defineProperty( global, 'innerWidth', {
+		configurable: true,
+		value: viewportWidth,
+	} );
 }

@@ -28,7 +28,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -57,41 +57,30 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 	const isMultisite = useSelect( ( select ) =>
 		select( CORE_SITE ).isMultisite()
 	);
-	const generalSettingsURL = useSelect(
-		( select ) =>
-			new URL(
-				isMultisite ? 'network/settings.php' : 'options-general.php',
-				select( CORE_SITE ).getAdminURL()
-			).href
+	const generalSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminSettingsURL()
 	);
 
-	const anyoneCanRegister = useSelect( ( select ) =>
-		select( CORE_SITE ).getAnyoneCanRegister()
-	);
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ANYONE_CAN_REGISTER_DISABLED_NOTICE
 		)
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	if ( isDismissed === true || anyoneCanRegister === true ) {
+	if ( isDismissed === true ) {
 		return null;
 	}
 
 	return (
 		<SettingsNotice
 			className={ classnames(
+				'googlesitekit-registration-disabled-notice',
 				'googlesitekit-anyone-can-register-disabled-notice',
 				className
 			) }
 			type={ TYPE_INFO }
 			Icon={ InfoIcon }
-			dismiss
-			dismissCallback={ () =>
-				dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE )
-			}
+			dismiss={ ANYONE_CAN_REGISTER_DISABLED_NOTICE }
 			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 			notice={ createInterpolateElement(
 				sprintf(

@@ -26,53 +26,40 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
+	createTestRegistry,
 } from '../../../../tests/js/utils';
 
-const setupAdBlockerNotConnectedRegistry = ( registry ) => {
-	provideModules( registry, [
-		{
-			slug: 'adsense',
-			active: true,
-			connected: false,
-		},
-	] );
-	provideModuleRegistrations( registry );
-	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
-	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
-};
-
-const setupAdBlockerConnectedRegistry = ( registry ) => {
-	provideModules( registry, [
-		{
-			slug: 'adsense',
-			active: true,
-			connected: true,
-		},
-	] );
-	provideModuleRegistrations( registry );
-	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
-	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
-};
-
-const setupNoAdBlockerRegistry = ( registry ) => {
-	provideModules( registry, [
-		{
-			slug: 'adsense',
-			active: true,
-			connected: true,
-		},
-	] );
-	provideModuleRegistrations( registry );
-	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
-	registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
-};
-
 describe( 'AdBlockerWarning', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+	} );
+
 	it( 'should render the warning when an AdBlocker is active and module is not connected', () => {
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: true,
+				connected: false,
+			},
+		] );
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 		const { container } = render(
 			<AdBlockerWarning moduleSlug="adsense" />,
 			{
-				setupRegistry: setupAdBlockerNotConnectedRegistry,
+				registry,
 			}
 		);
 
@@ -84,10 +71,13 @@ describe( 'AdBlockerWarning', () => {
 	} );
 
 	it( 'should render the warning when an AdBlocker is active and module is connected', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
+
 		const { container } = render(
 			<AdBlockerWarning moduleSlug="adsense" />,
 			{
-				setupRegistry: setupAdBlockerConnectedRegistry,
+				registry,
 			}
 		);
 
@@ -99,10 +89,13 @@ describe( 'AdBlockerWarning', () => {
 	} );
 
 	it( 'should render nothing when no AdBlocker is active', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
+
 		const { container } = render(
 			<AdBlockerWarning moduleSlug="adsense" />,
 			{
-				setupRegistry: setupNoAdBlockerRegistry,
+				registry,
 			}
 		);
 

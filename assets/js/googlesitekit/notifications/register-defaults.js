@@ -62,7 +62,8 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
-import { isFeatureEnabled } from '../../features';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
+import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -494,6 +495,29 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
+	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
+		Component: ConsentModeSetupCTAWidget,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The isConsentModeEnabled selector relies on the resolution
+			// of the getConsentModeSettings() resolver.
+			await resolveSelect( CORE_SITE ).getConsentModeSettings();
+
+			const isConsentModeEnabled =
+				select( CORE_SITE ).isConsentModeEnabled();
+
+			if ( isConsentModeEnabled !== false ) {
+				return false;
+			}
+
+			return resolveSelect( CORE_SITE ).isAdsConnected();
+		},
+		dismissRetries: 2,
+	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: 30,
@@ -531,8 +555,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'firstPartyMode',
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
@@ -562,8 +584,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'firstPartyMode',
 	},
 	'setup-success-notification-fpm': {
@@ -577,8 +597,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
 			);
 		},
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'firstPartyMode',
 	},
 };
@@ -592,15 +610,6 @@ export const DEFAULT_NOTIFICATIONS = {
  */
 export function registerDefaults( notificationsAPI ) {
 	for ( const notificationID in DEFAULT_NOTIFICATIONS ) {
-		if (
-			DEFAULT_NOTIFICATIONS[ notificationID ]?.featureFlag &&
-			! isFeatureEnabled(
-				DEFAULT_NOTIFICATIONS[ notificationID ]?.featureFlag
-			)
-		) {
-			continue;
-		}
-
 		notificationsAPI.registerNotification(
 			notificationID,
 			DEFAULT_NOTIFICATIONS[ notificationID ]

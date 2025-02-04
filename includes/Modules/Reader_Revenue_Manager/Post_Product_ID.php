@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Storage\Post_Meta;
-use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
+use Google\Site_Kit\Core\Storage\Meta_Setting_Trait;
 
 /**
  * Class for associating product ID to post meta.
@@ -20,7 +20,10 @@ use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
  * @access private
  * @ignore
  */
-class Post_Product_ID extends Post_Meta_Setting {
+class Post_Product_ID {
+
+	use Meta_Setting_Trait;
+
 	/**
 	 * Publication ID.
 	 *
@@ -39,8 +42,7 @@ class Post_Product_ID extends Post_Meta_Setting {
 	 * @param string    $publication_id Publication ID.
 	 */
 	public function __construct( Post_Meta $post_meta, string $publication_id ) {
-		parent::__construct( $post_meta );
-
+		$this->meta           = $post_meta;
 		$this->publication_id = $publication_id;
 	}
 
@@ -53,6 +55,17 @@ class Post_Product_ID extends Post_Meta_Setting {
 	 */
 	protected function get_meta_key(): string {
 		return 'googlesitekit_rrm_' . $this->publication_id . ':productID';
+	}
+
+	/**
+	 * Returns the object type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Object type.
+	 */
+	protected function get_object_type(): string {
+		return 'post';
 	}
 
 	/**

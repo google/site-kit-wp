@@ -27,6 +27,7 @@ import {
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_QUESTIONS_PURPOSE,
@@ -47,6 +48,7 @@ function Template( args ) {
 export const Default = Template.bind( {} );
 Default.storyName = 'ConfirmSitePurposeChangeModal';
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/ConfirmSitePurposeChangeModal',
 };
 
@@ -67,6 +69,9 @@ export default {
 						scope: 'site',
 					},
 				} );
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( 'purpose', [ 'sell_products' ] );
 				provideSiteInfo( registry );
 			};
 

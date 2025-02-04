@@ -598,6 +598,30 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Retrieves an admin settings URL, pointing to either network or single-site settings
+	 * depending on whether the site is multisite.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string|undefined} The admin settings URL, or undefined if required data is unavailable.
+	 */
+	getAdminSettingsURL: createRegistrySelector( ( select ) => () => {
+		const adminURL = select( CORE_SITE ).getAdminURL();
+		const isMultisite = select( CORE_SITE ).isMultisite();
+
+		if ( adminURL === undefined || isMultisite === undefined ) {
+			return undefined;
+		}
+
+		return new URL(
+			isMultisite === true
+				? 'network/settings.php'
+				: 'options-general.php',
+			adminURL
+		).href;
+	} ),
+
+	/**
 	 * Gets a site's timezone.
 	 *
 	 * @since 1.9.0
