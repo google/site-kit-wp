@@ -6,11 +6,11 @@ set -e
 # Include useful functions
 . "$(dirname "$0")/includes.sh"
 
-# Check whether Docker is installed and running
-. "$(dirname "$0")/launch-containers.sh"
-
 # Change to the expected directory
 cd "$(dirname "$0")/../.."
+
+# Check whether Docker is installed and running
+. "$(dirname "$0")/launch-containers.sh"
 
 # Set up WordPress Development site.
 # Note: we don't bother installing the test site right now, because that's

@@ -35,7 +35,6 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./wp-cli-php.ini:/usr/local/etc/php/conf.d/wp-cli-php.ini
-      # TODO: since moving the code this no longer maps correcly.
       - ../../../../:/var/www/html/wp-content/plugins/google-site-kit
       - ./mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:
