@@ -78,7 +78,8 @@ export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 	return (
 		<SettingsNotice
 			className={ classnames(
-				'googlesitekit-registration-disabled-notice googlesitekit-anyone-can-register-disabled-notice',
+				'googlesitekit-registration-disabled-notice',
+				'googlesitekit-anyone-can-register-disabled-notice',
 				className
 			) }
 			type={ TYPE_INFO }
