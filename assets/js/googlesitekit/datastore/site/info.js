@@ -598,11 +598,12 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Returns admin settings URL based on the site environment.
+	 * Retrieves an admin settings URL, pointing to either network or single-site settings
+	 * depending on whether the site is multisite.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string)} Admin settings URL.
+	 * @return {string|undefined} The admin settings URL, or undefined if required data is unavailable.
 	 */
 	getAdminSettingsURL: createRegistrySelector( ( select ) => () => {
 		const adminURL = select( CORE_SITE ).getAdminURL();
