@@ -24,4 +24,40 @@
 			margin-top: $grid-gap-desktop;
 		}
 	}
+
+	.googlesitekit-rrm-settings-edit {
+
+		.googlesitekit-settings-module__fields-group:not(:last-child) .googlesitekit-publication-onboarding-state-notice {
+			margin-bottom: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-rrm-settings-edit__snippet-mode p {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 10px 0 0;
+		}
+
+		.googlesitekit-rrm-settings-edit__post-types {
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-rrm-settings-edit__post-types h5 {
+			font-family: $f-primary;
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+			margin: 0 0 14px;
+		}
+	}
 }

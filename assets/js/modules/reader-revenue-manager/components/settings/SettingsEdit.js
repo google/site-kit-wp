@@ -27,19 +27,26 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { ProgressBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
+import Link from '../../../../components/Link';
+import PostTypesSelect from '../common/PostTypesSelect';
 import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
+import SnippetModeSelect from '../common/SnippetModeSelect';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function SettingsEdit() {
+	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
+
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
@@ -109,49 +116,105 @@ export default function SettingsEdit() {
 			? `<strong>${ module.owner.login }</strong>`
 			: __( 'Another admin', 'google-site-kit' );
 	} );
+	const snippetMode = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
+	);
+	const snippetModeLearnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'rrm-content-settings'
+		);
+	} );
 
 	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
 		return <ProgressBar />;
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
-			{ hasModuleAccess && false === publicationAvailable && (
-				<ErrorText
-					message={ sprintf(
-						/* translators: 1: Publication ID. */
-						__(
-							'The previously selected publication with ID %s was not found. Please select a new publication.',
-							'google-site-kit'
-						),
-						publicationID
-					) }
-				/>
-			) }
-			<div className="googlesitekit-setup-module__inputs">
-				<PublicationSelect hasModuleAccess={ hasModuleAccess } />
-			</div>
-			{ hasModuleAccess && publicationAvailable && (
-				<PublicationOnboardingStateNotice />
-			) }
-			{ ! hasModuleAccess && (
-				<SettingsNotice
-					type={ TYPE_INFO }
-					Icon={ WarningIcon }
-					notice={ createInterpolateElement(
-						sprintf(
-							/* translators: %s: module owner's name */
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager googlesitekit-rrm-settings-edit">
+			<div className="googlesitekit-settings-module__fields-group">
+				{ hasModuleAccess && false === publicationAvailable && (
+					<ErrorText
+						message={ sprintf(
+							/* translators: 1: Publication ID. */
 							__(
-								'%s configured Reader Revenue Manager and you don’t have access to its configured publication. Contact them to share access or change the configured publication.',
+								'The previously selected publication with ID %s was not found. Please select a new publication.',
 								'google-site-kit'
 							),
-							formattedOwnerName
-						),
-						{
-							strong: <strong />,
-						}
+							publicationID
+						) }
+					/>
+				) }
+				<div className="googlesitekit-setup-module__inputs">
+					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
+				</div>
+				{ hasModuleAccess && publicationAvailable && (
+					<PublicationOnboardingStateNotice />
+				) }
+				{ ! hasModuleAccess && (
+					<SettingsNotice
+						type={ TYPE_INFO }
+						Icon={ WarningIcon }
+						notice={ createInterpolateElement(
+							sprintf(
+								/* translators: %s: module owner's name */
+								__(
+									'%s configured Reader Revenue Manager and you don’t have access to its configured publication. Contact them to share access or change the configured publication.',
+									'google-site-kit'
+								),
+								formattedOwnerName
+							),
+							{
+								strong: <strong />,
+							}
+						) }
+					/>
+				) }
+			</div>
+			{ isRRMv2Enabled && (
+				<div className="googlesitekit-settings-module__fields-group">
+					<h4 className="googlesitekit-settings-module__fields-group-title">
+						{ __( 'CTA Placement', 'google-site-kit' ) }
+					</h4>
+					<div className="googlesitekit-rrm-settings-edit__snippet-mode">
+						<SnippetModeSelect
+							hasModuleAccess={ hasModuleAccess }
+						/>
+						<p>
+							{ createInterpolateElement(
+								__(
+									'Use the new settings in the block editor to customize where your CTAs appear. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<Link
+											aria-label={ __(
+												'Learn more about Reader Revenue Manager settings in the block editor',
+												'google-site-kit'
+											) }
+											href={ snippetModeLearnMoreURL }
+											external
+											hideExternalIndicator
+										/>
+									),
+								}
+							) }
+						</p>
+					</div>
+					{ snippetMode === 'post_types' && (
+						<div className="googlesitekit-rrm-settings-edit__post-types">
+							<h5>
+								{ __(
+									'Select the content types where you want your CTAs to appear:',
+									'google-site-kit'
+								) }
+							</h5>
+							<PostTypesSelect
+								hasModuleAccess={ hasModuleAccess }
+							/>
+						</div>
 					) }
-				/>
+				</div>
 			) }
 		</div>
 	);
