@@ -59,6 +59,7 @@ export const actions = {
 	 * Registers a notification with a given `id` slug and settings.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Added `featureFlag` parameter.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
@@ -70,7 +71,7 @@ export const actions = {
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
 	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
-	 * @param {string}         [settings.featureFlag]       Optional. Feature flag guard passed to skip registering the notification when feature flag is not enabled.
+	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
 	 * @return {Object} Redux-style action.
 	 */
 	registerNotification(
