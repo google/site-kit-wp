@@ -294,7 +294,21 @@ describe( 'PAX partner services', () => {
 			} );
 
 			describe( 'getSupportedConversionTrackingTypes', () => {
-				it( 'should return the expected supported types', async () => {
+				it( 'should return the expected supported types when no detected events are present', async () => {
+					const supportedTypes =
+						await services.conversionTrackingService.getSupportedConversionTrackingTypes(
+							{}
+						);
+
+					expect( supportedTypes ).toMatchObject( {
+						conversionTrackingTypes: [ 'TYPE_PAGE_VIEW' ],
+					} );
+				} );
+				it( 'should return the expected supported types when detected events are present', async () => {
+					const mockSupportedEvents = [ 'mock-event' ];
+					registry.dispatch( MODULES_ADS ).receiveModuleData( {
+						supportedConversionEvents: mockSupportedEvents,
+					} );
 					const supportedTypes =
 						await services.conversionTrackingService.getSupportedConversionTrackingTypes(
 							{}
@@ -302,8 +316,8 @@ describe( 'PAX partner services', () => {
 
 					expect( supportedTypes ).toMatchObject( {
 						conversionTrackingTypes: [
-							'TYPE_CONVERSION_EVENT',
 							'TYPE_PAGE_VIEW',
+							'TYPE_CONVERSION_EVENT',
 						],
 					} );
 				} );
