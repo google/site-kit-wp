@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	fireEvent,
 	provideModules,
 	provideSiteInfo,
@@ -38,6 +39,8 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryToggle', () => {
+	let registry;
+
 	const validSettings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -47,21 +50,26 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		adBlockingRecoverySetupStatus: '',
 	};
 
-	it( 'should not render the Ad blocking recovery toggle when Ad blocking recovery setup status is empty', () => {
-		const { container } = render( <AdBlockingRecoveryToggle />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				provideSiteInfo( registry );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetSettings( validSettings );
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: true,
+				connected: true,
 			},
+		] );
+		provideSiteInfo( registry );
+	} );
+
+	it( 'should not render the Ad blocking recovery toggle when Ad blocking recovery setup status is empty', () => {
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSettings( validSettings );
+
+		const { container } = render( <AdBlockingRecoveryToggle />, {
+			registry,
 		} );
 
 		expect(
@@ -74,26 +82,18 @@ describe( 'AdBlockingRecoveryToggle', () => {
 	} );
 
 	it( 'should render the Ad blocking recovery toggle when the conditions are met', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: true,
+		} );
+
 		const { container, getByLabelText, getAllByRole } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideSiteInfo( registry );
-					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-						...validSettings,
-						adBlockingRecoverySetupStatus:
-							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockingRecoverySnippet: true,
-						useAdBlockingRecoveryErrorSnippet: true,
-					} );
-				},
+				registry,
 			}
 		);
 
@@ -126,26 +126,18 @@ describe( 'AdBlockingRecoveryToggle', () => {
 	} );
 
 	it( 'renders the Ad Blocking Recovery tag toggle unchecked and does not render the Error Protection tag toggle', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+			useAdBlockingRecoverySnippet: false,
+			useAdBlockingRecoveryErrorSnippet: false,
+		} );
+
 		const { getByLabelText, getAllByRole, queryByLabelText } = render(
 			<AdBlockingRecoveryToggle />,
 			{
-				setupRegistry: ( registry ) => {
-					provideModules( registry, [
-						{
-							slug: 'adsense',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideSiteInfo( registry );
-					registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-						...validSettings,
-						adBlockingRecoverySetupStatus:
-							ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-						useAdBlockingRecoverySnippet: false,
-						useAdBlockingRecoveryErrorSnippet: false,
-					} );
-				},
+				registry,
 			}
 		);
 
@@ -166,29 +158,19 @@ describe( 'AdBlockingRecoveryToggle', () => {
 	} );
 
 	it( 'should render the same account existing tag notice there is an existing ad blocking recovery tag for the same account', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: false,
+		} );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( validSettings.accountID );
+
 		const { container } = render( <AdBlockingRecoveryToggle />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					...validSettings,
-					adBlockingRecoverySetupStatus:
-						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-					useAdBlockingRecoverySnippet: true,
-					useAdBlockingRecoveryErrorSnippet: false,
-				} );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetExistingAdBlockingRecoveryTag(
-						validSettings.accountID
-					);
-			},
+			registry,
 		} );
 
 		// Verify that the notice is rendered.
@@ -200,29 +182,19 @@ describe( 'AdBlockingRecoveryToggle', () => {
 	} );
 
 	it( 'should render the different account existing tag notice there is an existing ad blocking recovery tag for a different account', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: false,
+		} );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetExistingAdBlockingRecoveryTag( 'pub-1234567890123456' );
+
 		const { container } = render( <AdBlockingRecoveryToggle />, {
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					...validSettings,
-					adBlockingRecoverySetupStatus:
-						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-					useAdBlockingRecoverySnippet: true,
-					useAdBlockingRecoveryErrorSnippet: false,
-				} );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveGetExistingAdBlockingRecoveryTag(
-						'pub-1234567890123456'
-					);
-			},
+			registry,
 		} );
 
 		// Verify that the notice is rendered.
@@ -234,26 +206,18 @@ describe( 'AdBlockingRecoveryToggle', () => {
 	} );
 
 	it( 'should fire appropriate tracking events when toggles are clicked', () => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...validSettings,
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
+			// Set the initial values to true - both toggles are enabled.
+			useAdBlockingRecoverySnippet: true,
+			useAdBlockingRecoveryErrorSnippet: true,
+		} );
+
 		const { getByLabelText } = render( <AdBlockingRecoveryToggle />, {
 			viewContext: VIEW_CONTEXT_SETTINGS,
-			setupRegistry: ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: true,
-						connected: true,
-					},
-				] );
-				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
-					...validSettings,
-					adBlockingRecoverySetupStatus:
-						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED,
-					// Set the initial values to true - both toggles are enabled.
-					useAdBlockingRecoverySnippet: true,
-					useAdBlockingRecoveryErrorSnippet: true,
-				} );
-			},
+			registry,
 		} );
 
 		// Click the recovery tag toggle.
