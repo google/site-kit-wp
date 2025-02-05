@@ -28,7 +28,6 @@ import {
 } from '../../../../../tests/js/utils';
 import {
 	surveyEventEndpoint,
-	surveyTimeoutEndpoint,
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../tests/js/mock-survey-endpoints';
@@ -72,7 +71,6 @@ describe( 'core/user surveys', () => {
 				provideUserAuthentication( registry );
 
 				muteFetch( surveyTriggerEndpoint );
-				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
