@@ -170,6 +170,48 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertEqualSets( $survey, $this->queue->front() );
 	}
 
+	public function test_survey_trigger__adds_timeout_when_ttl_provided() {
+		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+
+		$this->subscribe_to_wp_http_requests(
+			function () {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( array() ),
+			)
+		);
+
+		$this->fake_proxy_site_connection();
+		$data     = array(
+			'triggerID' => 'test_trigger',
+			'ttl'       => '1337',
+		);
+		$response = $this->send_request( 'survey-trigger', $data );
+
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
+		$this->assertContains( 'test_trigger', $this->timeouts->get_survey_timeouts() );
+	}
+
+	public function test_survey_trigger__no_timeout_when_no_ttl_provided() {
+		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+
+		$this->subscribe_to_wp_http_requests(
+			function () {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( array() ),
+			)
+		);
+
+		$this->fake_proxy_site_connection();
+		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
+
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
+		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+	}
+
 	public function data_survey_event_response_codes() {
 		return array(
 			'successful' => array( 200 ),
