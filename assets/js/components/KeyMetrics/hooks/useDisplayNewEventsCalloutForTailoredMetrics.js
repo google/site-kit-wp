@@ -51,7 +51,7 @@ export default function useDisplayNewEventsCalloutForTailoredMetrics(
 		const haveConversionReportingEventsForTailoredMetrics =
 			select(
 				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics();
+			).haveConversionEventsForTailoredMetrics( true );
 
 		return (
 			! hasUserPickedMetrics?.length &&

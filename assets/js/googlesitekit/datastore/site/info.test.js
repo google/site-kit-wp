@@ -578,6 +578,62 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
+		describe( 'getAdminSettingsURL', () => {
+			it( 'uses a resolver to load site info, then returns settings URL if set', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( CORE_SITE ).getAdminSettingsURL();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				expect( adminSettingsURL ).toContain( '/options-general.php' );
+			} );
+
+			it( 'returns admin settings URL containing "options-general.php" when it is single site', async () => {
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( baseInfo );
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				expect( adminSettingsURL ).toContain( 'options-general.php' );
+			} );
+
+			it( 'returns admin settings URL containing "network/settings.php" for multisite setups', async () => {
+				const baseInfoMultisite = { ...baseInfo, isMultisite: true };
+
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( baseInfoMultisite );
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				expect( adminSettingsURL ).toContain( 'network/settings.php' );
+			} );
+
+			it( 'returns undefined if site info is not resolved', async () => {
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
+				expect( global[ entityInfoVar ] ).toEqual( undefined );
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect( adminSettingsURL ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'getSiteURLPermutations', () => {
 			it( 'should correctly process regular URL', () => {
 				provideSiteInfo( registry, {
