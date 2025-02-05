@@ -363,7 +363,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$render_buttons = $is_wp_login || $is_woocommerce_login;
 		$render_one_tap = ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() );
 
-		// If no need to render buttons and One-tap then return.
+		// If we aren't rendering buttons or One-tap, return early.
 		if ( ! $render_buttons && ! $render_one_tap ) {
 			return;
 		}
