@@ -41,13 +41,8 @@ export const mockSurveyEndpoints = () => {
 		body: {},
 	} );
 
-	fetchMock.getOnce( surveyTimeoutEndpoint, {
+	fetchMock.getOnce( surveyTimeoutsEndpoint, {
 		status: 200,
-		body: {},
-	} );
-
-	fetchMock.postOnce( surveyTimeoutEndpoint, {
-		status: 200,
-		body: {},
+		body: [],
 	} );
 };
