@@ -39,7 +39,11 @@ import { createValidatedAction } from '../../data/utils';
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
 	controlCallback: ( { triggerID, ttl } ) => {
-		return API.set( 'core', 'user', 'survey-trigger', { triggerID, ttl } );
+		const args = ttl ? { ttl } : {};
+		return API.set( 'core', 'user', 'survey-trigger', {
+			triggerID,
+			...args,
+		} );
 	},
 	argsToParams: ( triggerID, ttl ) => {
 		return { triggerID, ttl };
