@@ -46,6 +46,7 @@
 		"env:stop": "npm run env:stop -w ./tests/e2e",
 		"env:reset-site": "npm run env:reset-site -w ./tests/e2e",
 		"install-global-npm": "npm install -g npm@7.24.2",
+		"bootstrap-npm7": "node bin/bootstrap-npm7.js",
 		"postinstall": "patch-package"
 	},
 	"browserslist": [
@@ -225,6 +226,7 @@
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^1.2.1",
 		"node-fetch": "^2.6.8",
+		"npm": "7.24.2",
 		"patch-package": "^8.0.0",
 		"postcss": "^8.4.31",
 		"postcss-import-url": "^7.0.0",
