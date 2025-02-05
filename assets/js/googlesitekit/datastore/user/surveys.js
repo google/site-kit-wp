@@ -202,7 +202,8 @@ const baseActions = {
 				}
 
 				if ( ttl > 0 ) {
-					const timeouts = getSurveyTimeouts();
+					// Survey timeouts should be available here; fallback to empty array in case of error.
+					const timeouts = getSurveyTimeouts() || [];
 					// Add the trigger to the list of timeouts directly (next time it will come from server side).
 					yield fetchGetSurveyTimeoutsStore.actions.receiveGetSurveyTimeouts(
 						[ ...timeouts, triggerID ]
