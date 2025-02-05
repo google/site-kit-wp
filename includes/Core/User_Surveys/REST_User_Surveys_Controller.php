@@ -143,6 +143,10 @@ class REST_User_Surveys_Controller {
 									'type'     => 'string',
 									'required' => true,
 								),
+								'ttl'       => array(
+									'type'    => 'integer',
+									'minimum' => 0,
+								),
 							),
 						),
 					),
