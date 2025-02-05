@@ -20,7 +20,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptio
 /**
  * Class for synchronizing the onboarding state.
  *
- * @since n.e.x.t
+ * @since 1.146.0
  * @access private
  * @ignore
  */
@@ -47,7 +47,7 @@ class Synchronize_Publication {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
 	 * @param User_Options           $user_options           User_Options instance.
@@ -60,7 +60,7 @@ class Synchronize_Publication {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return void
 	 */
@@ -76,7 +76,7 @@ class Synchronize_Publication {
 	/**
 	 * Cron callback for synchronizing the publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return void
 	 */
@@ -144,7 +144,7 @@ class Synchronize_Publication {
 	/**
 	 * Returns the products IDs for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param Publication $publication Publication object.
 	 * @return array Product IDs.
@@ -171,7 +171,7 @@ class Synchronize_Publication {
 	/**
 	 * Returns the payment option for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param Publication $publication Publication object.
 	 * @return string Payment option.
@@ -195,7 +195,7 @@ class Synchronize_Publication {
 	/**
 	 * Maybe schedule the synchronize onboarding state cron event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return void
 	 */

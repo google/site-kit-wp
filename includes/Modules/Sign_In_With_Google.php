@@ -83,7 +83,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * WooCommerce instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 * @var WooCommerce
 	 */
 	protected $woocommerce;
@@ -692,7 +692,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Exposes inline module data to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.142.0
-	 * @since n.e.x.t Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
+	 * @since 1.146.0 Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

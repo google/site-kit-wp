@@ -601,7 +601,7 @@ export const selectors = {
 	 * Retrieves an admin settings URL, pointing to either network or single-site settings
 	 * depending on whether the site is multisite.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return {string|undefined} The admin settings URL, or undefined if required data is unavailable.
 	 */

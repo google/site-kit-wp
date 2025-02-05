@@ -42,7 +42,7 @@ class WooCommerce_Authenticator extends Authenticator {
 	 * Gets the redirect URL after the user signs in with Google.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Updated to take into account redirect URL from cookie.
+	 * @since 1.146.0 Updated to take into account redirect URL from cookie.
 	 *
 	 * @param WP_User $user User object.
 	 * @param Input   $input Input instance.

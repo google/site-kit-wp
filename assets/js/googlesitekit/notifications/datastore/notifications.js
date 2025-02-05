@@ -59,7 +59,7 @@ export const actions = {
 	 * Registers a notification with a given `id` slug and settings.
 	 *
 	 * @since 1.132.0
-	 * @since n.e.x.t Added `featureFlag` parameter.
+	 * @since 1.146.0 Added `featureFlag` parameter.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
