@@ -735,12 +735,18 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 						propertySummaries: [ { _id: '1122334475' } ],
 						account: 'accounts/123458',
 					},
+					{
+						_id: '123459',
+						account: 'accounts/123459',
+						// If an account has no properties, propertySummaries will not be set.
+						// This is important to test to catch cases that assume it is present.
+					},
 				],
 				nextPageToken: null,
 			};
 
 			const propertyIDs = accountSummaries.accountSummaries
-				.map( ( { propertySummaries } ) =>
+				.map( ( { propertySummaries = [] } ) =>
 					propertySummaries.map( ( { _id } ) => _id )
 				)
 				.reduce( ( acc, propIDs ) => [ ...acc, ...propIDs ], [] );
