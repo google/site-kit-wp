@@ -814,9 +814,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					accountID: 'UA-abcd',
-				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
