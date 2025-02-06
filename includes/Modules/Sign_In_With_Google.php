@@ -38,6 +38,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Sign_In_With_Google_Block;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
 use WP_Error;
@@ -160,6 +161,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		);
 
 		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
+
+		// Load the Gutenberg block for this module.
+		$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
+		$sign_in_with_google_block->block_init();
 	}
 
 	/**
@@ -336,13 +341,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
-		// If this is not the WordPress or WooCommerce login page, check to
-		// see if "One-tap enabled on all pages" is set first. If it isnt:
-		// don't render the Sign in with Google JS.
-		if ( ! $is_wp_login && ! $is_woocommerce_login && ! $settings['oneTapOnAllPages'] ) {
-			return;
-		}
-
 		$login_uri = add_query_arg( 'action', self::ACTION_AUTH, wp_login_url() );
 		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
 			return;
@@ -359,17 +357,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			'shape' => $settings['shape'],
 		);
 
+		// Whether this is a WordPress/WooCommerce login page.
+		$is_login_page = $is_wp_login || $is_woocommerce_login;
+
 		// Whether buttons will be rendered/transformed on this page.
-		$render_buttons = $is_wp_login || $is_woocommerce_login;
 		$render_one_tap = ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() );
 
-		// If we aren't rendering buttons or One-tap, return early.
-		if ( ! $render_buttons && ! $render_one_tap ) {
-			return;
-		}
-
-		// Set the cookie time to live to 5 minutes. If the redirect_to is empty,
-		// set the cookie to expire immediately.
+		// Set the cookie time to live to 5 minutes. If the redirect_to is
+		// empty, set the cookie to expire immediately.
 		$cookie_expire_time = 300000;
 		if ( empty( $redirect_to ) ) {
 			$cookie_expire_time *= -1;
@@ -391,7 +386,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				body: new URLSearchParams( response )
 			} );
 
-			<?php if ( empty( $redirect_to ) && ! $render_buttons && $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			<?php if ( empty( $redirect_to ) && ! $is_login_page && $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				location.reload();
 			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				if ( res.ok && res.redirected ) {
@@ -409,23 +404,33 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		library_name: 'Site-Kit'
 	} );
 
-	<?php if ( $render_buttons ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		const parent = document.createElement( 'div' );
+	const parent = document.createElement( 'div' );
 
-		<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-			document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-
-		<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-			parent.classList.add( 'woocommerce-form-row', 'form-row' );
-			const form = document.querySelector( '.woocommerce-form.login' );
-			if ( form ) {
-				form.insertBefore( parent, form.firstChild );
-			}
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-
-		google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+	<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+	<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		parent.classList.add( 'woocommerce-form-row', 'form-row' );
+		const form = document.querySelector( '.woocommerce-form.login' );
+		if ( form ) {
+			form.insertBefore( parent, form.firstChild );
+		}
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
+
+	/**
+	 * Render SiwG buttons for all `<div>` elements with the "magic class"
+	 * on the page.
+	 *
+	 *Mainly used by Gutenberg blocks.
+	 */
+	const siwgButtonDivs = document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' );
+	console.log('siwgButtonDivs', siwgButtonDivs);
+	siwgButtonDivs.forEach( ( siwgButtonDiv ) => {
+		google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
+	});
 
 	<?php if ( $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		google.accounts.id.prompt();

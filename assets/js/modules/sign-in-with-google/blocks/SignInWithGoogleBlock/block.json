@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "google-site-kit/sign-in-with-google",
+	"version": "0.1.0",
+	"title": "Sign in with Google",
+	"category": "widgets",
+	"icon": "google",
+	"description": "Allow users to sign in to your site using their Google Account.",
+	"example": {},
+	"supports": {},
+	"textdomain": "sign-in-with-google",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

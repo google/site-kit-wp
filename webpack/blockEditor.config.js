@@ -20,6 +20,7 @@
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
+const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const WebpackBar = require( 'webpackbar' );
@@ -40,6 +41,8 @@ module.exports = ( mode ) => ( {
 	entry: {
 		'googlesitekit-reader-revenue-manager-block-editor':
 			'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
+		'sign-in-with-google-block/index':
+			'./assets/js/modules/sign-in-with-google/blocks/SignInWithGoogleBlock/index.js',
 	},
 	externals: gutenbergExternals,
 	output: {
@@ -72,6 +75,14 @@ module.exports = ( mode ) => ( {
 			emitError: true,
 			emitWarning: true,
 			failOnError: true,
+		} ),
+		new CopyWebpackPlugin( {
+			patterns: [
+				{
+					from: 'assets/js/modules/sign-in-with-google/blocks/SignInWithGoogleBlock/block.json',
+					to: 'sign-in-with-google-block',
+				},
+			],
 		} ),
 	],
 	optimization: {
