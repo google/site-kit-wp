@@ -363,8 +363,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$render_buttons = $is_wp_login || $is_woocommerce_login;
 		$render_one_tap = ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() );
 
-		if ( empty( $redirect_to ) && ! $render_buttons && $render_one_tap && isset( $_SERVER['REQUEST_URI'] ) ) {
-			$redirect_to = wp_strip_all_tags( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		// If we aren't rendering buttons or One-tap, return early.
+		if ( ! $render_buttons && ! $render_one_tap ) {
+			return;
 		}
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is empty,
@@ -389,9 +390,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams( response )
 			} );
-			if ( res.ok && res.redirected ) {
-				location.assign( res.url );
-			}
+
+			<?php if ( empty( $redirect_to ) && ! $render_buttons && $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+				location.reload();
+			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+				if ( res.ok && res.redirected ) {
+					location.assign( res.url );
+				}
+			<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		} catch( error ) {
 			console.error( error );
 		}
@@ -425,9 +431,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		google.accounts.id.prompt();
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	const expires = new Date();
-	expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
-	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const expires = new Date();
+		expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
 
