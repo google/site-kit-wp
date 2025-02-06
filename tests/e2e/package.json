@@ -23,10 +23,10 @@
     "amphtml-validator": "^1.0.35",
     "babel-jest": "^26.6.3",
     "dockerode": "^4.0.2",
-    "expect-puppeteer": "^4.4.0",
+    "expect-puppeteer": "^11.0.0",
     "jest": "^26.6.3",
-    "jest-puppeteer": "^6.0.1",
+    "jest-puppeteer": "^11.0.0",
     "jsdom": "^16.5.0",
-    "puppeteer": "^10.4.0"
+    "puppeteer": "^24.2.0"
   }
 }
