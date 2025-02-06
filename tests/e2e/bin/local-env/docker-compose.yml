@@ -1,0 +1,54 @@
+services:
+  wordpress:
+    image: wordpress:5.6-php7.4
+    ports:
+      - 9002:80
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_PASSWORD: example
+      ABSPATH: /usr/src/wordpress/
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'SCRIPT_DEBUG', true );
+        define( 'WP_DEBUG_LOG', true );
+        define( 'WP_DEBUG_DISPLAY', false );
+        define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
+        define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org' );
+        define( 'WP_AUTO_UPDATE_CORE', false );
+    volumes:
+      - wordpress_data:/var/www/html
+      - ../../../../:/var/www/html/wp-content/plugins/google-site-kit
+      - ../../plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
+      - ../../mu-plugins:/var/www/html/wp-content/mu-plugins
+    depends_on:
+      - mysql
+
+  wordpress-debug-log:
+    image: alpine
+    volumes:
+      - wordpress_data:/var/www/html
+    command: tail -n 0 -F /var/www/html/wp-content/debug.log
+
+  cli:
+    image: wordpress:cli-php7.4
+    user: xfs
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wp-cli-php.ini:/usr/local/etc/php/conf.d/wp-cli-php.ini
+      - ../../../../:/var/www/html/wp-content/plugins/google-site-kit
+      - ../../mu-plugins:/var/www/html/wp-content/mu-plugins
+    depends_on:
+      - mysql
+      - wordpress
+    command: tail -f /dev/null
+
+  mysql:
+    image: mariadb:10.3
+    ports:
+      - 9306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: wordpress_test
+
+volumes:
+  wordpress_data:
