@@ -232,8 +232,6 @@
 		"postcss-loader": "^4.0.0",
 		"postcss-preset-env": "^9.5.11",
 		"prettier": "npm:wp-prettier@2.6.2",
-		"puppeteer": "^10.4.0",
-		"puppeteer-core": "^3.3.0",
 		"rimraf": "^3.0.2",
 		"rxjs": "^6.6.7",
 		"sanitize-filename": "^1.6.3",
