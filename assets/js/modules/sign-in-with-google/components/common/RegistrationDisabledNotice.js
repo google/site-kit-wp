@@ -58,7 +58,7 @@ export default function RegistrationDisabledNotice( { className } ) {
 			notice={ sprintf(
 				/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 				__(
-					'Using “One Tap sign in on all pages” will cause errors for users without an account. Enable “%1$s”. Visit WordPress settings to allow anyone to use %2$s.',
+					'Using “One Tap sign in on all pages” will cause errors for users without an account. Enable “%1$s” in WordPress settings to allow anyone to use %2$s.',
 					'google-site-kit'
 				),
 				isMultisite

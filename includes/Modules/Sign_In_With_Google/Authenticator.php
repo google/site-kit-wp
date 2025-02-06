@@ -333,7 +333,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the redirect URL from the cookie and clears the cookie.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param Input $input Input instance.
 	 * @return string Redirect URL.

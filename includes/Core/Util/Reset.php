@@ -224,7 +224,7 @@ class Reset {
 	/**
 	 * Deletes all Site Kit term meta settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param string $scope Scope of the deletion ('site' or 'network').
 	 */
