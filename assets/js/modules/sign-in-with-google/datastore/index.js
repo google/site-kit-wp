@@ -23,8 +23,9 @@ import { combineStores } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 import baseModuleStore from './base';
 import service from './service';
+import moduleData from './module-data';
 
-const store = combineStores( baseModuleStore, service );
+const store = combineStores( baseModuleStore, service, moduleData );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -317,6 +317,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingState()
 				).toEqual( onboardingState );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationOnboardingStateChanged()
+				).toEqual( false );
 			} );
 
 			describe( 'with the rrmModuleV2 feature flag enabled', () => {
@@ -359,6 +365,26 @@ describe( 'modules/reader-revenue-manager publications', () => {
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getProductIDs()
 					).toEqual( [] );
+				} );
+
+				it( 'should set productID to "openaccess" when different publication is selected', () => {
+					const products = [
+						{ name: 'ABC:product-1' },
+						{ name: 'DEF:product-2' },
+					];
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.selectPublication( {
+							publicationId: 'publication-id',
+							onboardingState: 'onboarding-state',
+							products,
+						} );
+
+					expect(
+						registry
+							.select( MODULES_READER_REVENUE_MANAGER )
+							.getProductID()
+					).toEqual( 'openaccess' );
 				} );
 
 				it( 'should handle products with a missing name property', () => {

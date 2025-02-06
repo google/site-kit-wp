@@ -33,14 +33,20 @@ import { MODULES_ADS } from '../../modules/ads/datastore/constants';
 import { WEEK_IN_SECONDS } from '../../util';
 import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+)( ConsentModeSetupCTAWidget );
 
 function Template() {
-	return <ConsentModeSetupCTAWidget />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'ConsentMode/ConsentModeSetupCTAWidget/Default',
 	delay: 250,
 };
@@ -94,6 +100,9 @@ export default {
 				);
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getDismissedPrompts', [] );
 
 				fetchMock.postOnce(
 					new RegExp(

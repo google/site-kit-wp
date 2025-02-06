@@ -133,14 +133,9 @@ class Authenticator implements Authenticator_Interface {
 		$redirect_to = admin_url();
 
 		// If we have the redirect URL in the cookie, use it as the main redirect_to URL.
-		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::COOKIE_REDIRECT_TO );
+		$cookie_redirect_to = $this->get_cookie_redirect( $input );
 		if ( ! empty( $cookie_redirect_to ) ) {
 			$redirect_to = $cookie_redirect_to;
-
-			if ( ! headers_sent() ) {
-				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-				setcookie( self::COOKIE_REDIRECT_TO, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
-			}
 		}
 
 		// Redirect to HTTPS if user wants SSL.
@@ -333,5 +328,23 @@ class Authenticator implements Authenticator_Interface {
 	 */
 	public static function get_cookie_path() {
 		return dirname( wp_parse_url( wp_login_url(), PHP_URL_PATH ) );
+	}
+
+	/**
+	 * Gets the redirect URL from the cookie and clears the cookie.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Redirect URL.
+	 */
+	protected function get_cookie_redirect( $input ) {
+		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::COOKIE_REDIRECT_TO );
+		if ( ! empty( $cookie_redirect_to ) && ! headers_sent() ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( self::COOKIE_REDIRECT_TO, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+		}
+
+		return $cookie_redirect_to;
 	}
 }

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -31,6 +30,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import WidgetNewBadge from './WidgetNewBadge';
+import { useWindowWidth } from '../../../hooks/useWindowSize';
 
 export default function WidgetAreaHeader( {
 	slug,
