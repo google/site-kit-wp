@@ -1,0 +1,11 @@
+{
+	"scripts": {
+		"test:visualtest": "npm run backstopjs -- test",
+		"test:visualapprove": "npm run backstopjs -- approve",
+		"backstopjs": "./bin/backstop"
+	},
+	"dependencies": {
+		"@componentdriven/csf": "^0.0.2-alpha.0",
+		"lodash": "^4.17.21"
+	}
+}

@@ -22,10 +22,10 @@
 		"prerelease-zip": "npm run build",
 		"release-zip": "npm run zip",
 		"pretest": "npm run build:production -- --display=none",
-		"pretest:visualtest": "VRT=1 npm run build:storybook",
+		"pretest:visualtest": "VRT=1 npm run --include-workspace-root build:storybook",
 		"test": "npm run test:js:watch",
-		"test:visualtest": "npm run backstopjs -- test",
-		"test:visualapprove": "npm run backstopjs -- approve",
+		"test:visualtest": "npm run test:visualtest -w ./tests/backstop",
+		"test:visualapprove": "npm run test:visualapprove -w ./tests/backstop",
 		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
@@ -170,7 +170,6 @@
 		"@babel/core": "^7.14.8",
 		"@babel/plugin-transform-runtime": "^7.10.4",
 		"@babel/preset-react": "^7.10.4",
-		"@componentdriven/csf": "0.0.2-alpha.0",
 		"@jackfranklin/test-data-bot": "^2.0.0",
 		"@popperjs/core": "^2.9.2",
 		"@shopify/jest-dom-mocks": "^4.0.2",
@@ -254,6 +253,7 @@
 		"webpackbar": "^4.0.0"
 	},
 	"workspaces": [
+		"tests/backstop",
 		"tests/e2e"
 	]
 }
