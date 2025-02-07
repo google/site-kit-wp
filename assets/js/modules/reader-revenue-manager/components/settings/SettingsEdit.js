@@ -36,12 +36,15 @@ import {
 } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 import Link from '../../../../components/Link';
-import PostTypesSelect from '../common/PostTypesSelect';
-import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
+import {
+	PostTypesSelect,
+	PublicationOnboardingStateNotice,
+	PublicationSelect,
+	SnippetModeSelect,
+} from '../common';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
-import SnippetModeSelect from '../common/SnippetModeSelect';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function SettingsEdit() {
