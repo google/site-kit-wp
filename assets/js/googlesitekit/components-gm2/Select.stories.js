@@ -127,7 +127,7 @@ export function VRTStory() {
 			<div style={ { marginBottom: '50px' } }>
 				<OpenSelect { ...OpenSelect.args } />
 			</div>
-			<div style={ { marginBottom: '250px' } }>
+			<div style={ { marginBottom: '50px' } }>
 				<BasicSelect { ...BasicSelect.args } />
 			</div>
 			<div style={ { marginBottom: '250px' } }>
