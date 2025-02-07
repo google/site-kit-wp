@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.145.0
+Stable tag:        1.146.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,29 +109,39 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.145.0 =
+= 1.146.0 =
 
 **Enhanced**
 
-* Add Site Health information for Reader Revenue Manager expansions. See [#9974](https://github.com/google/site-kit-wp/issues/9974).
-* Add an empty RRM V2 JavaScript entry point for the WordPress block editor, with functionality to be added in subsequent issues. See [#9957](https://github.com/google/site-kit-wp/issues/9957).
-* Add mechanism to store post-level Reader Revenue Manager settings. See [#9955](https://github.com/google/site-kit-wp/issues/9955).
-* Update Reader Revenue Manager module settings infrastructure. See [#9951](https://github.com/google/site-kit-wp/issues/9951).
-* Add a trigger for a survey when the user sees the FPM setup banner, and one when the user enables FPM, in order to help track usage of the feature. See [#9940](https://github.com/google/site-kit-wp/issues/9940).
-* Update copy on disconnect module modal. See [#9935](https://github.com/google/site-kit-wp/issues/9935).
-* Standardize the capitalization of "First-party mode" across the plugin for consistency. See [#9902](https://github.com/google/site-kit-wp/issues/9902).
-* Ensure the Reader Revenue Manager Setup CTA does not appear alongside other CTAs. See [#9889](https://github.com/google/site-kit-wp/issues/9889).
-* Add error handling to the First-party mode setup banner to display errors and prevent premature dismissal when saving settings fail. See [#9846](https://github.com/google/site-kit-wp/issues/9846).
-* Update auth error notification to use new notifications infrastructure. See [#9284](https://github.com/google/site-kit-wp/issues/9284).
-* Update tooltip tours to display on smaller screen sizes. See [#3003](https://github.com/google/site-kit-wp/issues/3003).
+* Add warning to users when Sign in with Google One-tap appears site-wide without open user registrations. See [#10079](https://github.com/google/site-kit-wp/issues/10079).
+* Update the Reader Revenue Manager settings view screen to include new settings introduced in Phase 2. See [#10067](https://github.com/google/site-kit-wp/issues/10067).
+* Add a reusable chip multi-select component. See [#10064](https://github.com/google/site-kit-wp/issues/10064).
+* Update the Reader Revenue Manager setup CTA banner copy to highlight paywall support when the feature flag is enabled. See [#10063](https://github.com/google/site-kit-wp/issues/10063).
+* Add mechanism to clear term meta on Site Kit reset. See [#10061](https://github.com/google/site-kit-wp/issues/10061).
+* Add mechanism to store term-level Reader Revenue Manager settings. See [#9956](https://github.com/google/site-kit-wp/issues/9956).
+* Add mechanism to synchronize Reader Revenue Manager publication information. See [#9954](https://github.com/google/site-kit-wp/issues/9954).
+* Add mechanism to reset publication-specific information when the publication is changed. See [#9953](https://github.com/google/site-kit-wp/issues/9953).
+* Update Reader Revenue Manager publication selection to populate new settings. See [#9952](https://github.com/google/site-kit-wp/issues/9952).
+* Add infrastructure to interface with WordPress term metadata. See [#9949](https://github.com/google/site-kit-wp/issues/9949).
+* Improve the styling of the Sign in with Google button on WooCommerce login forms. See [#9932](https://github.com/google/site-kit-wp/issues/9932).
+* Update Ads settings view screen to display items in the correct order. See [#9908](https://github.com/google/site-kit-wp/issues/9908).
+* Update the First-party mode status in Site Health to use "Enabled" or "Disabled" instead of "Yes" or "No" and update the label from "First-party mode: Enabled" to "First-party mode". See [#9904](https://github.com/google/site-kit-wp/issues/9904).
+* Refactor consent mode setup CTA to use new infrastructure. See [#9887](https://github.com/google/site-kit-wp/issues/9887).
+* Update the Audience Segmentation Setup CTA so it does not appear alongside other CTAs. See [#9886](https://github.com/google/site-kit-wp/issues/9886).
+* Update visitor group card to prevent including `(not set)` in cities with the most visitors. See [#9604](https://github.com/google/site-kit-wp/issues/9604).
 
 **Changed**
 
-* Update the service provisioning URL not to contain the `supportemail` query param. See [#10024](https://github.com/google/site-kit-wp/issues/10024).
+* Ensure user is redirected back to original page when using Sign in with Google. See [#10015](https://github.com/google/site-kit-wp/issues/10015).
 
 **Fixed**
 
-* Fix custom dimension metric tiles error when loaded on the KMW widget with the ACR feature flag enabled. See [#9967](https://github.com/google/site-kit-wp/issues/9967).
-* Improve redirects when Sign in with Google login fails on WooCommerce pages. See [#9780](https://github.com/google/site-kit-wp/issues/9780).
+* Improve reliability of Sign in with Google rendering on WooCommerce account pages. See [#10120](https://github.com/google/site-kit-wp/issues/10120).
+* Fix bug that could cause CTA to add new metrics to Analytics. See [#10044](https://github.com/google/site-kit-wp/issues/10044).
+* Fix bug that caused the "Top traffic source driving leads" metric to show no data in the "90 days" view. See [#10043](https://github.com/google/site-kit-wp/issues/10043).
+* Fix bug that could cause metrics not to update properly if answers were changed several times before saving changes. See [#10034](https://github.com/google/site-kit-wp/issues/10034).
+* Ensure suggested metrics include new events. See [#10033](https://github.com/google/site-kit-wp/issues/10033).
+* Fix user registration notification dismissal issue on the Sign in with Google settings screen. See [#9933](https://github.com/google/site-kit-wp/issues/9933).
+* Fix key metrics setup CTA layout at 960px. See [#9911](https://github.com/google/site-kit-wp/issues/9911).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

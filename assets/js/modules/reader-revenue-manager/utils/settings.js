@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Gets the formatted list of post types based on the `postTypes` slugs
  * stored in settings.
  *
- * @since n.e.x.t
+ * @since 1.146.0
  *
  * @param {Array} postTypes    The `postTypes` setting value.
  * @param {Array} allPostTypes All available public postTypes.

@@ -308,7 +308,7 @@ export const selectors = {
 	/**
 	 * Returns the conversion events if detected events are suitable for tailored metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return {Array} List of detected conversion events or empty array.
 	 */

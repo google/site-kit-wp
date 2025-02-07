@@ -83,7 +83,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * WooCommerce instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 * @var WooCommerce
 	 */
 	protected $woocommerce;
@@ -317,7 +317,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Renders the Sign in with Google JS script tags, One-tap code, and
+	 * Renders the Sign in with Google JS script tags, One Tap code, and
 	 * buttons.
 	 *
 	 * @since 1.139.0
@@ -337,7 +337,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		// If this is not the WordPress or WooCommerce login page, check to
-		// see if "One-tap enabled on all pages" is set first. If it isnt:
+		// see if "One Tap enabled on all pages" is set first. If it isnt:
 		// don't render the Sign in with Google JS.
 		if ( ! $is_wp_login && ! $is_woocommerce_login && ! $settings['oneTapOnAllPages'] ) {
 			return;
@@ -363,8 +363,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$render_buttons = $is_wp_login || $is_woocommerce_login;
 		$render_one_tap = ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() );
 
-		if ( empty( $redirect_to ) && ! $render_buttons && $render_one_tap && isset( $_SERVER['REQUEST_URI'] ) ) {
-			$redirect_to = wp_strip_all_tags( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		// If we aren't rendering buttons or One-tap, return early.
+		if ( ! $render_buttons && ! $render_one_tap ) {
+			return;
 		}
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is empty,
@@ -389,9 +390,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams( response )
 			} );
-			if ( res.ok && res.redirected ) {
-				location.assign( res.url );
-			}
+
+			<?php if ( empty( $redirect_to ) && ! $render_buttons && $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+				location.reload();
+			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+				if ( res.ok && res.redirected ) {
+					location.assign( res.url );
+				}
+			<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		} catch( error ) {
 			console.error( error );
 		}
@@ -425,9 +431,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		google.accounts.id.prompt();
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	const expires = new Date();
-	expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
-	document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const expires = new Date();
+		expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
 
@@ -500,7 +508,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			),
 			'sign_in_with_google_use_snippet'              => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: One-tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: One Tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
 			),
@@ -692,7 +700,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Exposes inline module data to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.142.0
-	 * @since n.e.x.t Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
+	 * @since 1.146.0 Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

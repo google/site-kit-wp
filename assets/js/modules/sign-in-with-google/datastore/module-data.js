@@ -52,7 +52,7 @@ export const actions = {
 	 * Because this is frequently-accessed data, this is usually sourced
 	 * from a global variable (`_googlesitekitModulesData`), set by PHP.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 * @private
 	 *
 	 * @param {Object} moduleData Module data, usually supplied via a global variable from PHP.
@@ -113,7 +113,7 @@ export const selectors = {
 	 * Not intended to be used publicly; this is largely here so other selectors can
 	 * request data using the selector/resolver pattern.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -126,7 +126,7 @@ export const selectors = {
 	/**
 	 * Gets WooCommerce active status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} List of supported conversion events.
@@ -136,7 +136,7 @@ export const selectors = {
 	/**
 	 * Gets WooCommerce registration enabled value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} List of supported conversion events.
