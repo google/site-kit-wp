@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"pretest:visualtest": "cd ../../ && VRT=1 npm run build:storybook",
 		"test:visualtest": "npm run backstopjs -- test",
 		"test:visualapprove": "npm run backstopjs -- approve",
 		"backstopjs": "./bin/backstop"
