@@ -25,13 +25,15 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Link from '../../../../components/Link';
 import { Option, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { SNIPPET_MODES } from '../../constants';
 
@@ -46,6 +48,11 @@ export default function SnippetModeSelect( props ) {
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
 	);
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'rrm-content-settings'
+		);
+	} );
 
 	const { setSnippetMode } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
@@ -86,6 +93,25 @@ export default function SnippetModeSelect( props ) {
 			disabled={ isDisabled }
 			enhanced
 			outlined
+			helperText={ createInterpolateElement(
+				__(
+					'Use the new settings in the block editor to customize where your CTAs appear. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							aria-label={ __(
+								'Learn more about Reader Revenue Manager settings in the block editor',
+								'google-site-kit'
+							) }
+							href={ learnMoreURL }
+							external
+							hideExternalIndicator
+						/>
+					),
+				}
+			) }
 		>
 			{ Object.keys( SNIPPET_MODES ).map( ( mode ) => (
 				<Option key={ mode } value={ mode }>

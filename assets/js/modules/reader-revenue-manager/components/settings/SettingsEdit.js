@@ -29,13 +29,11 @@ import { ProgressBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
-import Link from '../../../../components/Link';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
@@ -122,11 +120,6 @@ export default function SettingsEdit() {
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
 	);
-	const snippetModeLearnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'rrm-content-settings'
-		);
-	} );
 
 	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
 		return <ProgressBar />;
@@ -182,27 +175,6 @@ export default function SettingsEdit() {
 						<SnippetModeSelect
 							hasModuleAccess={ hasModuleAccess }
 						/>
-						<p>
-							{ createInterpolateElement(
-								__(
-									'Use the new settings in the block editor to customize where your CTAs appear. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<Link
-											aria-label={ __(
-												'Learn more about Reader Revenue Manager settings in the block editor',
-												'google-site-kit'
-											) }
-											href={ snippetModeLearnMoreURL }
-											external
-											hideExternalIndicator
-										/>
-									),
-								}
-							) }
-						</p>
 					</div>
 					{ snippetMode === 'post_types' && (
 						<div className="googlesitekit-rrm-settings-edit__post-types">
