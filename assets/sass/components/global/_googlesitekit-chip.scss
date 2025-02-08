@@ -66,5 +66,10 @@
 				padding: 0;
 			}
 		}
+
+		&.googlesitekit-chip--disabled {
+			opacity: 0.5;
+			pointer-events: none;
+		}
 	}
 }
