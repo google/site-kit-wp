@@ -1,5 +1,5 @@
 /**
- * ProductIDNotification component.
+ * ProductIDContributionsNotification component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -31,16 +31,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 
-export default function ProductIDNotification( { id, Notification } ) {
-	const paymentOption = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
-	);
-
+export default function ProductIDContributionsNotification( {
+	id,
+	Notification,
+} ) {
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -48,22 +46,11 @@ export default function ProductIDNotification( { id, Notification } ) {
 	return (
 		<Notification>
 			<SubtleNotification
-				type={
-					paymentOption === 'subscriptions'
-						? 'warning'
-						: 'new-feature'
-				}
-				description={
-					paymentOption === 'subscriptions'
-						? __(
-								'To complete your Reader Revenue Manager paywall setup, add your product IDs in settings',
-								'google-site-kit'
-						  )
-						: __(
-								'New! You can now select product IDs to use with your Reader Revenue Manager snippet',
-								'google-site-kit'
-						  )
-				}
+				type="new-feature"
+				description={ __(
+					'New! You can now select product IDs to use with your Reader Revenue Manager snippet',
+					'google-site-kit'
+				) }
 				dismissCTA={
 					<Dismiss
 						id={ id }
@@ -83,7 +70,7 @@ export default function ProductIDNotification( { id, Notification } ) {
 	);
 }
 
-ProductIDNotification.propTypes = {
+ProductIDContributionsNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
 };

@@ -49,12 +49,14 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { isFeatureEnabled } from '../../features';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import ProductIDNotification from './components/dashboard/ProductIDNotification';
+import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
 import {
-	RRM_PRODUCT_ID_NOTIFICATION_ID,
+	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
+	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from './constants';
+import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 
 export { registerStore } from './datastore';
 
@@ -91,6 +93,37 @@ export const registerModule = ( modules ) => {
 		},
 	} );
 };
+
+async function checkRequirementsForProductIDNotification(
+	{ select, resolveSelect },
+	requiredPaymentOption
+) {
+	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+	const publicationOnboardingState = select(
+		MODULES_READER_REVENUE_MANAGER
+	).getPublicationOnboardingState();
+
+	const paymentOption = select(
+		MODULES_READER_REVENUE_MANAGER
+	).getPaymentOption();
+
+	const productIDs = select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
+
+	const productID = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
+
+	if (
+		publicationOnboardingState ===
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+		productIDs.length > 0 &&
+		productID === 'openaccess' &&
+		paymentOption === requiredPaymentOption
+	) {
+		return true;
+	}
+
+	return false;
+}
 
 export const NOTIFICATIONS = {
 	[ RRM_SETUP_NOTIFICATION_ID ]: {
@@ -173,41 +206,35 @@ export const NOTIFICATIONS = {
 		},
 		isDismissible: false,
 	},
-	[ RRM_PRODUCT_ID_NOTIFICATION_ID ]: {
-		Component: ProductIDNotification,
+	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
+		Component: ProductIDContributionsNotification,
 		priority: 20,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+			const isActive = await checkRequirementsForProductIDNotification(
+				{ select, resolveSelect },
+				'contributions'
+			);
 
-			const publicationOnboardingState = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPublicationOnboardingState();
+			return isActive;
+		},
+		featureFlag: 'rrmModuleV2',
+	},
+	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
+		Component: ProductIDSubscriptionsNotification,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const isActive = await checkRequirementsForProductIDNotification(
+				{ select, resolveSelect },
+				'subscriptions'
+			);
 
-			const paymentOption = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPaymentOption();
-
-			const productIDs = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getProductIDs();
-
-			const productID = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getProductID();
-
-			if (
-				publicationOnboardingState ===
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				productIDs.length > 0 &&
-				! productID &&
-				( paymentOption === 'contributions' ||
-					paymentOption === 'subscriptions' )
-			) {
-				return true;
-			}
+			return isActive;
 		},
 		featureFlag: 'rrmModuleV2',
 	},

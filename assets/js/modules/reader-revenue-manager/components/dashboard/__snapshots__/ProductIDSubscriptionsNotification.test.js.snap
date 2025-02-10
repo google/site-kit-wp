@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductIDSubscriptionsNotification should render correctly 1`] = `
+<div>
+  <section
+    id="rrm-product-id-subscriptions-notification"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-subtle-notification googlesitekit-subtle-notification--warning mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-subtle-notification__icon"
+          >
+            <svg />
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__content"
+          >
+            <p />
+            <p
+              class="googlesitekit-subtle-notification__secondary_description"
+            >
+              To complete your Reader Revenue Manager paywall setup, add your product IDs in settings
+            </p>
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__action"
+          >
+            <button
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Got it
+              </span>
+            </button>
+            <a
+              class="mdc-button googlesitekit-subtle-notification__cta mdc-button--raised"
+              href="undefined#connected-services/reader-revenue-manager"
+              role="button"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Edit settings
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

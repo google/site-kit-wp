@@ -30,4 +30,7 @@ export const SNIPPET_MODES = {
 export const RRM_SETUP_NOTIFICATION_ID = 'rrm-setup-notification';
 export const RRM_SETUP_SUCCESS_NOTIFICATION_ID =
 	'setup-success-notification-rrm';
-export const RRM_PRODUCT_ID_NOTIFICATION_ID = 'rrm-product-id-notification';
+export const RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID =
+	'rrm-product-id-contributions-notification';
+export const RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID =
+	'rrm-product-id-subscriptions-notification';

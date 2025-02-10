@@ -1,5 +1,5 @@
 /**
- * ProductIDNotification Component Stories.
+ * ProductIDContributionsNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -23,44 +23,35 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
+import { RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID } from '../../constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import ProductIDNotification from './ProductIDNotification';
+import ProductIDContributionsNotification from './ProductIDContributionsNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'rrm-product-id-notification'
-)( ProductIDNotification );
+	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID
+)( ProductIDContributionsNotification );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 
-export const Contributions = Template.bind( {} );
-Contributions.storyName = 'Contributions';
-Contributions.args = {
-	paymentOption: 'contributions',
-};
-Contributions.scenario = {};
-
-export const Subscriptions = Template.bind( {} );
-Subscriptions.storyName = 'Subscriptions';
-Subscriptions.args = {
-	paymentOption: 'subscriptions',
-};
-Subscriptions.scenario = {};
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {};
 
 export default {
-	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ProductIDNotification',
-	component: ProductIDNotification,
+	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ProductIDContributionsNotification',
+	component: ProductIDContributionsNotification,
 	decorators: [
-		( Story, { args } ) => {
+		( Story ) => {
 			const setupRegistry = async ( registry ) => {
 				await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
-						paymentOption: args.paymentOption,
+						paymentOption: 'contributions',
 						productIDs: [],
-						productID: null, // TODO: Check what to do about the default value of 'openaccess'.
+						productID: 'openaccess',
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 					} );

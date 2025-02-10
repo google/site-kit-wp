@@ -1,5 +1,5 @@
 /**
- * ProductIDNotification component tests.
+ * ProductIDSubscriptionsNotification component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -30,23 +30,24 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { RRM_PRODUCT_ID_NOTIFICATION_ID } from '../../constants';
+import { RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID } from '../../constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
 import { NOTIFICATIONS } from '../..';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import ProductIDNotification from './ProductIDNotification';
+import ProductIDSubscriptionsNotification from './ProductIDSubscriptionsNotification';
 
-describe( 'ProductIDNotification', () => {
+describe( 'ProductIDSubscriptionsNotification', () => {
 	let registry;
 
-	const notification = NOTIFICATIONS[ RRM_PRODUCT_ID_NOTIFICATION_ID ];
+	const notification =
+		NOTIFICATIONS[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ];
 
-	const ProductIDNotificationComponent = withNotificationComponentProps(
-		RRM_PRODUCT_ID_NOTIFICATION_ID
-	)( ProductIDNotification );
+	const NotificationWithComponentProps = withNotificationComponentProps(
+		RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID
+	)( ProductIDSubscriptionsNotification );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -66,47 +67,19 @@ describe( 'ProductIDNotification', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should render correctly when payment option is `contributions`', () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				paymentOption: 'contributions',
-				productIDs: [],
-				productID: null, // TODO: Check what to do about the default value of 'openaccess'.
-				publicationOnboardingState:
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-			} );
-
-		const { container, getByText } = render(
-			<ProductIDNotificationComponent />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		expect(
-			getByText(
-				'New! You can now select product IDs to use with your Reader Revenue Manager snippet'
-			)
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render correctly when payment option is `subscriptions`', () => {
+	it( 'should render correctly', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
 				paymentOption: 'subscriptions',
 				productIDs: [],
-				productID: null, // TODO: Check what to do about the default value of 'openaccess'.
+				productID: 'openaccess',
 				publicationOnboardingState:
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 			} );
 
 		const { container, getByText } = render(
-			<ProductIDNotificationComponent />,
+			<NotificationWithComponentProps />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -129,7 +102,7 @@ describe( 'ProductIDNotification', () => {
 				.receiveGetSettings( {
 					paymentOption: 'subscriptions',
 					productIDs: [ '123', '456' ],
-					productID: null, // TODO: Check what to do about the default value of 'openaccess'.
+					productID: 'openaccess',
 					publicationOnboardingState:
 						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 				} );
@@ -147,9 +120,9 @@ describe( 'ProductIDNotification', () => {
 		[
 			'publicationOnboardingState is not ONBOARDING_COMPLETE',
 			{
-				paymentOption: 'contributions',
+				paymentOption: 'subscriptions',
 				productIDs: [ '123', '456' ],
-				productID: null,
+				productID: 'openaccess',
 				publicationOnboardingState:
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED,
 			},
@@ -157,17 +130,17 @@ describe( 'ProductIDNotification', () => {
 		[
 			'productIDs is empty',
 			{
-				paymentOption: 'contributions',
+				paymentOption: 'subscriptions',
 				productIDs: [],
-				productID: null,
+				productID: 'openaccess',
 				publicationOnboardingState:
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 			},
 		],
 		[
-			'productID is not null',
+			'productID is not `openaccess`',
 			{
-				paymentOption: 'contributions',
+				paymentOption: 'subscriptions',
 				productIDs: [ '123', '456' ],
 				productID: '123',
 				publicationOnboardingState:
@@ -175,11 +148,11 @@ describe( 'ProductIDNotification', () => {
 			},
 		],
 		[
-			'paymentOption is not `contributions` or `subscriptions`',
+			'paymentOption is not `subscriptions`',
 			{
-				paymentOption: 'openaccess',
+				paymentOption: 'contributions',
 				productIDs: [ '123', '456' ],
-				productID: null,
+				productID: 'openaccess',
 				publicationOnboardingState:
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 			},
