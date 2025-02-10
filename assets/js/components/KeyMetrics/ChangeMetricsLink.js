@@ -19,7 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment } from '@wordpress/element';
+import {
+	useEffect,
+	useRef,
+	useCallback,
+	Fragment,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,16 +37,18 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import Link from '../Link';
 import PencilIcon from '../../../svg/icons/pencil-alt.svg';
-import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
-import { trackEvent } from '../../util';
+import { trackEvent, WEEK_IN_SECONDS } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
+import { useIntersection } from 'react-use';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export default function ChangeMetricsLink() {
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);
 	const viewContext = useViewContext();
+	const trackingRef = useRef();
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -54,6 +62,51 @@ export default function ChangeMetricsLink() {
 
 	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
 
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
+	const isKeyMetricsSetupCompletedBy = useSelect( ( select ) =>
+		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
+	);
+
+	const currentUserID = useSelect( ( select ) =>
+		select( CORE_USER ).getID()
+	);
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			if ( usingProxy ) {
+				triggerSurvey( 'view_kmw', {
+					ttl: WEEK_IN_SECONDS,
+				} );
+				if ( isKeyMetricsSetupCompletedBy === currentUserID ) {
+					triggerSurvey( 'view_kmw_setup_completed', {
+						ttl: WEEK_IN_SECONDS,
+					} );
+				}
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [
+		inView,
+		viewContext,
+		hasBeenInView,
+		usingProxy,
+		triggerSurvey,
+		currentUserID,
+		isKeyMetricsSetupCompletedBy,
+	] );
+
 	if ( ! renderChangeMetricLink ) {
 		return null;
 	}
@@ -61,6 +114,7 @@ export default function ChangeMetricsLink() {
 	return (
 		<Fragment>
 			<Link
+				ref={ trackingRef }
 				secondary
 				linkButton
 				className="googlesitekit-widget-area__cta-link"
@@ -69,7 +123,6 @@ export default function ChangeMetricsLink() {
 			>
 				{ __( 'Change metrics', 'google-site-kit' ) }
 			</Link>
-			<SetupCompletedSurveyTrigger />
 		</Fragment>
 	);
 }

@@ -39,6 +39,12 @@ import {
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 } from '../../googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+jest.mock( 'react-use' );
+mockUseIntersection.mockImplementation( () => ( {
+	intersectionRatio: 1,
+} ) );
 
 describe( 'ChangeMetricsLink', () => {
 	let registry;
@@ -68,16 +74,23 @@ describe( 'ChangeMetricsLink', () => {
 		expect( button ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render if no key metrics are selected', () => {
+	it( 'should not render if no key metrics are selected', async () => {
 		provideKeyMetrics( registry, { widgetSlugs: [] } );
 
-		const { queryByRole } = render( <ChangeMetricsLink />, { registry } );
+		const { queryByRole, waitForRegistry } = render(
+			<ChangeMetricsLink />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		const button = queryByRole( 'button' );
 		expect( button ).not.toBeInTheDocument();
 	} );
 
-	it( 'should render a button to change metrics', () => {
+	it( 'should render a button to change metrics', async () => {
 		provideKeyMetrics( registry, {
 			widgetSlugs: [
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
@@ -85,16 +98,21 @@ describe( 'ChangeMetricsLink', () => {
 			],
 		} );
 
-		const { queryByRole } = render( <ChangeMetricsLink />, {
-			registry,
-		} );
+		const { queryByRole, waitForRegistry } = render(
+			<ChangeMetricsLink />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Change metrics' );
 	} );
 
-	it( 'should set UI store key correctly when button is clicked', () => {
+	it( 'should set UI store key correctly when button is clicked', async () => {
 		provideKeyMetrics( registry, {
 			widgetSlugs: [
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
@@ -106,7 +124,11 @@ describe( 'ChangeMetricsLink', () => {
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, false );
 
-		const { getByRole } = render( <ChangeMetricsLink />, { registry } );
+		const { getByRole, waitForRegistry } = render( <ChangeMetricsLink />, {
+			registry,
+		} );
+
+		await waitForRegistry();
 
 		const button = getByRole( 'button', { name: /change metrics/i } );
 
