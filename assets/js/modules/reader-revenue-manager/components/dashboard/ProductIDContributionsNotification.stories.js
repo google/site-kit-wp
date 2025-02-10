@@ -50,7 +50,7 @@ export default {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
 						paymentOption: 'contributions',
-						productIDs: [],
+						productIDs: [ '123', '456' ],
 						productID: 'openaccess',
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
