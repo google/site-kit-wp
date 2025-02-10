@@ -26,3 +26,8 @@ export const SNIPPET_MODES = {
 	per_post: __( 'Specified pages', 'google-site-kit' ),
 	sitewide: __( 'Site wide', 'google-site-kit' ),
 };
+
+export const RRM_SETUP_NOTIFICATION_ID = 'rrm-setup-notification';
+export const RRM_SETUP_SUCCESS_NOTIFICATION_ID =
+	'setup-success-notification-rrm';
+export const RRM_PRODUCT_ID_NOTIFICATION_ID = 'rrm-product-id-notification';

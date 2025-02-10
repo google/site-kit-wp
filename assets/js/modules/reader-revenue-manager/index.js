@@ -50,6 +50,11 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { isFeatureEnabled } from '../../features';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import ProductIDNotification from './components/dashboard/ProductIDNotification';
+import {
+	RRM_PRODUCT_ID_NOTIFICATION_ID,
+	RRM_SETUP_NOTIFICATION_ID,
+	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+} from './constants';
 
 export { registerStore } from './datastore';
 
@@ -88,7 +93,7 @@ export const registerModule = ( modules ) => {
 };
 
 export const NOTIFICATIONS = {
-	'rrm-setup-notification': {
+	[ RRM_SETUP_NOTIFICATION_ID ]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
 		priority: 50,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -134,7 +139,7 @@ export const NOTIFICATIONS = {
 		isDismissible: true,
 		dismissRetries: 1,
 	},
-	'setup-success-notification-rrm': {
+	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -171,7 +176,7 @@ export const NOTIFICATIONS = {
 };
 
 if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
-	NOTIFICATIONS[ 'rrm-product-id-notification' ] = {
+	NOTIFICATIONS[ RRM_PRODUCT_ID_NOTIFICATION_ID ] = {
 		Component: ProductIDNotification,
 		priority: 20,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
