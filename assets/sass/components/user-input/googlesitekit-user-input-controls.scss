@@ -39,10 +39,6 @@
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
-
-			@media (min-width: $bp-tablet) {
-				padding: 10px 0;
-			}
 		}
 	}
 

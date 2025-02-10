@@ -36,6 +36,13 @@
 			overflow: hidden;
 			padding: 0;
 		}
+
+		.googlesitekit-user-input__select-options-wrapper {
+
+			@media (min-width: $bp-wpdb3) {
+				padding-left: unset;
+			}
+		}
 	}
 
 	.googlesitekit-user-input__notification-text-loading {
