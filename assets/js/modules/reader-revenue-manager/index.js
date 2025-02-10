@@ -173,10 +173,7 @@ export const NOTIFICATIONS = {
 		},
 		isDismissible: false,
 	},
-};
-
-if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
-	NOTIFICATIONS[ RRM_PRODUCT_ID_NOTIFICATION_ID ] = {
+	[ RRM_PRODUCT_ID_NOTIFICATION_ID ]: {
 		Component: ProductIDNotification,
 		priority: 20,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -212,8 +209,9 @@ if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
 				return true;
 			}
 		},
-	};
-}
+		featureFlag: 'rrmModuleV2',
+	},
+};
 
 export const registerNotifications = ( notificationsAPI ) => {
 	if ( isFeatureEnabled( 'rrmModule' ) ) {
