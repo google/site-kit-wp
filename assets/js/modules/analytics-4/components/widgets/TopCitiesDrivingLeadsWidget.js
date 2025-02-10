@@ -78,10 +78,9 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 				value: eventNames,
 			},
 			city: {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
-				notExpression: true,
+				filterType: 'emptyFilter',
+				value: '',
+				notExpression: false,
 			},
 		},
 		metrics: [ { name: 'eventCount' } ],
