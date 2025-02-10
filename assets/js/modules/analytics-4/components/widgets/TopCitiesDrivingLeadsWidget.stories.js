@@ -46,10 +46,9 @@ const reportOptions = {
 			value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 		},
 		city: {
-			filterType: 'stringFilter',
-			matchType: 'EXACT',
-			value: '(not set)',
-			notExpression: true,
+			filterType: 'emptyFilter',
+			value: '',
+			notExpression: false,
 		},
 	},
 	metrics: [ { name: 'eventCount' } ],
@@ -87,9 +86,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopCitiesDrivingLeadsWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

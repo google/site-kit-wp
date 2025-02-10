@@ -82,10 +82,9 @@ describe( 'TopCategoriesWidget', () => {
 			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
 			dimensionFilters: {
 				'customEvent:googlesitekit_post_categories': {
-					filterType: 'stringFilter',
-					matchType: 'EXACT',
-					value: '(not set)',
-					notExpression: true,
+					filterType: 'emptyFilter',
+					value: '',
+					notExpression: false,
 				},
 			},
 			metrics: [ { name: 'screenPageViews' } ],

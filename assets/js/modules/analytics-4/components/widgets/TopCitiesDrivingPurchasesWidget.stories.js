@@ -39,10 +39,9 @@ const reportOptions = {
 	dimensions: [ 'city' ],
 	dimensionFilters: {
 		city: {
-			filterType: 'stringFilter',
-			matchType: 'EXACT',
-			value: '(not set)',
-			notExpression: true,
+			filterType: 'emptyFilter',
+			value: '',
+			notExpression: false,
 		},
 	},
 	metrics: [ { name: 'ecommercePurchases' } ],
@@ -86,9 +85,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopCitiesDrivingPurchasesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

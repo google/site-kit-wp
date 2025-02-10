@@ -79,7 +79,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'United States',
 		'United Kingdom',
 		'India',
-		'(not set)',
+		'Germany',
 		'France',
 		'Ukraine',
 		'Italy',
@@ -87,7 +87,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	],
 	city: [
 		'Dublin',
-		'(not set)',
+		'Berlin',
 		'Cork',
 		'New York',
 		'London',

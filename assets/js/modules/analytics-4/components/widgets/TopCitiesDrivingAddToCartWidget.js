@@ -59,10 +59,9 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 		dimensions: [ 'city' ],
 		dimensionFilters: {
 			city: {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
-				notExpression: true,
+				filterType: 'emptyFilter',
+				value: '',
+				notExpression: false,
 			},
 		},
 		metrics: [ { name: 'addToCarts' } ],
