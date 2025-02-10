@@ -31,7 +31,6 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
@@ -259,24 +258,30 @@ describe( 'modules/analytics-4 accounts', () => {
 			} );
 		} );
 
-		describe( 'transformAndSortAccountSummaries', () => {
-			it( 'should create an action to transform and sort account summaries', async () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( fixtures.accountSummaries );
+		describe( 'sortAccountSummaries', () => {
+			it( 'should sort account summaries in state by their display names', async () => {
+				const summary = {
+					account: 'accounts/123',
+					_id: '123',
+					propertySummaries: [],
+				};
+				const summaryA = { displayName: 'Account A', ...summary };
+				const summaryB = { displayName: 'Account B', ...summary };
+				const summaryC = { displayName: 'Account C', ...summary };
+				const { receiveGetAccountSummaries, sortAccountSummaries } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
 
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.transformAndSortAccountSummaries();
+				receiveGetAccountSummaries( {
+					accountSummaries: [ summaryC, summaryA, summaryB ],
+				} );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries()
-				).toEqual(
-					caseInsensitiveListSort(
-						fixtures.accountSummaries.accountSummaries,
-						'displayName'
-					)
-				);
+				await sortAccountSummaries();
+
+				expect( store.getState().accountSummaries ).toEqual( [
+					summaryA,
+					summaryB,
+					summaryC,
+				] );
 			} );
 		} );
 	} );

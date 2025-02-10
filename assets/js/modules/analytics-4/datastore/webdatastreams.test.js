@@ -36,6 +36,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
+import { populateAccountSummaries } from '../utils/account';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
@@ -714,33 +715,39 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			const accountSummaries = {
 				accountSummaries: [
 					{
-						_id: '123456',
 						propertySummaries: [
-							{ _id: '1122334455' },
-							{ _id: '1122334456' },
-							{ _id: '1122334457' },
+							{ property: 'properties/1122334455' },
+							{ property: 'properties/1122334456' },
+							{ property: 'properties/1122334457' },
 						],
 						account: 'accounts/123456',
 					},
 					{
-						_id: '123457',
 						propertySummaries: [
-							{ _id: '1122334465' },
-							{ _id: '1122334466' },
+							{ property: 'properties/1122334465' },
+							{ property: 'properties/1122334466' },
 						],
 						account: 'accounts/123457',
 					},
 					{
-						_id: '123458',
-						propertySummaries: [ { _id: '1122334475' } ],
+						propertySummaries: [
+							{ property: 'properties/1122334475' },
+						],
 						account: 'accounts/123458',
+					},
+					{
+						account: 'accounts/123459',
+						// If an account has no properties, propertySummaries will not be set.
+						// This is important to test to catch cases that assume it is present.
 					},
 				],
 				nextPageToken: null,
 			};
 
-			const propertyIDs = accountSummaries.accountSummaries
-				.map( ( { propertySummaries } ) =>
+			const propertyIDs = populateAccountSummaries(
+				accountSummaries.accountSummaries
+			)
+				.map( ( { propertySummaries = [] } ) =>
 					propertySummaries.map( ( { _id } ) => _id )
 				)
 				.reduce( ( acc, propIDs ) => [ ...acc, ...propIDs ], [] );
@@ -808,9 +815,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					accountID: 'UA-abcd',
-				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
