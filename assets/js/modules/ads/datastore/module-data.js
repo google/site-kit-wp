@@ -145,6 +145,18 @@ export const selectors = {
 	 * @return {(Array|undefined)} Plugin status array.
 	 */
 	getWooCommercePluginStatus: getModuleDataProperty( 'woocommerce' ),
+
+	/**
+	 * Gets Google for WooCommerce plugin status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Plugin status array.
+	 */
+	getGoogleForWooCommercePluginStatus: getModuleDataProperty(
+		'googleListingsAndAds'
+	),
 };
 
 export default {
