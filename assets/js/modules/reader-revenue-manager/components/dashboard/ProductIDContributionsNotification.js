@@ -62,7 +62,7 @@ export default function ProductIDContributionsNotification( {
 					<CTALinkSubtle
 						id={ id }
 						ctaLabel={ __( 'Edit settings', 'google-site-kit' ) }
-						ctaLink={ `${ settingsURL }#connected-services/reader-revenue-manager` }
+						ctaLink={ `${ settingsURL }#connected-services/reader-revenue-manager/edit` }
 					/>
 				}
 			/>
