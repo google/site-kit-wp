@@ -174,8 +174,6 @@ describe( 'User Input Settings', () => {
 				)
 			) {
 				request.continue();
-			} else if ( url.match( 'user/data/survey-timeout' ) ) {
-				request.respond( { status: 200 } );
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {

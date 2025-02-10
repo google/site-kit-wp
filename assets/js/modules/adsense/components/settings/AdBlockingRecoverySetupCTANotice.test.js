@@ -235,11 +235,14 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 		} );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_abr_setup_cta' },
-				},
-			} )
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: 'view_abr_setup_cta' },
+					},
+				} )
+			)
 		);
 	} );
 } );

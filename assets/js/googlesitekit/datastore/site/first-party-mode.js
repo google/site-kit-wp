@@ -118,7 +118,9 @@ const baseActions = {
 			);
 
 		if ( results?.response?.isEnabled ) {
-			dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+			yield commonActions.await(
+				dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' )
+			);
 		}
 
 		return results;

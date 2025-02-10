@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
 import {
@@ -30,6 +25,7 @@ import {
 	fireEvent,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
@@ -48,10 +44,11 @@ import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecove
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-jest.mock( 'react-use' );
-
-mockUseIntersection.mockImplementation( () => ( {
-	isIntersecting: true,
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: () => ( {
+		isIntersecting: true,
+	} ),
 } ) );
 
 describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
@@ -68,6 +65,7 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 				connected: true,
 			},
 		] );
+		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			accountID: 'pub-123456',
@@ -139,11 +137,14 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 
 		// The survey trigger endpoint should be called.
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'abr_setup_completed' },
-				},
-			} )
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: 'abr_setup_completed' },
+					},
+				} )
+			)
 		);
 	} );
 } );

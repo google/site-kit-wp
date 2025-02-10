@@ -28,7 +28,6 @@ import {
 } from '../../../../../tests/js/utils';
 import {
 	surveyEventEndpoint,
-	surveyTimeoutEndpoint,
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../tests/js/mock-survey-endpoints';
@@ -49,57 +48,6 @@ describe( 'core/user surveys', () => {
 	};
 
 	describe( 'actions', () => {
-		describe( 'setSurveyTimeout', () => {
-			it( 'should save timeout and return new timed out surveys', async () => {
-				fetchMock.postOnce( surveyTimeoutEndpoint, {
-					body: [ 'foo', 'bar', 'baz' ],
-				} );
-
-				await registry
-					.dispatch( CORE_USER )
-					.setSurveyTimeout( 'baz', 3 );
-
-				// Ensure the proper body parameters were sent.
-				expect( fetchMock ).toHaveFetched( surveyTimeoutEndpoint, {
-					body: {
-						data: {
-							slug: 'baz',
-							timeout: 3,
-						},
-					},
-				} );
-
-				const timeouts = registry
-					.select( CORE_USER )
-					.getSurveyTimeouts();
-				expect( timeouts ).toEqual( [ 'foo', 'bar', 'baz' ] );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
-			it( 'should dispatch an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-
-				fetchMock.post( surveyTimeoutEndpoint, {
-					body: response,
-					status: 500,
-				} );
-
-				await registry
-					.dispatch( CORE_USER )
-					.setSurveyTimeout( 'baz', 10 );
-				expect(
-					registry
-						.select( CORE_USER )
-						.getErrorForAction( 'setSurveyTimeout', [ 'baz', 10 ] )
-				).toMatchObject( response );
-				expect( console ).toHaveErrored();
-			} );
-		} );
-
 		describe( 'triggerSurvey', () => {
 			it( 'should throw an error when parameters are missing or incorrect', () => {
 				expect( () => {
@@ -123,7 +71,6 @@ describe( 'core/user surveys', () => {
 				provideUserAuthentication( registry );
 
 				muteFetch( surveyTriggerEndpoint );
-				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -152,7 +99,6 @@ describe( 'core/user surveys', () => {
 
 			it( 'should wait for authentication to be resolved before making a network request', async () => {
 				muteFetch( surveyTriggerEndpoint );
-				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -167,7 +113,9 @@ describe( 'core/user surveys', () => {
 
 				const triggerSurveyPromise = registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'userInput_answered_other__goals' );
+					.triggerSurvey( 'userInput_answered_other__goals', {
+						ttl: 123,
+					} );
 
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 
@@ -175,7 +123,10 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'userInput_answered_other__goals' },
+						data: {
+							triggerID: 'userInput_answered_other__goals',
+							ttl: 123,
+						},
 					},
 				} );
 			} );
@@ -184,17 +135,21 @@ describe( 'core/user surveys', () => {
 				provideUserAuthentication( registry );
 
 				muteFetch( surveyTriggerEndpoint );
-				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				await registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'userInput_answered_other__goals' );
+					.triggerSurvey( 'userInput_answered_other__goals', {
+						ttl: 123,
+					} );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'userInput_answered_other__goals' },
+						data: {
+							triggerID: 'userInput_answered_other__goals',
+							ttl: 123,
+						},
 					},
 				} );
 			} );
@@ -217,6 +172,24 @@ describe( 'core/user surveys', () => {
 				} );
 			} );
 
+			it( 'should only fetch once per triggerID', async () => {
+				const { triggerSurvey } = registry.dispatch( CORE_USER );
+				fetchMock.post( surveyTriggerEndpoint, {} );
+
+				provideUserAuthentication( registry );
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				await Promise.all( [
+					triggerSurvey( 'testID', { ttl: 500 } ),
+					triggerSurvey( 'testID', { ttl: 500 } ),
+				] );
+
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					surveyTriggerEndpoint
+				);
+			} );
+
 			it( 'should cache survey for provided ttl', async () => {
 				const triggerID = 'userInput_answered_other__goals';
 
@@ -225,7 +198,6 @@ describe( 'core/user surveys', () => {
 				await registry.resolveSelect( CORE_USER ).getAuthentication();
 
 				muteFetch( surveyTriggerEndpoint );
-				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -242,11 +214,11 @@ describe( 'core/user surveys', () => {
 				// Wait one tick for async storage functions.
 				await new Promise( ( resolve ) => resolve() );
 
-				expect( fetchMock ).toHaveFetched( surveyTimeoutEndpoint, {
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
 						data: {
-							slug: 'userInput_answered_other__goals',
-							timeout: 500,
+							triggerID: 'userInput_answered_other__goals',
+							ttl: 500,
 						},
 					},
 				} );
@@ -424,50 +396,6 @@ describe( 'core/user surveys', () => {
 				expect(
 					registry.select( CORE_USER ).isSurveyTimedOut( 'baz' )
 				).toBe( false );
-			} );
-		} );
-
-		describe( 'isTimingOutSurvey', () => {
-			it( 'should return true while timing out is in progress', () => {
-				const slug = 'foo-bar';
-				const timeout = 100;
-
-				fetchMock.postOnce( surveyTimeoutEndpoint, { body: [ slug ] } );
-
-				let timingOut = registry
-					.select( CORE_USER )
-					.isTimingOutSurvey( slug, timeout );
-				expect( timingOut ).toBe( false );
-
-				registry
-					.dispatch( CORE_USER )
-					.setSurveyTimeout( slug, timeout );
-
-				timingOut = registry
-					.select( CORE_USER )
-					.isTimingOutSurvey( slug, timeout );
-				expect( timingOut ).toBe( true );
-			} );
-
-			it( 'should return false while timing out is over', async () => {
-				const slug = 'foo-bar';
-				const timeout = 100;
-
-				fetchMock.postOnce( surveyTimeoutEndpoint, { body: [ slug ] } );
-
-				let timingOut = registry
-					.select( CORE_USER )
-					.isTimingOutSurvey( slug, timeout );
-				expect( timingOut ).toBe( false );
-
-				await registry
-					.dispatch( CORE_USER )
-					.setSurveyTimeout( slug, timeout );
-
-				timingOut = registry
-					.select( CORE_USER )
-					.isTimingOutSurvey( slug, timeout );
-				expect( timingOut ).toBe( false );
 			} );
 		} );
 
