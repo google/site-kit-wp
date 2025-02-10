@@ -16,7 +16,41 @@
  * limitations under the License.
  */
 
-export const selectors = {};
+import { createRegistrySelector } from 'googlesitekit-data';
+import { MODULES_ADS } from './constants';
+
+function getPluginStatusProperty( propName, plugin ) {
+	return createRegistrySelector( ( select ) => () => {
+		const {
+			getWooCommercePluginStatus,
+			getGoogleForWooCommercePluginStatus,
+		} = select( MODULES_ADS );
+
+		const getPluginStatus =
+			plugin === 'WooCommerce'
+				? getWooCommercePluginStatus
+				: getGoogleForWooCommercePluginStatus;
+
+		const pluginStatus = getPluginStatus() || [];
+		return pluginStatus[ propName ];
+	} );
+}
+
+export const selectors = {
+	/**
+	 * Gets all site info from this data store.
+	 *
+	 * Not intended to be used publicly; this is largely here so other selectors can
+	 * request data using the selector/resolver pattern.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Module data.
+	 */
+	isWooCommerceActive: getPluginStatusProperty( 'active', 'WooCommerce' ),
+};
 
 const store = {
 	selectors,
