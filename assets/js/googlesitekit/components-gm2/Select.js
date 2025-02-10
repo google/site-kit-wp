@@ -19,18 +19,28 @@
 /**
  * External dependencies
  */
-import MaterialSelect from '@material/react-select';
+import MaterialSelect, { SelectHelperText } from '@material/react-select';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
 
-export default function Select( { id, ...props } ) {
+export default function Select( { id, helperText, ...props } ) {
 	// For accessibility, provide a generated id fallback if an id
 	// is not supplied. Adding an id is mandatory because otherwise the label
 	// is not able to associate with the select.
 	const idFallback = useInstanceId( Select, 'googlesitekit-select' );
 
-	return <MaterialSelect id={ id || idFallback } { ...props } />;
+	return (
+		<MaterialSelect
+			id={ id || idFallback }
+			helperText={
+				!! helperText ? (
+					<SelectHelperText>{ helperText }</SelectHelperText>
+				) : undefined
+			}
+			{ ...props }
+		/>
+	);
 }

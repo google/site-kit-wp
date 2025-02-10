@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Meta_Setting_Trait;
 /**
  * Class for associating product ID to term meta.
  *
- * @since n.e.x.t
+ * @since 1.146.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Term_Product_ID {
 	/**
 	 * Publication ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @var string
 	 */
@@ -36,7 +36,7 @@ class Term_Product_ID {
 	/**
 	 * Term_Product_ID constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param Term_Meta $term_meta Term_Meta instance.
 	 * @param string    $publication_id Publication ID.
@@ -49,7 +49,7 @@ class Term_Product_ID {
 	/**
 	 * Gets the meta key for the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return string Meta key.
 	 */
@@ -60,7 +60,7 @@ class Term_Product_ID {
 	/**
 	 * Returns the object type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return string Object type.
 	 */
@@ -71,7 +71,7 @@ class Term_Product_ID {
 	/**
 	 * Gets the `show_in_rest` value for this termmeta setting value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return bool|Array Any valid value for the `show_in_rest`
 	 */

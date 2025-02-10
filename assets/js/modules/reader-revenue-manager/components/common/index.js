@@ -19,3 +19,5 @@
 export { default as PublicationOnboardingStateNotice } from './PublicationOnboardingStateNotice';
 export { default as PublicationCreate } from './PublicationCreate';
 export { default as PublicationSelect } from './PublicationSelect';
+export { default as PostTypesSelect } from './PostTypesSelect';
+export { default as SnippetModeSelect } from './SnippetModeSelect';

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	render,
@@ -34,15 +35,18 @@ jest.mock( './DashboardMainApp', () =>
 );
 
 describe( 'DashboardEntryPoint', () => {
-	const setupRegistry = ( registry ) => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideModules( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	};
+	} );
 
 	it( 'should render the unified dashboard', () => {
 		const { container } = render( <DashboardEntryPoint />, {
-			setupRegistry,
+			registry,
 		} );
 		expect( container ).toMatchSnapshot();
 	} );
@@ -50,7 +54,7 @@ describe( 'DashboardEntryPoint', () => {
 	it( 'should render the module setup component when the setupModuleSlug prop is passed', () => {
 		const { container } = render(
 			<DashboardEntryPoint setupModuleSlug="analytics-4" />,
-			{ setupRegistry }
+			{ registry }
 		);
 		expect( container ).toMatchSnapshot();
 	} );

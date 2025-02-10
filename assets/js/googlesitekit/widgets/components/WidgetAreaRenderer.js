@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -52,6 +51,7 @@ import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
 import WidgetAreaHeader from './WidgetAreaHeader';
+import { useWindowWidth } from '../../../hooks/useWindowSize';
 
 /**
  * Gets root margin value for the intersection hook.

@@ -239,18 +239,30 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				return;
 			}
 
-			// Handle internal tracking if not lost events variant.
-			conversionReportingDetectedEventsTracking(
-				conversionReportingDetectedEventsTrackingArgs,
-				viewContext,
-				'confirm_select_new_conversion_metrics'
-			);
+			if ( ! shouldShowCalloutForNewEvents ) {
+				// Handle internal tracking for initial events detection - manually selected KMW.
+				conversionReportingDetectedEventsTracking(
+					conversionReportingDetectedEventsTrackingArgs,
+					viewContext,
+					'confirm_select_new_conversion_metrics'
+				);
+			}
+
+			if ( shouldShowCalloutForNewEvents ) {
+				// Handle internal tracking for new events detection - after initial events were detected.
+				conversionReportingDetectedEventsTracking(
+					conversionReportingDetectedEventsTrackingArgs,
+					viewContext,
+					'confirm_view_new_conversion_metrics'
+				);
+			}
 		},
 		[
 			viewContext,
 			conversionReportingDetectedEventsTrackingArgs,
 			setValue,
 			shouldShowCalloutForLostEvents,
+			shouldShowCalloutForNewEvents,
 		]
 	);
 

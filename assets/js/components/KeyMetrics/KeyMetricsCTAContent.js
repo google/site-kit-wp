@@ -22,7 +22,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useIntersection } from 'react-use';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /**
  * WordPress dependencies
@@ -47,6 +46,7 @@ import KeyMetricsSetupDesktopSVG from './KeyMetricsSetupDesktopSVG';
 import KeyMetricsSetupSmallDesktopSVG from './KeyMetricsSetupSmallDesktopSVG';
 import KeyMetricsSetupTabletSVG from './KeyMetricsSetupTabletSVG';
 import KeyMetricsSetupMobileSVG from './KeyMetricsSetupMobileSVG';
+import { useWindowWidth } from '../../hooks/useWindowSize';
 
 export default function KeyMetricsCTAContent( {
 	className,

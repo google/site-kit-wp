@@ -43,6 +43,10 @@ import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../..
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';
 import EnhancedMeasurementActivationBanner from './index';
 import { properties } from '../../../datastore/__fixtures__';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-width-utils';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const propertyID = '1000';
@@ -55,6 +59,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	let enhancedMeasurementSettingsMock;
 	let enhancedMeasurementEnabledSettingsMock;
 	let registry;
+	let originalViewportWidth;
 
 	beforeEach( () => {
 		enhancedMeasurementSettingsMock = {
@@ -109,6 +114,13 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 				enhancedMeasurementSettingsMock,
 				{ propertyID, webDataStreamID }
 			);
+
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
+	} );
+
+	afterEach( () => {
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', async () => {

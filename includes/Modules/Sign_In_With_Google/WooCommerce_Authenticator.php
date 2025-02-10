@@ -42,13 +42,21 @@ class WooCommerce_Authenticator extends Authenticator {
 	 * Gets the redirect URL after the user signs in with Google.
 	 *
 	 * @since 1.145.0
+	 * @since 1.146.0 Updated to take into account redirect URL from cookie.
 	 *
 	 * @param WP_User $user User object.
 	 * @param Input   $input Input instance.
 	 * @return string Redirect URL.
 	 */
 	protected function get_redirect_url( $user, $input ) {
-		$redirect = wc_get_page_permalink( 'myaccount' );
-		return apply_filters( 'woocommerce_login_redirect', $redirect, $user );
+		$redirect_to = wc_get_page_permalink( 'myaccount' );
+
+		// If we have the redirect URL in the cookie, use it as the main redirect_to URL.
+		$cookie_redirect_to = $this->get_cookie_redirect( $input );
+		if ( ! empty( $cookie_redirect_to ) ) {
+			$redirect_to = $cookie_redirect_to;
+		}
+
+		return apply_filters( 'woocommerce_login_redirect', $redirect_to, $user );
 	}
 }
