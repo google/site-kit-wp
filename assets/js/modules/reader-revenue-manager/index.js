@@ -31,6 +31,7 @@ import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
+	PUBLICATION_ONBOARDING_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -48,6 +49,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { isFeatureEnabled } from '../../features';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import ProductIDNotification from './components/dashboard/ProductIDNotification';
 
 export { registerStore } from './datastore';
 
@@ -167,6 +169,46 @@ export const NOTIFICATIONS = {
 		isDismissible: false,
 	},
 };
+
+if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+	NOTIFICATIONS[ 'rrm-product-id-notification' ] = {
+		Component: ProductIDNotification,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+			const publicationOnboardingState = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationOnboardingState();
+
+			const paymentOption = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPaymentOption();
+
+			const productIDs = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getProductIDs();
+
+			const productID = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getProductID();
+
+			if (
+				publicationOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+				productIDs.length > 0 &&
+				! productID &&
+				( paymentOption === 'contributions' ||
+					paymentOption === 'subscriptions' )
+			) {
+				return true;
+			}
+		},
+	};
+}
 
 export const registerNotifications = ( notificationsAPI ) => {
 	if ( isFeatureEnabled( 'rrmModule' ) ) {
