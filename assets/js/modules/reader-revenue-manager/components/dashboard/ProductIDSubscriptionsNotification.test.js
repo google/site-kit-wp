@@ -26,6 +26,7 @@
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -52,6 +53,7 @@ describe( 'ProductIDSubscriptionsNotification', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'reader-revenue-manager',

@@ -44,7 +44,7 @@ exports[`ProductIDSubscriptionsNotification should render correctly 1`] = `
             </button>
             <a
               class="mdc-button googlesitekit-subtle-notification__cta mdc-button--raised"
-              href="undefined#connected-services/reader-revenue-manager"
+              href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/reader-revenue-manager/edit"
               role="button"
               target="_self"
             >
