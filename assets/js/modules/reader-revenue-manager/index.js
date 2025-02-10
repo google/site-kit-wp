@@ -212,9 +212,9 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( registry ) => {
 			const isActive = await checkRequirementsForProductIDNotification(
-				{ select, resolveSelect },
+				registry,
 				'contributions'
 			);
 
@@ -228,9 +228,9 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( registry ) => {
 			const isActive = await checkRequirementsForProductIDNotification(
-				{ select, resolveSelect },
+				registry,
 				'subscriptions'
 			);
 
