@@ -22,6 +22,7 @@
 		"prerelease-zip": "npm run build",
 		"release-zip": "npm run zip",
 		"pretest": "npm run build:production -- --display=none",
+		"pretest:visualtest": "VRT=1 npm run build:storybook",
 		"test": "npm run test:js:watch",
 		"test:visualtest": "npm run test:visualtest -w ./tests/backstop",
 		"test:visualapprove": "npm run test:visualapprove -w ./tests/backstop",

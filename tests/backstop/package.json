@@ -1,12 +1,15 @@
 {
 	"scripts": {
-		"pretest:visualtest": "cd ../../ && VRT=1 npm run build:storybook",
 		"test:visualtest": "npm run backstopjs -- test",
 		"test:visualapprove": "npm run backstopjs -- approve",
 		"backstopjs": "./bin/backstop"
 	},
 	"dependencies": {
+		"@babel/parser": "^7.11.5",
+		"@babel/traverse": "^7.23.2",
 		"@componentdriven/csf": "^0.0.2-alpha.0",
-		"lodash": "^4.17.21"
+		"glob": "^7.2.3",
+		"lodash": "^4.17.21",
+		"node-fetch": "^2.7.0"
 	}
 }
