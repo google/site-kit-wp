@@ -41,6 +41,8 @@ const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
 export const initialState = {
 	moduleData: {
 		supportedConversionEvents: undefined,
+		woocommerce: undefined,
+		googleListingsAndAds: undefined,
 	},
 };
 
@@ -70,8 +72,16 @@ export const actions = {
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { supportedConversionEvents } = payload;
-			const moduleData = { supportedConversionEvents };
+			const {
+				supportedConversionEvents,
+				woocommerce,
+				googleListingsAndAds,
+			} = payload;
+			const moduleData = {
+				supportedConversionEvents,
+				woocommerce,
+				googleListingsAndAds,
+			};
 
 			return {
 				...state,
