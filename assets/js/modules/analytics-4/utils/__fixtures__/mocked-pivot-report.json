@@ -31,7 +31,7 @@
 		{
 			"pivotDimensionHeaders": [
 				{ "dimensionValues": [ { "value": "Dublin" } ] },
-				{ "dimensionValues": [ { "value": "(not set)" } ] },
+				{ "dimensionValues": [ { "value": "Berlin" } ] },
 				{ "dimensionValues": [ { "value": "Cork" } ] }
 			],
 			"rowCount": 3
@@ -103,7 +103,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "properties/12345/audiences/1" },
-				{ "value": "(not set)" }
+				{ "value": "Berlin" }
 			],
 			"metricValues": [
 				{ "value": "0.03756667533889413" },
@@ -163,7 +163,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "properties/12345/audiences/3" },
-				{ "value": "(not set)" }
+				{ "value": "Berlin" }
 			],
 			"metricValues": [
 				{ "value": "0.8528603634331376" },
@@ -173,7 +173,7 @@
 		{
 			"dimensionValues": [
 				{ "value": "properties/12345/audiences/2" },
-				{ "value": "(not set)" }
+				{ "value": "Berlin" }
 			],
 			"metricValues": [
 				{ "value": "0.8865012191236019" },
