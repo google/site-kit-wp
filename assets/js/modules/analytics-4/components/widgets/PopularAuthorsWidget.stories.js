@@ -55,10 +55,9 @@ const reportOptions = {
 	dimensions: [ 'customEvent:googlesitekit_post_author' ],
 	dimensionFilters: {
 		'customEvent:googlesitekit_post_author': {
-			filterType: 'stringFilter',
-			matchType: 'EXACT',
-			value: '(not set)',
-			notExpression: true,
+			filterType: 'emptyFilter',
+			value: '',
+			notExpression: false,
 		},
 	},
 	metrics: [ { name: 'screenPageViews' } ],
@@ -80,9 +79,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -122,9 +119,7 @@ GatheringData.args = {
 // Since the "Gathering Data" state is the same for all KMW tiles that require
 // custom dimensions, this is the sole scenario and should not be added to any
 // other generic `MetricTile___` or KMW component.
-GatheringData.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
-};
+GatheringData.scenario = {};
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
@@ -140,7 +135,6 @@ ErrorMissingCustomDimensions.args = {
 // that require custom dimensions, this is the sole scenario and should not be
 // added to any other generic `MetricTile___` or KMW component.
 ErrorMissingCustomDimensions.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
 	delay: 250,
 };
 
@@ -169,7 +163,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 // all KMW tiles that require custom dimensions,, this is the sole scenario and should
 // not be added to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
 
@@ -198,7 +191,6 @@ ErrorCustomDimensionsGeneric.args = {
 // that require custom dimensions, this is the sole scenario and should not be added
 // to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsGeneric.scenario = {
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
 
