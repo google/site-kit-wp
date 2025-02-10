@@ -60,7 +60,7 @@ class Post_Product_ID {
 	/**
 	 * Returns the object type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @return string Object type.
 	 */

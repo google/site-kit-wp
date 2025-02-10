@@ -126,7 +126,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// The button shouldn't be rendered on a non-login page.
 		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
-		// Enable the Sign in with Google One-tap on all pages.
+		// Enable the Sign in with Google One Tap on all pages.
 		$this->module->get_settings()->set(
 			array(
 				'clientID'         => '1234567890.googleusercontent.com',
