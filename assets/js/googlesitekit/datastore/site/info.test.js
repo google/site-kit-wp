@@ -54,7 +54,7 @@ describe( 'core/site site info', () => {
 			active: false,
 			installed: true,
 		},
-		googleListingsAndAds: {
+		googleForWooCommerce: {
 			active: false,
 			installed: false,
 			adsLinked: false,
