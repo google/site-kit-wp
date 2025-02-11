@@ -31,14 +31,6 @@ describe( 'modules/ads module data', () => {
 	const baseData = {
 		ads: {
 			supportedConversionEvents: [ 'add-to-cart' ],
-			woocommerce: {
-				active: false,
-				installed: true,
-			},
-			googleListingsAndAds: {
-				active: false,
-				installed: false,
-			},
 		},
 	};
 
@@ -130,8 +122,6 @@ describe( 'modules/ads module data', () => {
 
 		describe.each( [
 			[ 'getSupportedConversionEvents', 'supportedConversionEvents' ],
-			[ 'getWooCommercePluginStatus', 'woocommerce' ],
-			[ 'getGoogleForWooCommercePluginStatus', 'googleListingsAndAds' ],
 		] )( '%s', ( selector, dataKey ) => {
 			it( 'uses a resolver to load module data then returns the data when this specific selector is used', async () => {
 				registry.select( MODULES_ADS )[ selector ]();
