@@ -187,6 +187,8 @@ export const reducer = ( state, { payload, type } ) => {
 				consentModeRegions,
 				anyoneCanRegister,
 				isMultisite,
+				woocommerce,
+				googleListingsAndAds,
 			} = payload.siteInfo;
 
 			return {
@@ -223,6 +225,8 @@ export const reducer = ( state, { payload, type } ) => {
 					consentModeRegions,
 					anyoneCanRegister,
 					isMultisite,
+					woocommerce,
+					googleListingsAndAds,
 				},
 			};
 		}
@@ -314,6 +318,8 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
+			woocommerce,
+			googleListingsAndAds,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -355,6 +361,8 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
+			woocommerce,
+			googleListingsAndAds,
 		} );
 	},
 };
