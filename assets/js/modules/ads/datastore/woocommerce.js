@@ -85,6 +85,44 @@ export const selectors = {
 		'adsConnected',
 		'GoogleForWooCommerce'
 	),
+
+	/**
+	 * Gets boolean value for determining to show or not modal.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
+	 */
+	shouldShowWooCommerceRedirectModal: createRegistrySelector(
+		( select ) => () => {
+			const {
+				isWooCommerceActive,
+				isGoogleForWooCommerceActive,
+				isGoogleForWooCommerceAdsAccountLinked,
+			} = select( MODULES_ADS );
+
+			if (
+				isWooCommerceActive() === undefined ||
+				isGoogleForWooCommerceActive() === undefined ||
+				isGoogleForWooCommerceAdsAccountLinked() === undefined
+			) {
+				return undefined;
+			}
+
+			if (
+				( isWooCommerceActive() &&
+					isGoogleForWooCommerceActive() === false ) ||
+				( isWooCommerceActive() &&
+					isGoogleForWooCommerceActive() &&
+					isGoogleForWooCommerceAdsAccountLinked() === false )
+			) {
+				return true;
+			}
+
+			return false;
+		}
+	),
 };
 
 const store = {
