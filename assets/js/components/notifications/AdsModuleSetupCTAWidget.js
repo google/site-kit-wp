@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-// import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 // import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { WEEK_IN_SECONDS } from '../../util';
 import AdsSetupSVG from '../../../svg/graphics/ads-setup.svg';
@@ -39,6 +39,7 @@ import Description from '../../googlesitekit/notifications/components/common/Des
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	// const breakpoint = useBreakpoint();
@@ -46,6 +47,10 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	// const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
 	const learnMoreURL = undefined;
+
+	const isDismissalFinal = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
+	);
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
@@ -76,16 +81,13 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 					<ActionsCTALinkDismiss
 						id={ id }
 						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __(
-							'Set up Reader Revenue Manager',
-							'google-site-kit'
-						) }
+						ctaLabel={ __( 'Set up Ads', 'google-site-kit' ) }
 						onCTAClick={ onSetupCallback }
-						// dismissLabel={
-						// 	isDismissalFinal
-						// 		? __( 'Don’t show again', 'google-site-kit' )
-						// 		: __( 'Maybe later', 'google-site-kit' )
-						// }
+						dismissLabel={
+							isDismissalFinal
+								? __( 'Don’t show again', 'google-site-kit' )
+								: __( 'Maybe later', 'google-site-kit' )
+						}
 						// onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
