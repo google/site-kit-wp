@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
+import { CORE_SITE } from './constants';
 
 describe( 'modules/ads woocommerce', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
@@ -64,16 +64,14 @@ describe( 'modules/ads woocommerce', () => {
 			],
 		] )( '%s', ( selector, pluginKey, value ) => {
 			it( 'uses a resolver to load plugin status then returns the status value when this specific selector is used', async () => {
-				registry.select( MODULES_ADS )[ selector ]();
+				registry.select( CORE_SITE )[ selector ]();
 
-				await untilResolved( registry, MODULES_ADS ).getModuleData();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
-				const moduleData = registry
-					.select( MODULES_ADS )
-					.getModuleData();
+				const moduleData = registry.select( CORE_SITE ).getSiteInfo();
 
 				const selectorValue = registry
-					.select( MODULES_ADS )
+					.select( CORE_SITE )
 					[ selector ]();
 
 				expect( moduleData ).toHaveProperty( pluginKey );
@@ -83,9 +81,9 @@ describe( 'modules/ads woocommerce', () => {
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				delete global[ baseModulesGlobalName ];
 
-				const result = registry.select( MODULES_ADS )[ selector ]();
+				const result = registry.select( CORE_SITE )[ selector ]();
 
-				await untilResolved( registry, MODULES_ADS ).getModuleData();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( result ).toEqual( undefined );
 			} );
@@ -109,13 +107,13 @@ describe( 'modules/ads woocommerce', () => {
 				};
 
 				registry
-					.select( MODULES_ADS )
+					.select( CORE_SITE )
 					.shouldShowWooCommerceRedirectModal();
 
-				await untilResolved( registry, MODULES_ADS ).getModuleData();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				const shouldShowWooCommerceRedirectModal = registry
-					.select( MODULES_ADS )
+					.select( CORE_SITE )
 					.shouldShowWooCommerceRedirectModal();
 
 				expect( shouldShowWooCommerceRedirectModal ).toEqual( true );
@@ -123,13 +121,13 @@ describe( 'modules/ads woocommerce', () => {
 
 			it( 'uses a resolver to load module data, then returns false if modal should not be shown', async () => {
 				registry
-					.select( MODULES_ADS )
+					.select( CORE_SITE )
 					.shouldShowWooCommerceRedirectModal();
 
-				await untilResolved( registry, MODULES_ADS ).getModuleData();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				const shouldShowWooCommerceRedirectModal = registry
-					.select( MODULES_ADS )
+					.select( CORE_SITE )
 					.shouldShowWooCommerceRedirectModal();
 
 				expect( shouldShowWooCommerceRedirectModal ).toEqual( false );
@@ -141,10 +139,10 @@ describe( 'modules/ads woocommerce', () => {
 				expect( global[ baseModulesGlobalName ] ).toEqual( undefined );
 
 				const result = registry
-					.select( MODULES_ADS )
+					.select( CORE_SITE )
 					.shouldShowWooCommerceRedirectModal();
 
-				await untilResolved( registry, MODULES_ADS ).getModuleData();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();

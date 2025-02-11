@@ -1,5 +1,5 @@
 /**
- * `modules/ads` data store: woocommerce.
+ * `core/site` data store: plugin status.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -17,14 +17,14 @@
  */
 
 import { createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
+import { CORE_SITE } from './constants';
 
 function getPluginStatusProperty( propName, plugin ) {
 	return createRegistrySelector( ( select ) => () => {
 		const {
 			getWooCommercePluginStatus,
 			getGoogleForWooCommercePluginStatus,
-		} = select( MODULES_ADS );
+		} = select( CORE_SITE );
 
 		const getPluginStatus =
 			plugin === 'WooCommerce'
@@ -100,7 +100,7 @@ export const selectors = {
 				isWooCommerceActive,
 				isGoogleForWooCommerceActive,
 				isGoogleForWooCommerceAdsAccountLinked,
-			} = select( MODULES_ADS );
+			} = select( CORE_SITE );
 
 			if (
 				isWooCommerceActive() === undefined ||
