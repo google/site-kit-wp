@@ -40,12 +40,16 @@ import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
 } from './components/notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import AdsModuleSetupCTAWidget from '../../components/notifications/AdsModuleSetupCTAWidget';
 
 export { registerStore } from './datastore';
 
@@ -124,6 +128,7 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 	} );
+
 	notifications.registerNotification( 'setup-success-notification-pax', {
 		Component: PAXSetupSuccessSubtleNotification,
 		priority: 10,
@@ -141,5 +146,17 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
+	} );
+
+	notifications.registerNotification( 'ads-setup-cta', {
+		Component: AdsModuleSetupCTAWidget,
+		priority: 30,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			return true;
+		},
+		featureFlag: 'adsPax',
 	} );
 };
