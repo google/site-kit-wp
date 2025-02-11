@@ -17,7 +17,7 @@
  */
 
 import { createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_ADS } from './constants';
+import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
 
 function getPluginStatusProperty( propName, plugin ) {
 	return createRegistrySelector( ( select ) => () => {

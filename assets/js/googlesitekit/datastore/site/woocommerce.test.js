@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { MODULES_ADS } from './constants';
+import { MODULES_ADS } from '../../../modules/ads/datastore/constants';
 
 describe( 'modules/ads woocommerce', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
@@ -88,6 +88,66 @@ describe( 'modules/ads woocommerce', () => {
 				await untilResolved( registry, MODULES_ADS ).getModuleData();
 
 				expect( result ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'shouldShowWooCommerceRedirectModal', () => {
+			it( 'uses a resolver to load module data, then returns true if modal should be shown', async () => {
+				global[ baseModulesGlobalName ] = {
+					ads: {
+						supportedConversionEvents: [ 'add-to-cart' ],
+						woocommerce: {
+							active: true,
+							installed: true,
+						},
+						googleListingsAndAds: {
+							active: true,
+							installed: true,
+							adsLinked: false,
+						},
+					},
+				};
+
+				registry
+					.select( MODULES_ADS )
+					.shouldShowWooCommerceRedirectModal();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				const shouldShowWooCommerceRedirectModal = registry
+					.select( MODULES_ADS )
+					.shouldShowWooCommerceRedirectModal();
+
+				expect( shouldShowWooCommerceRedirectModal ).toEqual( true );
+			} );
+
+			it( 'uses a resolver to load module data, then returns false if modal should not be shown', async () => {
+				registry
+					.select( MODULES_ADS )
+					.shouldShowWooCommerceRedirectModal();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				const shouldShowWooCommerceRedirectModal = registry
+					.select( MODULES_ADS )
+					.shouldShowWooCommerceRedirectModal();
+
+				expect( shouldShowWooCommerceRedirectModal ).toEqual( false );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				delete global[ baseModulesGlobalName ];
+
+				expect( global[ baseModulesGlobalName ] ).toEqual( undefined );
+
+				const result = registry
+					.select( MODULES_ADS )
+					.shouldShowWooCommerceRedirectModal();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				expect( result ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );
