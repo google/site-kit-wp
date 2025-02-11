@@ -109,7 +109,7 @@ export const resolvers = {
 
 export const selectors = {
 	/**
-	 * Gets all site info from this data store.
+	 * Gets all module data from this data store.
 	 *
 	 * Not intended to be used publicly; this is largely here so other selectors can
 	 * request data using the selector/resolver pattern.
