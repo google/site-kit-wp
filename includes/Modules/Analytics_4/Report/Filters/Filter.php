@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\Filter
+ * Class Google\Site_Kit\Modules\Analytics_4\Report\Filter
  *
  * @package   Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter
  * @copyright 2023 Google LLC
@@ -8,25 +8,25 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter;
+namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
 
 /**
- * Interface for a dimension filter class.
+ * Interface for a filter class.
  *
  * @since 1.106.0
  */
 interface Filter {
 
 	/**
-	 * Converts the dimension filter into the GA4 compatible dimension filter expression.
+	 * Converts the filter into the GA4 compatible filter expression.
 	 *
 	 * @since 1.106.0
 	 *
-	 * @param string $dimension_name The dimension name.
-	 * @param mixed  $dimension_value The dimension filter value.
+	 * @param string $name Filter name.
+	 * @param mixed  $value Filter value.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression instance.
 	 */
-	public function parse_filter_expression( $dimension_name, $dimension_value );
+	public function parse_filter_expression( $name, $value );
 }

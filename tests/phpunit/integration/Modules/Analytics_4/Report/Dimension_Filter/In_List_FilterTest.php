@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Report\Dimension_Filter;
 
-use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\In_List_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\In_List_Filter;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
