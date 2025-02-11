@@ -37,6 +37,7 @@ describe( 'modules/ads woocommerce', () => {
 			googleListingsAndAds: {
 				active: false,
 				installed: false,
+				adsLinked: false,
 			},
 		},
 	};
@@ -56,6 +57,11 @@ describe( 'modules/ads woocommerce', () => {
 		describe.each( [
 			[ 'isWooCommerceActive', 'woocommerce', false ],
 			[ 'isGoogleForWooCommercePresent', 'googleListingsAndAds', false ],
+			[
+				'isGoogleForWooCommerceAdsAccountLinked',
+				'googleListingsAndAds',
+				false,
+			],
 		] )( '%s', ( selector, pluginKey, value ) => {
 			it( 'uses a resolver to load plugin status then returns the status value when this specific selector is used', async () => {
 				registry.select( MODULES_ADS )[ selector ]();
