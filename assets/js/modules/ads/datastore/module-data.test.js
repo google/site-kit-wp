@@ -133,7 +133,7 @@ describe( 'modules/ads module data', () => {
 			[ 'getWooCommercePluginStatus', 'woocommerce' ],
 			[ 'getGoogleForWooCommercePluginStatus', 'googleListingsAndAds' ],
 		] )( '%s', ( selector, dataKey ) => {
-			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
+			it( 'uses a resolver to load module data then returns the data when this specific selector is used', async () => {
 				registry.select( MODULES_ADS )[ selector ]();
 
 				await untilResolved( registry, MODULES_ADS ).getModuleData();
