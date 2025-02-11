@@ -31,6 +31,14 @@ describe( 'modules/ads module data', () => {
 	const baseData = {
 		ads: {
 			supportedConversionEvents: [ 'add-to-cart' ],
+			woocommerce: {
+				active: false,
+				installed: true,
+			},
+			googleListingsAndAds: {
+				active: false,
+				installed: false,
+			},
 		},
 	};
 
@@ -117,6 +125,35 @@ describe( 'modules/ads module data', () => {
 				expect( moduleData.supportedConversionEvents ).toBe(
 					undefined
 				);
+			} );
+		} );
+
+		describe.each( [
+			[ 'getSupportedConversionEvents', 'supportedConversionEvents' ],
+			[ 'getWooCommercePluginStatus', 'woocommerce' ],
+			[ 'getGoogleForWooCommercePluginStatus', 'googleListingsAndAds' ],
+		] )( '%s', ( selector, dataKey ) => {
+			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
+				registry.select( MODULES_ADS )[ selector ]();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				const moduleData = registry
+					.select( MODULES_ADS )
+					.getModuleData();
+
+				expect( moduleData ).toHaveProperty( dataKey );
+				expect( moduleData ).toEqual( baseData.ads );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				delete global[ baseModulesGlobalName ];
+
+				const result = registry.select( MODULES_ADS )[ selector ]();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				expect( result ).toEqual( undefined );
 			} );
 		} );
 	} );
