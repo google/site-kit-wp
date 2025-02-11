@@ -18,6 +18,7 @@
 
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { addQueryArgs } from '@wordpress/url';
 
 function getPluginStatusProperty( propName, plugin ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -87,12 +88,12 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets boolean value for determining to show or not modal.
+	 * Determines whether the WooCommerce redirect modal should be displayed.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
+	 * @return {(boolean|undefined)} Returns `true` if the modal should be shown, `false` if it shouldn't, and `undefined` if data is not yet resolved.
 	 */
 	shouldShowWooCommerceRedirectModal: createRegistrySelector(
 		( select ) => () => {
@@ -121,6 +122,50 @@ export const selectors = {
 			}
 
 			return false;
+		}
+	),
+
+	/**
+	 * Gets Google for WooCommerce redirect URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The appropriate redirect URL, or `undefined` if data is not resolved.
+	 */
+	getGoogleForWooCommerceRedirectURI: createRegistrySelector(
+		( select ) => () => {
+			const {
+				getAdminURL,
+				isWooCommerceActive,
+				isGoogleForWooCommerceActive,
+			} = select( CORE_SITE );
+
+			const adminURL = getAdminURL();
+
+			if ( ! adminURL ) {
+				return undefined;
+			}
+
+			if (
+				isWooCommerceActive() &&
+				isGoogleForWooCommerceActive() === false
+			) {
+				return addQueryArgs( `${ adminURL }/plugin-install.php`, {
+					s: 'google-listings-and-ads',
+					tab: 'search',
+					type: 'term',
+				} );
+			}
+
+			if ( isWooCommerceActive() && isGoogleForWooCommerceActive() ) {
+				const googleDashboardPath =
+					encodeURIComponent( '/google/dashboard' );
+
+				return `${ adminURL }/admin.php?page=wc-admin&path=${ googleDashboardPath }`;
+			}
+
+			return undefined;
 		}
 	),
 };
