@@ -45,10 +45,7 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidAccountSelection } from '../utils/validation';
 import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
-import {
-	populateAccountID,
-	populatePropertyAndAccountIds,
-} from '../utils/account';
+import { populateAccountSummaries } from '../utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
@@ -73,7 +70,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 			...state,
 			accountSummaries: [
 				...( state.accountSummaries || [] ),
-				...( response.accountSummaries || [] ),
+				...populateAccountSummaries( response.accountSummaries || [] ),
 			],
 		};
 	},
@@ -109,8 +106,7 @@ const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
 const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 const RESET_ACCOUNT_SUMMARIES = 'RESET_ACCOUNT_SUMMARIES';
 const RESET_ACCOUNT_SETTINGS = 'RESET_ACCOUNT_SETTINGS';
-const TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES =
-	'TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES';
+const SORT_ACCOUNT_SUMMARIES = 'SORT_ACCOUNT_SUMMARIES';
 
 const baseInitialState = {
 	accountSummaries: undefined,
@@ -268,19 +264,15 @@ const baseActions = {
 	},
 
 	/**
-	 * Creates an action to transform and sort account summaries.
+	 * Sorts account summaries.
 	 *
-	 * This action is typically dispatched when account summaries need to be
-	 * transformed (e.g., extracting and populating relevant account and property
-	 * IDs) and then sorted in a case-insensitive manner by display name.
+	 * @since n.e.x.t
 	 *
-	 * @since 1.138.0
-	 *
-	 * @return {Object} The action object with the type `TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES`.
+	 * @return {Object} Redux-style action.
 	 */
-	transformAndSortAccountSummaries() {
+	sortAccountSummaries() {
 		return {
-			type: TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES,
+			type: SORT_ACCOUNT_SUMMARIES,
 		};
 	},
 };
@@ -311,30 +303,15 @@ const baseReducer = createReducer( ( state, { type } ) => {
 			state.settings.webDataStreamID = undefined;
 			break;
 
-		case TRANSFORM_AND_SORT_ACCOUNT_SUMMARIES:
+		case SORT_ACCOUNT_SUMMARIES:
 			if ( ! state.accountSummaries?.length ) {
-				return state;
+				return;
 			}
-
-			state.accountSummaries = state.accountSummaries.map(
-				( account ) => {
-					const accountObj = populateAccountID( account );
-					accountObj.propertySummaries = (
-						accountObj.propertySummaries || []
-					).map( ( property ) =>
-						populatePropertyAndAccountIds( property )
-					);
-
-					return accountObj;
-				}
-			);
 
 			state.accountSummaries = caseInsensitiveListSort(
 				state.accountSummaries,
 				'displayName'
 			);
-
-			return state;
 	}
 } );
 
@@ -361,7 +338,7 @@ const baseResolvers = {
 			} while ( nextPageToken );
 		}
 
-		yield baseActions.transformAndSortAccountSummaries();
+		yield baseActions.sortAccountSummaries();
 	},
 };
 
