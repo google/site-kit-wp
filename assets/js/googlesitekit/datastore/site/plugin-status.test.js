@@ -25,7 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
-describe( 'modules/ads woocommerce', () => {
+describe( 'core/site plugin status', () => {
 	const baseInfoVar = '_googlesitekitBaseData';
 	const baseInfo = {
 		adminURL: 'http://something.test/wp-admin',
