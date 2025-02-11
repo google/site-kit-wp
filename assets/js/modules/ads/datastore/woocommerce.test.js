@@ -53,42 +53,36 @@ describe( 'modules/ads woocommerce', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe.each( [ [ 'isWooCommerceActive', 'woocommerce', false ] ] )(
-			'%s',
-			( selector, pluginKey, value ) => {
-				it( 'uses a resolver to load plugin status then returns the status value when this specific selector is used', async () => {
-					registry.select( MODULES_ADS )[ selector ]();
+		describe.each( [
+			[ 'isWooCommerceActive', 'woocommerce', false ],
+			[ 'isGoogleForWooCommercePresent', 'googleListingsAndAds', false ],
+		] )( '%s', ( selector, pluginKey, value ) => {
+			it( 'uses a resolver to load plugin status then returns the status value when this specific selector is used', async () => {
+				registry.select( MODULES_ADS )[ selector ]();
 
-					await untilResolved(
-						registry,
-						MODULES_ADS
-					).getModuleData();
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
 
-					const moduleData = registry
-						.select( MODULES_ADS )
-						.getModuleData();
+				const moduleData = registry
+					.select( MODULES_ADS )
+					.getModuleData();
 
-					const selectorValue = registry
-						.select( MODULES_ADS )
-						[ selector ]();
+				const selectorValue = registry
+					.select( MODULES_ADS )
+					[ selector ]();
 
-					expect( moduleData ).toHaveProperty( pluginKey );
-					expect( selectorValue ).toEqual( value );
-				} );
+				expect( moduleData ).toHaveProperty( pluginKey );
+				expect( selectorValue ).toEqual( value );
+			} );
 
-				it( 'will return initial state (undefined) when no data is available', async () => {
-					delete global[ baseModulesGlobalName ];
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				delete global[ baseModulesGlobalName ];
 
-					const result = registry.select( MODULES_ADS )[ selector ]();
+				const result = registry.select( MODULES_ADS )[ selector ]();
 
-					await untilResolved(
-						registry,
-						MODULES_ADS
-					).getModuleData();
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
 
-					expect( result ).toEqual( undefined );
-				} );
-			}
-		);
+				expect( result ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );
