@@ -26,40 +26,38 @@ import {
 import { CORE_SITE } from './constants';
 
 describe( 'modules/ads woocommerce', () => {
-	const baseModulesGlobalName = '_googlesitekitModulesData';
-	const baseData = {
-		ads: {
-			supportedConversionEvents: [ 'add-to-cart' ],
-			woocommerce: {
-				active: false,
-				installed: true,
-			},
-			googleListingsAndAds: {
-				active: false,
-				installed: false,
-				adsLinked: false,
-			},
+	const baseInfoVar = '_googlesitekitBaseData';
+	const baseInfo = {
+		woocommerce: {
+			active: false,
+			installed: true,
+		},
+		googleForWooCommerce: {
+			active: false,
+			installed: false,
+			adsConnected: false,
 		},
 	};
 
 	let registry;
 
 	beforeEach( () => {
-		global[ baseModulesGlobalName ] = baseData;
 		registry = createTestRegistry();
+
+		global[ baseInfoVar ] = baseInfo;
 	} );
 
 	afterEach( () => {
-		delete global[ baseModulesGlobalName ];
+		delete global[ baseInfoVar ];
 	} );
 
 	describe( 'selectors', () => {
 		describe.each( [
 			[ 'isWooCommerceActive', 'woocommerce', false ],
-			[ 'isGoogleForWooCommercePresent', 'googleListingsAndAds', false ],
+			[ 'isGoogleForWooCommercePresent', 'googleForWooCommerce', false ],
 			[
 				'isGoogleForWooCommerceAdsAccountLinked',
-				'googleListingsAndAds',
+				'googleForWooCommerce',
 				false,
 			],
 		] )( '%s', ( selector, pluginKey, value ) => {
@@ -68,41 +66,39 @@ describe( 'modules/ads woocommerce', () => {
 
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
-				const moduleData = registry.select( CORE_SITE ).getSiteInfo();
+				const siteInfo = registry.select( CORE_SITE ).getSiteInfo();
 
 				const selectorValue = registry
 					.select( CORE_SITE )
 					[ selector ]();
 
-				expect( moduleData ).toHaveProperty( pluginKey );
+				expect( siteInfo ).toHaveProperty( pluginKey );
 				expect( selectorValue ).toEqual( value );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				delete global[ baseModulesGlobalName ];
+				delete global[ baseInfoVar ];
 
 				const result = registry.select( CORE_SITE )[ selector ]();
 
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( result ).toEqual( undefined );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'shouldShowWooCommerceRedirectModal', () => {
 			it( 'uses a resolver to load module data, then returns true if modal should be shown', async () => {
-				global[ baseModulesGlobalName ] = {
-					ads: {
-						supportedConversionEvents: [ 'add-to-cart' ],
-						woocommerce: {
-							active: true,
-							installed: true,
-						},
-						googleListingsAndAds: {
-							active: true,
-							installed: true,
-							adsLinked: false,
-						},
+				global[ baseInfoVar ] = {
+					woocommerce: {
+						active: true,
+						installed: true,
+					},
+					googleForWooCommerce: {
+						active: true,
+						installed: true,
+						adsConnected: false,
 					},
 				};
 
@@ -134,9 +130,9 @@ describe( 'modules/ads woocommerce', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				delete global[ baseModulesGlobalName ];
+				delete global[ baseInfoVar ];
 
-				expect( global[ baseModulesGlobalName ] ).toEqual( undefined );
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
 
 				const result = registry
 					.select( CORE_SITE )
