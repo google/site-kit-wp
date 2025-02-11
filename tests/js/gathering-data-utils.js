@@ -8,46 +8,8 @@ import invariant from 'invariant';
  */
 import { getAnalytics4MockResponse } from '../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../assets/js/modules/search-console/util/data-mock';
-import { CORE_USER } from '../../assets/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import {
-	DATE_RANGE_OFFSET as ANALYTICS_4_DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../assets/js/modules/analytics-4/datastore/constants';
-import {
-	DATE_RANGE_OFFSET as SEARCH_CONSOLE_DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '../../assets/js/modules/search-console/datastore/constants';
-
-/**
- * Generates report options for the Analytics 4 report used in the zero data check, which is in turn used to determine the gathering data state.
- *
- * @since 1.106.0
- *
- * @param {Object} registry Data registry object.
- * @return {Object} Report options object.
- */
-export function getAnalytics4HasZeroDataReportOptions( registry ) {
-	const { startDate, endDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates( {
-			offsetDays: ANALYTICS_4_DATE_RANGE_OFFSET,
-		} );
-
-	const options = {
-		dimensions: [ 'date' ],
-		metrics: [ { name: 'totalUsers' } ],
-		startDate,
-		endDate,
-	};
-
-	const url = registry.select( CORE_SITE ).getCurrentEntityURL();
-	if ( url ) {
-		options.url = url;
-	}
-
-	return options;
-}
+import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
 
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Analytics 4 module.
@@ -63,7 +25,9 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 		"Analytics 4 gathering data's `true` state relies on the current authentication and selected property state so is unreliable to set from a helper, and therefore unsupported."
 	);
 
-	const options = getAnalytics4HasZeroDataReportOptions( registry );
+	const options = registry
+		.select( MODULES_ANALYTICS_4 )
+		.getSampleReportArgs();
 
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
@@ -75,31 +39,18 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Search Console module.
  *
- * @since 1.106.0
+ * This function ensures that the Search Console module receives the correct report data
+ * based on whether it is in a gathering data state.
  *
- * @param {Object}  registry        Data registry object.
- * @param {boolean} isGatheringData The desired gathering data state.
+ * @since 1.106.0 Introduced to manage Search Console module's gathering data state.
+ *
+ * @param {Object}  registry        The data registry object used to interact with the store.
+ * @param {boolean} isGatheringData Indicates whether the module should be in a gathering data state.
  */
 function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
-	const rangeArgs = {
-		compare: true,
-		offsetDays: SEARCH_CONSOLE_DATE_RANGE_OFFSET,
-	};
-
-	const url = registry.select( CORE_SITE ).getCurrentEntityURL();
-	const { compareStartDate: startDate, endDate } = registry
-		.select( CORE_USER )
-		.getDateRangeDates( rangeArgs );
-
-	const options = {
-		dimensions: 'date',
-		startDate,
-		endDate,
-	};
-
-	if ( url ) {
-		options.url = url;
-	}
+	const options = registry
+		.select( MODULES_SEARCH_CONSOLE )
+		.getSampleReportArgs();
 
 	const reportData = isGatheringData
 		? []
