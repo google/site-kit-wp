@@ -42,7 +42,7 @@ export default function LostEventsSubtleNotification( {
 			className="googlesitekit-acr-subtle-notification googlesitekit-acr-subtle-notification__lost-events"
 			title={ __( 'Unavailable metrics data', 'google-site-kit' ) }
 			description={ __(
-				'We couldn’t detect any events for some of your metrics in over 90 days. You can select other metrics for your dashboard',
+				'We couldn’t detect any events for some of your metrics in over 90 days. You can select other metrics for your dashboard.',
 				'google-site-kit'
 			) }
 			dismissCTA={
