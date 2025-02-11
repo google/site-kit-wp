@@ -165,7 +165,7 @@ export const selectors = {
 				return `${ adminURL }/admin.php?page=wc-admin&path=${ googleDashboardPath }`;
 			}
 
-			return undefined;
+			return '';
 		}
 	),
 };
