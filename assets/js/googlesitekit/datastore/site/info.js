@@ -188,7 +188,7 @@ export const reducer = ( state, { payload, type } ) => {
 				anyoneCanRegister,
 				isMultisite,
 				woocommerce,
-				googleListingsAndAds,
+				googleForWooCommerce,
 			} = payload.siteInfo;
 
 			return {
@@ -226,7 +226,7 @@ export const reducer = ( state, { payload, type } ) => {
 					anyoneCanRegister,
 					isMultisite,
 					woocommerce,
-					googleListingsAndAds,
+					googleForWooCommerce,
 				},
 			};
 		}
@@ -319,7 +319,7 @@ export const resolvers = {
 			anyoneCanRegister,
 			isMultisite,
 			woocommerce,
-			googleListingsAndAds,
+			googleForWooCommerce,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -362,7 +362,7 @@ export const resolvers = {
 			anyoneCanRegister,
 			isMultisite,
 			woocommerce,
-			googleListingsAndAds,
+			googleForWooCommerce,
 		} );
 	},
 };
@@ -971,7 +971,7 @@ export const selectors = {
 	 * @return {(Array|undefined)} Plugin status array.
 	 */
 	getGoogleForWooCommercePluginStatus: getSiteInfoProperty(
-		'googleListingsAndAds'
+		'googleForWooCommerce'
 	),
 };
 
