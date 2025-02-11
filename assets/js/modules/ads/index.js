@@ -157,6 +157,8 @@ export const registerNotifications = ( notifications ) => {
 		checkRequirements: () => {
 			return true;
 		},
+		isDismissible: true,
+		dismissRetries: 1,
 		featureFlag: 'adsPax',
 	} );
 };
