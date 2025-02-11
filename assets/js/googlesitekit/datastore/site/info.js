@@ -951,6 +951,28 @@ export const selectors = {
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	isMultisite: getSiteInfoProperty( 'isMultisite' ),
+
+	/**
+	 * Gets WooCommerce plugin status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Plugin status array.
+	 */
+	getWooCommercePluginStatus: getSiteInfoProperty( 'woocommerce' ),
+
+	/**
+	 * Gets Google for WooCommerce plugin status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Plugin status array.
+	 */
+	getGoogleForWooCommercePluginStatus: getSiteInfoProperty(
+		'googleListingsAndAds'
+	),
 };
 
 export default {
