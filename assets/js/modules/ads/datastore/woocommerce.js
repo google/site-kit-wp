@@ -53,7 +53,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status array.
+	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
 	 */
 	isGoogleForWooCommercePresent: getPluginStatusProperty(
 		'installed',
@@ -66,10 +66,23 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status array.
+	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
 	 */
 	isGoogleForWooCommerceActive: getPluginStatusProperty(
 		'active',
+		'GoogleForWooCommerce'
+	),
+
+	/**
+	 * Gets Google for WooCommerce adsConnected property from plugin status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
+	 */
+	isGoogleForWooCommerceAdsAccountLinked: getPluginStatusProperty(
+		'adsConnected',
 		'GoogleForWooCommerce'
 	),
 };
