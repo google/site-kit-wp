@@ -38,33 +38,38 @@ function getPluginStatusProperty( propName, plugin ) {
 
 export const selectors = {
 	/**
-	 * Gets all site info from this data store.
-	 *
-	 * Not intended to be used publicly; this is largely here so other selectors can
-	 * request data using the selector/resolver pattern.
+	 * Gets WooCommerce active property from plugin status.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Module data.
+	 * @return {(boolean|undefined)} Plugin status array.
 	 */
 	isWooCommerceActive: getPluginStatusProperty( 'active', 'WooCommerce' ),
 
 	/**
-	 * Gets all site info from this data store.
-	 *
-	 * Not intended to be used publicly; this is largely here so other selectors can
-	 * request data using the selector/resolver pattern.
+	 * Gets Google for WooCommerce installed property from plugin status.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Module data.
+	 * @return {(boolean|undefined)} Plugin status array.
 	 */
 	isGoogleForWooCommercePresent: getPluginStatusProperty(
 		'installed',
+		'GoogleForWooCommerce'
+	),
+
+	/**
+	 * Gets Google for WooCommerce active property from plugin status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Plugin status array.
+	 */
+	isGoogleForWooCommerceActive: getPluginStatusProperty(
+		'active',
 		'GoogleForWooCommerce'
 	),
 };
