@@ -50,6 +50,23 @@ export const selectors = {
 	 * @return {(boolean|undefined)} Module data.
 	 */
 	isWooCommerceActive: getPluginStatusProperty( 'active', 'WooCommerce' ),
+
+	/**
+	 * Gets all site info from this data store.
+	 *
+	 * Not intended to be used publicly; this is largely here so other selectors can
+	 * request data using the selector/resolver pattern.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Module data.
+	 */
+	isGoogleForWooCommercePresent: getPluginStatusProperty(
+		'installed',
+		'GoogleForWooCommerce'
+	),
 };
 
 const store = {
