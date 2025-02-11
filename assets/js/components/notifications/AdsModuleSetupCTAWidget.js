@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-// import { useCallback } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +41,11 @@ import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	AdminMenuTooltip,
+	useShowTooltip,
+	useTooltipState,
+} from '../AdminMenuTooltip';
 
 export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	// const breakpoint = useBreakpoint();
@@ -61,6 +66,25 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
+
+	const showTooltip = useShowTooltip( id );
+	const { isTooltipVisible } = useTooltipState( id );
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<AdminMenuTooltip
+					title=""
+					content={ __(
+						'You can always enable Ads from Settings later',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					tooltipStateKey={ id }
+				/>
+			</Fragment>
+		);
+	}
 
 	// TODO Remove this hack
 	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
@@ -105,7 +129,7 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 								? __( 'Don’t show again', 'google-site-kit' )
 								: __( 'Maybe later', 'google-site-kit' )
 						}
-						// onDismiss={ showTooltip }
+						onDismiss={ showTooltip }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
