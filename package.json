@@ -24,8 +24,8 @@
 		"pretest": "npm run build:production -- --display=none",
 		"pretest:visualtest": "VRT=1 npm run build:storybook",
 		"test": "npm run test:js:watch",
-		"test:visualtest": "npm run backstopjs -- test",
-		"test:visualapprove": "npm run backstopjs -- approve",
+		"test:visualtest": "npm run test:visualtest -w ./tests/backstop",
+		"test:visualapprove": "npm run test:visualapprove -w ./tests/backstop",
 		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=tests/js/jest.config.js --passWithNoTests",
 		"test:js:watch": "npm run test:js -- --watch",
@@ -170,7 +170,6 @@
 		"@babel/core": "^7.14.8",
 		"@babel/plugin-transform-runtime": "^7.10.4",
 		"@babel/preset-react": "^7.10.4",
-		"@componentdriven/csf": "0.0.2-alpha.0",
 		"@jackfranklin/test-data-bot": "^2.0.0",
 		"@popperjs/core": "^2.9.2",
 		"@shopify/jest-dom-mocks": "^4.0.2",
@@ -215,7 +214,6 @@
 		"file-loader": "^6.1.1",
 		"fs-extra": "^9.0.1",
 		"git-repo-info": "^2.1.1",
-		"glob": "^7.1.7",
 		"glob-to-regexp": "^0.4.1",
 		"google-pax-sdk": "1.1.0",
 		"husky": "^3.1.0",
@@ -224,7 +222,6 @@
 		"jsdom-testing-mocks": "^1.6.0",
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^1.2.1",
-		"node-fetch": "^2.6.8",
 		"patch-package": "^8.0.0",
 		"postcss": "^8.4.31",
 		"postcss-import-url": "^7.0.0",
@@ -254,6 +251,7 @@
 		"webpackbar": "^4.0.0"
 	},
 	"workspaces": [
+		"tests/backstop",
 		"tests/e2e"
 	]
 }
