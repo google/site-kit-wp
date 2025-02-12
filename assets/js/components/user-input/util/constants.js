@@ -91,36 +91,32 @@ export const USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING = {
  * @return {Object} Questions object.
  */
 export function getUserInputQuestions() {
+	const description = __(
+		'Based on your answer, Site Kit will suggest the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
+		'google-site-kit'
+	);
+
 	return [
 		{
 			title: __(
 				'What is the main purpose of this site?',
 				'google-site-kit'
 			),
-			description: __(
-				'Based on your answer, Site Kit will suggest the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
-				'google-site-kit'
-			),
+			description,
 		},
 		{
 			title: __(
 				'How often do you create new content for this site?',
 				'google-site-kit'
 			),
-			description: __(
-				'Based on your answer, Site Kit will suggest the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
-				'google-site-kit'
-			),
+			description,
 		},
 		{
 			title: __(
 				'What are your top 3 goals for this site?',
 				'google-site-kit'
 			),
-			description: __(
-				'Based on your answer, Site Kit will suggest the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
-				'google-site-kit'
-			),
+			description,
 		},
 	];
 }
