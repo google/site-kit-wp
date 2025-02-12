@@ -31,27 +31,31 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-// import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '../../util';
 import AdsSetupSVG from '../../../svg/graphics/ads-setup.svg';
+import AdsSetupTabletSVG from '../../../svg/graphics/ads-setup-tablet.svg';
+import AdsSetupMobileSVG from '../../../svg/graphics/ads-setup-mobile.svg';
 import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import AdBlockerWarning from './AdBlockerWarning';
 import {
 	AdminMenuTooltip,
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
-import AdBlockerWarning from './AdBlockerWarning';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../hooks/useBreakpoint';
 
 export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
-	// const breakpoint = useBreakpoint();
-	// const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-	// const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
+	const breakpoint = useBreakpoint();
 
 	const learnMoreURL = undefined;
 
@@ -100,6 +104,11 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 		return null;
 	}
 
+	const breakpointSVGMap = {
+		[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
+		[ BREAKPOINT_TABLET ]: AdsSetupTabletSVG,
+	};
+
 	return (
 		<Notification>
 			<NotificationWithSVG
@@ -146,7 +155,7 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>
 				}
-				SVG={ AdsSetupSVG }
+				SVG={ breakpointSVGMap[ breakpoint ] || AdsSetupSVG }
 			/>
 		</Notification>
 	);
