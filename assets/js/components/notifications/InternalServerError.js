@@ -23,6 +23,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
 import Notification from '../../googlesitekit/notifications/components/Notification';
+import Description from '../../googlesitekit/notifications/components/common/Description';
 
 export default function InternalServerError() {
 	const error = useSelect( ( select ) =>
@@ -37,7 +38,7 @@ export default function InternalServerError() {
 		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
 			<NotificationError
 				title={ error.title }
-				description={ error.description }
+				description={ <Description text={ error.description } /> }
 			/>
 		</Notification>
 	);
