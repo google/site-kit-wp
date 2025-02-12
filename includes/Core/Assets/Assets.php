@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use WP_Dependencies;
 use WP_Post_Type;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 
 /**
  * Class managing assets.
@@ -759,6 +760,54 @@ final class Assets {
 			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
 			'isMultisite'       => is_multisite(),
 		);
+
+		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			$inline_data['plugins'] = array(
+				'woocommerce'             => array(
+					'installed' => false,
+					'active'    => false,
+				),
+				'google-listings-and-ads' => array(
+					'installed'    => false,
+					'active'       => false,
+					'adsConnected' => false,
+				),
+			);
+
+			// Get the status of the WooCommerce plugin.
+			$woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
+
+			// Get the status of the Google for WooCommerce plugin.
+			$google_for_woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'google-listings-and-ads/google-listings-and-ads.php', 'https://wordpress.org/plugins/google-listings-and-ads' );
+
+			switch ( $woocommerce_plugin_status ) {
+				case Plugin_Status::PLUGIN_STATUS_ACTIVE:
+					$inline_data['plugins']['woocommerce']['installed'] = true;
+					$inline_data['plugins']['woocommerce']['active']    = true;
+					break;
+				case Plugin_Status::PLUGIN_STATUS_INSTALLED:
+					$inline_data['plugins']['woocommerce']['installed'] = true;
+					$inline_data['plugins']['woocommerce']['active']    = false;
+					break;
+			}
+
+			switch ( $google_for_woocommerce_plugin_status ) {
+				case Plugin_Status::PLUGIN_STATUS_ACTIVE:
+					$inline_data['plugins']['google-listings-and-ads']['installed'] = true;
+					$inline_data['plugins']['google-listings-and-ads']['active']    = true;
+
+					// Only check for the presence of Ads connection if plugin is active.
+					$gla_ads_id = get_option( 'gla_ads_id' );
+					if ( ! empty( $gla_ads_id ) ) {
+						$inline_data['plugins']['google-listings-and-ads']['adsConnected'] = true;
+					}
+					break;
+				case Plugin_Status::PLUGIN_STATUS_INSTALLED:
+					$inline_data['plugins']['google-listings-and-ads']['installed'] = true;
+					$inline_data['plugins']['google-listings-and-ads']['active']    = false;
+					break;
+			}
+		}
 
 		/**
 		 * Filters the most basic inline data to pass to JS.
