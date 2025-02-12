@@ -46,7 +46,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 
 /**
  * Class representing the Ads module.
@@ -90,9 +89,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @param Assets|null         $assets         Assets object.
 	 */
 	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
-		$this->conversion_tracking = new Conversion_Tracking( $context );
-
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$this->conversion_tracking = new Conversion_Tracking( $context );
 	}
 
 	/**
@@ -373,25 +372,25 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	}
 
 	/**
-	 * Helper function get detected events from the event provider infrastructure.
+	 * Returns events supported by active providers from the conversion tracking infrastructure.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return array Array of supported conversion events, or empty array.
 	 */
-	public function get_detected_event_provider_events() {
-		$active_event_providers = $this->conversion_tracking->get_active_providers();
+	public function get_supported_conversion_events() {
+		$providers = $this->conversion_tracking->get_active_providers();
 
-		if ( empty( $active_event_providers ) ) {
+		if ( empty( $providers ) ) {
 			return array();
 		}
 
-		$event_provider_events = array();
+		$events = array();
 
-		foreach ( $active_event_providers as $active_event_provider_instance ) {
-			$event_provider_events = array_merge( $event_provider_events, array_values( $active_event_provider_instance->get_event_names() ) );
+		foreach ( $providers as $provider ) {
+			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
 		}
 
-		return array_unique( $event_provider_events );
+		return array_unique( $events );
 	}
 }
