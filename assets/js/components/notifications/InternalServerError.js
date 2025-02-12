@@ -34,10 +34,7 @@ export default function InternalServerError() {
 	}
 
 	return (
-		<Notification
-			skipOnViewTracking
-			className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error"
-		>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
 			<NotificationError
 				title={ error.title }
 				description={ error.description }
