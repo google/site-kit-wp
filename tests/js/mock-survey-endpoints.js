@@ -22,10 +22,6 @@ export const surveyEventEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/survey-event'
 );
 
-export const surveyTimeoutEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/survey-timeout'
-);
-
 export const surveyTimeoutsEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/survey-timeouts'
 );
@@ -41,13 +37,8 @@ export const mockSurveyEndpoints = () => {
 		body: {},
 	} );
 
-	fetchMock.getOnce( surveyTimeoutEndpoint, {
+	fetchMock.getOnce( surveyTimeoutsEndpoint, {
 		status: 200,
-		body: {},
-	} );
-
-	fetchMock.postOnce( surveyTimeoutEndpoint, {
-		status: 200,
-		body: {},
+		body: [],
 	} );
 };
