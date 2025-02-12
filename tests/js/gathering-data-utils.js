@@ -39,13 +39,10 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Search Console module.
  *
- * This function ensures that the Search Console module receives the correct report data
- * based on whether it is in a gathering data state.
+ * @since 1.106.0
  *
- * @since 1.106.0 Introduced to manage Search Console module's gathering data state.
- *
- * @param {Object}  registry        The data registry object used to interact with the store.
- * @param {boolean} isGatheringData Indicates whether the module should be in a gathering data state.
+ * @param {Object}  registry        Data registry object.
+ * @param {boolean} isGatheringData The desired gathering data state.
  */
 function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
 	const options = registry
