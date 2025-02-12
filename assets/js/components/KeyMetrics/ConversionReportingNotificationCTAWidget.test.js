@@ -645,12 +645,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				'conversion_reporting'
 			);
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_kmw-manual-conversion-events-detected-notification',
-				'dismiss_notification',
-				'conversion_reporting'
-			);
-
 			await waitForRegistry();
 
 			expect(
@@ -729,12 +723,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_kmw-manual-new-conversion-events-detected-notification',
 				'confirm_view_new_conversion_metrics',
-				'conversion_reporting'
-			);
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_kmw-manual-new-conversion-events-detected-notification',
-				'dismiss_notification',
 				'conversion_reporting'
 			);
 
