@@ -46,6 +46,7 @@ import {
 	useShowTooltip,
 	useTooltipState,
 } from '../AdminMenuTooltip';
+import AdBlockerWarning from './AdBlockerWarning';
 
 export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	// const breakpoint = useBreakpoint();
@@ -53,6 +54,10 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	// const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
 	const learnMoreURL = undefined;
+
+	const isAdBlockerActive = useSelect( ( select ) =>
+		select( CORE_USER ).isAdBlockerActive()
+	);
 
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
@@ -115,6 +120,11 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 								label={ __( 'Learn more', 'google-site-kit' ) }
 								url={ learnMoreURL }
 							/>
+						}
+						AdditionalComponent={
+							isAdBlockerActive && (
+								<AdBlockerWarning moduleSlug="ads" />
+							)
 						}
 					/>
 				}
