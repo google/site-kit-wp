@@ -25,7 +25,6 @@ import {
 	fireEvent,
 	provideModules,
 	provideSiteInfo,
-	provideUserAuthentication,
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
@@ -65,7 +64,6 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 				connected: true,
 			},
 		] );
-		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			accountID: 'pub-123456',
