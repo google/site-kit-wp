@@ -68,8 +68,7 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 			// Make sure that we select only rows without (not set) records.
 			'customEvent:googlesitekit_post_author': {
 				filterType: 'emptyFilter',
-				value: '',
-				notExpression: false,
+				notExpression: true,
 			},
 		},
 		metrics: [ { name: 'screenPageViews' } ],

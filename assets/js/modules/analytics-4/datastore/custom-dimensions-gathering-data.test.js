@@ -294,8 +294,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					dimensionFilters: {
 						[ `customEvent:${ customDimension }` ]: {
 							filterType: 'emptyFilter',
-							value: '',
-							notExpression: false,
+							notExpression: true,
 						},
 					},
 					metrics: [ { name: 'eventCount' } ],

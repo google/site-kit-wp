@@ -328,8 +328,7 @@ const baseSelectors = {
 				dimensionFilters: {
 					[ `customEvent:${ customDimension }` ]: {
 						filterType: 'emptyFilter',
-						value: '',
-						notExpression: false,
+						notExpression: true,
 					},
 				},
 				metrics: [ { name: 'eventCount' } ],

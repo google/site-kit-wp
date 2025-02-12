@@ -40,8 +40,7 @@ const reportOptions = {
 	dimensionFilters: {
 		city: {
 			filterType: 'emptyFilter',
-			value: '',
-			notExpression: false,
+			notExpression: true,
 		},
 	},
 	metrics: [ { name: 'ecommercePurchases' } ],

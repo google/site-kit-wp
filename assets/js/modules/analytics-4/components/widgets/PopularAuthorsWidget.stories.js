@@ -56,8 +56,7 @@ const reportOptions = {
 	dimensionFilters: {
 		'customEvent:googlesitekit_post_author': {
 			filterType: 'emptyFilter',
-			value: '',
-			notExpression: false,
+			notExpression: true,
 		},
 	},
 	metrics: [ { name: 'screenPageViews' } ],

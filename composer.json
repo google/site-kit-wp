@@ -55,7 +55,7 @@
     "wordpress-install-dir": "vendor/roots/wordpress",
     "patches": {
       "google/apiclient-services": {
-        "Fixes for empty filter": "patches/google-api-client-services.diff"
+        "Fixes for empty filter": "patches/google-api-client-services-v0.355.0.patch"
       }
     }
   },

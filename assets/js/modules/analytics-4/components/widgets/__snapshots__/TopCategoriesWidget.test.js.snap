@@ -41,26 +41,6 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 <p
                   class="googlesitekit-km-widget-tile__table-plain-text"
                 >
-                  Health
-                </p>
-              </div>
-              <div
-                class="googlesitekit-table__body-item"
-              >
-                <strong>
-                  31
-                </strong>
-              </div>
-            </div>
-            <div
-              class="googlesitekit-table__body-row"
-            >
-              <div
-                class="googlesitekit-table__body-item"
-              >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
-                >
                   Entertainment, Sports, Media
                 </p>
               </div>
@@ -68,7 +48,7 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  17
+                  62
                 </strong>
               </div>
             </div>
@@ -88,7 +68,27 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  12
+                  35
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  Health
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  21
                 </strong>
               </div>
             </div>

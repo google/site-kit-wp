@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\EmptyFilter as Goo
 /**
  * Class for parsing the dimension empty filter.
  *
- * @since 1.106.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
