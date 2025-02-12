@@ -29,6 +29,7 @@ import AdsIcon from '../../../svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
@@ -154,7 +155,15 @@ export const registerNotifications = ( notifications ) => {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
+		checkRequirements: async ( { resolveSelect } ) => {
+			const isAdsActive = await resolveSelect(
+				CORE_MODULES
+			).isModuleActive();
+
+			if ( isAdsActive ) {
+				return false;
+			}
+
 			return true;
 		},
 		isDismissible: true,
