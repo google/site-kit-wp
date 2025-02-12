@@ -165,7 +165,6 @@ export function createPaxServices( registry, options = {} ) {
 					websitePages,
 				};
 			},
-			// eslint-disable-next-line require-await
 			getSupportedConversionTrackingTypes: async () => {
 				const conversionEvents = await getSupportedConversionEvents();
 				const conversionTrackingTypesArray = [ 'TYPE_PAGE_VIEW' ];
