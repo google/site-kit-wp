@@ -34,6 +34,11 @@ class AssetsTest extends TestCase {
 	 */
 	private $assets;
 
+	/**
+	 * Initial active plugin state array.
+	 */
+	private $initial_active_plugins_state;
+
 	// The actions and filters below only get registered for users that can
 	// authorize with Site Kit.
 	private $authorized_actions = array(
@@ -54,7 +59,8 @@ class AssetsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assets                       = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->initial_active_plugins_state = $GLOBALS['wp_tests_options']['active_plugins'];
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -68,6 +74,39 @@ class AssetsTest extends TestCase {
 		if ( post_type_exists( 'product' ) ) {
 			unregister_post_type( 'product' );
 		}
+
+		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
+	}
+
+	protected function enable_feature( $feature ) {
+		$enable_callback = function ( $enabled, $feature_name ) use ( $feature ) {
+			if ( $feature_name === $feature ) {
+				return true;
+			}
+			return $enabled;
+		};
+
+		add_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10, 2 );
+
+		return function () use ( $enable_callback ) {
+			remove_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10 );
+		};
+	}
+
+	public function activate_woocommerce() {
+		$GLOBALS['wp_tests_options']['active_plugins'][] = 'woocommerce/woocommerce.php';
+	}
+
+	public function deactivate_woocommerce() {
+		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
+	}
+
+	public function activate_google_for_woocommerce() {
+		$GLOBALS['wp_tests_options']['active_plugins'][] = 'google-listings-and-ads/google-listings-and-ads.php';
+	}
+
+	public function deactivate_google_for_woocommerce() {
+		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
 	}
 
 	public function test_register() {
@@ -275,5 +314,70 @@ class AssetsTest extends TestCase {
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'] );
+	}
+
+	public function test_base_data__plugins_default_data_with_ads_pax_feature_flag() {
+		self::enable_feature( 'adsPax' );
+		$data                 = $this->get_inline_base_data();
+		$default_plugins_data = array(
+			'woocommerce'             => array(
+				'installed' => false,
+				'active'    => false,
+			),
+			'google-listings-and-ads' => array(
+				'installed'    => false,
+				'active'       => false,
+				'adsConnected' => false,
+			),
+		);
+
+		$this->assertEquals( $default_plugins_data, $data['plugins'] );
+	}
+
+	public function test_base_data__plugins_default_data_without_ads_pax_feature_flag() {
+		$data = $this->get_inline_base_data();
+		$this->assertArrayNotHasKey( 'plugins', $data );
+	}
+
+	public function test_base_data__plugins_default_data_with_woocommerce_active() {
+		self::enable_feature( 'adsPax' );
+		$this->activate_woocommerce();
+		$data                 = $this->get_inline_base_data();
+		$default_plugins_data = array(
+			'woocommerce'             => array(
+				'installed' => true,
+				'active'    => true,
+			),
+			'google-listings-and-ads' => array(
+				'installed'    => false,
+				'active'       => false,
+				'adsConnected' => false,
+			),
+		);
+
+		$this->assertEquals( $default_plugins_data, $data['plugins'] );
+
+		$this->deactivate_woocommerce();
+	}
+
+	public function test_base_data__plugins_default_data_with_google_for_woocommerce_active() {
+		self::enable_feature( 'adsPax' );
+		$this->activate_google_for_woocommerce();
+		$data                 = $this->get_inline_base_data();
+		$default_plugins_data = array(
+			'woocommerce'             => array(
+				'installed' => false,
+				'active'    => false,
+			),
+			'google-listings-and-ads' => array(
+				'installed'    => true,
+				'active'       => true,
+				'adsConnected' => false,
+			),
+		);
+
+		$this->assertEquals( $default_plugins_data, $data['plugins'] );
+
+		$this->deactivate_google_for_woocommerce();
 	}
 }
