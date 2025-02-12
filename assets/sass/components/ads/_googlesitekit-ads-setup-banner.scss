@@ -17,74 +17,35 @@
  */
 
 .googlesitekit-plugin {
-	.googlesitekit-ads-setup-cta-widget {
+	.googlesitekit-setup-cta-banner--ads-setup-cta {
 
-		.googlesitekit-setup-cta-banner__primary-cell {
-			padding: $grid-gap-desktop - 4 $grid-gap-phone 0;
+		.googlesitekit-publisher-win__desc {
 
-			@media (min-width: $width-tablet + 1 + px) {
-				padding: $grid-gap-desktop;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__title {
-			@media (min-width: $width-tablet + 1 + px) {
-				font-size: $fs-headline-sm;
-				font-weight: $fw-medium;
-				line-height: $lh-headline-sm;
-			}
-
-			@media (min-width: $width-xlarge + px) {
-				font-size: $fs-headline-md;
-				line-height: $lh-headline-md;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__description {
-
-			@media (min-width: $width-tablet + 1 + px) {
+			@media (min-width: $bp-tablet) {
 				font-size: $fs-body-md;
 				line-height: $lh-body-md;
 			}
 
-			@media (min-width: $width-xlarge + 1 + px) {
+			@media (min-width: $bp-xlarge) {
 				font-size: $fs-body-lg;
 				line-height: $lh-body-lg;
 			}
 		}
 
-		.googlesitekit-setup-cta-banner__actions-wrapper {
-			gap: $cta-gap-phone;
-			margin-bottom: 27px;
-
-			@media (min-width: $bp-nonMobile) {
-				gap: $cta-gap-tablet;
-				margin-bottom: 0;
-				padding: 10px 0;
-			}
-		}
-
-		.googlesitekit-setup-cta-banner__svg-wrapper {
+		.googlesitekit-setup-cta-banner__svg-wrapper--ads-setup-cta {
+			height: 100%;
+			position: relative;
 
 			svg {
-				max-height: 143px;
+				height: 100%;
+				position: absolute;
 
-				// Increase the SVG size via scale in order to achieve the desired clipping effect
-				// in conjunction with the parent's overflow: hidden.
-				scale: 1;
-
-				@media (min-width: $width-desktop + 1 + px) {
-					max-height: 272px;
-					right: 70px;
-					scale: 1.6;
-					top: 10px;
-					width: 65%;
+				@media (min-width: $bp-desktop) {
+					right: 34px;
 				}
 
-				@media (min-width: $width-xlarge + px) {
+				@media (min-width: $bp-xlarge) {
 					right: 50px;
-					scale: 1.1;
-					width: unset;
 				}
 			}
 		}
