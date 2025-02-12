@@ -22,15 +22,35 @@ class WooCommerceTest extends TestCase {
 	 */
 	private $woocommerce;
 
+	/**
+	 * Initial active plugin state array.
+	 */
+	private $initial_active_plugins_state;
+
 	public function set_up() {
 		parent::set_up();
-		$this->woocommerce = new WooCommerce( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->woocommerce                  = new WooCommerce( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->initial_active_plugins_state = $GLOBALS['wp_tests_options']['active_plugins'];
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
+	}
+
+	public function activate_woocommerce() {
+		$GLOBALS['wp_tests_options']['active_plugins'][] = 'woocommerce/woocommerce.php';
+	}
+
+	public function deactivate_woocommerce() {
+		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
 	}
 
 	public function test_is_active() {
 		$this->assertFalse( $this->woocommerce->is_active() );
-		do_action( 'woocommerce_loaded' );
+		$this->activate_woocommerce();
 		$this->assertTrue( $this->woocommerce->is_active() );
+		$this->deactivate_woocommerce();
 	}
 
 	public function test_get_event_names() {
