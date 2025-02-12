@@ -462,15 +462,17 @@ const baseSelectors = {
 			const info = {};
 			const propertyIDs = [];
 
-			summaries.forEach( ( { _id: accountID, propertySummaries } ) => {
-				propertySummaries.forEach( ( { _id: propertyID } ) => {
-					propertyIDs.push( propertyID );
-					info[ propertyID ] = {
-						accountID,
-						propertyID,
-					};
-				} );
-			} );
+			summaries.forEach(
+				( { _id: accountID, propertySummaries = [] } ) => {
+					propertySummaries.forEach( ( { _id: propertyID } ) => {
+						propertyIDs.push( propertyID );
+						info[ propertyID ] = {
+							accountID,
+							propertyID,
+						};
+					} );
+				}
+			);
 
 			if ( propertyIDs.length === 0 ) {
 				return null;
