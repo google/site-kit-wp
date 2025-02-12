@@ -37,7 +37,9 @@ class Plugin_StatusTest extends TestCase {
 		if ( empty( $plugin_path ) ) {
 			return;
 		}
-		$GLOBALS['wp_tests_options']['active_plugins'][] = $plugin_path;
+		if ( ! array_key_exists( $plugin_path, $GLOBALS['wp_tests_options']['active_plugins'] ) ) {
+			$GLOBALS['wp_tests_options']['active_plugins'][] = $plugin_path;
+		}
 	}
 
 	public function deactivate_plugin( $plugin_path = '' ) {
