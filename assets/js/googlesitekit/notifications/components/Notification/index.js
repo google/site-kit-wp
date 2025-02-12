@@ -35,7 +35,6 @@ export default function Notification( {
 	id,
 	className,
 	gaTrackingEventArgs,
-	skipOnViewTracking,
 	children,
 	onView,
 } ) {
@@ -51,25 +50,16 @@ export default function Notification( {
 	// Track view once.
 	useEffect( () => {
 		if ( ! isViewedOnce && viewed ) {
-			if ( ! skipOnViewTracking ) {
-				trackEvents.view(
-					gaTrackingEventArgs?.label,
-					gaTrackingEventArgs?.value
-				);
-			}
+			trackEvents.view(
+				gaTrackingEventArgs?.label,
+				gaTrackingEventArgs?.value
+			);
 
 			onView?.();
 
 			setIsViewedOnce( true );
 		}
-	}, [
-		viewed,
-		trackEvents,
-		isViewedOnce,
-		gaTrackingEventArgs,
-		onView,
-		skipOnViewTracking,
-	] );
+	}, [ viewed, trackEvents, isViewedOnce, gaTrackingEventArgs, onView ] );
 
 	return (
 		<section id={ id } ref={ ref } className={ className }>
