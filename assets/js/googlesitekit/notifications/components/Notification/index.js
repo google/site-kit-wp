@@ -85,7 +85,6 @@ Notification.propTypes = {
 		label: PropTypes.string,
 		value: PropTypes.string,
 	} ),
-	skipOnViewTracking: PropTypes.bool,
 	children: PropTypes.node,
 	onView: PropTypes.func,
 };
