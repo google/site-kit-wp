@@ -93,7 +93,9 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	label: 'KeyMetrics/TopCategoriesWidget/Ready',
+};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

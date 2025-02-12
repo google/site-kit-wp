@@ -86,7 +86,9 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	label: 'KeyMetrics/TopCitiesDrivingLeadsWidget/Ready',
+};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

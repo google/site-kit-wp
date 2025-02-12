@@ -82,7 +82,9 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	label: 'KeyMetrics/TopCitiesDrivingAddToCartWidget/Ready',
+};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
