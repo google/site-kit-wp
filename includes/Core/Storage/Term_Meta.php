@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Term metadata storage class.
  *
- * @since n.e.x.t
+ * @since 1.146.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Gets term meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param int    $term_id Term ID.
 	 * @param string $key     Metadata key.
@@ -36,7 +36,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Updates a term meta field based on the given term ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param int    $term_id    Term ID.
 	 * @param string $key        Metadata key.
@@ -51,7 +51,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Adds a meta field to the given term.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param int    $term_id Term ID.
 	 * @param string $key     Metadata key.
@@ -66,7 +66,7 @@ final class Term_Meta implements Meta_Interface {
 	/**
 	 * Deletes a term meta field for the given term ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.146.0
 	 *
 	 * @param int    $term_id Term ID.
 	 * @param string $key     Metadata key.

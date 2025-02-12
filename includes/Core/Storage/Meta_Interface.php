@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Core\Storage;
  * Interface for object meta implementations.
  *
  * @since 1.33.0
- * @since n.e.x.t Renamed from Post_Meta_Interface to Meta_Interface.
+ * @since 1.146.0 Renamed from Post_Meta_Interface to Meta_Interface.
  *
  * @access private
  * @ignore

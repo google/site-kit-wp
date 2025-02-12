@@ -60,6 +60,8 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ currentMetricsSnapshot, setCurrentMetricsSnapshot ] =
+		useState( null );
 
 	const includeConversionTailoredMetrics = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
@@ -72,15 +74,19 @@ function ConfirmSitePurposeChangeModal( {
 		)
 	);
 
+	const savedPurposeSnapshot = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			FORM_USER_INPUT_QUESTION_SNAPSHOT,
+			USER_INPUT_QUESTIONS_PURPOSE
+		)
+	);
+
 	const savedPurpose = useSelect( ( select ) =>
 		select( CORE_USER ).getSavedUserInputSettings()
 	);
 
 	const currentMetrics = useSelect( ( select ) => {
-		if (
-			savedPurpose === undefined ||
-			! savedPurpose?.purpose?.values?.length
-		) {
+		if ( ! savedPurpose?.purpose?.values?.length ) {
 			return [];
 		}
 
@@ -94,7 +100,7 @@ function ConfirmSitePurposeChangeModal( {
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const onClose = useCallback( async () => {
-		if ( savedPurpose?.length ) {
+		if ( savedPurposeSnapshot?.length ) {
 			await resetUserInputSettings();
 			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
@@ -108,7 +114,7 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving( false );
 	}, [
 		handleDialog,
-		savedPurpose,
+		savedPurposeSnapshot,
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
@@ -173,6 +179,45 @@ function ConfirmSitePurposeChangeModal( {
 		}
 	}, [ prevDialogActive, dialogActive, isSaving, viewContext ] );
 
+	useEffect( () => {
+		// Preserve current metrics list in a snapshot, so after site purpose is updated in the modal
+		// the previous list shown under current metrics is not changing last moment during update.
+		if (
+			savedPurpose?.purpose?.values?.[ 0 ] &&
+			currentMetricsSnapshot === null
+		) {
+			setCurrentMetricsSnapshot( currentMetrics );
+		}
+	}, [
+		savedPurpose,
+		currentMetricsSnapshot,
+		currentMetrics,
+		setCurrentMetricsSnapshot,
+	] );
+
+	const previousIsSaving = usePrevious( isSaving );
+
+	useEffect( () => {
+		if (
+			previousIsSaving &&
+			! isSaving &&
+			! dialogActive &&
+			currentMetricsSnapshot !== null
+		) {
+			// Reset metrics snapshot once saving is done dialog is closed. Timeout is needed
+			// to delay reset since modal has closing animation.
+			setTimeout( () => {
+				setCurrentMetricsSnapshot( null );
+			}, 50 );
+		}
+	}, [
+		previousIsSaving,
+		isSaving,
+		dialogActive,
+		currentMetricsSnapshot,
+		setCurrentMetricsSnapshot,
+	] );
+
 	return (
 		<Dialog
 			open={ dialogActive }
@@ -199,9 +244,9 @@ function ConfirmSitePurposeChangeModal( {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 						<h3>{ __( 'Current metrics', 'google-site-kit' ) }</h3>
-						{ !! currentMetrics && (
+						{ !! currentMetricsSnapshot && (
 							<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-								{ currentMetrics.map( ( item ) => (
+								{ currentMetricsSnapshot.map( ( item ) => (
 									<li key={ item } className="mdc-list-item">
 										<span className="mdc-list-item__text">
 											{
