@@ -73,7 +73,7 @@ describe( 'SettingsNotice', () => {
 		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
 	} );
 
-	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both one tap settings are true and WooCommerce is active but isWooCommerceRegistrationEnabled is true', () => {
+	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is active but isWooCommerceRegistrationEnabled is true', () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
 			oneTapOnAllPages: true,
@@ -95,7 +95,7 @@ describe( 'SettingsNotice', () => {
 		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
 	} );
 
-	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both one tap settings are true, WooCommerce is active but isWooCommerceRegistrationEnabled is already true', async () => {
+	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active but isWooCommerceRegistrationEnabled is already true', async () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
 			oneTapOnAllPages: true,
@@ -119,7 +119,7 @@ describe( 'SettingsNotice', () => {
 		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
 	} );
 
-	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both one tap settings are true and WooCommerce is not active', () => {
+	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is not active', () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
 			oneTapOnAllPages: true,
@@ -138,7 +138,7 @@ describe( 'SettingsNotice', () => {
 		);
 	} );
 
-	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both one tap settings are true, WooCommerce is active and isWooCommerceRegistrationEnabled is false', async () => {
+	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active and isWooCommerceRegistrationEnabled is false', async () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
 			oneTapOnAllPages: true,

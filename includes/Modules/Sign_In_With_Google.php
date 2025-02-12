@@ -317,7 +317,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Renders the Sign in with Google JS script tags, One-tap code, and
+	 * Renders the Sign in with Google JS script tags, One Tap code, and
 	 * buttons.
 	 *
 	 * @since 1.139.0
@@ -337,7 +337,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		}
 
 		// If this is not the WordPress or WooCommerce login page, check to
-		// see if "One-tap enabled on all pages" is set first. If it isnt:
+		// see if "One Tap enabled on all pages" is set first. If it isnt:
 		// don't render the Sign in with Google JS.
 		if ( ! $is_wp_login && ! $is_woocommerce_login && ! $settings['oneTapOnAllPages'] ) {
 			return;
@@ -508,7 +508,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			),
 			'sign_in_with_google_use_snippet'              => array(
 				/* translators: %s: Sign in with Google service name */
-				'label' => sprintf( __( '%s: One-tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
+				'label' => sprintf( __( '%s: One Tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
 			),

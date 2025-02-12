@@ -81,9 +81,8 @@ export default function SetupForm() {
 
 		if (
 			currentClientID === '' &&
-			global._googlesitekitModulesData?.[ 'sign-in-with-google' ]?.[
-				'existingClientID'
-			]
+			global._googlesitekitModulesData?.[ 'sign-in-with-google' ]
+				?.existingClientID
 		) {
 			setExistingClientID(
 				global._googlesitekitModulesData[ 'sign-in-with-google' ]

@@ -63,7 +63,7 @@ if ( result.status > 0 ) {
 	process.exit( result.status );
 }
 
-const config = [ '--config=tests/e2e/jest.config.js' ];
+const config = [ '--config=jest.config.js' ];
 
 const hasRunInBand = hasArgInCLI( '--runInBand' ) || hasArgInCLI( '-i' );
 const runInBand = ! hasRunInBand ? [ '--runInBand' ] : [];
