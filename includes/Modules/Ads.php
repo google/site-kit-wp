@@ -199,7 +199,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	private function inline_modules_data( $modules_data ) {
 		if ( Feature_Flags::enabled( 'adsPax' ) ) {
 			// Get detected events.
-			$detected_events = $this->get_detected_event_provider_events();
+			$detected_events = $this->get_supported_conversion_events();
 			// Add the data under the `ads` key to make it clear it's scoped to this module.
 			$modules_data['ads'] = array(
 				'supportedConversionEvents' => $detected_events,
