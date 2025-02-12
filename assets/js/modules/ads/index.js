@@ -54,6 +54,8 @@ import AdsModuleSetupCTAWidget from '../../components/notifications/AdsModuleSet
 
 export { registerStore } from './datastore';
 
+const ADS_SETUP_CTA_ID = 'ads-setup-cta';
+
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'ads', {
 		storeName: MODULES_ADS,
@@ -149,18 +151,31 @@ export const registerNotifications = ( notifications ) => {
 		},
 	} );
 
-	notifications.registerNotification( 'ads-setup-cta', {
+	notifications.registerNotification( ADS_SETUP_CTA_ID, {
 		Component: AdsModuleSetupCTAWidget,
 		priority: 30,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { resolveSelect } ) => {
-			const isAdsActive = await resolveSelect(
-				CORE_MODULES
-			).isModuleActive();
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isPromptDismissed selector relies on the resolution
+				// of the getDismissedPrompts() resolver.
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
+			] );
 
-			if ( isAdsActive ) {
+			const isAdsConnected =
+				select( CORE_MODULES ).isModuleConnected( 'ads' );
+
+			const isDismissed =
+				select( CORE_USER ).isPromptDismissed( ADS_SETUP_CTA_ID );
+
+			const canActivateAdsModule =
+				select( CORE_MODULES ).canActivateModule( 'ads' );
+
+			if ( isAdsConnected || ! canActivateAdsModule || isDismissed ) {
 				return false;
 			}
 
