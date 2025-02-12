@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
@@ -32,6 +31,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
@@ -80,13 +80,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	protected $existing_client_id;
 
-	/**
-	 * WooCommerce instance.
-	 *
-	 * @since 1.146.0
-	 * @var WooCommerce
-	 */
-	protected $woocommerce;
 
 	/**
 	 * Constructor.
@@ -108,7 +101,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->existing_client_id = new Existing_Client_ID( $this->options );
-		$this->woocommerce        = new WooCommerce( $this->context );
 	}
 
 	/**
@@ -558,7 +550,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_content_url() {
 		$wp_login_url = wp_login_url();
 
-		if ( $this->woocommerce->is_active() ) {
+		if ( Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' ) ) {
 			$wc_login_page_id = wc_get_page_id( 'myaccount' );
 			$wc_login_url     = get_permalink( $wc_login_page_id );
 			return array(
@@ -713,7 +705,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$inline_data['existingClientID'] = $existing_client_id;
 		}
 
-		$is_woocommerce_active            = $this->woocommerce->is_active();
+		$is_woocommerce_active            = Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
 		$woocommerce_registration_enabled = $is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
 
 		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
