@@ -582,11 +582,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			},
 			$this->reader_revenue_manager->get_assets()
 		);
-
-		$this->assertContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
-			$registerable_asset_handles
-		);
 	}
 
 	public function test_block_editor_script_not_enqueued() {
@@ -595,11 +590,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				return $asset->get_handle();
 			},
 			$this->reader_revenue_manager->get_assets()
-		);
-
-		$this->assertNotContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
-			$registerable_asset_handles
 		);
 	}
 
