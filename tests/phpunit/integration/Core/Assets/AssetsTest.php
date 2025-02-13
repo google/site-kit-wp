@@ -304,11 +304,11 @@ class AssetsTest extends TestCase {
 	public function test_base_data__plugins_default_data() {
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
-			'woocommerce'             => array(
+			'wooCommerce'          => array(
 				'installed' => false,
 				'active'    => false,
 			),
-			'google-listings-and-ads' => array(
+			'googleForWooCommerce' => array(
 				'installed'    => false,
 				'active'       => false,
 				'adsConnected' => false,
@@ -322,11 +322,11 @@ class AssetsTest extends TestCase {
 		$this->activate_woocommerce();
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
-			'woocommerce'             => array(
+			'wooCommerce'          => array(
 				'installed' => true,
 				'active'    => true,
 			),
-			'google-listings-and-ads' => array(
+			'googleForWooCommerce' => array(
 				'installed'    => false,
 				'active'       => false,
 				'adsConnected' => false,
@@ -343,11 +343,11 @@ class AssetsTest extends TestCase {
 		$this->activate_google_for_woocommerce();
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
-			'woocommerce'             => array(
+			'wooCommerce'          => array(
 				'installed' => false,
 				'active'    => false,
 			),
-			'google-listings-and-ads' => array(
+			'googleForWooCommerce' => array(
 				'installed'    => true,
 				'active'       => true,
 				'adsConnected' => false,
