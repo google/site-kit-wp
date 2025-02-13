@@ -53,8 +53,10 @@
 			}
 		}
 
-		.googlesitekit-settings-module__fields-group:first-child {
-			border-bottom: none;
+		.googlesitekit-settings-module__fields-group {
+			&:has(+ .googlesitekit-rrm-settings-edit__product-id-container) {
+				border-bottom: 0;
+			}
 		}
 
 		.googlesitekit-rrm-settings-edit__product-id-container {
