@@ -44,13 +44,19 @@ import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 export default function SettingsEdit() {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
 
+	const productIDs = useSelect( ( select ) => {
+		return select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
+	} );
+
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
+
 	const hasModuleAccess = useSelect( ( select ) => {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
@@ -83,9 +89,15 @@ export default function SettingsEdit() {
 
 		return false;
 	} );
+
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+
+	const isCurrentProductMissing = productIDs
+		? ! productIDs.includes( publicationID )
+		: true;
+
 	const publicationAvailable = useSelect( ( select ) => {
 		if ( hasModuleAccess === undefined ) {
 			return undefined;
@@ -128,6 +140,11 @@ export default function SettingsEdit() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager googlesitekit-rrm-settings-edit">
 			<div className="googlesitekit-settings-module__fields-group">
+				<StoreErrorNotices
+					moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+					storeName={ MODULES_READER_REVENUE_MANAGER }
+				/>
+
 				{ hasModuleAccess && false === publicationAvailable && (
 					<ErrorText
 						message={ sprintf(
@@ -140,6 +157,22 @@ export default function SettingsEdit() {
 						) }
 					/>
 				) }
+				{ isRRMv2Enabled &&
+					hasModuleAccess &&
+					publicationAvailable &&
+					isCurrentProductMissing && (
+						<ErrorText
+							message={ sprintf(
+								/* translators: 1: Publication ID. */
+								__(
+									'The previously selected product ID %s was not found. Please select a new product ID.',
+									'google-site-kit'
+								),
+								publicationID
+							) }
+						/>
+					) }
+
 				<div className="googlesitekit-setup-module__inputs">
 					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
 				</div>
