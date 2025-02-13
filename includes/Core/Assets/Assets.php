@@ -758,18 +758,21 @@ final class Assets {
 			'productPostType'   => $this->get_product_post_type(),
 			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
 			'isMultisite'       => is_multisite(),
-			'plugins'           => array(
-				'wooCommerce'          => array(
+		);
+
+		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			$inline_data['plugins'] = array(
+				'woocommerce'             => array(
 					'installed' => false,
 					'active'    => false,
 				),
-				'googleForWooCommerce' => array(
+				'google-listings-and-ads' => array(
 					'installed'    => false,
 					'active'       => false,
 					'adsConnected' => false,
 				),
-			),
-		);
+			);
+		}
 
 		$inline_data = $this->update_plugins_inline_data( $inline_data );
 
