@@ -78,21 +78,6 @@ class AssetsTest extends TestCase {
 		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
 	}
 
-	protected function enable_feature( $feature ) {
-		$enable_callback = function ( $enabled, $feature_name ) use ( $feature ) {
-			if ( $feature_name === $feature ) {
-				return true;
-			}
-			return $enabled;
-		};
-
-		add_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10, 2 );
-
-		return function () use ( $enable_callback ) {
-			remove_filter( 'googlesitekit_is_feature_enabled', $enable_callback, 10 );
-		};
-	}
-
 	public function activate_woocommerce() {
 		$GLOBALS['wp_tests_options']['active_plugins'][] = 'woocommerce/woocommerce.php';
 	}
@@ -316,8 +301,7 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( 'product', $data['productPostType'] );
 	}
 
-	public function test_base_data__plugins_default_data_with_ads_pax_feature_flag() {
-		self::enable_feature( 'adsPax' );
+	public function test_base_data__plugins_default_data() {
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
 			'woocommerce'             => array(
@@ -334,13 +318,7 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( $default_plugins_data, $data['plugins'] );
 	}
 
-	public function test_base_data__plugins_default_data_without_ads_pax_feature_flag() {
-		$data = $this->get_inline_base_data();
-		$this->assertArrayNotHasKey( 'plugins', $data );
-	}
-
 	public function test_base_data__plugins_default_data_with_woocommerce_active() {
-		self::enable_feature( 'adsPax' );
 		$this->activate_woocommerce();
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
