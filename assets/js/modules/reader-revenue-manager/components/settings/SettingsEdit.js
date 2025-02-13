@@ -35,6 +35,10 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import {
+	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
+	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+} from '../../constants';
 import ErrorText from '../../../../components/ErrorText';
 import {
 	PostTypesSelect,
@@ -49,10 +53,6 @@ import SettingsNotice, {
 import Link from '../../../../components/Link';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
-
-const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =
-	'rrm-product-id-open-access-notice';
-const RRM_PRODUCT_ID_INFO_NOTICE_SLUG = 'rrm-product-id-info-notice';
 
 export default function SettingsEdit() {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
