@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "google-site-kit/sign-in-with-google",
-	"version": "n.e.x.t",
+	"version": "1.146.0",
 	"title": "Sign in with Google",
 	"category": "widgets",
 	"icon": "google",
