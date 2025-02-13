@@ -13,7 +13,7 @@
 		"prebuild:storybook": "npm run remove-dist",
 		"build:storybook": "build-storybook -c .storybook -o dist --quiet --loglevel warn",
 		"remove-dist": "rimraf ./dist",
-		"prezip": "composer run autoload-includes && composer run autoload-blocks",
+		"prezip": "composer run autoload-includes",
 		"zip": "./bin/release",
 		"dev": "npm run build:dev",
 		"predev-zip": "npm run build:dev",

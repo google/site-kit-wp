@@ -79,7 +79,6 @@
 			"@composer --working-dir=php-scoper install",
 			"@php -dxdebug.mode=off php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
 			"@autoload-includes",
-			"@autoload-blocks",
 			"@autoload-third-party",
 			"@composer dump-autoload --no-dev",
 			"cp vendor/composer/autoload_files.php third-party/vendor/",
@@ -91,13 +90,6 @@
 			"cp includes/vendor/composer/autoload_classmap.php includes/",
 			"rm -rf includes/vendor && rm includes/composer.json",
 			"mkdir -p includes/vendor/composer && mv includes/autoload_classmap.php includes/vendor/composer/"
-		],
-		"autoload-blocks": [
-			"echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > blocks/composer.json",
-			"@composer --working-dir=blocks dump-autoload --classmap-authoritative --no-interaction",
-			"cp blocks/vendor/composer/autoload_classmap.php blocks/",
-			"rm -rf blocks/vendor && rm blocks/composer.json",
-			"mkdir -p blocks/vendor/composer && mv blocks/autoload_classmap.php blocks/vendor/composer/"
 		],
 		"autoload-third-party": [
 			"echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > third-party/composer.json",

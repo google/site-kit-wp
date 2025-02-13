@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Sign_In_With_Google\Sign_In_With_Google_Block
+ * Class Google\Site_Kit\Blocks\Sign_In_With_Google_Block
  *
- * @package   Google\Site_Kit\Modules\Sign_In_With_Google
+ * @package   Google\Site_Kit\Blocks
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Modules\Sign_In_With_Google;
+namespace Google\Site_Kit\Blocks;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
