@@ -761,11 +761,11 @@ final class Assets {
 		);
 
 		$inline_data['plugins'] = array(
-			'woocommerce'             => array(
+			'wooCommerce'          => array(
 				'installed' => false,
 				'active'    => false,
 			),
-			'google-listings-and-ads' => array(
+			'googleForWooCommerce' => array(
 				'installed'    => false,
 				'active'       => false,
 				'adsConnected' => false,
