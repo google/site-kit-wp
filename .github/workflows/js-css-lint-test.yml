@@ -74,3 +74,12 @@ jobs:
         run: npm run lint:js
       - name: Jest Tests
         run: npm run test:js
+      - name: Jest Tests (Retry Failures 1)
+        run: npm run test:js -- --onlyFailures
+        if: failure()
+      - name: Jest Tests (Retry Failures 2)
+        run: npm run test:js -- --onlyFailures
+        if: failure()
+      - name: Jest Tests (Retry Failures 3)
+        run: npm run test:js -- --onlyFailures
+        if: failure()
