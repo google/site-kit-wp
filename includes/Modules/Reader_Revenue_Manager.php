@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Stylesheet;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -418,13 +419,26 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) { // TODO: Include a check for WP 5.4+.
+			$assets[] = new Stylesheet(
+				'googlesitekit-block-editor-css',
+				array(
+					'src'           => $base_url . 'css/googlesitekit-block-editor-css.css',
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+
 			$assets[] = new Script(
 				'googlesitekit-reader-revenue-manager-block-editor',
 				array(
 					'src'           => $base_url . 'js/googlesitekit-reader-revenue-manager-block-editor.js',
-					'dependencies'  => array(),
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
 				)
 			);
 		}

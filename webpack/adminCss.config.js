@@ -32,6 +32,7 @@ module.exports = ( mode ) => ( {
 	entry: {
 		'googlesitekit-admin-css': './assets/sass/admin.scss',
 		'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
+		'googlesitekit-block-editor-css': './assets/sass/block-editor.scss',
 		'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
 		'googlesitekit-authorize-application-css':
 			'./assets/sass/authorize-application.scss',
