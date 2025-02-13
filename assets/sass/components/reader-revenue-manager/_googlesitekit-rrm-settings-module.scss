@@ -46,11 +46,7 @@
 	.googlesitekit-rrm-settings-edit {
 
 		.googlesitekit-settings-module__fields-group:not(:last-child) .googlesitekit-publication-onboarding-state-notice {
-			margin-bottom: $grid-gap-phone;
-
-			@media (min-width: $bp-desktop) {
-				margin-bottom: $grid-gap-desktop;
-			}
+			margin-bottom: $grid-gap-desktop;
 		}
 
 		.googlesitekit-settings-module__fields-group {
