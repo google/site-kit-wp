@@ -1149,7 +1149,7 @@ final class Assets {
 		$woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
 
 		// Get the status of the Google for WooCommerce plugin.
-		$google_for_woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'google-listings-and-ads/google-listings-and-ads.php', 'https://wordpress.org/plugins/google-listings-and-ads' );
+		$google_for_woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'google-listings-and-ads/google-listings-and-ads.php', 'https://wordpress.org/plugins/google-listings-and-ads/' );
 
 		switch ( $woocommerce_plugin_status ) {
 			case Plugin_Status::PLUGIN_STATUS_ACTIVE:
