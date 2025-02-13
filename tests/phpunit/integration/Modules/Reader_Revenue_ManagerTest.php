@@ -573,26 +573,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $registered );
 	}
 
-	public function test_block_editor_script_enqueued() {
-		$this->enable_feature( 'rrmModuleV2' );
-
-		$registerable_asset_handles = array_map(
-			function ( $asset ) {
-				return $asset->get_handle();
-			},
-			$this->reader_revenue_manager->get_assets()
-		);
-	}
-
-	public function test_block_editor_script_not_enqueued() {
-		$registerable_asset_handles = array_map(
-			function ( $asset ) {
-				return $asset->get_handle();
-			},
-			$this->reader_revenue_manager->get_assets()
-		);
-	}
-
 	/**
 	 * @return Module_With_Scopes
 	 */
