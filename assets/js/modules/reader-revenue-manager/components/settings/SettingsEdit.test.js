@@ -55,7 +55,7 @@ describe( 'SettingsEdit', () => {
 		publicationOnboardingState,
 		ownerID: 1,
 		postTypes: [ 'post' ],
-		productID: 'openaccess',
+		productID: 'product-1',
 		productIDs: [ 'product-1', 'product-2' ],
 	};
 
@@ -252,10 +252,11 @@ describe( 'SettingsEdit', () => {
 			it( 'should render the warning notice when the product ID is "openaccess" and the payment option is "subscriptions"', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						...settings,
-						paymentOption: 'subscriptions',
-					} );
+					.setProductID( 'openaccess' );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPaymentOption( 'subscriptions' );
 
 				const { container, getByText, waitForRegistry } = render(
 					<SettingsEdit />,
