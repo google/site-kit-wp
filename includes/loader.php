@@ -24,6 +24,8 @@ function autoload_classes() {
 	$class_map = array_merge(
 		// Site Kit classes.
 		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'includes/vendor/composer/autoload_classmap.php',
+		// Site Kit blocks.
+		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'blocks/vendor/composer/autoload_classmap.php',
 		// Third-party classes.
 		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/composer/autoload_classmap.php'
 	);

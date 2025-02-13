@@ -1,5 +1,5 @@
 /**
- * Block editor config webpack partial.
+ * Gutenberg Blocks config webpack partial.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -20,9 +20,9 @@
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
-const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const WebpackBar = require( 'webpackbar' );
 
 /**
@@ -39,24 +39,43 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		'googlesitekit-reader-revenue-manager-block-editor':
-			'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
-		'sign-in-with-google-block/index':
-			'./assets/js/modules/sign-in-with-google/blocks/SignInWithGoogleBlock/index.js',
+		// Sign in with Google block.
+		'sign-in-with-google/dist/index':
+			'./blocks/sign-in-with-google/index.js',
+		'sign-in-with-google/dist/editor-styles':
+			'./blocks/sign-in-with-google/editor-styles.scss',
 	},
 	externals: gutenbergExternals,
 	output: {
-		filename:
-			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
-		path: rootDir + '/dist/assets/js',
+		filename: '[name].js',
+		path: rootDir + '/blocks',
 		publicPath: '',
 	},
 	module: {
-		rules: createRules( mode ),
+		rules: [
+			...createRules( mode ),
+			{
+				test: /\.scss$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					'css-loader',
+					'postcss-loader',
+					{
+						loader: 'sass-loader',
+						options: {
+							implementation: require( 'sass' ),
+							sassOptions: {
+								includePaths: [ 'node_modules' ],
+							},
+						},
+					},
+				],
+			},
+		],
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Block Editor Entry Points',
+			name: 'Gutenberg Blocks Entry Points',
 			color: '#deff13',
 		} ),
 		new CircularDependencyPlugin( {
@@ -71,18 +90,13 @@ module.exports = ( mode ) => ( {
 				return ( file.name || '' ).match( /\.js$/ );
 			},
 		} ),
+		new MiniCssExtractPlugin( {
+			filename: '[name].css',
+		} ),
 		new ESLintPlugin( {
 			emitError: true,
 			emitWarning: true,
 			failOnError: true,
-		} ),
-		new CopyWebpackPlugin( {
-			patterns: [
-				{
-					from: 'assets/js/modules/sign-in-with-google/blocks/SignInWithGoogleBlock/block.json',
-					to: 'sign-in-with-google-block',
-				},
-			],
 		} ),
 	],
 	optimization: {

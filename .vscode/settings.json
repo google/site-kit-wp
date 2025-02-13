@@ -1,32 +1,38 @@
 {
-	"search.exclude": {
-		".storybook/data": true,
-		"dist/": true,
-		"node_modules/": true,
-		"third-party/": true,
-		"vendor/": true
-	},
-	"files.exclude": {
-		"dist/": true,
-		"node_modules/": true,
-		"third-party/": true,
-		"vendor/": true
-	},
-	"jest.autoEnable": false,
-	"jest.pathToConfig": "./tests/js/jest.config.js",
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"[javascript]": {
-		"editor.formatOnSave": true
-	},
-	"[scss]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "stylelint.vscode-stylelint"
-	},
-	"editor.codeActionsOnSave": {
-		"source.fixAll": "explicit",
-		"source.fixAll.eslint": "explicit"
-	},
-	"phpcs.enable": true,
-	"phpcs.executablePath": "vendor/bin/phpcs",
-	"stylelint.validate": [ "css", "scss" ]
+  "search.exclude": {
+    ".storybook/data": true,
+    "**/dist": true,
+    "node_modules/": true,
+    "**/composer.lock": true,
+    "**/package-lock.json": true,
+    "third-party/": true,
+    "**/vendor/": true
+  },
+  "files.exclude": {
+    "**/dist": true,
+    "coverage/": true,
+    "node_modules/": true,
+    "third-party/": true,
+    "**/vendor/": true
+  },
+  "jest.autoEnable": false,
+  "jest.pathToConfig": "./tests/js/jest.config.js",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[scss]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+  "phpcs.enable": true,
+  "phpcs.executablePath": "vendor/bin/phpcs",
+  "stylelint.validate": [
+    "css",
+    "scss"
+  ]
 }

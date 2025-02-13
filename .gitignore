@@ -46,3 +46,6 @@ tests/backstop/tests/
 # Jest
 coverage/
 tests/e2e/screenshots
+
+# Block output
+blocks/*/dist

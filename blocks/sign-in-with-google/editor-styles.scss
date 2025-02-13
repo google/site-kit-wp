@@ -1,4 +1,6 @@
 /**
+ * Sign in with Google block.
+ *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-// eslint-disable-next-line import/no-unresolved
-import { useBlockProps } from '@wordpress-core/block-editor';
-// import { useState, useEffect } from '@wordpress-core/element';
-
-// import './editor.scss';
-
-/**
- * Sign in with Google Block Edit component.
- *
- * @since n.e.x.t
- *
- * @return {Element} Element to render.
- */
-export default function Edit() {
-	const blockProps = useBlockProps();
-
-	return (
-		<div { ...blockProps }>Sign in with Google block edit component.</div>
-	);
+.googlesitekit-blocks-sign-in-with-google {
+    max-width: 180px;
 }

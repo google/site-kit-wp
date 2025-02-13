@@ -164,7 +164,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Load the Gutenberg block for this module.
 		$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
-		$sign_in_with_google_block->block_init();
 	}
 
 	/**
@@ -420,17 +419,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
 
-	/**
-	 * Render SiwG buttons for all `<div>` elements with the "magic class"
-	 * on the page.
-	 *
-	 *Mainly used by Gutenberg blocks.
-	 */
-	const siwgButtonDivs = document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' );
-	console.log('siwgButtonDivs', siwgButtonDivs);
-	siwgButtonDivs.forEach( ( siwgButtonDiv ) => {
-		google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
-	});
+	<?php if ( ! is_user_logged_in() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		/**
+		 * Render SiwG buttons for all `<div>` elements with the "magic class"
+		 * on the page.
+		 *
+		 * Mainly used by Gutenberg blocks.
+		 */
+		const siwgButtonDivs = document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' );
+		siwgButtonDivs.forEach( ( siwgButtonDiv ) => {
+			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
+		});
+	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	<?php if ( $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		google.accounts.id.prompt();
