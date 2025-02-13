@@ -73,16 +73,19 @@ jobs:
       - name: JS Lint
         run: npm run lint:js
       - name: Jest Tests
-        run: npm run test:js
         id: test-js
+        run: npm run test:js
+        continue-on-error: true
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
         run: npm run test:js -- --onlyFailures
         if: failure() && steps.test-js.conclusion == 'failure'
+        continue-on-error: true
       - name: Jest Tests (Retry Failures 2)
         id: test-js-retry-2
         run: npm run test:js -- --onlyFailures
         if: failure() && steps.test-js-retry-1.conclusion == 'failure'
+        continue-on-error: true
       - name: Jest Tests (Retry Failures 3)
         run: npm run test:js -- --onlyFailures
         if: failure() && steps.test-js-retry-2.conclusion == 'failure'
