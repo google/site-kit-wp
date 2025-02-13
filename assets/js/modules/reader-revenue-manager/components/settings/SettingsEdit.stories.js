@@ -56,6 +56,14 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 0, 3, 1 ] );
+	},
+};
 
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'PendingVerification';
@@ -65,6 +73,11 @@ PendingVerification.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
+
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 0, 3, 1 ] );
 	},
 };
 
@@ -76,6 +89,10 @@ ActionRequired.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 0, 3, 1 ] );
 	},
 };
 
@@ -92,6 +109,11 @@ WithoutModuleAccess.args = {
 				{ access: false },
 				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
 			);
+
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 0, 3, 1 ] );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -111,6 +133,19 @@ PublicationUnavailable.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
+	},
+};
+
+export const MissingProductID = Template.bind( {} );
+MissingProductID.storyName = 'MissingProductID';
+MissingProductID.scenario = {};
+MissingProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 1 );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 0, 3 ] );
 	},
 };
 

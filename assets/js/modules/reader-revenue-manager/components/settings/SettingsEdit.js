@@ -94,8 +94,16 @@ export default function SettingsEdit() {
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
+	const productID = useSelect( ( select ) => {
+		const id = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
+		if ( 'openaccess' === id ) {
+			return __( 'Open access', 'google-site-kit' );
+		}
+		return id;
+	} );
+
 	const isCurrentProductMissing = productIDs
-		? ! productIDs.includes( publicationID )
+		? ! productIDs.includes( productID )
 		: true;
 
 	const publicationAvailable = useSelect( ( select ) => {
@@ -157,18 +165,19 @@ export default function SettingsEdit() {
 						) }
 					/>
 				) }
+
 				{ isRRMv2Enabled &&
 					hasModuleAccess &&
 					publicationAvailable &&
 					isCurrentProductMissing && (
 						<ErrorText
 							message={ sprintf(
-								/* translators: 1: Publication ID. */
+								/* translators: 1: Product ID. */
 								__(
 									'The previously selected product ID %s was not found. Please select a new product ID.',
 									'google-site-kit'
 								),
-								publicationID
+								productID
 							) }
 						/>
 					) }
