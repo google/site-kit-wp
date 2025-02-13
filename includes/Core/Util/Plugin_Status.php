@@ -12,23 +12,40 @@ namespace Google\Site_Kit\Core\Util;
 
 /**
  * Plugin_Status class.
+ *
+ * @since n.e.x.t
  */
 class Plugin_Status {
 
 	/**
 	 * Plugin installed identifier.
+	 *
+	 * @since n.e.x.t
 	 */
 	const PLUGIN_STATUS_INSTALLED = 'installed';
 
 	/**
 	 * Plugin not active identifier.
+	 *
+	 * @since n.e.x.t
 	 */
 	const PLUGIN_STATUS_ACTIVE = 'active';
 
 	/**
 	 * Plugin not installed identifier.
+	 *
+	 * @since n.e.x.t
 	 */
 	const PLUGIN_STATUS_NOT_INSTALLED = 'not-installed';
+
+	/**
+	 * The plugin path of the plugin being checked.
+	 *
+	 * @var string The plugin path of the plugin being checked.
+	 *
+	 * @since n.e.x.t
+	 */
+	public static $plugin_path;
 
 	/**
 	 * Helper method to retrieve plugin installation/activation status.
@@ -41,6 +58,8 @@ class Plugin_Status {
 	 * @return string The status of the plugin.
 	 */
 	public static function get_plugin_status( $plugin_path = '', $plugin_url = '' ) {
+		static::$plugin_path = $plugin_path;
+
 		if ( empty( $plugin_path ) && empty( $plugin_url ) ) {
 			return static::PLUGIN_STATUS_NOT_INSTALLED;
 		}
@@ -60,6 +79,7 @@ class Plugin_Status {
 		} else {
 			foreach ( $plugins as $plugin_file => $installed_plugin ) {
 				if ( $installed_plugin['PluginURI'] === $plugin_url ) {
+					static::$plugin_path = $plugin_file;
 					return static::PLUGIN_STATUS_INSTALLED;
 				}
 			}
