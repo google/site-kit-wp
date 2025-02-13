@@ -696,7 +696,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				isWidgetHidden: false,
 			} );
 
-			const { getByRole, waitForRegistry } = render(
+			const { getByRole, getByText, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
@@ -711,6 +711,17 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			expect(
 				getByRole( 'button', { name: 'View metrics' } )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					( content, testElement ) =>
+						testElement.tagName.toLowerCase() === 'p' &&
+						testElement.className ===
+							'googlesitekit-subtle-notification__secondary_description' &&
+						content ===
+							'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics.'
+				)
 			).toBeInTheDocument();
 
 			// eslint-disable-next-line require-await

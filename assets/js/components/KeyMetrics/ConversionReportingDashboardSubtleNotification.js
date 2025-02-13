@@ -25,51 +25,27 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import StarFill from '../../../svg/icons/star-fill.svg';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Link from '../Link';
 
 export default function ConversionReportingDashboardSubtleNotification( {
+	description,
 	ctaLabel,
 	handleCTAClick,
 	isSaving = false,
 	onDismiss,
 	dismissCTALabel = __( 'Maybe later', 'google-site-kit' ),
 } ) {
-	const documentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'key-metrics' )
-	);
-
 	return (
 		<SubtleNotification
 			className="googlesitekit-acr-subtle-notification"
 			title={ __( 'New key metrics were added!', 'google-site-kit' ) }
-			description={ createInterpolateElement(
-				__(
-					'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics. Add them to your dashboard to get a better understanding of how users interact with your site. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{
-					a: (
-						<Link
-							href={ documentationURL }
-							external
-							aria-label={ __(
-								'Learn more about advanced conversion reporting',
-								'google-site-kit'
-							) }
-						/>
-					),
-				}
-			) }
+			description={ description }
 			dismissCTA={
 				<Button tertiary onClick={ onDismiss }>
 					{ dismissCTALabel }
