@@ -66,6 +66,12 @@ const topCitiesReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
 	dimensions: [ 'city' ],
+	dimensionFilters: {
+		city: {
+			filterType: 'emptyFilter',
+			notExpression: true,
+		},
+	},
 	metrics: [ { name: 'totalUsers' } ],
 	orderby: [
 		{
@@ -75,7 +81,7 @@ const topCitiesReportOptions = {
 			desc: true,
 		},
 	],
-	limit: 4,
+	limit: 3,
 };
 
 const topContentReportOptions = {
@@ -506,7 +512,10 @@ SiteKitAudiencesPartialData.args = {
 
 				provideAnalytics4MockReport( registry, {
 					...topCitiesReportOptions,
-					dimensionFilters,
+					dimensionFilters: {
+						...topCitiesReportOptions.dimensionFilters,
+						...dimensionFilters,
+					},
 				} );
 
 				provideAnalytics4MockReport( registry, {
@@ -602,6 +611,10 @@ SingleTileErrored.args = {
 			endDate,
 			dimensions: [ 'city' ],
 			dimensionFilters: {
+				city: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
 				audienceResourceName: 'properties/12345/audiences/3',
 			},
 			metrics: [ { name: 'totalUsers' } ],
@@ -613,7 +626,7 @@ SingleTileErrored.args = {
 					desc: true,
 				},
 			],
-			limit: 4,
+			limit: 3,
 		};
 
 		const errorReport = {
@@ -764,7 +777,10 @@ export default {
 
 					provideAnalytics4MockReport( registry, {
 						...topCitiesReportOptions,
-						dimensionFilters,
+						dimensionFilters: {
+							...topCitiesReportOptions.dimensionFilters,
+							...dimensionFilters,
+						},
 					} );
 
 					provideAnalytics4MockReport( registry, {
