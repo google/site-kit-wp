@@ -143,6 +143,13 @@ export default function SettingsEdit() {
 			'rrm-content-settings'
 		);
 	} );
+	const { categoriesAdminURL, tagsAdminURL } = useSelect( ( select ) => {
+		const adminURL = select( CORE_SITE ).getAdminURL();
+		return {
+			categoriesAdminURL: `${ adminURL }edit-tags.php?taxonomy=category`,
+			tagsAdminURL: `${ adminURL }edit-tags.php?taxonomy=post_tag`,
+		};
+	} );
 	const isOpenAccessNoticeDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
@@ -243,7 +250,7 @@ export default function SettingsEdit() {
 													'Learn more about Categories',
 													'google-site-kit'
 												) }
-												href={ learnMoreURL }
+												href={ categoriesAdminURL }
 												external
 												hideExternalIndicator
 											/>
@@ -254,7 +261,7 @@ export default function SettingsEdit() {
 													'Learn more about Tags',
 													'google-site-kit'
 												) }
-												href={ learnMoreURL }
+												href={ tagsAdminURL }
 												external
 												hideExternalIndicator
 											/>
