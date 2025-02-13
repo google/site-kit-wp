@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -107,7 +108,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 	}, [ findMatchedPublication, publicationID, selectPublication ] );
 
 	// Auto-select the first custom product ID if none is selected.
-	useEffect( () => {
+	useMount( () => {
 		if (
 			productIDs?.length > 0 &&
 			( ! productID || productID === 'openaccess' )
@@ -119,7 +120,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 				setProductID( firstCustomProductID );
 			}
 		}
-	}, [ productID, productIDs, setProductID ] );
+	} );
 
 	if ( ! publications ) {
 		return null;
