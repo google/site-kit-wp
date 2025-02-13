@@ -208,8 +208,10 @@ class REST_Consent_Mode_Controller {
 								$nonce_url = function ( $action_url, $action ) {
 									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
 								};
+
+								$plugin       = Plugin_Status::$plugin_path;
 								$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
-								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
+								$install_url  = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
 
 								$response['wpConsentPlugin'] = array(
 									'installed'   => $installed,
