@@ -758,53 +758,20 @@ final class Assets {
 			'productPostType'   => $this->get_product_post_type(),
 			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
 			'isMultisite'       => is_multisite(),
+			'plugins'           => array(
+				'wooCommerce'          => array(
+					'installed' => false,
+					'active'    => false,
+				),
+				'googleForWooCommerce' => array(
+					'installed'    => false,
+					'active'       => false,
+					'adsConnected' => false,
+				),
+			),
 		);
 
-		$inline_data['plugins'] = array(
-			'wooCommerce'          => array(
-				'installed' => false,
-				'active'    => false,
-			),
-			'googleForWooCommerce' => array(
-				'installed'    => false,
-				'active'       => false,
-				'adsConnected' => false,
-			),
-		);
-
-		// Get the status of the WooCommerce plugin.
-		$woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
-
-		// Get the status of the Google for WooCommerce plugin.
-		$google_for_woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'google-listings-and-ads/google-listings-and-ads.php', 'https://wordpress.org/plugins/google-listings-and-ads' );
-
-		switch ( $woocommerce_plugin_status ) {
-			case Plugin_Status::PLUGIN_STATUS_ACTIVE:
-				$inline_data['plugins']['woocommerce']['installed'] = true;
-				$inline_data['plugins']['woocommerce']['active']    = true;
-				break;
-			case Plugin_Status::PLUGIN_STATUS_INSTALLED:
-				$inline_data['plugins']['woocommerce']['installed'] = true;
-				$inline_data['plugins']['woocommerce']['active']    = false;
-				break;
-		}
-
-		switch ( $google_for_woocommerce_plugin_status ) {
-			case Plugin_Status::PLUGIN_STATUS_ACTIVE:
-				$inline_data['plugins']['google-listings-and-ads']['installed'] = true;
-				$inline_data['plugins']['google-listings-and-ads']['active']    = true;
-
-				// Only check for the presence of Ads connection if plugin is active.
-				$gla_ads_id = get_option( 'gla_ads_id' );
-				if ( ! empty( $gla_ads_id ) ) {
-					$inline_data['plugins']['google-listings-and-ads']['adsConnected'] = true;
-				}
-				break;
-			case Plugin_Status::PLUGIN_STATUS_INSTALLED:
-				$inline_data['plugins']['google-listings-and-ads']['installed'] = true;
-				$inline_data['plugins']['google-listings-and-ads']['active']    = false;
-				break;
-		}
+		$inline_data = $this->update_plugins_inline_data( $inline_data );
 
 		/**
 		 * Filters the most basic inline data to pass to JS.
@@ -1166,5 +1133,52 @@ final class Assets {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Updates the plugins inline data based on plugin status.
+	 *
+	 * @param array $inline_data The inline base data to be updated.
+	 * @since n.e.x.t
+	 *
+	 * @return array The inline data with plugins data modified.
+	 */
+	public function update_plugins_inline_data( $inline_data = array() ) {
+
+		// Get the status of the WooCommerce plugin.
+		$woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
+
+		// Get the status of the Google for WooCommerce plugin.
+		$google_for_woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'google-listings-and-ads/google-listings-and-ads.php', 'https://wordpress.org/plugins/google-listings-and-ads' );
+
+		switch ( $woocommerce_plugin_status ) {
+			case Plugin_Status::PLUGIN_STATUS_ACTIVE:
+				$inline_data['plugins']['wooCommerce']['installed'] = true;
+				$inline_data['plugins']['wooCommerce']['active']    = true;
+				break;
+			case Plugin_Status::PLUGIN_STATUS_INSTALLED:
+				$inline_data['plugins']['wooCommerce']['installed'] = true;
+				$inline_data['plugins']['wooCommerce']['active']    = false;
+				break;
+		}
+
+		switch ( $google_for_woocommerce_plugin_status ) {
+			case Plugin_Status::PLUGIN_STATUS_ACTIVE:
+				$inline_data['plugins']['googleForWooCommerce']['installed'] = true;
+				$inline_data['plugins']['googleForWooCommerce']['active']    = true;
+
+				// Only check for the presence of Ads connection if plugin is active.
+				$gla_ads_id = get_option( 'gla_ads_id' );
+				if ( ! empty( $gla_ads_id ) ) {
+					$inline_data['plugins']['googleForWooCommerce']['adsConnected'] = true;
+				}
+				break;
+			case Plugin_Status::PLUGIN_STATUS_INSTALLED:
+				$inline_data['plugins']['googleForWooCommerce']['installed'] = true;
+				$inline_data['plugins']['googleForWooCommerce']['active']    = false;
+				break;
+		}
+
+		return $inline_data;
 	}
 }
