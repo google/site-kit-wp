@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
@@ -90,12 +85,6 @@ export default {
 				new RegExp(
 					'^/google-site-kit/v1/core/user/data/survey-trigger'
 				)
-			);
-			fetchMock.postOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/survey-timeout'
-				),
-				{}
 			);
 			muteFetch(
 				new RegExp(

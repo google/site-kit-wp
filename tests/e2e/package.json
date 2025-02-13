@@ -1,7 +1,7 @@
 {
   "scripts": {
     "pretest:e2e": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
-    "test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./script.js",
+    "test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 ./script.js",
     "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
     "test:e2e:watch": "npm run test:e2e -- --watch",
     "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
@@ -22,11 +22,13 @@
     "@wordpress/jest-console": "^3.9.0",
     "amphtml-validator": "^1.0.35",
     "babel-jest": "^26.6.3",
+    "cross-env": "^7.0.3",
     "dockerode": "^4.0.2",
     "expect-puppeteer": "^4.4.0",
     "jest": "^26.6.3",
     "jest-puppeteer": "^6.0.1",
     "jsdom": "^16.5.0",
+    "lodash": "^4.17.21",
     "puppeteer": "^10.4.0"
   }
 }
