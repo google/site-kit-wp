@@ -233,7 +233,7 @@ export default function SettingsEdit() {
 							<SubtleNotification
 								title={ createInterpolateElement(
 									__(
-										'Use the new settings in the block editor select different product IDs for individual pages or control where CTAs appear on an individual post. You can also configure a different product ID for a group of posts in the <categories>Categories</categories> or <tags>Tags</tags> section. <learnMore>Learn more</learnMore>',
+										'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. You can also configure a different product ID for a group of posts in the <categories>Categories</categories> or <tags>Tags</tags> section. <learnMore>Learn more</learnMore>',
 										'google-site-kit'
 									),
 									{
