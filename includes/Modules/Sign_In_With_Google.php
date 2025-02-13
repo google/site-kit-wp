@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Stylesheet;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Modules\Module;
@@ -31,6 +32,7 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
@@ -164,7 +166,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Load the Gutenberg block for this module.
 		$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
-		$sign_in_with_google_block->register();
+
+		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+			$sign_in_with_google_block->register();
+		}
 	}
 
 	/**
@@ -273,7 +278,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
-		return array(
+		$assets = array(
 			new Script(
 				'googlesitekit-modules-sign-in-with-google',
 				array(
@@ -290,6 +295,30 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				)
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+			$assets[] = new Script(
+				'blocks/sign-in-with-google',
+				array(
+					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/index.js' ),
+					'dependencies'  => array(
+						'googlesitekit-vendor',
+						'googlesitekit-base-data',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+			$assets[] = new Stylesheet(
+				'blocks/sign-in-with-google/editor-styles',
+				array(
+					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/editor-styles.css' ),
+					'dependencies'  => array(),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+		}
+
+		return $assets;
 	}
 
 	/**

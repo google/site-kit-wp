@@ -20,6 +20,7 @@
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
+const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
@@ -40,15 +41,15 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		// Sign in with Google block.
-		'sign-in-with-google/dist/index':
-			'./blocks/sign-in-with-google/index.js',
-		'sign-in-with-google/dist/editor-styles':
+		'sign-in-with-google/index': './blocks/sign-in-with-google/index.js',
+		'sign-in-with-google/editor-styles':
 			'./blocks/sign-in-with-google/editor-styles.scss',
 	},
 	externals: gutenbergExternals,
 	output: {
-		filename: '[name].js',
-		path: rootDir + '/blocks',
+		filename:
+			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+		path: rootDir + '/dist/assets/js/blocks',
 		publicPath: '',
 	},
 	module: {
@@ -84,6 +85,14 @@ module.exports = ( mode ) => ( {
 			allowAsyncCycles: false,
 			cwd: process.cwd(),
 		} ),
+		new CopyWebpackPlugin( {
+			patterns: [
+				{
+					from: 'blocks/sign-in-with-google/block.json',
+					to: 'sign-in-with-google',
+				},
+			],
+		} ),
 		new ManifestPlugin( {
 			...manifestArgs( mode ),
 			filter( file ) {
@@ -91,7 +100,10 @@ module.exports = ( mode ) => ( {
 			},
 		} ),
 		new MiniCssExtractPlugin( {
-			filename: '[name].css',
+			filename:
+				'production' === mode
+					? '[name]-[contenthash].min.css'
+					: '[name].css',
 		} ),
 		new ESLintPlugin( {
 			emitError: true,

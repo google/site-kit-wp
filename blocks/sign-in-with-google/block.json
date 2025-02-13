@@ -7,7 +7,5 @@
 	"category": "widgets",
 	"icon": "google",
 	"description": "Allow users to sign in to your site using their Google Account.",
-	"textdomain": "google-site-kit/sign-in-with-google",
-	"editorScript": "file:./dist/index.js",
-	"editorStyle": "file:./dist/editor-styles.css"
+	"textdomain": "google-site-kit/sign-in-with-google"
 }

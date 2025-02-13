@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 
 /**
@@ -49,7 +48,7 @@ class Sign_In_With_Google_Block {
 			'init',
 			function () {
 				register_block_type(
-					__DIR__ . '/block.json',
+					__DIR__ . '/../../dist/assets/js/blocks/sign-in-with-google/block.json',
 					array(
 						'render_callback' => array( $this, 'render_callback' ),
 					)
@@ -78,14 +77,6 @@ class Sign_In_With_Google_Block {
 			return '';
 		}
 
-		// Start buffer output.
-		ob_start();
-		?>
-<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>
-		<?php
-		// Get the buffer output.
-		$output = ob_get_clean();
-
-		return $output;
+		return '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
 	}
 }

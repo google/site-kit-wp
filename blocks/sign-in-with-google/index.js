@@ -20,12 +20,17 @@ import { registerBlockType } from '@wordpress-core/blocks';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '../../assets/js/features';
 import Edit from './Edit';
 import metadata from './block.json';
 
 /**
- * Register the Memorable Quotes Block.
+ * Registers the Sign in with Google block.
+ *
+ * @since n.e.x.t
  */
-registerBlockType( metadata.name, {
-	edit: Edit,
-} );
+if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
+	registerBlockType( metadata.name, {
+		edit: Edit,
+	} );
+}
