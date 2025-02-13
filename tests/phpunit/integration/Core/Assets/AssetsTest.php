@@ -301,7 +301,8 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( 'product', $data['productPostType'] );
 	}
 
-	public function test_base_data__plugins_default_data() {
+	public function test_base_data__plugins_default_data_with_ads_pax_feature_flag() {
+		self::enable_feature( 'adsPax' );
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
 			'wooCommerce'          => array(
@@ -318,7 +319,13 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( $default_plugins_data, $data['plugins'] );
 	}
 
+	public function test_base_data__plugins_default_data_without_ads_pax_feature_flag() {
+		$data = $this->get_inline_base_data();
+		$this->assertArrayNotHasKey( 'plugins', $data );
+	}
+
 	public function test_base_data__plugins_default_data_with_woocommerce_active() {
+		self::enable_feature( 'adsPax' );
 		$this->activate_woocommerce();
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
