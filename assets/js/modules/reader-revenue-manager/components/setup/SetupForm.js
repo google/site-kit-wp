@@ -41,9 +41,16 @@ import {
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
-import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
+import {
+	ProductIDSelect,
+	PublicationOnboardingStateNotice,
+	PublicationSelect,
+} from '../common';
+import { useFeature } from '../../../../hooks/useFeature';
 
 export default function SetupForm( { onCompleteSetup } ) {
+	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
+
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).canSubmitChanges()
 	);
@@ -56,14 +63,19 @@ export default function SetupForm( { onCompleteSetup } ) {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+	const productID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
+	);
+	const productIDs = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+	);
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { findMatchedPublication, selectPublication } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
+	const { findMatchedPublication, selectPublication, setProductID } =
+		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const handleLinkClick = useCallback( () => {
 		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
@@ -94,6 +106,21 @@ export default function SetupForm( { onCompleteSetup } ) {
 		}
 	}, [ findMatchedPublication, publicationID, selectPublication ] );
 
+	// Auto-select the first custom product ID if none is selected.
+	useEffect( () => {
+		if (
+			productIDs?.length > 0 &&
+			( ! productID || productID === 'openaccess' )
+		) {
+			const firstCustomProductID = productIDs.find(
+				( id ) => id !== 'openaccess'
+			);
+			if ( firstCustomProductID ) {
+				setProductID( firstCustomProductID );
+			}
+		}
+	}, [ productID, productIDs, setProductID ] );
+
 	if ( ! publications ) {
 		return null;
 	}
@@ -117,6 +144,9 @@ export default function SetupForm( { onCompleteSetup } ) {
 			</p>
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationSelect />
+				{ isRRMv2Enabled && productIDs?.length > 0 && (
+					<ProductIDSelect showHelperText={ false } />
+				) }
 			</div>
 			<PublicationOnboardingStateNotice />
 			<Link external href={ serviceURL } onClick={ handleLinkClick }>
