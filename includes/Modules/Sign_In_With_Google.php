@@ -80,6 +80,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 */
 	protected $existing_client_id;
 
+	/**
+	 * Stores the active state of the WooCommerce plugin.
+	 *
+	 * @since n.e.x.t
+	 * @var bool Whether WooCommerce is active or not.
+	 */
+	protected $is_woocommerce_active;
+
 
 	/**
 	 * Constructor.
@@ -100,7 +108,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->existing_client_id = new Existing_Client_ID( $this->options );
+		$this->existing_client_id    = new Existing_Client_ID( $this->options );
+		$this->is_woocommerce_active = $this->is_woocommerce_active();
 	}
 
 	/**
@@ -550,7 +559,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	public function get_content_url() {
 		$wp_login_url = wp_login_url();
 
-		if ( Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' ) ) {
+		if ( $this->is_woocommerce_active ) {
 			$wc_login_page_id = wc_get_page_id( 'myaccount' );
 			$wc_login_url     = get_permalink( $wc_login_page_id );
 			return array(
@@ -705,7 +714,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$inline_data['existingClientID'] = $existing_client_id;
 		}
 
-		$is_woocommerce_active            = Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
+		$is_woocommerce_active            = $this->is_woocommerce_active;
 		$woocommerce_registration_enabled = $is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
 
 		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
@@ -715,5 +724,15 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$modules_data['sign-in-with-google'] = $inline_data;
 
 		return $modules_data;
+	}
+
+	/**
+	 * Helper method to determine if the WooCommerce plugin is active.
+	 *
+	 * @since n.e.x.t
+	 * @return bool True if active, false if not.
+	 */
+	public function is_woocommerce_active() {
+		return Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
 	}
 }
