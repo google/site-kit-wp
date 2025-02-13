@@ -41,6 +41,7 @@ export default function ProductIDSelect( props ) {
 	const {
 		isDisabled,
 		hasModuleAccess,
+		showHelperText = true,
 		className,
 		onChange = () => {},
 	} = props;
@@ -94,25 +95,29 @@ export default function ProductIDSelect( props ) {
 			disabled={ isDisabled }
 			enhanced
 			outlined
-			helperText={ createInterpolateElement(
-				__(
-					'Product IDs offer a way to link content to payment plans. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{
-					a: (
-						<Link
-							aria-label={ __(
-								'Learn more about Product IDs',
+			helperText={
+				showHelperText
+					? createInterpolateElement(
+							__(
+								'Product IDs offer a way to link content to payment plans. <a>Learn more</a>',
 								'google-site-kit'
-							) }
-							href={ learnMoreURL }
-							external
-							hideExternalIndicator
-						/>
-					),
-				}
-			) }
+							),
+							{
+								a: (
+									<Link
+										aria-label={ __(
+											'Learn more about Product IDs',
+											'google-site-kit'
+										) }
+										href={ learnMoreURL }
+										external
+										hideExternalIndicator
+									/>
+								),
+							}
+					  )
+					: undefined
+			}
 		>
 			<Option key="openaccess" value="openaccess">
 				{ __( 'Open access', 'google-site-kit' ) }
@@ -129,6 +134,7 @@ export default function ProductIDSelect( props ) {
 ProductIDSelect.propTypes = {
 	isDisabled: PropTypes.bool,
 	hasModuleAccess: PropTypes.bool,
+	showHelperText: PropTypes.bool,
 	className: PropTypes.string,
 	onChange: PropTypes.func,
 };
