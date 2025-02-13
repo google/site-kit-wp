@@ -164,6 +164,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Load the Gutenberg block for this module.
 		$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
+		$sign_in_with_google_block->register();
 	}
 
 	/**
@@ -359,8 +360,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		// Whether this is a WordPress/WooCommerce login page.
 		$is_login_page = $is_wp_login || $is_woocommerce_login;
 
-		// Whether buttons will be rendered/transformed on this page.
-		$render_one_tap = ! empty( $settings['oneTapEnabled'] ) && ( $is_wp_login || ! is_user_logged_in() );
+		// Check to see if we should show the One Tap prompt on this page.
+		//
+		// If this is not the WordPress or WooCommerce login page, check to
+		// see if "One Tap enabled on all pages" is set first. If it isnt:
+		// don't render the Sign in with Google JS.
+		$should_show_one_tap_prompt = ! empty( $settings['oneTapEnabled'] ) && (
+			// If One Tap is enabled at all, it should always appear on a login
+			// page.
+			$is_login_page ||
+			// Only show the prompt on other pages if the setting is enabled and
+			// the user isn't already signed in.
+			( $settings['oneTapOnAllPages'] && ! is_user_logged_in() )
+		);
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is
 		// empty, set the cookie to expire immediately.
@@ -385,7 +397,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 				body: new URLSearchParams( response )
 			} );
 
-			<?php if ( empty( $redirect_to ) && ! $is_login_page && $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			<?php if ( empty( $redirect_to ) && ! $is_login_page && $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				location.reload();
 			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				if ( res.ok && res.redirected ) {
@@ -432,7 +444,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		});
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( $render_one_tap ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		google.accounts.id.prompt();
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 

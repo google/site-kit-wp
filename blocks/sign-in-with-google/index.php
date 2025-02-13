@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 
 /**
@@ -21,9 +20,6 @@ use Google\Site_Kit\Modules\Sign_In_With_Google;
  * @since n.e.x.t
  */
 class Sign_In_With_Google_Block {
-
-	use Method_Proxy_Trait;
-
 	/**
 	 * Context instance.
 	 *
@@ -41,22 +37,25 @@ class Sign_In_With_Google_Block {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
-
-		add_action( 'init', $this->get_method_proxy( 'block_init' ), 99 );
 	}
 
 	/**
-	 * Initializes the block for displaying a Sign in with Google
-	 * button.
+	 * Register this block.
 	 *
 	 * @since n.e.x.t
 	 */
-	public function block_init() {
-		register_block_type(
-			__DIR__ . '/block.json',
-			array(
-				'render_callback' => array( $this, 'render_callback' ),
-			)
+	public function register() {
+		add_action(
+			'init',
+			function () {
+				register_block_type(
+					__DIR__ . '/block.json',
+					array(
+						'render_callback' => array( $this, 'render_callback' ),
+					)
+				);
+			},
+			99
 		);
 	}
 
