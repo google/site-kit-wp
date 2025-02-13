@@ -27,6 +27,10 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import {
+	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
+	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+} from '../../constants';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -34,6 +38,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 describe( 'SettingsEdit', () => {
 	let registry;
@@ -44,6 +49,15 @@ describe( 'SettingsEdit', () => {
 		publicationId: publicationID,
 		onboardingState: publicationOnboardingState,
 	} = publication;
+
+	const settings = {
+		publicationID,
+		publicationOnboardingState,
+		ownerID: 1,
+		postTypes: [ 'post' ],
+		productID: 'openaccess',
+		productIDs: [ 'product-1', 'product-2' ],
+	};
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -65,12 +79,9 @@ describe( 'SettingsEdit', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID,
-				publicationOnboardingState,
-				ownerID: 1,
-				postTypes: [ 'post' ],
-			} );
+			.receiveGetSettings( settings );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'should render the "SettingsEdit" component', async () => {
@@ -216,6 +227,111 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	describe( 'with the rrmModuleV2 feature flag enabled', () => {
+		describe( 'with the product ID setting', () => {
+			it( 'should render the product ID setting', async () => {
+				const { container, getByText, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
+
+				// Ensure the info notice is rendered.
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-settings-edit__product-id-info-notice'
+					)
+				).toBeInTheDocument();
+			} );
+
+			it( 'should render the warning notice when the product ID is "openaccess" and the payment option is "subscriptions"', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						...settings,
+						paymentOption: 'subscriptions',
+					} );
+
+				const { container, getByText, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
+					)
+				).toBeInTheDocument();
+
+				expect(
+					getByText(
+						'Selecting “open access” will allow your reader to access your content without a subscription'
+					)
+				).toBeInTheDocument();
+			} );
+
+			it( 'should not render the warning notice when the product ID is "openaccess" and the payment option is not "subscriptions"', async () => {
+				const { container, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
+					)
+				).not.toBeInTheDocument();
+			} );
+
+			it( 'should not render the product ID warning and info notices if they were dismissed', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+						RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
+					] );
+
+				const { container, getByText, waitForRegistry } = render(
+					<SettingsEdit />,
+					{
+						registry,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
+					)
+				).not.toBeInTheDocument();
+
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-settings-edit__product-id-info-notice'
+					)
+				).not.toBeInTheDocument();
+			} );
+		} );
+
 		it( 'should display CTA placement settings', async () => {
 			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
 				registry,
