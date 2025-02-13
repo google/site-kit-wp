@@ -29,10 +29,12 @@ import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/a
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import { PublicationApprovedOverlayNotification } from '../../modules/reader-revenue-manager/components/dashboard';
+import RRMIntroductoryOverlayNotification from '../../modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
 
 export default function OverlayNotificationsRenderer() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
+	const readerRevenueManagerV2Enabled = useFeature( 'rrmModuleV2' );
 
 	return (
 		<Fragment>
@@ -43,6 +45,9 @@ export default function OverlayNotificationsRenderer() {
 			) }
 			{ readerRevenueManagerEnabled && (
 				<PublicationApprovedOverlayNotification />
+			) }
+			{ readerRevenueManagerV2Enabled && (
+				<RRMIntroductoryOverlayNotification />
 			) }
 		</Fragment>
 	);
