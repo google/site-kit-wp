@@ -134,6 +134,22 @@ final class Assets {
 			}
 		);
 
+		add_action(
+			'enqueue_block_editor_assets',
+			function () {
+				$assets = $this->get_assets();
+
+				array_walk(
+					$assets,
+					function ( $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POST_EDITOR ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
+						}
+					}
+				);
+			}
+		);
+
 		$scripts_print_callback = function () {
 			$scripts = wp_scripts();
 			$this->run_before_print_callbacks( $scripts, $scripts->queue );
