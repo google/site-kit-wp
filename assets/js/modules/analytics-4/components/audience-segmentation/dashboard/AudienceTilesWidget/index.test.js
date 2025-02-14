@@ -158,12 +158,6 @@ function provideAudienceTilesMockReport(
 		startDate,
 		endDate,
 		dimensions: [ 'city' ],
-		dimensionFilters: {
-			city: {
-				filterType: 'emptyFilter',
-				notExpression: true,
-			},
-		},
 		metrics: [ { name: 'totalUsers' } ],
 		orderby: [
 			{
@@ -173,7 +167,7 @@ function provideAudienceTilesMockReport(
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
 	const topContentReportOptions = {
