@@ -109,6 +109,7 @@ function SettingsForm() {
 					...productIDs.map( ( productID ) => {
 						// The product ID will be in the format `publicationID:productID`.
 						// We want to display the product ID without the publication ID.
+						// See https://github.com/google/site-kit-wp/issues/10228.
 						const productIDParts = productID.split( ':' );
 						const label =
 							productIDParts.length > 1
