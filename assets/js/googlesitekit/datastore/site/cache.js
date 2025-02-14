@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { combineStores } from 'googlesitekit-data';
+import { combineStores, createReducer } from 'googlesitekit-data';
 import { setItem } from '../../../googlesitekit/api/cache';
 
 // Actions.
@@ -101,11 +101,24 @@ export const baseSelectors = {
 	},
 };
 
+const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case CACHE_RECEIVE_ITEM_DATA:
+			const { key, data } = payload;
+			state.cacheItems[ key ] = data;
+			break;
+
+		default:
+			break;
+	}
+} );
+
 const store = combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
 	selectors: baseSelectors,
+	reducer: baseReducer,
 } );
 
 export const initialState = store.initialState;
