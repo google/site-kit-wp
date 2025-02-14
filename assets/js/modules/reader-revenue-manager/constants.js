@@ -26,3 +26,7 @@ export const SNIPPET_MODES = {
 	per_post: __( 'Specified pages', 'google-site-kit' ),
 	sitewide: __( 'Site wide', 'google-site-kit' ),
 };
+
+export const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =
+	'rrm-product-id-open-access-notice';
+export const RRM_PRODUCT_ID_INFO_NOTICE_SLUG = 'rrm-product-id-info-notice';

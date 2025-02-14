@@ -26,23 +26,32 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import {
+	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
+	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+} from '../../constants';
 import ErrorText from '../../../../components/ErrorText';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
+	ProductIDSelect,
 	SnippetModeSelect,
 } from '../common';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
+import Link from '../../../../components/Link';
+import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function SettingsEdit() {
@@ -120,6 +129,38 @@ export default function SettingsEdit() {
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
 	);
+	const productID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
+	);
+	const productIDs = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+	);
+	const paymentOption = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
+	);
+	const learnMoreURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'rrm-content-settings'
+		);
+	} );
+	const { categoriesAdminURL, tagsAdminURL } = useSelect( ( select ) => {
+		const adminURL = select( CORE_SITE ).getAdminURL();
+		return {
+			categoriesAdminURL: `${ adminURL }edit-tags.php?taxonomy=category`,
+			tagsAdminURL: `${ adminURL }edit-tags.php?taxonomy=post_tag`,
+		};
+	} );
+	const isOpenAccessNoticeDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
+		)
+	);
+	const isInfoNoticeDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( RRM_PRODUCT_ID_INFO_NOTICE_SLUG )
+	);
+	const hasPaymentSubscription = paymentOption === 'subscriptions';
+
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
 		return <ProgressBar />;
@@ -166,6 +207,93 @@ export default function SettingsEdit() {
 					/>
 				) }
 			</div>
+			{ isRRMv2Enabled && productIDs?.length > 0 && (
+				<div className="googlesitekit-settings-module__fields-group googlesitekit-rrm-settings-edit__product-id-container">
+					<div className="googlesitekit-rrm-settings-edit__product-id">
+						<ProductIDSelect hasModuleAccess={ hasModuleAccess } />
+					</div>
+					{ hasPaymentSubscription &&
+						productID === 'openaccess' &&
+						! isOpenAccessNoticeDismissed && (
+							<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
+								<SubtleNotification
+									title={ __(
+										'Selecting “open access” will allow your reader to access your content without a subscription',
+										'google-site-kit'
+									) }
+									hideIcon
+									variant="warning"
+									dismissLabel={ __(
+										'Got it',
+										'google-site-kit'
+									) }
+									onDismiss={ () =>
+										dismissItem(
+											RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
+										)
+									}
+								/>
+							</div>
+						) }
+					{ ! isInfoNoticeDismissed && (
+						<div className="googlesitekit-rrm-settings-edit__product-id-info-notice">
+							<SubtleNotification
+								title={ createInterpolateElement(
+									__(
+										'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. You can also configure a different product ID for a group of posts in the <categories>Categories</categories> or <tags>Tags</tags> section. <learnMore>Learn more</learnMore>',
+										'google-site-kit'
+									),
+									{
+										categories: (
+											<Link
+												aria-label={ __(
+													'Learn more about Categories',
+													'google-site-kit'
+												) }
+												href={ categoriesAdminURL }
+												external
+												hideExternalIndicator
+											/>
+										),
+										tags: (
+											<Link
+												aria-label={ __(
+													'Learn more about Tags',
+													'google-site-kit'
+												) }
+												href={ tagsAdminURL }
+												external
+												hideExternalIndicator
+											/>
+										),
+										learnMore: (
+											<Link
+												aria-label={ __(
+													'Learn more about Product IDs',
+													'google-site-kit'
+												) }
+												href={ learnMoreURL }
+												external
+												hideExternalIndicator
+											/>
+										),
+									}
+								) }
+								variant="info"
+								dismissLabel={ __(
+									'Got it',
+									'google-site-kit'
+								) }
+								onDismiss={ () =>
+									dismissItem(
+										RRM_PRODUCT_ID_INFO_NOTICE_SLUG
+									)
+								}
+							/>
+						</div>
+					) }
+				</div>
+			) }
 			{ isRRMv2Enabled && (
 				<div className="googlesitekit-settings-module__fields-group">
 					<h4 className="googlesitekit-settings-module__fields-group-title">
