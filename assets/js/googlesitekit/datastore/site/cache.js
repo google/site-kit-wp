@@ -71,10 +71,26 @@ export const baseControls = {
 	},
 };
 
+export const baseSelectors = {
+	/**
+	 * Gets cached item data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Name of cache key.
+	 * @return {(Object|undefined)} Cache item data or undefined if item has not loaded.
+	 */
+	getCacheItem( state, key ) {
+		return state.cacheItems?.[ key ];
+	},
+};
+
 const store = combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
+	selectors: baseSelectors,
 } );
 
 export const initialState = store.initialState;
