@@ -15,3 +15,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import {
+	Button,
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogTitle,
+	SpinnerButton,
+} from 'googlesitekit-components';
+
+export default function WooCommerceRedirectModal( {
+	dialogActive,
+	onDismiss,
+} ) {
+	return (
+		<Dialog
+			open={ dialogActive }
+			aria-describedby={ undefined }
+			tabIndex="-1"
+			className="googlesitekit-dialog-confirm-site-purpose-change"
+			onClose={ onDismiss }
+		>
+			<DialogTitle>
+				{ __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
+			</DialogTitle>
+			<DialogContent>
+				<p>
+					{ __(
+						'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+						'google-site-kit'
+					) }
+				</p>
+			</DialogContent>
+			<DialogFooter>
+				<Button className="mdc-dialog__cancel-button" tertiary>
+					{ __( 'Continue with Site Kit', 'google-site-kit' ) }
+				</Button>
+				<SpinnerButton>
+					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
+				</SpinnerButton>
+			</DialogFooter>
+		</Dialog>
+	);
+}
