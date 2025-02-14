@@ -419,7 +419,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) { // TODO: Include a check for WP 5.4+.
+		// The required Gutenberg API for the RRM block editor is only guaranteed to be available in WP 5.4+, so don't add the assets if the version is below 5.4.
+		// See https://github.com/google/site-kit-wp/issues/9962#issuecomment-2654512322.
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && version_compare( get_bloginfo( 'version' ), '5.4', '>=' ) ) {
 			$assets[] = new Stylesheet(
 				'googlesitekit-block-editor-css',
 				array(
