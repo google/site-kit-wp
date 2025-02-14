@@ -29,6 +29,7 @@ import { setItem } from '../../../googlesitekit/api/cache';
 
 // Actions.
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';
+const CACHE_RECEIVE_ITEM_DATA = 'CACHE_RECEIVE_ITEM_DATA';
 
 const baseInitialState = {};
 
@@ -57,6 +58,18 @@ const baseActions = {
 				key,
 				value,
 				args,
+			},
+		};
+	},
+
+	receiveCacheItem( key, data ) {
+		invariant( key, 'key is required' );
+
+		return {
+			type: CACHE_RECEIVE_ITEM_DATA,
+			payload: {
+				key,
+				data,
 			},
 		};
 	},
