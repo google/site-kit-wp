@@ -25,10 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { combineStores, createReducer } from 'googlesitekit-data';
-import { setItem } from '../../../googlesitekit/api/cache';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
 // Actions.
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';
+const CACHE_GET_ITEM = 'CACHE_GET_ITEM';
 const CACHE_RECEIVE_ITEM_DATA = 'CACHE_RECEIVE_ITEM_DATA';
 
 const baseInitialState = {
@@ -83,6 +84,11 @@ export const baseControls = {
 		const { key, value, args } = payload;
 
 		await setItem( key, value, args );
+	},
+	[ CACHE_GET_ITEM ]: async ( { payload } ) => {
+		const { key } = payload;
+
+		return await getItem( key );
 	},
 };
 
