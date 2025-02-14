@@ -106,14 +106,24 @@ function SettingsForm() {
 						label: __( 'Use "open access"', 'google-site-kit' ),
 						value: 'openaccess',
 					},
-					...productIDs.map( ( productID ) => ( {
-						label: sprintf(
-							/* translators: %s: Product ID */
-							__( 'Use "%s"', 'google-site-kit' ),
-							productID
-						),
-						value: productID,
-					} ) ),
+					...productIDs.map( ( productID ) => {
+						// The product ID will be in the format `publicationID:productID`.
+						// We want to display the product ID without the publication ID.
+						const productIDParts = productID.split( ':' );
+						const label =
+							productIDParts.length > 1
+								? productIDParts[ 1 ]
+								: productID;
+
+						return {
+							label: sprintf(
+								/* translators: %s: Product ID */
+								__( 'Use "%s"', 'google-site-kit' ),
+								label
+							),
+							value: productID,
+						};
+					} ),
 				] }
 				help={ help }
 			/>
