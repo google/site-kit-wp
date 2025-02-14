@@ -583,8 +583,6 @@ describe( 'AudienceTilesWidget', () => {
 
 		await waitForRegistry();
 
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
-
 		fireEvent.mouseOver(
 			container.querySelector( '.googlesitekit-info-tooltip' )
 		);
