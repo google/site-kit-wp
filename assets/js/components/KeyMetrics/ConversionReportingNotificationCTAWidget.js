@@ -394,16 +394,18 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		}
 	);
 	let ctaLabel = __( 'Select metrics', 'google-site-kit' );
+	let dismissCTALabel = __( 'Maybe later', 'google-site-kit' );
 
 	if ( shouldShowInitialCalloutForTailoredMetrics ) {
 		ctaLabel = __( 'Add metrics', 'google-site-kit' );
 	}
 	if ( shouldShowCalloutForNewEvents ) {
 		description = __(
-			'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics.',
+			'We’ve extended your metrics selection based on your website events',
 			'google-site-kit'
 		);
 		ctaLabel = __( 'View metrics', 'google-site-kit' );
+		dismissCTALabel = __( 'Got it', 'google-site-kit' );
 	}
 
 	return (
@@ -422,6 +424,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				<ConversionReportingDashboardSubtleNotification
 					description={ description }
 					ctaLabel={ ctaLabel }
+					dismissCTALabel={ dismissCTALabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
 							? handleAddMetricsClick
