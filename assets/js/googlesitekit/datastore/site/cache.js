@@ -31,7 +31,9 @@ import { setItem } from '../../../googlesitekit/api/cache';
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';
 const CACHE_RECEIVE_ITEM_DATA = 'CACHE_RECEIVE_ITEM_DATA';
 
-const baseInitialState = {};
+const baseInitialState = {
+	cacheItems: {},
+};
 
 const baseActions = {
 	/**
