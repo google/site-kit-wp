@@ -78,7 +78,7 @@ const reportOptions = [
 	{
 		dimensions: [ 'date' ],
 		metrics: [ { name: 'totalUsers' } ],
-		startDate: '2020-08-11',
+		startDate: '2020-07-14',
 		endDate: '2020-09-07',
 	},
 ];
