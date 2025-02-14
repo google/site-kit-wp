@@ -24,8 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { combineStores, createReducer } from 'googlesitekit-data';
+import {
+	combineStores,
+	commonActions,
+	createReducer,
+} from 'googlesitekit-data';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import { CORE_SITE } from './constants';
 
 // Actions.
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';
@@ -119,12 +124,34 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 	}
 } );
 
+export const baseResolvers = {
+	*getCacheItem( key ) {
+		invariant( key, 'key is required' );
+
+		const registry = yield commonActions.getRegistry();
+
+		const cacheItem = registry.select( CORE_SITE ).getCacheItem( key );
+
+		if ( cacheItem ) {
+			return;
+		}
+
+		const data = yield {
+			type: CACHE_GET_ITEM,
+			payload: { key },
+		};
+
+		yield baseActions.receiveCacheItem( key, data );
+	},
+};
+
 const store = combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
 	selectors: baseSelectors,
 	reducer: baseReducer,
+	resolvers: baseResolvers,
 } );
 
 export const initialState = store.initialState;
