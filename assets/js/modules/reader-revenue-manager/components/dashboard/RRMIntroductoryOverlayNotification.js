@@ -19,40 +19,38 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
+import ExternalIcon from '../../../../../svg/icons/external.svg';
 import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import useViewContext from '../../../../hooks/useViewContext';
+import SupportLink from '../../../../components/SupportLink';
 import useDashboardType from '../../../../hooks/useDashboardType';
-import ExternalIcon from '../../../../../svg/icons/external.svg';
-import { trackEvent } from '../../../../util';
-import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import useViewOnly from '../../../../hooks/useViewOnly';
+import whenActive from '../../../../util/when-active';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
-import whenActive from '../../../../util/when-active';
-import { createInterpolateElement } from '@wordpress/element';
-import SupportLink from '../../../../components/SupportLink';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
-export const RRM_MONETIZATION_OVERLAY_NOTIFICATION =
-	'rrmMonetizationOverlayNotification';
+export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
+	'rrmIntroductoryOverlayNotification';
 
 function RRMIntroductoryOverlayNotification() {
-	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
 
@@ -64,25 +62,13 @@ function RRMIntroductoryOverlayNotification() {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			RRM_MONETIZATION_OVERLAY_NOTIFICATION
+			RRM_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)
 	);
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
-	const usingNonMonetaryCTA =
-		paymentOption === '' || paymentOption === 'noPayment';
-
-	const shouldShowNotification =
-		isDismissed === false &&
-		! isViewOnly &&
-		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
-		publicationOnboardingState === ONBOARDING_COMPLETE &&
-		usingNonMonetaryCTA;
-
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
-			RRM_MONETIZATION_OVERLAY_NOTIFICATION
+			RRM_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)
 	);
 
@@ -95,32 +81,32 @@ function RRMIntroductoryOverlayNotification() {
 		} )
 	);
 
-	const dismissNotice = () => {
-		dismissOverlayNotification( RRM_MONETIZATION_OVERLAY_NOTIFICATION );
-	};
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/news/publisher-center/answer/11449914',
+		} )
+	);
 
-	const dismissNotification = () => {
-		trackEvent(
-			`${ viewContext }_rrm-monetization-notification`,
-			'dismiss_notification'
-		).finally( () => {
-			dismissNotice();
-		} );
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
+
+	const shouldShowNotification =
+		isDismissed === false &&
+		! isViewOnly &&
+		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
+		publicationOnboardingState === ONBOARDING_COMPLETE &&
+		[ 'noPayment', '' ].includes( paymentOption );
+
+	const dismissNotice = () => {
+		dismissOverlayNotification( RRM_INTRODUCTORY_OVERLAY_NOTIFICATION );
 	};
 
 	return (
 		<OverlayNotification
-			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-monetization-notification"
+			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-introductory-notification"
 			GraphicDesktop={ ReaderRevenueManagerIntroductoryGraphicDesktop }
 			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
-			onShow={ () => {
-				trackEvent(
-					`${ viewContext }_rrm-monetization-notification`,
-					'view_notification'
-				);
-			} }
 			shouldShowNotification={ shouldShowNotification }
-			notificationID={ RRM_MONETIZATION_OVERLAY_NOTIFICATION }
+			notificationID={ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION }
 		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>
@@ -138,7 +124,7 @@ function RRMIntroductoryOverlayNotification() {
 					{ paymentOption === 'noPayment'
 						? createInterpolateElement(
 								__(
-									'Now, you can offer your users subscription options to access content behind a paywall, or make voluntary contributions. <a>Learn more.</a>',
+									'Now you can offer your users subscription options to access content behind a paywall, or make voluntary contributions. <a>Learn more</a>',
 									'google-site-kit'
 								),
 								{
@@ -146,6 +132,7 @@ function RRMIntroductoryOverlayNotification() {
 										<SupportLink
 											path="/news/publisher-center/answer/11449914"
 											external
+											hideExternalIndicator
 										/>
 									),
 								}
@@ -160,26 +147,23 @@ function RRMIntroductoryOverlayNotification() {
 				<Button
 					tertiary
 					disabled={ isDismissing }
-					onClick={ dismissNotification }
+					onClick={ dismissNotice }
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
 
 				<Button
 					disabled={ isDismissing }
-					href={ serviceURL }
-					onClick={ () => {
-						trackEvent(
-							`${ viewContext }_rrm-monetization-notification`,
-							'confirm_notification'
-						).finally( () => {
-							dismissNotice();
-						} );
-					} }
+					href={
+						paymentOption === 'noPayment' ? serviceURL : supportURL
+					}
+					onClick={ dismissNotice }
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
 					target="_blank"
 				>
-					{ __( 'Explore features', 'google-site-kit' ) }
+					{ paymentOption === 'noPayment'
+						? __( 'Explore features', 'google-site-kit' )
+						: __( 'Learn more', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</OverlayNotification>

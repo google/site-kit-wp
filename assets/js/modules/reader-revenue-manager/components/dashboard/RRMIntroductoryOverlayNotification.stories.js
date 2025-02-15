@@ -23,26 +23,25 @@ import {
 	provideModules,
 	provideUserInfo,
 } from '../../../../../../tests/js/utils';
-
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import RRMIntroductoryOverlayNotification from './RRMIntroductoryOverlayNotification';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template() {
 	return <RRMIntroductoryOverlayNotification />;
 }
 
 export const NoPayment = Template.bind( {} );
-NoPayment.storyName = 'PaymentOptionNoPayment';
+NoPayment.storyName = 'Without monetary CTA';
 NoPayment.scenario = {};
 NoPayment.args = {
 	paymentOption: 'noPayment',
 };
 
 export const Empty = Template.bind( {} );
-Empty.storyName = 'PaymentOptionEmpty';
+Empty.storyName = 'Without any CTA';
 Empty.scenario = {};
 Empty.args = {
 	paymentOption: '',
@@ -59,7 +58,6 @@ export default {
 						slug: 'reader-revenue-manager',
 						active: true,
 						connected: true,
-						setupComplete: true,
 					},
 				] );
 

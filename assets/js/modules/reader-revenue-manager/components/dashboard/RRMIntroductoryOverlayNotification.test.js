@@ -25,38 +25,30 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import {
 	act,
 	fireEvent,
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import * as tracking from '../../../../util/tracking';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import RRMIntroductoryOverlayNotification, {
-	RRM_MONETIZATION_OVERLAY_NOTIFICATION,
+	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'RRMIntroductoryOverlayNotification', () => {
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
-
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
 	beforeEach( () => {
@@ -78,21 +70,10 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 				paymentOption: 'noPayment',
 			} );
 
-		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
-			const { data } = JSON.parse( opts.body );
-
-			// Return the same settings passed to the API.
-			return { body: data, status: 200 };
-		} );
-	} );
-
-	afterEach( () => {
-		fetchMock.reset();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'should render an introductory overlay notification when payment option is noPayment', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		const { container, waitForRegistry } = render(
 			<RRMIntroductoryOverlayNotification />,
 			{
@@ -109,8 +90,6 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 	} );
 
 	it( 'should render an introductory overlay notification when payment option is empty', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( '' );
@@ -131,8 +110,6 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 	} );
 
 	it( 'should return null when dashboard is not main dashboard', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		const { container, waitForRegistry } = render(
 			<RRMIntroductoryOverlayNotification />,
 			{
@@ -150,7 +127,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				RRM_MONETIZATION_OVERLAY_NOTIFICATION,
+				RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 			] );
 
 		const { container, waitForRegistry } = render(
@@ -167,12 +144,10 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 	} );
 
 	it( 'should get dismissed when "Explore features" CTA is clicked', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		fetchMock.postOnce( dismissItemsEndpoint, {
 			body: {
 				data: {
-					slug: RRM_MONETIZATION_OVERLAY_NOTIFICATION,
+					slug: RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 					expiration: 0,
 				},
 			},
@@ -189,12 +164,6 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 		await waitForRegistry();
 
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-monetization-notification`,
-			'view_notification'
-		);
-
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click(
@@ -204,12 +173,6 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 		waitFor( () => {
 			expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-monetization-notification`,
-				'confirm_notification'
-			);
 		} );
 	} );
 } );
