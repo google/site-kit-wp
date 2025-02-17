@@ -373,16 +373,10 @@ const baseActions = {
 
 	*getSelectionFromExistingAudiences() {
 		const registry = yield commonActions.getRegistry();
-		const { dispatch, resolveSelect } = registry;
+		const { dispatch, resolveSelect, select } = registry;
 
-		const { response: availableAudiences, error: syncError } =
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
-
-		if ( syncError ) {
-			return { error: syncError };
-		}
+		const availableAudiences =
+			select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 		const { error, configuredAudiences } = yield commonActions.await(
 			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
@@ -423,14 +417,6 @@ const baseActions = {
 	*needsAnalytics4EditScope() {
 		const registry = yield commonActions.getRegistry();
 		const { dispatch, resolveSelect, select } = registry;
-
-		const { error: syncDimensionsError } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableCustomDimensions()
-		);
-
-		if ( syncDimensionsError ) {
-			return { error: syncDimensionsError };
-		}
 
 		// TODO: Verify this is needed.
 		yield commonActions.await(

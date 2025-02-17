@@ -64,8 +64,12 @@ export default function useEnableAudienceGroup( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
-	const { enableAudienceGroup, needsAnalytics4EditScope } =
-		useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		enableAudienceGroup,
+		fetchSyncAvailableCustomDimensions,
+		needsAnalytics4EditScope,
+		syncAvailableAudiences,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	if ( ! redirectURL ) {
 		redirectURL = addQueryArgs( global.location.href, {
@@ -73,54 +77,77 @@ export default function useEnableAudienceGroup( {
 		} );
 	}
 
-	const onEnableGroups = useCallback( async () => {
-		setIsSaving( true );
+	const maybeEnableAudienceGroup = useCallback( async () => {
+		const { error: syncAudiencesError } = await syncAvailableAudiences();
 
-		let needsScopeError = null;
+		if ( syncAudiencesError ) {
+			return { error: syncAudiencesError };
+		}
+
+		const { error: syncDimensionsError } =
+			await fetchSyncAvailableCustomDimensions();
+
+		if ( syncDimensionsError ) {
+			return { error: syncDimensionsError };
+		}
 
 		if ( ! failedAudiences?.length && ! hasAnalytics4EditScope ) {
 			const { error, needsScope } = await needsAnalytics4EditScope();
 
 			if ( error ) {
-				needsScopeError = error;
+				return { error };
 			} else if ( needsScope ) {
-				setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-					autoSubmit: true,
-				} );
-
-				setPermissionScopeError( {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: __(
-						'Additional permissions are required to create new audiences in Analytics.',
-						'google-site-kit'
-					),
-					data: {
-						status: 403,
-						scopes: [ EDIT_SCOPE ],
-						skipModal: true,
-						skipDefaultErrorNotifications: true,
-						redirectURL,
-						errorRedirectURL: global.location.href,
-					},
-				} );
-
-				return;
+				return { needsScope: true };
 			}
 		}
 
-		let error = null,
-			failedSiteKitAudienceSlugs = null;
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
 
-		if ( ! needsScopeError ) {
+		const { error, failedSiteKitAudienceSlugs } =
+			( await enableAudienceGroup( failedAudiences ) ) || {};
+
+		return { error, failedSiteKitAudienceSlugs };
+	}, [
+		enableAudienceGroup,
+		failedAudiences,
+		fetchSyncAvailableCustomDimensions,
+		hasAnalytics4EditScope,
+		needsAnalytics4EditScope,
+		setValues,
+		syncAvailableAudiences,
+	] );
+
+	const onEnableGroups = useCallback( async () => {
+		setIsSaving( true );
+
+		const { error, needsScope, failedSiteKitAudienceSlugs } =
+			await maybeEnableAudienceGroup();
+
+		if ( needsScope ) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-				autoSubmit: false,
+				autoSubmit: true,
 			} );
 
-			( { error, failedSiteKitAudienceSlugs } =
-				( await enableAudienceGroup( failedAudiences ) ) || {} );
-		}
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create new audiences in Analytics.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes: [ EDIT_SCOPE ],
+					skipModal: true,
+					skipDefaultErrorNotifications: true,
+					redirectURL,
+					errorRedirectURL: global.location.href,
+				},
+			} );
 
-		error = error || needsScopeError;
+			return;
+		}
 
 		if ( !! error || !! failedSiteKitAudienceSlugs ) {
 			onError?.();
@@ -143,12 +170,9 @@ export default function useEnableAudienceGroup( {
 			setIsSaving( false );
 		}
 	}, [
-		failedAudiences,
-		setValues,
-		enableAudienceGroup,
+		maybeEnableAudienceGroup,
 		isMounted,
-		hasAnalytics4EditScope,
-		needsAnalytics4EditScope,
+		setValues,
 		setPermissionScopeError,
 		redirectURL,
 		onError,
