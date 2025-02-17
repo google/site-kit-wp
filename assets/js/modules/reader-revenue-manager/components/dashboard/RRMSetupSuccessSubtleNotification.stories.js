@@ -23,6 +23,7 @@ import { withQuery } from '@storybook/addon-queryparams';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import {
@@ -30,7 +31,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -77,12 +77,95 @@ OnboardingActionRequired.parameters = {
 };
 OnboardingActionRequired.scenario = {};
 
+export const WithSubscriptionsAndProductID = Template.bind( {} );
+WithSubscriptionsAndProductID.storyName = 'With Subscriptions and Product ID';
+WithSubscriptionsAndProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+WithSubscriptionsAndProductID.args = {
+	features: [ 'rrmModuleV2' ],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-1' );
+	},
+};
+
+export const WithContributionsAndProductID = Template.bind( {} );
+WithContributionsAndProductID.storyName = 'With Contributions and Product ID';
+WithContributionsAndProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+WithContributionsAndProductID.args = {
+	features: [ 'rrmModuleV2' ],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'contributions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-1' );
+	},
+};
+
+export const WithContributionsAndNoProductID = Template.bind( {} );
+WithContributionsAndNoProductID.storyName =
+	'With Contributions and No Product ID';
+WithContributionsAndNoProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+WithContributionsAndNoProductID.args = {
+	features: [ 'rrmModuleV2' ],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'contributions' );
+	},
+};
+
+export const WithNoPaymentOption = Template.bind( {} );
+WithNoPaymentOption.storyName = 'With No Payment Option';
+WithNoPaymentOption.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+WithNoPaymentOption.args = {
+	features: [ 'rrmModuleV2' ],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'noPayment' );
+	},
+};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
 	component: RRMSetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,
-		( Story, { parameters } ) => {
+		( Story, { args, parameters } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -101,12 +184,17 @@ export default {
 						publicationOnboardingState:
 							parameters.publicationOnboardingState,
 					} );
+
+				args?.setupRegistry?.( registry );
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithTestRegistry
+					callback={ setupRegistry }
+					features={ args?.features || [] }
+				>
 					<Story />
-				</WithRegistrySetup>
+				</WithTestRegistry>
 			);
 		},
 	],
