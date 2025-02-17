@@ -384,14 +384,6 @@ const baseActions = {
 			return { error: syncError };
 		}
 
-		const { error: syncDimensionsError } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableCustomDimensions()
-		);
-
-		if ( syncDimensionsError ) {
-			return { error: syncDimensionsError };
-		}
-
 		const { error, configuredAudiences } = yield commonActions.await(
 			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
 				availableAudiences
@@ -430,14 +422,38 @@ const baseActions = {
 
 	*needsAnalytics4EditScope() {
 		const registry = yield commonActions.getRegistry();
-		const { dispatch } = registry;
+		const { dispatch, resolveSelect, select } = registry;
 
-		const { error, configuredAudiences } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).getSelectionFromExistingAudiences()
+		const { error: syncDimensionsError } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableCustomDimensions()
 		);
 
-		if ( error ) {
-			return { error };
+		if ( syncDimensionsError ) {
+			return { error: syncDimensionsError };
+		}
+
+		// TODO: Verify this is needed.
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
+		);
+
+		if (
+			! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				'googlesitekit_post_type'
+			)
+		) {
+			return { needsAnalytics4EditScope: true };
+		}
+
+		const { error: getSelectionError, configuredAudiences } =
+			yield commonActions.await(
+				dispatch(
+					MODULES_ANALYTICS_4
+				).getSelectionFromExistingAudiences()
+			);
+
+		if ( getSelectionError ) {
+			return { error: getSelectionError };
 		}
 
 		return { needsAnalytics4EditScope: configuredAudiences.length === 0 };
@@ -548,7 +564,6 @@ const baseActions = {
 			} );
 		}
 
-		// START
 		// Create custom dimension if it doesn't exist.
 		yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
@@ -559,7 +574,6 @@ const baseActions = {
 				'googlesitekit_post_type'
 			)
 		) {
-			// END
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 			const { error } = yield commonActions.await(
