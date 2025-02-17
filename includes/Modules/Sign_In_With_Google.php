@@ -460,7 +460,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
 
-	<?php if ( ! is_user_logged_in() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		/**
 		 * Render SiwG buttons for all `<div>` elements with the "magic class"
 		 * on the page.
