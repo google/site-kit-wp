@@ -88,19 +88,26 @@ function provideAudienceTilesMockReport(
 		metrics: [ { name: 'totalUsers' } ],
 	};
 
-	const userCountReportData = getAnalytics4MockResponse(
-		userCountReportOptions
+	const gatheringDataReportOptions = {
+		...userCountReportOptions,
+		startDate: dates.compareStartDate,
+	};
+
+	[ userCountReportOptions, gatheringDataReportOptions ].forEach(
+		( options ) => {
+			const reportData = getAnalytics4MockResponse( options );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( reportData, {
+					options,
+				} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		}
 	);
-
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( userCountReportData, {
-			options: userCountReportOptions,
-		} );
-
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ userCountReportOptions ] );
 
 	const reportOptions = {
 		dimensions: isSiteKitAudiencePartialData
@@ -582,6 +589,8 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 
 		fireEvent.mouseOver(
 			container.querySelector( '.googlesitekit-info-tooltip' )
