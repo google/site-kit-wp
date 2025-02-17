@@ -300,33 +300,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 										isNavigatingToOAuthURL={
 											isNavigatingToOAuthURL
 										}
-										createAccountCTA={
-											<Fragment>
-												<SpinnerButton
-													onClick={ createAccount }
-													disabled={
-														isNavigatingToOAuthURL
-													}
-													isSaving={
-														isNavigatingToOAuthURL
-													}
-													inverse
-												>
-													{ __(
-														'Create an account',
-														'google-site-kit'
-													) }
-												</SpinnerButton>
-												{ ! hasAdwordsScope && (
-													<p className="googlesitekit-setup-module__permission-notice">
-														{ __(
-															'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
-															'google-site-kit'
-														) }
-													</p>
-												) }
-											</Fragment>
-										}
 									/>
 								</Cell>
 							</Row>
