@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useCallbackOne } from 'use-memo-one';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,6 +31,7 @@ import {
 	useCallback,
 	useEffect,
 	useRef,
+	useState,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -40,7 +42,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
-import SetupForm from './SetupForm';
+import SetupFormPAX from './SetupFormPAX';
 import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -59,6 +61,7 @@ import {
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
 import { useFeature } from '../../../../hooks/useFeature';
+import { Cell, Row } from '../../../../material-components';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
@@ -66,6 +69,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
+
+	const [ shouldShowProgressBar, setShouldShowProgressBar ] =
+		useState( false );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -95,6 +101,15 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
+
+	useMount( () => {
+		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
+			// If the PAX query param indicates the setup is finished on page load,
+			// set the step back to the PAX launch, as values are only temporarily
+			// saved in state after PAX campaign setup signal is received.
+			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
+		}
+	} );
 
 	// Callback to be executed when a campaign is created in PAX.
 	//
@@ -145,12 +160,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [ registry, finishSetup ] );
 
 	const createAccount = useCallback( () => {
+		setShouldShowProgressBar( true );
+
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
 			return;
 		}
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
+
+		setShouldShowProgressBar( false );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	const onLaunch = useCallback( ( app ) => {
@@ -161,7 +180,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 	useEffect( () => {
 		if ( isAdsPaxEnabled ) {
-			createAccount();
+			//createAccount();
 		}
 	}, [ isAdsPaxEnabled, createAccount ] );
 
@@ -179,60 +198,61 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
 
-				{ isAdsPaxEnabled && ! showPaxAppStep && <ProgressBar /> }
+				{ isAdsPaxEnabled && shouldShowProgressBar && <ProgressBar /> }
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
 					hasAdwordsScope && (
-						<PAXEmbeddedApp
-							displayMode="setup"
-							onLaunch={ onLaunch }
-							onCampaignCreated={ onCampaignCreated }
-							onFinishAndCloseSignUpFlow={ onCompleteSetup }
-						/>
+						<Row>
+							<Cell mdSize={ 12 } lgSize={ 12 }>
+								<PAXEmbeddedApp
+									displayMode="setup"
+									onLaunch={ onLaunch }
+									onCampaignCreated={ onCampaignCreated }
+									onFinishAndCloseSignUpFlow={
+										onCompleteSetup
+									}
+								/>
+							</Cell>
+						</Row>
 					) }
 
-				{ ! isAdsPaxEnabled &&
-					! isAdBlockerActive &&
+				{ ! isAdBlockerActive &&
 					( ! showPaxAppStep || ! hasAdwordsScope ) && (
 						<Fragment>
-							<p>
-								{ createInterpolateElement(
-									__(
-										'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
-										'google-site-kit'
-									),
-									{
-										a: (
-											<SupportLink
-												path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
-												external
-											/>
-										),
-									}
-								) }
-								<br />
-								{ __(
-									'You can always change this later in Site Kit Settings.',
-									'google-site-kit'
-								) }
-							</p>
-
-							<SetupForm
-								finishSetup={ finishSetup }
-								isNavigatingToOAuthURL={
-									isNavigatingToOAuthURL
-								}
-								createAccountCTA={
+							<Row className="googlesitekit-setup-module--ads--setup-container">
+								<span className="vertical-line"></span>
+								<Cell
+									mdSize={ 5 }
+									lgSize={ 5 }
+									className="align-top"
+								>
+									<h3>
+										{ __(
+											'Ads Setup Wizard',
+											'google-site-kit'
+										) }
+									</h3>
+									<strong>
+										{ __(
+											'Don’t have an Ads account yet?',
+											'google-site-kit'
+										) }
+									</strong>
+									<p className="instructions">
+										{ __(
+											'Create your Ads account using a step by step wizard that will help you set up your campaign, define your goals and set billing information. To create new Ads account you’ll be asked to grant Site Kit additional permissions during the account creation process.',
+											'google-site-kit'
+										) }
+									</p>
 									<Fragment>
 										<SpinnerButton
 											onClick={ createAccount }
 											disabled={ isNavigatingToOAuthURL }
 											isSaving={ isNavigatingToOAuthURL }
-											inverse
 										>
 											{ __(
-												'Create an account',
+												'Start setup wizard',
 												'google-site-kit'
 											) }
 										</SpinnerButton>
@@ -245,8 +265,81 @@ export default function SetupMainPAX( { finishSetup } ) {
 											</p>
 										) }
 									</Fragment>
-								}
-							/>
+								</Cell>
+								<Cell
+									className="divider"
+									mdSize={ 2 }
+									lgSize={ 2 }
+								>
+									<span className="divider-label">
+										{ __( 'OR', 'google-site-kit' ) }
+									</span>
+								</Cell>
+								<Cell mdSize={ 5 } lgSize={ 5 }>
+									<h3>
+										{ __(
+											'Connect Ads Manually',
+											'google-site-kit'
+										) }
+									</h3>
+									<strong>
+										{ __(
+											'Already have an Ads account?',
+											'google-site-kit'
+										) }
+									</strong>
+									<p className="instructions">
+										{ createInterpolateElement(
+											__(
+												'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.<a>Learn more</a>.<br></br>You can always change this later in Site Kit Settings.',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<SupportLink
+														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+														external
+													/>
+												),
+												br: <br />,
+											}
+										) }
+									</p>
+									<SetupFormPAX
+										finishSetup={ finishSetup }
+										isNavigatingToOAuthURL={
+											isNavigatingToOAuthURL
+										}
+										createAccountCTA={
+											<Fragment>
+												<SpinnerButton
+													onClick={ createAccount }
+													disabled={
+														isNavigatingToOAuthURL
+													}
+													isSaving={
+														isNavigatingToOAuthURL
+													}
+													inverse
+												>
+													{ __(
+														'Create an account',
+														'google-site-kit'
+													) }
+												</SpinnerButton>
+												{ ! hasAdwordsScope && (
+													<p className="googlesitekit-setup-module__permission-notice">
+														{ __(
+															'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
+															'google-site-kit'
+														) }
+													</p>
+												) }
+											</Fragment>
+										}
+									/>
+								</Cell>
+							</Row>
 						</Fragment>
 					) }
 			</div>
