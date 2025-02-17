@@ -88,8 +88,13 @@ module.exports = ( mode ) => ( {
 		new CopyWebpackPlugin( {
 			patterns: [
 				{
-					from: 'blocks/sign-in-with-google/block.json',
-					to: 'sign-in-with-google',
+					from: 'blocks/**/block.json',
+					to: ( { context, absoluteFilename } ) => {
+						return absoluteFilename.replace(
+							`${ context }/blocks`,
+							`${ rootDir }/dist/assets/js/blocks`
+						);
+					},
 				},
 			],
 		} ),
