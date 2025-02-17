@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules;
 
-use Google\Site_Kit\Blocks\Sign_In_With_Google_Block;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
@@ -33,7 +32,6 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
@@ -41,6 +39,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Sign_In_With_Google_Block;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
 use WP_Error;
@@ -82,6 +81,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @var Existing_Client_ID
 	 */
 	protected $existing_client_id;
+
+	/**
+	 * Sign in with Google Block instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Sign_In_With_Google_Block
+	 */
+	protected $sign_in_with_google_block;
 
 	/**
 	 * WooCommerce instance.
@@ -165,11 +172,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
 
 		// Check to see if the module is connected before registering the block.
-		if ( $this->is_connected() && Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+		if ( $this->is_connected() ) {
 			// Load the Gutenberg block for this module.
-			$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
+			$this->sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
 
-			$sign_in_with_google_block->register();
+			$this->sign_in_with_google_block->register();
 		}
 	}
 
@@ -295,29 +302,23 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 					),
 				)
 			),
-		);
-
-		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
-			$assets[] = new Script(
+			new Script(
 				'blocks-sign-in-with-google',
 				array(
 					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/index.js' ),
-					'dependencies'  => array(
-						'googlesitekit-vendor',
-						'googlesitekit-base-data',
-					),
+					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
-			);
-			$assets[] = new Stylesheet(
+			),
+			new Stylesheet(
 				'blocks-sign-in-with-google-editor-styles',
 				array(
 					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/editor-styles.css' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
-			);
-		}
+			),
+		);
 
 		return $assets;
 	}

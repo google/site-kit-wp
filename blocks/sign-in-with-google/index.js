@@ -19,7 +19,6 @@ import { registerBlockType } from '@wordpress-core/blocks';
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../../assets/js/features';
 import Edit from './Edit';
 import metadata from './block.json';
 
@@ -28,8 +27,6 @@ import metadata from './block.json';
  *
  * @since n.e.x.t
  */
-if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
-	registerBlockType( metadata.name, {
-		edit: Edit,
-	} );
-}
+registerBlockType( metadata.name, {
+	edit: Edit,
+} );
