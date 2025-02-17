@@ -1,6 +1,6 @@
 !/.storybook
 /.storybook/data/*
-**/dist/*
+dist/*
 /tests/backstop/html_report/*
 /php-scoper/*
 /vendor/*
