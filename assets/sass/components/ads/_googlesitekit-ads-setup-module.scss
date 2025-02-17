@@ -38,7 +38,52 @@
 		}
 
 		.googlesitekit-setup-module__action {
-			margin-bottom: 32px;
+			margin-bottom: 0;
+			margin-top: 20px;
+		}
+
+		.googlesitekit-setup-module--ads--setup-container {
+			align-items: center;
+			position: relative;
+
+			h3 {
+				margin-top: 0;
+			}
+
+			.align-top {
+				align-self: flex-start;
+			}
+
+			.instructions {
+				margin-top: 5px;
+			}
+
+			.divider {
+				text-align: center;
+			}
+
+			.divider-label {
+				background: $c-white;
+				color: $c-neutral-n-500;
+				display: inline-block;
+				font-size: 12px;
+				padding: 5px;
+				position: relative;
+				z-index: 99;
+			}
+
+			.vertical-line {
+				background: $c-mercury;
+				display: inline-block;
+				height: 100%;
+				left: 50%;
+				position: absolute;
+				width: 1px;
+			}
+
+			.googlesitekit-ads-setup__form {
+				margin-top: 20px;
+			}
 		}
 	}
 }
