@@ -189,7 +189,7 @@ export default function SettingsEdit() {
 									'The previously selected product ID %s was not found. Please select a new product ID.',
 									'google-site-kit'
 								),
-								productID
+								missingProductID
 							) }
 						/>
 					) }
