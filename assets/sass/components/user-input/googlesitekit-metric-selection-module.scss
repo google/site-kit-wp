@@ -22,8 +22,9 @@
 
 		.googlesitekit-user-input__footer-container--fullscreen {
 			bottom: 0;
+			left: 160px;
 			position: fixed;
-			width: 100vw;
+			width: calc(100vw - 160px);
 			z-index: 99;
 
 			.googlesitekit-selection-panel-footer {
@@ -86,6 +87,7 @@
 
 			.googlesitekit-user-input__footer-container--fullscreen {
 				left: 0;
+				width: 100vw;
 			}
 		}
 	}
@@ -120,12 +122,9 @@
 
 		.googlesitekit-metric-selection {
 
-			.googlesitekit-user-input__question {
-
-				.googlesitekit-user-input__footer-container--fullscreen {
-					left: 36px;
-					width: calc(100vw - 36px);
-				}
+			.googlesitekit-user-input__footer-container--fullscreen {
+				left: 36px;
+				width: calc(100vw - 36px);
 			}
 		}
 	}
