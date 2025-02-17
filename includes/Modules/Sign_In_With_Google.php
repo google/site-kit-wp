@@ -467,8 +467,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		 *
 		 * Mainly used by Gutenberg blocks.
 		 */
-		const siwgButtonDivs = document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' );
-		siwgButtonDivs.forEach( ( siwgButtonDiv ) => {
+		document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
 			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
 		});
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
