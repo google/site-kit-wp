@@ -17,7 +17,6 @@
 /**
  * WordPress dependencies
  */
-// eslint-disable-next-line import/no-unresolved
 import { useBlockProps } from '@wordpress-core/block-editor';
 
 /**

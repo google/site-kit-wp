@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/no-unresolved
 import { registerBlockType } from '@wordpress-core/blocks';
 
 /**
