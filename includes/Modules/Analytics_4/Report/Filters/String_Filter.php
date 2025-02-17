@@ -30,8 +30,8 @@ class String_Filter implements Filter {
 	 *
 	 * @since 1.106.0
 	 *
-	 * @param string $name Filter name.
-	 * @param mixed  $value Filter value.
+	 * @param string $name The filter field name.
+	 * @param mixed  $value The filter value.
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression instance.
 	 */
 	public function parse_filter_expression( $name, $value ) {

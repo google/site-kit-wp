@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\EmptyFilter as Goo
 
 
 /**
- * Class for parsing the dimension empty filter.
+ * Class for parsing the empty filter.
  *
  * @since n.e.x.t
  * @access private
@@ -25,19 +25,19 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\EmptyFilter as Goo
 class Empty_Filter implements Filter {
 
 	/**
-	 * Parses the dimension empty filter.
+	 * Parses the empty filter.
 	 *
 	 * @since n.e.x.t
-	 * @param string $dimension_name The dimension name.
-	 * @param string $dimension_value The dimension value.
+	 * @param string $name The filter field name.
+	 * @param string $value The filter value (not used).
 	 *
 	 * @return Google_Service_AnalyticsData_FilterExpression The filter expression.
 	 */
-	public function parse_filter_expression( $dimension_name, $dimension_value ) {
+	public function parse_filter_expression( $name, $value ) {
 		$empty_filter = new Google_Service_AnalyticsData_EmptyFilter();
 
 		$filter = new Google_Service_AnalyticsData_Filter();
-		$filter->setFieldName( $dimension_name );
+		$filter->setFieldName( $name );
 		$filter->setEmptyFilter( $empty_filter );
 
 		$expression = new Google_Service_AnalyticsData_FilterExpression();
