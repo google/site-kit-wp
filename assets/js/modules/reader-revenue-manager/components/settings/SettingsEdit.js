@@ -181,7 +181,7 @@ export default function SettingsEdit() {
 				{ isRRMv2Enabled &&
 					hasModuleAccess &&
 					publicationAvailable &&
-					isCurrentProductMissing && (
+					missingProductID && (
 						<ErrorText
 							message={ sprintf(
 								/* translators: 1: Product ID. */
