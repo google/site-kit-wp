@@ -371,18 +371,9 @@ const baseActions = {
 		return response;
 	},
 
-	/**
-	 * This contains the main logic for the `*enableAudienceGroup()` action above.
-	 *
-	 * @since 1.136.0
-	 *
-	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
-	 */
-	*enableAudienceGroupMain( failedSiteKitAudienceSlugs ) {
+	*getSelectionFromExistingAudiences() {
 		const registry = yield commonActions.getRegistry();
-
-		const { dispatch, select, resolveSelect } = registry;
+		const { dispatch, resolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
 			yield commonActions.await(
@@ -401,21 +392,14 @@ const baseActions = {
 			return { error: syncDimensionsError };
 		}
 
-		const configuredAudiences = [];
+		const { error, configuredAudiences } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
+				availableAudiences
+			)
+		);
 
-		if ( ! failedSiteKitAudienceSlugs?.length ) {
-			const { error, configuredAudiences: audiences } =
-				yield commonActions.await(
-					dispatch(
-						MODULES_ANALYTICS_4
-					).retrieveInitialAudienceSelection( availableAudiences )
-				);
-
-			if ( error ) {
-				return { error };
-			}
-
-			configuredAudiences.push( ...audiences );
+		if ( error ) {
+			return { error };
 		}
 
 		if ( configuredAudiences.length === 1 ) {
@@ -439,6 +423,53 @@ const baseActions = {
 					configuredAudiences.push( purchasersAudience.name );
 				}
 			}
+		}
+
+		return { configuredAudiences };
+	},
+
+	*needsAnalytics4EditScope() {
+		const registry = yield commonActions.getRegistry();
+		const { dispatch } = registry;
+
+		const { error, configuredAudiences } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).getSelectionFromExistingAudiences()
+		);
+
+		if ( error ) {
+			return { error };
+		}
+
+		return { needsAnalytics4EditScope: configuredAudiences.length === 0 };
+	},
+
+	/**
+	 * This contains the main logic for the `*enableAudienceGroup()` action above.
+	 *
+	 * @since 1.136.0
+	 *
+	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 */
+	*enableAudienceGroupMain( failedSiteKitAudienceSlugs ) {
+		const registry = yield commonActions.getRegistry();
+		const { dispatch, select, resolveSelect } = registry;
+
+		const configuredAudiences = [];
+
+		if ( ! failedSiteKitAudienceSlugs?.length ) {
+			const { error, configuredAudiences: audiences } =
+				yield commonActions.await(
+					dispatch(
+						MODULES_ANALYTICS_4
+					).getSelectionFromExistingAudiences()
+				);
+
+			if ( error ) {
+				return { error };
+			}
+
+			configuredAudiences.push( ...audiences );
 		}
 
 		if ( configuredAudiences.length === 0 ) {
@@ -517,6 +548,7 @@ const baseActions = {
 			} );
 		}
 
+		// START
 		// Create custom dimension if it doesn't exist.
 		yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
@@ -527,6 +559,7 @@ const baseActions = {
 				'googlesitekit_post_type'
 			)
 		) {
+			// END
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 			const { error } = yield commonActions.await(
@@ -559,12 +592,12 @@ const baseActions = {
 
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
-		const { error } = yield commonActions.await(
+		const { error: saveAudienceSettingsError } = yield commonActions.await(
 			dispatch( CORE_USER ).saveAudienceSettings()
 		);
 
-		if ( error ) {
-			return { error };
+		if ( saveAudienceSettingsError ) {
+			return { error: saveAudienceSettingsError };
 		}
 
 		// Expire new badges for initially configured audiences.
