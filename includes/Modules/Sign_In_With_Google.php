@@ -714,11 +714,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$inline_data['existingClientID'] = $existing_client_id;
 		}
 
-		$is_woocommerce_active            = $this->is_woocommerce_active;
-		$woocommerce_registration_enabled = $is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
+		$woocommerce_registration_enabled = $this->is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
 
-		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
-		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
+		$inline_data['isWooCommerceActive']              = $this->is_woocommerce_active;
+		$inline_data['isWooCommerceRegistrationEnabled'] = $this->is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
 
 		// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
 		$modules_data['sign-in-with-google'] = $inline_data;
