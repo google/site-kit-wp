@@ -62,7 +62,7 @@ export default function ConversionReportingDashboardSubtleNotification( {
 }
 
 ConversionReportingDashboardSubtleNotification.propTypes = {
-	description: PropTypes.string.isRequired,
+	description: PropTypes.node.isRequired,
 	ctaLabel: PropTypes.string.isRequired,
 	handleCTAClick: PropTypes.func.isRequired,
 	isSaving: PropTypes.bool,
