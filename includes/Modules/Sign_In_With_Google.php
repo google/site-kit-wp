@@ -154,10 +154,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
-		// (Potentially) render the Sign in with Google script tags/buttons.
+		// Render the Sign in with Google script that converts placeholder
+		// <div>s with Sign in with Google buttons.
 		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
 		// Output the Sign in with Google JS on the WordPress login page.
 		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
+		// Output the Sign in with Google <div> in the WooCommerce login form.
+		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signinwithgoogle_woocommerce' ) );
 
 		// Delete client ID stored from previous module connection on module reconnection.
 		add_action(
@@ -353,6 +356,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
+	 * Renders the placeholder Sign in with Google div for the WooCommerce
+	 * login form.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function render_signinwithgoogle_woocommerce() {
+		?>
+		<div class="googlesitekit-sign-in-with-google__frontend-output-button woocommerce-form-row form-row"></div>
+		<?php
+	}
+
+	/**
 	 * Renders the Sign in with Google JS script tags, One Tap code, and
 	 * buttons.
 	 *
@@ -446,19 +461,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		library_name: 'Site-Kit'
 	} );
 
-	const buttonDivToAddToLoginForm = document.createElement( 'div' );
-	buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
-
 	<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		const buttonDivToAddToLoginForm = document.createElement( 'div' );
+		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
 
-	<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		buttonDivToAddToLoginForm.classList.add( 'woocommerce-form-row', 'form-row' );
-		const form = document.querySelector( '.woocommerce-form.login' );
-		if ( form ) {
-			form.insertBefore( buttonDivToAddToLoginForm, form.firstChild );
-		}
+		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	<?php if ( ! is_user_logged_in() || $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
