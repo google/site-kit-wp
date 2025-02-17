@@ -1154,11 +1154,11 @@ final class Assets {
 		// Get the status of the Google for WooCommerce plugin.
 		$google_for_woocommerce_plugin_status = Plugin_Status::get_plugin_status( 'google-listings-and-ads/google-listings-and-ads.php', 'https://wordpress.org/plugins/google-listings-and-ads/' );
 
-		$inline_data['plugins']['wooCommerce']['installed'] = $woocommerce_plugin_status === Plugin_Status::PLUGIN_STATUS_INSTALLED;
-		$inline_data['plugins']['wooCommerce']['active']    = $woocommerce_plugin_status === Plugin_Status::PLUGIN_STATUS_ACTIVE;
+		$inline_data['plugins']['wooCommerce']['installed'] = Plugin_Status::PLUGIN_STATUS_INSTALLED === $woocommerce_plugin_status || Plugin_Status::PLUGIN_STATUS_ACTIVE === $woocommerce_plugin_status;
+		$inline_data['plugins']['wooCommerce']['active']    = Plugin_Status::PLUGIN_STATUS_ACTIVE === $woocommerce_plugin_status;
 
-		$inline_data['plugins']['googleForWooCommerce']['installed'] = $woocommerce_plugin_status === Plugin_Status::PLUGIN_STATUS_INSTALLED;
-		$inline_data['plugins']['googleForWooCommerce']['active']    = $google_for_woocommerce_plugin_status === Plugin_Status::PLUGIN_STATUS_ACTIVE;
+		$inline_data['plugins']['googleForWooCommerce']['installed'] = Plugin_Status::PLUGIN_STATUS_INSTALLED === $woocommerce_plugin_status || Plugin_Status::PLUGIN_STATUS_ACTIVE === $woocommerce_plugin_status;
+		$inline_data['plugins']['googleForWooCommerce']['active']    = Plugin_Status::PLUGIN_STATUS_ACTIVE === $google_for_woocommerce_plugin_status;
 
 		// Only check for the presence of Ads connection if the "Google for
 		// Woo" plugin is active.
