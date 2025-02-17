@@ -506,10 +506,7 @@ SiteKitAudiencesPartialData.args = {
 
 				provideAnalytics4MockReport( registry, {
 					...topCitiesReportOptions,
-					dimensionFilters: {
-						...topCitiesReportOptions.dimensionFilters,
-						...dimensionFilters,
-					},
+					dimensionFilters,
 				} );
 
 				provideAnalytics4MockReport( registry, {
@@ -767,10 +764,7 @@ export default {
 
 					provideAnalytics4MockReport( registry, {
 						...topCitiesReportOptions,
-						dimensionFilters: {
-							...topCitiesReportOptions.dimensionFilters,
-							...dimensionFilters,
-						},
+						dimensionFilters,
 					} );
 
 					provideAnalytics4MockReport( registry, {
