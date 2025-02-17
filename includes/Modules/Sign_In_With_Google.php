@@ -164,10 +164,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
 
-		// Load the Gutenberg block for this module.
-		$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
+		// Check to see if the module is connected before registering the block.
+		$is_module_connected = apply_filters( 'googlesitekit_is_module_connected', false, self::MODULE_SLUG );
 
-		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+		if ( $is_module_connected && Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+			// Load the Gutenberg block for this module.
+			$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
+
 			$sign_in_with_google_block->register();
 		}
 	}
@@ -444,29 +447,30 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		library_name: 'Site-Kit'
 	} );
 
-	const parent = document.createElement( 'div' );
+	const buttonDivToAddToLoginForm = document.createElement( 'div' );
+	buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
 
 	<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		document.getElementById( 'login' ).insertBefore( parent, document.getElementById( 'loginform' ) );
+		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	<?php if ( $is_woocommerce_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		parent.classList.add( 'woocommerce-form-row', 'form-row' );
+		buttonDivToAddToLoginForm.classList.add( 'woocommerce-form-row', 'form-row' );
 		const form = document.querySelector( '.woocommerce-form.login' );
 		if ( form ) {
-			form.insertBefore( parent, form.firstChild );
+			form.insertBefore( buttonDivToAddToLoginForm, form.firstChild );
 		}
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	google.accounts.id.renderButton( parent, <?php echo wp_json_encode( $btn_args ); ?> );
-
-	<?php if ( ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		/**
-		 * Render SiwG buttons for all `<div>` elements with the "magic class"
-		 * on the page.
-		 *
-		 * Mainly used by Gutenberg blocks.
-		 */
+	<?php if ( ! is_user_logged_in() || $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			<?php
+			/**
+			 * Render SiwG buttons for all `<div>` elements with the "magic
+			 * class" on the page.
+			 *
+			 * Mainly used by Gutenberg blocks.
+			 */
+			?>
 		document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
 			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
 		});
