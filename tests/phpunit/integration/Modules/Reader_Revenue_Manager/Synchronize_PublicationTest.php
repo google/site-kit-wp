@@ -220,7 +220,7 @@ class Synchronize_PublicationTest extends TestCase {
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEquals( array( 'basic', 'advanced' ), $settings['productIDs'] );
+		$this->assertEquals( array( 'testpubID:basic', 'testpubID:advanced' ), $settings['productIDs'] );
 	}
 
 	public function test_synchronize_product_ids_with_non_existent_publication() {
