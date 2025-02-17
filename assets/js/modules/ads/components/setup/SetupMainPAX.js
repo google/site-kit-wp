@@ -213,7 +213,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 							<Row className="googlesitekit-setup-module--ads--setup-container">
 								<span className="vertical-line"></span>
 								<Cell
-									mdSize={ 5 }
+									smSize={ 8 }
+									mdSize={ 8 }
 									lgSize={ 5 }
 									className="align-top"
 								>
@@ -258,14 +259,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								</Cell>
 								<Cell
 									className="divider"
-									mdSize={ 2 }
+									smSize={ 8 }
+									mdSize={ 8 }
 									lgSize={ 2 }
 								>
+									<div className="horizontal-line"></div>
 									<span className="divider-label">
 										{ __( 'OR', 'google-site-kit' ) }
 									</span>
 								</Cell>
-								<Cell mdSize={ 5 } lgSize={ 5 }>
+								<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
 									<h3>
 										{ __(
 											'Connect Ads Manually',

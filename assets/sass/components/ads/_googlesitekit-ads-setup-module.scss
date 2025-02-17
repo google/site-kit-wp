@@ -59,6 +59,8 @@
 			}
 
 			.divider {
+				height: 24px;
+				position: relative;
 				text-align: center;
 			}
 
@@ -79,6 +81,22 @@
 				left: 50%;
 				position: absolute;
 				width: 1px;
+
+				@media (max-width: $width-desktop + 1 + px) {
+					display: none;
+				}
+			}
+
+			.horizontal-line {
+				background: $c-mercury;
+				height: 1px;
+				position: relative;
+				top: 10px;
+				width: 100%;
+
+				@media (min-width: $width-desktop + 1 + px) {
+					display: none;
+				}
 			}
 
 			.googlesitekit-ads-setup__form {
