@@ -165,9 +165,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
 
 		// Check to see if the module is connected before registering the block.
-		$is_module_connected = apply_filters( 'googlesitekit_is_module_connected', false, self::MODULE_SLUG );
-
-		if ( $is_module_connected && Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
+		if ( $this->is_connected() && Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
 			// Load the Gutenberg block for this module.
 			$sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
 

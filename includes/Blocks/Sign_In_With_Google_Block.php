@@ -65,12 +65,6 @@ class Sign_In_With_Google_Block {
 	 * @return string Rendered block.
 	 */
 	public function render_callback() {
-		$sign_in_with_google_connected = apply_filters( 'googlesitekit_is_module_connected', false, Sign_In_With_Google::MODULE_SLUG );
-
-		if ( empty( $sign_in_with_google_connected ) ) {
-			return '';
-		}
-
 		// If the user is already signed in, do not render a Sign in
 		// with Google button.
 		if ( is_user_logged_in() ) {
