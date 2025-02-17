@@ -1141,7 +1141,7 @@ final class Assets {
 	/**
 	 * Updates the plugins inline data based on plugin status.
 	 *
-	 * @param array $inline_data The inline base data to be updated.
+	 * @param array $inline_data The inline Site Kit base data.
 	 * @since n.e.x.t
 	 *
 	 * @return array The inline data with plugins data modified.
