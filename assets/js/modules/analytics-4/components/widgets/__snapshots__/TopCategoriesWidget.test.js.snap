@@ -41,14 +41,14 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 <p
                   class="googlesitekit-km-widget-tile__table-plain-text"
                 >
-                  Health
+                  Entertainment, Sports, Media
                 </p>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  80
+                  62
                 </strong>
               </div>
             </div>
@@ -68,7 +68,7 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  63
+                  35
                 </strong>
               </div>
             </div>
@@ -81,14 +81,14 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 <p
                   class="googlesitekit-km-widget-tile__table-plain-text"
                 >
-                  Entertainment, Sports, Media
+                  Health
                 </p>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  3
+                  21
                 </strong>
               </div>
             </div>
