@@ -29,7 +29,6 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
-	useEffect,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -60,7 +59,6 @@ import {
 	PAX_SETUP_STEP,
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
-import { useFeature } from '../../../../hooks/useFeature';
 import { Cell, Row } from '../../../../material-components';
 
 export default function SetupMainPAX( { finishSetup } ) {
@@ -176,14 +174,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		paxAppRef.current = app;
 	}, [] );
 
-	const isAdsPaxEnabled = useFeature( 'adsPax' );
-
-	useEffect( () => {
-		if ( isAdsPaxEnabled ) {
-			//createAccount();
-		}
-	}, [ isAdsPaxEnabled, createAccount ] );
-
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
 			<div className="googlesitekit-setup-module__step">
@@ -198,7 +188,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
 
-				{ isAdsPaxEnabled && shouldShowProgressBar && <ProgressBar /> }
+				{ shouldShowProgressBar && <ProgressBar /> }
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
