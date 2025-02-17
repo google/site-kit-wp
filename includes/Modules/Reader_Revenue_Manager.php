@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Stylesheet;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -423,6 +424,20 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'googlesitekit-reader-revenue-manager-block-editor',
 				array(
 					'src'           => $base_url . 'js/googlesitekit-reader-revenue-manager-block-editor.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+					),
+					'execution'     => 'defer',
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+
+			$assets[] = new Stylesheet(
+				'googlesitekit-reader-revenue-manager-block-editor',
+				array(
+					'src'           => $base_url . 'css/googlesitekit-reader-revenue-manager-block-editor.css',
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
