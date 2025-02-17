@@ -165,7 +165,7 @@ function PublicationApprovedOverlayNotification() {
 
 	return (
 		<OverlayNotification
-			className="googlesitekit-reader-revenue-manager-publication-approved-notification"
+			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-publication-approved-notification"
 			GraphicDesktop={ ReaderRevenueManagerIntroductoryGraphicDesktop }
 			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
 			onShow={ () => {
