@@ -426,7 +426,7 @@ const baseActions = {
 				'googlesitekit_post_type'
 			)
 		) {
-			return { needsAnalytics4EditScope: true };
+			return { needsScope: true };
 		}
 
 		const { error: getSelectionError, configuredAudiences } =
@@ -440,7 +440,7 @@ const baseActions = {
 			return { error: getSelectionError };
 		}
 
-		return { needsAnalytics4EditScope: configuredAudiences.length === 0 };
+		return { needsScope: configuredAudiences.length === 0 };
 	},
 
 	/**
