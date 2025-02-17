@@ -94,17 +94,29 @@ export default function SettingsEdit() {
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
-	const productID = useSelect( ( select ) => {
-		const id = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
-		if ( 'openaccess' === id ) {
-			return __( 'Open access', 'google-site-kit' );
-		}
-		return id;
-	} );
+	const missingProductID = useSelect( ( select ) => {
+		const productID = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getProductID();
 
-	const isCurrentProductMissing = productIDs
-		? ! productIDs.includes( productID )
-		: true;
+		if ( productID === undefined ) {
+			return undefined;
+		}
+
+		if ( 'openaccess' === productID ) {
+			return null;
+		}
+
+		const productIDs = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getProductIDs();
+
+		if ( productIDs === undefined ) {
+			return undefined;
+		}
+
+		return productIDs.includes( productID ) ? null : productID;
+	} );
 
 	const publicationAvailable = useSelect( ( select ) => {
 		if ( hasModuleAccess === undefined ) {
