@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+export { default as ProductIDContributionsNotification } from './ProductIDContributionsNotification';
+export { default as ProductIDSubscriptionsNotification } from './ProductIDSubscriptionsNotification';
 export { default as PublicationApprovedOverlayNotification } from './PublicationApprovedOverlayNotification';
 export { default as ReaderRevenueManagerSetupCTABanner } from './ReaderRevenueManagerSetupCTABanner';
 export { default as RRMSetupSuccessSubtleNotification } from './RRMSetupSuccessSubtleNotification';
+export { default as RRMIntroductoryOverlayNotification } from './RRMIntroductoryOverlayNotification';
