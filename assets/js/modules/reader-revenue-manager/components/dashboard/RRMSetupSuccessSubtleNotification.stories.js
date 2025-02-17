@@ -98,6 +98,7 @@ WithSubscriptionsAndProductID.args = {
 			.setProductID( 'product-1' );
 	},
 };
+WithSubscriptionsAndProductID.scenario = {};
 
 export const WithContributionsAndProductID = Template.bind( {} );
 WithContributionsAndProductID.storyName = 'With Contributions and Product ID';
@@ -120,6 +121,7 @@ WithContributionsAndProductID.args = {
 			.setProductID( 'product-1' );
 	},
 };
+WithContributionsAndProductID.scenario = {};
 
 export const WithContributionsAndNoProductID = Template.bind( {} );
 WithContributionsAndNoProductID.storyName =
@@ -140,6 +142,7 @@ WithContributionsAndNoProductID.args = {
 			.setPaymentOption( 'contributions' );
 	},
 };
+WithContributionsAndNoProductID.scenario = {};
 
 export const WithNoPaymentOption = Template.bind( {} );
 WithNoPaymentOption.storyName = 'With No Payment Option';
@@ -159,6 +162,7 @@ WithNoPaymentOption.args = {
 			.setPaymentOption( 'noPayment' );
 	},
 };
+WithNoPaymentOption.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
