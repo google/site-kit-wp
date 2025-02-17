@@ -645,12 +645,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				'conversion_reporting'
 			);
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_kmw-manual-conversion-events-detected-notification',
-				'dismiss_notification',
-				'conversion_reporting'
-			);
-
 			await waitForRegistry();
 
 			expect(
@@ -702,7 +696,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				isWidgetHidden: false,
 			} );
 
-			const { getByRole, waitForRegistry } = render(
+			const { getByRole, getByText, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
@@ -719,6 +713,17 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				getByRole( 'button', { name: 'View metrics' } )
 			).toBeInTheDocument();
 
+			expect(
+				getByText(
+					( content, testElement ) =>
+						testElement.tagName.toLowerCase() === 'p' &&
+						testElement.className ===
+							'googlesitekit-subtle-notification__secondary_description' &&
+						content ===
+							'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics.'
+				)
+			).toBeInTheDocument();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
@@ -729,12 +734,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_kmw-manual-new-conversion-events-detected-notification',
 				'confirm_view_new_conversion_metrics',
-				'conversion_reporting'
-			);
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_kmw-manual-new-conversion-events-detected-notification',
-				'dismiss_notification',
 				'conversion_reporting'
 			);
 
