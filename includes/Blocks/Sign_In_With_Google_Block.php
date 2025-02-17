@@ -48,7 +48,7 @@ class Sign_In_With_Google_Block {
 			'init',
 			function () {
 				register_block_type(
-					__DIR__ . '/../../dist/assets/js/blocks/sign-in-with-google/block.json',
+					dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/dist/assets/js/blocks/sign-in-with-google/block.json',
 					array(
 						'render_callback' => array( $this, 'render_callback' ),
 					)
