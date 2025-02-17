@@ -772,9 +772,9 @@ final class Assets {
 					'adsConnected' => false,
 				),
 			);
-		}
 
-		$inline_data = $this->update_plugins_inline_data( $inline_data );
+			$inline_data = $this->update_plugins_inline_data( $inline_data );
+		}
 
 		/**
 		 * Filters the most basic inline data to pass to JS.
@@ -1157,7 +1157,7 @@ final class Assets {
 		$inline_data['plugins']['wooCommerce']['installed'] = Plugin_Status::PLUGIN_STATUS_INSTALLED === $woocommerce_plugin_status || Plugin_Status::PLUGIN_STATUS_ACTIVE === $woocommerce_plugin_status;
 		$inline_data['plugins']['wooCommerce']['active']    = Plugin_Status::PLUGIN_STATUS_ACTIVE === $woocommerce_plugin_status;
 
-		$inline_data['plugins']['googleForWooCommerce']['installed'] = Plugin_Status::PLUGIN_STATUS_INSTALLED === $woocommerce_plugin_status || Plugin_Status::PLUGIN_STATUS_ACTIVE === $woocommerce_plugin_status;
+		$inline_data['plugins']['googleForWooCommerce']['installed'] = Plugin_Status::PLUGIN_STATUS_INSTALLED === $google_for_woocommerce_plugin_status || Plugin_Status::PLUGIN_STATUS_ACTIVE === $google_for_woocommerce_plugin_status;
 		$inline_data['plugins']['googleForWooCommerce']['active']    = Plugin_Status::PLUGIN_STATUS_ACTIVE === $google_for_woocommerce_plugin_status;
 
 		// Only check for the presence of Ads connection if the "Google for
