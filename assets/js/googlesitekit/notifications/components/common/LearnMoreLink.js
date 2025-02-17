@@ -15,12 +15,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import Link from '../../../../components/Link';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function LearnMoreLink( { id, label, url } ) {
+export default function LearnMoreLink( { id, label, url, ariaLabel } ) {
 	const trackEvents = useNotificationEvents( id );
 
 	const handleLearnMore = ( event ) => {
@@ -29,8 +34,20 @@ export default function LearnMoreLink( { id, label, url } ) {
 	};
 
 	return (
-		<Link onClick={ handleLearnMore } href={ url } external>
+		<Link
+			onClick={ handleLearnMore }
+			href={ url }
+			aria-label={ ariaLabel }
+			external
+		>
 			{ label }
 		</Link>
 	);
 }
+
+LearnMoreLink.propTypes = {
+	id: PropTypes.string,
+	label: PropTypes.string,
+	url: PropTypes.string,
+	ariaLabel: PropTypes.string,
+};

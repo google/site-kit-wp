@@ -306,6 +306,35 @@ export const selectors = {
 	),
 
 	/**
+	 * Returns the conversion events if detected events are suitable for tailored metrics.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @return {Array} List of detected conversion events or empty array.
+	 */
+	shouldIncludeConversionTailoredMetrics: createRegistrySelector(
+		( select ) => () => {
+			const isGA4Connected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			if ( ! isGA4Connected ) {
+				return [];
+			}
+
+			const {
+				haveConversionEventsForTailoredMetrics,
+				getDetectedEvents,
+			} = select( MODULES_ANALYTICS_4 );
+
+			if ( haveConversionEventsForTailoredMetrics() ) {
+				return getDetectedEvents() || [];
+			}
+
+			return [];
+		}
+	),
+
+	/**
 	 * Gets conversion events related metrics.
 	 *
 	 * @since 1.142.0

@@ -40,11 +40,13 @@ export default function ActionsCTALinkDismiss( {
 	ctaLabel,
 	onCTAClick,
 	ctaDismissOptions,
+	isSaving = false,
 	onDismiss = () => {},
 	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
 	dismissOnCTAClick = true,
 	dismissExpires = 0,
 	dismissOptions = {},
+	gaTrackingEventArgs = {},
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -63,6 +65,8 @@ export default function ActionsCTALinkDismiss( {
 					dismissOnCTAClick={ dismissOnCTAClick }
 					dismissExpires={ dismissExpires }
 					dismissOptions={ ctaDismissOptions }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
+					isSaving={ isSaving }
 				/>
 
 				<Dismiss
@@ -73,6 +77,7 @@ export default function ActionsCTALinkDismiss( {
 					disabled={ isNavigatingToCTALink }
 					onDismiss={ onDismiss }
 					dismissOptions={ dismissOptions }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 				/>
 			</div>
 		</Fragment>
@@ -85,10 +90,12 @@ ActionsCTALinkDismiss.propTypes = {
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
+	isSaving: PropTypes.bool,
 	onDismiss: PropTypes.func,
 	ctaDismissOptions: PropTypes.object,
 	dismissLabel: PropTypes.string,
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
 	dismissOptions: PropTypes.object,
+	gaTrackingEventArgs: PropTypes.object,
 };

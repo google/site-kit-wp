@@ -118,8 +118,17 @@ class REST_User_Surveys_Controller {
 						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_trigger( $creds, $access_token, $data['triggerID'] );
+
 						if ( ! is_wp_error( $response ) && ! empty( $response['survey_id'] ) ) {
 							$this->queue->enqueue( $response );
+						}
+
+						if ( ! is_wp_error( $response ) && ! empty( $data['ttl'] ) ) {
+							$ttl = intval( $data['ttl'] );
+
+							if ( $ttl > 0 ) {
+								$this->timeouts->add( $data['triggerID'], $ttl );
+							}
 						}
 
 						return new WP_REST_Response( array( 'success' => true ) );
@@ -133,6 +142,10 @@ class REST_User_Surveys_Controller {
 								'triggerID' => array(
 									'type'     => 'string',
 									'required' => true,
+								),
+								'ttl'       => array(
+									'type'    => 'integer',
+									'minimum' => 0,
 								),
 							),
 						),
@@ -209,40 +222,6 @@ class REST_User_Surveys_Controller {
 									),
 								),
 							),
-						),
-					),
-				)
-			),
-			'survey-timeout'  => new REST_Route(
-				'core/user/data/survey-timeout',
-				array(
-					'methods'             => WP_REST_Server::CREATABLE,
-					'permission_callback' => $can_authenticate,
-					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['data'];
-
-						if ( empty( $data['slug'] ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
-								array( 'status' => 400 )
-							);
-						}
-
-						$timeout = HOUR_IN_SECONDS;
-						if ( isset( $data['timeout'] ) && intval( $data['timeout'] ) > 0 ) {
-							$timeout = $data['timeout'];
-						}
-
-						$this->timeouts->add( $data['slug'], $timeout );
-
-						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
-					},
-					'args'                => array(
-						'data' => array(
-							'type'     => 'object',
-							'required' => true,
 						),
 					),
 				)

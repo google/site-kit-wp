@@ -101,10 +101,10 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
-	 * Saves the first-party mode settings.
+	 * Saves the First-party mode settings.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Added the survey trigger.
+	 * @since 1.145.0 Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -118,14 +118,16 @@ const baseActions = {
 			);
 
 		if ( results?.response?.isEnabled ) {
-			dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' );
+			yield commonActions.await(
+				dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' )
+			);
 		}
 
 		return results;
 	},
 
 	/**
-	 * Sets the first-party mode enabled status.
+	 * Sets the First-party mode enabled status.
 	 *
 	 * @since 1.141.0
 	 *
@@ -188,7 +190,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the first-party mode settings.
+	 * Gets the First-party mode settings.
 	 *
 	 * @since 1.141.0
 	 *
@@ -200,12 +202,12 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if first-party mode is enabled.
+	 * Checks if First-party mode is enabled.
 	 *
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if first-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if First-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =
@@ -245,7 +247,7 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Indicates whether the current first-party mode settings have changed from what is saved.
+	 * Indicates whether the current First-party mode settings have changed from what is saved.
 	 *
 	 * @since 1.142.0
 	 *

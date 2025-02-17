@@ -113,7 +113,7 @@ export default function OneTapToggles() {
 			<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__one-tap-on-all-pages">
 				<Switch
 					label={ __(
-						'One-Tap enabled on all pages',
+						'One Tap enabled on all pages',
 						'google-site-kit'
 					) }
 					checked={ !! oneTapOnAllPages }
@@ -124,11 +124,11 @@ export default function OneTapToggles() {
 				<HelperText persistent>
 					{ !! oneTapOnAllPages
 						? __(
-								'One-Tap will be available on every page on this website.',
+								'One Tap will be available on every page on this website.',
 								'google-site-kit'
 						  )
 						: __(
-								'One-Tap will only appear on existing login pages.',
+								'One Tap will only appear on existing login pages.',
 								'google-site-kit'
 						  ) }
 				</HelperText>

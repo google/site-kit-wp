@@ -25,7 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -59,47 +60,39 @@ function ConfirmSitePurposeChangeModal( {
 } ) {
 	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ currentMetricsSnapshot, setCurrentMetricsSnapshot ] =
+		useState( null );
 
-	const includeConversionTailoredMetrics = useSelect( ( select ) => {
-		const isGA4Connected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
+	);
 
-		if ( ! isGA4Connected ) {
-			return false;
-		}
-
-		const haveConversionEventsForTailoredMetrics =
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics();
-
-		if ( haveConversionEventsForTailoredMetrics ) {
-			return select( MODULES_ANALYTICS_4 ).getDetectedEvents() || [];
-		}
-
-		return [];
-	} );
-
-	const newMetrics = useSelect( ( select ) => {
-		return select( CORE_USER ).getAnswerBasedMetrics(
+	const newMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics(
 			null,
 			includeConversionTailoredMetrics
-		);
-	} );
+		)
+	);
 
-	const savedPurpose = useSelect( ( select ) =>
+	const savedPurposeSnapshot = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_USER_INPUT_QUESTION_SNAPSHOT,
 			USER_INPUT_QUESTIONS_PURPOSE
 		)
 	);
 
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_USER ).getSavedUserInputSettings()
+	);
+
 	const currentMetrics = useSelect( ( select ) => {
-		if ( savedPurpose === undefined ) {
+		if ( ! savedPurpose?.purpose?.values?.length ) {
 			return [];
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics( savedPurpose[ 0 ] );
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			savedPurpose?.purpose?.values?.[ 0 ]
+		);
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -107,7 +100,7 @@ function ConfirmSitePurposeChangeModal( {
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const onClose = useCallback( async () => {
-		if ( savedPurpose?.length ) {
+		if ( savedPurposeSnapshot?.length ) {
 			await resetUserInputSettings();
 			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
 				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
@@ -117,21 +110,14 @@ function ConfirmSitePurposeChangeModal( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 		} );
 
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'cancel_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		handleDialog();
+		setIsSaving( false );
 	}, [
 		handleDialog,
-		savedPurpose,
+		savedPurposeSnapshot,
 		resetUserInputSettings,
 		setValues,
 		setUIValues,
-		viewContext,
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
@@ -161,15 +147,6 @@ function ConfirmSitePurposeChangeModal( {
 		);
 		await saveUserInputSettings();
 
-		setIsSaving( false );
-
-		// Handle internal tracking.
-		trackEvent(
-			`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
-			'confirm_update_metrics_selection',
-			'conversion_reporting'
-		);
-
 		onClose();
 	}, [
 		saveUserInputSettings,
@@ -177,7 +154,68 @@ function ConfirmSitePurposeChangeModal( {
 		setIsSaving,
 		setUserInputSetting,
 		userInputPurposeConversionEvents,
-		viewContext,
+	] );
+
+	const prevDialogActive = usePrevious( dialogActive );
+
+	useEffect( () => {
+		if ( prevDialogActive === true && dialogActive === false ) {
+			if ( isSaving ) {
+				// Handle internal tracking when confirmation CTA is clicked.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'confirm_update_metrics_selection',
+					'conversion_reporting'
+				);
+			} else {
+				// Handle internal tracking when keep existing metrics CTA is clicked
+				// or the modal is closed via other means.
+				trackEvent(
+					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
+					'cancel_update_metrics_selection',
+					'conversion_reporting'
+				);
+			}
+		}
+	}, [ prevDialogActive, dialogActive, isSaving, viewContext ] );
+
+	useEffect( () => {
+		// Preserve current metrics list in a snapshot, so after site purpose is updated in the modal
+		// the previous list shown under current metrics is not changing last moment during update.
+		if (
+			savedPurpose?.purpose?.values?.[ 0 ] &&
+			currentMetricsSnapshot === null
+		) {
+			setCurrentMetricsSnapshot( currentMetrics );
+		}
+	}, [
+		savedPurpose,
+		currentMetricsSnapshot,
+		currentMetrics,
+		setCurrentMetricsSnapshot,
+	] );
+
+	const previousIsSaving = usePrevious( isSaving );
+
+	useEffect( () => {
+		if (
+			previousIsSaving &&
+			! isSaving &&
+			! dialogActive &&
+			currentMetricsSnapshot !== null
+		) {
+			// Reset metrics snapshot once saving is done dialog is closed. Timeout is needed
+			// to delay reset since modal has closing animation.
+			setTimeout( () => {
+				setCurrentMetricsSnapshot( null );
+			}, 50 );
+		}
+	}, [
+		previousIsSaving,
+		isSaving,
+		dialogActive,
+		currentMetricsSnapshot,
+		setCurrentMetricsSnapshot,
 	] );
 
 	return (
@@ -206,9 +244,9 @@ function ConfirmSitePurposeChangeModal( {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
 						<h3>{ __( 'Current metrics', 'google-site-kit' ) }</h3>
-						{ !! currentMetrics && (
+						{ !! currentMetricsSnapshot && (
 							<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-								{ currentMetrics.map( ( item ) => (
+								{ currentMetricsSnapshot.map( ( item ) => (
 									<li key={ item } className="mdc-list-item">
 										<span className="mdc-list-item__text">
 											{

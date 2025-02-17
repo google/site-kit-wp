@@ -42,6 +42,10 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../modules/analytics-4/datastore/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import * as tracking from '../../util/tracking';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -56,9 +60,10 @@ import {
 } from '../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { enabledFeatures } from '../../features';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ConversionReportingNotificationCTAWidget', () => {
 	let registry;
@@ -113,6 +118,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setLostConversionEventsLastUpdateAt( 0 );
+	} );
+
+	afterEach( () => {
+		afterEach( () => {
+			jest.clearAllMocks();
+		} );
 	} );
 
 	afterAll( () => {
@@ -581,7 +592,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -611,6 +622,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					features: [ 'conversionReporting' ],
 				}
 			);
@@ -626,6 +638,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					getByRole( 'button', { name: 'Select metrics' } )
 				);
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_kmw-manual-conversion-events-detected-notification',
+				'confirm_select_new_conversion_metrics',
+				'conversion_reporting'
+			);
 
 			await waitForRegistry();
 
@@ -678,13 +696,14 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				isWidgetHidden: false,
 			} );
 
-			const { getByRole, waitForRegistry } = render(
+			const { getByRole, getByText, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					features: [ 'conversionReporting' ],
 				}
 			);
@@ -694,12 +713,29 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				getByRole( 'button', { name: 'View metrics' } )
 			).toBeInTheDocument();
 
+			expect(
+				getByText(
+					( content, testElement ) =>
+						testElement.tagName.toLowerCase() === 'p' &&
+						testElement.className ===
+							'googlesitekit-subtle-notification__secondary_description' &&
+						content ===
+							'We’ve extended your metrics selection based on your website events'
+				)
+			).toBeInTheDocument();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
 					getByRole( 'button', { name: 'View metrics' } )
 				);
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_kmw-manual-new-conversion-events-detected-notification',
+				'confirm_view_new_conversion_metrics',
+				'conversion_reporting'
+			);
 
 			expect(
 				registry

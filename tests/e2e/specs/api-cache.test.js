@@ -28,15 +28,29 @@ import {
 	resetSiteKit,
 	safeLoginUser,
 	setupSiteKit,
-	testSiteNotification,
 	useRequestInterception,
-	wpApiFetch,
 } from '../utils';
 import { deleteAuthCookie } from '../utils/delete-auth-cookie';
 
-const goToSiteKitDashboard = async () => {
-	await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
-};
+async function goToWordPressDashboard() {
+	await visitAdminPage( 'index.php' );
+}
+
+async function googleSiteKitAPIGetTime() {
+	await page.waitForFunction(
+		() =>
+			window.googlesitekit !== undefined &&
+			window.googlesitekit.api !== undefined
+	);
+
+	return await page.evaluate( () => {
+		// `useCache` is enabled by default for `get` calls,
+		// but we'll be explicit here for the sake of the test.
+		return window.googlesitekit.api.get( 'e2e', 'util', 'time', null, {
+			useCache: true,
+		} );
+	} );
+}
 
 describe( 'API cache', () => {
 	beforeAll( async () => {
@@ -44,12 +58,6 @@ describe( 'API cache', () => {
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 			if ( url.match( 'search-console/data/searchanalytics' ) ) {
-				request.respond( { status: 200, body: '[]' } );
-			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
-				request.respond( { status: 200, body: '{}' } );
-			} else if ( url.match( 'user/data/survey' ) ) {
-				request.respond( { status: 200, body: '{"survey":null}' } );
-			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
@@ -64,60 +72,39 @@ describe( 'API cache', () => {
 	} );
 
 	it( 'isolates client storage between sessions', async () => {
-		const firstTestNotification = { ...testSiteNotification };
-		const secondTestNotification = {
-			...testSiteNotification,
-			id: 'test-notification-2',
-			title: 'Test notification title 2',
-			dismissLabel: 'test dismiss site notification 2',
-		};
+		// Navigate to WP dashboard to use SK APIs
+		// while minimizing side-effects from reporting, etc.
+		await goToWordPressDashboard();
 
-		// create first notification
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/core/site/notifications',
-			method: 'post',
-			data: firstTestNotification,
+		const initialTimeData = await googleSiteKitAPIGetTime();
+		expect( initialTimeData ).toMatchObject( {
+			microtime: expect.any( Number ),
 		} );
 
-		await goToSiteKitDashboard();
+		// Show that the data is cached when fetching again.
+		const timeData = await googleSiteKitAPIGetTime();
+		expect( timeData ).toEqual( initialTimeData );
 
-		await page.waitForSelector(
-			`#${ firstTestNotification.id }.googlesitekit-publisher-win--is-open`,
-			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
-		);
-
-		await expect( page ).toClick(
-			'.googlesitekit-publisher-win .mdc-button span',
-			{
-				text: firstTestNotification.dismissLabel,
-			}
-		);
-
-		// create second notification
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/core/site/notifications',
-			method: 'post',
-			data: secondTestNotification,
-		} );
-
-		// delete auth cookie to sign out the current user
+		// Delete auth cookie to sign out the current user.
+		// This was needed in the past due to cache clearing
+		// that was hooked into the logout action.
+		// Deleting cookies makes it more clear that the observed
+		// result is due to a new session only. It's also faster.
 		await deleteAuthCookie();
 
 		await safeLoginUser( 'admin', 'password' );
 
-		await goToSiteKitDashboard();
+		await goToWordPressDashboard();
 
-		// Ensure the second notification is displayed.
-		await page.waitForSelector(
-			`#${ secondTestNotification.id }.googlesitekit-publisher-win--is-open`,
-			{ timeout: 10_000 } // Core site notifications are delayed 5s for surveys.
-		);
-
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: secondTestNotification.title,
-			}
+		// Now that we're in a new session, we expect the API cache to be clear
+		// so the request should hit the backend and produce a new (greater) value.
+		const newTimeData = await googleSiteKitAPIGetTime();
+		expect( newTimeData ).not.toEqual( initialTimeData );
+		expect( initialTimeData ).toMatchObject( {
+			microtime: expect.any( Number ),
+		} );
+		expect( newTimeData.microtime ).toBeGreaterThan(
+			initialTimeData.microtime
 		);
 	} );
 } );

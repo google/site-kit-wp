@@ -591,8 +591,10 @@ const baseActions = {
 			return { error: saveSettingsError };
 		}
 
-		dispatch( CORE_USER ).triggerSurvey(
-			'audience_segmentation_setup_completed'
+		yield commonActions.await(
+			dispatch( CORE_USER ).triggerSurvey(
+				'audience_segmentation_setup_completed'
+			)
 		);
 
 		return {};

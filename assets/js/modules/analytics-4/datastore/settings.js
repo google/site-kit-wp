@@ -80,7 +80,7 @@ const store = {
 };
 export default store;
 
-export async function submitChanges( { select, dispatch } ) {
+export async function submitChanges( { dispatch, select, resolveSelect } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
 		const accountID = select( MODULES_ANALYTICS_4 ).getAccountID();
@@ -112,11 +112,7 @@ export async function submitChanges( { select, dispatch } ) {
 		let webDataStreamAlreadyExists = false;
 
 		if ( isValidPropertyID( propertyID ) ) {
-			await dispatch( MODULES_ANALYTICS_4 ).waitForWebDataStreams(
-				propertyID
-			);
-
-			webDataStreamAlreadyExists = select(
+			webDataStreamAlreadyExists = await resolveSelect(
 				MODULES_ANALYTICS_4
 			).doesWebDataStreamExist( propertyID, webDataStreamName );
 		}

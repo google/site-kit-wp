@@ -170,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
+				siteLocale,
 				timezone,
 				usingProxy,
 				webStoriesActive,
@@ -206,6 +207,7 @@ export const reducer = ( state, { payload, type } ) => {
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
+					siteLocale,
 					timezone,
 					usingProxy,
 					webStoriesActive,
@@ -297,6 +299,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			usingProxy,
 			webStoriesActive,
@@ -338,6 +341,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			postTypes,
 			usingProxy: !! usingProxy,
@@ -598,6 +602,30 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Retrieves an admin settings URL, pointing to either network or single-site settings
+	 * depending on whether the site is multisite.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @return {string|undefined} The admin settings URL, or undefined if required data is unavailable.
+	 */
+	getAdminSettingsURL: createRegistrySelector( ( select ) => () => {
+		const adminURL = select( CORE_SITE ).getAdminURL();
+		const isMultisite = select( CORE_SITE ).isMultisite();
+
+		if ( adminURL === undefined || isMultisite === undefined ) {
+			return undefined;
+		}
+
+		return new URL(
+			isMultisite === true
+				? 'network/settings.php'
+				: 'options-general.php',
+			adminURL
+		).href;
+	} ),
+
+	/**
 	 * Gets a site's timezone.
 	 *
 	 * @since 1.9.0
@@ -626,6 +654,18 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets a site's locale.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|undefined)} The site locale.
+	 */
+	getSiteLocale: createRegistrySelector(
+		( select ) => () =>
+			select( CORE_SITE ).getSiteInfo()?.siteLocale?.replace( '_', '-' )
+	),
 
 	/**
 	 * Gets a setup error code, if one exists.

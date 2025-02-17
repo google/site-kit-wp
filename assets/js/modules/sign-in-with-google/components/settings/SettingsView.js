@@ -32,7 +32,7 @@ import {
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from '../../datastore/constants';
-import { AnyoneCanRegisterDisabledNotice } from '../common';
+import { SettingsNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import DisplaySetting from '../../../../components/DisplaySetting';
 
@@ -178,7 +178,7 @@ export default function SettingsView() {
 					) }
 				</div>
 			</div>
-			<AnyoneCanRegisterDisabledNotice className="googlesitekit-margin-top-0" />
+			<SettingsNotice className="googlesitekit-margin-top-0" />
 		</div>
 	);
 }

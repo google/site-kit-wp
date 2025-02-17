@@ -224,12 +224,26 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
                         >
-                          (not set)
+                          Berlin
                         </div>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
                           99%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          New York
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          71.1%
                         </div>
                       </div>
                       <div
@@ -244,20 +258,6 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
                           64.9%
-                        </div>
-                      </div>
-                      <div
-                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
-                      >
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
-                        >
-                          Cork
-                        </div>
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
-                        >
-                          52.6%
                         </div>
                       </div>
                     </div>
@@ -640,12 +640,12 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
                         >
-                          (not set)
+                          New York
                         </div>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
-                          78.6%
+                          392.9%
                         </div>
                       </div>
                     </div>
@@ -1153,12 +1153,26 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
                         >
-                          (not set)
+                          Berlin
                         </div>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
                           106.7%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          New York
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          76.7%
                         </div>
                       </div>
                       <div
@@ -1173,20 +1187,6 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
                           70%
-                        </div>
-                      </div>
-                      <div
-                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
-                      >
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
-                        >
-                          Cork
-                        </div>
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
-                        >
-                          56.7%
                         </div>
                       </div>
                     </div>
@@ -1513,12 +1513,26 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
                         >
-                          (not set)
+                          Berlin
                         </div>
                         <div
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
                           145.5%
+                        </div>
+                      </div>
+                      <div
+                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
+                      >
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
+                        >
+                          New York
+                        </div>
+                        <div
+                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
+                        >
+                          104.5%
                         </div>
                       </div>
                       <div
@@ -1533,20 +1547,6 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                           class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
                         >
                           95.5%
-                        </div>
-                      </div>
-                      <div
-                        class="googlesitekit-audience-segmentation-tile-metric__cities-metric"
-                      >
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-name"
-                        >
-                          Cork
-                        </div>
-                        <div
-                          class="googlesitekit-audience-segmentation-tile-metric__cities-metric-value"
-                        >
-                          77.3%
                         </div>
                       </div>
                     </div>

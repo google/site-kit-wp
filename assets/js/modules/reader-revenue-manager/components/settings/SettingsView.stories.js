@@ -19,9 +19,12 @@
 /**
  * Internal dependencies
  */
-import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideSiteInfo,
+	WithTestRegistry,
+} from '../../../../../../tests/js/utils';
 import { Grid, Row, Cell } from '../../../../material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -110,6 +113,13 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry, {
+					postTypes: [
+						{ slug: 'post', label: 'Posts' },
+						{ slug: 'page', label: 'Pages' },
+					],
+				} );
+
 				provideModuleRegistrations( registry, [
 					{
 						slug: 'reader-revenue-manager',
@@ -122,6 +132,9 @@ export default {
 					ownerID: 1,
 					publicationID: 'ABCDEFGH',
 					publicationOnboardingState: '',
+					productID: 'openaccess',
+					snippetMode: 'post_types',
+					postTypes: [ 'post' ],
 				};
 
 				registry
@@ -138,9 +151,12 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithTestRegistry
+					callback={ setupRegistry }
+					features={ [ 'rrmModuleV2' ] }
+				>
 					<Story />
-				</WithRegistrySetup>
+				</WithTestRegistry>
 			);
 		},
 	],

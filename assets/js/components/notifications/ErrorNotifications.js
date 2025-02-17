@@ -24,7 +24,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AuthError from './AuthError';
 import InternalServerError from './InternalServerError';
 import Notifications from './Notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
@@ -32,8 +31,10 @@ import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/
 export default function ErrorNotifications() {
 	return (
 		<Fragment>
+			{ /* We will eventually refactor the InternalServerError component to not show
+			 in the usual Banner Notification area but as a floating snackbar in BNR3. This
+			 is why it has not been added to the new queue of notifications. */ }
 			<InternalServerError />
-			<AuthError />
 			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>
 	);

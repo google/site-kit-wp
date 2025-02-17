@@ -99,6 +99,16 @@ BasicSelect.args = {
 	outlined: true,
 };
 
+export const WithHelperText = Template.bind( {} );
+WithHelperText.args = {
+	name: 'select',
+	label: __( 'With helper text', 'google-site-kit' ),
+	options: [ 'Demo Option 1', 'Demo Option 2', 'Demo Option 3' ],
+	value: 'Demo Option 1',
+	outlined: true,
+	helperText: 'This is a helper text',
+};
+
 export function VRTStory() {
 	return (
 		<div>
@@ -117,14 +127,18 @@ export function VRTStory() {
 			<div style={ { marginBottom: '50px' } }>
 				<OpenSelect { ...OpenSelect.args } />
 			</div>
-			<div style={ { marginBottom: '250px' } }>
+			<div style={ { marginBottom: '50px' } }>
 				<BasicSelect { ...BasicSelect.args } />
+			</div>
+			<div style={ { marginBottom: '250px' } }>
+				<WithHelperText { ...WithHelperText.args } />
 			</div>
 		</div>
 	);
 }
 VRTStory.storyName = 'All Selects VRT';
 VRTStory.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/Selects',
 	delay: 3000, // Sometimes the click doesn't work, waiting for everything to load.
 	clickSelector: '.googlesitekit-story-select-click',

@@ -51,6 +51,10 @@ import {
 } from '../../../../datastore/constants';
 import * as tracking from '../../../../../../util/tracking';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../../tests/js/viewport-width-utils';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -84,19 +88,26 @@ function provideAudienceTilesMockReport(
 		metrics: [ { name: 'totalUsers' } ],
 	};
 
-	const userCountReportData = getAnalytics4MockResponse(
-		userCountReportOptions
+	const gatheringDataReportOptions = {
+		...userCountReportOptions,
+		startDate: dates.compareStartDate,
+	};
+
+	[ userCountReportOptions, gatheringDataReportOptions ].forEach(
+		( options ) => {
+			const reportData = getAnalytics4MockResponse( options );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( reportData, {
+					options,
+				} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		}
 	);
-
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( userCountReportData, {
-			options: userCountReportOptions,
-		} );
-
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ userCountReportOptions ] );
 
 	const reportOptions = {
 		dimensions: isSiteKitAudiencePartialData
@@ -163,7 +174,7 @@ function provideAudienceTilesMockReport(
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
 	const topContentReportOptions = {
@@ -243,6 +254,7 @@ function provideAudienceTilesMockReport(
 
 describe( 'AudienceTilesWidget', () => {
 	let registry;
+	let originalViewportWidth;
 
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
@@ -298,10 +310,14 @@ describe( 'AudienceTilesWidget', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
 			)
 		);
+
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
 	} );
 
 	afterEach( () => {
 		jest.clearAllMocks();
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render loading tiles when audiences are not syncing', async () => {
