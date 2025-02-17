@@ -27,6 +27,7 @@ import { useIntersection } from 'react-use';
  */
 import { __ } from '@wordpress/i18n';
 import {
+	createInterpolateElement,
 	useCallback,
 	useEffect,
 	useMemo,
@@ -52,6 +53,8 @@ import useDisplayNewEventsCalloutForTailoredMetrics from './hooks/useDisplayNewE
 import useDisplayNewEventsCalloutForUserPickedMetrics from './hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
 import useDisplayNewEventsCalloutAfterInitialDetection from './hooks/useDisplayNewEventsCalloutAfterInitialDetection';
 import { trackEvent } from '../../util';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Link from '../Link';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -359,6 +362,10 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		shouldShowCalloutForLostEvents,
 	] );
 
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'key-metrics' )
+	);
+
 	if (
 		! shouldShowInitialCalloutForTailoredMetrics &&
 		! shouldShowCalloutForLostEvents &&
@@ -368,12 +375,34 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		return <WidgetNull />;
 	}
 
+	let description = createInterpolateElement(
+		__(
+			'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics. Add them to your dashboard to get a better understanding of how users interact with your site. <a>Learn more</a>',
+			'google-site-kit'
+		),
+		{
+			a: (
+				<Link
+					href={ documentationURL }
+					external
+					aria-label={ __(
+						'Learn more about advanced conversion reporting',
+						'google-site-kit'
+					) }
+				/>
+			),
+		}
+	);
 	let ctaLabel = __( 'Select metrics', 'google-site-kit' );
 
 	if ( shouldShowInitialCalloutForTailoredMetrics ) {
 		ctaLabel = __( 'Add metrics', 'google-site-kit' );
 	}
 	if ( shouldShowCalloutForNewEvents ) {
+		description = __(
+			'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics.',
+			'google-site-kit'
+		);
 		ctaLabel = __( 'View metrics', 'google-site-kit' );
 	}
 
@@ -391,6 +420,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				shouldShowCalloutForUserPickedMetrics ||
 				shouldShowCalloutForNewEvents ) && (
 				<ConversionReportingDashboardSubtleNotification
+					description={ description }
 					ctaLabel={ ctaLabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
