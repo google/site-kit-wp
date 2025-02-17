@@ -19,6 +19,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\StringFilter as Go
  * Class for parsing the string filter.
  *
  * @since 1.106.0
+ * @since n.e.x.t Moved from `Analytics_4\Report\Dimension_Filters` to `Analytics_4\Report\Filters` for use with both dimensions and metrics.
  * @access private
  * @ignore
  */
