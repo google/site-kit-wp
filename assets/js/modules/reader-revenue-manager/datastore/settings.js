@@ -104,9 +104,10 @@ export function validateCanSubmitChanges( select ) {
 		);
 
 		invariant(
-			Array.isArray( postTypes ) &&
-				postTypes.every( ( item ) => typeof item === 'string' ) &&
-				postTypes.length > 0,
+			snippetMode !== 'post_types' ||
+				( Array.isArray( postTypes ) &&
+					postTypes.every( ( item ) => typeof item === 'string' ) &&
+					postTypes.length > 0 ),
 			INVARIANT_INVALID_POST_TYPES
 		);
 

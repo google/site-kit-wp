@@ -174,6 +174,24 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			);
 		} );
 
+		it( 'should not throw invariant error if no post types are selected and the snippet mode is different', () => {
+			enabledFeatures.add( 'rrmModuleV2' );
+
+			const settings = {
+				...validSettings,
+				postTypes: [],
+				snippetMode: 'per_post',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () =>
+				validateCanSubmitChanges( registry.select )
+			).not.toThrow( INVARIANT_INVALID_POST_TYPES );
+		} );
+
 		it( 'should throw invariant error for invalid product ID', () => {
 			enabledFeatures.add( 'rrmModuleV2' );
 
