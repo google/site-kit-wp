@@ -2,7 +2,7 @@
 /**
  * Class Google\Site_Kit\Modules\Analytics_4\Report\String_Filter
  *
- * @package   Google\Site_Kit\Modules\Analytics_4\Report
+ * @package   Google\Site_Kit\Modules\Analytics_4\Report\Filters
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
