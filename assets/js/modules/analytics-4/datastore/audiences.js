@@ -594,12 +594,12 @@ const baseActions = {
 
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
-		const { error: saveAudienceSettingsError } = yield commonActions.await(
+		const { error } = yield commonActions.await(
 			dispatch( CORE_USER ).saveAudienceSettings()
 		);
 
-		if ( saveAudienceSettingsError ) {
-			return { error: saveAudienceSettingsError };
+		if ( error ) {
+			return { error };
 		}
 
 		// Expire new badges for initially configured audiences.
