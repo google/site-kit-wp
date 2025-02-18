@@ -46,9 +46,7 @@ const reportOptions = {
 			value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 		},
 		city: {
-			filterType: 'stringFilter',
-			matchType: 'EXACT',
-			value: '(not set)',
+			filterType: 'emptyFilter',
 			notExpression: true,
 		},
 	},

@@ -73,7 +73,7 @@ const adminbarAnalytics4OptionSets = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 	{
-		startDate: '2020-12-31',
+		startDate: '2020-12-03',
 		endDate: '2021-01-27',
 		metrics: [
 			{

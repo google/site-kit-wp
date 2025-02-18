@@ -21,10 +21,11 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
-import { validateCanSubmitChanges } from './settings';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 export default Modules.createModuleStore( 'reader-revenue-manager', {
 	storeName: MODULES_READER_REVENUE_MANAGER,
+	submitChanges,
 	validateCanSubmitChanges,
 	ownedSettingsSlugs: [ 'publicationID' ],
 	settingSlugs: [

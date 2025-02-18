@@ -750,6 +750,7 @@ final class Assets {
 			'isNetworkMode'     => $this->context->is_network_mode(),
 			'timezone'          => get_option( 'timezone_string' ),
 			'siteName'          => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+			'siteLocale'        => $this->context->get_locale(),
 			'enabledFeatures'   => Feature_Flags::get_enabled_features(),
 			'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
 			'postTypes'         => $this->get_post_types(),
