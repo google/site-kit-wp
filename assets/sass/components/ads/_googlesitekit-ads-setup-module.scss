@@ -38,13 +38,17 @@
 		}
 
 		.googlesitekit-setup-module__action {
-			margin-bottom: 0;
-			margin-top: 20px;
+			margin-bottom: 32px;
 		}
 
 		.googlesitekit-setup-module--ads--setup-container {
 			align-items: center;
 			position: relative;
+
+			.googlesitekit-setup-module__action {
+				margin-bottom: 0;
+				margin-top: 20px;
+			}
 
 			h3 {
 				margin-top: 0;
@@ -69,7 +73,7 @@
 				color: $c-neutral-n-500;
 				display: inline-block;
 				font-size: 12px;
-				padding: 5px;
+				padding: 5px 10px;
 				position: relative;
 				z-index: 99;
 			}
@@ -91,7 +95,7 @@
 				background: $c-mercury;
 				height: 1px;
 				position: relative;
-				top: 10px;
+				top: 15px;
 				width: 100%;
 
 				@media (min-width: $width-desktop + 1 + px) {
