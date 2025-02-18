@@ -40,7 +40,7 @@ class Post_Product_ID {
 	 * @since 1.145.0
 	 *
 	 * @param Post_Meta $post_meta Post_Meta instance.
-	 * @param Settings  $settings  Module settings instance.
+	 * @param Settings  $settings  Reader Revenue Manager module settings instance.
 	 */
 	public function __construct( Post_Meta $post_meta, Settings $settings ) {
 		$this->meta     = $post_meta;
