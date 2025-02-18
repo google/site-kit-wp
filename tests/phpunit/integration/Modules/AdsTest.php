@@ -120,9 +120,22 @@ class AdsTest extends TestCase {
 	}
 
 
-	public function test_inline_modules_data__module_not_connected() {
+	public function test_inline_modules_data__module_not_connected__with_pax() {
 		self::enable_feature( 'adsPax' );
 
+		$this->ads->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals(
+			array(
+				'supportedConversionEvents' => array(),
+			),
+			$inline_modules_data['ads']
+		);
+	}
+
+	public function test_inline_modules_data__module_not_connected__without_pax() {
 		$this->ads->register();
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );

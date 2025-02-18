@@ -277,7 +277,7 @@ export default function UserInputPreview( props ) {
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_GOALS }
 					title={ __(
-						'What are your top goals for this site?',
+						'What are your top 3 goals for this site?',
 						'google-site-kit'
 					) }
 					values={ settings?.goals?.values || [] }

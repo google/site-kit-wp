@@ -119,12 +119,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'woocommerce-form-row', $output );
 
-		// Try rendering the button when not on the login page.
+		// The Sign in with Google JS should always render, even on the front
+		// page.
 		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$output                 = $this->capture_action( 'wp_footer' );
 
 		// The button shouldn't be rendered on a non-login page.
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Enable the Sign in with Google One Tap on all pages.
 		$this->module->get_settings()->set(
@@ -145,8 +146,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Render the button in the WooCommerce form.
+		do_action( 'woocommerce_loaded' );
 		do_action( 'woocommerce_login_form_start' );
-		$output = $this->capture_action( 'wp_footer' );
+		$output = $this->capture_action( 'woocommerce_login_form_start' );
 
 		// CHeck the render button contains the expected class name.
 		$this->assertStringContainsString( 'woocommerce-form-row', $output );

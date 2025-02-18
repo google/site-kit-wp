@@ -107,3 +107,26 @@ export const populatePropertyAndAccountIds = ( property ) => {
 		_accountID,
 	};
 };
+
+/**
+ * Populates a list of accountSummaries with IDs for accounts and properties.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array|unknown} accountSummaries Account summaries to populate.
+ * @return {Array|unknown} Populated account summaries or given value if not an array.
+ */
+export const populateAccountSummaries = ( accountSummaries ) => {
+	if ( ! Array.isArray( accountSummaries ) ) {
+		return accountSummaries;
+	}
+
+	return accountSummaries.map( ( account ) => {
+		return {
+			...populateAccountID( account ),
+			propertySummaries: ( account.propertySummaries || [] ).map(
+				( property ) => populatePropertyAndAccountIds( property )
+			),
+		};
+	} );
+};

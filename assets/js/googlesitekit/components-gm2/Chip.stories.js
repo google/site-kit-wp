@@ -40,6 +40,14 @@ SelectedChip.args = {
 	selected: true,
 };
 
+export const DisabledChip = Template.bind( {} );
+DisabledChip.storyName = 'Disabled Chip';
+DisabledChip.args = {
+	id: 'disabled',
+	label: 'Disabled Chip',
+	disabled: true,
+};
+
 export default {
 	title: 'Components/Chip',
 	component: Chip,

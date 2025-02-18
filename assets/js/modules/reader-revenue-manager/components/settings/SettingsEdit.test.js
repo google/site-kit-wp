@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
@@ -47,6 +48,13 @@ describe( 'SettingsEdit', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry, {
+			postTypes: [
+				{ slug: 'post', label: 'Posts' },
+				{ slug: 'page', label: 'Pages' },
+				{ slug: 'products', label: 'Products' },
+			],
+		} );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserInfo( registry );
@@ -61,6 +69,7 @@ describe( 'SettingsEdit', () => {
 				publicationID,
 				publicationOnboardingState,
 				ownerID: 1,
+				postTypes: [ 'post' ],
 			} );
 	} );
 
@@ -204,5 +213,67 @@ describe( 'SettingsEdit', () => {
 				'Another admin configured Reader Revenue Manager and you don’t have access to its configured publication. Contact them to share access or change the configured publication.'
 			)
 		).toBeInTheDocument();
+	} );
+
+	describe( 'with the rrmModuleV2 feature flag enabled', () => {
+		it( 'should display CTA placement settings', async () => {
+			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+				registry,
+				features: [ 'rrmModuleV2' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( getByText( 'CTA Placement' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should display the snippet mode setting', async () => {
+			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+				registry,
+				features: [ 'rrmModuleV2' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( getByText( 'Display CTAs' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should display the post types setting if snippet mode is set to post_types', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSnippetMode( 'post_types' );
+
+			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+				registry,
+				features: [ 'rrmModuleV2' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText(
+					'Select the content types where you want your CTAs to appear:'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display the post types setting if snippet mode is not set to post_types', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSnippetMode( 'per_post' );
+
+			const { queryByText, waitForRegistry } = render( <SettingsEdit />, {
+				registry,
+				features: [ 'rrmModuleV2' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					'Select the content types where you want your CTAs to appear:'
+				)
+			).not.toBeInTheDocument();
+		} );
 	} );
 } );
