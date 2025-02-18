@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Modules\Sign_In_With_Google;
 
 /**
  * Sign in with Google Gutenberg Block.
