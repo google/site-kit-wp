@@ -65,7 +65,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_0'
 	);
 
-	const totalSessionsCurrent = currentDateRangeRows.reduce(
+	const totalCurrent = currentDateRangeRows.reduce(
 		( sum, row ) => sum + parseInt( row.metricValues[ 0 ].value, 10 ),
 		0
 	);
@@ -74,15 +74,15 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_1'
 	);
 
-	const totalSessionsPrevious = previousDateRangeRows.reduce(
+	const totalPrevious = previousDateRangeRows.reduce(
 		( sum, row ) => sum + parseInt( row.metricValues[ 0 ].value, 10 ),
 		0
 	);
 
 	let hasOthers = withOthers;
 	let rowsNumber = currentDateRangeRows.length;
-	let othersCurrent = totalSessionsCurrent;
-	let othersPrevious = totalSessionsPrevious;
+	let othersCurrent = totalCurrent;
+	let othersPrevious = totalPrevious;
 	if ( maxSlices > 0 ) {
 		hasOthers = withOthers && currentDateRangeRows.length > maxSlices;
 		rowsNumber = Math.min(
@@ -109,8 +109,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		othersCurrent -= usersCurrent;
 		othersPrevious -= usersPrevious;
 
-		const percent =
-			totalSessionsCurrent > 0 ? usersCurrent / totalSessionsCurrent : 0;
+		const percent = totalCurrent > 0 ? usersCurrent / totalCurrent : 0;
 
 		const rowData = [ row.dimensionValues[ 0 ].value, percent ];
 		if ( withTooltips ) {
@@ -132,7 +131,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 	if ( hasOthers && othersCurrent > 0 ) {
 		const rowData = [
 			__( 'Others', 'google-site-kit' ),
-			othersCurrent / totalSessionsCurrent,
+			othersCurrent / totalCurrent,
 		];
 		if ( withTooltips ) {
 			rowData.push(
