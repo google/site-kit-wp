@@ -360,6 +360,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 */
 	private function render_signinwithgoogle_woocommerce() {
+		/**
+		 * Only render the button in a WooCommerce login page if:
+		 *
+		 * - the Sign in with Google module is connected
+		 * - WooCommerce is active
+		 * - the user is not logged in
+		 */
+		if ( ! $this->is_connected() || ! $this->woocommerce->is_active() || is_user_logged_in() ) {
+			return;
+		}
+
 		?>
 		<div class="googlesitekit-sign-in-with-google__frontend-output-button woocommerce-form-row form-row"></div>
 		<?php
