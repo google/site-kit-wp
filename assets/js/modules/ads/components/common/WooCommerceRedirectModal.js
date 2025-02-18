@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,21 +31,46 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
-	SpinnerButton,
 } from 'googlesitekit-components';
+import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
+import ExternalIcon from '../../../../../svg/icons/external.svg';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
 	onDismiss,
 } ) {
+	const { setCacheItem } = useDispatch( CORE_SITE );
+
+	const markModalDismissed = useCallback( async () => {
+		await setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, {
+			ttl: 0,
+		} );
+	}, [ setCacheItem ] );
+
+	const onSetupCallback = useActivateModuleCallback( 'ads' );
+
+	const onContinueWithSiteKit = useCallback( async () => {
+		// Store dismissal in cache first, since onSetupCallback will invoke navigateTo().
+		await markModalDismissed();
+
+		onSetupCallback();
+	}, [ markModalDismissed, onSetupCallback ] );
+
 	return (
 		<Dialog
 			open={ dialogActive }
 			aria-describedby={ undefined }
 			tabIndex="-1"
-			className="googlesitekit-dialog-confirm-site-purpose-change"
+			className="googlesitekit-dialog-woocommerce-redirect"
 			onClose={ onDismiss }
 		>
+			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
+				<WooLogoIcon width={ 110 } height={ 46 } />
+			</div>
 			<DialogTitle>
 				{ __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
@@ -57,12 +83,18 @@ export default function WooCommerceRedirectModal( {
 				</p>
 			</DialogContent>
 			<DialogFooter>
-				<Button className="mdc-dialog__cancel-button" tertiary>
+				<Button
+					className="mdc-dialog__cancel-button"
+					tertiary
+					onClick={ onContinueWithSiteKit }
+				>
 					{ __( 'Continue with Site Kit', 'google-site-kit' ) }
 				</Button>
-				<SpinnerButton>
+				<Button
+					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+				>
 					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
-				</SpinnerButton>
+				</Button>
 			</DialogFooter>
 		</Dialog>
 	);
