@@ -343,7 +343,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.setSettings( {
-						...validSettings,
 						snippetMode: 'per_post',
 						postTypes: [ 'page' ],
 					} );
@@ -357,6 +356,13 @@ describe( 'modules/reader-revenue-manager settings', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPostTypes()
 				).toEqual( [ 'post', 'page' ] );
+
+				// Verify that the snippet mode is saved as expected.
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSnippetMode()
+				).toEqual( 'per_post' );
 			} );
 		} );
 	} );
