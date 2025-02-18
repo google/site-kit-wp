@@ -11,9 +11,12 @@ namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
+use Google\Site_Kit\Tests\PluginStatusTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 class WooCommerceTest extends TestCase {
+
+	use PluginStatusTrait;
 
 	/**
 	 * WooCommerce instance.
@@ -22,35 +25,20 @@ class WooCommerceTest extends TestCase {
 	 */
 	private $woocommerce;
 
-	/**
-	 * Initial active plugin state array.
-	 */
-	private $initial_active_plugins_state;
-
 	public function set_up() {
 		parent::set_up();
-		$this->woocommerce                  = new WooCommerce( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->initial_active_plugins_state = $GLOBALS['wp_tests_options']['active_plugins'];
+		$this->woocommerce = new WooCommerce( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 	public function tear_down() {
 		parent::tear_down();
-		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
-	}
-
-	public function activate_woocommerce() {
-		$GLOBALS['wp_tests_options']['active_plugins'][] = 'woocommerce/woocommerce.php';
-	}
-
-	public function deactivate_woocommerce() {
-		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
+		$this->deactivate_all_test_plugins();
 	}
 
 	public function test_is_active() {
 		$this->assertFalse( $this->woocommerce->is_active() );
-		$this->activate_woocommerce();
+		$this->activate_plugin( 'woocommerce/woocommerce.php' );
 		$this->assertTrue( $this->woocommerce->is_active() );
-		$this->deactivate_woocommerce();
 	}
 
 	public function test_get_event_names() {
