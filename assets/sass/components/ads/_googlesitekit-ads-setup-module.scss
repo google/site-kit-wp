@@ -63,43 +63,39 @@
 			}
 
 			.divider {
-				height: 24px;
+				height: 100%;
 				position: relative;
 				text-align: center;
 			}
 
 			.divider-label {
-				background: $c-white;
 				color: $c-neutral-n-500;
 				display: inline-block;
 				font-size: 12px;
-				padding: 5px 10px;
-				position: relative;
-				z-index: 99;
-			}
+				padding-top: 90px;
 
-			.vertical-line {
-				background: $c-mercury;
-				display: inline-block;
-				height: 100%;
-				left: 50%;
-				position: absolute;
-				width: 1px;
+				&::before,
+				&::after {
+					background: $c-mercury;
+					content: "";
+					display: inline-block;
+					position: absolute;
 
-				@media (max-width: $width-desktop + 1 + px) {
-					display: none;
+					@media (min-width: $bp-desktop) {
+						height: 100%;
+						left: 50%;
+						width: 1px;
+					}
 				}
-			}
 
-			.horizontal-line {
-				background: $c-mercury;
-				height: 1px;
-				position: relative;
-				top: 15px;
-				width: 100%;
+				&::before {
+					height: calc(90px - 5px); // -5px for spacing above the label.
+					top: 0;
+				}
 
-				@media (min-width: $width-desktop + 1 + px) {
-					display: none;
+				&::after {
+					bottom: 0;
+					height: calc(100% - 90px - 22px); // -22px to shorten the height for the label and add additional space bellow.
 				}
 			}
 
