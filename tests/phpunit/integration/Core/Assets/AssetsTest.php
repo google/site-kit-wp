@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\PluginStatusTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,16 +29,12 @@ use Google\Site_Kit\Tests\TestCase;
 class AssetsTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use PluginStatusTrait;
 
 	/**
 	 * @var Assets
 	 */
 	private $assets;
-
-	/**
-	 * Initial active plugin state array.
-	 */
-	private $initial_active_plugins_state;
 
 	// The actions and filters below only get registered for users that can
 	// authorize with Site Kit.
@@ -59,8 +56,7 @@ class AssetsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->assets                       = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->initial_active_plugins_state = $GLOBALS['wp_tests_options']['active_plugins'];
+		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -75,23 +71,7 @@ class AssetsTest extends TestCase {
 			unregister_post_type( 'product' );
 		}
 
-		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
-	}
-
-	public function activate_woocommerce() {
-		$GLOBALS['wp_tests_options']['active_plugins'][] = 'woocommerce/woocommerce.php';
-	}
-
-	public function deactivate_woocommerce() {
-		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
-	}
-
-	public function activate_google_for_woocommerce() {
-		$GLOBALS['wp_tests_options']['active_plugins'][] = 'google-listings-and-ads/google-listings-and-ads.php';
-	}
-
-	public function deactivate_google_for_woocommerce() {
-		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
+		$this->deactivate_all_test_plugins();
 	}
 
 	public function test_register() {
@@ -326,7 +306,8 @@ class AssetsTest extends TestCase {
 
 	public function test_base_data__plugins_default_data_with_woocommerce_active() {
 		self::enable_feature( 'adsPax' );
-		$this->activate_woocommerce();
+		$this->activate_plugin( 'woocommerce/woocommerce.php' );
+
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
 			'wooCommerce'          => array(
@@ -341,13 +322,11 @@ class AssetsTest extends TestCase {
 		);
 
 		$this->assertEquals( $default_plugins_data, $data['plugins'] );
-
-		$this->deactivate_woocommerce();
 	}
 
 	public function test_base_data__plugins_default_data_with_google_for_woocommerce_active() {
 		self::enable_feature( 'adsPax' );
-		$this->activate_google_for_woocommerce();
+		$this->activate_plugin( 'google-listings-and-ads/google-listings-and-ads.php' );
 		$data                 = $this->get_inline_base_data();
 		$default_plugins_data = array(
 			'wooCommerce'          => array(
@@ -362,7 +341,5 @@ class AssetsTest extends TestCase {
 		);
 
 		$this->assertEquals( $default_plugins_data, $data['plugins'] );
-
-		$this->deactivate_google_for_woocommerce();
 	}
 }
