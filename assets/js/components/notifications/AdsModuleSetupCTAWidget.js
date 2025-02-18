@@ -54,6 +54,11 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 
+const breakpointSVGMap = {
+	[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
+	[ BREAKPOINT_TABLET ]: AdsSetupTabletSVG,
+};
+
 export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 
@@ -103,11 +108,6 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	if ( hideCTABanner ) {
 		return null;
 	}
-
-	const breakpointSVGMap = {
-		[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
-		[ BREAKPOINT_TABLET ]: AdsSetupTabletSVG,
-	};
 
 	return (
 		<Notification>
