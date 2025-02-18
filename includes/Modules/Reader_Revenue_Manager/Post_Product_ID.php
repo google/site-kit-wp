@@ -10,9 +10,9 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
-use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Meta_Setting_Trait;
+use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 
 /**
  * Class for associating product ID to post meta.
@@ -26,11 +26,11 @@ class Post_Product_ID {
 	use Meta_Setting_Trait;
 
 	/**
-	 * Module_Settings instance.
+	 * Settings instance.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @var Module_Settings
+	 * @var Settings
 	 */
 	private $settings;
 
@@ -39,10 +39,10 @@ class Post_Product_ID {
 	 *
 	 * @since 1.145.0
 	 *
-	 * @param Post_Meta       $post_meta Post_Meta instance.
-	 * @param Module_Settings $settings Module settings instance.
+	 * @param Post_Meta $post_meta Post_Meta instance.
+	 * @param Settings  $settings  Module settings instance.
 	 */
-	public function __construct( Post_Meta $post_meta, Module_Settings $settings ) {
+	public function __construct( Post_Meta $post_meta, Settings $settings ) {
 		$this->meta     = $post_meta;
 		$this->settings = $settings;
 	}
