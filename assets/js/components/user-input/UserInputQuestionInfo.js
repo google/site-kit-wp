@@ -56,7 +56,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 		<Fragment>
 			<Cell
 				className="googlesitekit-user-input__question-instructions"
-				lgSize={ 5 }
+				lgSize={ 6 }
 				mdSize={ 8 }
 				smSize={ 4 }
 			>
