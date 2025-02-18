@@ -146,8 +146,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Render the button in the WooCommerce form.
+		do_action( 'woocommerce_loaded' );
 		do_action( 'woocommerce_login_form_start' );
-		$output = $this->capture_action( 'wp_footer' );
+		$output = $this->capture_action( 'woocommerce_login_form_start' );
 
 		// CHeck the render button contains the expected class name.
 		$this->assertStringContainsString( 'woocommerce-form-row', $output );
