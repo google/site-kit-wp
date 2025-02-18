@@ -117,7 +117,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
 
-		$this->assertStringNotContainsString( 'woocommerce-form-row', $output );
+		// If WooCommerce is not active, the button should not be rendered in
+		// the WooCommerce form.
+		do_action( 'woocommerce_login_form_start' );
+		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
+		$this->assertStringNotContainsString( 'woocommerce-form-row', $woo_output );
 
 		// The Sign in with Google JS should always render, even on the front
 		// page.
@@ -148,10 +152,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Render the button in the WooCommerce form.
 		do_action( 'woocommerce_loaded' );
 		do_action( 'woocommerce_login_form_start' );
-		$output = $this->capture_action( 'woocommerce_login_form_start' );
+		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
 
 		// CHeck the render button contains the expected class name.
-		$this->assertStringContainsString( 'woocommerce-form-row', $output );
+		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output );
 
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
