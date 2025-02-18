@@ -473,7 +473,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				array(
 					'productID' => 'ABDCEFGH:advanced',
 				),
-				'ABDCEFGH:openaccess',
+				'openaccess',
 				'openaccess',
 			),
 			'with product ID set in post to none'      => array(
