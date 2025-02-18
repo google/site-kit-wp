@@ -90,6 +90,7 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
@@ -173,6 +174,15 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	protected $resource_data_availability_date;
 
 	/**
+	 * Audience_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -232,6 +242,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$this
 			);
 			$conversion_reporting_provider->register();
+		}
+
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+			$this->audience_settings = new Audience_Settings( $this->options );
+			$this->audience_settings->register();
 		}
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -704,6 +719,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$datapoints['POST:sync-audiences']                       = array(
 				'service'   => 'analyticsaudiences',
 				'shareable' => true,
+			);
+			$datapoints['GET:audience-settings']                     = array(
+				'service'   => 'analyticsaudiences',
+				'shareable' => true,
+			);
+			$datapoints['POST:save-audience-settings']               = array(
+				'service' => 'analyticsaudiences',
 			);
 		}
 
@@ -1469,6 +1491,38 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						self::normalize_property_id( $data['propertyID'] ),
 						$custom_dimension
 					);
+
+			case 'GET:audience-settings':
+				return function () {
+					$settings = $this->audience_settings->get();
+					return current_user_can( Permissions::MANAGE_OPTIONS ) ? $settings : array_intersect_key( $settings, array_flip( $this->audience_settings->get_view_only_keys() ) );
+				};
+
+			case 'POST:save-audience-settings':
+				if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+					return new WP_Error(
+						'forbidden',
+						__( 'User does not have permission to save audience settings.', 'google-site-kit' ),
+						array( 'status' => 403 )
+					);
+				}
+
+				return function () use ( $data ) {
+					$new_settings['audienceSegmentationSetupCompletedBy'] = get_current_user_id();
+
+					if ( isset( $data['availableAudiences'] ) && is_array( $data['availableAudiences'] ) ) {
+						$new_settings['audienceSegmentationEnabled'] = $data['audienceSegmentationEnabled'];
+					}
+
+					if ( isset( $data['availableAudiencesLastSyncedAt'] ) ) {
+						$new_settings['availableAudiencesLastSyncedAt'] = intval( $data['availableAudiencesLastSyncedAt'] );
+					}
+
+					$settings = $this->audience_settings->merge( $new_settings );
+
+					return $settings;
+				};
+
 			case 'POST:sync-audiences':
 				if ( ! $this->authentication->is_authenticated() ) {
 					return new WP_Error(
