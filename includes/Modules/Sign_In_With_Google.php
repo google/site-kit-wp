@@ -369,7 +369,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		 * - WooCommerce is active
 		 * - the user is not logged in
 		 */
-		if ( ! $this->is_connected() || ! $this->woocommerce->is_active() || is_user_logged_in() ) {
+		if ( ! $this->is_connected() || ! $this->is_woocommerce_active || is_user_logged_in() ) {
 			return;
 		}
 
