@@ -120,7 +120,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->existing_client_id        = new Existing_Client_ID( $this->options );
-		$this->is_woocommerce_active     = $this->is_woocommerce_active();
+		$this->is_woocommerce_active     = $this->check_is_woocommerce_active();
 		$this->sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
 	}
 
@@ -796,7 +796,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since n.e.x.t
 	 * @return bool True if active, false if not.
 	 */
-	public function is_woocommerce_active() {
+	public function check_is_woocommerce_active() {
 		return Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
 	}
 }
