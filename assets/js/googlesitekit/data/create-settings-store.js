@@ -54,6 +54,7 @@ export const INVARIANT_SETTINGS_NOT_CHANGED =
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
 const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
+const ROLLBACK_SETTING = 'ROLLBACK_SETTING';
 
 /**
  * Creates a store object that includes actions and selectors for managing settings.
@@ -194,6 +195,25 @@ export const createSettingsStore = (
 		},
 
 		/**
+		 * Returns a specific setting back to the current saved value.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {string} setting The setting to rollback.
+		 * @return {Object} Redux-style action.
+		 */
+		rollbackSetting( setting ) {
+			invariant( setting, 'setting is required.' );
+
+			return {
+				payload: {
+					setting,
+				},
+				type: ROLLBACK_SETTING,
+			};
+		},
+
+		/**
 		 * Saves all current settings to the server.
 		 *
 		 * @since 1.6.0
@@ -240,6 +260,24 @@ export const createSettingsStore = (
 				return {
 					...state,
 					settings: state.savedSettings,
+				};
+			}
+
+			case ROLLBACK_SETTING: {
+				const { setting } = payload;
+
+				if ( ! state.savedSettings[ setting ] ) {
+					return {
+						...state,
+					};
+				}
+
+				return {
+					...state,
+					settings: {
+						...( state.settings || {} ),
+						[ setting ]: state.savedSettings[ setting ],
+					},
 				};
 			}
 
