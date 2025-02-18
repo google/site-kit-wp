@@ -94,11 +94,21 @@ class Tag_GuardTest extends TestCase {
 				array(
 					'publicationID' => '12345',
 					'snippetMode'   => 'post_types',
+					// The `post` type is in the `postTypes` setting by default.
 				),
 				'',
 				true,
 			),
-			'with empty post-product-id, snippet mode of post types, and a different post types setting' => array(
+			'with empty post-product-id, snippet mode of post types, and the `post` type in the `postTypes` setting' => array(
+				array(
+					'publicationID' => '12345',
+					'snippetMode'   => 'post_types',
+					'postTypes'     => array( 'page', 'products', 'post' ),
+				),
+				'',
+				true,
+			),
+			'with empty post-product-id, snippet mode of post types, and the `post` type not in the `postTypes` setting' => array(
 				array(
 					'publicationID' => '12345',
 					'snippetMode'   => 'post_types',
