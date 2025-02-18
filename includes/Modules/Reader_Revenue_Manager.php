@@ -515,11 +515,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			// Extract the product ID from the setting, which is in the format
 			// of `publicationID:productID`.
-			if (
-				'openaccess' !== $product_id &&
-				strpos( $product_id, ':' ) !== false
-			) {
-				$product_id = substr( $product_id, strpos( $product_id, ':' ) + 1 );
+			if ( 'openaccess' !== $product_id ) {
+				$separator_index = strpos( $product_id, ':' );
+
+				if ( false !== $separator_index ) {
+					$product_id = substr( $product_id, $separator_index + 1 );
+				}
 			}
 		}
 
