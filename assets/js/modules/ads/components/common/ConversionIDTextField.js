@@ -38,7 +38,10 @@ import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 
-export default function ConversionIDTextField( { helperText } ) {
+export default function ConversionIDTextField( {
+	helperText,
+	showHeading = true,
+} ) {
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
 	);
@@ -71,9 +74,11 @@ export default function ConversionIDTextField( { helperText } ) {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
-			<h4 className="googlesitekit-settings-module__fields-group-title">
-				{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
-			</h4>
+			{ showHeading && (
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+				</h4>
+			) }
 
 			{ helperText && (
 				<p className="googlesitekit-settings-module__fields-group-helper-text">

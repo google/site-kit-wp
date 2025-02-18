@@ -40,5 +40,72 @@
 		.googlesitekit-setup-module__action {
 			margin-bottom: 32px;
 		}
+
+		.googlesitekit-setup-module--ads--setup-container {
+			align-items: center;
+			position: relative;
+
+			.googlesitekit-setup-module__action {
+				margin-bottom: 0;
+				margin-top: 20px;
+			}
+
+			h3 {
+				margin-top: 0;
+			}
+
+			.align-top {
+				align-self: flex-start;
+			}
+
+			.instructions {
+				margin-top: 5px;
+			}
+
+			.divider {
+				height: 24px;
+				position: relative;
+				text-align: center;
+			}
+
+			.divider-label {
+				background: $c-white;
+				color: $c-neutral-n-500;
+				display: inline-block;
+				font-size: 12px;
+				padding: 5px 10px;
+				position: relative;
+				z-index: 99;
+			}
+
+			.vertical-line {
+				background: $c-mercury;
+				display: inline-block;
+				height: 100%;
+				left: 50%;
+				position: absolute;
+				width: 1px;
+
+				@media (max-width: $width-desktop + 1 + px) {
+					display: none;
+				}
+			}
+
+			.horizontal-line {
+				background: $c-mercury;
+				height: 1px;
+				position: relative;
+				top: 15px;
+				width: 100%;
+
+				@media (min-width: $width-desktop + 1 + px) {
+					display: none;
+				}
+			}
+
+			.googlesitekit-ads-setup__form {
+				margin-top: 20px;
+			}
+		}
 	}
 }
