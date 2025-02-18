@@ -117,8 +117,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->existing_client_id = new Existing_Client_ID( $this->options );
-		$this->woocommerce        = new WooCommerce( $this->context );
+		$this->existing_client_id        = new Existing_Client_ID( $this->options );
+		$this->sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
+		$this->woocommerce               = new WooCommerce( $this->context );
 	}
 
 	/**
@@ -176,9 +177,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 
 		// Check to see if the module is connected before registering the block.
 		if ( $this->is_connected() ) {
-			// Load the Gutenberg block for this module.
-			$this->sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
-
 			$this->sign_in_with_google_block->register();
 		}
 	}
