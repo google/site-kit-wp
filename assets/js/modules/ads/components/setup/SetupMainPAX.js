@@ -211,7 +211,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 					( ! showPaxAppStep || ! hasAdwordsScope ) && (
 						<Fragment>
 							<Row className="googlesitekit-setup-module--ads--setup-container">
-								<span className="vertical-line"></span>
 								<Cell
 									smSize={ 8 }
 									mdSize={ 8 }
@@ -263,7 +262,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 									mdSize={ 8 }
 									lgSize={ 2 }
 								>
-									<div className="horizontal-line"></div>
 									<span className="divider-label">
 										{ __( 'OR', 'google-site-kit' ) }
 									</span>
