@@ -54,6 +54,12 @@ export function getAvailableDateRanges() {
 		);
 
 	return {
+		// FIXME: This 1 day range included for testing, do not include in production.
+		'last-1-days': {
+			slug: 'last-1-days',
+			label: label( 1 ),
+			days: 1,
+		},
 		'last-7-days': {
 			slug: 'last-7-days',
 			label: label( 7 ),
