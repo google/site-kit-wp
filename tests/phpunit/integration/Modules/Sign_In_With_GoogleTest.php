@@ -149,12 +149,20 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
+		// Make sure the WooCommerce plugin is considered active.
+		// TODO: Activate WooCommerce plugin so `check_is_woocommerce_active()`
+		// returns `true`
+
 		// Render the button in the WooCommerce form.
 		do_action( 'woocommerce_loaded' );
 		do_action( 'woocommerce_login_form_start' );
 		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
 
-		// CHeck the render button contains the expected class name.
+		// Deactivate WooCommerce plugin.
+		// TODO: Deactivate WooCommerce plugin so
+		// `check_is_woocommerce_active()` returns `true`
+
+		// Check the render button contains the expected class name.
 		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output );
 
 		// Revert home and siteurl and https value.
