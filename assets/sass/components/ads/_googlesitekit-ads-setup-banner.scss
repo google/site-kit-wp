@@ -33,14 +33,27 @@
 		}
 
 		.googlesitekit-setup-cta-banner__svg-wrapper--ads-setup-cta {
+			display: flex;
 			height: 100%;
+			justify-content: center;
 			position: relative;
+
+			@media (min-width: $bp-tablet) {
+				padding-top: $br-md;
+			}
+
+			@media (min-width: $bp-desktop) {
+				padding-top: unset;
+			}
 
 			svg {
 				height: 100%;
-				position: absolute;
+				max-height: 143px;
 
 				@media (min-width: $bp-desktop) {
+					max-height: unset;
+					max-width: 100%;
+					position: absolute;
 					right: 34px;
 				}
 
