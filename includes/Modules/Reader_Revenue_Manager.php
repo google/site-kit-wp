@@ -36,14 +36,12 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
-use Google\Site_Kit\Core\Storage\Term_Meta;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Term_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
@@ -84,13 +82,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.104.0
+	 * @since n.e.x.t
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -101,8 +99,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
-		$post_meta = new Post_Meta();
-
+		$post_meta             = new Post_Meta();
 		$this->post_product_id = new Post_Product_ID( $post_meta, $this->get_settings() );
 	}
 
@@ -514,6 +511,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			if ( is_singular() && ! empty( $post_product_id ) ) {
 				$product_id = $post_product_id;
+			}
+
+			// Extract the product ID from the setting, which is in the format
+			// of `publicationID:productID`.
+			if (
+				'openaccess' !== $product_id &&
+				strpos( $product_id, ':' ) !== false
+			) {
+				$product_id = substr( $product_id, strpos( $product_id, ':' ) + 1 );
 			}
 		}
 
