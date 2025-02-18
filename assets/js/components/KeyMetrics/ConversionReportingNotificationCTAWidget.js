@@ -61,7 +61,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isViewed, setIsViewed ] = useState( false );
-	const [ skipDismissTracking, setSkipDismissTracking ] = useState( false );
+	const trackDismissalRef = useRef( true );
 
 	const conversionReportingNotificationRef = useRef();
 	const intersectionEntry = useIntersection(
@@ -163,14 +163,14 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 					timestamp;
 
 				// Handle internal tracking for lost events banner dismissal.
-				if ( ! skipDismissTracking ) {
+				if ( trackDismissalRef.current ) {
 					trackEvent(
 						`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
 						'dismiss_notification',
 						'conversion_reporting'
 					);
 				}
-			} else if ( ! skipDismissTracking ) {
+			} else if ( trackDismissalRef.current ) {
 				// Handle internal tracking.
 				conversionReportingDetectedEventsTracking(
 					conversionReportingDetectedEventsTrackingArgs,
@@ -182,14 +182,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			await saveConversionReportingSettings(
 				conversionReportingSettings
 			);
-
-			setSkipDismissTracking( false );
 		},
 		[
 			viewContext,
 			conversionReportingDetectedEventsTrackingArgs,
 			saveConversionReportingSettings,
-			skipDismissTracking,
 		]
 	);
 
@@ -203,7 +200,6 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const handleAddMetricsClick = useCallback( () => {
 		if ( shouldShowInitialCalloutForTailoredMetrics ) {
 			setIsSaving( true );
-			setSkipDismissTracking( true );
 			setUserInputSetting(
 				'includeConversionEvents',
 				userInputPurposeConversionEvents
@@ -218,7 +214,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			viewContext,
 			'confirm_add_new_conversion_metrics'
 		);
-
+		trackDismissalRef.current = false;
 		dismissCallout();
 	}, [
 		setUserInputSetting,
@@ -234,9 +230,8 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 	const handleSelectMetricsClick = useCallback(
 		( clickContext = '' ) => {
+			trackDismissalRef.current = false;
 			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-
-			setSkipDismissTracking( true );
 
 			// Handle internal tracking of lost events variant.
 			if ( 'lostEvents' === clickContext ) {
@@ -394,16 +389,18 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		}
 	);
 	let ctaLabel = __( 'Select metrics', 'google-site-kit' );
+	let dismissCTALabel = __( 'Maybe later', 'google-site-kit' );
 
 	if ( shouldShowInitialCalloutForTailoredMetrics ) {
 		ctaLabel = __( 'Add metrics', 'google-site-kit' );
 	}
 	if ( shouldShowCalloutForNewEvents ) {
 		description = __(
-			'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics.',
+			'We’ve extended your metrics selection based on your website events',
 			'google-site-kit'
 		);
 		ctaLabel = __( 'View metrics', 'google-site-kit' );
+		dismissCTALabel = __( 'Got it', 'google-site-kit' );
 	}
 
 	return (
@@ -422,6 +419,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 				<ConversionReportingDashboardSubtleNotification
 					description={ description }
 					ctaLabel={ ctaLabel }
+					dismissCTALabel={ dismissCTALabel }
 					handleCTAClick={
 						shouldShowInitialCalloutForTailoredMetrics
 							? handleAddMetricsClick

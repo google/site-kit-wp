@@ -720,7 +720,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						testElement.className ===
 							'googlesitekit-subtle-notification__secondary_description' &&
 						content ===
-							'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics.'
+							'We’ve extended your metrics selection based on your website events'
 				)
 			).toBeInTheDocument();
 

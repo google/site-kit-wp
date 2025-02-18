@@ -151,7 +151,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				{
 					dimensionValues: [
 						{
-							value: '(not set)',
+							value: '789',
 						},
 					],
 					metricValues: [
@@ -205,40 +205,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				subjectToThresholding: null,
 				timeZone: 'Europe/London',
 			},
-		};
-
-		const dataAvailabilityReportWithNoSetValues = {
-			dimensionHeaders: [
-				{
-					name: `customEvent:${ customDimension }`,
-				},
-			],
-			metricHeaders: [
-				{
-					name: 'eventCount',
-					type: 'TYPE_INTEGER',
-				},
-			],
-			rows: [
-				{
-					dimensionValues: [
-						{
-							value: '(not set)',
-						},
-					],
-					metricValues: [
-						{
-							value: '123',
-						},
-					],
-				},
-			],
-			rowCount: 1,
-			metadata: {
-				currencyCode: 'USD',
-				timeZone: 'Europe/London',
-			},
-			kind: 'analyticsData#runReport',
 		};
 
 		let previousSiteKitModulesData;
@@ -325,8 +291,14 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					startDate: createDate,
 					endDate: referenceDate,
 					dimensions: [ `customEvent:${ customDimension }` ],
+					dimensionFilters: {
+						[ `customEvent:${ customDimension }` ]: {
+							filterType: 'emptyFilter',
+							notExpression: true,
+						},
+					},
 					metrics: [ { name: 'eventCount' } ],
-					limit: 2,
+					limit: 1,
 				};
 
 				if ( report ) {
@@ -420,14 +392,6 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					() => {
 						setupCustomDimensionDataAvailability( {
 							report: dataAvailabilityReportWithNoRows,
-						} );
-					},
-				],
-				[
-					'the report contains no set values',
-					() => {
-						setupCustomDimensionDataAvailability( {
-							report: dataAvailabilityReportWithNoSetValues,
 						} );
 					},
 				],

@@ -276,6 +276,8 @@ exports.GOOGLESITEKIT_VERSION = googleSiteKitVersion
 const corePackages = [
 	'api-fetch',
 	'components',
+	'block-editor',
+	'blocks',
 	'compose',
 	'data',
 	'dom-ready',
