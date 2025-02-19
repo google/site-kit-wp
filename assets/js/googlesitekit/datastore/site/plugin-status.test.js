@@ -23,20 +23,22 @@ import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from './constants';
+import { CORE_SITE, PLUGINS } from './constants';
 
 describe( 'core/site plugin status', () => {
 	const baseInfoVar = '_googlesitekitBaseData';
 	const baseInfo = {
 		adminURL: 'http://something.test/wp-admin',
-		woocommerce: {
-			active: false,
-			installed: true,
-		},
-		googleForWooCommerce: {
-			active: false,
-			installed: false,
-			adsConnected: false,
+		plugins: {
+			wooCommerce: {
+				active: false,
+				installed: true,
+			},
+			googleForWooCommerce: {
+				active: false,
+				installed: false,
+				adsConnected: false,
+			},
 		},
 	};
 
@@ -54,11 +56,15 @@ describe( 'core/site plugin status', () => {
 
 	describe( 'selectors', () => {
 		describe.each( [
-			[ 'isWooCommerceActive', 'woocommerce', false ],
-			[ 'isGoogleForWooCommercePresent', 'googleForWooCommerce', false ],
+			[ 'isWooCommerceActive', PLUGINS.WOOCOMMERCE, false ],
+			[
+				'isGoogleForWooCommercePresent',
+				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
+				false,
+			],
 			[
 				'isGoogleForWooCommerceAdsAccountLinked',
-				'googleForWooCommerce',
+				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
 				false,
 			],
 		] )( '%s', ( selector, pluginKey, value ) => {
@@ -73,7 +79,8 @@ describe( 'core/site plugin status', () => {
 					.select( CORE_SITE )
 					[ selector ]();
 
-				expect( siteInfo ).toHaveProperty( pluginKey );
+				expect( siteInfo ).toHaveProperty( 'plugins' );
+				expect( siteInfo.plugins ).toHaveProperty( pluginKey );
 				expect( selectorValue ).toEqual( value );
 			} );
 
@@ -92,14 +99,16 @@ describe( 'core/site plugin status', () => {
 		describe( 'shouldShowWooCommerceRedirectModal', () => {
 			it( 'uses a resolver to load site info, then returns true if modal should be shown', async () => {
 				global[ baseInfoVar ] = {
-					woocommerce: {
-						active: true,
-						installed: true,
-					},
-					googleForWooCommerce: {
-						active: true,
-						installed: true,
-						adsConnected: false,
+					plugins: {
+						wooCommerce: {
+							active: true,
+							installed: true,
+						},
+						googleForWooCommerce: {
+							active: true,
+							installed: true,
+							adsConnected: false,
+						},
 					},
 				};
 
@@ -150,14 +159,16 @@ describe( 'core/site plugin status', () => {
 			it( 'uses a resolver to load site info, then returns the correct URL when WooCommerce is active but Google for WooCommerce is not', async () => {
 				global[ baseInfoVar ] = {
 					...baseInfo,
-					woocommerce: {
-						active: true,
-						installed: true,
-					},
-					googleForWooCommerce: {
-						active: false,
-						installed: false,
-						adsConnected: false,
+					plugins: {
+						wooCommerce: {
+							active: true,
+							installed: true,
+						},
+						googleForWooCommerce: {
+							active: false,
+							installed: false,
+							adsConnected: false,
+						},
 					},
 				};
 
@@ -179,14 +190,16 @@ describe( 'core/site plugin status', () => {
 			it( 'uses a resolver to load site info, then returns the correct URL when both WooCommerce and Google for WooCommerce are active', async () => {
 				global[ baseInfoVar ] = {
 					...baseInfo,
-					woocommerce: {
-						active: true,
-						installed: true,
-					},
-					googleForWooCommerce: {
-						active: true,
-						installed: true,
-						adsConnected: false,
+					plugins: {
+						wooCommerce: {
+							active: true,
+							installed: true,
+						},
+						googleForWooCommerce: {
+							active: true,
+							installed: true,
+							adsConnected: false,
+						},
 					},
 				};
 
