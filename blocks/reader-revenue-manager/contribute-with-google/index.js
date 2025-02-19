@@ -14,19 +14,33 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
 import { registerBlockType } from '@wordpress-core/blocks';
 
 /**
  * Internal dependencies
  */
-import Edit from './Edit';
+import Data, { dispatch, select, resolveSelect } from 'googlesitekit-data';
+import { registerStore } from '../../../assets/js/modules/reader-revenue-manager';
+import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import metadata from './block.json';
+import Edit from './Edit';
 
-/**
- * Registers the block.
- *
- * @since n.e.x.t
- */
-registerBlockType( metadata.name, {
-	edit: Edit,
+registerStore( Data );
+
+// Since we aren't currently able to use `useSelect()` in the components,
+// we need to resolve selectors before registering the block
+// to ensure the data is available when the block is rendered.
+Promise.all( [
+	resolveSelect( CORE_MODULES ).getModules(),
+	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
+] ).then( () => {
+	registerBlockType( metadata.name, {
+		edit() {
+			return <Edit select={ select } dispatch={ dispatch } />;
+		},
+	} );
 } );
