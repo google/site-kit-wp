@@ -1511,7 +1511,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$new_settings['audienceSegmentationSetupCompletedBy'] = get_current_user_id();
 
 					if ( isset( $data['availableAudiences'] ) && is_array( $data['availableAudiences'] ) ) {
-						$new_settings['audienceSegmentationEnabled'] = $data['audienceSegmentationEnabled'];
+						$new_settings['availableAudiences'] = $data['availableAudiences'];
 					}
 
 					if ( isset( $data['availableAudiencesLastSyncedAt'] ) ) {

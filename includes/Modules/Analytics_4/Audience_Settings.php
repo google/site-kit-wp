@@ -62,25 +62,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	 */
 	protected function get_sanitize_callback() {
 		return function ( $option ) {
-			if ( isset( $option['availableAudiences'] ) ) {
-				if ( ! is_array( $option['availableAudiences'] ) ) {
-					$option['availableAudiences'] = null;
-				}
-			}
-
-			if ( isset( $option['availableAudiencesLastSyncedAt'] ) ) {
-				if ( ! is_int( $option['availableAudiencesLastSyncedAt'] ) ) {
-					$option['availableAudiencesLastSyncedAt'] = 0;
-				}
-			}
-
-			if ( isset( $option['audienceSegmentationSetupCompletedBy'] ) ) {
-				if ( ! is_int( $option['audienceSegmentationSetupCompletedBy'] ) ) {
-					$option['audienceSegmentationSetupCompletedBy'] = null;
-				}
-			}
-
-			return $option;
+			return $this->sanitize( $option );
 		};
 	}
 
@@ -110,28 +92,51 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	 */
 	public function merge( $settings ) {
 		$existing_settings = $this->get();
+		$new_settings      = $this->sanitize( $settings, $existing_settings );
+		$updated_settings  = array_merge( $existing_settings, $new_settings );
 
-		$merged_settings = array_merge(
-			$existing_settings,
-			array_filter(
-				$settings,
-				function ( $key ) {
-					return in_array(
-						$key,
-						array(
-							'availableAudiences',
-							'audienceSegmentationSetupCompletedBy',
-							'availableAudiencesLastSyncedAt',
-						),
-						true
-					);
-				},
-				ARRAY_FILTER_USE_KEY
-			)
-		);
+		$this->set( $updated_settings );
 
-		$this->set( $merged_settings );
+		return $updated_settings;
+	}
 
-		return $merged_settings;
+	/**
+	 * Sanitizes the settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $settings The settings to sanitize.
+	 * @param array $existing_settings The existing settings to merge with.
+	 *
+	 * @return array The sanitized settings.
+	 */
+	private function sanitize( $settings, $existing_settings = null ) {
+		$option = $existing_settings ?? $this->get_default();
+
+		if ( isset( $settings['availableAudiences'] ) ) {
+			if ( is_array( $settings['availableAudiences'] ) ) {
+				$option['availableAudiences'] = $settings['availableAudiences'];
+			} else {
+				$option['availableAudiences'] = null;
+			}
+		}
+
+		if ( isset( $settings['availableAudiencesLastSyncedAt'] ) ) {
+			if ( is_int( $settings['availableAudiencesLastSyncedAt'] ) ) {
+				$option['availableAudiencesLastSyncedAt'] = $settings['availableAudiencesLastSyncedAt'];
+			} else {
+				$option['availableAudiencesLastSyncedAt'] = 0;
+			}
+		}
+
+		if ( isset( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
+			if ( is_int( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
+				$option['audienceSegmentationSetupCompletedBy'] = $settings['audienceSegmentationSetupCompletedBy'];
+			} else {
+				$option['audienceSegmentationSetupCompletedBy'] = null;
+			}
+		}
+
+		return $option;
 	}
 }
