@@ -58,7 +58,9 @@ Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
@@ -77,7 +79,7 @@ PendingVerification.args = {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3, 1 ] );
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -92,7 +94,7 @@ ActionRequired.args = {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3, 1 ] );
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -113,7 +115,7 @@ WithoutModuleAccess.args = {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3, 1 ] );
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
