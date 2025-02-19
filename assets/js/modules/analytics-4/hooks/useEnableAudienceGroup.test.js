@@ -92,12 +92,8 @@ describe( 'useEnableAudienceGroup', () => {
 			},
 		] );
 
-		registry.dispatch( CORE_USER ).receiveCapabilities( {
-			googlesitekit_manage_options: true,
-		} );
-
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			availableAudiences: audiencesFixture,
+			availableAudiences: null,
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 			propertyID: '123456789',
 		} );
@@ -262,12 +258,12 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', async () => {
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
 		} );
 
-		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_type' ],
 			status: 200,
 		} );
@@ -308,12 +304,12 @@ describe( 'useEnableAudienceGroup', () => {
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
+		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 			status: 200,
 			body: audiencesFixture,
 		} );
 
-		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_type' ],
 			status: 200,
 		} );
