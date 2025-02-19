@@ -81,6 +81,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	private $post_product_id;
 
 	/**
+	 * Tag_Guard instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Tag_Guard
+	 */
+	private $tag_guard;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -102,6 +111,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		$post_meta             = new Post_Meta();
 		$this->post_product_id = new Post_Product_ID( $post_meta, $this->get_settings() );
+
+		$this->tag_guard = new Tag_Guard( $this->get_settings(), $this->post_product_id );
 	}
 
 	/**
@@ -121,7 +132,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$this->post_product_id->register();
 
-			$contribute_with_google = new Contribute_With_Google( $this->context );
+			$contribute_with_google = new Contribute_With_Google( $this->context, $this->tag_guard );
 			$contribute_with_google->register();
 		}
 
@@ -500,17 +511,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			return;
 		}
 
-		$post_product_id = '';
-
-		if (
-			Feature_Flags::enabled( 'rrmModuleV2' ) &&
-			is_singular()
-		) {
-			$post_product_id = $this->post_product_id->get( get_the_ID() );
-		}
-
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$tag->use_guard( new Tag_Guard( $module_settings, $post_product_id ) );
+		$tag->use_guard( $this->tag_guard );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( ! $tag->can_register() ) {
@@ -520,10 +522,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$product_id = 'openaccess';
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			$product_id = $settings['productID'];
+			$product_id      = $settings['productID'];
+			$post_product_id = '';
 
-			if ( is_singular() && ! empty( $post_product_id ) ) {
-				$product_id = $post_product_id;
+			if ( is_singular() ) {
+				$post_product_id = $this->post_product_id->get( get_the_ID() );
+
+				if ( ! empty( $post_product_id ) ) {
+					$product_id = $post_product_id;
+				}
 			}
 
 			// Extract the product ID from the setting, which is in the format

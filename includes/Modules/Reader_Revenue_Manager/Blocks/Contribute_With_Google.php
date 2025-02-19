@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Blocks;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 
 /**
  * Contribute with Google Gutenberg block.
@@ -27,14 +28,25 @@ class Contribute_With_Google {
 	protected $context;
 
 	/**
+	 * Tag_Guard instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Tag_Guard
+	 */
+	private $tag_guard;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context $context Plugin context.
+	 * @param Context   $context   Plugin context.
+	 * @param Tag_Guard $tag_guard Tag_Guard instance.
 	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
+	public function __construct( Context $context, Tag_Guard $tag_guard ) {
+		$this->context   = $context;
+		$this->tag_guard = $tag_guard;
 	}
 
 	/**
@@ -64,6 +76,11 @@ class Contribute_With_Google {
 	 * @return string Rendered block.
 	 */
 	public function render_callback() {
+		// If the tag is not placed, do not render the block.
+		if ( ! $this->tag_guard->can_activate() ) {
+			return '';
+		}
+
 		return '<button swg-standard-button="contribution"></button>';
 	}
 }
