@@ -40,7 +40,7 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		// Reader Revenue Manager
+		// Reader Revenue Manager block.
 		'googlesitekit-reader-revenue-manager-block-editor':
 			'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
 		// Sign in with Google block.
