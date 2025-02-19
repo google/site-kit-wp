@@ -970,7 +970,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Plugins data array.
+	 * @return {Array|undefined} Plugins data array.
 	 */
 	getPluginsData: getSiteInfoProperty( 'plugins' ),
 };
