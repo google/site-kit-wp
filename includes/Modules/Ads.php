@@ -72,7 +72,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Conversion_Tracking instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 * @var Conversion_Tracking
 	 */
 	protected $conversion_tracking;
@@ -80,7 +80,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Class constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @param Context             $context        Context object.
 	 * @param Options|null        $options        Options object.
@@ -374,7 +374,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Returns events supported by active providers from the conversion tracking infrastructure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @return array Array of supported conversion events, or empty array.
 	 */

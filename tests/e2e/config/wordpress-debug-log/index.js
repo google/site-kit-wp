@@ -48,7 +48,7 @@ let container;
  * i.e. `NODE_OPTIONS=--experimental-abortcontroller node ...`
  * See https://nodejs.org/docs/latest-v14.x/api/globals.html#globals_class_abortcontroller.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  */
 const logStreamAbortController = new AbortController();
 
