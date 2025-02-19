@@ -156,15 +156,19 @@ export default function useEnableAudienceGroup( {
 		}
 
 		if ( isMounted() ) {
+			function newArrayIfNotEmpty( array ) {
+				return array.length ? [] : array;
+			}
+
 			if ( error ) {
 				setApiErrors( [ error ] );
-				setFailedAudiences( [] );
+				setFailedAudiences( newArrayIfNotEmpty );
 			} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
 				setFailedAudiences( failedSiteKitAudienceSlugs );
-				setApiErrors( [] );
+				setApiErrors( newArrayIfNotEmpty );
 			} else {
-				setApiErrors( [] );
-				setFailedAudiences( [] );
+				setApiErrors( newArrayIfNotEmpty );
+				setFailedAudiences( newArrayIfNotEmpty );
 			}
 
 			setIsSaving( false );
