@@ -71,9 +71,7 @@ export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
 			const { supportedConversionEvents } = payload;
-			const moduleData = {
-				supportedConversionEvents,
-			};
+			const moduleData = { supportedConversionEvents };
 
 			return {
 				...state,
