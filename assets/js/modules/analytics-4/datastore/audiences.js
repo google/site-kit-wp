@@ -430,7 +430,6 @@ const baseActions = {
 		const registry = yield commonActions.getRegistry();
 		const { dispatch, resolveSelect, select } = registry;
 
-		// TODO: Verify this is needed.
 		yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
 		);
