@@ -70,15 +70,9 @@ export const actions = {
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const {
-				supportedConversionEvents,
-				woocommerce,
-				googleListingsAndAds,
-			} = payload;
+			const { supportedConversionEvents } = payload;
 			const moduleData = {
 				supportedConversionEvents,
-				woocommerce,
-				googleListingsAndAds,
 			};
 
 			return {
