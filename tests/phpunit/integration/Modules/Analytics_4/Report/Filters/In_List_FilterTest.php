@@ -1,23 +1,23 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics_4\Report\Dimension_Filter\In_List_FilterTest
+ * Class Google\Site_Kit\Tests\Modules\Analytics_4\Report\Filters\In_List_FilterTest
  *
- * @package   Google\Site_Kit\Tests\Modules\Analytics_4\Report\Dimension_Filter
+ * @package   Google\Site_Kit\Tests\Modules\Analytics_4\Report\Filters
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Modules\Analytics_4\Report\Dimension_Filter;
+namespace Google\Site_Kit\Tests\Modules\Analytics_4\Report\Filters;
 
-use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\In_List_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Filters\In_List_Filter;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
  * @group Analytics_4
  * @group Report
- * @group Dimension_Filter
+ * @group Filters
  */
 class In_List_FilterTest extends TestCase {
 
