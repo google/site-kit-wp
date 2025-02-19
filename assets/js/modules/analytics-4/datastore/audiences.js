@@ -540,10 +540,14 @@ const baseActions = {
 			configuredAudiences.push( ...existingConfiguredAudiences );
 
 			// Resync available audiences to ensure the newly created audiences are available.
-			const { response: newAvailableAudiences } =
+			const { error, response: newAvailableAudiences } =
 				yield commonActions.await(
 					dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 				);
+
+			if ( error ) {
+				return { error };
+			}
 
 			// Find the audience in the newly available audiences that matches the required slug.
 			// If a matching audience is found and it's not already in the configured audiences, add it.
