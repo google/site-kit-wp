@@ -51,14 +51,16 @@ describe( 'core/site site info', () => {
 		],
 		productPostType: [ 'product' ],
 		isMultisite: false,
-		woocommerce: {
-			active: false,
-			installed: true,
-		},
-		googleForWooCommerce: {
-			active: false,
-			installed: false,
-			adsLinked: false,
+		plugins: {
+			wooCommerce: {
+				active: false,
+				installed: true,
+			},
+			googleForWooCommerce: {
+				active: false,
+				installed: false,
+				adsLinked: false,
+			},
 		},
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
@@ -424,8 +426,7 @@ describe( 'core/site site info', () => {
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 			[ 'getConsentModeRegions', 'consentModeRegions' ],
 			[ 'isMultisite', 'isMultisite' ],
-			[ 'getWooCommercePluginStatus', 'woocommerce' ],
-			[ 'getGoogleForWooCommercePluginStatus', 'googleListingsAndAds' ],
+			[ 'getPluginsData', 'plugins' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
