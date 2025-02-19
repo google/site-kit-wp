@@ -421,14 +421,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
 			$assets[] = new Script(
-				'googlesitekit-reader-revenue-manager-block-editor',
+				'googlesitekit-reader-revenue-manager-block-editor-plugin',
 				array(
-					'src'           => $base_url . 'js/blocks/googlesitekit-reader-revenue-manager-block-editor.js',
+					'src'           => $this->context->url( 'dist/assets/js/blocks/googlesitekit-reader-revenue-manager-block-editor.js' ),
 					'dependencies'  => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
-					)
+					),
+					'execution'     => 'defer',
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			);
 
