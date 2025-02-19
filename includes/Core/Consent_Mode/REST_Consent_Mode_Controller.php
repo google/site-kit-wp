@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
@@ -197,30 +198,20 @@ class REST_Consent_Mode_Controller {
 							);
 
 							if ( ! $is_active ) {
-								if ( ! function_exists( 'get_plugins' ) ) {
-									require_once ABSPATH . 'wp-admin/includes/plugin.php';
-								}
+								$consent_mode_plugin_status = Plugin_Status::get_plugin_status( $plugin, $plugin_uri );
 
-								$plugins = get_plugins();
-
-								if ( array_key_exists( $plugin, $plugins ) ) {
+								if ( Plugin_Status::PLUGIN_STATUS_INSTALLED === $consent_mode_plugin_status ) {
 									$installed = true;
-								} else {
-									foreach ( $plugins as $plugin_file => $installed_plugin ) {
-										if ( $installed_plugin['PluginURI'] === $plugin_uri ) {
-											$plugin    = $plugin_file;
-											$installed = true;
-											break;
-										}
-									}
 								}
 
 								// Alternate wp_nonce_url without esc_html breaking query parameters.
 								$nonce_url = function ( $action_url, $action ) {
 									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
 								};
+
+								$plugin       = Plugin_Status::$plugin_path;
 								$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
-								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
+								$install_url  = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
 
 								$response['wpConsentPlugin'] = array(
 									'installed'   => $installed,

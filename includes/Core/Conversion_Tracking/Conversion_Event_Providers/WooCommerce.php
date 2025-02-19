@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -33,7 +34,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @return bool True if WooCommerce is active, false otherwise.
 	 */
 	public function is_active() {
-		return did_action( 'woocommerce_loaded' ) > 0;
+		return Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
 	}
 
 	/**

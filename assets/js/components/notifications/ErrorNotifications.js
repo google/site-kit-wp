@@ -31,6 +31,9 @@ import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/
 export default function ErrorNotifications() {
 	return (
 		<Fragment>
+			{ /* We will eventually refactor the InternalServerError component to not show
+			 in the usual Banner Notification area but as a floating snackbar in BNR3. This
+			 is why it has not been added to the new queue of notifications. */ }
 			<InternalServerError />
 			<Notifications areaSlug={ NOTIFICATION_AREAS.ERRORS } />
 		</Fragment>

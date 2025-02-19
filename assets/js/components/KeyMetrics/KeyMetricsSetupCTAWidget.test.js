@@ -39,7 +39,6 @@ import {
 	muteFetch,
 	provideGatheringDataState,
 	provideUserAuthentication,
-	getAnalytics4HasZeroDataReportOptions,
 	fireEvent,
 	waitFor,
 } from '../../../../tests/js/test-utils';
@@ -185,12 +184,14 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 
 		// Then provide an empty report to ensure "gathering data" is true for Analytics 4.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{},
-				{ options: getAnalytics4HasZeroDataReportOptions( registry ) }
-			);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{},
+			{
+				options: registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSampleReportArgs(),
+			}
+		);
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsDataAvailableOnLoad( true );

@@ -274,18 +274,7 @@ const baseActions = {
 								return ids;
 							}
 
-							const productIDSeparatorIndex = name.indexOf( ':' );
-
-							if ( productIDSeparatorIndex !== -1 ) {
-								return [
-									...ids,
-									name.substring(
-										productIDSeparatorIndex + 1
-									),
-								];
-							}
-
-							return ids;
+							return [ ...ids, name ];
 						},
 						[]
 					);

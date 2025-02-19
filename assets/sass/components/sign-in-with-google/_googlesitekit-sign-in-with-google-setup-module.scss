@@ -20,7 +20,7 @@
 
 	.googlesitekit-setup-cta-banner__svg-wrapper--sign-in-with-google-setup-cta {
 
-		@media (min-width: $bp-wpdb3) {
+		@media (min-width: $bp-xxxlarge) {
 			height: 100%;
 			position: relative;
 		}
@@ -39,7 +39,7 @@
 				max-height: 274px;
 			}
 
-			@media (min-width: $bp-wpdb3) {
+			@media (min-width: $bp-xxxlarge) {
 				max-height: 300px;
 				position: absolute;
 				right: 0;

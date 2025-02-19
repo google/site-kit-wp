@@ -32,6 +32,7 @@ import { forwardRef } from '@wordpress/element';
  */
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import WarningSVG from '../../../../../svg/icons/warning.svg';
+import StarFill from '../../../../../svg/icons/star-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
 const SubtleNotification = forwardRef(
@@ -61,6 +62,8 @@ const SubtleNotification = forwardRef(
 									type === 'success',
 								'googlesitekit-subtle-notification--warning':
 									type === 'warning',
+								'googlesitekit-subtle-notification--new-feature':
+									type === 'new-feature',
 							}
 						) }
 					>
@@ -71,6 +74,9 @@ const SubtleNotification = forwardRef(
 							) }
 							{ type === 'warning' && ! icon && (
 								<WarningSVG width={ 24 } height={ 24 } />
+							) }
+							{ type === 'new-feature' && ! icon && (
+								<StarFill width={ 24 } height={ 24 } />
 							) }
 						</div>
 
@@ -94,11 +100,11 @@ const SubtleNotification = forwardRef(
 
 SubtleNotification.propTypes = {
 	className: PropTypes.string,
-	title: PropTypes.node.isRequired,
+	title: PropTypes.node,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
-	type: PropTypes.string,
+	type: PropTypes.oneOf( [ 'success', 'warning', 'new-feature' ] ),
 	icon: PropTypes.object,
 };
 
