@@ -41,8 +41,6 @@ const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
 export const initialState = {
 	moduleData: {
 		supportedConversionEvents: undefined,
-		woocommerce: undefined,
-		googleListingsAndAds: undefined,
 	},
 };
 
