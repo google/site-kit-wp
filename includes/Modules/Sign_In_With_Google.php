@@ -85,7 +85,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Sign in with Google Block instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 * @var Sign_In_With_Google_Block
 	 */
 	protected $sign_in_with_google_block;
@@ -357,7 +357,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * Renders the placeholder Sign in with Google div for the WooCommerce
 	 * login form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 */
 	private function render_signinwithgoogle_woocommerce() {
 		/**

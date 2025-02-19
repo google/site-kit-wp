@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\EmptyFilter as Goo
 /**
  * Class for parsing the empty filter.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Empty_Filter implements Filter {
 	/**
 	 * Parses the empty filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 * @param string $name The filter field name.
 	 * @param string $value The filter value (not used).
 	 *
