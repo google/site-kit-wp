@@ -55,9 +55,7 @@ const reportOptions = {
 	dimensions: [ 'customEvent:googlesitekit_post_author' ],
 	dimensionFilters: {
 		'customEvent:googlesitekit_post_author': {
-			filterType: 'stringFilter',
-			matchType: 'EXACT',
-			value: '(not set)',
+			filterType: 'emptyFilter',
 			notExpression: true,
 		},
 	},

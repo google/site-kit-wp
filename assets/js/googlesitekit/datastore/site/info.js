@@ -170,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
+				siteLocale,
 				timezone,
 				usingProxy,
 				webStoriesActive,
@@ -208,6 +209,7 @@ export const reducer = ( state, { payload, type } ) => {
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
+					siteLocale,
 					timezone,
 					usingProxy,
 					webStoriesActive,
@@ -301,6 +303,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			usingProxy,
 			webStoriesActive,
@@ -344,6 +347,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			postTypes,
 			usingProxy: !! usingProxy,
@@ -658,6 +662,18 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets a site's locale.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|undefined)} The site locale.
+	 */
+	getSiteLocale: createRegistrySelector(
+		( select ) => () =>
+			select( CORE_SITE ).getSiteInfo()?.siteLocale?.replace( '_', '-' )
+	),
 
 	/**
 	 * Gets a setup error code, if one exists.

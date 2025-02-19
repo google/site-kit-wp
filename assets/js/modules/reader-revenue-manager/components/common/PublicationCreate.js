@@ -49,8 +49,8 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublications()
 	);
-	const serviceURL = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
+	const createPublicationURL = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getCreatePublicationLinkURL()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -110,7 +110,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 					</p>
 					<div className="googlesitekit-setup-module__action">
 						<Button
-							href={ serviceURL }
+							href={ createPublicationURL }
 							target="_blank"
 							trailingIcon={
 								<ExternalIcon width={ 14 } height={ 14 } />
