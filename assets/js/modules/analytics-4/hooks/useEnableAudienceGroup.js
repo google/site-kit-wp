@@ -156,8 +156,8 @@ export default function useEnableAudienceGroup( {
 		}
 
 		if ( isMounted() ) {
-			function newArrayIfNotEmpty( array ) {
-				return array.length ? [] : array;
+			function newArrayIfNotEmpty( currentArray ) {
+				return currentArray.length ? [] : currentArray;
 			}
 
 			if ( error ) {
