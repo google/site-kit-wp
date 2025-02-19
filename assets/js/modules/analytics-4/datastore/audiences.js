@@ -369,6 +369,13 @@ const baseActions = {
 		return response;
 	},
 
+	/**
+	 * Retrieves the initial set of selected audiences from the existing audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `configuredAudiences` or `error`.
+	 */
 	*getSelectionFromExistingAudiences() {
 		const registry = yield commonActions.getRegistry();
 		const { dispatch, resolveSelect, select } = registry;
@@ -412,6 +419,13 @@ const baseActions = {
 		return { configuredAudiences };
 	},
 
+	/**
+	 * Checks if the user needs to grant the Analytics 4 edit scope to create audiences or custom dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `needsScope` or `error`.
+	 */
 	*needsAnalytics4EditScope() {
 		const registry = yield commonActions.getRegistry();
 		const { dispatch, resolveSelect, select } = registry;
