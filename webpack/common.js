@@ -277,6 +277,7 @@ const corePackages = [
 	'api-fetch',
 	'block-editor',
 	'blocks',
+	'components',
 	'compose',
 	'data',
 	'dom-ready',
