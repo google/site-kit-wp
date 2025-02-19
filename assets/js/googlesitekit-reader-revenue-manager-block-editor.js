@@ -36,6 +36,8 @@ import { registerPlugin } from '@wordpress-core/plugins';
 import Data, { dispatch, select, resolveSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from './googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './modules/reader-revenue-manager/datastore/constants';
+// We need to import `registerStore` from `./modules/reader-revenue-manager/datastore` rather than `./modules/reader-revenue-manager`
+// to avoid pulling in all the other modules imported in the top-level RRM module.
 import { registerStore } from './modules/reader-revenue-manager/datastore';
 import GoogleLogoIcon from '../svg/graphics/logo-g.svg';
 
