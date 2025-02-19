@@ -18,12 +18,12 @@
  * WordPress dependencies
  */
 import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
-import { Notice } from '@wordpress-core/components';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { EditorButton, UnavailableNotice } from '../common';
 
 /**
  * Sign in with Google Block Edit component.
@@ -39,14 +39,12 @@ export default function Edit() {
 		<Fragment>
 			<InspectorControls>
 				<div className="block-editor-block-card">
-					<Notice status="warning" isDismissible={ false }>
-						This is a notice.
-					</Notice>
+					<UnavailableNotice />
 				</div>
 			</InspectorControls>
 			<div { ...blockProps }>
 				<div className="googlesitekit-blocks-reader-revenue-manager">
-					Contribute with Google
+					<EditorButton>Contribute with Google</EditorButton>
 				</div>
 			</div>
 		</Fragment>

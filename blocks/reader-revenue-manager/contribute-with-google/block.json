@@ -7,5 +7,6 @@
 	"category": "widgets",
 	"icon": "google",
 	"description": "Allow users to make voluntary contributions using Reader Revenue Manager.",
-	"textdomain": "google-site-kit"
+	"textdomain": "google-site-kit",
+	"editorStyle": "blocks-reader-revenue-manager-editor-styles"
 }

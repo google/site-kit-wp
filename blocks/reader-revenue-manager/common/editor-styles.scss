@@ -1,0 +1,41 @@
+/**
+ * Contribute/Subscribe with Google block editor styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Styles copied over from the actual inline button.
+.googlesitekit-blocks-reader-revenue-manager-button {
+	align-items: center;
+	background-color: #fff;
+	border: 1px solid #dadce0;
+	border-radius: 4px;
+	color: #1a73e8;
+	display: flex;
+	font-family: "Google Sans", Roboto-Regular, sans-serif, arial;
+	font-size: 14px;
+	font-weight: 500;
+	height: 44px;
+	justify-content: center;
+	letter-spacing: 0.014px;
+	min-height: 44px;
+	min-width: 237px;
+	outline: 0;
+	width: 237px;
+
+	svg {
+		margin-right: 8px;
+	}
+}
