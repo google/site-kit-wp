@@ -188,8 +188,7 @@ export const reducer = ( state, { payload, type } ) => {
 				consentModeRegions,
 				anyoneCanRegister,
 				isMultisite,
-				woocommerce,
-				googleForWooCommerce,
+				plugins,
 			} = payload.siteInfo;
 
 			return {
@@ -227,8 +226,7 @@ export const reducer = ( state, { payload, type } ) => {
 					consentModeRegions,
 					anyoneCanRegister,
 					isMultisite,
-					woocommerce,
-					googleForWooCommerce,
+					plugins,
 				},
 			};
 		}
@@ -321,8 +319,7 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
-			woocommerce,
-			googleForWooCommerce,
+			plugins,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -365,8 +362,7 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
-			woocommerce,
-			googleForWooCommerce,
+			plugins,
 		} );
 	},
 };
@@ -969,26 +965,14 @@ export const selectors = {
 	isMultisite: getSiteInfoProperty( 'isMultisite' ),
 
 	/**
-	 * Gets WooCommerce plugin status.
+	 * Gets plugins data.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Plugin status array.
+	 * @return {(Array|undefined)} Plugins data array.
 	 */
-	getWooCommercePluginStatus: getSiteInfoProperty( 'woocommerce' ),
-
-	/**
-	 * Gets Google for WooCommerce plugin status.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Plugin status array.
-	 */
-	getGoogleForWooCommercePluginStatus: getSiteInfoProperty(
-		'googleForWooCommerce'
-	),
+	getPluginsData: getSiteInfoProperty( 'plugins' ),
 };
 
 export default {
