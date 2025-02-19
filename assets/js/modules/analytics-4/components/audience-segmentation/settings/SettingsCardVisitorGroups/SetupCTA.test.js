@@ -160,6 +160,9 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 		);
 
 		expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetched(
+			syncAvailableCustomDimensionsEndpoint
+		);
 
 		await act( waitForDefaultTimeouts );
 	} );
