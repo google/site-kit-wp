@@ -16,23 +16,33 @@
  * limitations under the License.
  */
 
-import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
+ * WordPress dependencies
+ */
 import { addQueryArgs } from '@wordpress/url';
 
+/**
+ * Internal dependencies
+ */
+import { createRegistrySelector } from 'googlesitekit-data';
+import { AVAILABLE_PLUGINS, CORE_SITE, PLUGINS } from './constants';
+
 function getPluginStatusProperty( propName, plugin ) {
+	invariant( propName, 'propName is required.' );
+	invariant( plugin, 'plugin is required.' );
+	invariant( AVAILABLE_PLUGINS.includes( plugin ), 'Invalid plugin.' );
+
 	return createRegistrySelector( ( select ) => () => {
-		const {
-			getWooCommercePluginStatus,
-			getGoogleForWooCommercePluginStatus,
-		} = select( CORE_SITE );
+		const { getPluginsData } = select( CORE_SITE );
 
-		const getPluginStatus =
-			plugin === 'WooCommerce'
-				? getWooCommercePluginStatus
-				: getGoogleForWooCommercePluginStatus;
+		const pluginData = getPluginsData() || [];
+		const pluginStatus = pluginData[ plugin ] || [];
 
-		const pluginStatus = getPluginStatus() || [];
 		return pluginStatus[ propName ];
 	} );
 }
@@ -46,7 +56,10 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} Plugin status array.
 	 */
-	isWooCommerceActive: getPluginStatusProperty( 'active', 'WooCommerce' ),
+	isWooCommerceActive: getPluginStatusProperty(
+		'active',
+		PLUGINS.WOOCOMMERCE
+	),
 
 	/**
 	 * Gets Google for WooCommerce installed property from plugin status.
@@ -58,7 +71,7 @@ export const selectors = {
 	 */
 	isGoogleForWooCommercePresent: getPluginStatusProperty(
 		'installed',
-		'GoogleForWooCommerce'
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
 
 	/**
@@ -71,7 +84,7 @@ export const selectors = {
 	 */
 	isGoogleForWooCommerceActive: getPluginStatusProperty(
 		'active',
-		'GoogleForWooCommerce'
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
 
 	/**
@@ -84,7 +97,7 @@ export const selectors = {
 	 */
 	isGoogleForWooCommerceAdsAccountLinked: getPluginStatusProperty(
 		'adsConnected',
-		'GoogleForWooCommerce'
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
 
 	/**
