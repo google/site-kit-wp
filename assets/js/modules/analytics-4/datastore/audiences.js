@@ -442,15 +442,12 @@ const baseActions = {
 			return { needsScope: true };
 		}
 
-		const { error: getSelectionError, configuredAudiences } =
-			yield commonActions.await(
-				dispatch(
-					MODULES_ANALYTICS_4
-				).getSelectionFromExistingAudiences()
-			);
+		const { error, configuredAudiences } = yield commonActions.await(
+			dispatch( MODULES_ANALYTICS_4 ).getSelectionFromExistingAudiences()
+		);
 
-		if ( getSelectionError ) {
-			return { error: getSelectionError };
+		if ( error ) {
+			return { error };
 		}
 
 		return { needsScope: configuredAudiences.length === 0 };
