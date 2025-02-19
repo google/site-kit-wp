@@ -91,7 +91,7 @@ export default function useEnableAudienceGroup( {
 			return { error: syncDimensionsError };
 		}
 
-		if ( ! failedAudiences?.length && ! hasAnalytics4EditScope ) {
+		if ( ! hasAnalytics4EditScope ) {
 			const { error, needsScope } = await needsAnalytics4EditScope();
 
 			if ( error ) {
