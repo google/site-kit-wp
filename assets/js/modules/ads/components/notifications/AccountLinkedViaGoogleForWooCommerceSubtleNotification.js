@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,7 +36,6 @@ import SubtleNotification from '../../../../googlesitekit/notifications/componen
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { useCallback } from 'react';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
