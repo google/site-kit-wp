@@ -1,22 +1,20 @@
-import { registerPlugin } from '@wordpress-core/plugins'; // Uses the mock due to moduleNameMapper
-import { registerReaderRevenueManagerPlugin } from './plugin-registration';
+jest.mock( '@wordpress-core/plugins', () => ( {
+	registerPlugin: jest.fn(),
+} ) );
+
+import { registerPlugin } from '@wordpress-core/plugins';
 import { select, resolveSelect } from 'googlesitekit-data';
-import SettingPanel from './components/SettingPanel';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../assets/js/modules/reader-revenue-manager/datastore/constants';
-
-jest.mock( 'googlesitekit-data', () => ( {
-	select: jest.fn(),
-	resolveSelect: jest.fn(),
-} ) );
+import { registerReaderRevenueManagerPlugin } from './plugin-registration';
+import SettingPanel from './components/SettingPanel';
 
 describe( 'registerReaderRevenueManagerPlugin', () => {
 	beforeEach( () => {
-		jest.clearAllMocks(); // Reset mock calls before each test
+		jest.clearAllMocks();
 	} );
 
 	it( 'should register the plugin if the module is connected', async () => {
-		// Mock `resolveSelect` behavior
 		resolveSelect.mockImplementation( ( store ) => {
 			if ( store === CORE_MODULES ) {
 				return { getModules: jest.fn().mockResolvedValue( {} ) };
@@ -26,16 +24,14 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 			}
 		} );
 
-		// Mock `select` behavior
 		select.mockImplementation( ( store ) => {
 			if ( store === CORE_MODULES ) {
 				return { isModuleConnected: jest.fn().mockReturnValue( true ) };
 			}
 		} );
 
-		await registerReaderRevenueManagerPlugin();
+		await registerReaderRevenueManagerPlugin(); // Ensure the promise resolves
 
-		// Ensure `registerPlugin` is called with expected arguments
 		expect( registerPlugin ).toHaveBeenCalledWith(
 			'googlesitekit-rrm-plugin',
 			{
@@ -64,7 +60,6 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 
 		await registerReaderRevenueManagerPlugin();
 
-		// Ensure `registerPlugin` is NOT called
 		expect( registerPlugin ).not.toHaveBeenCalled();
 	} );
 } );
