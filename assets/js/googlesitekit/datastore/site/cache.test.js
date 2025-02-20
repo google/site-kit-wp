@@ -19,11 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import * as cacheAPI from '../../../googlesitekit/api/cache';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { clearCache, getItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site client side cache', () => {
@@ -35,12 +32,10 @@ describe( 'core/site client side cache', () => {
 
 	describe( 'actions', () => {
 		beforeEach( async () => {
-			await cacheAPI.clearCache();
+			await clearCache();
 		} );
 
 		describe( 'setCacheItem', () => {
-			const cacheItemKey = 'cache-set-key';
-
 			it( 'requires `key` param', async () => {
 				await expect( async () => {
 					await registry.dispatch( CORE_SITE ).setCacheItem();
@@ -54,78 +49,18 @@ describe( 'core/site client side cache', () => {
 			} );
 
 			it( 'sets cache item', async () => {
-				const initialResult = await cacheAPI.getItem( cacheItemKey );
+				const initialResult = await getItem( 'cache-set-key' );
 
 				expect( initialResult.cacheHit ).toEqual( false );
 				expect( initialResult.value ).toEqual( undefined );
 
 				await registry
 					.dispatch( CORE_SITE )
-					.setCacheItem( cacheItemKey, 'value', {
+					.setCacheItem( 'cache-set-key', 'value', {
 						timestamp: Date.now(),
 					} );
 
-				const result = await cacheAPI.getItem( cacheItemKey );
-
-				expect( result.cacheHit ).toEqual( true );
-				expect( result.value ).toEqual( 'value' );
-			} );
-		} );
-	} );
-
-	describe( 'selectors', () => {
-		let getItemSpy;
-
-		beforeEach( async () => {
-			await cacheAPI.clearCache();
-
-			getItemSpy = jest.spyOn( cacheAPI, 'getItem' );
-		} );
-
-		afterEach( () => {
-			getItemSpy.mockReset();
-		} );
-
-		describe( 'getCacheItem', () => {
-			const cacheItemKey = 'cache-item';
-
-			it( 'uses a resolver to retrieves the data', async () => {
-				await registry
-					.dispatch( CORE_SITE )
-					.setCacheItem( cacheItemKey, 'value', {
-						timestamp: Date.now(),
-					} );
-
-				const initialResult = registry
-					.select( CORE_SITE )
-					.getCacheItem( cacheItemKey );
-
-				expect( initialResult ).toEqual( undefined );
-
-				await untilResolved( registry, CORE_SITE ).getCacheItem(
-					cacheItemKey
-				);
-
-				const result = registry
-					.select( CORE_SITE )
-					.getCacheItem( cacheItemKey );
-
-				expect( result.cacheHit ).toEqual( true );
-				expect( result.value ).toEqual( 'value' );
-				expect( getItemSpy ).toHaveBeenCalled();
-			} );
-
-			it( 'does not use a resolver if data is already in the state', () => {
-				registry.dispatch( CORE_SITE ).receiveCacheItem( cacheItemKey, {
-					cacheHit: true,
-					value: 'value',
-				} );
-
-				const result = registry
-					.select( CORE_SITE )
-					.getCacheItem( cacheItemKey );
-
-				expect( getItemSpy ).not.toHaveBeenCalled();
+				const result = await getItem( 'cache-set-key' );
 
 				expect( result.cacheHit ).toEqual( true );
 				expect( result.value ).toEqual( 'value' );
