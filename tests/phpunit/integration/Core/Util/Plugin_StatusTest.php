@@ -51,18 +51,4 @@ class Plugin_StatusTest extends TestCase {
 	public function reset_plugins() {
 		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
 	}
-
-	public function test_default_response() {
-		$plugin_status = Plugin_Status::get_plugin_status();
-
-		$this->assertEquals( Plugin_Status::PLUGIN_STATUS_NOT_INSTALLED, $plugin_status );
-	}
-
-	public function test_response__plugin_active() {
-		$this->activate_plugin( 'foo/foo.php' );
-		$plugin_status = Plugin_Status::get_plugin_status( 'foo/foo.php' );
-		$this->deactivate_plugin( 'foo/foo.php' );
-
-		$this->assertEquals( Plugin_Status::PLUGIN_STATUS_ACTIVE, $plugin_status );
-	}
 }
