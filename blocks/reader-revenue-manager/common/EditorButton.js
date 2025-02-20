@@ -15,13 +15,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * Internal dependencies
  */
 import GoogleLogoIcon from '../../../assets/svg/graphics/logo-g.svg';
 
-export default function EditorButton( { children } ) {
+export default function EditorButton( { children, disabled } ) {
 	return (
-		<button className="googlesitekit-blocks-reader-revenue-manager-button">
+		<button
+			disabled={ disabled }
+			className={ classnames(
+				'googlesitekit-blocks-reader-revenue-manager-button',
+				{
+					'googlesitekit-blocks-reader-revenue-manager-button--disabled':
+						disabled,
+				}
+			) }
+		>
 			<GoogleLogoIcon height="18" width="18" />
 			{ children }
 		</button>

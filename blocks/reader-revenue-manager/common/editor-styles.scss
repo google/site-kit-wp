@@ -38,4 +38,9 @@
 	svg {
 		margin-right: 8px;
 	}
+
+	&.googlesitekit-blocks-reader-revenue-manager-button--disabled {
+		filter: grayscale(50%);
+		opacity: 0.5;
+	}
 }
