@@ -423,7 +423,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Script(
 				'googlesitekit-reader-revenue-manager-block-editor-plugin',
 				array(
-					'src'           => $this->context->url( 'dist/assets/js/blocks/googlesitekit-reader-revenue-manager-block-editor.js' ),
+					'src'           => $this->context->url( 'dist/assets/js/blocks/reader-revenue-manager/index.js' ),
 					'dependencies'  => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
