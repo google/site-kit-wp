@@ -29,17 +29,32 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import { useCallback } from 'react';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
 	Notification,
 } ) {
+	const onSetupCallback = useActivateModuleCallback( 'ads' );
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const onCTAClick = useCallback( () => {
+		dismissNotification( id );
+
+		onSetupCallback();
+	}, [ onSetupCallback, dismissNotification, id ] );
+
 	return (
 		<Notification>
 			<SubtleNotification
+				type="new-feature"
 				description={ __(
 					'We’ve detected an existing Ads account via Google for WooCommerce plugin. Now you can also create a new Ads account using Site Kit.',
 					'google-site-kit'
@@ -47,7 +62,6 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 				dismissCTA={
 					<Dismiss
 						id={ id }
-						primary
 						dismissLabel={ __(
 							'Keep existing account',
 							'google-site-kit'
@@ -57,12 +71,15 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 				additionalCTA={
 					<CTALinkSubtle
 						id={ id }
+						tertiary
 						ctaLabel={ __(
 							'Create new account',
 							'google-site-kit'
 						) }
+						onCTAClick={ onCTAClick }
 					/>
 				}
+				reverseCTAs
 			/>
 		</Notification>
 	);
