@@ -15,13 +15,13 @@ use Google\Site_Kit\Context;
 /**
  * Sign in with Google Gutenberg Block.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  */
 class Sign_In_With_Google_Block {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 * @var Context
 	 */
 	protected $context;
@@ -29,7 +29,7 @@ class Sign_In_With_Google_Block {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -40,7 +40,7 @@ class Sign_In_With_Google_Block {
 	/**
 	 * Register this block.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 */
 	public function register() {
 		add_action(
@@ -60,7 +60,7 @@ class Sign_In_With_Google_Block {
 	/**
 	 * Render callback for the Sign in with Google block.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 * @return string Rendered block.
 	 */
 	public function render_callback() {

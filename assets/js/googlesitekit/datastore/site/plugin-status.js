@@ -22,11 +22,6 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
@@ -49,137 +44,68 @@ function getPluginStatusProperty( propName, plugin ) {
 
 export const selectors = {
 	/**
-	 * Gets WooCommerce active property from plugin status.
+	 * Determines whether the WooCommerce plugin is installed or not.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status array.
+	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
 	 */
-	isWooCommerceActive: getPluginStatusProperty(
+	isWooCommerceInstalled: getPluginStatusProperty(
+		'installed',
+		PLUGINS.WOOCOMMERCE
+	),
+
+	/**
+	 * Determines whether the WooCommerce plugin is activated or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
+	 */
+	isWooCommerceActivated: getPluginStatusProperty(
 		'active',
 		PLUGINS.WOOCOMMERCE
 	),
 
 	/**
-	 * Gets Google for WooCommerce installed property from plugin status.
+	 * Determines whether the Google for WooCommerce plugin is installed or not.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
+	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
 	 */
-	isGoogleForWooCommercePresent: getPluginStatusProperty(
+	isGoogleForWooCommerceInstalled: getPluginStatusProperty(
 		'installed',
 		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
 
 	/**
-	 * Gets Google for WooCommerce active property from plugin status.
+	 * Determines whether the Google for WooCommerce plugin is activated or not.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
+	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
 	 */
-	isGoogleForWooCommerceActive: getPluginStatusProperty(
+	isGoogleForWooCommerceActivated: getPluginStatusProperty(
 		'active',
 		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
 
 	/**
-	 * Gets Google for WooCommerce adsConnected property from plugin status.
+	 * Determines whether the Google for WooCommerce plugin has the linked Ads account.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Plugin status property value. Undefined if data is not resolved.
+	 * @return {boolean|undefined} True if the plugin has linked Ads account, false if it doesn't have it, and undefined if data is being resolved.
 	 */
-	isGoogleForWooCommerceAdsAccountLinked: getPluginStatusProperty(
+	hasGoogleForWooCommerceAdsAccount: getPluginStatusProperty(
 		'adsConnected',
 		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
-	),
-
-	/**
-	 * Determines whether the WooCommerce redirect modal should be displayed.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Returns `true` if the modal should be shown, `false` if it shouldn't, and `undefined` if data is not yet resolved.
-	 */
-	shouldShowWooCommerceRedirectModal: createRegistrySelector(
-		( select ) => () => {
-			const {
-				isWooCommerceActive,
-				isGoogleForWooCommerceActive,
-				isGoogleForWooCommerceAdsAccountLinked,
-			} = select( CORE_SITE );
-
-			if (
-				isWooCommerceActive() === undefined ||
-				isGoogleForWooCommerceActive() === undefined ||
-				isGoogleForWooCommerceAdsAccountLinked() === undefined
-			) {
-				return undefined;
-			}
-
-			if (
-				( isWooCommerceActive() &&
-					isGoogleForWooCommerceActive() === false ) ||
-				( isWooCommerceActive() &&
-					isGoogleForWooCommerceActive() &&
-					isGoogleForWooCommerceAdsAccountLinked() === false )
-			) {
-				return true;
-			}
-
-			return false;
-		}
-	),
-
-	/**
-	 * Gets Google for WooCommerce redirect URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} The appropriate redirect URL, or `undefined` if data is not resolved.
-	 */
-	getGoogleForWooCommerceRedirectURI: createRegistrySelector(
-		( select ) => () => {
-			const {
-				getAdminURL,
-				isWooCommerceActive,
-				isGoogleForWooCommerceActive,
-			} = select( CORE_SITE );
-
-			const adminURL = getAdminURL();
-
-			if ( ! adminURL ) {
-				return undefined;
-			}
-
-			if (
-				isWooCommerceActive() &&
-				isGoogleForWooCommerceActive() === false
-			) {
-				return addQueryArgs( `${ adminURL }/plugin-install.php`, {
-					s: 'google-listings-and-ads',
-					tab: 'search',
-					type: 'term',
-				} );
-			}
-
-			if ( isWooCommerceActive() && isGoogleForWooCommerceActive() ) {
-				const googleDashboardPath =
-					encodeURIComponent( '/google/dashboard' );
-
-				return `${ adminURL }/admin.php?page=wc-admin&path=${ googleDashboardPath }`;
-			}
-
-			return '';
-		}
 	),
 };
 
