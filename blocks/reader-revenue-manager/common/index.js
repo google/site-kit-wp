@@ -15,4 +15,3 @@
  */
 
 export { default as EditorButton } from './EditorButton';
-export { default as UnavailableNotice } from './UnavailableNotice';

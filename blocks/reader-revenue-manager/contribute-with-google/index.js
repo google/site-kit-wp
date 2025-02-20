@@ -22,7 +22,7 @@ import { registerBlockType } from '@wordpress-core/blocks';
 /**
  * Internal dependencies
  */
-import Data, { dispatch, select, resolveSelect } from 'googlesitekit-data';
+import Data, { select, resolveSelect } from 'googlesitekit-data';
 // We need to import `registerStore` from `./modules/reader-revenue-manager/datastore` rather than `./modules/reader-revenue-manager`
 // to avoid pulling in all the other modules imported in the top-level RRM module.
 import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
@@ -37,12 +37,12 @@ registerStore( Data );
 // we need to resolve selectors before registering the block
 // to ensure the data is available when the block is rendered.
 Promise.all( [
-	resolveSelect( CORE_MODULES ).getModules(),
+	resolveSelect( CORE_MODULES ).getModule( 'reader-revenue-manager' ),
 	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 ] ).then( () => {
 	registerBlockType( metadata.name, {
 		edit() {
-			return <Edit select={ select } dispatch={ dispatch } />;
+			return <Edit select={ select } />;
 		},
 	} );
 } );

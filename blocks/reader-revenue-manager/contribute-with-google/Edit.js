@@ -18,33 +18,119 @@
  * WordPress dependencies
  */
 import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
-import { Fragment } from '@wordpress/element';
+import { ExternalLink, Notice } from '@wordpress-core/components';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { EditorButton, UnavailableNotice } from '../common';
+import { EditorButton } from '../common';
+import { CORE_EDITOR } from '../common/constants';
+import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
- * Sign in with Google Block Edit component.
+ * Contribute with Google Block Edit component.
  *
  * @since n.e.x.t
  *
+ * @param {Object} props        Component props.
+ * @param {Object} props.select Data store select function.
  * @return {Element} Element to render.
  */
-export default function Edit() {
+export default function Edit( { select } ) {
 	const blockProps = useBlockProps();
+
+	const hasModuleAccess = select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+		'reader-revenue-manager'
+	);
+
+	const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+	const { publicationID, paymentOption, snippetMode, postTypes } = settings;
+
+	const serviceURL = select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+		path: 'reader-revenue-manager',
+		query: {
+			publication: publicationID,
+		},
+	} );
+
+	const metaKey = `googlesitekit_rrm_${ publicationID }:productID`;
+
+	const postProductID =
+		select( CORE_EDITOR ).getEditedPostAttribute( 'meta' )?.[ metaKey ] ||
+		'';
+	const postType = select( CORE_EDITOR ).getCurrentPostType();
+
+	let notice = '';
+	let disabled = false;
+
+	if ( paymentOption !== 'contributions' ) {
+		disabled = true;
+
+		if ( hasModuleAccess ) {
+			notice = createInterpolateElement(
+				__(
+					'You need to set up a contributions request in Reader Revenue Manager to use this block. <a>Go to Reader Revenue Manager</a>',
+					'google-site-kit'
+				),
+				{
+					a: <ExternalLink href={ serviceURL } />,
+				}
+			);
+		} else {
+			notice = __(
+				'You need to set up a contributions request in Reader Revenue Manager to use this block. Contact your administrator.',
+				'google-site-kit'
+			);
+		}
+	}
+
+	if (
+		postProductID === 'none' ||
+		( ! postProductID && snippetMode === 'per_post' ) ||
+		( ! postProductID &&
+			snippetMode === 'post_types' &&
+			! postTypes.includes( postType ) )
+	) {
+		disabled = true;
+
+		if ( hasModuleAccess ) {
+			notice = createInterpolateElement(
+				__(
+					'This post does not include the Reader Revenue Manager snippet. Configure the snippet for this post in the post settings sidebar.',
+					'google-site-kit'
+				),
+				{
+					a: <ExternalLink href={ serviceURL } />,
+				}
+			);
+		} else {
+			notice = __(
+				'This post does not include the Reader Revenue Manager snippet. Contact your administrator',
+				'google-site-kit'
+			);
+		}
+	}
 
 	return (
 		<Fragment>
-			<InspectorControls>
-				<div className="block-editor-block-card">
-					<UnavailableNotice />
-				</div>
-			</InspectorControls>
+			{ notice && (
+				<InspectorControls>
+					<div className="block-editor-block-card">
+						<Notice status="warning" isDismissible={ false }>
+							{ notice }
+						</Notice>
+					</div>
+				</InspectorControls>
+			) }
 			<div { ...blockProps }>
 				<div className="googlesitekit-blocks-reader-revenue-manager">
-					<EditorButton>Contribute with Google</EditorButton>
+					<EditorButton disabled={ disabled }>
+						Contribute with Google
+					</EditorButton>
 				</div>
 			</div>
 		</Fragment>

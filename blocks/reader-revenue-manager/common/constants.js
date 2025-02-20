@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { Notice } from '@wordpress-core/components';
-
-export default function UnavailableNotice() {
-	return (
-		<Notice status="warning" isDismissible={ false }>
-			This is a notice.
-		</Notice>
-	);
-}
+export const CORE_EDITOR = 'core/editor';
