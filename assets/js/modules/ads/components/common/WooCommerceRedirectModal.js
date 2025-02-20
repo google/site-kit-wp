@@ -20,11 +20,13 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useMemo } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	Button,
 	Dialog,
@@ -32,17 +34,44 @@ import {
 	DialogFooter,
 	DialogTitle,
 } from 'googlesitekit-components';
-import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
-import ExternalIcon from '../../../../../svg/icons/external.svg';
-import { useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
+import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
 	onDismiss,
 } ) {
+	const adminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL()
+	);
+	const isWooCommerceActive = useSelect( ( select ) =>
+		select( CORE_SITE ).isWooCommerceActivated()
+	);
+	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
+		select( CORE_SITE ).isGoogleForWooCommerceActivated()
+	);
+
+	const googleForWooCommerceRedirectURI = useMemo( () => {
+		if ( ! adminURL || ! isWooCommerceActive ) {
+			return undefined;
+		}
+
+		if ( isGoogleForWooCommerceActive === false ) {
+			return addQueryArgs( `${ adminURL }/plugin-install.php`, {
+				s: 'google-listings-and-ads',
+				tab: 'search',
+				type: 'term',
+			} );
+		}
+
+		const googleDashboardPath = encodeURIComponent( '/google/dashboard' );
+		return `${ adminURL }/admin.php?page=wc-admin&path=${ googleDashboardPath }`;
+	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
+
 	const { setCacheItem } = useDispatch( CORE_SITE );
 
 	const markModalDismissed = useCallback( async () => {
@@ -50,6 +79,14 @@ export default function WooCommerceRedirectModal( {
 			ttl: 0,
 		} );
 	}, [ setCacheItem ] );
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const getGoogleForWooCommerceRedirectURI = useCallback( async () => {
+		await markModalDismissed();
+
+		navigateTo( googleForWooCommerceRedirectURI );
+	}, [ navigateTo, googleForWooCommerceRedirectURI ] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
@@ -92,6 +129,7 @@ export default function WooCommerceRedirectModal( {
 				</Button>
 				<Button
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					onClick={ getGoogleForWooCommerceRedirectURI }
 				>
 					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
 				</Button>
