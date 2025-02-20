@@ -106,8 +106,8 @@ export const registerWidgets = ( widgets ) => {
 	}
 };
 
-export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'setup-success-notification-ads', {
+export const ADS_NOTIFICATIONS = {
+	'setup-success-notification-ads': {
 		Component: SetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -125,9 +125,8 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
-	} );
-
-	notifications.registerNotification( 'setup-success-notification-pax', {
+	},
+	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -144,38 +143,43 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
-	} );
+	},
+	'account-linked-via-google-for-woocommerce': {
+		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: ( { select, resolveSelect } ) => {
+			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
+			// on the data being resolved in getSiteInfo() selector.
+			resolveSelect( CORE_SITE ).getSiteInfo();
 
-	notifications.registerNotification(
-		'account-linked-via-google-for-woocommerce',
-		{
-			Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
-			priority: 10,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			checkRequirements: ( { select, resolveSelect } ) => {
-				// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
-				// on the data being resolved in getSiteInfo() selector.
-				resolveSelect( CORE_SITE ).getSiteInfo();
+			const {
+				isWooCommerceActivated,
+				isGoogleForWooCommerceActivated,
+				hasGoogleForWooCommerceAdsAccount,
+			} = select( CORE_SITE );
 
-				const {
-					isWooCommerceActivated,
-					isGoogleForWooCommerceActivated,
-					isGoogleForWooCommerceLinked,
-				} = select( CORE_SITE );
+			if (
+				isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				hasGoogleForWooCommerceAdsAccount()
+			) {
+				return true;
+			}
 
-				if (
-					isWooCommerceActivated() &&
-					isGoogleForWooCommerceActivated() &&
-					isGoogleForWooCommerceLinked()
-				) {
-					return true;
-				}
+			return false;
+		},
+		featureFlag: 'adsPax',
+		isDismissible: true,
+	},
+};
 
-				return false;
-			},
-			featureFlag: 'adsPax',
-			isDismissible: true,
-		}
-	);
+export const registerNotifications = ( notifications ) => {
+	for ( const notificationID in ADS_NOTIFICATIONS ) {
+		notifications.registerNotification(
+			notificationID,
+			ADS_NOTIFICATIONS[ notificationID ]
+		);
+	}
 };
