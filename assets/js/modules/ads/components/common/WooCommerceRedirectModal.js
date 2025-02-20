@@ -34,8 +34,9 @@ import {
 	DialogFooter,
 	DialogTitle,
 } from 'googlesitekit-components';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
@@ -72,28 +73,25 @@ export default function WooCommerceRedirectModal( {
 		return `${ adminURL }/admin.php?page=wc-admin&path=${ googleDashboardPath }`;
 	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
 
-	const { setCacheItem } = useDispatch( CORE_SITE );
+	const { dismissItem } = useDispatch( CORE_USER );
 
-	const markModalDismissed = useCallback( async () => {
-		await setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, {
-			ttl: 0,
-		} );
-	}, [ setCacheItem ] );
+	const markModalDismissed = useCallback( () => {
+		onDismiss();
+		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY );
+	}, [ onDismiss, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const getGoogleForWooCommerceRedirectURI = useCallback( async () => {
-		await markModalDismissed();
+	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
+		markModalDismissed();
 
 		navigateTo( googleForWooCommerceRedirectURI );
-	}, [ navigateTo, googleForWooCommerceRedirectURI ] );
+	}, [ markModalDismissed, navigateTo, googleForWooCommerceRedirectURI ] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
-	const onContinueWithSiteKit = useCallback( async () => {
-		// Store dismissal in cache first, since onSetupCallback will invoke navigateTo().
-		await markModalDismissed();
-
+	const onContinueWithSiteKit = useCallback( () => {
+		markModalDismissed();
 		onSetupCallback();
 	}, [ markModalDismissed, onSetupCallback ] );
 
@@ -103,7 +101,7 @@ export default function WooCommerceRedirectModal( {
 			aria-describedby={ undefined }
 			tabIndex="-1"
 			className="googlesitekit-dialog-woocommerce-redirect"
-			onClose={ onDismiss }
+			onClose={ markModalDismissed }
 		>
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
 				<WooLogoIcon width={ 110 } height={ 46 } />
