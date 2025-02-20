@@ -147,8 +147,9 @@ export default function useEnableAudienceGroup( {
 				},
 			} );
 
-			// Note that we don't set isSaving to false here, this is to ensure that the OAuth error modal doesn't disappear
-			// when the user clicks the "Retry" button and the page begins to navigate back to the OAuth flow.
+			// Note that we don't set isSaving to false here, this is to ensure that, when the page begins to navigate to the OAuth flow:
+			// - The in-progress state for the Audience Segmentation Setup CTA is retained.
+			// - The OAuth error modal doesn't disappear when it's shown and the user clicks the "Retry" button.
 			return;
 		}
 
