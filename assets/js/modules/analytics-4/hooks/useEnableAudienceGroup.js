@@ -147,6 +147,8 @@ export default function useEnableAudienceGroup( {
 				},
 			} );
 
+			// Note that we don't set isSaving to false here, this is to ensure that the OAuth error modal doesn't disappear
+			// when the user clicks the "Retry" button and the page begins to navigate back to the OAuth flow.
 			return;
 		}
 
