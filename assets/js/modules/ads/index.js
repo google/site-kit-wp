@@ -33,6 +33,7 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 import PartnerAdsPAXWidget from './components/dashboard/PartnerAdsPAXWidget';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets/default-areas';
@@ -152,10 +153,29 @@ export const registerNotifications = ( notifications ) => {
 			priority: 10,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			checkRequirements: () => {
-				return true;
+			checkRequirements: ( { select, resolveSelect } ) => {
+				// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
+				// on the data being resolved in getSiteInfo() selector.
+				resolveSelect( CORE_SITE ).getSiteInfo();
+
+				const {
+					isWooCommerceActivated,
+					isGoogleForWooCommerceActivated,
+					isGoogleForWooCommerceLinked,
+				} = select( CORE_SITE );
+
+				if (
+					isWooCommerceActivated() &&
+					isGoogleForWooCommerceActivated() &&
+					isGoogleForWooCommerceLinked()
+				) {
+					return true;
+				}
+
+				return false;
 			},
 			featureFlag: 'adsPax',
+			isDismissible: true,
 		}
 	);
 };
