@@ -39,6 +39,7 @@ import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
+	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 } from './components/notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import {
@@ -124,6 +125,7 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 	} );
+
 	notifications.registerNotification( 'setup-success-notification-pax', {
 		Component: PAXSetupSuccessSubtleNotification,
 		priority: 10,
@@ -142,4 +144,18 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 	} );
+
+	notifications.registerNotification(
+		'account-linked-via-google-for-woocommerce',
+		{
+			Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+			priority: 10,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+			checkRequirements: () => {
+				return true;
+			},
+			featureFlag: 'adsPax',
+		}
+	);
 };
