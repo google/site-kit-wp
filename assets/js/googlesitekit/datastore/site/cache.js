@@ -24,22 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import {
-	combineStores,
-	commonActions,
-	createReducer,
-} from 'googlesitekit-data';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import { CORE_SITE } from './constants';
+import { combineStores } from 'googlesitekit-data';
+import { setItem } from '../../../googlesitekit/api/cache';
 
 // Actions.
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';
-const CACHE_GET_ITEM = 'CACHE_GET_ITEM';
-const CACHE_RECEIVE_ITEM_DATA = 'CACHE_RECEIVE_ITEM_DATA';
 
-const baseInitialState = {
-	cacheItems: {},
-};
+const baseInitialState = {};
 
 const baseActions = {
 	/**
@@ -69,18 +60,6 @@ const baseActions = {
 			},
 		};
 	},
-
-	receiveCacheItem( key, data ) {
-		invariant( key, 'key is required' );
-
-		return {
-			type: CACHE_RECEIVE_ITEM_DATA,
-			payload: {
-				key,
-				data,
-			},
-		};
-	},
 };
 
 // Base Controls
@@ -90,68 +69,12 @@ export const baseControls = {
 
 		await setItem( key, value, args );
 	},
-	[ CACHE_GET_ITEM ]: async ( { payload } ) => {
-		const { key } = payload;
-
-		return await getItem( key );
-	},
-};
-
-export const baseSelectors = {
-	/**
-	 * Gets cached item data.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} key   Name of cache key.
-	 * @return {(Object|undefined)} Cache item data or undefined if item has not loaded.
-	 */
-	getCacheItem( state, key ) {
-		return state.cacheItems?.[ key ];
-	},
-};
-
-const baseReducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case CACHE_RECEIVE_ITEM_DATA:
-			const { key, data } = payload;
-			state.cacheItems[ key ] = data;
-			break;
-
-		default:
-			break;
-	}
-} );
-
-export const baseResolvers = {
-	*getCacheItem( key ) {
-		invariant( key, 'key is required' );
-
-		const registry = yield commonActions.getRegistry();
-
-		const cacheItem = registry.select( CORE_SITE ).getCacheItem( key );
-
-		if ( cacheItem ) {
-			return;
-		}
-
-		const data = yield {
-			type: CACHE_GET_ITEM,
-			payload: { key },
-		};
-
-		yield baseActions.receiveCacheItem( key, data );
-	},
 };
 
 const store = combineStores( {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
-	selectors: baseSelectors,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
 } );
 
 export const initialState = store.initialState;
