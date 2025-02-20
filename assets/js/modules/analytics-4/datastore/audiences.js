@@ -132,6 +132,51 @@ export const baseInitialState = {
 	isSettingUpAudiences: false,
 };
 
+/**
+ * Retrieves the initial set of selected audiences from the existing audiences.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Registry object.
+ * @return {Object} Object with `configuredAudiences` or `error`.
+ */
+async function getConfiguredAudiencesFromExistingAudiences( registry ) {
+	const { dispatch, resolveSelect, select } = registry;
+
+	const availableAudiences =
+		select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+	const { error, configuredAudiences } = await dispatch(
+		MODULES_ANALYTICS_4
+	).retrieveInitialAudienceSelection( availableAudiences );
+
+	if ( error ) {
+		return { error };
+	}
+
+	if ( configuredAudiences.length === 1 ) {
+		// Add 'Purchasers' audience if it has data.
+		const purchasersAudience = availableAudiences.find(
+			( { audienceSlug } ) => audienceSlug === 'purchasers'
+		);
+
+		if ( purchasersAudience ) {
+			const purchasersResourceDataAvailabilityDate = await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getResourceDataAvailabilityDate(
+				purchasersAudience.name,
+				RESOURCE_TYPE_AUDIENCE
+			);
+
+			if ( purchasersResourceDataAvailabilityDate ) {
+				configuredAudiences.push( purchasersAudience.name );
+			}
+		}
+	}
+
+	return { configuredAudiences };
+}
+
 const baseActions = {
 	/**
 	 * Creates new property audience.
@@ -370,56 +415,6 @@ const baseActions = {
 	},
 
 	/**
-	 * Retrieves the initial set of selected audiences from the existing audiences.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} Object with `configuredAudiences` or `error`.
-	 */
-	*getSelectionFromExistingAudiences() {
-		const registry = yield commonActions.getRegistry();
-		const { dispatch, resolveSelect, select } = registry;
-
-		const availableAudiences =
-			select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-		const { error, configuredAudiences } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
-				availableAudiences
-			)
-		);
-
-		if ( error ) {
-			return { error };
-		}
-
-		if ( configuredAudiences.length === 1 ) {
-			// Add 'Purchasers' audience if it has data.
-			const purchasersAudience = availableAudiences.find(
-				( { audienceSlug } ) => audienceSlug === 'purchasers'
-			);
-
-			if ( purchasersAudience ) {
-				const purchasersResourceDataAvailabilityDate =
-					yield commonActions.await(
-						resolveSelect(
-							MODULES_ANALYTICS_4
-						).getResourceDataAvailabilityDate(
-							purchasersAudience.name,
-							RESOURCE_TYPE_AUDIENCE
-						)
-					);
-
-				if ( purchasersResourceDataAvailabilityDate ) {
-					configuredAudiences.push( purchasersAudience.name );
-				}
-			}
-		}
-
-		return { configuredAudiences };
-	},
-
-	/**
 	 * Checks if the user needs to grant the Analytics 4 edit scope to create audiences or custom dimensions.
 	 *
 	 * @since n.e.x.t
@@ -428,7 +423,7 @@ const baseActions = {
 	 */
 	*needsAnalytics4EditScope() {
 		const registry = yield commonActions.getRegistry();
-		const { dispatch, resolveSelect, select } = registry;
+		const { resolveSelect, select } = registry;
 
 		yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
@@ -443,7 +438,7 @@ const baseActions = {
 		}
 
 		const { error, configuredAudiences } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).getSelectionFromExistingAudiences()
+			getConfiguredAudiencesFromExistingAudiences( registry )
 		);
 
 		if ( error ) {
@@ -470,9 +465,7 @@ const baseActions = {
 		if ( ! failedSiteKitAudienceSlugs?.length ) {
 			const { error, configuredAudiences: audiences } =
 				yield commonActions.await(
-					dispatch(
-						MODULES_ANALYTICS_4
-					).getSelectionFromExistingAudiences()
+					getConfiguredAudiencesFromExistingAudiences( registry )
 				);
 
 			if ( error ) {
