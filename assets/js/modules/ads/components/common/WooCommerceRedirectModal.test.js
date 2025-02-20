@@ -70,7 +70,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 
 		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal />,
+			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -110,7 +110,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			},
 		} );
 		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal />,
+			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -156,7 +156,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			},
 		} );
 		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal />,
+			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
 			{ registry }
 		);
 		await waitForRegistry();

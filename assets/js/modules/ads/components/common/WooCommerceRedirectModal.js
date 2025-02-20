@@ -44,7 +44,7 @@ import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallba
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
-	onDismiss,
+	onDismiss = null,
 } ) {
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
