@@ -46,8 +46,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onCTAClick = useCallback( () => {
-		dismissNotification( id );
-
+		dismissNotification( id, { skipHidingFromQueue: true } );
 		onSetupCallback();
 	}, [ onSetupCallback, dismissNotification, id ] );
 
