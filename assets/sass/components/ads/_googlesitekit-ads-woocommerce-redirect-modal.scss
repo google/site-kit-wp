@@ -46,6 +46,14 @@
 			padding: 0 0 10px;
 		}
 
+		.mdc-dialog__actions {
+			justify-content: center;
+
+			@media (min-width: $bp-desktop) {
+				justify-content: flex-end;
+			}
+		}
+
 		.mdc-button--raised {
 
 			svg {
