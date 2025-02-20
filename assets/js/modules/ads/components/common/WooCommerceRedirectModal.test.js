@@ -89,7 +89,8 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect(
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
 		).toBe( true );
-		expect( cacheItemSpy ).toHaveBeenCalledTimes( 1 );
+
+		// Modal should be dismissed.
 		expect( cacheItemSpy ).toHaveBeenCalledWith(
 			ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 			{ ttl: 0 }
@@ -130,6 +131,12 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /tab=search/ )
+		);
+
+		// Modal should be dismissed.
+		expect( cacheItemSpy ).toHaveBeenCalledWith(
+			ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
+			{ ttl: 0 }
 		);
 	} );
 
