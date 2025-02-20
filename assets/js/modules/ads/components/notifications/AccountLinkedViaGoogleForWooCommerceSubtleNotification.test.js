@@ -101,7 +101,6 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
 		).toBe( true );
 
-		// Modal should be dismissed.
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
@@ -122,7 +121,6 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 
 		await waitForRegistry();
 
-		// Modal should be dismissed.
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
