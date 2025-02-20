@@ -1,7 +1,7 @@
 module.exports = {
 	preset: '@wordpress/jest-preset-default',
 	collectCoverage: false, // Enable with `--coverage=true` flag.
-	collectCoverageFrom: [ 'assets/**/**.js' ],
+	collectCoverageFrom: [ 'assets/**/**.js', 'blocks/**/**.js' ],
 	coverageDirectory: 'coverage',
 	coveragePathIgnorePatterns: [
 		'<rootDir>/build/',
@@ -29,6 +29,8 @@ module.exports = {
 		'<rootDir>/assets/**/__tests__/**/*.js',
 		'<rootDir>/assets/**/test/*.js',
 		'<rootDir>/assets/**/?(*.)test.js',
+		'<rootDir>/blocks/**/test/*.js',
+		'<rootDir>/blocks/**/?(*.)test.js',
 		'<rootDir>/packages/**/__tests__/**/*.js',
 		'<rootDir>/packages/**/test/*.js',
 		'<rootDir>/packages/**/?(*.)test.js',
@@ -63,5 +65,6 @@ module.exports = {
 		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
 		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
 			'<rootDir>/tests/js/fileMock.js',
+		'^@wordpress-core/(.*)$': '<rootDir>/__mocks__/@wordpress/$1',
 	},
 };

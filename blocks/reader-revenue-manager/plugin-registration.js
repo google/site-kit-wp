@@ -31,7 +31,7 @@ import SettingPanel from './components/SettingPanel';
 import { MODULES_READER_REVENUE_MANAGER } from '../../assets/js/modules/reader-revenue-manager/datastore/constants';
 
 export function registerReaderRevenueManagerPlugin() {
-	Promise.all( [
+	return Promise.all( [
 		resolveSelect( CORE_MODULES ).getModules(),
 		resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 	] ).then( () => {
