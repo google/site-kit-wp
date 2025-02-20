@@ -52,6 +52,16 @@
 			@media (min-width: $bp-desktop) {
 				justify-content: flex-end;
 			}
+
+			button {
+				@media (max-width: $bp-tablet) {
+					width: 100%;
+
+					&:last-child {
+						margin-top: 5px;
+					}
+				}
+			}
 		}
 
 		.mdc-button--raised {
