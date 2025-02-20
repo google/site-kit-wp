@@ -29,15 +29,17 @@ import {
 	provideUserCapabilities,
 	provideModuleRegistrations,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
 describe( 'WooCommerceRedirectModal', () => {
 	mockLocation();
 	let registry;
 
+	const dismissItemEndpoint = RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 	const moduleActivationEndpoint = RegExp(
 		'google-site-kit/v1/core/modules/data/activation'
 	);
@@ -45,24 +47,13 @@ describe( 'WooCommerceRedirectModal', () => {
 		'^/google-site-kit/v1/core/user/data/authentication'
 	);
 
-	let cacheItemSpy;
-
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		cacheItemSpy = jest.spyOn(
-			registry.dispatch( CORE_SITE ),
-			'setCacheItem'
-		);
 
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
-	} );
-
-	afterEach( () => {
-		cacheItemSpy.mockReset();
 	} );
 
 	it( 'clicking "Continue with Site Kit" should trigger ads module activation and dismiss the modal', async () => {
@@ -71,6 +62,11 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 		fetchMock.getOnce( userAuthenticationEndpoint, {
 			body: { needsReauthentication: false },
+		} );
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: JSON.stringify( [
+				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+			] ),
 		} );
 
 		const { getByText, waitForRegistry } = render(
@@ -91,13 +87,16 @@ describe( 'WooCommerceRedirectModal', () => {
 		).toBe( true );
 
 		// Modal should be dismissed.
-		expect( cacheItemSpy ).toHaveBeenCalledWith(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
-			{ ttl: 0 }
-		);
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: JSON.stringify( [
+				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+			] ),
+		} );
+
 		provideSiteInfo( registry, {
 			plugins: {
 				wooCommerce: {
@@ -134,13 +133,16 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 
 		// Modal should be dismissed.
-		expect( cacheItemSpy ).toHaveBeenCalledWith(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
-			{ ttl: 0 }
-		);
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: JSON.stringify( [
+				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+			] ),
+		} );
+
 		provideSiteInfo( registry, {
 			plugins: {
 				wooCommerce: {
@@ -172,5 +174,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
 		);
+
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 } );
