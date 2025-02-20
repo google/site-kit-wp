@@ -783,6 +783,51 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		dismissRetries: 1,
 		featureFlag: 'audienceSegmentation',
 	},
+	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
+		Component: WebDataStreamNotAvailableNotification,
+		priority: 290,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isWebDataStreamAvailable property is set within the
+				// syncGoogleTagSettings() action.
+				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const isWebDataStreamAvailable =
+				select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				! isWebDataStreamAvailable
+			);
+		},
+	},
 };
 
 export const registerNotifications = ( notifications ) => {
@@ -792,57 +837,4 @@ export const registerNotifications = ( notifications ) => {
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
 	}
-
-	notifications.registerNotification(
-		WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
-		{
-			Component: WebDataStreamNotAvailableNotification,
-			priority: 290,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			isDismissible: true,
-			checkRequirements: async ( {
-				select,
-				resolveSelect,
-				dispatch,
-			} ) => {
-				await Promise.all( [
-					// The hasScope() selector relies on the resolution of
-					// the getAuthentication() resolver.
-					resolveSelect( CORE_USER ).getAuthentication(),
-					// The isModuleConnected() selector relies on the resolution
-					// of the getModules() resolver.
-					resolveSelect( CORE_MODULES ).getModules(),
-					// The getID() selector relies on the resolution
-					// of the getUser() resolver.
-					resolveSelect( CORE_USER ).getUser(),
-					// The getOwnerID() selector relies on the resolution
-					// of the getSettings() resolver.
-					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-					// The isWebDataStreamAvailable property is set within the
-					// syncGoogleTagSettings() action.
-					dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
-				] );
-
-				const ga4ModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-				const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
-
-				const loggedInUserID = select( CORE_USER ).getID();
-				const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-				const isGA4ModuleOwner =
-					ga4ModuleConnected && ga4OwnerID === loggedInUserID;
-
-				const isWebDataStreamAvailable =
-					select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
-
-				return (
-					ga4ModuleConnected &&
-					hasGTMScope &&
-					isGA4ModuleOwner &&
-					! isWebDataStreamAvailable
-				);
-			},
-		}
-	);
 };
