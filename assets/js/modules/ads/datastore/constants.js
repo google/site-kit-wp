@@ -28,4 +28,4 @@ export const DATE_RANGE_OFFSET = 1;
 export const ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY =
 	'ads_module_setup_banner_prompt_dismissed_key';
 
-export const ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY = 'wc-redirect-modal';
+export const ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY = 'wc-redirect-modal';
