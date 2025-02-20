@@ -128,10 +128,6 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	},
 } );
 
-export const baseInitialState = {
-	isSettingUpAudiences: false,
-};
-
 /**
  * Retrieves the initial set of selected audiences from the existing audiences.
  *
@@ -141,14 +137,15 @@ export const baseInitialState = {
  * @return {Object} Object with `configuredAudiences` or `error`.
  */
 async function getConfiguredAudiencesFromExistingAudiences( registry ) {
-	const { dispatch, resolveSelect, select } = registry;
+	const { resolveSelect, select } = registry;
 
 	const availableAudiences =
 		select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
-	const { error, configuredAudiences } = await dispatch(
-		MODULES_ANALYTICS_4
-	).retrieveInitialAudienceSelection( availableAudiences );
+	const { error, configuredAudiences } = await getInitialConfiguredAudiences(
+		registry,
+		availableAudiences
+	);
 
 	if ( error ) {
 		return { error };
@@ -176,6 +173,87 @@ async function getConfiguredAudiencesFromExistingAudiences( registry ) {
 
 	return { configuredAudiences };
 }
+
+/**
+ * Retrives the initial set of audiences for selection.
+ *
+ * @since 1.136.0
+ * @since n.e.x.t Extracted to a helper function. Renamed from `retrieveInitialAudienceSelection` to `getInitialConfiguredAudiences`.
+ *
+ * @param {Object} registry           Registry object.
+ * @param {Array}  availableAudiences List of available audiences.
+ * @return {Object} Object with properties `configuredAudiences` or `error`.
+ */
+async function getInitialConfiguredAudiences( registry, availableAudiences ) {
+	const { select } = registry;
+
+	const configuredAudiences = [];
+
+	const userAudiences = availableAudiences.filter(
+		( { audienceType } ) => audienceType === 'USER_AUDIENCE'
+	);
+
+	if ( userAudiences.length > 0 ) {
+		// If there are user audiences, filter and sort them by total users over the last 90 days,
+		// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
+
+		const endDate = select( CORE_USER ).getReferenceDate();
+
+		const startDate = getPreviousDate(
+			endDate,
+			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
+		);
+
+		const { audienceResourceNames, error } =
+			await getNonZeroDataAudiencesSortedByTotalUsers(
+				registry,
+				userAudiences,
+				startDate,
+				endDate
+			);
+
+		if ( error ) {
+			return { error };
+		}
+
+		configuredAudiences.push(
+			...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
+		);
+	}
+
+	if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
+		// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences
+		// if they exist, up to the limit of two.
+
+		const siteKitAudiences = availableAudiences.filter(
+			( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
+		);
+
+		// Audience slugs to sort by:
+		const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
+
+		const sortedSiteKitAudiences = siteKitAudiences.sort(
+			( audienceA, audienceB ) => {
+				const indexA = sortedSlugs.indexOf( audienceA.audienceSlug );
+				const indexB = sortedSlugs.indexOf( audienceB.audienceSlug );
+
+				return indexA - indexB;
+			}
+		);
+
+		const audienceResourceNames = sortedSiteKitAudiences
+			.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
+			.map( ( { name } ) => name );
+
+		configuredAudiences.push( ...audienceResourceNames );
+	}
+
+	return { configuredAudiences };
+}
+
+export const baseInitialState = {
+	isSettingUpAudiences: false,
+};
 
 const baseActions = {
 	/**
@@ -305,88 +383,6 @@ const baseActions = {
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 		}
-	},
-
-	/**
-	 * Retrives the initial set of audiences for selection.
-	 *
-	 * @since 1.136.0
-	 *
-	 * @param {Array} availableAudiences List of available audiences.
-	 * @return {Object} Object with properties `configuredAudiences` or `error`.
-	 */
-	*retrieveInitialAudienceSelection( availableAudiences ) {
-		const registry = yield commonActions.getRegistry();
-
-		const { select } = registry;
-
-		const configuredAudiences = [];
-
-		const userAudiences = availableAudiences.filter(
-			( { audienceType } ) => audienceType === 'USER_AUDIENCE'
-		);
-
-		if ( userAudiences.length > 0 ) {
-			// If there are user audiences, filter and sort them by total users over the last 90 days,
-			// and add the top two (MAX_INITIAL_AUDIENCES) which have users to the configured audiences.
-
-			const endDate = select( CORE_USER ).getReferenceDate();
-
-			const startDate = getPreviousDate(
-				endDate,
-				90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-			);
-
-			const { audienceResourceNames, error } = yield commonActions.await(
-				getNonZeroDataAudiencesSortedByTotalUsers(
-					registry,
-					userAudiences,
-					startDate,
-					endDate
-				)
-			);
-
-			if ( error ) {
-				return { error };
-			}
-
-			configuredAudiences.push(
-				...audienceResourceNames.slice( 0, MAX_INITIAL_AUDIENCES )
-			);
-		}
-
-		if ( configuredAudiences.length < MAX_INITIAL_AUDIENCES ) {
-			// If there are less than two (MAX_INITIAL_AUDIENCES) configured user audiences, add the Site Kit-created audiences
-			// if they exist, up to the limit of two.
-
-			const siteKitAudiences = availableAudiences.filter(
-				( { audienceType } ) => audienceType === 'SITE_KIT_AUDIENCE'
-			);
-
-			// Audience slugs to sort by:
-			const sortedSlugs = [ 'new-visitors', 'returning-visitors' ];
-
-			const sortedSiteKitAudiences = siteKitAudiences.sort(
-				( audienceA, audienceB ) => {
-					const indexA = sortedSlugs.indexOf(
-						audienceA.audienceSlug
-					);
-					const indexB = sortedSlugs.indexOf(
-						audienceB.audienceSlug
-					);
-
-					return indexA - indexB;
-				}
-			);
-
-			const audienceResourceNames = sortedSiteKitAudiences
-				.slice( 0, MAX_INITIAL_AUDIENCES - configuredAudiences.length )
-				.map( ( { name } ) => name );
-
-			configuredAudiences.push( ...audienceResourceNames );
-		}
-
-		return { configuredAudiences };
 	},
 
 	/**
@@ -685,9 +681,7 @@ const baseActions = {
 			error: retrieveInitialAudienceSelectionError,
 			configuredAudiences,
 		} = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).retrieveInitialAudienceSelection(
-				availableAudiences
-			)
+			getInitialConfiguredAudiences( registry, availableAudiences )
 		);
 
 		if ( retrieveInitialAudienceSelectionError ) {
