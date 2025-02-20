@@ -483,6 +483,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 						'googlesitekit-modules',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
 				)
 			);
 
