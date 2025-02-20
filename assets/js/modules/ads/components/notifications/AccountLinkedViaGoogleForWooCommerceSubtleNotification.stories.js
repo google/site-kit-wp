@@ -28,8 +28,8 @@ const NotificationWithComponentProps = withNotificationComponentProps(
 	'account-linked-via-google-for-woocommerce'
 )( AccountLinkedViaGoogleForWooCommerceSubtleNotification );
 
-function Template( { ...args } ) {
-	return <NotificationWithComponentProps { ...args } />;
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const Ads = Template.bind( {} );
