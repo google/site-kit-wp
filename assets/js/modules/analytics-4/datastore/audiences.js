@@ -417,7 +417,7 @@ const baseActions = {
 	 *
 	 * @return {Object} Object with `needsScope` or `error`.
 	 */
-	*needsAnalytics4EditScope() {
+	*determineNeedForAnalytics4EditScope() {
 		const registry = yield commonActions.getRegistry();
 		const { resolveSelect, select } = registry;
 

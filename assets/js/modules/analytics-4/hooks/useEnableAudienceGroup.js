@@ -67,7 +67,7 @@ export default function useEnableAudienceGroup( {
 	const {
 		enableAudienceGroup,
 		fetchSyncAvailableCustomDimensions,
-		needsAnalytics4EditScope,
+		determineNeedForAnalytics4EditScope,
 		syncAvailableAudiences,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
@@ -92,7 +92,8 @@ export default function useEnableAudienceGroup( {
 		}
 
 		if ( ! hasAnalytics4EditScope ) {
-			const { error, needsScope } = await needsAnalytics4EditScope();
+			const { error, needsScope } =
+				await determineNeedForAnalytics4EditScope();
 
 			if ( error ) {
 				return { error };
@@ -114,7 +115,7 @@ export default function useEnableAudienceGroup( {
 		failedAudiences,
 		fetchSyncAvailableCustomDimensions,
 		hasAnalytics4EditScope,
-		needsAnalytics4EditScope,
+		determineNeedForAnalytics4EditScope,
 		setValues,
 		syncAvailableAudiences,
 	] );
