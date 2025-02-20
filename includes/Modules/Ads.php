@@ -34,6 +34,7 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
@@ -197,13 +198,27 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @return array Inline modules data.
 	 */
 	private function inline_modules_data( $modules_data ) {
-		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			// Get detected events.
-			$detected_events = $this->get_supported_conversion_events();
-			// Add the data under the `ads` key to make it clear it's scoped to this module.
-			$modules_data['ads'] = array(
-				'supportedConversionEvents' => $detected_events,
-			);
+		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
+			return $modules_data;
+		}
+
+		$modules_data['ads'] = array(
+			'supportedConversionEvents' => $this->get_supported_conversion_events(),
+			'plugins'                   => array(
+				'woocommerce'             => array(
+					'installed' => Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
+					'active'    => Plugin_Status::is_plugin_active( 'woocommerce/woocommerce.php' ),
+				),
+				'google-listings-and-ads' => array(
+					'installed'    => Plugin_Status::is_plugin_installed( 'google-listings-and-ads/google-listings-and-ads.php' ),
+					'active'       => Plugin_Status::is_plugin_active( 'google-listings-and-ads/google-listings-and-ads.php' ),
+					'adsConnected' => false,
+				),
+			),
+		);
+
+		if ( $modules_data['ads']['plugins']['google-listings-and-ads']['active'] ) {
+			$modules_data['ads']['plugins']['google-listings-and-ads']['adsConnected'] = (bool) get_option( 'gla_ads_id' );
 		}
 
 		return $modules_data;
