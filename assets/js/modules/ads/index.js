@@ -133,10 +133,10 @@ export const ADS_NOTIFICATIONS = {
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
 			// on the data being resolved in getSiteInfo() selector.
-			resolveSelect( CORE_SITE ).getSiteInfo();
+			await resolveSelect( CORE_SITE ).getSiteInfo();
 
 			const {
 				isWooCommerceActivated,
@@ -144,15 +144,11 @@ export const ADS_NOTIFICATIONS = {
 				hasGoogleForWooCommerceAdsAccount,
 			} = select( CORE_SITE );
 
-			if (
+			return (
 				isWooCommerceActivated() &&
 				isGoogleForWooCommerceActivated() &&
 				hasGoogleForWooCommerceAdsAccount()
-			) {
-				return true;
-			}
-
-			return false;
+			);
 		},
 		featureFlag: 'adsPax',
 		isDismissible: true,
