@@ -127,7 +127,7 @@ class AdsTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals(
+		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
@@ -157,7 +157,7 @@ class AdsTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals(
+		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
