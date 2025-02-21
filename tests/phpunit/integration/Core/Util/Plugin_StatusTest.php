@@ -14,41 +14,56 @@ use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * @group Assets
+ * @group Util
  */
 class Plugin_StatusTest extends TestCase {
+
 	/**
-	 * Initial active plugin state array.
+	 * @dataProvider data_is_plugin_installed
+	 * @param string|\Closure $input
+	 * @param boolean $expected
 	 */
-	private $initial_active_plugins_state;
-
-	public function set_up() {
-		parent::set_up();
-
-		$this->initial_active_plugins_state = $GLOBALS['wp_tests_options']['active_plugins'];
+	public function test_is_plugin_installed( $input, $expected ) {
+		$this->mock_installed_plugins();
+		$actual = Plugin_Status::is_plugin_installed( $input );
+		$this->assertEquals( $expected, $actual );
 	}
 
-	public function tear_down() {
-		parent::tear_down();
-		$this->reset_plugins();
+	public function data_is_plugin_installed() {
+		yield 'non-existent plugin' => array(
+			'non-existent-plugin/non-existent-plugin.php',
+			false,
+		);
+
+		yield 'existing plugin using file' => array(
+			'google-site-kit/google-site-kit.php',
+			true,
+		);
+
+		yield 'existing plugin using predicate returns file' => array(
+			fn ( $plugin ) => 'https://example.com/test-plugin' === $plugin['PluginURI'],
+			'test/test.php',
+		);
 	}
 
-	public function activate_plugin( $plugin_path = '' ) {
-		if ( empty( $plugin_path ) ) {
-			return;
-		}
-		if ( ! array_key_exists( $plugin_path, $GLOBALS['wp_tests_options']['active_plugins'] ) ) {
-			$GLOBALS['wp_tests_options']['active_plugins'][] = $plugin_path;
-		}
-	}
+	private function mock_installed_plugins() {
+		// Installed plugins are stored in cache as an array, under an empty string key.
+		// [ plugin-file ] => Array(data)
 
-	public function deactivate_plugin( $plugin_path = '' ) {
-		if ( array_key_exists( $plugin_path, $GLOBALS['wp_tests_options']['active_plugins'] ) ) {
-			unset( $GLOBALS['wp_tests_options']['active_plugins'][ $plugin_path ] );
-		}
-	}
+		$sk_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE, false, false );
+		$installed      = array(
+			// Include SK using a fixed file path to avoid fragility.
+			'google-site-kit/google-site-kit.php' => $sk_plugin_data,
+			'test/test.php'                       => array_merge(
+				$sk_plugin_data,
+				array(
+					'Name'      => 'Test Plugin',
+					'PluginURI' => 'https://example.com/test-plugin',
+					'Version'   => '1.0',
+				)
+			),
+		);
 
-	public function reset_plugins() {
-		$GLOBALS['wp_tests_options']['active_plugins'] = $this->initial_active_plugins_state;
+		wp_cache_set( 'plugins', array( '' => $installed ), 'plugins' );
 	}
 }
