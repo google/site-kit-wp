@@ -54,18 +54,9 @@
 			}
 
 			button {
-				width: 100%;
 
 				&:last-child {
 					margin-top: 5px;
-				}
-
-				@media (min-width: $bp-desktop) {
-					width: unset;
-
-					&:last-child {
-						margin-top: unset;
-					}
 				}
 			}
 		}
