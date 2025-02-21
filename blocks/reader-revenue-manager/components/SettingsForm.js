@@ -4,8 +4,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import { SelectControl } from '@wordpress-core/components';
 // eslint-disable-next-line import/no-unresolved
 import { Fragment, useState } from '@wordpress-core/element';
-import { dispatch, select } from 'googlesitekit-data';
+import Data from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+
+const { select, dispatch } = Data;
 
 const CORE_EDITOR = 'core/editor';
 
