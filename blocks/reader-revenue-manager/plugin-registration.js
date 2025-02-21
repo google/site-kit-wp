@@ -25,10 +25,15 @@ import { registerPlugin } from '@wordpress-core/plugins';
 /**
  * Internal dependencies
  */
-import { select, resolveSelect } from 'googlesitekit-data';
+import Data from 'googlesitekit-data';
+import { registerStore } from '../../assets/js/modules/reader-revenue-manager/datastore';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import SettingPanel from './components/SettingPanel';
 import { MODULES_READER_REVENUE_MANAGER } from '../../assets/js/modules/reader-revenue-manager/datastore/constants';
+
+const { select, resolveSelect } = Data;
+
+registerStore( Data );
 
 export function registerReaderRevenueManagerPlugin() {
 	return Promise.all( [
