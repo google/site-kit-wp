@@ -126,6 +126,18 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
+			provideSiteInfo( registry, {
+				plugins: {
+					wooCommerce: {
+						active: false,
+					},
+					googleForWooCommerce: {
+						active: true,
+						adsConnected: true,
+					},
+				},
+			} );
+
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD
