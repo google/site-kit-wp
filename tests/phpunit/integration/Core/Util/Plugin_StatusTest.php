@@ -11,12 +11,15 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Util
  */
 class Plugin_StatusTest extends TestCase {
+
+	use FakeInstalledPlugins;
 
 	/**
 	 * @dataProvider data_is_plugin_installed
@@ -44,26 +47,5 @@ class Plugin_StatusTest extends TestCase {
 			fn ( $plugin ) => 'https://example.com/test-plugin' === $plugin['PluginURI'],
 			'test/test.php',
 		);
-	}
-
-	private function mock_installed_plugins() {
-		// Installed plugins are stored in cache as an array, under an empty string key.
-		// [ plugin-file ] => Array(data)
-
-		$sk_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE, false, false );
-		$installed      = array(
-			// Include SK using a fixed file path to avoid fragility.
-			'google-site-kit/google-site-kit.php' => $sk_plugin_data,
-			'test/test.php'                       => array_merge(
-				$sk_plugin_data,
-				array(
-					'Name'      => 'Test Plugin',
-					'PluginURI' => 'https://example.com/test-plugin',
-					'Version'   => '1.0',
-				)
-			),
-		);
-
-		wp_cache_set( 'plugins', array( '' => $installed ), 'plugins' );
 	}
 }
