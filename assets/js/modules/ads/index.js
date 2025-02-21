@@ -33,10 +33,12 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
+	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 } from './components/notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import {
@@ -88,8 +90,8 @@ export const registerModule = ( modules ) => {
 
 export const registerWidgets = () => {};
 
-export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'setup-success-notification-ads', {
+export const ADS_NOTIFICATIONS = {
+	'setup-success-notification-ads': {
 		Component: SetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -107,8 +109,8 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
-	} );
-	notifications.registerNotification( 'setup-success-notification-pax', {
+	},
+	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -125,5 +127,39 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
-	} );
+	},
+	'account-linked-via-google-for-woocommerce': {
+		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
+			// on the data being resolved in getSiteInfo() selector.
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const {
+				isWooCommerceActivated,
+				isGoogleForWooCommerceActivated,
+				hasGoogleForWooCommerceAdsAccount,
+			} = select( CORE_SITE );
+
+			return (
+				isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				hasGoogleForWooCommerceAdsAccount()
+			);
+		},
+		featureFlag: 'adsPax',
+		isDismissible: true,
+	},
+};
+
+export const registerNotifications = ( notifications ) => {
+	for ( const notificationID in ADS_NOTIFICATIONS ) {
+		notifications.registerNotification(
+			notificationID,
+			ADS_NOTIFICATIONS[ notificationID ]
+		);
+	}
 };

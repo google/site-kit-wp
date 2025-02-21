@@ -33,6 +33,7 @@ export default function CTALinkSubtle( {
 	onCTAClick,
 	isCTALinkExternal = false,
 	gaTrackingEventArgs,
+	tertiary = false,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
@@ -56,6 +57,7 @@ export default function CTALinkSubtle( {
 					<ExternalSVG width={ 14 } height={ 14 } />
 				) : undefined
 			}
+			tertiary={ tertiary }
 		>
 			{ ctaLabel }
 		</Button>
@@ -73,4 +75,5 @@ CTALinkSubtle.propTypes = {
 		label: PropTypes.string,
 		value: PropTypes.string,
 	} ),
+	tertiary: PropTypes.bool,
 };

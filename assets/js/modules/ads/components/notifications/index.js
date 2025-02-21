@@ -18,3 +18,4 @@
 
 export { default as PAXSetupSuccessSubtleNotification } from './PAXSetupSuccessSubtleNotification';
 export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';
+export { default as AccountLinkedViaGoogleForWooCommerceSubtleNotification } from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
