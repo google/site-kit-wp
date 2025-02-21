@@ -35,8 +35,6 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
-import PartnerAdsPAXWidget from './components/dashboard/PartnerAdsPAXWidget';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
@@ -90,21 +88,7 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
-export const registerWidgets = ( widgets ) => {
-	if ( isFeatureEnabled( 'adsPax' ) ) {
-		widgets.registerWidget(
-			'partnerAdsPAX',
-			{
-				Component: PartnerAdsPAXWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 20,
-				wrapWidget: false,
-				modules: [ 'ads' ],
-			},
-			[ AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY ]
-		);
-	}
-};
+export const registerWidgets = () => {};
 
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
