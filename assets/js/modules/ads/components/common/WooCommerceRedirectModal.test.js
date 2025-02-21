@@ -29,6 +29,7 @@ import {
 	provideUserCapabilities,
 	provideModuleRegistrations,
 } from '../../../../../../tests/js/test-utils';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
@@ -54,6 +55,26 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	} );
+
+	it( 'does not render when dismissed', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+			] );
+
+		const { queryByText, waitForRegistry } = render(
+			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			queryByText( /continue with site kit/i )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'clicking "Continue with Site Kit" should trigger ads module activation and dismiss the modal', async () => {
