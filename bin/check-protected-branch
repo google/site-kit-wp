@@ -2,7 +2,7 @@
 # Warn before pushing to protected branches
 
 BRANCH=`git rev-parse --abbrev-ref HEAD`
-PROTECTED_BRANCHES="^(main|develop|poc/test-hook)"
+PROTECTED_BRANCHES="^(main|develop|infra/confirm-protected-branch)$"
 
 if [[ "$BRANCH" =~ $PROTECTED_BRANCHES ]]; then
   read -p "Are you sure you want to push to \"$BRANCH\" ? (y/n): " -n 1 -r < /dev/tty
