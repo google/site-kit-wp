@@ -18,6 +18,7 @@ export const logIgnoreList = {
 	],
 	// Any entries that should be ignored in all versions.
 	ALL: [
+		'tail: /var/www/html/wp-content/debug.log has appeared',
 		// Can be removed once WordPress AMP Plugin removes the deprecated function call.
 		// See: https://github.com/ampproject/amp-wp/issues/7619
 		'PHP Deprecated:  Function _admin_bar_bump_cb is deprecated since version 6.4.0! Use wp_enqueue_admin_bar_bump_styles instead. in /var/www/html/wp-includes/functions.php',
