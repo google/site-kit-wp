@@ -736,7 +736,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
+			'googlesitekit-reader-revenue-manager-block-editor-plugin',
 			$registerable_asset_handles
 		);
 	}
@@ -750,7 +750,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertNotContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
+			'googlesitekit-reader-revenue-manager-block-editor-plugin',
 			$registerable_asset_handles
 		);
 	}
