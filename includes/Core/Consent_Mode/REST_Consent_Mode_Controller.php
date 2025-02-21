@@ -194,21 +194,29 @@ class REST_Consent_Mode_Controller {
 								'hasConsentAPI' => $is_active,
 							);
 
+							// Alternate wp_nonce_url without esc_html breaking query parameters.
+							$nonce_url = function ( $action_url, $action ) {
+								return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
+							};
+
 							if ( ! $is_active ) {
-								// Alternate wp_nonce_url without esc_html breaking query parameters.
-								$nonce_url = function ( $action_url, $action ) {
-									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
-								};
-
 								$installed_plugin = $this->get_consent_api_plugin_file();
-								$activate_url     = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $installed_plugin ), 'activate-plugin_' . $installed_plugin );
-								$install_url      = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
 
-								$response['wpConsentPlugin'] = array(
+								$consent_plugin = array(
 									'installed'   => (bool) $installed_plugin,
-									'activateURL' => current_user_can( 'activate_plugin', $installed_plugin ) ? esc_url_raw( $activate_url ) : false,
-									'installURL'  => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
+									'installURL'  => false,
+									'activateURL' => false,
 								);
+
+								if ( ! $installed_plugin && current_user_can( 'install_plugins' ) ) {
+									$consent_plugin['installURL'] = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
+								}
+
+								if ( $installed_plugin && current_user_can( 'activate_plugin', $installed_plugin ) ) {
+									$consent_plugin['activateURL'] = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $installed_plugin ), 'activate-plugin_' . $installed_plugin );
+								}
+
+								$response['wpConsentPlugin'] = $consent_plugin;
 							}
 
 							return new WP_REST_Response( $response );
