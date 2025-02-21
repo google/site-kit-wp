@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -44,7 +49,7 @@ import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallba
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
-	onDismiss = null,
+	onDismiss,
 } ) {
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -144,3 +149,8 @@ export default function WooCommerceRedirectModal( {
 		</Dialog>
 	);
 }
+
+WooCommerceRedirectModal.propTypes = {
+	dialogActive: PropTypes.bool.isRequired,
+	onDismiss: PropTypes.func,
+};
