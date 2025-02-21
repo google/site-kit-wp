@@ -43,7 +43,7 @@ const SubtleNotification = forwardRef(
 			description,
 			dismissCTA,
 			additionalCTA,
-			reverseCTAs,
+			reverseCTAs = false,
 			type = 'success',
 			icon,
 		},
