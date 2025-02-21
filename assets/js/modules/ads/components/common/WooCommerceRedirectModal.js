@@ -55,6 +55,11 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isGoogleForWooCommerceActivated()
 	);
+	const isModalDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
+		)
+	);
 
 	const googleForWooCommerceRedirectURI = useMemo( () => {
 		if ( ! adminURL || ! isWooCommerceActive ) {
@@ -76,7 +81,7 @@ export default function WooCommerceRedirectModal( {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const markModalDismissed = useCallback( () => {
-		onDismiss();
+		onDismiss?.();
 		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY );
 	}, [ onDismiss, dismissItem ] );
 
@@ -94,6 +99,10 @@ export default function WooCommerceRedirectModal( {
 		markModalDismissed();
 		onSetupCallback();
 	}, [ markModalDismissed, onSetupCallback ] );
+
+	if ( isModalDismissed ) {
+		return null;
+	}
 
 	return (
 		<Dialog
