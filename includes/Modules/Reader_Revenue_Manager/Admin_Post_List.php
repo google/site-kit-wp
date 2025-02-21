@@ -111,7 +111,7 @@ class Admin_Post_List {
 		$post_product_id = $this->post_product_id->get( $post_id );
 
 		if ( 'none' === $post_product_id ) {
-			esc_html_e( 'No', 'google-site-kit' );
+			esc_html_e( 'Exclude from Reader Revenue Manager', 'google-site-kit' );
 
 			return;
 		}
@@ -128,7 +128,7 @@ class Admin_Post_List {
 			}
 
 			if ( 'openaccess' === $post_product_id ) {
-				esc_html_e( 'Yes, with "open access"', 'google-site-kit' );
+				esc_html_e( 'Use "open access"', 'google-site-kit' );
 
 				return;
 			}
@@ -136,7 +136,7 @@ class Admin_Post_List {
 			echo esc_html(
 				sprintf(
 					/* translators: %s: Product ID */
-					__( 'Yes, with "%s"', 'google-site-kit' ),
+					__( 'Use "%s"', 'google-site-kit' ),
 					$post_product_id
 				),
 			);
@@ -147,7 +147,7 @@ class Admin_Post_List {
 		$settings = $this->settings->get();
 
 		if ( 'per_post' === $settings['snippetMode'] ) {
-			esc_html_e( 'No', 'google-site-kit' );
+			esc_html_e( 'Exclude from Reader Revenue Manager', 'google-site-kit' );
 
 			return;
 		}
@@ -167,13 +167,13 @@ class Admin_Post_List {
 		if ( 'post_types' === $settings['snippetMode'] &&
 			! in_array( get_post_type(), $cta_post_types, true )
 		) {
-			esc_html_e( 'No', 'google-site-kit' );
+			esc_html_e( 'Exclude from Reader Revenue Manager', 'google-site-kit' );
 
 			return;
 		}
 
 		esc_html_e(
-			'Yes, with default selection',
+			'Use default selection',
 			'google-site-kit'
 		);
 	}
