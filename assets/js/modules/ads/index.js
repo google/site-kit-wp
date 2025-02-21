@@ -29,6 +29,7 @@ import AdsIcon from '../../../svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
@@ -38,14 +39,20 @@ import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
 } from './components/notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import AdsModuleSetupCTAWidget from '../../components/notifications/AdsModuleSetupCTAWidget';
 
 export { registerStore } from './datastore';
+
+const ADS_SETUP_CTA_ID = 'ads-setup-cta';
 
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'ads', {
@@ -108,6 +115,7 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 	} );
+
 	notifications.registerNotification( 'setup-success-notification-pax', {
 		Component: PAXSetupSuccessSubtleNotification,
 		priority: 10,
@@ -125,5 +133,40 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
+	} );
+
+	notifications.registerNotification( ADS_SETUP_CTA_ID, {
+		Component: AdsModuleSetupCTAWidget,
+		priority: 30,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isPromptDismissed selector relies on the resolution
+				// of the getDismissedPrompts() resolver.
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
+			] );
+
+			const isAdsConnected =
+				select( CORE_MODULES ).isModuleConnected( 'ads' );
+
+			const isDismissed =
+				select( CORE_USER ).isPromptDismissed( ADS_SETUP_CTA_ID );
+
+			const canActivateAdsModule =
+				select( CORE_MODULES ).canActivateModule( 'ads' );
+
+			if ( isAdsConnected || ! canActivateAdsModule || isDismissed ) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		dismissRetries: 1,
+		featureFlag: 'adsPax',
 	} );
 };
