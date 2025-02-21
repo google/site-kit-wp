@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Persistent_Registration;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -55,7 +56,7 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation {
+final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
@@ -106,6 +107,15 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
+	}
+
+	/**
+	 * Registers functionality independent of module activation.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register_persistent() {
+		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
 	}
 
 	/**
@@ -190,6 +200,41 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	}
 
 	/**
+	 * Populates module data needed independent of Ads module activation.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	protected function persistent_inline_modules_data( $modules_data ) {
+		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
+			return $modules_data;
+		}
+
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
+		}
+
+		$active_wc  = class_exists( 'WooCommerce' );
+		$active_gla = defined( 'WC_GLA_VERSION' );
+
+		$modules_data['ads']['plugins'] = array(
+			'woocommerce'             => array(
+				'active'    => $active_wc,
+				'installed' => $active_wc || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
+			),
+			'google-listings-and-ads' => array(
+				'active'       => $active_gla,
+				'installed'    => $active_gla || Plugin_Status::is_plugin_installed( 'google-listings-and-ads/google-listings-and-ads.php' ),
+				'adsConnected' => $active_gla && get_option( 'gla_ads_id' ),
+			),
+		);
+
+		return $modules_data;
+	}
+
+	/**
 	 * Populates module data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.126.0
@@ -202,24 +247,11 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			return $modules_data;
 		}
 
-		$modules_data['ads'] = array(
-			'supportedConversionEvents' => $this->get_supported_conversion_events(),
-			'plugins'                   => array(
-				'woocommerce'             => array(
-					'installed' => Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
-					'active'    => Plugin_Status::is_plugin_active( 'woocommerce/woocommerce.php' ),
-				),
-				'google-listings-and-ads' => array(
-					'installed'    => Plugin_Status::is_plugin_installed( 'google-listings-and-ads/google-listings-and-ads.php' ),
-					'active'       => Plugin_Status::is_plugin_active( 'google-listings-and-ads/google-listings-and-ads.php' ),
-					'adsConnected' => false,
-				),
-			),
-		);
-
-		if ( $modules_data['ads']['plugins']['google-listings-and-ads']['active'] ) {
-			$modules_data['ads']['plugins']['google-listings-and-ads']['adsConnected'] = (bool) get_option( 'gla_ads_id' );
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
 		}
+
+		$modules_data['ads']['supportedConversionEvents'] = $this->get_supported_conversion_events();
 
 		return $modules_data;
 	}

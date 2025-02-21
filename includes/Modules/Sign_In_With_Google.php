@@ -797,6 +797,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @return bool True if active, false if not.
 	 */
 	protected function is_woocommerce_active() {
-		return defined( 'WC_PLUGIN_FILE' );
+		return class_exists( 'WooCommerce' );
 	}
 }

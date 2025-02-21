@@ -20,21 +20,6 @@ namespace Google\Site_Kit\Core\Util;
 class Plugin_Status {
 
 	/**
-	 * Determines whether a plugin is active.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $plugin Path to the plugin file relative to the plugins directory.
-	 * @return bool
-	 */
-	public static function is_plugin_active( $plugin ) {
-		if ( ! function_exists( 'is_plugin_active' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-		return is_plugin_active( $plugin );
-	}
-
-	/**
 	 * Determines whether a plugin is installed.
 	 *
 	 * @since n.e.x.t
