@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Tests\TestCase;
@@ -29,6 +31,13 @@ class Tag_GuardTest extends TestCase {
 	 */
 	private $settings;
 
+	/**
+	 * Post_Product_ID instance.
+	 *
+	 * @var Post_Product_ID
+	 */
+	private $post_product_id;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -40,10 +49,13 @@ class Tag_GuardTest extends TestCase {
 				'publicationID' => '12345',
 			)
 		);
+
+		$post_meta             = new Post_Meta();
+		$this->post_product_id = new Post_Product_ID( $post_meta, $this->settings );
 	}
 
 	public function test_can_activate() {
-		$guard = new Tag_Guard( $this->settings, '' );
+		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
 		$this->assertTrue( $guard->can_activate() );
 	}
@@ -51,7 +63,7 @@ class Tag_GuardTest extends TestCase {
 	public function test_can_not_activate_when_publication_id_is_unset() {
 		$this->settings->merge( array( 'publicationID' => '' ) );
 
-		$guard = new Tag_Guard( $this->settings, '' );
+		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
 		$this->assertFalse(
 			$guard->can_activate(),
@@ -145,7 +157,10 @@ class Tag_GuardTest extends TestCase {
 		$post_ID = $this->factory()->post->create();
 		$this->go_to( get_permalink( $post_ID ) );
 
-		$guard = new Tag_Guard( $this->settings, $post_product_id );
+		// Set the post product ID.
+		$this->post_product_id->set( $post_ID, $post_product_id );
+
+		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
 		$this->assertEquals( $expected, $guard->can_activate() );
 	}
@@ -156,7 +171,6 @@ class Tag_GuardTest extends TestCase {
 				array(
 					'publicationID' => '',
 				),
-				'',
 				false,
 			),
 			'with snippet mode of post types' => array(
@@ -164,7 +178,6 @@ class Tag_GuardTest extends TestCase {
 					'publicationID' => '12345',
 					'snippetMode'   => 'post_types',
 				),
-				'',
 				false,
 			),
 			'with snippet mode of per post'   => array(
@@ -172,7 +185,6 @@ class Tag_GuardTest extends TestCase {
 					'publicationID' => '12345',
 					'snippetMode'   => 'per_post',
 				),
-				'',
 				false,
 			),
 			'with snippet mode of site wide'  => array(
@@ -180,7 +192,6 @@ class Tag_GuardTest extends TestCase {
 					'publicationID' => '12345',
 					'snippetMode'   => 'sitewide',
 				),
-				'',
 				true,
 			),
 		);
@@ -191,14 +202,13 @@ class Tag_GuardTest extends TestCase {
 	 */
 	public function test_can_activate__non_singular__rrmModuleV2(
 		$settings,
-		$post_product_id,
 		$expected
 	) {
 		$this->enable_feature( 'rrmModuleV2' );
 
 		$this->settings->merge( $settings );
 
-		$guard = new Tag_Guard( $this->settings, $post_product_id );
+		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
 		$this->assertEquals( $expected, $guard->can_activate() );
 	}
