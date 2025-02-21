@@ -25,6 +25,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
+      - 'webpack/*.config.js'
       - 'webpack.config.js'
       - 'feature-flags.json'
     tags: ['**']
@@ -50,6 +51,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
+      - 'webpack/*.config.js'
       - 'webpack.config.js'
       - 'feature-flags.json'
     types:

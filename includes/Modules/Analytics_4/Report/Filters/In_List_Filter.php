@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\InListFilter as Go
  * Class for parsing the in-list filter.
  *
  * @since 1.106.0
- * @since n.e.x.t Moved from `Analytics_4\Report\Dimension_Filters` to `Analytics_4\Report\Filters` for use with both dimensions and metrics.
+ * @since 1.147.0 Moved from `Analytics_4\Report\Dimension_Filters` to `Analytics_4\Report\Filters` for use with both dimensions and metrics.
  * @access private
  * @ignore
  */

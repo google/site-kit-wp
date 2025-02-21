@@ -197,7 +197,7 @@ export const createSettingsStore = (
 		/**
 		 * Returns a specific setting back to the current saved value.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.147.0
 		 *
 		 * @param {string} setting The setting to rollback.
 		 * @return {Object} Redux-style action.

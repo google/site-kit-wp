@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
@@ -19,6 +18,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
+use Google\Site_Kit\Tests\PluginStatusTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_User;
 use WPDieException;
@@ -27,6 +27,8 @@ use WPDieException;
  * @group Modules
  */
 class Sign_In_With_GoogleTest extends TestCase {
+
+	use PluginStatusTrait;
 
 	/**
 	 * Sign_In_With_Google object.
@@ -55,6 +57,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Restore the original $_SERVER data.
 		$_SERVER = $this->server_data;
+
+		$this->deactivate_all_test_plugins();
 	}
 
 	public function test_magic_methods() {
@@ -117,7 +121,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
 
-		$this->assertStringNotContainsString( 'woocommerce-form-row', $output );
+		// If WooCommerce is not active, the button should not be rendered in
+		// the WooCommerce form.
+		do_action( 'woocommerce_login_form_start' );
+		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
+		$this->assertStringNotContainsString( 'woocommerce-form-row', $woo_output );
 
 		// The Sign in with Google JS should always render, even on the front
 		// page.
@@ -145,20 +153,60 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
-		// Render the button in the WooCommerce form.
-		do_action( 'woocommerce_loaded' );
-		do_action( 'woocommerce_login_form_start' );
-		$output = $this->capture_action( 'woocommerce_login_form_start' );
-
-		// CHeck the render button contains the expected class name.
-		$this->assertStringContainsString( 'woocommerce-form-row', $output );
-
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
 		update_option( 'siteurl', $reset_site_url );
 		unset( $_SERVER['HTTPS'] );
 		unset( $_SERVER['SCRIPT_NAME'] );
 		add_action( 'wp_footer', 'the_block_template_skip_link' );
+	}
+
+	public function test_render_signinwithgoogle__woocommerce_not_active() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+			)
+		);
+
+		do_action( 'woocommerce_loaded' );
+		do_action( 'woocommerce_login_form_start' );
+		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
+
+		$this->assertStringNotContainsString( 'woocommerce-form-row', $woo_output );
+	}
+
+	public function test_render_signinwithgoogle__woocommerce_active() {
+		$this->activate_plugin( 'woocommerce/woocommerce.php' );
+
+		// Re-instantiate the class so its "is_woocommerce_active" property is recalculated
+		// using the updated, filtered active_plugins. Otherwise, it would use the old cached value.
+		$this->module = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+			)
+		);
+
+		// Render the button in the WooCommerce form.
+		do_action( 'woocommerce_loaded' );
+		do_action( 'woocommerce_login_form_start' );
+		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
+
+		// Check the render button contains the expected class name.
+		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output );
 	}
 
 	public function test_handle_disconnect_user__bad_nonce() {

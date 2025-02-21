@@ -27,7 +27,7 @@ import SignInWithGoogleIcon from './icon.svg';
 /**
  * Sign in with Google Block Edit component.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  *
  * @return {Element} Element to render.
  */
