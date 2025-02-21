@@ -19,7 +19,7 @@
  */
 import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
 import { ExternalLink, Notice } from '@wordpress-core/components';
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress-core/element';
 import { __ } from '@wordpress/i18n';
 
 /**
