@@ -45,7 +45,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		tooltipCallback,
 	} = options;
 
-	const { rows = [], totals = [] } = report || {};
+	const { rows = [] } = report || {};
 
 	const withTooltips = typeof tooltipCallback === 'function';
 	const columns = [ 'Source', 'Percent' ];
@@ -59,17 +59,30 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		} );
 	}
 
-	const totalUsers =
-		totals?.[ 0 ]?.metricValues?.[ keyColumnIndex ]?.value || 0;
 	const dataMap = [ columns ];
 
 	const currentDateRangeRows = rows.filter(
 		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_0'
 	);
 
+	const totalCurrent = currentDateRangeRows.reduce(
+		( sum, row ) => sum + parseInt( row.metricValues[ 0 ].value, 10 ),
+		0
+	);
+
+	const previousDateRangeRows = rows.filter(
+		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_1'
+	);
+
+	const totalPrevious = previousDateRangeRows.reduce(
+		( sum, row ) => sum + parseInt( row.metricValues[ 0 ].value, 10 ),
+		0
+	);
+
 	let hasOthers = withOthers;
 	let rowsNumber = currentDateRangeRows.length;
-	let others = 1;
+	let othersCurrent = totalCurrent;
+	let othersPrevious = totalPrevious;
 	if ( maxSlices > 0 ) {
 		hasOthers = withOthers && currentDateRangeRows.length > maxSlices;
 		rowsNumber = Math.min(
@@ -83,10 +96,20 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 
 	for ( let i = 0; i < rowsNumber; i++ ) {
 		const row = currentDateRangeRows[ i ];
-		const users = row.metricValues[ keyColumnIndex ].value;
-		const percent = totalUsers > 0 ? users / totalUsers : 0;
+		const usersCurrent = row.metricValues[ keyColumnIndex ].value;
 
-		others -= percent;
+		const previousRow = previousDateRangeRows.find(
+			( { dimensionValues } ) =>
+				dimensionValues[ 0 ].value === row.dimensionValues[ 0 ].value
+		);
+		const usersPrevious = previousRow
+			? previousRow.metricValues[ keyColumnIndex ].value
+			: 0;
+
+		othersCurrent -= usersCurrent;
+		othersPrevious -= usersPrevious;
+
+		const percent = totalCurrent > 0 ? usersCurrent / totalCurrent : 0;
 
 		const rowData = [ row.dimensionValues[ 0 ].value, percent ];
 		if ( withTooltips ) {
@@ -105,10 +128,23 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		dataMap.push( rowData );
 	}
 
-	if ( hasOthers && others > 0 ) {
-		const rowData = [ __( 'Others', 'google-site-kit' ), others ];
+	if ( hasOthers && othersCurrent > 0 ) {
+		const rowData = [
+			__( 'Others', 'google-site-kit' ),
+			othersCurrent / totalCurrent,
+		];
 		if ( withTooltips ) {
-			rowData.push( tooltipCallback( null, null, rowData ) );
+			rowData.push(
+				tooltipCallback(
+					{
+						metricValues: [ { value: othersCurrent } ],
+					},
+					{
+						metricValues: [ { value: othersPrevious } ],
+					},
+					rowData
+				)
+			);
 		}
 
 		dataMap.push( rowData );
