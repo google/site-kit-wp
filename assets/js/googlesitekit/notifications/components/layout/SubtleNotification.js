@@ -43,6 +43,7 @@ const SubtleNotification = forwardRef(
 			description,
 			dismissCTA,
 			additionalCTA,
+			reverseCTAs = false,
 			type = 'success',
 			icon,
 		},
@@ -87,9 +88,11 @@ const SubtleNotification = forwardRef(
 							</p>
 						</div>
 						<div className="googlesitekit-subtle-notification__action">
-							{ dismissCTA }
+							{ ! reverseCTAs && dismissCTA }
+							{ reverseCTAs && additionalCTA }
 
-							{ additionalCTA }
+							{ ! reverseCTAs && additionalCTA }
+							{ reverseCTAs && dismissCTA }
 						</div>
 					</Cell>
 				</Row>
@@ -104,6 +107,7 @@ SubtleNotification.propTypes = {
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
+	reverseCTAs: PropTypes.bool,
 	type: PropTypes.oneOf( [ 'success', 'warning', 'new-feature' ] ),
 	icon: PropTypes.object,
 };

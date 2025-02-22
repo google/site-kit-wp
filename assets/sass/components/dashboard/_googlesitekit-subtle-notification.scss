@@ -151,7 +151,7 @@
 
 		.mdc-button {
 
-			&.googlesitekit-subtle-notification__cta {
+			&.mdc-button--raised {
 				@include mdc-button-filled-accessible($c-violet-v-600);
 			}
 		}
