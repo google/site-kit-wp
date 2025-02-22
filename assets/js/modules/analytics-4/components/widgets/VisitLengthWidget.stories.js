@@ -29,7 +29,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import VisitLengthWidget from './VisitLengthWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import {
 	CORE_USER,
 	KM_ANALYTICS_PAGES_PER_VISIT,
