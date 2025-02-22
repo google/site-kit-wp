@@ -24,6 +24,7 @@ use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings as Tag_Manager_Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\ContainerVersion;
@@ -35,6 +36,7 @@ use WP_REST_Request;
 class REST_Consent_Mode_ControllerTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use FakeInstalledPlugins;
 	use RestTestTrait;
 
 	/**
@@ -67,6 +69,8 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
+		// Avoid unexpected results when running locally.
+		$this->mock_installed_plugins();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -255,9 +259,11 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$wp_consent_plugin = $response_data['wpConsentPlugin'];
 
+		// Plugin not installed (see mock_installed_plugins)
 		$this->assertFalse( $wp_consent_plugin['installed'] );
+		// Plugin is not installed, hence cannot be activated.
+		$this->assertFalse( $wp_consent_plugin['activateURL'] );
 
-		$this->assertStringStartsWith( 'http://example.org/wp-admin/plugins.php?action=activate&plugin=wp-consent-api%2Fwp-consent-api.php&_wpnonce=', $wp_consent_plugin['activateURL'] );
 		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', $wp_consent_plugin['installURL'] );
 	}
 
