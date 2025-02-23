@@ -103,7 +103,7 @@ NoAlternativeGA4Config.decorators = [
 NoAlternativeGA4Config.scenario = {};
 
 export default {
-	title: 'Components/GoogleTagIDMismatchNotification',
+	title: 'Components/Notifications/Banners/GoogleTagIDMismatchNotification',
 	component: GoogleTagIDMismatchNotification,
 	decorators: [
 		( Story ) => {
