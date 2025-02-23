@@ -23,9 +23,14 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import * as fixtures from '../../modules/analytics-4/datastore/__fixtures__';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
-function Template( { ...args } ) {
-	return <GoogleTagIDMismatchNotification { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'google-tag-id-mismatch'
+)( GoogleTagIDMismatchNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const AlternativeGA4Config = Template.bind( {} );
@@ -64,9 +69,7 @@ AlternativeGA4Config.decorators = [
 		);
 	},
 ];
-AlternativeGA4Config.scenario = {
-	label: 'Global/GoogleTagIDMismatchNotification/AlternativeGA4Config',
-};
+AlternativeGA4Config.scenario = {};
 
 export const NoAlternativeGA4Config = Template.bind( {} );
 NoAlternativeGA4Config.storyName = 'NoAlternativeGA4Config';
@@ -97,9 +100,7 @@ NoAlternativeGA4Config.decorators = [
 		);
 	},
 ];
-NoAlternativeGA4Config.scenario = {
-	label: 'Global/GoogleTagIDMismatchNotification/NoAlternativeGA4Config',
-};
+NoAlternativeGA4Config.scenario = {};
 
 export default {
 	title: 'Components/GoogleTagIDMismatchNotification',
