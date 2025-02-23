@@ -28,9 +28,7 @@ import { useCallback } from '@wordpress/element';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { isValidMeasurementID } from '../../modules/analytics-4/utils/validation';
-import { ProgressBar } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { Cell, Grid, Row } from '../../material-components';
 import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
 import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
 import Description from '../../googlesitekit/notifications/components/common/Description';
@@ -155,19 +153,7 @@ export default function GoogleTagIDMismatchNotification( {
 		newGoogleTagID === undefined ||
 		currentAnalyticsProperty === undefined
 	) {
-		// Wrap in the googlesitekit-publisher-win class to ensure the output is treated in the same way as BannerNotification,
-		// with only one instance visible on the screen at a time.
-		return (
-			<div className="googlesitekit-publisher-win">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<ProgressBar />
-						</Cell>
-					</Row>
-				</Grid>
-			</div>
-		);
+		return null;
 	}
 
 	if ( newAnalyticsProperty ) {
