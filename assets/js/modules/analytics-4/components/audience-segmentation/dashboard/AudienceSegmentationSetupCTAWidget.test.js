@@ -28,6 +28,7 @@ import {
 } from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	provideModules,
 	provideSiteInfo,
@@ -897,6 +898,8 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			it( 'should track an event when the Retry button is clicked', () => {
 				mockTrackEvent.mockClear();
+
+				freezeFetch( syncAvailableAudiencesEndpoint );
 
 				act( () => {
 					fireEvent.click(
