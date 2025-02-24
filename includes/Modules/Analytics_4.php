@@ -721,11 +721,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'shareable' => true,
 			);
 			$datapoints['GET:audience-settings']                     = array(
-				'service'   => 'analyticsaudiences',
+				'service'   => '',
 				'shareable' => true,
 			);
 			$datapoints['POST:save-audience-settings']               = array(
-				'service' => 'analyticsaudiences',
+				'service' => '',
 			);
 		}
 
@@ -1507,8 +1507,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
+				if ( isset( $data['audienceSegmentationSetupCompletedBy'] ) && ! is_int( $data['audienceSegmentationSetupCompletedBy'] ) ) {
+					throw new Invalid_Param_Exception( 'audienceSegmentationSetupCompletedBy' );
+				}
+
 				return function () use ( $data ) {
-					$new_settings['audienceSegmentationSetupCompletedBy'] = get_current_user_id();
+					if ( isset( $data['audienceSegmentationSetupCompletedBy'] ) ) {
+						$new_settings['audienceSegmentationSetupCompletedBy'] = $data['audienceSegmentationSetupCompletedBy'];
+					}
 
 					if ( isset( $data['availableAudiences'] ) && is_array( $data['availableAudiences'] ) ) {
 						$new_settings['availableAudiences'] = $data['availableAudiences'];

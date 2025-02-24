@@ -92,8 +92,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	 */
 	public function merge( $settings ) {
 		$existing_settings = $this->get();
-		$new_settings      = $this->sanitize( $settings, $existing_settings );
-		$updated_settings  = array_merge( $existing_settings, $new_settings );
+		$updated_settings  = array_merge( $existing_settings, $settings );
 
 		$this->set( $updated_settings );
 
@@ -105,38 +104,37 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $settings The settings to sanitize.
-	 * @param array $existing_settings The existing settings to merge with.
+	 * @param array $option The option to sanitize.
 	 *
 	 * @return array The sanitized settings.
 	 */
-	private function sanitize( $settings, $existing_settings = null ) {
-		$option = $existing_settings ?? $this->get_default();
+	private function sanitize( $option ) {
+		$new_option = $this->get();
 
-		if ( isset( $settings['availableAudiences'] ) ) {
-			if ( is_array( $settings['availableAudiences'] ) ) {
-				$option['availableAudiences'] = $settings['availableAudiences'];
+		if ( isset( $option['availableAudiences'] ) ) {
+			if ( is_array( $option['availableAudiences'] ) ) {
+				$new_option['availableAudiences'] = $option['availableAudiences'];
 			} else {
-				$option['availableAudiences'] = null;
+				$new_option['availableAudiences'] = null;
 			}
 		}
 
-		if ( isset( $settings['availableAudiencesLastSyncedAt'] ) ) {
-			if ( is_int( $settings['availableAudiencesLastSyncedAt'] ) ) {
-				$option['availableAudiencesLastSyncedAt'] = $settings['availableAudiencesLastSyncedAt'];
+		if ( isset( $option['availableAudiencesLastSyncedAt'] ) ) {
+			if ( is_int( $option['availableAudiencesLastSyncedAt'] ) ) {
+				$new_option['availableAudiencesLastSyncedAt'] = $option['availableAudiencesLastSyncedAt'];
 			} else {
-				$option['availableAudiencesLastSyncedAt'] = 0;
+				$new_option['availableAudiencesLastSyncedAt'] = 0;
 			}
 		}
 
-		if ( isset( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
-			if ( is_int( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
-				$option['audienceSegmentationSetupCompletedBy'] = $settings['audienceSegmentationSetupCompletedBy'];
+		if ( isset( $option['audienceSegmentationSetupCompletedBy'] ) ) {
+			if ( is_int( $option['audienceSegmentationSetupCompletedBy'] ) ) {
+				$new_option['audienceSegmentationSetupCompletedBy'] = $option['audienceSegmentationSetupCompletedBy'];
 			} else {
-				$option['audienceSegmentationSetupCompletedBy'] = null;
+				$new_option['audienceSegmentationSetupCompletedBy'] = null;
 			}
 		}
 
-		return $option;
+		return $new_option;
 	}
 }

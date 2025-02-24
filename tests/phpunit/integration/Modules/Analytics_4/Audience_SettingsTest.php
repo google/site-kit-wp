@@ -43,9 +43,6 @@ class Audience_SettingsTest extends SettingsTestCase {
 
 		$this->options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->audience_settings = new Audience_Settings( $this->options );
-		$this->user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-
-		wp_set_current_user( $this->user_id );
 	}
 
 	/**
@@ -156,9 +153,6 @@ class Audience_SettingsTest extends SettingsTestCase {
 		);
 	}
 
-	/**
-	 * @group 10up
-	 */
 	public function test_merge_with_invalid_values() {
 		$this->audience_settings->register();
 
