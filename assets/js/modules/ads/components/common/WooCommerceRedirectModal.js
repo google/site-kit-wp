@@ -43,6 +43,7 @@ import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/cons
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { HOUR_IN_SECONDS } from '../../../../util';
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
@@ -87,7 +88,9 @@ export default function WooCommerceRedirectModal( {
 
 	const markModalDismissed = useCallback( () => {
 		onDismiss?.();
-		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY );
+		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
+			expiresInSeconds: HOUR_IN_SECONDS,
+		} );
 	}, [ onDismiss, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
