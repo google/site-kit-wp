@@ -16,7 +16,5 @@
  * limitations under the License.
  */
 
-export const NOTIFICATION_ID = 'enable-plugin-auto-update-notification';
 export const CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP =
 	'auto-update-banner-hide-notification-on-first-setup';
-export const DISMISSED_ITEM_KEY = 'auto-update-cta';
