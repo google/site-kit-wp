@@ -35,11 +35,14 @@ jest.mock( '@wordpress-core/components', () => ( {} ), {
 jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
 
 import Data from 'googlesitekit-data';
+import SettingPanel from './SettingPanel';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { provideModules } from '../../../tests/js/utils';
 import { registerPlugin } from '@wordpress-core/plugins';
+import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
-import SettingPanel from './components/SettingPanel';
-import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../assets/js/modules/reader-revenue-manager/datastore/constants';
+
+registerStore( Data );
 
 const { dispatch } = Data;
 
@@ -53,14 +56,11 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 	} );
 
 	it( 'should register the plugin if the module is connected', async () => {
-		dispatch( CORE_MODULES ).receiveGetModules( [
+		provideModules( Data, [
 			{
 				slug: 'reader-revenue-manager',
 				active: true,
 				connected: true,
-				shareable: true,
-				recoverable: true,
-				internal: false,
 			},
 		] );
 
@@ -75,7 +75,13 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 	} );
 
 	it( 'should not register the plugin if the module is not connected', async () => {
-		dispatch( CORE_MODULES ).receiveGetModules( [] );
+		provideModules( Data, [
+			{
+				slug: 'reader-revenue-manager',
+				active: true,
+				connected: false,
+			},
+		] );
 
 		await registerReaderRevenueManagerPlugin();
 

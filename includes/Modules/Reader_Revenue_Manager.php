@@ -452,7 +452,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Script(
 				'googlesitekit-reader-revenue-manager-block-editor-plugin',
 				array(
-					'src'           => $this->context->url( 'dist/assets/js/blocks/reader-revenue-manager/index.js' ),
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/index.js',
 					'dependencies'  => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
@@ -466,7 +466,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Stylesheet(
 				'googlesitekit-block-editor-css',
 				array(
-					'src'           => $base_url . 'css/googlesitekit-block-editor-css.css',
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/editor-styles.css',
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)

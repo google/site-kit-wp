@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+import Data from 'googlesitekit-data';
+import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
+
+registerStore( Data );
 
 registerReaderRevenueManagerPlugin();

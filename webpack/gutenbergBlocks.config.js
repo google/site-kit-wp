@@ -41,8 +41,10 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		// Reader Revenue Manager
-		'reader-revenue-manager/index':
-			'./blocks/reader-revenue-manager/index.js',
+		'reader-revenue-manager/block-editor-plugin/index':
+			'./blocks/reader-revenue-manager/block-editor-plugin/index.js',
+		'reader-revenue-manager/block-editor-plugin/editor-styles':
+			'./blocks/reader-revenue-manager/block-editor-plugin/editor-styles.scss',
 		// Sign in with Google block.
 		'sign-in-with-google/index': './blocks/sign-in-with-google/index.js',
 		'sign-in-with-google/editor-styles':

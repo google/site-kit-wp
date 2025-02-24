@@ -35,7 +35,6 @@ module.exports = ( mode ) => ( {
 		'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
 		'googlesitekit-authorize-application-css':
 			'./assets/sass/authorize-application.scss',
-		'googlesitekit-block-editor-css': './assets/sass/block-editor.scss',
 	},
 	module: {
 		rules: [
