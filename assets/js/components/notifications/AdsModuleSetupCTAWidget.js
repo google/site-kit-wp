@@ -54,9 +54,11 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import { WooCommerceRedirectModal } from '../../modules/ads/components/common';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { useCallback } from 'react';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../modules/ads/datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+} from '../../modules/ads/datastore/constants';
 
 const breakpointSVGMap = {
 	[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
@@ -90,7 +92,7 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 			isWooCommerceActivated,
 			isGoogleForWooCommerceActivated,
 			hasGoogleForWooCommerceAdsAccount,
-		} = select( CORE_SITE );
+		} = select( MODULES_ADS );
 
 		return (
 			( isWooCommerceActivated() &&
