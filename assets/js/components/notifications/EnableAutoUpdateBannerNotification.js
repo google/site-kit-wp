@@ -20,12 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MINUTE_IN_SECONDS } from '../../util';
@@ -35,13 +34,18 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '../../googlesitekit/datastore/user/constants';
 import { getItem, setItem } from '../../googlesitekit/api/cache';
-import ErrorNotice from '../ErrorNotice';
-import BannerNotification from './BannerNotification';
+import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 
 const CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP =
 	'auto-update-banner-hide-notification-on-first-setup';
 
-export default function EnableAutoUpdateBannerNotification() {
+export default function EnableAutoUpdateBannerNotification( {
+	id,
+	Notification,
+} ) {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
 	);
@@ -50,10 +54,6 @@ export default function EnableAutoUpdateBannerNotification() {
 	);
 	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
-	);
-
-	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
-		select( CORE_SITE ).isDoingEnableAutoUpdate()
 	);
 
 	const enableAutoUpdateError = useSelect( ( select ) =>
@@ -150,48 +150,59 @@ export default function EnableAutoUpdateBannerNotification() {
 		return null;
 	}
 
+	// Render the Auto Updates enabled successfully banner.
+	if ( enabledViaCTA ) {
+		return (
+			<Notification className="googlesitekit-publisher-win">
+				<SimpleNotification
+					title={ __(
+						'Thanks for enabling auto-updates',
+						'google-site-kit'
+					) }
+					description={
+						<Description
+							text={ __(
+								'Auto-updates have been enabled. Your version of Site Kit will automatically be updated when new versions are available.',
+								'google-site-kit'
+							) }
+							errorText={ enableAutoUpdateError }
+						/>
+					}
+					actions={
+						<ActionsCTALinkDismiss
+							id={ id }
+							ctaLabel={ __(
+								'Enable auto-updates',
+								'google-site-kit'
+							) }
+							onCTAClick={ ctaActivate }
+							dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
+						/>
+					}
+				/>
+			</Notification>
+		);
+	}
+
 	return (
-		<BannerNotification
-			title={
-				enabledViaCTA
-					? __(
-							'Thanks for enabling auto-updates',
-							'google-site-kit'
-					  )
-					: __( 'Keep Site Kit up-to-date', 'google-site-kit' )
-			}
-			description={
-				enabledViaCTA
-					? __(
-							'Auto-updates have been enabled. Your version of Site Kit will automatically be updated when new versions are available.',
-							'google-site-kit'
-					  )
-					: __(
+		<Notification className="googlesitekit-publisher-win">
+			<SimpleNotification
+				title={ __( 'Keep Site Kit up-to-date', 'google-site-kit' ) }
+				description={
+					<Description
+						text={ __(
 							'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
 							'google-site-kit'
-					  )
-			}
-			ctaComponent={
-				enabledViaCTA ? undefined : (
-					<Fragment>
-						{ enableAutoUpdateError && (
-							<div>
-								<ErrorNotice
-									error={ enableAutoUpdateError }
-									storeName={ CORE_SITE }
-								/>
-							</div>
 						) }
-						<SpinnerButton
-							onClick={ ctaActivate }
-							isSaving={ isDoingEnableAutoUpdate }
-						>
-							{ __( 'Enable auto-updates', 'google-site-kit' ) }
-						</SpinnerButton>
-					</Fragment>
-				)
-			}
-			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
-		/>
+					/>
+				}
+				actions={
+					<Dismiss
+						id={ id }
+						dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }
