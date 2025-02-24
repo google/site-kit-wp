@@ -128,10 +128,10 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
 			provideSiteInfo( registry, {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: false,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: true,
 						adsConnected: true,
 					},
@@ -149,10 +149,10 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return true if the WooCommerce and Google for WooCommerce plugins are active and Ads account ins linked', async () => {
 			provideSiteInfo( registry, {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: true,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: true,
 						adsConnected: true,
 					},

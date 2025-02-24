@@ -31,8 +31,8 @@ export const ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY =
 export const ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY = 'wc-redirect-modal';
 
 export const PLUGINS = {
-	WOOCOMMERCE: 'wooCommerce',
-	GOOGLE_FOR_WOOCOMMERCE: 'googleForWooCommerce',
+	WOOCOMMERCE: 'woocommerce',
+	GOOGLE_FOR_WOOCOMMERCE: 'google-listings-and-ads',
 };
 
 export const AVAILABLE_PLUGINS = [

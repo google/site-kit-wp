@@ -39,7 +39,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { ADS_NOTIFICATIONS } from '../../modules/ads';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../modules/ads/datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+} from '../../modules/ads/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
@@ -72,12 +75,14 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 				connected: false,
 			},
 		] );
-		provideSiteInfo( registry, {
+		provideSiteInfo( registry );
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				wooCommerce: {
+				woocommerce: {
 					active: false,
 				},
-				googleForWooCommerce: {
+				'google-listings-and-ads': {
 					active: false,
 					adsConnected: false,
 				},
@@ -105,12 +110,12 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when WooCommerce is active but Google For WooCommerce is not', async () => {
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: true,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: false,
 						adsConnected: false,
 					},
@@ -141,12 +146,12 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: true,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: true,
 						adsConnected: false,
 					},
@@ -224,12 +229,12 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 
 		it( 'should start Ads module activation if WooCommerce redirect modal was previously dismissed', async () => {
 			provideModuleRegistrations( registry );
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: true,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: true,
 						adsConnected: false,
 					},
@@ -356,12 +361,12 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 				},
 			} );
 
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: true,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: true,
 						adsConnected: false,
 					},
@@ -423,12 +428,12 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 		} );
 
 		it( 'is not active when Google for WooCommerce Ads account is linked', async () => {
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					wooCommerce: {
+					woocommerce: {
 						active: true,
 					},
-					googleForWooCommerce: {
+					'google-listings-and-ads': {
 						active: true,
 						adsConnected: true,
 					},

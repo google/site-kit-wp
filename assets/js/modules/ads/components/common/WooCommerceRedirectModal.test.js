@@ -120,11 +120,11 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		provideSiteInfo( registry, {
 			plugins: {
-				wooCommerce: {
+				woocommerce: {
 					active: true,
 					installed: true,
 				},
-				googleForWooCommerce: {
+				'google-listings-and-ads': {
 					active: false,
 					installed: false,
 				},
@@ -166,11 +166,11 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		provideSiteInfo( registry, {
 			plugins: {
-				wooCommerce: {
+				woocommerce: {
 					active: true,
 					installed: true,
 				},
-				googleForWooCommerce: {
+				'google-listings-and-ads': {
 					active: true,
 					installed: true,
 				},
