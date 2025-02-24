@@ -31,7 +31,10 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+} from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
 describe( 'WooCommerceRedirectModal', () => {
@@ -56,6 +59,18 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				woocommerce: {
+					active: false,
+				},
+				'google-listings-and-ads': {
+					active: false,
+					adsConnected: false,
+				},
+			},
+		} );
 	} );
 
 	it( 'does not render when dismissed', async () => {
@@ -118,7 +133,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			] ),
 		} );
 
-		provideSiteInfo( registry, {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				woocommerce: {
 					active: true,
@@ -164,7 +179,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			] ),
 		} );
 
-		provideSiteInfo( registry, {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				woocommerce: {
 					active: true,
