@@ -34,6 +34,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { MODULES_ADS } from '../../datastore/constants';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 
 const NOTIFICATION_ID = 'account-linked-via-google-for-woocommerce';
@@ -126,7 +127,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
 					woocommerce: {
 						active: false,
@@ -147,7 +148,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		} );
 
 		it( 'should return true if the WooCommerce and Google for WooCommerce plugins are active and Ads account ins linked', async () => {
-			provideSiteInfo( registry, {
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
 					woocommerce: {
 						active: true,
