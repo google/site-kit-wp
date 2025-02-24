@@ -221,6 +221,9 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 									  )
 									: __( 'Maybe later', 'google-site-kit' )
 							}
+							dismissOptions={ {
+								skipHidingFromQueue: true,
+							} }
 							onDismiss={ showTooltip }
 							dismissExpires={ 2 * WEEK_IN_SECONDS }
 						/>
