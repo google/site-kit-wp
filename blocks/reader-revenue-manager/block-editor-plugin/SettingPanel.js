@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-// eslint-disable-next-line import/no-unresolved
 import { PluginDocumentSettingPanel } from '@wordpress-core/edit-post';
 
 /**

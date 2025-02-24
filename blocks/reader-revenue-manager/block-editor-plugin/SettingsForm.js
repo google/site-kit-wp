@@ -20,9 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-// eslint-disable-next-line import/no-unresolved
 import { SelectControl } from '@wordpress-core/components';
-// eslint-disable-next-line import/no-unresolved
 import { useState } from '@wordpress-core/element';
 
 /**

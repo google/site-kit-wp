@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-// eslint-disable-next-line import/no-unresolved
 import { registerPlugin } from '@wordpress-core/plugins';
 
 /**
