@@ -34,7 +34,6 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { isFeatureEnabled } from '../../features';
 import {
 	PAXSetupSuccessSubtleNotification,
@@ -138,7 +137,7 @@ export const ADS_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
 			// on the data being resolved in getModuleData() selector.
-			await resolveSelect( CORE_SITE ).getModuleData();
+			await resolveSelect( MODULES_ADS ).getModuleData();
 
 			const {
 				isWooCommerceActivated,
