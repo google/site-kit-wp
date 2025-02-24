@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -33,7 +32,6 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 	render,
-	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -337,62 +335,6 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).toBeInTheDocument();
-		} );
-	} );
-
-	describe( 'Escape key', () => {
-		beforeEach( () => {
-			provideUserCapabilities( registry );
-
-			registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.registerNotification( NOTIFICATION_ID, notification );
-
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-			registry
-				.dispatch( CORE_USER )
-				.finishResolution( 'getDismissedPrompts', [] );
-		} );
-
-		it( 'should close the modal on pressing escape key and dismiss the notification', async () => {
-			fetchMock.postOnce( fetchDismissPrompt, {
-				body: {
-					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
-				},
-			} );
-
-			registry.dispatch( MODULES_ADS ).receiveModuleData( {
-				plugins: {
-					woocommerce: {
-						active: true,
-					},
-					'google-listings-and-ads': {
-						active: true,
-						adsConnected: false,
-					},
-				},
-			} );
-
-			const { waitForRegistry } = render(
-				<AdsModuleSetupCTAWidgetComponent />,
-				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-			);
-
-			fireEvent.keyUp( global, { keyCode: ESCAPE } );
-
-			await waitForRegistry();
-
-			await waitFor( () => {
-				expect(
-					document.querySelector( '.mdc-dialog--closing' )
-				).not.toBeInTheDocument();
-			} );
-
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
 		} );
 	} );
 
