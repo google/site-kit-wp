@@ -47,9 +47,6 @@ function EnableAutoUpdateBannerNotification() {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
 	);
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( DISMISSED_ITEM_KEY )
-	);
 	const hasChangePluginAutoUpdatesCapacity = useSelect( ( select ) =>
 		select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity()
 	);
@@ -138,10 +135,6 @@ function EnableAutoUpdateBannerNotification() {
 		setFirstPluginSetup,
 		siteKitAutoUpdatesEnabled,
 	] );
-
-	if ( isDismissed !== false ) {
-		return null;
-	}
 
 	// Don't render anything if the user has no permission to update plugin,
 	// auto-updates can not be enabled for Site Kit, or auto update are already
