@@ -242,7 +242,7 @@ describe( 'AudienceCreationNotice', () => {
 
 			muteFetch( createAudienceEndpoint );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [],
 				isAudienceSegmentationWidgetHidden: false,
 				didSetAudiences: true,

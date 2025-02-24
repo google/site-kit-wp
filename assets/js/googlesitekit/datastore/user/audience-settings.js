@@ -67,7 +67,7 @@ const fetchStoreReducerCallback = createReducer(
 );
 
 const fetchGetAudienceSettingsStore = createFetchStore( {
-	baseName: 'getAudienceSettings',
+	baseName: 'getUserAudienceSettings',
 	controlCallback() {
 		return API.get(
 			'core',
@@ -82,8 +82,8 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 	reducerCallback: fetchStoreReducerCallback,
 } );
 
-const fetchSaveAudienceSettingsStore = createFetchStore( {
-	baseName: 'saveAudienceSettings',
+const fetchSaveUserAudienceSettingsStore = createFetchStore( {
+	baseName: 'saveUserAudienceSettings',
 	controlCallback: ( settings ) =>
 		API.set( 'core', 'user', 'audience-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -110,7 +110,7 @@ const baseActions = {
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	saveAudienceSettings: createValidatedAction(
+	saveUserAudienceSettings: createValidatedAction(
 		( settings = {} ) => {
 			invariant(
 				isPlainObject( settings ),
@@ -118,11 +118,11 @@ const baseActions = {
 			);
 		},
 		function* ( settings = {} ) {
-			yield clearError( 'saveAudienceSettings', [] );
+			yield clearError( 'saveUserAudienceSettings', [] );
 
 			const registry = yield commonActions.getRegistry();
 			const audienceSettings = yield commonActions.await(
-				registry.resolveSelect( CORE_USER ).getAudienceSettings()
+				registry.resolveSelect( CORE_USER ).getUserAudienceSettings()
 			);
 			const finalSettings = {
 				...audienceSettings,
@@ -155,12 +155,12 @@ const baseActions = {
 			finalSettings.configuredAudiences = sortedConfiguredAudiences;
 
 			const { response, error } =
-				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
+				yield fetchSaveUserAudienceSettingsStore.actions.fetchSaveUserAudienceSettings(
 					finalSettings
 				);
 
 			if ( error ) {
-				yield receiveError( error, 'saveAudienceSettings', [] );
+				yield receiveError( error, 'saveUserAudienceSettings', [] );
 			}
 
 			return { response, error };
@@ -174,7 +174,7 @@ const baseActions = {
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	*resetAudienceSettings() {
+	*resetUserAudienceSettings() {
 		const { dispatch } = yield commonActions.getRegistry();
 
 		yield {
@@ -182,10 +182,10 @@ const baseActions = {
 			type: RESET_AUDIENCE_SETTINGS,
 		};
 
-		yield errorStoreActions.clearErrors( 'getAudienceSettings' );
+		yield errorStoreActions.clearErrors( 'getUserAudienceSettings' );
 
 		return dispatch( CORE_USER ).invalidateResolutionForStoreSelector(
-			'getAudienceSettings'
+			'getUserAudienceSettings'
 		);
 	},
 
@@ -276,15 +276,15 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 } );
 
 const baseResolvers = {
-	*getAudienceSettings() {
+	*getUserAudienceSettings() {
 		const registry = yield commonActions.getRegistry();
 
 		const audienceSettings = registry
 			.select( CORE_USER )
-			.getAudienceSettings();
+			.getUserAudienceSettings();
 
 		if ( audienceSettings === undefined ) {
-			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
+			yield fetchGetAudienceSettingsStore.actions.fetchGetUserAudienceSettings();
 		}
 	},
 };
@@ -298,7 +298,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
 	 */
-	getAudienceSettings( state ) {
+	getUserAudienceSettings( state ) {
 		return state.audienceSettings?.settings;
 	},
 
@@ -311,7 +311,7 @@ const baseSelectors = {
 	 * @return {(Array|undefined)} An array with configured audiences; `undefined` if not loaded.
 	 */
 	getConfiguredAudiences: createRegistrySelector( ( select ) => () => {
-		const audienceSettings = select( CORE_USER ).getAudienceSettings();
+		const audienceSettings = select( CORE_USER ).getUserAudienceSettings();
 
 		return audienceSettings?.configuredAudiences;
 	} ),
@@ -326,7 +326,8 @@ const baseSelectors = {
 	 */
 	isAudienceSegmentationWidgetHidden: createRegistrySelector(
 		( select ) => () => {
-			const audienceSettings = select( CORE_USER ).getAudienceSettings();
+			const audienceSettings =
+				select( CORE_USER ).getUserAudienceSettings();
 
 			return audienceSettings?.isAudienceSegmentationWidgetHidden;
 		}
@@ -341,7 +342,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Whether or not the audience selection has ever been populated for the current user; `undefined` if not loaded.
 	 */
 	didSetAudiences: createRegistrySelector( ( select ) => () => {
-		const audienceSettings = select( CORE_USER ).getAudienceSettings();
+		const audienceSettings = select( CORE_USER ).getUserAudienceSettings();
 
 		return audienceSettings?.didSetAudiences;
 	} ),
@@ -371,11 +372,11 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the audience settings are being saved, otherwise FALSE.
 	 */
-	isSavingAudienceSettings( state ) {
-		// Since `isFetchingSaveAudienceSettings` holds information based on specific
+	isSavingUserAudienceSettings( state ) {
+		// Since `isFetchingSaveUserAudienceSettings` holds information based on specific
 		// values but we only need generic information here, we need to check
 		// whether ANY such request is in progress.
-		return Object.values( state.isFetchingSaveAudienceSettings ).some(
+		return Object.values( state.isFetchingSaveUserAudienceSettings ).some(
 			Boolean
 		);
 	},
@@ -383,7 +384,7 @@ const baseSelectors = {
 
 const store = combineStores(
 	fetchGetAudienceSettingsStore,
-	fetchSaveAudienceSettingsStore,
+	fetchSaveUserAudienceSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

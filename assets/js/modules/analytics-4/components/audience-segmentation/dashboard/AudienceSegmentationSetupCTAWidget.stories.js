@@ -116,7 +116,7 @@ export default {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden: false,
 				} );
