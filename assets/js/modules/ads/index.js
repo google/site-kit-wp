@@ -168,8 +168,8 @@ export const ADS_NOTIFICATIONS = {
 				// of the getDismissedPrompts() resolver.
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				// isGoogleForWooCommerceLinked is relying
-				// on the data being resolved in getSiteInfo() selector.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// on the data being resolved in getModuleData() selector.
+				resolveSelect( MODULES_ADS ).getModuleData(),
 				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
 				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
 			] );
@@ -177,7 +177,7 @@ export const ADS_NOTIFICATIONS = {
 			const { isModuleConnected, canActivateModule } =
 				select( CORE_MODULES );
 			const { isPromptDismissed } = select( CORE_USER );
-			const { hasGoogleForWooCommerceAdsAccount } = select( CORE_SITE );
+			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
 			const isAdsConnected = isModuleConnected( 'ads' );
 			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
