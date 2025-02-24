@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { ESCAPE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
@@ -28,6 +33,7 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 	render,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -191,12 +197,6 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
-			fetchMock.postOnce(
-				RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
-				{
-					body: { success: true },
-				}
-			);
 
 			const { getByText, waitForRegistry } = render(
 				<AdsModuleSetupCTAWidgetComponent />,
@@ -259,12 +259,6 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
-			fetchMock.postOnce(
-				RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
-				{
-					body: { success: true },
-				}
-			);
 
 			const { getByText, waitForRegistry } = render(
 				<AdsModuleSetupCTAWidgetComponent />,
@@ -287,6 +281,112 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 			).toBe( true );
 
 			// Dismissal should be triggered when the CTA is clicked.
+			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
+		} );
+	} );
+
+	describe( 'Tertiary CTA', () => {
+		beforeEach( () => {
+			provideUserCapabilities( registry );
+
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( NOTIFICATION_ID, notification );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry
+				.dispatch( CORE_USER )
+				.finishResolution( 'getDismissedPrompts', [] );
+		} );
+
+		it( 'should dismiss notification', async () => {
+			fetchMock.postOnce( fetchDismissPrompt, {
+				body: {
+					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
+				},
+			} );
+
+			const { getByText, waitForRegistry } = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdsModuleSetupCTAWidgetComponent />
+				</div>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			const tertiaryCTA = getByText( 'Maybe later' );
+			fireEvent.click( tertiaryCTA );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
+			expect(
+				document.querySelector( '.googlesitekit-publisher-win__title' )
+			).not.toBeInTheDocument();
+
+			// Tooltip should be visible after dismissing the notification.
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).toBeInTheDocument();
+		} );
+	} );
+
+	describe( 'Escape key', () => {
+		beforeEach( () => {
+			provideUserCapabilities( registry );
+
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( NOTIFICATION_ID, notification );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry
+				.dispatch( CORE_USER )
+				.finishResolution( 'getDismissedPrompts', [] );
+		} );
+
+		it( 'should close the modal on pressing escape key and dismiss the notification', async () => {
+			fetchMock.postOnce( fetchDismissPrompt, {
+				body: {
+					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
+				},
+			} );
+
+			provideSiteInfo( registry, {
+				plugins: {
+					wooCommerce: {
+						active: true,
+					},
+					googleForWooCommerce: {
+						active: true,
+						adsConnected: false,
+					},
+				},
+			} );
+
+			const { waitForRegistry } = render(
+				<AdsModuleSetupCTAWidgetComponent />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.keyUp( global, { keyCode: ESCAPE } );
+
+			await waitForRegistry();
+
+			await waitFor( () => {
+				expect(
+					document.querySelector( '.mdc-dialog--closing' )
+				).not.toBeInTheDocument();
+			} );
+
+			expect(
+				document.querySelector( '.mdc-dialog--open' )
+			).not.toBeInTheDocument();
+
 			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
 		} );
 	} );
