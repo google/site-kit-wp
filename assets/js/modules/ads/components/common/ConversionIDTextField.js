@@ -76,7 +76,7 @@ export default function ConversionIDTextField( {
 		<div className="googlesitekit-settings-module__fields-group">
 			{ ! hideHeading && (
 				<h4 className="googlesitekit-settings-module__fields-group-title">
-					{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+					{ __( 'Conversion ID', 'google-site-kit' ) }
 				</h4>
 			) }
 
@@ -87,7 +87,7 @@ export default function ConversionIDTextField( {
 			) }
 
 			<TextField
-				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+				label={ __( 'Conversion ID', 'google-site-kit' ) }
 				className={ classnames(
 					'googlesitekit-text-field-conversion-tracking-id',
 					{

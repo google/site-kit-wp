@@ -219,19 +219,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 								>
 									<h3>
 										{ __(
-											'Ads Setup Wizard',
+											'Set up a new Ads account',
 											'google-site-kit'
 										) }
 									</h3>
-									<strong>
-										{ __(
-											'Don’t have an Ads account yet?',
-											'google-site-kit'
-										) }
-									</strong>
 									<p className="instructions">
 										{ __(
-											'Create your Ads account using a step by step wizard that will help you set up your campaign, define your goals and set billing information. To create new Ads account you’ll be asked to grant Site Kit additional permissions during the account creation process.',
+											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process.',
 											'google-site-kit'
 										) }
 									</p>
@@ -262,6 +256,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 									mdSize={ 8 }
 									lgSize={ 2 }
 								>
+									<span className="divider-line" />
 									<span className="divider-label">
 										{ __( 'OR', 'google-site-kit' ) }
 									</span>
@@ -269,20 +264,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 								<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
 									<h3>
 										{ __(
-											'Connect Ads Manually',
+											'Connect an existing Ads account',
 											'google-site-kit'
 										) }
 									</h3>
-									<strong>
-										{ __(
-											'Already have an Ads account?',
-											'google-site-kit'
-										) }
-									</strong>
 									<p className="instructions">
 										{ createInterpolateElement(
 											__(
-												'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.<a>Learn more</a>.<br></br>You can always change this later in Site Kit Settings.',
+												'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
 												'google-site-kit'
 											),
 											{
