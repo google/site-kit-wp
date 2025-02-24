@@ -37,10 +37,9 @@ import {
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import ErrorNotice from '../../ErrorNotice';
 import BannerNotification from '../BannerNotification';
-import {
-	CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
-	NOTIFICATION_ID,
-} from './constants';
+
+const CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP =
+	'auto-update-banner-hide-notification-on-first-setup';
 
 function EnableAutoUpdateBannerNotification() {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
@@ -153,7 +152,6 @@ function EnableAutoUpdateBannerNotification() {
 
 	return (
 		<BannerNotification
-			id={ NOTIFICATION_ID }
 			title={
 				enabledViaCTA
 					? __(
