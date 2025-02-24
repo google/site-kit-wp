@@ -47,6 +47,7 @@ import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarn
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
@@ -60,8 +61,10 @@ import {
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
 import { Cell, Row } from '../../../../material-components';
+import { WooCommerceRedirectModal } from '../common';
 
 export default function SetupMainPAX( { finishSetup } ) {
+	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
 	const showPaxAppStep =
@@ -157,6 +160,30 @@ export default function SetupMainPAX( { finishSetup } ) {
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup ] );
 
+	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
+		)
+	);
+	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
+		const {
+			isWooCommerceActivated,
+			isGoogleForWooCommerceActivated,
+			hasGoogleForWooCommerceAdsAccount,
+		} = select( MODULES_ADS );
+
+		return (
+			( isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				! hasGoogleForWooCommerceAdsAccount() ) ||
+			( isWooCommerceActivated() && ! isGoogleForWooCommerceActivated() )
+		);
+	} );
+
+	const onModalDismiss = useCallback( () => {
+		setOpenDialog( false );
+	}, [ setOpenDialog ] );
+
 	const createAccount = useCallback( () => {
 		setShouldShowProgressBar( true );
 
@@ -173,6 +200,23 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const onLaunch = useCallback( ( app ) => {
 		paxAppRef.current = app;
 	}, [] );
+
+	const onSetupCallback = useCallback( () => {
+		if (
+			shouldShowWooCommerceRedirectModal &&
+			! isWooCommerceRedirectModalDismissed
+		) {
+			setOpenDialog( true );
+			return;
+		}
+
+		createAccount();
+	}, [
+		shouldShowWooCommerceRedirectModal,
+		isWooCommerceRedirectModalDismissed,
+		setOpenDialog,
+		createAccount,
+	] );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
@@ -231,7 +275,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 									</p>
 									<Fragment>
 										<SpinnerButton
-											onClick={ createAccount }
+											onClick={ onSetupCallback }
 											disabled={ isNavigatingToOAuthURL }
 											isSaving={ isNavigatingToOAuthURL }
 										>
@@ -296,6 +340,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 						</Fragment>
 					) }
 			</div>
+			<WooCommerceRedirectModal
+				dialogActive={ openDialog }
+				onDismiss={ onModalDismiss }
+				onContinue={ createAccount }
+			/>
 		</div>
 	);
 }
