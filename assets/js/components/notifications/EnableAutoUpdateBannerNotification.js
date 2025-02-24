@@ -27,21 +27,21 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MINUTE_IN_SECONDS } from '../../../util';
-import useQueryArg from '../../../hooks/useQueryArg';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MINUTE_IN_SECONDS } from '../../util';
+import useQueryArg from '../../hooks/useQueryArg';
 import {
 	CORE_USER,
 	PERMISSION_UPDATE_PLUGINS,
-} from '../../../googlesitekit/datastore/user/constants';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import ErrorNotice from '../../ErrorNotice';
-import BannerNotification from '../BannerNotification';
+} from '../../googlesitekit/datastore/user/constants';
+import { getItem, setItem } from '../../googlesitekit/api/cache';
+import ErrorNotice from '../ErrorNotice';
+import BannerNotification from './BannerNotification';
 
 const CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP =
 	'auto-update-banner-hide-notification-on-first-setup';
 
-function EnableAutoUpdateBannerNotification() {
+export default function EnableAutoUpdateBannerNotification() {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
 	);
@@ -195,5 +195,3 @@ function EnableAutoUpdateBannerNotification() {
 		/>
 	);
 }
-
-export default EnableAutoUpdateBannerNotification;

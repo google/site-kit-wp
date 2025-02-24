@@ -29,12 +29,11 @@ import {
 	provideSiteInfo,
 	waitForDefaultTimeouts,
 	act,
-} from '../../../../../tests/js/test-utils';
-import EnableAutoUpdateBannerNotification from '.';
-import useQueryArg from '../../../hooks/useQueryArg';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import * as apiCache from '../../../googlesitekit/api/cache';
-import { DISMISSED_ITEM_KEY } from './constants';
+} from '../../../../tests/js/test-utils';
+import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import useQueryArg from '../../hooks/useQueryArg';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import * as apiCache from '../../googlesitekit/api/cache';
 import fetchMock from 'fetch-mock';
 
 jest.mock( '../../../hooks/useQueryArg' );
@@ -112,7 +111,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ DISMISSED_ITEM_KEY ] );
+			.receiveGetDismissedItems( 'auto-update-cta' );
 
 		const { container } = render( <EnableAutoUpdateBannerNotification />, {
 			registry,
