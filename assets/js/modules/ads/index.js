@@ -167,11 +167,11 @@ export const ADS_NOTIFICATIONS = {
 				// The isPromptDismissed selector relies on the resolution
 				// of the getDismissedPrompts() resolver.
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
-				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
-				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
 				// isGoogleForWooCommerceLinked is relying
 				// on the data being resolved in getSiteInfo() selector.
 				resolveSelect( CORE_SITE ).getSiteInfo(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
 			] );
 
 			const { isModuleConnected, canActivateModule } =
