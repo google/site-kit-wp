@@ -50,7 +50,8 @@ import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallba
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
-	onDismiss,
+	onDismiss = null,
+	onContinue = null,
 } ) {
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -105,8 +106,15 @@ export default function WooCommerceRedirectModal( {
 
 	const onContinueWithSiteKit = useCallback( () => {
 		markModalDismissed();
+
+		if ( onContinue ) {
+			// Override default module activation with custom callback.
+			onContinue();
+			return;
+		}
+
 		onSetupCallback();
-	}, [ markModalDismissed, onSetupCallback ] );
+	}, [ markModalDismissed, onSetupCallback, onContinue ] );
 
 	if ( isModalDismissed ) {
 		return null;
@@ -156,4 +164,5 @@ export default function WooCommerceRedirectModal( {
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
+	onContinue: PropTypes.func,
 };
