@@ -173,18 +173,15 @@ export const ADS_NOTIFICATIONS = {
 				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
 			] );
 
-			const { isModuleConnected, canActivateModule } =
-				select( CORE_MODULES );
+			const { isModuleConnected } = select( CORE_MODULES );
 			const { isPromptDismissed } = select( CORE_USER );
 			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
 			const isAdsConnected = isModuleConnected( 'ads' );
 			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
-			const canActivateAdsModule = canActivateModule( 'ads' );
 
 			return (
 				isAdsConnected === false &&
-				canActivateAdsModule &&
 				isDismissed === false &&
 				hasGoogleForWooCommerceAdsAccount() === false
 			);
