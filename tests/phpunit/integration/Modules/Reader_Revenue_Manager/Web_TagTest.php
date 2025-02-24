@@ -30,24 +30,15 @@ class Web_TagTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$web_tag = new Web_Tag( self::PUBLICATION_ID, Reader_Revenue_Manager::MODULE_SLUG );
+		$web_tag = new Web_Tag(
+			self::PUBLICATION_ID,
+			Reader_Revenue_Manager::MODULE_SLUG
+		);
 		$web_tag->register();
+		$web_tag->set_product_id( 'openaccess' );
 	}
 
-	public function test_snippet_not_inserted_on_non_singular_posts() {
-		do_action( 'wp_enqueue_scripts' );
-
-		$footer_html = $this->capture_action( 'wp_footer' );
-
-		foreach ( self::EXPECTED_SNIPPET_STRINGS as $snippet_string ) {
-			$this->assertStringNotContainsString( $snippet_string, $footer_html );
-		}
-	}
-
-	public function test_snippet_inserted_on_singular_posts() {
-		$post_ID = $this->factory()->post->create();
-		$this->go_to( get_permalink( $post_ID ) );
-
+	public function test_snippet_inserted() {
 		do_action( 'wp_enqueue_scripts' );
 
 		$footer_html = $this->capture_action( 'wp_footer' );

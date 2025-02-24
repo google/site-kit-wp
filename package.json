@@ -192,6 +192,7 @@
 		"archiver": "^5.0.2",
 		"babel-loader": "^8.1.0",
 		"circular-dependency-plugin": "^5.2.0",
+		"copy-webpack-plugin": "^6.4.1",
 		"create-file-webpack": "^1.0.2",
 		"cross-env": "^7.0.3",
 		"css-loader": "^3.6.0",

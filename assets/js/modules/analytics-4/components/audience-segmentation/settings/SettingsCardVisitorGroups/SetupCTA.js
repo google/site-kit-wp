@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -46,18 +46,20 @@ export default function SetupCTA() {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
+	const onSuccess = useCallback( () => {
+		// Dismiss success notification in dashboard.
+		dismissNotification( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
+	}, [ dismissNotification ] );
+
+	const onError = useCallback( () => {
+		setShowErrorModal( true );
+	}, [ setShowErrorModal ] );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			redirectURL: global.location.href,
-			onSuccess: () => {
-				// Dismiss success notification in dashboard.
-				dismissNotification(
-					AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
-				);
-			},
-			onError: () => {
-				setShowErrorModal( true );
-			},
+			onSuccess,
+			onError,
 		} );
 
 	const setupErrorCode = useSelect( ( select ) =>

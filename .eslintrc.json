@@ -14,6 +14,14 @@
     "fetchMock": false
   },
   "rules": {
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          "^@wordpress-core\/?.*"
+        ]
+      }
+    ],
     "jsdoc/check-tag-names": "error",
     "jsdoc/check-types": "error",
     "jsdoc/check-line-alignment": [

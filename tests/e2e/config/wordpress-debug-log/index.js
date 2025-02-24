@@ -48,7 +48,7 @@ let container;
  * i.e. `NODE_OPTIONS=--experimental-abortcontroller node ...`
  * See https://nodejs.org/docs/latest-v14.x/api/globals.html#globals_class_abortcontroller.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  */
 const logStreamAbortController = new AbortController();
 
@@ -131,7 +131,11 @@ function resetDebugLog() {
 
 async function assertEmptyDebugLog() {
 	// Filter out some lines from WP core that we can't do anything about.
-	const ignoreList = logIgnoreList[ process.env.WP_VERSION ] || [];
+	const ignoreList = [
+		...( logIgnoreList[ process.env.WP_VERSION ] || [] ),
+		// Include common ignores that apply to all versions.
+		...logIgnoreList.ALL,
+	];
 
 	// Wait 1 second for any log data to finish propagating.
 	// Without this, node can disconnect from the log stream

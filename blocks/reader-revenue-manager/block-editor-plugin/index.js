@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager module's block editor entrypoint.
+ * Reader Revenue Manager Block Editor plugin entry point.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,3 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import Data from 'googlesitekit-data';
+import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
+import { registerReaderRevenueManagerPlugin } from './plugin-registration';
+
+registerStore( Data );
+
+registerReaderRevenueManagerPlugin();

@@ -27,9 +27,15 @@ class WooCommerceTest extends TestCase {
 		$this->woocommerce = new WooCommerce( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->woocommerce->is_active() );
-		do_action( 'woocommerce_loaded' );
+
+		// Fake the existence of the `WooCommerce` class.
+		class_alias( __CLASS__, 'WooCommerce' );
+
 		$this->assertTrue( $this->woocommerce->is_active() );
 	}
 
