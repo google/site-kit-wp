@@ -1,7 +1,7 @@
 /**
- * Ads Notification components.
+ * Ads WooCommerceRedirectModal component stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,22 @@
  * limitations under the License.
  */
 
-export { default as PAXSetupSuccessSubtleNotification } from './PAXSetupSuccessSubtleNotification';
-export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';
-export { default as AccountLinkedViaGoogleForWooCommerceSubtleNotification } from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
+/**
+ * Internal dependencies
+ */
+import WooCommerceRedirectModal from './WooCommerceRedirectModal';
+
+function Template() {
+	return <WooCommerceRedirectModal dialogActive />;
+}
+
+export const Default = Template.bind( null );
+Default.storyName = 'Default';
+Default.scenario = {};
+Default.parameters = {
+	features: [ 'adsPax' ],
+};
+
+export default {
+	title: 'Modules/Ads/WooCommerceRedirectModal',
+};
