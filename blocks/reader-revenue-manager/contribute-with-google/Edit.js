@@ -86,9 +86,7 @@ export default function Edit( { select } ) {
 				'google-site-kit'
 			);
 		}
-	}
-
-	if (
+	} else if (
 		postProductID === 'none' ||
 		( ! postProductID && snippetMode === 'per_post' ) ||
 		( ! postProductID &&
