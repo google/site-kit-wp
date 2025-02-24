@@ -17,22 +17,23 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
-import { ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY } from '../../modules/ads/datastore/constants';
-import { WEEK_IN_SECONDS } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'ads-setup-cta'
+)( AdsModuleSetupCTAWidget );
 
 function Template() {
-	return <AdsModuleSetupCTAWidget />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -42,27 +43,17 @@ Default.args = {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 	},
 };
-Default.scenario = {
-	label: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTAWidget/Default',
-	delay: 250,
-};
+Default.scenario = {};
 
-export const AfterOneDismissal = Template.bind( {} );
-AfterOneDismissal.storyName = 'After It Was Dismissed Once';
-AfterOneDismissal.args = {
+export const WithAdBlockerDetected = Template.bind( {} );
+WithAdBlockerDetected.storyName = 'With Ad Blocker Detected';
+WithAdBlockerDetected.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-			[ ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY ]: {
-				expires: Date.now() / 1000 - WEEK_IN_SECONDS, // Set date to the past so banner is shown again.
-				count: 1,
-			},
-		} );
+		provideModuleRegistrations( registry );
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 	},
 };
-AfterOneDismissal.scenario = {
-	label: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTAWidget/AfterOneDismissal',
-	delay: 250,
-};
+WithAdBlockerDetected.scenario = {};
 
 export default {
 	title: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTAWidget',
@@ -76,22 +67,11 @@ export default {
 					},
 				] );
 
-				args?.setupRegistry( registry );
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getDismissedPrompts', [] );
 
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-					),
-					{
-						body: {
-							[ ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY ]: {
-								expires: Date.now() / 1000 + WEEK_IN_SECONDS, // Provide a realistic value, although it's not used.
-								count: 1,
-							},
-						},
-						status: 200,
-					}
-				);
+				args?.setupRegistry( registry );
 			};
 
 			return (
