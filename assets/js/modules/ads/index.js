@@ -184,10 +184,10 @@ export const ADS_NOTIFICATIONS = {
 			const canActivateAdsModule = canActivateModule( 'ads' );
 
 			return (
-				! isAdsConnected &&
+				isAdsConnected === false &&
 				canActivateAdsModule &&
-				! isDismissed &&
-				! hasGoogleForWooCommerceAdsAccount()
+				isDismissed === false &&
+				hasGoogleForWooCommerceAdsAccount() === false
 			);
 		},
 		isDismissible: true,
