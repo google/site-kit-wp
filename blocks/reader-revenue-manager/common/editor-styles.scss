@@ -16,15 +16,23 @@
  * limitations under the License.
  */
 
+@import "../../../assets/sass/config/variables";
+
+$c-reader-revenue-manager-button-background: $c-base;
+$c-reader-revenue-manager-button-border: $c-iron;
+$c-reader-revenue-manager-button-text: $c-vivid-blue;
+
+$f-reader-revenue-manager-button: "Google Sans", Roboto-Regular, sans-serif, arial;
+
 // Styles copied over from the actual inline button.
 .googlesitekit-blocks-reader-revenue-manager-button {
 	align-items: center;
-	background-color: #fff;
-	border: 1px solid #dadce0;
+	background-color: $c-reader-revenue-manager-button-background;
+	border: 1px solid $c-reader-revenue-manager-button-border;
 	border-radius: 4px;
-	color: #1a73e8;
+	color: $c-reader-revenue-manager-button-text;
 	display: flex;
-	font-family: "Google Sans", Roboto-Regular, sans-serif, arial;
+	font-family: $f-reader-revenue-manager-button;
 	font-size: 14px;
 	font-weight: 500;
 	justify-content: center;

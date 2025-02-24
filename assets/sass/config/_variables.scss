@@ -64,10 +64,12 @@ $c-mango-tango: #e77d5b;
 $c-thunderbird: #ac4220;
 $c-solitude: #f8faff;
 $c-heather: #b8bdb9;
-$c-gallery: #ebeef0;
-$c-gallery-2: #ebeef0;
+$c-gallery: #ededed;
+$c-porcelain: #ebeef0;
+$c-pumice: #c4c7c5;
+$c-vivid-blue: #1a73e8;
 $c-fiord: #1b3870;
-$c-iron: #b8bdb9;
+$c-iron: #dadce0;
 $c-shark: #232824;
 $c-oslo-gray: #7b807d;
 $c-jordy-blue: #7f9cd4;
@@ -339,9 +341,9 @@ $c-authorize-application-sys-light-primary: #0b57d0;
 $c-authorize-application-sys-light-on-primary: $c-base;
 $c-authorize-application-sys-light-on-surface: #1f1f1f;
 $c-authorize-application-sys-light-outline: #747775;
-$c-authorize-application-gallery: #ededed; // Gallery color name from http://chir.ag/projects/name-that-color/.
-$c-authorize-application-pumice: #c4c7c5; // Pumice color name as above.
-$c-authorize-application-vivid-blue: #1a73e8; // Vivid Blue color name as above.
+$c-authorize-application-code-background: $c-gallery;
+$c-authorize-application-divider: $c-pumice;
+$c-authorize-application-brand-color: $c-vivid-blue;
 
 $fs-authorize-application-headline-sm: 24px;
 $fs-authorize-application-title-lg: 18px;
