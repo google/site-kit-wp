@@ -27,8 +27,8 @@ import { registerPlugin } from '@wordpress-core/plugins';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
-import SettingPanel from './SettingPanel';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import SettingPanel from './SettingPanel';
 
 const { select, resolveSelect } = Data;
 
