@@ -39,7 +39,6 @@ import ErrorNotice from '../../ErrorNotice';
 import BannerNotification from '../BannerNotification';
 import {
 	CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
-	DISMISSED_ITEM_KEY,
 	NOTIFICATION_ID,
 } from './constants';
 
@@ -63,7 +62,6 @@ function EnableAutoUpdateBannerNotification() {
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
-	const { dismissItem } = useDispatch( CORE_USER );
 
 	const [ notification ] = useQueryArg( 'notification' );
 
@@ -196,13 +194,6 @@ function EnableAutoUpdateBannerNotification() {
 				)
 			}
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
-			isDismissible
-			dismissExpires={ 0 }
-			onDismiss={ () => {
-				// Don't return the result here to avoid
-				// added delay in the dismissal.
-				dismissItem( DISMISSED_ITEM_KEY );
-			} }
 		/>
 	);
 }
