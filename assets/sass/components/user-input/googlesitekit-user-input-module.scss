@@ -142,10 +142,17 @@
 
 	.googlesitekit-user-input__select-options-wrapper {
 		grid-row: span 2;
+
+		@media (min-width: $bp-desktop) {
+			grid-column-start: 9;
+		}
+		@media (min-width: $bp-xxxlarge) {
+			grid-column-start: 7;
+			padding-left: 60px;
+		}
 	}
 
 	p.googlesitekit-user-input__select-instruction {
-		border-bottom: 1px solid $c-mercury;
 		color: $c-surfaces-on-surface;
 		font-size: $fs-body-sm;
 		line-height: $lh-body-sm;

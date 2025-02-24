@@ -1,16 +1,19 @@
 {
 	"search.exclude": {
 		".storybook/data": true,
-		"dist/": true,
-		"node_modules/": true,
+		"**/dist": true,
+		"**/node_modules/": true,
+		"**/composer.lock": true,
+		"**/package-lock.json": true,
 		"third-party/": true,
-		"vendor/": true
+		"**/vendor/": true
 	},
 	"files.exclude": {
-		"dist/": true,
-		"node_modules/": true,
+		"**/dist": true,
+		"coverage/": true,
+		"**/node_modules/": true,
 		"third-party/": true,
-		"vendor/": true
+		"**/vendor/": true
 	},
 	"jest.autoEnable": false,
 	"jest.pathToConfig": "./tests/js/jest.config.js",
@@ -28,5 +31,8 @@
 	},
 	"phpcs.enable": true,
 	"phpcs.executablePath": "vendor/bin/phpcs",
-	"stylelint.validate": [ "css", "scss" ]
+	"stylelint.validate": [
+		"css",
+		"scss"
+	]
 }

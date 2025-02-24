@@ -1,5 +1,5 @@
 /**
- * Block editor config webpack partial.
+ * Gutenberg Blocks config webpack partial.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -20,8 +20,10 @@
  * External dependencies
  */
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
+const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const WebpackBar = require( 'webpackbar' );
 
 /**
@@ -38,22 +40,45 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
+		// Reader Revenue Manager block.
 		'googlesitekit-reader-revenue-manager-block-editor':
 			'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
+		// Sign in with Google block.
+		'sign-in-with-google/index': './blocks/sign-in-with-google/index.js',
+		'sign-in-with-google/editor-styles':
+			'./blocks/sign-in-with-google/editor-styles.scss',
 	},
 	externals: gutenbergExternals,
 	output: {
-		filename:
-			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
-		path: rootDir + '/dist/assets/js',
+		filename: '[name].js',
+		path: rootDir + '/dist/assets/js/blocks',
 		publicPath: '',
 	},
 	module: {
-		rules: createRules( mode ),
+		rules: [
+			...createRules( mode ),
+			{
+				test: /\.scss$/,
+				use: [
+					MiniCssExtractPlugin.loader,
+					'css-loader',
+					'postcss-loader',
+					{
+						loader: 'sass-loader',
+						options: {
+							implementation: require( 'sass' ),
+							sassOptions: {
+								includePaths: [ 'node_modules' ],
+							},
+						},
+					},
+				],
+			},
+		],
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Block Editor Entry Points',
+			name: 'Gutenberg Blocks Entry Points',
 			color: '#deff13',
 		} ),
 		new CircularDependencyPlugin( {
@@ -62,11 +87,27 @@ module.exports = ( mode ) => ( {
 			allowAsyncCycles: false,
 			cwd: process.cwd(),
 		} ),
+		new CopyWebpackPlugin( {
+			patterns: [
+				{
+					from: 'blocks/**/block.json',
+					to: ( { context, absoluteFilename } ) => {
+						return absoluteFilename.replace(
+							`${ context }/blocks`,
+							`${ rootDir }/dist/assets/js/blocks`
+						);
+					},
+				},
+			],
+		} ),
 		new ManifestPlugin( {
 			...manifestArgs( mode ),
 			filter( file ) {
 				return ( file.name || '' ).match( /\.js$/ );
 			},
+		} ),
+		new MiniCssExtractPlugin( {
+			filename: '[name].css',
 		} ),
 		new ESLintPlugin( {
 			emitError: true,

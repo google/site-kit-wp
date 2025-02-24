@@ -23,7 +23,7 @@ import { combineStores } from 'googlesitekit-data';
 import { MODULES_ADS } from './constants';
 import baseModuleStore from './base';
 import adblocker from './adblocker';
-import moduleData from './moduleData';
+import moduleData from './module-data';
 
 const store = combineStores( baseModuleStore, adblocker, moduleData );
 

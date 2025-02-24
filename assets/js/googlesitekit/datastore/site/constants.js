@@ -20,3 +20,13 @@ export const CORE_SITE = 'core/site';
 
 export const AMP_MODE_PRIMARY = 'primary';
 export const AMP_MODE_SECONDARY = 'secondary';
+
+export const PLUGINS = {
+	WOOCOMMERCE: 'wooCommerce',
+	GOOGLE_FOR_WOOCOMMERCE: 'googleForWooCommerce',
+};
+
+export const AVAILABLE_PLUGINS = [
+	PLUGINS.WOOCOMMERCE,
+	PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
+];
