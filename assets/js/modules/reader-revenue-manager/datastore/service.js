@@ -26,6 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 const selectors = {
@@ -87,6 +88,25 @@ const selectors = {
 			},
 		} );
 	} ),
+
+	/**
+	 * Gets the create publication link URL for Reader Revenue Manager.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return {string} Create publication link URL.
+	 */
+	getCreatePublicationLinkURL: createRegistrySelector(
+		( select ) => () =>
+			select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+				query: {
+					prefill_canonical_domain:
+						select( CORE_SITE ).getReferenceSiteURL(),
+					prefill_lang: select( CORE_SITE ).getSiteLocale(),
+					app_redirect: 'rrm',
+				},
+			} )
+	),
 };
 
 const store = {

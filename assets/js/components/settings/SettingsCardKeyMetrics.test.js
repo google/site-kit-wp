@@ -68,11 +68,14 @@ describe( 'SettingsCardKeyMetrics', () => {
 		} );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_kmw_setup_cta' },
-				},
-			} )
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: 'view_kmw_setup_cta' },
+					},
+				} )
+			)
 		);
 	} );
 

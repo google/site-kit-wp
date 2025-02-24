@@ -11,9 +11,12 @@ namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
+use Google\Site_Kit\Tests\PluginStatusTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 class WooCommerceTest extends TestCase {
+
+	use PluginStatusTrait;
 
 	/**
 	 * WooCommerce instance.
@@ -27,9 +30,14 @@ class WooCommerceTest extends TestCase {
 		$this->woocommerce = new WooCommerce( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
+	public function tear_down() {
+		parent::tear_down();
+		$this->deactivate_all_test_plugins();
+	}
+
 	public function test_is_active() {
 		$this->assertFalse( $this->woocommerce->is_active() );
-		do_action( 'woocommerce_loaded' );
+		$this->activate_plugin( 'woocommerce/woocommerce.php' );
 		$this->assertTrue( $this->woocommerce->is_active() );
 	}
 

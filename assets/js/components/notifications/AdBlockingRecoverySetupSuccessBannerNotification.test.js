@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
 import {
@@ -48,10 +43,11 @@ import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecove
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-jest.mock( 'react-use' );
-
-mockUseIntersection.mockImplementation( () => ( {
-	isIntersecting: true,
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: () => ( {
+		isIntersecting: true,
+	} ),
 } ) );
 
 describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
@@ -139,11 +135,14 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 
 		// The survey trigger endpoint should be called.
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'abr_setup_completed' },
-				},
-			} )
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: 'abr_setup_completed' },
+					},
+				} )
+			)
 		);
 	} );
 } );

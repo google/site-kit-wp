@@ -10,9 +10,12 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Assets\Script_Data;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -28,6 +31,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
@@ -40,6 +45,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 
 /**
  * Class representing the Ads module.
@@ -62,6 +68,31 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 
 	const SCOPE                 = 'https://www.googleapis.com/auth/adwords';
 	const SUPPORT_CONTENT_SCOPE = 'https://www.googleapis.com/auth/supportcontent';
+
+	/**
+	 * Conversion_Tracking instance.
+	 *
+	 * @since 1.147.0
+	 * @var Conversion_Tracking
+	 */
+	protected $conversion_tracking;
+
+	/**
+	 * Class constructor.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @param Context             $context        Context object.
+	 * @param Options|null        $options        Options object.
+	 * @param User_Options|null   $user_options   User options object.
+	 * @param Authentication|null $authentication Authentication object.
+	 * @param Assets|null         $assets         Assets object.
+	 */
+	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$this->conversion_tracking = new Conversion_Tracking( $context );
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -166,10 +197,12 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @return array Inline modules data.
 	 */
 	private function inline_modules_data( $modules_data ) {
-		if ( $this->is_connected() && Feature_Flags::enabled( 'adsPax' ) ) {
+		if ( Feature_Flags::enabled( 'adsPax' ) ) {
+			// Get detected events.
+			$detected_events = $this->get_supported_conversion_events();
 			// Add the data under the `ads` key to make it clear it's scoped to this module.
 			$modules_data['ads'] = array(
-				'supportedConversionEvents' => array(),
+				'supportedConversionEvents' => $detected_events,
 			);
 		}
 
@@ -336,5 +369,28 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
+	}
+
+	/**
+	 * Returns events supported by active providers from the conversion tracking infrastructure.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return array Array of supported conversion events, or empty array.
+	 */
+	public function get_supported_conversion_events() {
+		$providers = $this->conversion_tracking->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
+		}
+
+		return array_unique( $events );
 	}
 }

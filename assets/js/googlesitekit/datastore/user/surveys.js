@@ -30,6 +30,7 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -37,17 +38,22 @@ import { createValidatedAction } from '../../data/utils';
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
-	controlCallback: ( { triggerID } ) => {
-		return API.set( 'core', 'user', 'survey-trigger', { triggerID } );
+	controlCallback: ( { triggerID, ttl } ) => {
+		const args = ttl ? { ttl } : {};
+		return API.set( 'core', 'user', 'survey-trigger', {
+			triggerID,
+			...args,
+		} );
 	},
-	argsToParams: ( triggerID ) => {
-		return { triggerID };
+	argsToParams: ( triggerID, ttl ) => {
+		return { triggerID, ttl };
 	},
-	validateParams: ( { triggerID } = {} ) => {
+	validateParams: ( { triggerID, ttl = 0 } = {} ) => {
 		invariant(
 			'string' === typeof triggerID && triggerID.length,
 			'triggerID is required and must be a string'
 		);
+		invariant( 'number' === typeof ttl, 'ttl must be a number' );
 	},
 } );
 
@@ -81,31 +87,6 @@ const fetchGetSurveyTimeoutsStore = createFetchStore( {
 	},
 } );
 
-const fetchSetSurveyTimeoutStore = createFetchStore( {
-	baseName: 'setSurveyTimeout',
-	controlCallback( { slug, timeout } ) {
-		return API.set( 'core', 'user', 'survey-timeout', {
-			slug,
-			timeout,
-		} );
-	},
-	reducerCallback( state, surveyTimeouts ) {
-		return {
-			...state,
-			surveyTimeouts: Array.isArray( surveyTimeouts )
-				? surveyTimeouts
-				: [],
-		};
-	},
-	argsToParams( slug, timeout ) {
-		return { slug, timeout };
-	},
-	validateParams( { slug, timeout } = {} ) {
-		invariant( slug, 'slug is required.' );
-		invariant( Number.isInteger( timeout ), 'timeout must be an integer.' );
-	},
-} );
-
 const fetchGetSurveyStore = createFetchStore( {
 	baseName: 'getSurvey',
 	controlCallback() {
@@ -128,38 +109,29 @@ const fetchGetSurveyStore = createFetchStore( {
 const baseInitialState = {
 	currentSurvey: undefined,
 	currentSurveySession: undefined,
-	surveyTimeouts: undefined,
+	lockedSurveyTriggers: {},
 };
 
-const baseActions = {
-	/**
-	 * Sets a timeout for the survey.
-	 *
-	 * @since 1.73.0
-	 *
-	 * @param {string} triggerID Trigger ID for the survey.
-	 * @param {number} timeout   Timeout for survey.
-	 * @return {Object} Object with `response` and `error`.
-	 */
-	setSurveyTimeout: createValidatedAction(
-		( triggerID, timeout ) => {
-			invariant(
-				'string' === typeof triggerID && triggerID.length,
-				'triggerID is required and must be a string'
-			);
-			invariant(
-				'number' === typeof timeout,
-				'timeout must be a number'
-			);
-		},
-		function* ( triggerID, timeout ) {
-			return yield fetchSetSurveyTimeoutStore.actions.fetchSetSurveyTimeout(
-				triggerID,
-				timeout
-			);
-		}
-	),
+const LOCK_SURVEY_TRIGGER = 'LOCK_SURVEY_TRIGGER';
+const UNLOCK_SURVEY_TRIGGER = 'UNLOCK_SURVEY_TRIGGER';
 
+function lockSurveyTrigger( triggerID ) {
+	return {
+		type: LOCK_SURVEY_TRIGGER,
+		payload: {
+			triggerID,
+		},
+	};
+}
+function unlockSurveyTrigger( triggerID ) {
+	return {
+		type: UNLOCK_SURVEY_TRIGGER,
+		payload: {
+			triggerID,
+		},
+	};
+}
+const baseActions = {
 	/**
 	 * Triggers a survey.
 	 *
@@ -185,58 +157,66 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const { select, dispatch, resolveSelect } =
-				yield commonActions.getRegistry();
+			const { select, resolveSelect } = yield commonActions.getRegistry();
+			const {
+				isAuthenticated,
+				isSurveyTimedOut,
+				isSurveyTriggerLocked,
+				getSurveyTimeouts,
+			} = select( CORE_USER );
 
-			// Wait for user authentication state to be available before selecting.
-			yield commonActions.await(
-				resolveSelect( CORE_USER ).getAuthentication()
-			);
-
-			if ( ! select( CORE_USER ).isAuthenticated() ) {
+			// The lock prevents multiple concurrent triggers for the same ID.
+			if ( isSurveyTriggerLocked( triggerID ) ) {
 				return {};
 			}
+			yield lockSurveyTrigger( triggerID );
 
-			// Await for surveys to be resolved before checking timeouts.
-			yield commonActions.await(
-				resolveSelect( CORE_USER ).getSurveyTimeouts()
-			);
+			try {
+				// Wait for user authentication state to be available before selecting.
+				yield commonActions.await(
+					resolveSelect( CORE_USER ).getAuthentication()
+				);
 
-			const isTimedOut =
-				select( CORE_USER ).isSurveyTimedOut( triggerID );
-			const isTimingOut = select( CORE_USER ).isTimingOutSurvey(
-				triggerID,
-				ttl
-			);
+				if ( ! isAuthenticated() ) {
+					return {};
+				}
 
-			// Both isTimedOut and isTimingOut variables are already resolved since they depend on
-			// the getSurveyTimeouts selector which we've resolved just before getting these variables.
-			if ( ! isTimedOut && ! isTimingOut ) {
+				yield commonActions.await(
+					resolveSelect( CORE_USER ).getSurveyTimeouts()
+				);
+
+				// Check if persistent timeout for this trigger is set
+				// or if an in-memory timeout is present (see below).
+				if ( isSurveyTimedOut( triggerID ) ) {
+					return { response: {}, error: false };
+				}
+
 				const { response, error } =
 					yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey(
-						triggerID
+						triggerID,
+						ttl
 					);
 
 				if ( error ) {
 					return { response, error };
 				}
 
-				// If TTL isn't empty, then sleep for 30s and set survey timeout.
 				if ( ttl > 0 ) {
-					yield new Promise( ( resolve ) => {
-						setTimeout( resolve, 30000 );
-					} );
-
-					yield commonActions.await(
-						dispatch( CORE_USER ).setSurveyTimeout( triggerID, ttl )
+					// Survey timeouts should be available here; fallback to empty array in case of error.
+					const timeouts = getSurveyTimeouts() || [];
+					// Add the trigger to the list of timeouts directly (next time it will come from server side).
+					yield fetchGetSurveyTimeoutsStore.actions.receiveGetSurveyTimeouts(
+						[ ...timeouts, triggerID ]
 					);
 				}
-			}
 
-			return {
-				response: {},
-				error: false,
-			};
+				return {
+					response: {},
+					error: false,
+				};
+			} finally {
+				yield unlockSurveyTrigger( triggerID );
+			}
 		}
 	),
 
@@ -373,23 +353,17 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Checks whether or not the survey is being timed out for the given slug.
+	 * Checks if the given survey trigger is currently locked.
 	 *
-	 * @since 1.73.0
+	 * @since 1.147.0
 	 *
-	 * @param {Object} state   Data store's state.
-	 * @param {string} slug    Survey slug.
-	 * @param {number} timeout Timeout for survey.
-	 * @return {(boolean|undefined)} TRUE if the survey is being timed out, otherwise FALSE.
+	 * @param {Object} state     Data store's state.
+	 * @param {string} triggerID Survey trigger ID.
+	 * @return {boolean} TRUE if locked, otherwise FALSE.
 	 */
-	isTimingOutSurvey: createRegistrySelector(
-		( select ) => ( state, slug, timeout ) => {
-			return select( CORE_USER ).isFetchingSetSurveyTimeout(
-				slug,
-				timeout
-			);
-		}
-	),
+	isSurveyTriggerLocked( state, triggerID ) {
+		return !! state.lockedSurveyTriggers[ triggerID ];
+	},
 
 	/**
 	 * Determines whether surveys are on cooldown or not.
@@ -405,15 +379,29 @@ const baseSelectors = {
 	} ),
 };
 
+const reducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		case LOCK_SURVEY_TRIGGER: {
+			const { triggerID } = action.payload;
+			state.lockedSurveyTriggers[ triggerID ] = true;
+			break;
+		}
+		case UNLOCK_SURVEY_TRIGGER: {
+			const { triggerID } = action.payload;
+			state.lockedSurveyTriggers[ triggerID ] = false;
+		}
+	}
+} );
+
 const store = combineStores(
 	fetchTriggerSurveyStore,
 	fetchSendSurveyEventStore,
 	fetchGetSurveyTimeoutsStore,
-	fetchSetSurveyTimeoutStore,
 	fetchGetSurveyStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
+		reducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
