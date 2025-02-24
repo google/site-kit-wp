@@ -130,7 +130,7 @@ export default function Edit( { select } ) {
 				<div className="googlesitekit-blocks-reader-revenue-manager">
 					<EditorButton disabled={ disabled }>
 						{
-							/* translators: Button label for Contribute with Google. See: https://github.com/subscriptions-project/swg-js/blob/05af2d45cfcaf831a6b4d35c28f2c7b5c2e39308/src/i18n/swg-strings.ts#L58-L91 (see latest version) */
+							/* translators: Button label for Contribute with Google. See: https://github.com/subscriptions-project/swg-js/blob/05af2d45cfcaf831a6b4d35c28f2c7b5c2e39308/src/i18n/swg-strings.ts#L58-L91 (please refer to the latest version of the file) */
 							__( 'Contribute with Google', 'google-site-kit' )
 						}
 					</EditorButton>
