@@ -64,6 +64,8 @@ import FirstPartyModeSetupBanner, {
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
 import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
+import { NOTIFICATION_ID } from '../../components/notifications/EnableAutoUpdateBannerNotification/constants';
+import EnableAutoUpdateBannerNotification from '../../components/notifications/EnableAutoUpdateBannerNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -320,6 +322,16 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			return true;
 		},
+		isDismissible: true,
+	},
+	[ NOTIFICATION_ID ]: {
+		Component: EnableAutoUpdateBannerNotification,
+		priority: 280,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
 		isDismissible: true,
 	},
 	'gathering-data-notification': {
