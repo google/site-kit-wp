@@ -63,39 +63,46 @@
 			}
 
 			.divider {
-				height: 100%;
+				align-items: center;
+				display: flex;
+				height: 28px;
+				justify-content: center;
+				margin: 10px 0 28px;
 				position: relative;
 				text-align: center;
+
+				@media (min-width: $bp-desktop) {
+					display: initial;
+					height: 100%;
+					margin: unset;
+				}
+			}
+
+			.divider-line {
+				background: $c-mercury;
+				height: 1px;
+				position: absolute;
+				width: 100%;
+
+				@media (min-width: $bp-desktop) {
+					height: 100%;
+					left: 50%;
+					top: 0;
+					width: 1px;
+				}
 			}
 
 			.divider-label {
+				background-color: $c-white;
 				color: $c-neutral-n-500;
-				display: inline-block;
+				display: block;
 				font-size: 12px;
-				padding-top: 90px;
+				padding: 6px 20px;
+				position: relative;
+				z-index: 2;
 
-				&::before,
-				&::after {
-					background: $c-mercury;
-					content: "";
-					display: inline-block;
-					position: absolute;
-
-					@media (min-width: $bp-desktop) {
-						height: 100%;
-						left: 50%;
-						width: 1px;
-					}
-				}
-
-				&::before {
-					height: calc(90px - 5px); // -5px for spacing above the label.
-					top: 0;
-				}
-
-				&::after {
-					bottom: 0;
-					height: calc(100% - 90px - 22px); // -22px to shorten the height for the label and add additional space bellow.
+				@media (min-width: $bp-desktop) {
+					top: 90px;
 				}
 			}
 
