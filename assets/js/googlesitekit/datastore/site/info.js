@@ -188,7 +188,6 @@ export const reducer = ( state, { payload, type } ) => {
 				consentModeRegions,
 				anyoneCanRegister,
 				isMultisite,
-				plugins,
 			} = payload.siteInfo;
 
 			return {
@@ -226,7 +225,6 @@ export const reducer = ( state, { payload, type } ) => {
 					consentModeRegions,
 					anyoneCanRegister,
 					isMultisite,
-					plugins,
 				},
 			};
 		}
@@ -319,7 +317,6 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
-			plugins,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -362,7 +359,6 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
-			plugins,
 		} );
 	},
 };
@@ -963,16 +959,6 @@ export const selectors = {
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	isMultisite: getSiteInfoProperty( 'isMultisite' ),
-
-	/**
-	 * Gets plugins data.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {Array|undefined} Plugins data array.
-	 */
-	getPluginsData: getSiteInfoProperty( 'plugins' ),
 };
 
 export default {
