@@ -137,14 +137,14 @@ export const ADS_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
-			// on the data being resolved in getSiteInfo() selector.
-			await resolveSelect( CORE_SITE ).getSiteInfo();
+			// on the data being resolved in getModuleData() selector.
+			await resolveSelect( CORE_SITE ).getModuleData();
 
 			const {
 				isWooCommerceActivated,
 				isGoogleForWooCommerceActivated,
 				hasGoogleForWooCommerceAdsAccount,
-			} = select( CORE_SITE );
+			} = select( MODULES_ADS );
 
 			return (
 				isWooCommerceActivated() &&
