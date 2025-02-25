@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { getQueryArg } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import {
@@ -69,6 +74,7 @@ import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notif
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
 import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
 import EnableAutoUpdateBannerNotification from '../../components/notifications/EnableAutoUpdateBannerNotification';
+import { MINUTE_IN_SECONDS } from '../../util';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -335,7 +341,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			await Promise.all( [
 				// The hasCapability() selector relies on the resolution
 				// of the getCapabilities() resolver.
@@ -345,6 +351,25 @@ export const DEFAULT_NOTIFICATIONS = {
 				// resolution of the getSiteInfo() resolver.
 				resolveSelect( CORE_SITE ).getSiteInfo(),
 			] );
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			const { dismissNotification } = dispatch( CORE_NOTIFICATIONS );
+
+			/**
+			 * If the user just set up Site Kit (i.e. just returned from the
+			 * initial OAuth sign-in flow) and is seeing the dashboard
+			 * for the first time, we want to hide (dismiss) this notification for 10
+			 * minutes so they aren't immediately bothered by this CTA.
+			 */
+			if ( notification === 'authentication_success' && ! slug ) {
+				await dismissNotification( 'auto-update-cta', {
+					expiresInSeconds: MINUTE_IN_SECONDS * 10,
+					skipHidingFromQueue: true,
+				} );
+				return false;
+			}
 
 			const hasUpdatePluginCapability = select( CORE_USER ).hasCapability(
 				PERMISSION_UPDATE_PLUGINS

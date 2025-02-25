@@ -27,14 +27,10 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MINUTE_IN_SECONDS } from '../../util';
-import useQueryArg from '../../hooks/useQueryArg';
 import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
-import { useMount } from 'react-use';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function EnableAutoUpdateBannerNotification( {
 	id,
@@ -47,31 +43,12 @@ export default function EnableAutoUpdateBannerNotification( {
 		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
 	);
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
-
-	const [ notification ] = useQueryArg( 'notification' );
-
-	const [ enabledViaCTA, setEnabledViaCTA ] = useState( false );
-
 	const ctaActivate = useCallback( async () => {
 		await enableAutoUpdate();
 	}, [ enableAutoUpdate ] );
 
-	/**
-	 * If the user just set up Site Kit (eg. just returned from the
-	 * initial OAuth sign-in flow) and is seeing the dashboard
-	 * for the first time, we want to hide the notification for 10
-	 * minutes so they aren't immediately bothered by
-	 * CTA notifications.
-	 */
-	useMount( () => {
-		if ( notification === 'authentication_success' ) {
-			dismissNotification( id, {
-				expiresInSeconds: MINUTE_IN_SECONDS * 10,
-			} );
-		}
-	} );
+	const [ enabledViaCTA, setEnabledViaCTA ] = useState( false );
 
 	// If auto-updates were enabled via the CTA, set the state to true to
 	// render the success banner variation.
