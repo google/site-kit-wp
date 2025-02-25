@@ -84,7 +84,7 @@ jobs:
         include:
           # Min supported PHP + WP Oldest
           - php_version: '7.4'
-            wp_version: '5.2.21'
+            wp_version: '5.3.18' # PHP 7.4 support
             composer_phpunit_version: '^7'
           # Min supported PHP + WP Latest Multisite
           - php_version: '7.4'
