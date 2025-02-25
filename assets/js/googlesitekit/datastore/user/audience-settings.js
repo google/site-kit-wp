@@ -40,7 +40,7 @@ import { CORE_USER } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;
 
-const validateAudienceSettings = ( settings ) => {
+const validateUserAudienceSettings = ( settings ) => {
 	invariant(
 		isPlainObject( settings ),
 		'Audience settings should be an object.'
@@ -57,12 +57,12 @@ const validateAudienceSettings = ( settings ) => {
 
 const fetchStoreReducerCallback = createReducer(
 	( state, audienceSettings ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
+		if ( ! state.userAudienceSettings ) {
+			state.userAudienceSettings = {};
 		}
 
-		state.audienceSettings.settings = audienceSettings;
-		state.audienceSettings.savedSettings = audienceSettings;
+		state.userAudienceSettings.settings = audienceSettings;
+		state.userAudienceSettings.savedSettings = audienceSettings;
 	}
 );
 
@@ -88,7 +88,7 @@ const fetchSaveUserAudienceSettingsStore = createFetchStore( {
 		API.set( 'core', 'user', 'audience-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
-	validateParams: validateAudienceSettings,
+	validateParams: validateUserAudienceSettings,
 } );
 
 // Actions
@@ -98,7 +98,7 @@ const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
 	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
 
 const baseInitialState = {
-	audienceSettings: undefined,
+	userAudienceSettings: undefined,
 };
 
 const baseActions = {
@@ -235,19 +235,19 @@ const baseControls = {};
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RESET_AUDIENCE_SETTINGS: {
-			state.audienceSettings = baseInitialState.audienceSettings;
+			state.userAudienceSettings = baseInitialState.userAudienceSettings;
 			break;
 		}
 
 		case SET_CONFIGURED_AUDIENCES: {
 			const { audienceResourceNames } = payload;
 
-			if ( ! state.audienceSettings ) {
-				state.audienceSettings = {};
+			if ( ! state.userAudienceSettings ) {
+				state.userAudienceSettings = {};
 			}
 
-			state.audienceSettings.settings = {
-				...state.audienceSettings.settings,
+			state.userAudienceSettings.settings = {
+				...state.userAudienceSettings.settings,
 				configuredAudiences: audienceResourceNames,
 			};
 
@@ -257,12 +257,12 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN: {
 			const { isWidgetHidden } = payload;
 
-			if ( ! state.audienceSettings ) {
-				state.audienceSettings = {};
+			if ( ! state.userAudienceSettings ) {
+				state.userAudienceSettings = {};
 			}
 
-			state.audienceSettings.settings = {
-				...state.audienceSettings.settings,
+			state.userAudienceSettings.settings = {
+				...state.userAudienceSettings.settings,
 				isAudienceSegmentationWidgetHidden: isWidgetHidden,
 			};
 
@@ -299,7 +299,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
 	 */
 	getUserAudienceSettings( state ) {
-		return state.audienceSettings?.settings;
+		return state.userAudienceSettings?.settings;
 	},
 
 	/**
@@ -356,7 +356,7 @@ const baseSelectors = {
 	 * @return {boolean} True if configured audiences have changed, otherwise false.
 	 */
 	haveConfiguredAudiencesChanged( state ) {
-		const { settings, savedSettings } = state.audienceSettings || {};
+		const { settings, savedSettings } = state.userAudienceSettings || {};
 
 		return ! isEqual(
 			settings?.configuredAudiences,
