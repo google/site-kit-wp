@@ -35,9 +35,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	if ( ! registry.select( MODULES_READER_REVENUE_MANAGER ) ) {
-		registry.registerStore( MODULES_READER_REVENUE_MANAGER, store );
-	}
+	registry.registerStore( MODULES_READER_REVENUE_MANAGER, store );
 };
 
 export default store;

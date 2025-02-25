@@ -22,16 +22,11 @@ import { registerBlockType } from '@wordpress-core/blocks';
 /**
  * Internal dependencies
  */
-import Data, { select, resolveSelect } from 'googlesitekit-data';
-// We need to import `registerStore` from `./modules/reader-revenue-manager/datastore` rather than `./modules/reader-revenue-manager`
-// to avoid pulling in all the other modules imported in the top-level RRM module.
-import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
+import { select, resolveSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import metadata from './block.json';
 import Edit from './Edit';
-
-registerStore( Data );
 
 // Since we aren't currently able to use `useSelect()` in the components,
 // we need to resolve selectors before registering the block
