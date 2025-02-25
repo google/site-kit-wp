@@ -169,13 +169,7 @@ const baseActions = {
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ reportArgs ] );
 
-		const isGatheringData =
-			hasReportError ||
-			! report?.rows?.length ||
-			// If the only dimension value is '(not set)', then there is no data. See https://support.google.com/analytics/answer/13504892.
-			( report.rowCount === 1 &&
-				report.rows[ 0 ].dimensionValues?.[ 0 ]?.value ===
-					'(not set)' );
+		const isGatheringData = hasReportError || ! report?.rows?.length;
 
 		yield baseActions.receiveIsCustomDimensionGatheringData(
 			customDimension,
@@ -331,8 +325,14 @@ const baseSelectors = {
 				startDate: getDateString( new Date( propertyCreateTime ) ),
 				endDate,
 				dimensions: [ `customEvent:${ customDimension }` ],
+				dimensionFilters: {
+					[ `customEvent:${ customDimension }` ]: {
+						filterType: 'emptyFilter',
+						notExpression: true,
+					},
+				},
 				metrics: [ { name: 'eventCount' } ],
-				limit: 2,
+				limit: 1,
 			};
 		}
 	),

@@ -39,7 +39,10 @@ export const registerModule = ( modules ) => {
 		SetupComponent: SetupMain,
 		Icon: TagManagerIcon,
 		features: [
-			__( 'Create tags without updating code', 'google-site-kit' ),
+			__(
+				'You will not be able to create tags without updating code',
+				'google-site-kit'
+			),
 		],
 	} );
 };

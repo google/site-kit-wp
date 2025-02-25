@@ -20,16 +20,17 @@
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
+	color: $c-content-on-primary-container;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: $grid-gap-phone;
+	padding: 14px $grid-gap-phone;
 
 	@media (min-width: $bp-tablet) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
-		padding: 18px $grid-gap-desktop;
+		padding: 14px $grid-gap-desktop;
 	}
 
 	.googlesitekit-subtle-notification__icon {
@@ -37,7 +38,6 @@
 	}
 
 	.googlesitekit-subtle-notification__content {
-		color: $c-content-on-primary-container;
 		font-family: $f-primary;
 		font-size: $fs-title-md;
 		font-weight: $fw-medium;
@@ -52,6 +52,11 @@
 			margin: 0 0 10px;
 			@media (min-width: $bp-tablet) {
 				margin: 0;
+			}
+
+			& > a {
+				color: inherit;
+				text-decoration: underline;
 			}
 		}
 	}
@@ -81,7 +86,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: $grid-gap-phone;
-		justify-content: center;
+		justify-content: end;
 		width: 100%;
 
 		@media (min-width: $bp-tablet) {
@@ -132,6 +137,40 @@
 			&:focus {
 				@include mdc-button-filled-accessible( $c-interactive-callout-warning-focus );
 				@include mdc-button-ink-color( $c-utility-on-warning-container );
+			}
+		}
+	}
+
+	&.googlesitekit-subtle-notification--new-feature {
+		background-color: $c-violet-v-50;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-violet-v-600;
+		}
+
+		.mdc-button {
+
+			&.mdc-button--raised {
+				@include mdc-button-filled-accessible($c-violet-v-600);
+			}
+		}
+
+		/* These styles are inherently at the same specificity as the warning styles above. */
+		/* stylelint-disable-next-line no-descending-specificity */
+		.mdc-button--tertiary {
+
+			@include mdc-button-ink-color( $c-violet-v-600 );
+
+			&:hover {
+				@include mdc-button-filled-accessible( rgba( $c-violet-v-200, 0.6 ) );
+				@include mdc-button-ink-color( $c-violet-v-600 );
+			}
+
+			&:active,
+			&:focus {
+				@include mdc-button-filled-accessible( $c-violet-v-200 );
+				@include mdc-button-ink-color( $c-violet-v-600 );
 			}
 		}
 	}

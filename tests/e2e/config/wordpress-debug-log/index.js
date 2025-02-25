@@ -42,11 +42,15 @@ const docker = new Docker();
 let container;
 
 /**
- * @since 1.81.0
+ * Abort controller for container logs stream.
  *
- * @type {NodeJS.ReadableStream} Container logs Stream instance.
+ * Note: AbortController is only available via the opt-in experimental flag until Node 15.
+ * i.e. `NODE_OPTIONS=--experimental-abortcontroller node ...`
+ * See https://nodejs.org/docs/latest-v14.x/api/globals.html#globals_class_abortcontroller.
+ *
+ * @since 1.147.0
  */
-let dockerLogsStream;
+const logStreamAbortController = new AbortController();
 
 /**
  * Debug log data store.
@@ -102,14 +106,19 @@ async function setupDockerLogging() {
 		container = await getContainer();
 	}
 	container.logs(
-		{ stdout: true, stderr: true, follow: true, tail: 0 },
+		{
+			stdout: true,
+			stderr: true,
+			follow: true,
+			tail: 0,
+			abortSignal: logStreamAbortController.signal,
+		},
 		( err, stream ) => {
+			// Note: this callback will only called when the log stream receives data (not on connection).
 			if ( err ) {
 				global.console.error( err );
 				return;
 			}
-			// Keep a reference to the stream so we can close it later.
-			dockerLogsStream = stream;
 
 			container.modem.demuxStream( stream, logStream, logStream );
 		}
@@ -122,7 +131,11 @@ function resetDebugLog() {
 
 async function assertEmptyDebugLog() {
 	// Filter out some lines from WP core that we can't do anything about.
-	const ignoreList = logIgnoreList[ process.env.WP_VERSION ] || [];
+	const ignoreList = [
+		...( logIgnoreList[ process.env.WP_VERSION ] || [] ),
+		// Include common ignores that apply to all versions.
+		...logIgnoreList.ALL,
+	];
 
 	// Wait 1 second for any log data to finish propagating.
 	// Without this, node can disconnect from the log stream
@@ -147,10 +160,8 @@ async function assertEmptyDebugLog() {
 }
 
 function tearDownDockerLogging() {
-	// Close the stream to prevent Jest hanging from open resources.
-	if ( dockerLogsStream ) {
-		dockerLogsStream.destroy();
-	}
+	// Close the connection to the container logs to prevent Jest hanging on open resources.
+	logStreamAbortController.abort();
 }
 
 beforeAll( setupDockerLogging );

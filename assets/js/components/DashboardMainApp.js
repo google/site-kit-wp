@@ -42,18 +42,13 @@ import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
-import {
-	AudienceSegmentationSetupCTAWidget,
-	AudienceSelectionPanel,
-} from '../modules/analytics-4/components/audience-segmentation/dashboard';
-import ReaderRevenueManagerSetupCTABanner from '../modules/reader-revenue-manager/components/dashboard/ReaderRevenueManagerSetupCTABanner';
+import { AudienceSelectionPanel } from '../modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
@@ -88,7 +83,6 @@ import {
 
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
@@ -266,23 +260,6 @@ export default function DashboardMainApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-
-			{ ! viewOnlyDashboard && (
-				<Fragment>
-					{ audienceSegmentationEnabled && (
-						<AudienceSegmentationSetupCTAWidget />
-					) }
-					<ConsentModeSetupCTAWidget />
-				</Fragment>
-			) }
-
-			{ ! viewOnlyDashboard && (
-				<Fragment>
-					{ readerRevenueManagerEnabled && (
-						<ReaderRevenueManagerSetupCTABanner />
-					) }
-				</Fragment>
-			) }
 
 			<Notifications
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }

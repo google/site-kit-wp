@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
- * Class for handling audience settings rest routes.
+ * Class for handling user settings rest routes.
  *
  * @since 1.134.0
  * @access private
@@ -30,6 +30,14 @@ class User {
 	private $audience_segmentation;
 
 	/**
+	 * Conversion_Reporting instance.
+	 *
+	 * @since 1.144.0
+	 * @var Conversion_Reporting
+	 */
+	private $conversion_reporting;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.134.0
@@ -38,6 +46,7 @@ class User {
 	 */
 	public function __construct( User_Options $user_options ) {
 		$this->audience_segmentation = new Audience_Segmentation( $user_options );
+		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
 	}
 
 	/**
@@ -47,5 +56,6 @@ class User {
 	 */
 	public function register() {
 		$this->audience_segmentation->register();
+		$this->conversion_reporting->register();
 	}
 }

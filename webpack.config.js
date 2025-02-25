@@ -23,6 +23,7 @@ const { createRules } = require( './webpack/common' );
 const adminCssConfig = require( './webpack/adminCss.config' );
 const basicModulesConfig = require( './webpack/basicModules.config' );
 const frontendModules = require( './webpack/frontendModules.config' );
+const gutenbergBlocksConfig = require( './webpack/gutenbergBlocks.config' );
 const modulesConfig = require( './webpack/modules.config' );
 const testBundleConfig = require( './webpack/testBundle.config' );
 
@@ -44,6 +45,9 @@ function* webpackConfig( env, argv ) {
 
 	// Build modules that will be used on the frontend, that require wider browser support.
 	yield frontendModules( mode );
+
+	// Build the Gutenberg blocks JS/CSS.
+	yield gutenbergBlocksConfig( mode );
 
 	// Build the main plugin admin css.
 	yield adminCssConfig( mode );

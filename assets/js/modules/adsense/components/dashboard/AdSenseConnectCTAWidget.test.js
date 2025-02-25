@@ -33,9 +33,15 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
+
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		'adsenseConnectCTA'
+	)( AdSenseConnectCTAWidget );
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
@@ -60,13 +66,6 @@ describe( 'AdSenseConnectCTA', () => {
 				}
 			);
 
-			function Widget( { children } ) {
-				return <div>{ children }</div>;
-			}
-			function WidgetNull() {
-				return <div>NULL</div>;
-			}
-
 			container = render(
 				<div>
 					<div id="adminmenu">
@@ -74,10 +73,7 @@ describe( 'AdSenseConnectCTA', () => {
 							Settings
 						</a>
 					</div>
-					<AdSenseConnectCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<WidgetWithComponentProps />
 				</div>,
 				{ registry }
 			);
@@ -123,5 +119,17 @@ describe( 'AdSenseConnectCTA', () => {
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
 		} );
+	} );
+
+	it( 'should render WidgetNull when the widget is being dismissed', () => {
+		registry
+			.dispatch( CORE_USER )
+			.setIsItemDimissing( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY, true );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

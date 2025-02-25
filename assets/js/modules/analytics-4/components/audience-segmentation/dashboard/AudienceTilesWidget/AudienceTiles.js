@@ -56,6 +56,7 @@ import { isInvalidCustomDimensionError } from '../../../../utils/custom-dimensio
 import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
+import { reportRowsWithSetValues } from '../../../../utils/report-rows-with-set-values';
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -69,6 +70,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
+
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
@@ -475,7 +477,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 					<TabBar
 						// Force re-render when the number of audiences change, this is a workaround for a bug in TabBar which maintains an internal list of tabs but doesn't update it when the number of tabs is reduced.
 						key={ visibleAudiences.length }
-						className="googlesitekit-widget-audience-tiles__tabs"
+						className="googlesitekit-widget-audience-tiles__tabs googlesitekit-tab-bar--start-aligned-high-contrast"
 						activeIndex={ activeTileIndex }
 						handleActiveIndexUpdate={ ( index ) =>
 							setActiveTile( visibleAudiences[ index ] )
@@ -566,6 +568,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							isPartialData,
 						} = getAudienceTileData( audienceResourceName, index );
 
+						// Filter (not set) value from the top countries report if present.
+						const filteredTopCitiesRows = topCities?.rows
+							? reportRowsWithSetValues( topCities.rows )
+							: [];
+
 						// Return loading tile if data is not yet loaded.
 						if (
 							loading ||
@@ -632,19 +639,19 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 								}
 								topCities={ {
 									dimensionValues: [
-										topCities?.rows?.[ 0 ]
+										filteredTopCitiesRows?.[ 0 ]
 											?.dimensionValues?.[ 0 ],
-										topCities?.rows?.[ 1 ]
+										filteredTopCitiesRows?.[ 1 ]
 											?.dimensionValues?.[ 0 ],
-										topCities?.rows?.[ 2 ]
+										filteredTopCitiesRows?.[ 2 ]
 											?.dimensionValues?.[ 0 ],
 									],
 									metricValues: [
-										topCities?.rows?.[ 0 ]
+										filteredTopCitiesRows?.[ 0 ]
 											?.metricValues?.[ 0 ],
-										topCities?.rows?.[ 1 ]
+										filteredTopCitiesRows?.[ 1 ]
 											?.metricValues?.[ 0 ],
-										topCities?.rows?.[ 2 ]
+										filteredTopCitiesRows?.[ 2 ]
 											?.metricValues?.[ 0 ],
 									],
 									total: visitors,

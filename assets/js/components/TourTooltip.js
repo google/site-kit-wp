@@ -24,6 +24,11 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
@@ -100,7 +105,8 @@ export default function TourTooltip( {
 					text
 					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
-					{ ...closeProps }
+					onClick={ closeProps.onClick }
+					aria-label={ __( 'Close', 'google-site-kit' ) }
 				/>
 			</Card>
 		</div>

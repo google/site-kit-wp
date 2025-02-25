@@ -28,6 +28,7 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import { Cell, Grid, Row } from '../../../../material-components';
+import Error from '../common/Error';
 
 export default function NotificationWithSVG( {
 	id,
@@ -35,18 +36,23 @@ export default function NotificationWithSVG( {
 	description,
 	actions,
 	SVG,
+	primaryCellSizes,
+	SVGCellSizes,
 } ) {
 	const breakpoint = useBreakpoint();
 
 	// Desktop breakpoint.
-	let svgSizeProps = { mdSize: 8, lgSize: 6 };
+	let svgSizeProps = {
+		mdSize: SVGCellSizes?.md || 8,
+		lgSize: SVGCellSizes?.lg || 6,
+	};
 	// Tablet breakpoint.
 	if ( breakpoint === BREAKPOINT_TABLET ) {
-		svgSizeProps = { mdSize: 8 };
+		svgSizeProps = { mdSize: SVGCellSizes?.md || 8 };
 	}
 	// Mobile breakpoint.
 	if ( breakpoint === BREAKPOINT_SMALL ) {
-		svgSizeProps = { smSize: 12 };
+		svgSizeProps = { smSize: SVGCellSizes?.sm || 12 };
 	}
 
 	return (
@@ -66,9 +72,11 @@ export default function NotificationWithSVG( {
 								<Grid collapsed>
 									<Row>
 										<Cell
-											smSize={ 12 }
-											mdSize={ 8 }
-											lgSize={ 6 }
+											smSize={
+												primaryCellSizes?.sm || 12
+											}
+											mdSize={ primaryCellSizes?.md || 8 }
+											lgSize={ primaryCellSizes?.lg || 6 }
 											className="googlesitekit-setup-cta-banner__primary-cell"
 										>
 											<h3 className="googlesitekit-setup-cta-banner__title">
@@ -77,6 +85,7 @@ export default function NotificationWithSVG( {
 
 											{ description }
 
+											<Error id={ id } />
 											{ actions }
 										</Cell>
 										<Cell

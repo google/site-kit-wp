@@ -11,7 +11,12 @@
 namespace Google\Site_Kit\Modules;
 
 use Exception;
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Stylesheet;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -30,11 +35,16 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_OnboardingState;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
@@ -62,6 +72,39 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	const MODULE_SLUG = 'reader-revenue-manager';
 
 	/**
+	 * Post_Product_ID instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Post_Product_ID
+	 */
+	private $post_product_id;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$post_meta             = new Post_Meta();
+		$this->post_product_id = new Post_Product_ID( $post_meta, $this->get_settings() );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.130.0
@@ -69,14 +112,18 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function register() {
 		$this->register_scopes_hook();
 
-		$synchronize_onboarding_state = new Synchronize_OnboardingState(
+		$synchronize_publication = new Synchronize_Publication(
 			$this,
 			$this->user_options
 		);
-		$synchronize_onboarding_state->register();
+		$synchronize_publication->register();
 
-		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
-		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_onboarding_state, 'maybe_schedule_synchronize_onboarding_state' ) );
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
+			$this->post_product_id->register();
+		}
+
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
+		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
 
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
@@ -332,7 +379,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Reader Revenue Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', 'google-site-kit' ),
-			'order'       => 5,
 			'homepage'    => 'https://publishercenter.google.com',
 		);
 	}
@@ -384,7 +430,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
 
-		return array(
+		$assets = array(
 			new Script(
 				'googlesitekit-modules-reader-revenue-manager',
 				array(
@@ -401,6 +447,33 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$assets[] = new Script(
+				'googlesitekit-reader-revenue-manager-block-editor-plugin',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/index.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+					),
+					'execution'     => 'defer',
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+
+			$assets[] = new Stylesheet(
+				'googlesitekit-block-editor-css',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/editor-styles.css',
+					'dependencies'  => array(),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+		}
+
+		return $assets;
 	}
 
 	/**
@@ -429,14 +502,44 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			return;
 		}
 
+		$post_product_id = '';
+
+		if (
+			Feature_Flags::enabled( 'rrmModuleV2' ) &&
+			is_singular()
+		) {
+			$post_product_id = $this->post_product_id->get( get_the_ID() );
+		}
+
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Guard( $module_settings, $post_product_id ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( ! $tag->can_register() ) {
 			return;
 		}
 
+		$product_id = 'openaccess';
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$product_id = $settings['productID'];
+
+			if ( is_singular() && ! empty( $post_product_id ) ) {
+				$product_id = $post_product_id;
+			}
+
+			// Extract the product ID from the setting, which is in the format
+			// of `publicationID:productID`.
+			if ( 'openaccess' !== $product_id ) {
+				$separator_index = strpos( $product_id, ':' );
+
+				if ( false !== $separator_index ) {
+					$product_id = substr( $product_id, $separator_index + 1 );
+				}
+			}
+		}
+
+		$tag->set_product_id( $product_id );
 		$tag->register();
 	}
 
@@ -450,7 +553,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$debug_fields = array(
 			'reader_revenue_manager_publication_id' => array(
 				'label' => __( 'Reader Revenue Manager: Publication ID', 'google-site-kit' ),
 				'value' => $settings['publicationID'],
@@ -462,5 +565,47 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'debug' => $settings['publicationOnboardingState'],
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$snippet_mode_values = array(
+				'post_types' => __( 'Post types', 'google-site-kit' ),
+				'per_post'   => __( 'Per post', 'google-site-kit' ),
+				'sitewide'   => __( 'Sitewide', 'google-site-kit' ),
+			);
+
+			$debug_fields['reader_revenue_manager_snippet_mode'] = array(
+				'label' => __( 'Reader Revenue Manager: Snippet placement', 'google-site-kit' ),
+				'value' => $snippet_mode_values[ $settings['snippetMode'] ],
+				'debug' => $settings['snippetMode'],
+			);
+
+			if ( 'post_types' === $settings['snippetMode'] ) {
+				$debug_fields['reader_revenue_manager_post_types'] = array(
+					'label' => __( 'Reader Revenue Manager: Post types', 'google-site-kit' ),
+					'value' => implode( ', ', $settings['postTypes'] ),
+					'debug' => implode( ', ', $settings['postTypes'] ),
+				);
+			}
+
+			$debug_fields['reader_revenue_manager_product_id'] = array(
+				'label' => __( 'Reader Revenue Manager: Product ID', 'google-site-kit' ),
+				'value' => $settings['productID'],
+				'debug' => $settings['productID'],
+			);
+
+			$debug_fields['reader_revenue_manager_available_product_ids'] = array(
+				'label' => __( 'Reader Revenue Manager: Available product IDs', 'google-site-kit' ),
+				'value' => implode( ', ', $settings['productIDs'] ),
+				'debug' => implode( ', ', $settings['productIDs'] ),
+			);
+
+			$debug_fields['reader_revenue_manager_payment_option'] = array(
+				'label' => __( 'Reader Revenue Manager: Payment option', 'google-site-kit' ),
+				'value' => $settings['paymentOption'],
+				'debug' => $settings['paymentOption'],
+			);
+		}
+
+		return $debug_fields;
 	}
 }

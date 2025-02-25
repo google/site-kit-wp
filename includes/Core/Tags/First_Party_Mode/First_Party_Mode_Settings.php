@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class to store user First Party Mode settings.
  *
- * @since n.e.x.t
+ * @since 1.141.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class First_Party_Mode_Settings extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return string The type name.
 	 */
@@ -40,13 +40,13 @@ class First_Party_Mode_Settings extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return array The default value.
 	 */
 	protected function get_default() {
 		return array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -55,7 +55,7 @@ class First_Party_Mode_Settings extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -82,7 +82,7 @@ class First_Party_Mode_Settings extends Setting {
 	/**
 	 * Merges an array of settings to update.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.

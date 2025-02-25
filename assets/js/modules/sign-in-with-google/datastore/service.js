@@ -33,7 +33,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Object containing optional path and query args.
@@ -69,7 +69,7 @@ export const selectors = {
 	/**
 	 * Gets a URL to fetch the client ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The URL to the clientID, or `undefined` if not loaded.
@@ -78,13 +78,11 @@ export const selectors = {
 		( select ) => () => {
 			const siteName = select( CORE_SITE ).getSiteName();
 			const homeURL = select( CORE_SITE ).getHomeURL();
-			const supportEmail = select( CORE_USER ).getEmail();
 
 			const query = {
 				appname: siteName,
 				sitename: siteName,
 				siteorigin: homeURL ? new URL( homeURL ).origin : homeURL,
-				supportemail: supportEmail,
 			};
 
 			return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( {

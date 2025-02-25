@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useState, Fragment } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -49,32 +49,34 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 	const { setConversionTrackingEnabled } = useDispatch( CORE_SITE );
 
 	return (
-		<Fragment>
+		<div>
 			<LoadingWrapper loading={ loading } width="180px" height="21.3px">
-				<Switch
-					label={ __(
-						'Enable enhanced conversion tracking',
-						'google-site-kit'
-					) }
-					checked={ isConversionTrackingEnabled }
-					disabled={ isSaving || loading }
-					onClick={ () => {
-						// If Conversion Tracking is currently enabled, show a confirmation
-						// dialog warning users about the impact of disabling it.
-						if ( isConversionTrackingEnabled ) {
-							trackEvent( `${ viewContext }`, 'ect_disable' );
+				<div className="googlesitekit-module-settings-group__switch">
+					<Switch
+						label={ __(
+							'Enhanced conversion tracking',
+							'google-site-kit'
+						) }
+						checked={ isConversionTrackingEnabled }
+						disabled={ isSaving || loading }
+						onClick={ () => {
+							// If Conversion Tracking is currently enabled, show a confirmation
+							// dialog warning users about the impact of disabling it.
+							if ( isConversionTrackingEnabled ) {
+								trackEvent( `${ viewContext }`, 'ect_disable' );
 
-							setShowConfirmDialog( true );
-						} else {
-							trackEvent( `${ viewContext }`, 'ect_enable' );
+								setShowConfirmDialog( true );
+							} else {
+								trackEvent( `${ viewContext }`, 'ect_enable' );
 
-							// Conversion Tracking is not currently enabled, so this toggle
-							// enables it.
-							setConversionTrackingEnabled( true );
-						}
-					} }
-					hideLabel={ false }
-				/>
+								// Conversion Tracking is not currently enabled, so this toggle
+								// enables it.
+								setConversionTrackingEnabled( true );
+							}
+						} }
+						hideLabel={ false }
+					/>
+				</div>
 			</LoadingWrapper>
 			{ !! saveError && <ErrorText message={ saveError.message } /> }
 			<LoadingWrapper
@@ -87,7 +89,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 				tabletWidth="540px"
 				tabletHeight="84px"
 			>
-				<p className="googlesitekit-settings-module__fields-group-helper-text">
+				<p className="googlesitekit-module-settings-group__helper-text">
 					{ children }
 				</p>
 			</LoadingWrapper>
@@ -106,7 +108,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 					} }
 				/>
 			) }
-		</Fragment>
+		</div>
 	);
 }
 

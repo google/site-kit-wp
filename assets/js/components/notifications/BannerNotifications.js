@@ -40,7 +40,6 @@ import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/compo
 import useViewOnly from '../../hooks/useViewOnly';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
@@ -51,6 +50,7 @@ import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../modules/reader-revenue
 const MODULES_USING_SUBTLE_NOTIFICATIONS = [
 	'ads',
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	'sign-in-with-google',
 ];
 
 export default function BannerNotifications() {
@@ -128,7 +128,6 @@ export default function BannerNotifications() {
 					{ hasMismatchedGoogleTagID && (
 						<GoogleTagIDMismatchNotification />
 					) }
-					<WebDataStreamNotAvailableNotification />
 				</Fragment>
 			) }
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />

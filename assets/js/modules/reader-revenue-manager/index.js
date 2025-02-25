@@ -30,14 +30,33 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
+	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
+	PUBLICATION_ONBOARDING_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from './utils/validation';
-import { RRMSetupSuccessSubtleNotification } from './components/dashboard';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	ReaderRevenueManagerSetupCTABanner,
+	RRMSetupSuccessSubtleNotification,
+} from './components/dashboard';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../features';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
+import {
+	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
+	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
+	RRM_SETUP_NOTIFICATION_ID,
+	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+} from './constants';
+import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 
 export { registerStore } from './datastore';
 
@@ -50,7 +69,7 @@ export const registerModule = ( modules ) => {
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
-				'Reader Revenue Manager publication tracking (your Reader Revenue Manager account will still remain active)',
+				'Reader Revenue Manager publication tracking will be disabled',
 				'google-site-kit'
 			),
 		],
@@ -75,13 +94,98 @@ export const registerModule = ( modules ) => {
 	} );
 };
 
-export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'setup-success-notification-rrm', {
+async function checkRequirementsForProductIDNotification(
+	{ select, resolveSelect },
+	requiredPaymentOption
+) {
+	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+	const publicationOnboardingState = select(
+		MODULES_READER_REVENUE_MANAGER
+	).getPublicationOnboardingState();
+
+	const paymentOption = select(
+		MODULES_READER_REVENUE_MANAGER
+	).getPaymentOption();
+
+	const productIDs = select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
+
+	const productID = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
+
+	if (
+		publicationOnboardingState ===
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+		productIDs.length > 0 &&
+		productID === 'openaccess' &&
+		paymentOption === requiredPaymentOption
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+export const NOTIFICATIONS = {
+	[ RRM_SETUP_NOTIFICATION_ID ]: {
+		Component: ReaderRevenueManagerSetupCTABanner,
+		priority: 50,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isPromptDismissed selector relies on the resolution
+				// of the getDismissedPrompts() resolver.
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					READER_REVENUE_MANAGER_MODULE_SLUG
+				),
+				resolveSelect( CORE_MODULES ).canActivateModule(
+					READER_REVENUE_MANAGER_MODULE_SLUG
+				),
+			] );
+
+			// Check if the prompt with the legacy key used before the banner was refactored
+			// to use the `notification ID` as the dismissal key, is dismissed.
+			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
+				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
+			);
+
+			const isRRMModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			const canActivateRRMModule = select(
+				CORE_MODULES
+			).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if (
+				isLegacyDismissed === false &&
+				isRRMModuleConnected === false &&
+				canActivateRRMModule
+			) {
+				return true;
+			}
+
+			return false;
+		},
+		isDismissible: true,
+		dismissRetries: 1,
+	},
+	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 
@@ -101,5 +205,48 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 		isDismissible: false,
-	} );
+	},
+	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
+		Component: ProductIDContributionsNotification,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( registry ) => {
+			const isActive = await checkRequirementsForProductIDNotification(
+				registry,
+				'contributions'
+			);
+
+			return isActive;
+		},
+		featureFlag: 'rrmModuleV2',
+	},
+	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
+		Component: ProductIDSubscriptionsNotification,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( registry ) => {
+			const isActive = await checkRequirementsForProductIDNotification(
+				registry,
+				'subscriptions'
+			);
+
+			return isActive;
+		},
+		featureFlag: 'rrmModuleV2',
+	},
+};
+
+export const registerNotifications = ( notificationsAPI ) => {
+	if ( isFeatureEnabled( 'rrmModule' ) ) {
+		for ( const notificationID in NOTIFICATIONS ) {
+			notificationsAPI.registerNotification(
+				notificationID,
+				NOTIFICATIONS[ notificationID ]
+			);
+		}
+	}
 };

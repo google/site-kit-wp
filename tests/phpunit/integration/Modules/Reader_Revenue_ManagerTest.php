@@ -99,7 +99,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
 		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage );
 		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
-		$this->assertEquals( 5, $this->reader_revenue_manager->order );
+		$this->assertEquals( 10, $this->reader_revenue_manager->order ); // Since order is not set, it uses the default value.
 	}
 
 	public function test_get_scopes() {
@@ -455,6 +455,158 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 	}
 
+	public function data_product_ids__singular() {
+		return array(
+			'with no product ID configured'            => array(
+				array(),
+				'',
+				'openaccess',
+			),
+			'with product ID set in settings'          => array(
+				array(
+					'productID' => 'ABDCEFGH:advanced',
+				),
+				'',
+				'advanced',
+			),
+			'with product ID set in settings and post' => array(
+				array(
+					'productID' => 'ABDCEFGH:advanced',
+				),
+				'openaccess',
+				'openaccess',
+			),
+			'with product ID set in post to none'      => array(
+				array(
+					'productID' => 'ABDCEFGH:advanced',
+				),
+				'none',
+				'',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_product_ids__singular
+	 */
+	public function test_template_redirect__singular__rrmModuleV2( $settings, $post_product_id, $expected_product_id ) {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$publication_id = 'ABCDEFGH';
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		remove_all_actions( 'template_redirect' );
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+		$this->reader_revenue_manager->get_settings()->merge(
+			array_merge(
+				array( 'publicationID' => $publication_id ),
+				$settings
+			)
+		);
+
+		// Navigate to a singular post.
+		$post_ID = $this->factory()->post->create();
+		$this->go_to( get_permalink( $post_ID ) );
+
+		// Set post product ID.
+		if ( $post_product_id ) {
+			update_post_meta(
+				$post_ID,
+				'googlesitekit_rrm_' . $publication_id . ':productID',
+				$post_product_id
+			);
+		}
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$footer_html = $this->capture_action( 'wp_footer' );
+
+		if ( $expected_product_id ) {
+			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
+		} else {
+			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+		}
+	}
+
+	public function data_product_ids__non_singular() {
+		return array(
+			'with no product ID configured' => array(
+				array(),
+				'',
+			),
+			'with no product ID configured and snippet mode of site wide' => array(
+				array(
+					'snippetMode' => 'sitewide',
+				),
+				'openaccess',
+			),
+			'with product ID set in settings and snippet mode of post_types' => array(
+				array(
+					'productID' => 'ABDCEFGH:advanced',
+				),
+				'',
+			),
+			'with product ID set in settings and snippet mode of site wide' => array(
+				array(
+					'productID'   => 'ABDCEFGH:advanced',
+					'snippetMode' => 'sitewide',
+				),
+				'advanced',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_product_ids__non_singular
+	 */
+	public function test_template_redirect__non_singular__rrmModuleV2( $settings, $expected_product_id ) {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$publication_id = 'ABCDEFGH';
+
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		remove_all_actions( 'template_redirect' );
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+		$this->reader_revenue_manager->get_settings()->merge(
+			array_merge(
+				array( 'publicationID' => $publication_id ),
+				$settings
+			)
+		);
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$footer_html = $this->capture_action( 'wp_footer' );
+
+		if ( $expected_product_id ) {
+			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
+		} else {
+			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+		}
+	}
+
 	public function test_get_debug_fields() {
 		$this->reader_revenue_manager->get_settings()->register();
 
@@ -462,6 +614,43 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'reader_revenue_manager_publication_id',
 				'reader_revenue_manager_publication_onboarding_state',
+			),
+			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+
+		$this->enable_feature( 'rrmModuleV2' );
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Verify `postTypes` field appears when the `snippetMode` is `post_types`.
+		$this->assertEqualSets(
+			array(
+				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_snippet_mode',
+				'reader_revenue_manager_post_types',
+				'reader_revenue_manager_product_id',
+				'reader_revenue_manager_available_product_ids',
+				'reader_revenue_manager_payment_option',
+			),
+			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+
+		// Set `snippetMode` to `per_post`.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'snippetMode' => 'per_post',
+			)
+		);
+
+		// Verify `postTypes` field does not appear when the `snippetMode` is not `post_types`.
+		$this->assertEqualSets(
+			array(
+				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_snippet_mode',
+				'reader_revenue_manager_product_id',
+				'reader_revenue_manager_available_product_ids',
+				'reader_revenue_manager_payment_option',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -484,6 +673,86 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertNotWPError( $access );
 		$this->assertEquals( false, $access );
+	}
+
+	public function test_product_id_setting_registered() {
+		$publication_id = 'ABCDEFGH';
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertTrue( $registered );
+	}
+
+	public function test_publication_id_empty_product_id_setting_not_registered() {
+		$publication_id = 'ABCDEFGH';
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => '',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertFalse( $registered );
+	}
+
+	public function test_feature_disabled_product_id_setting_not_registered() {
+		$publication_id = 'ABCDEFGH';
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => $publication_id,
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+
+		$this->assertFalse( $registered );
+	}
+
+	public function test_block_editor_script_enqueued() {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$this->assertContains(
+			'googlesitekit-reader-revenue-manager-block-editor-plugin',
+			$registerable_asset_handles
+		);
+	}
+
+	public function test_block_editor_script_not_enqueued() {
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$this->assertNotContains(
+			'googlesitekit-reader-revenue-manager-block-editor-plugin',
+			$registerable_asset_handles
+		);
 	}
 
 	/**

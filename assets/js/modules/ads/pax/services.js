@@ -101,6 +101,11 @@ export function createPaxServices( registry, options = {} ) {
 	const { select, resolveSelect } = registry;
 	const getToken = createMemoizedGetToken();
 
+	const getSupportedConversionEvents = async () => {
+		await resolveSelect( MODULES_ADS ).getModuleData();
+		return select( MODULES_ADS ).getSupportedConversionEvents() || [];
+	};
+
 	const services = {
 		authenticationService: {
 			// Ignore the ESLint rule that requires `await` in the function body.
@@ -151,10 +156,7 @@ export function createPaxServices( registry, options = {} ) {
 		},
 		conversionTrackingService: {
 			getSupportedConversionLabels: async () => {
-				await resolveSelect( MODULES_ADS ).getModuleData();
-				const conversionEvents =
-					select( MODULES_ADS ).getSupportedConversionEvents() || [];
-
+				const conversionEvents = await getSupportedConversionEvents();
 				return { conversionLabels: conversionEvents };
 			},
 			getPageViewConversionSetting: async () => {
@@ -163,14 +165,18 @@ export function createPaxServices( registry, options = {} ) {
 					websitePages,
 				};
 			},
-			// eslint-disable-next-line require-await
 			getSupportedConversionTrackingTypes: async () => {
+				const conversionEvents = await getSupportedConversionEvents();
+				const conversionTrackingTypesArray = [ 'TYPE_PAGE_VIEW' ];
+
+				if ( conversionEvents.length > 0 ) {
+					conversionTrackingTypesArray.push(
+						'TYPE_CONVERSION_EVENT'
+					);
+				}
+
 				return {
-					conversionTrackingTypes: [
-						// @TODO: Include TYPE_CONVERSION_EVENT in a future update.
-						// 'TYPE_CONVERSION_EVENT',
-						'TYPE_PAGE_VIEW',
-					],
+					conversionTrackingTypes: conversionTrackingTypesArray,
 				};
 			},
 		},

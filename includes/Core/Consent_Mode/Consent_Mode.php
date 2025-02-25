@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -56,15 +57,25 @@ class Consent_Mode {
 	 * Constructor.
 	 *
 	 * @since 1.122.0
+	 * @since 1.142.0 Introduced Modules instance as an argument.
 	 *
 	 * @param Context $context Plugin context.
+	 * @param Modules $modules Modules instance.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct(
+		Context $context,
+		Modules $modules,
+		Options $options = null
+	) {
 		$this->context               = $context;
 		$options                     = $options ?: new Options( $context );
 		$this->consent_mode_settings = new Consent_Mode_Settings( $options );
-		$this->rest_controller       = new REST_Consent_Mode_Controller( $this->consent_mode_settings );
+		$this->rest_controller       = new REST_Consent_Mode_Controller(
+			$modules,
+			$this->consent_mode_settings,
+			$options
+		);
 	}
 
 	/**

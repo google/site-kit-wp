@@ -23,71 +23,93 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import WarningSVG from '../../../../../svg/icons/warning.svg';
+import StarFill from '../../../../../svg/icons/star-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
-export default function SubtleNotification( {
-	className,
-	title,
-	description,
-	dismissCTA,
-	additionalCTA,
-	type = 'success',
-	icon,
-} ) {
-	return (
-		<Grid>
-			<Row>
-				<Cell
-					alignMiddle
-					size={ 12 }
-					className={ classnames(
-						'googlesitekit-subtle-notification',
-						className,
-						{
-							'googlesitekit-subtle-notification--success':
-								type === 'success',
-							'googlesitekit-subtle-notification--warning':
-								type === 'warning',
-						}
-					) }
-				>
-					<div className="googlesitekit-subtle-notification__icon">
-						{ icon }
-						{ type === 'success' && ! icon && (
-							<CheckFill width={ 24 } height={ 24 } />
+const SubtleNotification = forwardRef(
+	(
+		{
+			className,
+			title,
+			description,
+			dismissCTA,
+			additionalCTA,
+			reverseCTAs = false,
+			type = 'success',
+			icon,
+		},
+		ref
+	) => {
+		return (
+			<Grid ref={ ref }>
+				<Row>
+					<Cell
+						alignMiddle
+						size={ 12 }
+						className={ classnames(
+							'googlesitekit-subtle-notification',
+							className,
+							{
+								'googlesitekit-subtle-notification--success':
+									type === 'success',
+								'googlesitekit-subtle-notification--warning':
+									type === 'warning',
+								'googlesitekit-subtle-notification--new-feature':
+									type === 'new-feature',
+							}
 						) }
-						{ type === 'warning' && ! icon && (
-							<WarningSVG width={ 24 } height={ 24 } />
-						) }
-					</div>
+					>
+						<div className="googlesitekit-subtle-notification__icon">
+							{ icon }
+							{ type === 'success' && ! icon && (
+								<CheckFill width={ 24 } height={ 24 } />
+							) }
+							{ type === 'warning' && ! icon && (
+								<WarningSVG width={ 24 } height={ 24 } />
+							) }
+							{ type === 'new-feature' && ! icon && (
+								<StarFill width={ 24 } height={ 24 } />
+							) }
+						</div>
 
-					<div className="googlesitekit-subtle-notification__content">
-						<p>{ title }</p>
-						<p className="googlesitekit-subtle-notification__secondary_description">
-							{ description }
-						</p>
-					</div>
-					<div className="googlesitekit-subtle-notification__action">
-						{ dismissCTA }
+						<div className="googlesitekit-subtle-notification__content">
+							<p>{ title }</p>
+							<p className="googlesitekit-subtle-notification__secondary_description">
+								{ description }
+							</p>
+						</div>
+						<div className="googlesitekit-subtle-notification__action">
+							{ ! reverseCTAs && dismissCTA }
+							{ reverseCTAs && additionalCTA }
 
-						{ additionalCTA }
-					</div>
-				</Cell>
-			</Row>
-		</Grid>
-	);
-}
+							{ ! reverseCTAs && additionalCTA }
+							{ reverseCTAs && dismissCTA }
+						</div>
+					</Cell>
+				</Row>
+			</Grid>
+		);
+	}
+);
 
 SubtleNotification.propTypes = {
 	className: PropTypes.string,
-	title: PropTypes.string.isRequired,
+	title: PropTypes.node,
 	description: PropTypes.node,
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
-	type: PropTypes.string,
+	reverseCTAs: PropTypes.bool,
+	type: PropTypes.oneOf( [ 'success', 'warning', 'new-feature' ] ),
 	icon: PropTypes.object,
 };
+
+export default SubtleNotification;

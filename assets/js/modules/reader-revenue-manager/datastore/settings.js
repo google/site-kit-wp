@@ -24,15 +24,18 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { isFeatureEnabled } from '../../../features';
 import {
 	isValidPublicationID,
 	isValidOnboardingState,
+	isValidSnippetMode,
 } from '../utils/validation';
 
 // Invariant error messages.
@@ -41,6 +44,20 @@ export const INVARIANT_INVALID_PUBLICATION_ID =
 
 export const INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE =
 	'a valid publication onboarding state is required';
+
+export const INVARIANT_INVALID_SNIPPET_MODE =
+	'a valid snippet mode is required';
+
+export const INVARIANT_INVALID_POST_TYPES =
+	'a valid post types array is required';
+
+export const INVARIANT_INVALID_PRODUCT_ID = 'a valid product ID is required';
+
+export const INVARIANT_INVALID_PRODUCT_IDS =
+	'a valid product IDs array is required';
+
+export const INVARIANT_INVALID_PAYMENT_OPTION =
+	'a valid payment option is required';
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
@@ -52,6 +69,11 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPublicationID,
 		getPublicationOnboardingState,
+		getSnippetMode,
+		getPostTypes,
+		getProductID,
+		getProductIDs,
+		getPaymentOption,
 	} = strictSelect( MODULES_READER_REVENUE_MANAGER );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
@@ -59,6 +81,7 @@ export function validateCanSubmitChanges( select ) {
 
 	const publicationID = getPublicationID();
 	const onboardingState = getPublicationOnboardingState();
+
 	invariant(
 		isValidPublicationID( publicationID ),
 		INVARIANT_INVALID_PUBLICATION_ID
@@ -68,4 +91,71 @@ export function validateCanSubmitChanges( select ) {
 		isValidOnboardingState( onboardingState ),
 		INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE
 	);
+
+	if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+		const snippetMode = getSnippetMode();
+		const postTypes = getPostTypes();
+		const productID = getProductID();
+		const productIDs = getProductIDs();
+		const paymentOption = getPaymentOption();
+
+		invariant(
+			isValidSnippetMode( snippetMode ),
+			INVARIANT_INVALID_SNIPPET_MODE
+		);
+
+		invariant(
+			snippetMode !== 'post_types' ||
+				( Array.isArray( postTypes ) &&
+					postTypes.every( ( item ) => typeof item === 'string' ) &&
+					postTypes.length > 0 ),
+			INVARIANT_INVALID_POST_TYPES
+		);
+
+		invariant(
+			typeof productID === 'string',
+			INVARIANT_INVALID_PRODUCT_ID
+		);
+
+		invariant(
+			Array.isArray( productIDs ) &&
+				productIDs.every( ( item ) => typeof item === 'string' ),
+			INVARIANT_INVALID_PRODUCT_IDS
+		);
+
+		invariant(
+			typeof paymentOption === 'string',
+			INVARIANT_INVALID_PAYMENT_OPTION
+		);
+	}
+}
+
+export async function submitChanges( { dispatch, select } ) {
+	const { getSnippetMode, hasSettingChanged, haveSettingsChanged } = select(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
+	if ( haveSettingsChanged() ) {
+		if (
+			isFeatureEnabled( 'rrmModuleV2' ) &&
+			hasSettingChanged( 'postTypes' ) &&
+			'post_types' !== getSnippetMode()
+		) {
+			await dispatch( MODULES_READER_REVENUE_MANAGER ).rollbackSetting(
+				'postTypes'
+			);
+		}
+
+		const { error } = await dispatch(
+			MODULES_READER_REVENUE_MANAGER
+		).saveSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
+	await API.invalidateCache( 'modules', 'reader-revenue-manager' );
+
+	return {};
 }

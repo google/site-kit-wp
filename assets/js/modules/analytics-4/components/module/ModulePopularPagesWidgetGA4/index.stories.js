@@ -87,7 +87,7 @@ const reportOptions = [
 		// Gathering/zero data report.
 		dimensions: [ 'date' ],
 		metrics: [ { name: 'totalUsers' } ],
-		startDate: '2020-12-09',
+		startDate: '2020-11-11',
 		endDate: '2021-01-05',
 	},
 ];

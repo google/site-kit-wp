@@ -28,6 +28,7 @@ import Footer from '../MetricsSelectionPanel/Footer';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -43,11 +44,14 @@ import {
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+} from '../../../modules/analytics-4/datastore/constants';
 import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
 
 function Template() {
@@ -109,6 +113,9 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+	},
 	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
@@ -127,16 +134,43 @@ WithError.args = {
 		];
 
 		provideKeyMetrics( registry, { widgetSlugs: savedKeyMetrics } );
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
 		registry.dispatch( CORE_FORMS ).setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedKeyMetrics,
 			[ EFFECTIVE_SELECTION ]: selectedMetrics,
 		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveConversionReportingInlineData( {
+				newEvents: [],
+				lostEvents: [],
+				newBadgeEvents: [],
+			} );
 	},
 	features: [ 'conversionReporting' ],
 };
 WithError.scenario = {
 	label: 'Components/KeyMetrics/ChipTabGroup/WithError',
+};
+
+export const WithSuggestedGroup = Template.bind( {} );
+WithSuggestedGroup.storyName = 'With Suggested Group';
+WithSuggestedGroup.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+		provideKeyMetricsUserInputSettings( registry, {
+			purpose: {
+				values: [ 'sell_products' ],
+				scope: 'site',
+			},
+		} );
+	},
+	features: [ 'conversionReporting' ],
+};
+WithSuggestedGroup.scenario = {
+	label: 'Components/KeyMetrics/ChipTabGroup/WithSuggestedGroup',
 };
 
 export default {
@@ -174,7 +208,7 @@ export default {
 					KM_ANALYTICS_VISITS_PER_VISITOR,
 					KM_ANALYTICS_VISIT_LENGTH,
 					KM_ANALYTICS_NEW_VISITORS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 				];
 
 				provideKeyMetrics( registry, { widgetSlugs: savedKeyMetrics } );
@@ -188,7 +222,18 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'contact', 'purchase' ] );
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveConversionReportingInlineData( {
+						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						lostEvents: [],
+						newBadgeEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					} );
 
 				// Call story-specific setup.
 				if ( args && args?.setupRegistry ) {

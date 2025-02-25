@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
@@ -39,20 +40,21 @@ describe( 'ConnectGA4CTATileWidget', () => {
 	)( ConnectGA4CTATileWidget );
 
 	it( 'should render the Connect GA4 CTA tile', () => {
-		const { container, getByText } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) => {
-				provideUserAuthentication( registry );
-				provideUserCapabilities( registry );
-				provideModules( registry );
+		const registry = createTestRegistry();
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry );
 
-				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-					widgetSlugs: [
-						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-						KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					],
-					isWidgetHidden: false,
-				} );
-			},
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [
+				KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			],
+			isWidgetHidden: false,
+		} );
+
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
 		} );
 
 		expect( container ).toMatchSnapshot();

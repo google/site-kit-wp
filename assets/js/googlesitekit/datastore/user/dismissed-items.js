@@ -98,6 +98,7 @@ const fetchDismissItemStore = createFetchStore( {
 
 const baseInitialState = {
 	dismissedItems: undefined,
+	isDismissingItems: {},
 };
 
 const baseActions = {
@@ -114,7 +115,8 @@ const baseActions = {
 	dismissItem: createValidatedAction(
 		( slug, options = {} ) => {
 			const { expiresInSeconds = 0 } = options;
-			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+			invariant( slug, 'A slug is required to dismiss an item.' );
+			invariant( typeof slug === 'string', 'A slug must be a string.' );
 			invariant(
 				Number.isInteger( expiresInSeconds ),
 				'expiresInSeconds must be an integer.'
@@ -122,10 +124,20 @@ const baseActions = {
 		},
 		function* ( slug, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
-			return yield fetchDismissItemStore.actions.fetchDismissItem(
-				slug,
-				expiresInSeconds
-			);
+
+			const registry = yield commonActions.getRegistry();
+
+			registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
+
+			const { response, error } =
+				yield fetchDismissItemStore.actions.fetchDismissItem(
+					slug,
+					expiresInSeconds
+				);
+
+			registry.dispatch( CORE_USER ).setIsItemDimissing( slug, false );
+
+			return { response, error };
 		}
 	),
 
@@ -154,6 +166,28 @@ const baseActions = {
 			);
 		}
 	),
+	setIsItemDimissing( slug, isDismissing ) {
+		return {
+			payload: { slug, isDismissing },
+			type: 'SET_IS_ITEM_DISMISSING',
+		};
+	},
+};
+
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case 'SET_IS_ITEM_DISMISSING':
+			const { slug, isDismissing } = payload;
+			return {
+				...state,
+				isDismissingItems: {
+					[ slug ]: isDismissing,
+				},
+			};
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -201,9 +235,9 @@ const baseSelectors = {
 	 * @param {string} slug  Item slug.
 	 * @return {(boolean|undefined)} True if the item is being dismissed, otherwise false.
 	 */
-	isDismissingItem: createRegistrySelector( ( select ) => ( state, slug ) => {
-		return select( CORE_USER ).isFetchingDismissItem( slug );
-	} ),
+	isDismissingItem( state, slug ) {
+		return !! state.isDismissingItems[ slug ];
+	},
 };
 
 export const {
@@ -218,6 +252,7 @@ export const {
 		initialState: baseInitialState,
 		actions: baseActions,
 		resolvers: baseResolvers,
+		reducer: baseReducer,
 		selectors: baseSelectors,
 	},
 	fetchDismissItemStore,

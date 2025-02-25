@@ -260,6 +260,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,
+		isMultisite: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -451,6 +452,10 @@ export const provideKeyMetricsUserInputSettings = (
 			values: [ 'publish_news' ],
 			scope: 'site',
 		},
+		includeConversionEvents: {
+			values: [],
+			scope: 'site',
+		},
 	};
 	registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 		...defaults,
@@ -462,15 +467,17 @@ export const provideKeyMetricsUserInputSettings = (
  * Provides notifications data to the given registry.
  *
  * @since 1.140.0
+ * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
  *
- * @param {Object}  registry    The registry to set up.
- * @param {Object}  [extraData] Extra data to merge with the default settings.
- * @param {boolean} overwrite   Merges extra data with default notifications when false, else overwrites default notifications.
+ * @param {Object}  registry            The registry to set up.
+ * @param {Object}  [extraData]         Extra data to merge with the default settings.
+ * @param {Object}  [options]           Options object.
+ * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
  */
 export const provideNotifications = (
 	registry,
 	extraData,
-	overwrite = false
+	{ overwrite = false } = {}
 ) => {
 	const notificationsAPI = coreNotifications.createNotifications( registry );
 
@@ -514,13 +521,16 @@ export const muteFetch = ( matcher, response = {} ) => {
  * Useful for simulating a loading state.
  *
  * @since 1.12.0
+ * @since 1.145.0 Added `repeat` option.
  * @private
  *
- * @param {(string|RegExp|Function|URL|Object)} matcher Criteria for deciding which requests to mock.
- *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {(string|RegExp|Function|URL|Object)} matcher          Criteria for deciding which requests to mock.
+ *                                                               (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {Object}                              [options]        Optional. Additional options for the mock.
+ * @param {number}                              [options.repeat] Optional. Number of times to mock the request. Defaults to 1.
  */
-export const freezeFetch = ( matcher ) => {
-	fetchMock.once( matcher, new Promise( () => {} ) );
+export const freezeFetch = ( matcher, { repeat = 1 } = {} ) => {
+	fetchMock.mock( matcher, new Promise( () => {} ), { repeat } );
 };
 
 /**
@@ -633,7 +643,7 @@ export const waitForTimeouts = ( timeout ) => {
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
- * @since n.e.x.t Reimplemented using debounced timer for reliability. Not compatible with fake timers.
+ * @since 1.141.0 Reimplemented using debounced timer for reliability. Not compatible with fake timers.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.

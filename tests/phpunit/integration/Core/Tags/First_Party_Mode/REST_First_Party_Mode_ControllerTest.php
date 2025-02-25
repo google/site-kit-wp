@@ -12,10 +12,11 @@ namespace Google\Site_Kit\Tests\Core\Tags\First_Party_Mode;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\REST_First_Party_Mode_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\REST_First_Party_Mode_Controller;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -56,8 +57,9 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options       = new Options( $this->context );
 
+		$first_party_mode = new First_Party_Mode( $this->context );
 		$this->settings   = new First_Party_Mode_Settings( $options );
-		$this->controller = new REST_First_Party_Mode_Controller( $this->settings );
+		$this->controller = new REST_First_Party_Mode_Controller( $first_party_mode, $this->settings );
 	}
 
 	public function tear_down() {
@@ -84,7 +86,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->grant_manage_options_permission();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -104,7 +106,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -128,7 +130,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->grant_manage_options_permission();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -163,7 +165,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$original_settings = array(
-			'isEnabled'             => null,
+			'isEnabled'             => false,
 			'isFPMHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
@@ -235,8 +237,8 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		// Here we mock the `is_endpoint_healthy()` method of the controller. This is necessary because, although we could
 		// mock `file_get_contents()`, it's not possible to mock the `$http_response_header` variable used within the scope
 		// of the `is_endpoint_healthy()` method. The rest of the controller's behaviour remains unmocked.
-		$mock_controller = $this->getMockBuilder( REST_First_Party_Mode_Controller::class )
-			->setConstructorArgs( array( $this->settings ) )
+		$mock_controller = $this->getMockBuilder( First_Party_Mode::class )
+			->setConstructorArgs( array( $this->context ) )
 			->onlyMethods( array( 'is_endpoint_healthy' ) )
 			->getMock();
 
@@ -280,7 +282,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'isEnabled'             => null,
+				'isEnabled'             => false,
 				'isFPMHealthy'          => $expected_settings['isFPMHealthy'],
 				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
 			),

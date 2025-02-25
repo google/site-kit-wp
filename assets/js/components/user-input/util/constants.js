@@ -21,6 +21,11 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { ENUM_CONVERSION_EVENTS } from '../../../modules/analytics-4/datastore/constants';
+
 export const USER_INPUT_QUESTIONS_PURPOSE = 'purpose';
 export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';
 export const USER_INPUT_QUESTIONS_GOALS = 'goals';
@@ -45,6 +50,38 @@ export const FORM_USER_INPUT_QUESTION_SNAPSHOT = 'user_input_question_snapshot';
 export const USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY =
 	'user-input-legacy-site-purpose-dismissed-item';
 
+export const USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING = {
+	publish_blog: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
+	publish_news: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
+	monetize_content: [],
+	sell_products_or_service: [
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	],
+	sell_products: [
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	],
+	provide_services: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
+	share_portfolio: [
+		ENUM_CONVERSION_EVENTS.CONTACT,
+		ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+	],
+};
+
 /**
  * Gets available questions for user input settings.
  *
@@ -54,36 +91,32 @@ export const USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY =
  * @return {Object} Questions object.
  */
 export function getUserInputQuestions() {
+	const description = __(
+		'Based on your answer, Site Kit will suggest the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
+		'google-site-kit'
+	);
+
 	return [
 		{
 			title: __(
 				'What is the main purpose of this site?',
 				'google-site-kit'
 			),
-			description: __(
-				'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track progress towards your specific goals',
-				'google-site-kit'
-			),
+			description,
 		},
 		{
 			title: __(
 				'How often do you create new content for this site?',
 				'google-site-kit'
 			),
-			description: __(
-				'Based on your answer, Site Kit will suggest new features for your dashboard related to content creation',
-				'google-site-kit'
-			),
+			description,
 		},
 		{
 			title: __(
-				'What are your top goals for this site?',
+				'What are your top 3 goals for this site?',
 				'google-site-kit'
 			),
-			description: __(
-				'Based on your answers, Site Kit will tailor the metrics and recommendations you see on your dashboard to help you make progress in these areas',
-				'google-site-kit'
-			),
+			description,
 		},
 	];
 }
@@ -105,14 +138,11 @@ export function getUserInputAnswers() {
 			),
 			sell_products: __( 'Sell products', 'google-site-kit' ),
 			provide_services: __( 'Provide services', 'google-site-kit' ),
-			monetize_content: __(
-				'Monetize content (with ads or affiliate links)',
-				'google-site-kit'
-			),
+			monetize_content: __( 'Monetize content', 'google-site-kit' ),
 			publish_blog: __( 'Publish a blog', 'google-site-kit' ),
 			publish_news: __( 'Publish news content', 'google-site-kit' ),
 			share_portfolio: __(
-				'Share a business card or portfolio to represent me or my company online',
+				'Portfolio or business card',
 				'google-site-kit'
 			),
 			other: __( 'Other', 'google-site-kit' ),
@@ -146,6 +176,7 @@ export function getUserInputAnswers() {
 				'Generate more revenue',
 				'google-site-kit'
 			),
+			generating_leads: __( 'Generate leads', 'google-site-kit' ),
 			help_better_rank: __(
 				'Help my content rank in a better position in Google search results',
 				'google-site-kit'
@@ -155,7 +186,7 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 			encourage_to_post: __(
-				'Tips for generating and posting engaging content updates',
+				'Encouragement to post more frequently',
 				'google-site-kit'
 			),
 			other: __( 'Other', 'google-site-kit' ),

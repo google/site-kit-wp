@@ -38,21 +38,6 @@ class AdsTest extends TestCase {
 	private $ads;
 
 	/**
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
-	 * @var Options
-	 */
-	protected $options;
-
-	/**
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
 	 * Plugin context.
 	 *
 	 * @var Context
@@ -135,9 +120,22 @@ class AdsTest extends TestCase {
 	}
 
 
-	public function test_inline_modules_data__module_not_connected() {
+	public function test_inline_modules_data__module_not_connected__with_pax() {
 		self::enable_feature( 'adsPax' );
 
+		$this->ads->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayIntersection(
+			array(
+				'supportedConversionEvents' => array(),
+			),
+			$inline_modules_data['ads']
+		);
+	}
+
+	public function test_inline_modules_data__module_not_connected__without_pax() {
 		$this->ads->register();
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
@@ -159,7 +157,7 @@ class AdsTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals(
+		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
@@ -244,7 +242,7 @@ class AdsTest extends TestCase {
 	 */
 	public function test_template_redirect( $settings ) {
 		remove_all_actions( 'wp_enqueue_scripts' );
-		( new GTag() )->register();
+		( new GTag( new Options( $this->context ) ) )->register();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -291,7 +289,7 @@ class AdsTest extends TestCase {
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_actions( 'wp_enqueue_scripts' );
-		( new GTag() )->register();
+		( new GTag( new Options( $this->context ) ) )->register();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();

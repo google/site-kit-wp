@@ -58,7 +58,7 @@
 				top: 0;
 			}
 
-			@media (min-width: $bp-wpdb3) {
+			@media (min-width: $bp-xxxlarge) {
 				max-width: 30%;
 			}
 		}
@@ -171,6 +171,10 @@
 				place-content: center;
 				text-align: center;
 				width: auto;
+			}
+
+			@media (min-width: $bp-nonMobile) {
+				gap: $cta-gap-tablet;
 			}
 
 			@media (min-width: $bp-nonMobile) {

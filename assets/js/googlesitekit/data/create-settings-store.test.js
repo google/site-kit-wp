@@ -50,7 +50,7 @@ describe( 'createSettingsStore store', () => {
 		registry = createRegistry();
 
 		storeDefinition = createSettingsStore( ...STORE_ARGS, {
-			settingSlugs: [ 'isSkyBlue' ],
+			settingSlugs: [ 'isSkyBlue', 'isGroundGreen' ],
 			registry,
 		} );
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
@@ -289,6 +289,37 @@ describe( 'createSettingsStore store', () => {
 				dispatch.rollbackSettings();
 
 				expect( select.getIsSkyBlue() ).toBe( 'yes' );
+			} );
+		} );
+
+		describe( 'rollbackSetting', () => {
+			it( 'requires the setting param', () => {
+				expect( () => {
+					dispatch.rollbackSetting();
+				} ).toThrow( 'setting is required.' );
+			} );
+
+			it( 'returns a specific setting back to its saved value', () => {
+				const savedSettings = {
+					isSkyBlue: 'yes',
+					isGroundGreen: 'yes',
+				};
+
+				dispatch.receiveSaveSettings( savedSettings, { values: {} } );
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
+				expect( select.getIsGroundGreen() ).toBe( 'yes' );
+
+				dispatch.setIsSkyBlue( 'no' );
+				dispatch.setIsGroundGreen( 'maybe' );
+
+				expect( select.getIsSkyBlue() ).toBe( 'no' );
+				expect( select.getIsGroundGreen() ).toBe( 'maybe' );
+
+				dispatch.rollbackSetting( 'isGroundGreen' );
+
+				expect( select.getIsSkyBlue() ).toBe( 'no' );
+				expect( select.getIsGroundGreen() ).toBe( 'yes' );
 			} );
 		} );
 	} );

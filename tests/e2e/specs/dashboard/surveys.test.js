@@ -42,10 +42,7 @@ describe( 'dashboard surveys', () => {
 					status: 200,
 					body: JSON.stringify( { survey: surveyResponse } ),
 				} );
-			} else if (
-				url.match( 'user/data/survey-event' ) ||
-				url.match( 'user/data/survey-timeout' )
-			) {
+			} else if ( url.match( 'user/data/survey-event' ) ) {
 				request.respond( { status: 200 } );
 			} else if (
 				url.match( 'search-console/data/searchanalytics' ) ||

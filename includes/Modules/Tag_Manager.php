@@ -445,11 +445,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Gets the configured TagManager service instance.
 	 *
 	 * @since 1.2.0
+	 * @since 1.142.0 Made method public.
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.
 	 */
-	private function get_tagmanager_service() {
+	public function get_tagmanager_service() {
 		return $this->get_service( 'tagmanager' );
 	}
 
@@ -465,7 +466,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
-			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
 		);
 	}

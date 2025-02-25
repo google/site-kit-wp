@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Core\Storage\Transients;
-use Google\Site_Kit\Context;
 
 /**
  * Class providing report implementation for available events for conversion reporting.
@@ -57,6 +56,13 @@ class Conversion_Reporting_Events_Sync {
 	private $analytics;
 
 	/**
+	 * Conversion_Reporting_New_Badge_Events_Sync instance.
+	 *
+	 * @var Conversion_Reporting_New_Badge_Events_Sync
+	 */
+	private $new_badge_events_sync;
+
+	/**
 	 * Transients instance.
 	 *
 	 * @since 1.139.0
@@ -69,19 +75,23 @@ class Conversion_Reporting_Events_Sync {
 	 *
 	 * @since 1.135.0
 	 * @since 1.139.0 Added $context param to constructor.
+	 * @since 1.144.0 Added $transients and $new_badge_events_sync params to constructor, and removed $context.
 	 *
-	 * @param Context     $context   Plugin context.
-	 * @param Settings    $settings  Settings module settings instance.
-	 * @param Analytics_4 $analytics Analytics 4 module instance.
+	 * @param Settings                                   $settings              Settings module settings instance.
+	 * @param Transients                                 $transients            Transients instance.
+	 * @param Analytics_4                                $analytics             Analytics 4 module instance.
+	 * @param Conversion_Reporting_New_Badge_Events_Sync $new_badge_events_sync Conversion_Reporting_New_Badge_Events_Sync instance.
 	 */
 	public function __construct(
-		Context $context,
 		Settings $settings,
-		Analytics_4 $analytics
+		Transients $transients,
+		Analytics_4 $analytics,
+		Conversion_Reporting_New_Badge_Events_Sync $new_badge_events_sync
 	) {
-		$this->settings   = $settings;
-		$this->analytics  = $analytics;
-		$this->transients = new Transients( $context );
+		$this->settings              = $settings;
+		$this->transients            = $transients;
+		$this->analytics             = $analytics;
+		$this->new_badge_events_sync = $new_badge_events_sync;
 	}
 
 	/**
@@ -117,23 +127,44 @@ class Conversion_Reporting_Events_Sync {
 		foreach ( $report->rows as $row ) {
 			$detected_events[] = $row['dimensionValues'][0]['value'];
 		}
+		$settings_partial = array( 'detectedEvents' => $detected_events );
 
+		$this->maybe_update_new_and_lost_events(
+			$detected_events,
+			$saved_detected_events,
+			$settings_partial
+		);
+
+		$this->settings->merge( $settings_partial );
+	}
+
+	/**
+	 * Saves new and lost events transients.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @param array $detected_events       Currently detected events array.
+	 * @param array $saved_detected_events Previously saved detected events array.
+	 * @param array $settings_partial      Analaytics settings partial.
+	 */
+	protected function maybe_update_new_and_lost_events( $detected_events, $saved_detected_events, &$settings_partial ) {
 		$new_events  = array_diff( $detected_events, $saved_detected_events );
 		$lost_events = array_diff( $saved_detected_events, $detected_events );
 
 		if ( ! empty( $new_events ) ) {
 			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
+			$this->new_badge_events_sync->sync_new_badge_events( $new_events );
+			$settings_partial['newConversionEventsLastUpdateAt'] = time();
 		}
 
 		if ( ! empty( $lost_events ) ) {
 			$this->transients->set( self::LOST_EVENTS_TRANSIENT, array_values( $lost_events ) );
+			$settings_partial['lostConversionEventsLastUpdateAt'] = time();
 		}
 
 		if ( empty( $saved_detected_events ) ) {
 			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, $detected_events );
 		}
-
-		$this->settings->merge( array( 'detectedEvents' => $detected_events ) );
 	}
 
 	/**

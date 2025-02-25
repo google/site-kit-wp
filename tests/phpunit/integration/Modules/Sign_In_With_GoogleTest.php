@@ -11,9 +11,9 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -64,32 +64,34 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 10, $this->module->order );
 	}
 
-	public function test_render_signin_button() {
+	public function test_render_signinwithgoogle() {
 		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
+		remove_action( 'wp_footer', 'the_block_template_skip_link' );
 
 		$this->module->register();
 		$this->module->get_settings()->register();
 
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->capture_action( 'login_form' );
-		$this->assertEmpty( $output );
+		$output = $this->capture_action( 'wp_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Update site URL to https.
-		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
 		update_option( 'siteurl', 'https://example.com/' );
 		update_option( 'home', 'https://example.com/' );
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->capture_action( 'login_form' );
-		$this->assertEmpty( $output );
+		$output = $this->capture_action( 'wp_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$output = $this->capture_action( 'login_form' );
-		$this->assertEmpty( $output );
+		$output = $this->capture_action( 'wp_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
 		$this->module->get_settings()->set(
@@ -102,22 +104,74 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 
 		// Render the button.
-		$output = $this->capture_action( 'login_form' );
+		$output = $this->capture_action( 'wp_footer' );
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 
-		$this->assertStringContainsString( "client_id: '1234567890.googleusercontent.com'", $output );
-		$this->assertStringContainsString( "fetch( 'https://example.com/wp-login.php?action=googlesitekit_auth'", $output );
+		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output );
+		$this->assertStringContainsString( "fetch('https://example.com/wp-login.php?action=googlesitekit_auth'", $output );
 
 		$this->assertStringContainsString( sprintf( '"text":"%s"', Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
 		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
 
+		// The Sign in with Google JS should always render, even on the front
+		// page.
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
+		$output                 = $this->capture_action( 'wp_footer' );
+
+		// The button shouldn't be rendered on a non-login page.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
+		// Enable the Sign in with Google One Tap on all pages.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'         => '1234567890.googleusercontent.com',
+				'text'             => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'            => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled'    => true,
+				'oneTapOnAllPages' => true,
+			)
+		);
+
+		// Now the button should be rendered on a non-login page.
+		$output = $this->capture_action( 'wp_footer' );
+
+		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
 		// Revert home and siteurl and https value.
 		update_option( 'home', $reset_site_url );
 		update_option( 'siteurl', $reset_site_url );
 		unset( $_SERVER['HTTPS'] );
+		unset( $_SERVER['SCRIPT_NAME'] );
+		add_action( 'wp_footer', 'the_block_template_skip_link' );
+	}
+
+	public function test_render_signinwithgoogle__woocommerce_active() {
+		// Re-instantiate the class so its "is_woocommerce_active" property is recalculated
+		// using the updated, filtered active_plugins. Otherwise, it would use the old cached value.
+		$this->module = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+			)
+		);
+
+		// Render the button in the WooCommerce form.
+		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
+
+		// Check the render button contains the expected class name.
+		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output );
 	}
 
 	public function test_handle_disconnect_user__bad_nonce() {
@@ -270,5 +324,17 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$mock->method( 'authenticate_user' )->willReturn( $redirect_to );
 
 		return $mock;
+	}
+
+	public function test_on_deactivation__persists_client_id() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$test_settings = array( 'clientID' => 'test_client_id.apps.googleusercontent.com' );
+		$this->module->get_settings()->merge( $test_settings );
+
+		$this->assertOptionNotExists( Existing_Client_ID::OPTION );
+		$this->module->on_deactivation();
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ) );
 	}
 }

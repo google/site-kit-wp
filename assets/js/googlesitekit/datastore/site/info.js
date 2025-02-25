@@ -170,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
+				siteLocale,
 				timezone,
 				usingProxy,
 				webStoriesActive,
@@ -186,6 +187,8 @@ export const reducer = ( state, { payload, type } ) => {
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				isMultisite,
+				plugins,
 			} = payload.siteInfo;
 
 			return {
@@ -205,6 +208,7 @@ export const reducer = ( state, { payload, type } ) => {
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
+					siteLocale,
 					timezone,
 					usingProxy,
 					webStoriesActive,
@@ -221,6 +225,8 @@ export const reducer = ( state, { payload, type } ) => {
 					keyMetricsSetupNew,
 					consentModeRegions,
 					anyoneCanRegister,
+					isMultisite,
+					plugins,
 				},
 			};
 		}
@@ -295,6 +301,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			usingProxy,
 			webStoriesActive,
@@ -311,6 +318,8 @@ export const resolvers = {
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			isMultisite,
+			plugins,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -335,6 +344,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			postTypes,
 			usingProxy: !! usingProxy,
@@ -351,6 +361,8 @@ export const resolvers = {
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			isMultisite,
+			plugins,
 		} );
 	},
 };
@@ -594,6 +606,30 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Retrieves an admin settings URL, pointing to either network or single-site settings
+	 * depending on whether the site is multisite.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @return {string|undefined} The admin settings URL, or undefined if required data is unavailable.
+	 */
+	getAdminSettingsURL: createRegistrySelector( ( select ) => () => {
+		const adminURL = select( CORE_SITE ).getAdminURL();
+		const isMultisite = select( CORE_SITE ).isMultisite();
+
+		if ( adminURL === undefined || isMultisite === undefined ) {
+			return undefined;
+		}
+
+		return new URL(
+			isMultisite === true
+				? 'network/settings.php'
+				: 'options-general.php',
+			adminURL
+		).href;
+	} ),
+
+	/**
 	 * Gets a site's timezone.
 	 *
 	 * @since 1.9.0
@@ -622,6 +658,18 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets a site's locale.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return {(string|undefined)} The site locale.
+	 */
+	getSiteLocale: createRegistrySelector(
+		( select ) => () =>
+			select( CORE_SITE ).getSiteInfo()?.siteLocale?.replace( '_', '-' )
+	),
 
 	/**
 	 * Gets a setup error code, if one exists.
@@ -899,12 +947,32 @@ export const selectors = {
 	/**
 	 * Checks if user registrations are open on this WordPress site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if registrations are open; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	getAnyoneCanRegister: getSiteInfoProperty( 'anyoneCanRegister' ),
+
+	/**
+	 * Checks if WordPress site is running in the multisite mode.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	isMultisite: getSiteInfoProperty( 'isMultisite' ),
+
+	/**
+	 * Gets plugins data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array|undefined} Plugins data array.
+	 */
+	getPluginsData: getSiteInfoProperty( 'plugins' ),
 };
 
 export default {

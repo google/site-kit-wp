@@ -23,7 +23,6 @@ import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	mockSurveyEndpoints,
-	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
 import {
@@ -35,7 +34,6 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
-	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -337,12 +335,46 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			);
 
 			await waitFor( () =>
-				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-					body: {
-						data: { triggerID: 'view_abr_setup_cta' },
-					},
-				} )
+				expect( fetchMock ).toHaveFetched(
+					surveyTriggerEndpoint,
+					expect.objectContaining( {
+						body: {
+							data: { triggerID: 'view_abr_setup_cta' },
+						},
+					} )
+				)
 			);
+		} );
+
+		it( 'should not render when it is being dismissed', () => {
+			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+				...validSettings,
+				setupCompletedTimestamp: timestampThreeWeeksPrior,
+			} );
+
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.receiveGetExistingAdBlockingRecoveryTag( null );
+
+			registry
+				.dispatch( CORE_USER )
+				.setIsPromptDimissing(
+					AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+					true
+				);
+
+			const { container } = render(
+				<AdBlockingRecoverySetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			expect( container ).toBeEmptyDOMElement();
 		} );
 	} );
 
@@ -550,10 +582,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		} );
 
 		it( 'should fire track event when "learn more" is clicked', async () => {
-			fetchMock.getOnce( surveyTimeoutsEndpoint, {
-				status: 200,
-				body: {},
-			} );
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 			const { getByRole, waitForRegistry } = render(
 				<div>
@@ -585,19 +614,10 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'mainDashboard_adsense-abr-cta-widget',
 				'click_learn_more_link'
 			);
-
-			// This improves stability, as sometimes the test would fail
-			// due to the `survey-timeouts` call losing the `fetchMock`
-			// context.
-			await waitForDefaultTimeouts();
 		} );
 
 		it( 'should show the `Don’t show again` CTA when the dismissCount is 2', async () => {
-			fetchMock.getOnce( surveyTimeoutsEndpoint, {
-				status: 200,
-				body: {},
-			} );
-
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 				[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
 					expires: 1000,

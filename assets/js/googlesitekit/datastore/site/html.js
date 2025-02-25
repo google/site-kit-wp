@@ -89,7 +89,6 @@ const fetchHTMLForURLStore = createFetchStore( {
 
 // Actions
 const RESET_HTML_FOR_URL = 'RESET_HTML_FOR_URL';
-const WAIT_FOR_HTML_FOR_URL = 'WAIT_FOR_HTML_FOR_URL';
 const CHECK_FOR_SETUP_TAG = 'CHECK_FOR_SETUP_TAG';
 
 // Errors
@@ -129,30 +128,9 @@ const baseActions = {
 			type: CHECK_FOR_SETUP_TAG,
 		};
 	},
-
-	/**
-	 * Waits for HTML for to be resolved for the given URL.
-	 *
-	 * @since 1.13.0
-	 * @private
-	 *
-	 * @param {string} url URL for which to fetch HTML.
-	 * @yield {Object} Redux-style action.
-	 */
-	*waitForHTMLForURL( url ) {
-		yield {
-			payload: { url },
-			type: WAIT_FOR_HTML_FOR_URL,
-		};
-	},
 };
 
 const baseControls = {
-	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl(
-		( registry ) =>
-			( { payload: { url } } ) =>
-				registry.resolveSelect( CORE_SITE ).getHTMLForURL( url )
-	),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl(
 		( registry ) => async () => {
 			let error;

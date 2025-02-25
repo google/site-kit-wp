@@ -480,6 +480,32 @@ describe( 'modules/tagmanager settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'areSettingsEditDependenciesLoaded', () => {
+			it( 'should return false if getAccounts selector has not resolved', () => {
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.startResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( false );
+			} );
+
+			it( 'should return true if getAccounts selector has resolved', () => {
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.finishResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'returns true while submitting changes', async () => {
 				registry
