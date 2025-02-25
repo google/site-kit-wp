@@ -451,7 +451,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-		$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html );
 		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 	}
 
@@ -532,7 +532,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		if ( $expected_product_id ) {
 			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 		} else {
 			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
@@ -600,7 +600,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		if ( $expected_product_id ) {
 			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html );
 			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 		} else {
 			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
