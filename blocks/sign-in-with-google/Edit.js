@@ -36,7 +36,10 @@ export default function Edit() {
 
 	return (
 		<div { ...blockProps }>
-			<div className="googlesitekit-blocks-sign-in-with-google">
+			<div
+				className="googlesitekit-blocks-sign-in-with-google"
+				style={ { maxWidth: '180px', minWidth: '120px' } }
+			>
 				<SignInWithGoogleIcon />
 			</div>
 		</div>

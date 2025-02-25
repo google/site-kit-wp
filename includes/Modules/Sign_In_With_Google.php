@@ -303,23 +303,26 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 					),
 				)
 			),
-			new Script(
+		);
+
+		if ( Sign_In_With_Google_Block::can_register() ) {
+			$assets[] = new Script(
 				'blocks-sign-in-with-google',
 				array(
 					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/index.js' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
-			),
-			new Stylesheet(
+			);
+			$assets[] = new Stylesheet(
 				'blocks-sign-in-with-google-editor-styles',
 				array(
 					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/editor-styles.css' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
-			),
-		);
+			);
+		}
 
 		return $assets;
 	}
