@@ -473,7 +473,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				</div>,
 				{
 					registry,
-					features: [ 'audienceSegmentation' ],
 				}
 			);
 			// eslint-disable-next-line require-await

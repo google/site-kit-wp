@@ -114,7 +114,6 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { isFeatureEnabled } from '../../features';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
@@ -710,10 +709,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				CORE_MODULES
 			).isModuleConnected( 'analytics-4' );
 
-			if (
-				! analyticsConnected ||
-				! isFeatureEnabled( 'audienceSegmentation' )
-			) {
+			if ( ! analyticsConnected ) {
 				return false;
 			}
 

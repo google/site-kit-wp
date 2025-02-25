@@ -93,7 +93,6 @@ class REST_Audience_Settings_ControllerTest extends TestCase {
 	}
 
 	public function test_get_routes__with_feature_flag() {
-		$this->enable_feature( 'audienceSegmentation' );
 		$this->controller->register();
 
 		$server = rest_get_server();
