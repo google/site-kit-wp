@@ -50,8 +50,8 @@ export default function EnableAutoUpdateBannerNotification( {
 
 	const [ enabledViaCTA, setEnabledViaCTA ] = useState( false );
 
-	// If auto-updates were enabled via the CTA, set the state to true to
-	// render the success banner variation.
+	// If auto-updates were enabled via this CTA banner, then set the state to
+	// true to render the success banner variation.
 	useEffect( () => {
 		if ( enabledViaCTA === false && siteKitAutoUpdatesEnabled === true ) {
 			setEnabledViaCTA( true );
