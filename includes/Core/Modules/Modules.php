@@ -183,9 +183,7 @@ final class Modules {
 			$this->core_modules[ Reader_Revenue_Manager::MODULE_SLUG ] = Reader_Revenue_Manager::class;
 		}
 
-		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
-			$this->core_modules[ Sign_In_With_Google::MODULE_SLUG ] = Sign_In_With_Google::class;
-		}
+		$this->core_modules[ Sign_In_With_Google::MODULE_SLUG ] = Sign_In_With_Google::class;
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
