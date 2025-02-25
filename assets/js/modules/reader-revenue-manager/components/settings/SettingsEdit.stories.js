@@ -76,10 +76,12 @@ PendingVerification.args = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3, 1 ] );
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -91,10 +93,12 @@ ActionRequired.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3, 1 ] );
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -112,10 +116,12 @@ WithoutModuleAccess.args = {
 				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
 			);
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3, 1 ] );
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
