@@ -541,14 +541,17 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				);
 			}
 
-			$assets[] = new Stylesheet(
-				'blocks-reader-revenue-manager-common-editor-styles',
-				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
-					'dependencies'  => array(),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
-				)
-			);
+			if ( Contribute_With_Google_Block::can_register() || Subscribe_With_Google_Block::can_register() ) {
+				// TODO: Find a way to enqueue this stylesheet in the full site editor.
+				$assets[] = new Stylesheet(
+					'blocks-reader-revenue-manager-common-editor-styles',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
+						'dependencies'  => array(),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					)
+				);
+			}
 		}
 
 		return $assets;

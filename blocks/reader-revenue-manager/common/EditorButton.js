@@ -24,10 +24,42 @@ import classnames from 'classnames';
  */
 import GoogleLogoIcon from '../../../assets/svg/graphics/logo-g.svg';
 
+// Styles copied over from the actual inline button.
+// TODO: These inline styles should be removed once we are enqueuing the corresponding stylesheet in the full site editor.
+const buttonStyles = {
+	alignItems: 'center',
+	backgroundColor: '#fff',
+	border: '1px solid #dadce0',
+	borderRadius: '4px',
+	color: '#1a73e8',
+	display: 'flex',
+	fontFamily: 'Google Sans, Roboto-Regular, sans-serif, arial',
+	fontSize: '14px',
+	fontWeight: 500,
+	justifyContent: 'center',
+	letterSpacing: '0.014px',
+	outline: '0',
+	padding: '12px 34px',
+};
+
+const disabledStyles = {
+	filter: 'grayscale(50%)',
+	opacity: 0.5,
+};
+
+const svgStyles = {
+	marginRight: '8px',
+};
+
 export default function EditorButton( { children, disabled } ) {
+	const style = disabled
+		? { ...buttonStyles, ...disabledStyles }
+		: buttonStyles;
+
 	return (
 		<button
 			disabled={ disabled }
+			style={ style }
 			className={ classnames(
 				'googlesitekit-blocks-reader-revenue-manager-button',
 				{
@@ -36,7 +68,7 @@ export default function EditorButton( { children, disabled } ) {
 				}
 			) }
 		>
-			<GoogleLogoIcon height="18" width="18" />
+			<GoogleLogoIcon height="18" width="18" style={ svgStyles } />
 			{ children }
 		</button>
 	);
