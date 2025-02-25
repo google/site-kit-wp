@@ -98,6 +98,8 @@ class Subscribe_With_Google_Block {
 			return '';
 		}
 
-		return '<button swg-standard-button="subscription"></button>';
+		// Ensure the button is centered to match the editor preview.
+		// TODO: Add a stylesheet to the page and style the button container using a class.
+		return '<div style="margin: 0 auto;"><button swg-standard-button="subscription"></button></div>';
 	}
 }
