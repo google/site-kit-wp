@@ -169,13 +169,8 @@ export default function EnableAutoUpdateBannerNotification( {
 						/>
 					}
 					actions={
-						<ActionsCTALinkDismiss
+						<Dismiss
 							id={ id }
-							ctaLabel={ __(
-								'Enable auto-updates',
-								'google-site-kit'
-							) }
-							onCTAClick={ ctaActivate }
 							dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
 						/>
 					}
@@ -197,8 +192,13 @@ export default function EnableAutoUpdateBannerNotification( {
 					/>
 				}
 				actions={
-					<Dismiss
+					<ActionsCTALinkDismiss
 						id={ id }
+						ctaLabel={ __(
+							'Enable auto-updates',
+							'google-site-kit'
+						) }
+						onCTAClick={ ctaActivate }
 						dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
 					/>
 				}
