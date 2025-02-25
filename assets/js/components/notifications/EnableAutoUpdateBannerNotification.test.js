@@ -26,31 +26,17 @@ import {
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
+	provideNotifications,
 } from '../../../../tests/js/test-utils';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from './EnableAutoUpdateBannerNotification';
-import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import * as apiCache from '../../googlesitekit/api/cache';
 import fetchMock from 'fetch-mock';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-
-jest.mock( '../../hooks/useQueryArg' );
-
-// Set up mockImplementation for `useQueryArg` used in this component,
-// so we can set the query params used to check whether this is a new Site Kit
-// setup.
-function stubMockUseQueryArg( isNewPluginInstall = false ) {
-	useQueryArg.mockImplementation( ( queryArg ) => {
-		if ( isNewPluginInstall && queryArg === 'notification' ) {
-			return [ 'authentication_success' ];
-		}
-		return [ false ];
-	} );
-}
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 
 const EnableAutoUpdateBannerNotificationComponent =
 	withNotificationComponentProps( ENABLE_AUTO_UPDATES_BANNER_SLUG )(
@@ -60,21 +46,54 @@ const EnableAutoUpdateBannerNotificationComponent =
 const notification = DEFAULT_NOTIFICATIONS[ ENABLE_AUTO_UPDATES_BANNER_SLUG ];
 
 describe( 'EnableAutoUpdateBannerNotification', () => {
+	mockLocation();
 	const registry = createTestRegistry();
 
 	beforeEach( () => {
-		stubMockUseQueryArg();
-
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetNonces( { updates: '751b9198d2' } );
-
-		// registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
-		useQueryArg.mockClear();
 		delete global.ajaxurl;
+	} );
+
+	it( 'should render banner and send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
+		provideSiteInfo( registry, {
+			changePluginAutoUpdatesCapacity: true,
+			pluginBasename: 'google-site-kit/google-site-kit.php',
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetNonces( {
+			updates: '751b9198d2',
+		} );
+
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: true,
+		} );
+
+		global.ajaxurl = 'admin-ajax.php';
+
+		fetchMock.postOnce( /^\/admin-ajax.php/, {
+			body: { success: true },
+			status: 200,
+		} );
+
+		const { getByText, findByText } = render(
+			<EnableAutoUpdateBannerNotificationComponent />,
+			{
+				registry,
+			}
+		);
+
+		expect(
+			await findByText( 'Keep Site Kit up-to-date' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByText( 'Enable auto-updates' ) );
+
+		await waitFor( () => expect( fetchMock ).toHaveFetchedTimes( 1 ) );
 	} );
 
 	describe( 'checkRequirements', () => {
@@ -144,71 +163,44 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
-	} );
 
-	it( 'should send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: true,
-			pluginBasename: 'google-site-kit/google-site-kit.php',
-		} );
+		it( 'is not active and dismisses the notification temporarily when Site Kit is set up', async () => {
+			const dismissItemEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-item'
+			);
+			fetchMock.post( dismissItemEndpoint, {
+				body: JSON.stringify( [ ENABLE_AUTO_UPDATES_BANNER_SLUG ] ),
+				status: 200,
+			} );
 
-		registry.dispatch( CORE_USER ).receiveGetNonces( {
-			updates: '751b9198d2',
-		} );
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: false,
+			} );
 
-		provideUserCapabilities( registry, {
-			googlesitekit_update_plugins: true,
-		} );
+			provideUserCapabilities( registry, {
+				googlesitekit_update_plugins: true,
+			} );
 
-		global.ajaxurl = 'admin-ajax.php';
-
-		fetchMock.postOnce( /^\/admin-ajax.php/, {
-			body: { success: true },
-			status: 200,
-		} );
-
-		const { getByText, findByText } = render(
-			<EnableAutoUpdateBannerNotificationComponent />,
-			{
+			provideNotifications(
 				registry,
-			}
-		);
+				{
+					[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]:
+						DEFAULT_NOTIFICATIONS[
+							ENABLE_AUTO_UPDATES_BANNER_SLUG
+						],
+				},
+				{ overwrite: true }
+			);
 
-		expect(
-			await findByText( 'Keep Site Kit up-to-date' )
-		).toBeInTheDocument();
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?notification=authentication_success';
 
-		fireEvent.click( getByText( 'Enable auto-updates' ) );
-
-		await waitFor( () => expect( fetchMock ).toHaveFetchedTimes( 1 ) );
-	} );
-
-	it( 'should not show the notification directly after Site Kit initial setup', async () => {
-		stubMockUseQueryArg( true );
-
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: true,
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
 		} );
-
-		provideUserCapabilities( registry, {
-			googlesitekit_update_plugins: true,
-		} );
-
-		const { container } = render( <EnableAutoUpdateBannerNotification />, {
-			registry,
-		} );
-
-		await waitFor( () =>
-			// When the component is rendered after the initial
-			// Site Kit setup, we hide the notification and prevent
-			// it from being displayed for ten minutes.
-			//
-			// Wait until that `setItem` call delaying the
-			// notification is called before checking the output
-			// of the component.
-			expect( apiCache.setItem ).toHaveBeenCalledTimes( 1 )
-		);
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
