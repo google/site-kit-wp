@@ -27,7 +27,7 @@ import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import metadata from './block.json';
 import Edit from './Edit';
-
+import { CORE_EDIT_SITE } from '../common/constants';
 // Since we aren't currently able to use `useSelect()` in the components,
 // we need to resolve selectors before registering the block
 // to ensure the data is available when the block is rendered.
@@ -35,7 +35,7 @@ Promise.all( [
 	resolveSelect( CORE_MODULES ).getModule( 'reader-revenue-manager' ),
 	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 ] ).then( () => {
-	const isFullSiteEditor = !! wp.data.select( 'core/edit-site' );
+	const isFullSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
 
 	registerBlockType( metadata.name, {
 		edit() {
