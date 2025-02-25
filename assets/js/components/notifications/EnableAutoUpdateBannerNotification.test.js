@@ -28,13 +28,17 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
-import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from './EnableAutoUpdateBannerNotification';
 import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import * as apiCache from '../../googlesitekit/api/cache';
 import fetchMock from 'fetch-mock';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
-jest.mock( '../../../hooks/useQueryArg' );
+jest.mock( '../../hooks/useQueryArg' );
 
 // Set up mockImplementation for `useQueryArg` used in this component,
 // so we can set the query params used to check whether this is a new Site Kit
@@ -47,6 +51,8 @@ function stubMockUseQueryArg( isNewPluginInstall = false ) {
 		return [ false ];
 	} );
 }
+
+const notification = DEFAULT_NOTIFICATIONS[ ENABLE_AUTO_UPDATES_BANNER_SLUG ];
 
 describe( 'EnableAutoUpdateBannerNotification', () => {
 	const registry = createTestRegistry();
@@ -66,22 +72,22 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		delete global.ajaxurl;
 	} );
 
-	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: true,
-			siteKitAutoUpdatesEnabled: false,
-		} );
-		provideUserCapabilities( registry, {
-			googlesitekit_update_plugins: true,
-		} );
+	describe( 'checkRequirements', () => {
+		it( 'is active when Site Kit was not recently set up and user can update plugins', async () => {
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: false,
+			} );
+			provideUserCapabilities( registry, {
+				googlesitekit_update_plugins: true,
+			} );
 
-		render( <EnableAutoUpdateBannerNotification />, {
-			registry,
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
 		} );
-
-		expect(
-			await screen.findByText( 'Keep Site Kit up-to-date' )
-		).toBeInTheDocument();
 	} );
 
 	it( 'should not show the notification when auto updates are already enabled for Site Kit', () => {
