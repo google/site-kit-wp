@@ -17,20 +17,28 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistry } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	provideUserAuthentication,
-	provideUserCapabilities,
-	provideUserInfo,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { untilResolved } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
-import fetchMock from 'fetch-mock';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+
+/**
+ * To-Do: After the implementation of #8888, we can remove these individual imports
+ * and directly use createTestRegistry from 'tests/js/utils' so that all the stores
+ * are registered without the duplicate registration issue.
+ */
+import AudienceSettingsStore from './audience-settings';
+import AudiencesStore from './audiences';
+import UserAudienceSettingsStore from '../../../googlesitekit/datastore/user/audience-settings';
+import AuthenticationStore from '../../../googlesitekit/datastore/user/authentication';
+import { combineStores, commonStore } from 'googlesitekit-data';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
@@ -44,18 +52,29 @@ describe( 'modules/analytics-4 audience settings', () => {
 	);
 
 	beforeEach( () => {
-		registry = createTestRegistry();
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-				setupComplete: true,
-			},
-		] );
-		provideUserAuthentication( registry );
-		provideUserCapabilities( registry );
-		provideUserInfo( registry );
+		// To-Do: After #8888 is implemented, we can directly use createTestRegistry from 'tests/js/utils'
+		registry = createRegistry();
+
+		registry.registerStore(
+			MODULES_ANALYTICS_4,
+			combineStores( AudienceSettingsStore, commonStore, {
+				...AudiencesStore,
+				resolvers: {},
+			} )
+		);
+
+		registry.registerStore(
+			CORE_USER,
+			combineStores(
+				AuthenticationStore,
+				commonStore,
+				UserAudienceSettingsStore
+			)
+		);
+
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+			authenticated: true,
+		} );
 	} );
 
 	describe( 'actions', () => {
