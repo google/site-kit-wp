@@ -22,7 +22,6 @@
 import {
 	render,
 	createTestRegistry,
-	screen,
 	waitFor,
 	fireEvent,
 	provideUserCapabilities,
@@ -37,6 +36,7 @@ import * as apiCache from '../../googlesitekit/api/cache';
 import fetchMock from 'fetch-mock';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 jest.mock( '../../hooks/useQueryArg' );
 
@@ -52,6 +52,11 @@ function stubMockUseQueryArg( isNewPluginInstall = false ) {
 	} );
 }
 
+const EnableAutoUpdateBannerNotificationComponent =
+	withNotificationComponentProps( ENABLE_AUTO_UPDATES_BANNER_SLUG )(
+		EnableAutoUpdateBannerNotification
+	);
+
 const notification = DEFAULT_NOTIFICATIONS[ ENABLE_AUTO_UPDATES_BANNER_SLUG ];
 
 describe( 'EnableAutoUpdateBannerNotification', () => {
@@ -64,7 +69,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			.dispatch( CORE_USER )
 			.receiveGetNonces( { updates: '751b9198d2' } );
 
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		// registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
@@ -162,15 +167,18 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			status: 200,
 		} );
 
-		render( <EnableAutoUpdateBannerNotification />, {
-			registry,
-		} );
+		const { getByText, findByText } = render(
+			<EnableAutoUpdateBannerNotificationComponent />,
+			{
+				registry,
+			}
+		);
 
 		expect(
-			await screen.findByText( 'Keep Site Kit up-to-date' )
+			await findByText( 'Keep Site Kit up-to-date' )
 		).toBeInTheDocument();
 
-		fireEvent.click( screen.getByText( 'Enable auto-updates' ) );
+		fireEvent.click( getByText( 'Enable auto-updates' ) );
 
 		await waitFor( () => expect( fetchMock ).toHaveFetchedTimes( 1 ) );
 	} );
