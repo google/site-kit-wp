@@ -1,4 +1,6 @@
 /**
+ * Reader Revenue Manager blocks constants.
+ *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,34 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { useBlockProps } from '@wordpress-core/block-editor';
-
-/**
- * Internal dependencies
- */
-import SignInWithGoogleIcon from './icon.svg';
-
-/**
- * Sign in with Google Block Edit component.
- *
- * @since 1.147.0
- *
- * @return {Element} Element to render.
- */
-export default function Edit() {
-	const blockProps = useBlockProps();
-
-	return (
-		<div { ...blockProps }>
-			<div
-				className="googlesitekit-blocks-sign-in-with-google"
-				style={ { maxWidth: '180px', minWidth: '120px' } }
-			>
-				<SignInWithGoogleIcon />
-			</div>
-		</div>
-	);
-}
+export const CORE_EDITOR = 'core/editor';
