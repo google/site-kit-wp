@@ -360,6 +360,15 @@ $lh-authorize-application-body-md: 20px;
 
 // End Authorize Application screen specific styles.
 
+// Start Reader Revenue Manager block editor specific styles.
+$c-reader-revenue-manager-button-background: $c-base;
+$c-reader-revenue-manager-button-border: $c-iron;
+$c-reader-revenue-manager-button-text: $c-vivid-blue;
+
+$f-reader-revenue-manager-button: "Google Sans", Roboto-Regular, sans-serif, arial;
+
+// End Reader Revenue Manager block editor specific styles.
+
 // Setup CTA specific styles.
 $cta-gap-phone: 4px;
 $cta-gap-tablet: 10px;
