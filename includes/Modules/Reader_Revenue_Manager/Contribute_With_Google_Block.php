@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Blocks\Contribute_With_Google
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block
  *
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Blocks;
+namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
  *
  * @since n.e.x.t
  */
-class Contribute_With_Google {
+class Contribute_With_Google_Block {
 	/**
 	 * Context instance.
 	 *

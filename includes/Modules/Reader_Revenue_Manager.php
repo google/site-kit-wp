@@ -42,7 +42,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Blocks\Contribute_With_Google;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
@@ -86,9 +86,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @var Contribute_With_Google
+	 * @var Contribute_With_Google_Block
 	 */
-	private $contribute_with_google;
+	private $contribute_with_google_block;
 
 	/**
 	 * Tag_Guard instance.
@@ -122,9 +122,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$post_meta = new Post_Meta();
 		$settings  = $this->get_settings();
 
-		$this->post_product_id        = new Post_Product_ID( $post_meta, $settings );
-		$this->tag_guard              = new Tag_Guard( $settings, $this->post_product_id );
-		$this->contribute_with_google = new Contribute_With_Google( $this->context, $this->tag_guard, $settings );
+		$this->post_product_id              = new Post_Product_ID( $post_meta, $settings );
+		$this->tag_guard                    = new Tag_Guard( $settings, $this->post_product_id );
+		$this->contribute_with_google_block = new Contribute_With_Google_Block( $this->context, $this->tag_guard, $settings );
 	}
 
 	/**
@@ -144,7 +144,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$this->post_product_id->register();
 
-			$this->contribute_with_google->register();
+			$this->contribute_with_google_block->register();
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
