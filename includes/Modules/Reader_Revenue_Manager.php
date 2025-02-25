@@ -509,33 +509,37 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			);
 
-			$assets[] = new Script(
-				'blocks-contribute-with-google',
-				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
-					'dependencies'  => array(
-						'googlesitekit-data',
-						'googlesitekit-i18n',
-						'googlesitekit-modules',
-					),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
-					'execution'     => 'defer',
-				)
-			);
+			if ( Contribute_With_Google_Block::can_register() ) {
+				$assets[] = new Script(
+					'blocks-contribute-with-google',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
+						'dependencies'  => array(
+							'googlesitekit-data',
+							'googlesitekit-i18n',
+							'googlesitekit-modules',
+						),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+						'execution'     => 'defer',
+					)
+				);
+			}
 
-			$assets[] = new Script(
-				'blocks-subscribe-with-google',
-				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
-					'dependencies'  => array(
-						'googlesitekit-data',
-						'googlesitekit-i18n',
-						'googlesitekit-modules',
-					),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
-					'execution'     => 'defer',
-				)
-			);
+			if ( Subscribe_With_Google_Block::can_register() ) {
+				$assets[] = new Script(
+					'blocks-subscribe-with-google',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
+						'dependencies'  => array(
+							'googlesitekit-data',
+							'googlesitekit-i18n',
+							'googlesitekit-modules',
+						),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+						'execution'     => 'defer',
+					)
+				);
+			}
 
 			$assets[] = new Stylesheet(
 				'blocks-reader-revenue-manager-common-editor-styles',
