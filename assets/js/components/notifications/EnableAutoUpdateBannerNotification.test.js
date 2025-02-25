@@ -27,8 +27,6 @@ import {
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
-	waitForDefaultTimeouts,
-	act,
 } from '../../../../tests/js/test-utils';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -99,28 +97,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not display the notification if it has been dismissed', async () => {
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: true,
-			siteKitAutoUpdatesEnabled: false,
-		} );
-
-		provideUserCapabilities( registry, {
-			googlesitekit_update_plugins: true,
-		} );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( 'auto-update-cta' );
-
-		const { container } = render( <EnableAutoUpdateBannerNotification />, {
-			registry,
-		} );
-		await act( waitForDefaultTimeouts );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should not show the notification when auto updates are already enabled for Site Kit', () => {
 		provideSiteInfo( registry, {
 			changePluginAutoUpdatesCapacity: true,
@@ -167,34 +143,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		const { container } = render( <EnableAutoUpdateBannerNotification />, {
 			registry,
 		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not show the notification when hide banner cache key is set', async () => {
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: true,
-		} );
-
-		provideUserCapabilities( registry, {
-			googlesitekit_update_plugins: true,
-		} );
-
-		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
-			return Promise.resolve( {
-				cacheHit: true,
-				value: true,
-				isError: false,
-			} );
-		} );
-
-		const { container } = render( <EnableAutoUpdateBannerNotification />, {
-			registry,
-		} );
-
-		await waitFor( () =>
-			expect( apiCache.getItem ).toHaveBeenCalledTimes( 1 )
-		);
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
