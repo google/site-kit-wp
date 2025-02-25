@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -39,6 +42,7 @@ import { CORE_SITE } from '../datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+	PERMISSION_UPDATE_PLUGINS,
 } from '../datastore/user/constants';
 import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
@@ -331,6 +335,38 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasCapability() selector relies on the resolution
+				// of the getCapabilities() resolver.
+				resolveSelect( CORE_USER ).getCapabilities(),
+				// The hasChangePluginAutoUpdatesCapacity() and
+				// getSiteKitAutoUpdatesEnabled() selectors rely on the
+				// resolution of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+			] );
+
+			const hasUpdatePluginCapability = select( CORE_USER ).hasCapability(
+				PERMISSION_UPDATE_PLUGINS
+			);
+			const hasChangePluginAutoUpdatesCapacity =
+				select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity();
+			const siteKitAutoUpdatesEnabled =
+				select( CORE_SITE ).getSiteKitAutoUpdatesEnabled();
+
+			// Don't render anything if the user has no permission to update plugin,
+			// auto-updates can not be enabled for Site Kit, or auto updates are already
+			// enabled for Site Kit.
+			if (
+				hasUpdatePluginCapability &&
+				hasChangePluginAutoUpdatesCapacity &&
+				! siteKitAutoUpdatesEnabled
+			) {
+				return true;
+			}
+
+			return false;
+		},
 		isDismissible: true,
 	},
 	'gathering-data-notification': {
