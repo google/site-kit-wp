@@ -40,9 +40,15 @@ Promise.all( [
 	resolveSelect( CORE_MODULES ).getModule( 'reader-revenue-manager' ),
 	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 ] ).then( () => {
+	const isFullSiteEditor = !! wp.data.select( 'core/edit-site' );
+
 	registerBlockType( metadata.name, {
 		edit() {
 			return <Edit select={ select } />;
+		},
+		supports: {
+			// Only allow the block to be inserted in the post editor.
+			inserter: ! isFullSiteEditor,
 		},
 	} );
 } );
