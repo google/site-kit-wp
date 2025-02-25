@@ -58,7 +58,9 @@ Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
@@ -141,11 +143,12 @@ MissingProductID.storyName = 'MissingProductID';
 MissingProductID.scenario = {};
 MissingProductID.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 1 );
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setProductID( 1 );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setProductIDs( [ 0, 3 ] );
+			.setProductID( 'product-c' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b' ] );
 	},
 };
 

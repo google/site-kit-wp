@@ -49,10 +49,6 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 export default function SettingsEdit() {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
 
-	const productIDs = useSelect( ( select ) => {
-		return select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
-	} );
-
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
