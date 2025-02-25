@@ -58,12 +58,6 @@ export default function EnableAutoUpdateBannerNotification( {
 		await enableAutoUpdate();
 	}, [ enableAutoUpdate ] );
 
-	useEffect( () => {
-		if ( enabledViaCTA === false && siteKitAutoUpdatesEnabled === true ) {
-			setEnabledViaCTA( true );
-		}
-	}, [ enabledViaCTA, siteKitAutoUpdatesEnabled ] );
-
 	/**
 	 * If the user just set up Site Kit (eg. just returned from the
 	 * initial OAuth sign-in flow) and is seeing the dashboard
@@ -78,6 +72,14 @@ export default function EnableAutoUpdateBannerNotification( {
 			} );
 		}
 	} );
+
+	// If auto-updates were enabled via the CTA, set the state to true to
+	// render the success banner variation.
+	useEffect( () => {
+		if ( enabledViaCTA === false && siteKitAutoUpdatesEnabled === true ) {
+			setEnabledViaCTA( true );
+		}
+	}, [ enabledViaCTA, siteKitAutoUpdatesEnabled ] );
 
 	// Render the "Auto Updates enabled successfully" banner variation
 	// if auto updates were enabled using this banner CTA.
