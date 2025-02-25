@@ -77,7 +77,7 @@ jobs:
       fail-fast: false
       matrix:
         composer_php_version: ['']
-        composer_phpunit_version: ['']
+        composer_dev_require: ['']
         php_version: ['7.4', '8.1']
         wp_multisite: ['']
         wp_version: ['latest']
@@ -85,7 +85,7 @@ jobs:
           # Min supported PHP + WP Oldest
           - php_version: '7.4'
             wp_version: '5.3.18' # PHP 7.4 support
-            composer_phpunit_version: '^7'
+            composer_dev_require: 'phpunit/phpunit:^7 yoast/phpunit-polyfills:^1'
           # Min supported PHP + WP Latest Multisite
           - php_version: '7.4'
             wp_multisite: '1'
@@ -141,9 +141,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Configure PHPUnit
-        if: ${{ matrix.composer_phpunit_version }}
-        run: composer require phpunit/phpunit "${{ matrix.composer_phpunit_version }}" --with-dependencies --no-install --no-scripts
+      - name: Configure Composer Dev Packages
+        if: ${{ matrix.composer_dev_require }}
+        run: composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress
