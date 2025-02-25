@@ -109,6 +109,7 @@ export default function EnableAutoUpdateBannerNotification( {
 							'Enable auto-updates',
 							'google-site-kit'
 						) }
+						dismissOnCTAClick={ false }
 						onCTAClick={ ctaActivate }
 						dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
 					/>
