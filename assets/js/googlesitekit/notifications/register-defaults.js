@@ -73,7 +73,9 @@ import FirstPartyModeSetupBanner, {
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
 import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
-import EnableAutoUpdateBannerNotification from '../../components/notifications/EnableAutoUpdateBannerNotification';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from '../../components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '../../util';
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -333,7 +335,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
-	'auto-update-cta': {
+	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
 		priority: 280,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,

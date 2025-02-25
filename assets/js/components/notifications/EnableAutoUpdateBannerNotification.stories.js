@@ -27,11 +27,13 @@ import fetchMock from 'fetch-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from './EnableAutoUpdateBannerNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'auto-update-cta'
+	ENABLE_AUTO_UPDATES_BANNER_SLUG
 )( EnableAutoUpdateBannerNotification );
 
 function Template() {

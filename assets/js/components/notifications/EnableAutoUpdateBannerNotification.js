@@ -32,6 +32,8 @@ import Description from '../../googlesitekit/notifications/components/common/Des
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 
+export const ENABLE_AUTO_UPDATES_BANNER_SLUG = 'auto-update-cta';
+
 export default function EnableAutoUpdateBannerNotification( {
 	id,
 	Notification,
