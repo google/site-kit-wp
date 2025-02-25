@@ -120,7 +120,7 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -174,7 +174,7 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );

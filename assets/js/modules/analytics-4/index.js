@@ -747,7 +747,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 					'analytics-4'
 				),
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
-				select( CORE_USER ).getAudienceSettings(),
+				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 			] );

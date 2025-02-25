@@ -514,7 +514,7 @@ const baseActions = {
 			}
 
 			yield commonActions.await(
-				resolveSelect( CORE_USER ).getAudienceSettings()
+				resolveSelect( CORE_USER ).getUserAudienceSettings()
 			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
@@ -598,7 +598,7 @@ const baseActions = {
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( CORE_USER ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveUserAudienceSettings()
 		);
 
 		if ( error ) {
@@ -714,7 +714,7 @@ const baseActions = {
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( CORE_USER ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveUserAudienceSettings()
 		);
 
 		if ( error ) {

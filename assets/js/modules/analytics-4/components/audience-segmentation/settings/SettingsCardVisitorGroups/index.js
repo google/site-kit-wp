@@ -49,7 +49,7 @@ export default function SettingsCardVisitorGroups() {
 		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
 	);
 
-	const { setAudienceSegmentationWidgetHidden, saveAudienceSettings } =
+	const { setAudienceSegmentationWidgetHidden, saveUserAudienceSettings } =
 		useDispatch( CORE_USER );
 
 	const handleKeyMetricsToggle = useCallback( () => {
@@ -62,12 +62,12 @@ export default function SettingsCardVisitorGroups() {
 				await setAudienceSegmentationWidgetHidden(
 					! audienceSegmentationWidgetHidden
 				);
-				await saveAudienceSettings();
+				await saveUserAudienceSettings();
 			}
 		);
 	}, [
 		audienceSegmentationWidgetHidden,
-		saveAudienceSettings,
+		saveUserAudienceSettings,
 		setAudienceSegmentationWidgetHidden,
 		viewContext,
 	] );

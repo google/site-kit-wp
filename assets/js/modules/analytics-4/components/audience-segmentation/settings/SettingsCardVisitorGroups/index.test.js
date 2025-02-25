@@ -56,7 +56,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	it( 'should render the setup CTA if groups are not configured', () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -75,7 +75,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 	it( 'should render the setup success notification once groups are configured', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -99,7 +99,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	it( 'should render the visitor groups switch correctly', async () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -149,7 +149,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( availableAudiences );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [ 'audienceA', 'audienceB' ],
 				isAudienceSegmentationWidgetHidden: true,
 			} );

@@ -84,7 +84,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 			didSetAudiences: true,

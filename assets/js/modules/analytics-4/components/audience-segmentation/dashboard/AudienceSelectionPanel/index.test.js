@@ -132,7 +132,7 @@ describe( 'AudienceSelectionPanel', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -1942,7 +1942,7 @@ describe( 'AudienceSelectionPanel', () => {
 				status: 200,
 			} );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences,
 				isAudienceSegmentationWidgetHidden: false,
 				didSetAudiences: true,

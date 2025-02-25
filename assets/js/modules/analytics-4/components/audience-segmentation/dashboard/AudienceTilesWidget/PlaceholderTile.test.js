@@ -39,7 +39,7 @@ describe( 'PlaceholderTile', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 		} );
 

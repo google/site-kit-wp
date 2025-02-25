@@ -109,7 +109,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -126,7 +126,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -143,7 +143,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [
 				'properties/12345/audiences/1',
 				'properties/12345/audiences/3',
@@ -163,7 +163,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [
 				'properties/12345/audiences/1',
 				'properties/12345/audiences/9',
@@ -188,7 +188,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( availableAudiences );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [],
 				didSetAudiences: false,
 			} );
@@ -300,7 +300,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( availableAudiences );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [],
 				didSetAudiences: true,
 			} );
@@ -416,7 +416,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( availableAudiences );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [],
 				didSetAudiences: false,
 			} );
@@ -499,7 +499,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAvailableAudiences( availableAudiences );
 
-			registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [],
 				didSetAudiences: true,
 			} );

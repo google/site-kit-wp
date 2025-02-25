@@ -49,7 +49,7 @@ AuthenticatedUserNeverSetup.storyName =
 AuthenticatedUserNeverSetup.scenario = {};
 AuthenticatedUserNeverSetup.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			didSetAudiences: false,
 		} );
@@ -62,7 +62,7 @@ AuthenticatedUserHasSetup.storyName =
 AuthenticatedUserHasSetup.scenario = {};
 AuthenticatedUserHasSetup.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			didSetAudiences: true,
 		} );
@@ -75,7 +75,7 @@ ViewOnlyUserNeverSetup.storyName =
 ViewOnlyUserNeverSetup.scenario = {};
 ViewOnlyUserNeverSetup.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			didSetAudiences: false,
 		} );
@@ -89,7 +89,7 @@ ViewOnlyUserHasSetup.storyName =
 ViewOnlyUserHasSetup.scenario = {};
 ViewOnlyUserHasSetup.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			didSetAudiences: true,
 		} );

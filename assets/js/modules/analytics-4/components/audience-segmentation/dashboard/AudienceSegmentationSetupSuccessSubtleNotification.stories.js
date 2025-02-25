@@ -42,7 +42,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					isAudienceSegmentationWidgetHidden: false,
 					configuredAudiences: null,
 				} );
