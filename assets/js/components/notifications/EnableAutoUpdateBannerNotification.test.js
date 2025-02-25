@@ -122,22 +122,23 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
-	} );
 
-	it( 'should not show the notification if plugin auto updates can not be enabled', () => {
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: false,
+		it( 'is not active when plugin auto updates can not be enabled', async () => {
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: false,
+				siteKitAutoUpdatesEnabled: false,
+			} );
+
+			provideUserCapabilities( registry, {
+				googlesitekit_update_plugins: true,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
 		} );
-
-		provideUserCapabilities( registry, {
-			googlesitekit_update_plugins: false,
-		} );
-
-		const { container } = render( <EnableAutoUpdateBannerNotification />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
