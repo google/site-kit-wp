@@ -54,17 +54,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	beforeEach( () => {
 		stubMockUseQueryArg();
 
-		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
-			return Promise.resolve( {
-				cacheHit: false,
-				value: undefined,
-			} );
-		} );
-
-		jest.spyOn( apiCache, 'setItem' ).mockImplementation( () => {
-			return Promise.resolve( true );
-		} );
-
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetNonces( { updates: '751b9198d2' } );
@@ -74,8 +63,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	afterEach( () => {
 		useQueryArg.mockClear();
-		apiCache.setItem.mockClear();
-		apiCache.getItem.mockClear();
 		delete global.ajaxurl;
 	} );
 
