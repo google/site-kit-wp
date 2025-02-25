@@ -79,7 +79,8 @@ export default function EnableAutoUpdateBannerNotification( {
 		}
 	} );
 
-	// Render the Auto Updates enabled successfully banner.
+	// Render the "Auto Updates enabled successfully" banner variation
+	// if auto updates were enabled using this banner CTA.
 	if ( enabledViaCTA ) {
 		return (
 			<Notification className="googlesitekit-publisher-win">
