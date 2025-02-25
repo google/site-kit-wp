@@ -358,10 +358,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
 
-		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
-		}
-
 		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
 		}
@@ -588,26 +584,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'label' => __( 'Analytics: AdSense Linked Last Synced At', 'google-site-kit' ),
 				'value' => $settings['adSenseLinkedLastSyncedAt'] ? gmdate( 'Y-m-d H:i:s', $settings['adSenseLinkedLastSyncedAt'] ) : __( 'Never synced', 'google-site-kit' ),
 				'debug' => Debug_Data::redact_debug_value( $settings['adSenseLinkedLastSyncedAt'] ),
-			);
-		}
-
-		// Check if the audienceSegmentation feature is enabled.
-		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			// Return the SITE_KIT_AUDIENCE audiences.
-			$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
-
-			$debug_fields['analytics_4_site_kit_audiences'] = array(
-				'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
-				'value' => empty( $site_kit_audiences )
-					? __( 'None', 'google-site-kit' )
-					: join(
-						/* translators: used between list items, there is a space after the comma */
-						__( ', ', 'google-site-kit' ),
-						$site_kit_audiences
-					),
-				'debug' => empty( $site_kit_audiences )
-					? 'none'
-					: join( ', ', $site_kit_audiences ),
 			);
 		}
 
