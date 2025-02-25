@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress-core/element';
  * Internal dependencies
  */
 import EditorButton from './EditorButton';
-import { CORE_EDITOR } from './constants';
+import { CORE_EDIT_SITE, CORE_EDITOR } from './constants';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 
@@ -63,17 +63,16 @@ export default function EditButton( {
 
 	const { publicationID, paymentOption, snippetMode, postTypes } = settings;
 
-	const metaKey = `googlesitekit_rrm_${ publicationID }:productID`;
-
-	const postProductID =
-		select( CORE_EDITOR ).getEditedPostAttribute( 'meta' )?.[ metaKey ] ||
-		'';
-	const postType = select( CORE_EDITOR ).getCurrentPostType();
-
 	let notice = '';
 	let disabled = false;
 
-	if ( paymentOption !== requiredPaymentOption ) {
+	const isFullSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
+
+	// If we're in the full site editor, we can't determine if the button will be shown
+	// so we disable it to avoid displaying it in the wrong context.
+	if ( isFullSiteEditor ) {
+		disabled = true;
+	} else if ( paymentOption !== requiredPaymentOption ) {
 		disabled = true;
 
 		if ( hasModuleAccess ) {
@@ -81,19 +80,29 @@ export default function EditButton( {
 		} else {
 			notice = invalidPaymentOptionWithoutModuleAccessNotice;
 		}
-	} else if (
-		postProductID === 'none' ||
-		( ! postProductID && snippetMode === 'per_post' ) ||
-		( ! postProductID &&
-			snippetMode === 'post_types' &&
-			! postTypes.includes( postType ) )
-	) {
-		disabled = true;
+	} else {
+		const metaKey = `googlesitekit_rrm_${ publicationID }:productID`;
 
-		if ( hasModuleAccess ) {
-			notice = noSnippetWithModuleAccessNotice;
-		} else {
-			notice = noSnippetWithoutModuleAccessNotice;
+		const postProductID =
+			select( CORE_EDITOR ).getEditedPostAttribute( 'meta' )?.[
+				metaKey
+			] || '';
+		const postType = select( CORE_EDITOR ).getCurrentPostType();
+
+		if (
+			postProductID === 'none' ||
+			( ! postProductID && snippetMode === 'per_post' ) ||
+			( ! postProductID &&
+				snippetMode === 'post_types' &&
+				! postTypes.includes( postType ) )
+		) {
+			disabled = true;
+
+			if ( hasModuleAccess ) {
+				notice = noSnippetWithModuleAccessNotice;
+			} else {
+				notice = noSnippetWithoutModuleAccessNotice;
+			}
 		}
 	}
 
