@@ -50,6 +50,7 @@ export default function Edit( { select } ) {
 
 	return (
 		<ButtonEdit
+			select={ select }
 			buttonLabel={
 				/* translators: Button label for Subscribe with Google. See: https://github.com/subscriptions-project/swg-js/blob/05af2d45cfcaf831a6b4d35c28f2c7b5c2e39308/src/i18n/swg-strings.ts#L24-L57 (please refer to the latest version of the file) */
 				__( 'Subscribe with Google', 'google-site-kit' )
