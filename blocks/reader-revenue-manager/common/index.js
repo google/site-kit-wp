@@ -15,3 +15,4 @@
  */
 
 export { default as EditorButton } from './EditorButton';
+export { default as ButtonEdit } from './ButtonEdit';
