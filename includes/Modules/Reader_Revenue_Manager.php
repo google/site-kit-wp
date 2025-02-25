@@ -43,6 +43,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
@@ -91,6 +92,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	private $contribute_with_google_block;
 
 	/**
+	 * Subscribe_With_Google_Block instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Subscribe_With_Google_Block
+	 */
+	private $subscribe_with_google_block;
+
+	/**
 	 * Tag_Guard instance.
 	 *
 	 * @since n.e.x.t
@@ -125,6 +135,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$this->post_product_id              = new Post_Product_ID( $post_meta, $settings );
 		$this->tag_guard                    = new Tag_Guard( $settings, $this->post_product_id );
 		$this->contribute_with_google_block = new Contribute_With_Google_Block( $this->context, $this->tag_guard, $settings );
+		$this->subscribe_with_google_block  = new Subscribe_With_Google_Block( $this->context, $this->tag_guard, $settings );
 	}
 
 	/**
@@ -145,6 +156,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$this->post_product_id->register();
 
 			$this->contribute_with_google_block->register();
+			$this->subscribe_with_google_block->register();
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
@@ -501,6 +513,20 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'blocks-contribute-with-google',
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
+				)
+			);
+
+			$assets[] = new Script(
+				'blocks-subscribe-with-google',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
 					'dependencies'  => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
