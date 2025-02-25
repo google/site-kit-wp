@@ -20,7 +20,8 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { PluginDocumentSettingPanel } from '@wordpress-core/edit-post';
+import { PluginDocumentSettingPanel as EditPostSettingPanel } from '@wordpress-core/edit-post';
+import { PluginDocumentSettingPanel as EditorSettingPanel } from '@wordpress-core/editor';
 
 /**
  * Internal dependencies
@@ -29,6 +30,9 @@ import GoogleLogoIcon from '../../../assets/svg/graphics/logo-g.svg';
 import SettingsForm from './SettingsForm';
 
 export default function SettingPanel() {
+	const PluginDocumentSettingPanel =
+		EditorSettingPanel || EditPostSettingPanel;
+
 	return (
 		<PluginDocumentSettingPanel
 			className="googlesitekit-rrm-settings-panel"
