@@ -1516,14 +1516,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$new_settings['audienceSegmentationSetupCompletedBy'] = $data['audienceSegmentationSetupCompletedBy'];
 					}
 
-					if ( isset( $data['availableAudiences'] ) && is_array( $data['availableAudiences'] ) ) {
-						$new_settings['availableAudiences'] = $data['availableAudiences'];
-					}
-
-					if ( isset( $data['availableAudiencesLastSyncedAt'] ) ) {
-						$new_settings['availableAudiencesLastSyncedAt'] = intval( $data['availableAudiencesLastSyncedAt'] );
-					}
-
 					$settings = $this->audience_settings->merge( $new_settings );
 
 					return $settings;
