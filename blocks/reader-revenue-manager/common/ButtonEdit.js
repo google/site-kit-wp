@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
- * Contribute with Google Block Edit component.
+ * Reader Revenue Manager Block Edit component.
  *
  * @since n.e.x.t
  *
