@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Blocks;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 
 /**
@@ -37,16 +38,27 @@ class Contribute_With_Google {
 	private $tag_guard;
 
 	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Module_Settings
+	 */
+	private $settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context   $context   Plugin context.
-	 * @param Tag_Guard $tag_guard Tag_Guard instance.
+	 * @param Context         $context   Plugin context.
+	 * @param Tag_Guard       $tag_guard Tag_Guard instance.
+	 * @param Module_Settings $settings Module_Settings instance.
 	 */
-	public function __construct( Context $context, Tag_Guard $tag_guard ) {
+	public function __construct( Context $context, Tag_Guard $tag_guard, Module_Settings $settings ) {
 		$this->context   = $context;
 		$this->tag_guard = $tag_guard;
+		$this->settings  = $settings;
 	}
 
 	/**
@@ -73,11 +85,16 @@ class Contribute_With_Google {
 	 * Render callback for the block.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return string Rendered block.
 	 */
 	public function render_callback() {
-		// If the tag is not placed, do not render the block.
-		if ( ! $this->tag_guard->can_activate() ) {
+		// If the payment option is not `contributions` or the tag is not placed, do not render the block.
+		$settings = $this->settings->get();
+
+		$is_contributions_payment_option = isset( $settings['paymentOption'] ) && 'contributions' === $settings['paymentOption'];
+
+		if ( ! ( $is_contributions_payment_option && $this->tag_guard->can_activate() ) ) {
 			return '';
 		}
 

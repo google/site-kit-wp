@@ -82,6 +82,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	private $post_product_id;
 
 	/**
+	 * Contribute_With_Google instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Contribute_With_Google
+	 */
+	private $contribute_with_google;
+
+	/**
 	 * Tag_Guard instance.
 	 *
 	 * @since n.e.x.t
@@ -110,10 +119,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
-		$post_meta             = new Post_Meta();
-		$this->post_product_id = new Post_Product_ID( $post_meta, $this->get_settings() );
+		$post_meta = new Post_Meta();
+		$settings  = $this->get_settings();
 
-		$this->tag_guard = new Tag_Guard( $this->get_settings(), $this->post_product_id );
+		$this->post_product_id        = new Post_Product_ID( $post_meta, $settings );
+		$this->tag_guard              = new Tag_Guard( $settings, $this->post_product_id );
+		$this->contribute_with_google = new Contribute_With_Google( $this->context, $this->tag_guard, $settings );
 	}
 
 	/**
@@ -133,8 +144,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$this->post_product_id->register();
 
-			$contribute_with_google = new Contribute_With_Google( $this->context, $this->tag_guard );
-			$contribute_with_google->register();
+			$this->contribute_with_google->register();
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
