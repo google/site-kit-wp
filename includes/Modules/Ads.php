@@ -219,6 +219,12 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$active_wc  = class_exists( 'WooCommerce' );
 		$active_gla = defined( 'WC_GLA_VERSION' );
 
+		$gla_ads_conversion_action = get_option( 'gla_ads_conversion_action' );
+		$gla_conversion_id         = '';
+		if ( is_array( $gla_ads_conversion_action ) ) {
+			$gla_conversion_id = $gla_ads_conversion_action['conversion_id'];
+		}
+
 		$modules_data['ads']['plugins'] = array(
 			'woocommerce'             => array(
 				'active'    => $active_wc,
@@ -228,6 +234,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				'active'       => $active_gla,
 				'installed'    => $active_gla || Plugin_Status::is_plugin_installed( 'google-listings-and-ads/google-listings-and-ads.php' ),
 				'adsConnected' => $active_gla && get_option( 'gla_ads_id' ),
+				'conversionID' => $gla_conversion_id,
 			),
 		);
 
