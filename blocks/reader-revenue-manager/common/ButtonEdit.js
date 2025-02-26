@@ -50,7 +50,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reade
  * @param {string} props.noSnippetWithoutModuleAccessNotice            No snippet without module access notice.
  * @return {Element} Element to render.
  */
-export default function EditButton( {
+export default function ButtonEdit( {
 	select,
 	buttonLabel,
 	requiredPaymentOption,
@@ -131,7 +131,7 @@ export default function EditButton( {
 	);
 }
 
-EditButton.propTypes = {
+ButtonEdit.propTypes = {
 	select: PropTypes.func.isRequired,
 	buttonLabel: PropTypes.string.isRequired,
 	requiredPaymentOption: PropTypes.string.isRequired,
