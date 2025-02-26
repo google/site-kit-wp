@@ -155,4 +155,33 @@ describe( 'SetupForm', () => {
 			expect( onCompleteSetup ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
+
+	it( 'should render the product ID setting', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				ownerID: 1,
+				// eslint-disable-next-line sitekit/acronym-case
+				publicationID: publications[ 0 ].publicationId,
+				productIDs: [ 'product-1', 'product-2' ],
+			} );
+
+		const onCompleteSetup = jest.fn();
+
+		const { getByText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ onCompleteSetup } />,
+			{
+				registry,
+				features: [ 'rrmModuleV2' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
+	} );
 } );

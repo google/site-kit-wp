@@ -24,6 +24,7 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
@@ -94,6 +95,29 @@ MultiplePublications.args = {
 };
 MultiplePublications.scenario = {};
 
+export const WithProductIDSetting = Template.bind( {} );
+WithProductIDSetting.storyName = 'With Product ID Setting';
+WithProductIDSetting.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				ownerID: 1,
+				// eslint-disable-next-line sitekit/acronym-case
+				publicationID: publications[ 0 ].publicationId,
+				productIDs: [ 'product-1', 'product-2' ],
+			} );
+	},
+};
+WithProductIDSetting.scenario = {};
+WithProductIDSetting.parameters = {
+	features: [ 'rrmModuleV2' ],
+};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMain',
 	decorators: [
@@ -107,6 +131,7 @@ export default {
 					},
 				] );
 				provideModuleRegistrations( registry );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				// Call story-specific setup.
 				args?.setupRegistry?.( registry );
