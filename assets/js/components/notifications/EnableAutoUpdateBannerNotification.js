@@ -27,6 +27,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import useViewContext from '../../hooks/useViewContext';
 import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
@@ -38,6 +39,8 @@ export default function EnableAutoUpdateBannerNotification( {
 	id,
 	Notification,
 } ) {
+	const viewContext = useViewContext();
+
 	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
 	);
@@ -63,6 +66,11 @@ export default function EnableAutoUpdateBannerNotification( {
 	// Render the "Auto Updates enabled successfully" banner variation
 	// if auto updates were enabled using this banner CTA.
 	if ( enabledViaCTA ) {
+		// Use separate GA tracking event category for success banner variation.
+		const gaTrackingEventArgs = {
+			category: `${ viewContext }_${ ENABLE_AUTO_UPDATES_BANNER_SLUG }-success`,
+		};
+
 		return (
 			<Notification className="googlesitekit-publisher-win">
 				<SimpleNotification
@@ -83,6 +91,7 @@ export default function EnableAutoUpdateBannerNotification( {
 						<Dismiss
 							id={ id }
 							dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
+							gaTrackingEventArgs={ gaTrackingEventArgs }
 							dismissExpires={ 1 } // Expire the dismissal instantly to allow showing the banner again if auto-updates are disabled later.
 						/>
 					}
@@ -113,7 +122,7 @@ export default function EnableAutoUpdateBannerNotification( {
 						) }
 						dismissOnCTAClick={ false }
 						onCTAClick={ ctaActivate }
-						dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
+						dismissLabel={ __( 'Dismiss', 'google-site-kit' ) } // This dismissal is permanent since the user specifically chose not to enable auto-updates.
 					/>
 				}
 			/>
