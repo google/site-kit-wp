@@ -34,6 +34,7 @@ import EditorButton from './EditorButton';
 import { CORE_EDITOR } from './constants';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { getNoticeAndDisabled } from './button-edit-utils';
 
 /**
  * Reader Revenue Manager Button Edit component.
@@ -82,32 +83,19 @@ export default function ButtonEdit( {
 		coreSelect( CORE_EDITOR ).getCurrentPostType()
 	);
 
-	let notice = '';
-	let disabled = false;
-
-	if ( paymentOption !== requiredPaymentOption ) {
-		disabled = true;
-
-		if ( hasModuleAccess ) {
-			notice = invalidPaymentOptionWithModuleAccessNotice;
-		} else {
-			notice = invalidPaymentOptionWithoutModuleAccessNotice;
-		}
-	} else if (
-		postProductID === 'none' ||
-		( ! postProductID && snippetMode === 'per_post' ) ||
-		( ! postProductID &&
-			snippetMode === 'post_types' &&
-			! postTypes.includes( postType ) )
-	) {
-		disabled = true;
-
-		if ( hasModuleAccess ) {
-			notice = noSnippetWithModuleAccessNotice;
-		} else {
-			notice = noSnippetWithoutModuleAccessNotice;
-		}
-	}
+	const { notice, disabled } = getNoticeAndDisabled( {
+		paymentOption,
+		requiredPaymentOption,
+		hasModuleAccess,
+		postProductID,
+		snippetMode,
+		postTypes,
+		postType,
+		invalidPaymentOptionWithModuleAccessNotice,
+		invalidPaymentOptionWithoutModuleAccessNotice,
+		noSnippetWithModuleAccessNotice,
+		noSnippetWithoutModuleAccessNotice,
+	} );
 
 	return (
 		<Fragment>
