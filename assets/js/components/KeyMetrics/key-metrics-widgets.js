@@ -355,11 +355,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
 		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
 		description: __(
-			'Total number of leads for the top traffic source',
+			'Channel which brought in the most leads to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Total number of leads for the top traffic source',
+			'Channel (e.g. social, paid, search) that brought in the most leads to your site',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
