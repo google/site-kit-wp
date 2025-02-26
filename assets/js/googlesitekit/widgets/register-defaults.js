@@ -43,6 +43,10 @@ import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
 import MetricsWidgetSubtitle from '../../components/KeyMetrics/MetricsWidgetSubtitle';
 import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
+import {
+	AudienceAreaFooter,
+	ChangeGroupsLink,
+} from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { isFeatureEnabled } from '../../features';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
 import ConversionReportingNotificationCTAWidget from '../../components/KeyMetrics/ConversionReportingNotificationCTAWidget';
@@ -84,6 +88,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 		// Entity dashboard
@@ -140,6 +145,35 @@ export function registerDefaults( widgetsAPI ) {
 			),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		{
+			subtitle: __(
+				'Understand how different visitor groups interact with your site',
+				'google-site-kit'
+			),
+			hasNewBadge: true,
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 2,
+			CTA: ChangeGroupsLink,
+			Footer: AudienceAreaFooter,
+			filterActiveWidgets( select, areaWidgets ) {
+				const isAudienceSegmentationWidgetHidden =
+					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
+				if (
+					isAudienceSegmentationWidgetHidden === undefined ||
+					isAudienceSegmentationWidgetHidden
+				) {
+					return [];
+				}
+
+				return areaWidgets;
+			},
 		},
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);

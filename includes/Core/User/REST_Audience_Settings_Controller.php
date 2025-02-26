@@ -62,7 +62,12 @@ class REST_Audience_Settings_Controller {
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
 			function ( $paths ) {
-				return $paths;
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings',
+					)
+				);
 			}
 		);
 	}

@@ -1338,6 +1338,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
+				'analytics_4_site_kit_audiences',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -1355,6 +1356,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
+				'analytics_4_site_kit_audiences',
 				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
@@ -1372,6 +1374,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_use_snippet',
 				'analytics_4_web_data_stream_id',
 				'analytics_4_ads_linked',
+				'analytics_4_site_kit_audiences',
 				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
@@ -1401,6 +1404,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_adsense_linked',
 				'analytics_4_adsense_linked_last_synced_at',
+				'analytics_4_site_kit_audiences',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
