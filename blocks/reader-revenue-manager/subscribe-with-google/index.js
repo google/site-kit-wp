@@ -25,10 +25,11 @@ import { registerBlockType } from '@wordpress-core/blocks';
 import { select, resolveSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_EDIT_SITE } from '../common/constants';
 import metadata from './block.json';
 import Edit from './Edit';
-import { CORE_EDIT_SITE } from '../common/constants';
-// Since we aren't currently able to use `useSelect()` in the components,
+
+// Since we aren't currently able to use the Site Kit `useSelect()` in the components,
 // we need to resolve selectors before registering the block
 // to ensure the data is available when the block is rendered.
 Promise.all( [
