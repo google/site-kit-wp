@@ -39,10 +39,15 @@ Promise.all( [
 
 	registerBlockType( metadata.name, {
 		edit() {
+			// Don't render the block in the site editor. Site editor support will be added in a future issue.
+			if ( isSiteEditor ) {
+				return null;
+			}
+
 			return <Edit select={ select } />;
 		},
 		supports: {
-			// Only allow the block to be inserted in the post editor.
+			// Don't allow the block to be inserted in the site editor.
 			inserter: ! isSiteEditor,
 		},
 	} );
