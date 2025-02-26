@@ -25,7 +25,7 @@ import classnames from 'classnames';
 import GoogleLogoIcon from '../../../assets/svg/graphics/logo-g.svg';
 
 // Styles copied over from the actual inline button.
-// TODO: These inline styles should be removed once we are enqueuing the corresponding stylesheet in the full site editor.
+// TODO: These inline styles should be removed once we are enqueuing the corresponding stylesheet in the site editor.
 const buttonStyles = {
 	alignItems: 'center',
 	backgroundColor: '#fff',

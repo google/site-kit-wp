@@ -547,7 +547,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			}
 
 			if ( Contribute_With_Google_Block::can_register() || Subscribe_With_Google_Block::can_register() ) {
-				// TODO: Find a way to enqueue this stylesheet in the full site editor.
+				// TODO: Find a way to enqueue this stylesheet in the site editor.
 				$assets[] = new Stylesheet(
 					'blocks-reader-revenue-manager-common-editor-styles',
 					array(
