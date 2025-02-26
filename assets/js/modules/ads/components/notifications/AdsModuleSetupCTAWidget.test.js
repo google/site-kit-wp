@@ -23,7 +23,7 @@
 /**
  * Internal dependencies
  */
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -32,19 +32,19 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 	render,
-} from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { ADS_NOTIFICATIONS } from '../../modules/ads';
+} from '../../../../../../tests/js/test-utils';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { ADS_NOTIFICATIONS } from '../../../../modules/ads';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	MODULES_ADS,
-} from '../../modules/ads/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+} from '../../../../modules/ads/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
-import { enabledFeatures } from '../../features';
+import { enabledFeatures } from '../../../../features';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
 

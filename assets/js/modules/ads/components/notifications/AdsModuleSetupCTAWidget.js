@@ -24,41 +24,40 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../util';
-import AdsSetupSVG from '../../../svg/graphics/ads-setup.svg';
-import AdsSetupTabletSVG from '../../../svg/graphics/ads-setup-tablet.svg';
-import AdsSetupMobileSVG from '../../../svg/graphics/ads-setup-mobile.svg';
-import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
-import AdBlockerWarning from './AdBlockerWarning';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { WEEK_IN_SECONDS } from '../../../../util';
 import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../AdminMenuTooltip';
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+} from '../../datastore/constants';
+import AdsSetupSVG from '../../../../../svg/graphics/ads-setup.svg';
+import AdsSetupTabletSVG from '../../../../../svg/graphics/ads-setup-tablet.svg';
+import AdsSetupMobileSVG from '../../../../../svg/graphics/ads-setup-mobile.svg';
+import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import Description from '../../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
-import { WooCommerceRedirectModal } from '../../modules/ads/components/common';
-import { useCallback } from 'react';
+} from '../../../../hooks/useBreakpoint';
+import { WooCommerceRedirectModal } from '../../components/common';
+import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-	MODULES_ADS,
-} from '../../modules/ads/datastore/constants';
+	useShowTooltip,
+	useTooltipState,
+	AdminMenuTooltip,
+} from '../../../../components/AdminMenuTooltip';
 
 const breakpointSVGMap = {
 	[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
@@ -148,17 +147,15 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 
 	if ( isTooltipVisible ) {
 		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title=""
-					content={ __(
-						'You can always enable Ads from Settings later',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={ id }
-				/>
-			</Fragment>
+			<AdminMenuTooltip
+				title=""
+				content={ __(
+					'You can always enable Ads from Settings later',
+					'google-site-kit'
+				) }
+				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+				tooltipStateKey={ id }
+			/>
 		);
 	}
 
@@ -174,72 +171,65 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	}
 
 	return (
-		<Fragment>
-			<Notification>
-				<NotificationWithSVG
-					id={ id }
-					title={ __(
-						'Get better quality leads and enhance conversions with Ads',
-						'google-site-kit'
-					) }
-					description={
-						<Description
-							text={ __(
-								'Help drive sales, leads, or site traffic by getting your business in front of people who are actively searching Google for products or services you offer.',
-								'google-site-kit'
-							) }
-							learnMoreLink={
-								<LearnMoreLink
-									id={ id }
-									label={ __(
-										'Learn more',
-										'google-site-kit'
-									) }
-									url={ learnMoreURL }
-								/>
-							}
-							AdditionalComponent={
-								isAdBlockerActive && (
-									<AdBlockerWarning moduleSlug="ads" />
-								)
-							}
-						/>
-					}
-					actions={
-						<ActionsCTALinkDismiss
-							id={ id }
-							className="googlesitekit-setup-cta-banner__actions-wrapper"
-							ctaLabel={ __( 'Set up Ads', 'google-site-kit' ) }
-							onCTAClick={ onSetupCallback }
-							dismissOnCTAClick={ false }
-							isSaving={ isSaving }
-							dismissLabel={
-								isDismissalFinal
-									? __(
-											'Don’t show again',
-											'google-site-kit'
-									  )
-									: __( 'Maybe later', 'google-site-kit' )
-							}
-							dismissOptions={ {
-								skipHidingFromQueue: true,
-							} }
-							onDismiss={ showTooltip }
-							dismissExpires={ 2 * WEEK_IN_SECONDS }
-						/>
-					}
-					SVG={ breakpointSVGMap[ breakpoint ] || AdsSetupSVG }
-				/>
-			</Notification>
-			<WooCommerceRedirectModal
-				dialogActive={ openDialog }
-				onDismiss={ onModalDismiss }
+		<Notification>
+			<NotificationWithSVG
+				id={ id }
+				title={ __(
+					'Get better quality leads and enhance conversions with Ads',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						text={ __(
+							'Help drive sales, leads, or site traffic by getting your business in front of people who are actively searching Google for products or services you offer.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ learnMoreURL }
+							/>
+						}
+					>
+						{ isAdBlockerActive && (
+							<AdBlockerWarning moduleSlug="ads" />
+						) }
+					</Description>
+				}
+				actions={
+					<ActionsCTALinkDismiss
+						id={ id }
+						className="googlesitekit-setup-cta-banner__actions-wrapper"
+						ctaLabel={ __( 'Set up Ads', 'google-site-kit' ) }
+						onCTAClick={ onSetupCallback }
+						dismissOnCTAClick={ false }
+						isSaving={ isSaving }
+						dismissLabel={
+							isDismissalFinal
+								? __( 'Don’t show again', 'google-site-kit' )
+								: __( 'Maybe later', 'google-site-kit' )
+						}
+						dismissOptions={ {
+							skipHidingFromQueue: true,
+						} }
+						onDismiss={ showTooltip }
+						dismissExpires={ 2 * WEEK_IN_SECONDS }
+					/>
+				}
+				SVG={ breakpointSVGMap[ breakpoint ] || AdsSetupSVG }
 			/>
-		</Fragment>
+			{ openDialog && (
+				<WooCommerceRedirectModal
+					dialogActive
+					onDismiss={ onModalDismiss }
+				/>
+			) }
+		</Notification>
 	);
 }
 
 AdsModuleSetupCTAWidget.propTypes = {
-	id: PropTypes.string,
-	Notification: PropTypes.elementType,
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
 };

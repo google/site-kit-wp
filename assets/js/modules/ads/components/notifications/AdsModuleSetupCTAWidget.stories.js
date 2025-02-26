@@ -22,11 +22,11 @@
 import {
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'ads-setup-cta'
