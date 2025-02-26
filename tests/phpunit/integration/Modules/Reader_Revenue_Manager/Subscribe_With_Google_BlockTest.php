@@ -45,21 +45,7 @@ class Subscribe_With_Google_BlockTest extends TestCase {
 		$this->block = new Subscribe_With_Google_Block( $context, $tag_guard, $this->settings );
 	}
 
-	public function test_cannot_register_in_wordpress_version_below_5_8() {
-		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) === false ) {
-			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and below.' );
-		}
-
-		$this->block->register();
-
-		$this->assertFalse( has_action( 'init' ) );
-	}
-
-	public function test_can_register_in_wordpress_version_5_8_and_above() {
-		if ( version_compare( get_bloginfo( 'version' ), '5.8', '>=' ) === false ) {
-			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
-		}
-
+	public function test_register() {
 		$this->block->register();
 
 		$this->assertTrue( has_action( 'init' ) );

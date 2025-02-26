@@ -40,6 +40,7 @@ use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Block_Support;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
@@ -155,8 +156,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$this->post_product_id->register();
 
-			$this->contribute_with_google_block->register();
-			$this->subscribe_with_google_block->register();
+			if ( Block_Support::has_block_support() ) {
+				$this->contribute_with_google_block->register();
+				$this->subscribe_with_google_block->register();
+			}
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
@@ -487,7 +490,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && Block_Support::has_block_support() ) {
 			$assets[] = new Script(
 				'blocks-reader-revenue-manager-block-editor-plugin',
 				array(
@@ -512,51 +515,45 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			);
 
-			if ( Contribute_With_Google_Block::can_register() ) {
-				$assets[] = new Script(
-					'blocks-contribute-with-google',
-					array(
-						'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
-						'dependencies'  => array(
-							'googlesitekit-data',
-							'googlesitekit-i18n',
-							'googlesitekit-modules',
-							'googlesitekit-modules-reader-revenue-manager',
-						),
-						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
-						'execution'     => 'defer',
-					)
-				);
-			}
+			$assets[] = new Script(
+				'blocks-contribute-with-google',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+						'googlesitekit-modules-reader-revenue-manager',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
+				)
+			);
 
-			if ( Subscribe_With_Google_Block::can_register() ) {
-				$assets[] = new Script(
-					'blocks-subscribe-with-google',
-					array(
-						'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
-						'dependencies'  => array(
-							'googlesitekit-data',
-							'googlesitekit-i18n',
-							'googlesitekit-modules',
-							'googlesitekit-modules-reader-revenue-manager',
-						),
-						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
-						'execution'     => 'defer',
-					)
-				);
-			}
+			$assets[] = new Script(
+				'blocks-subscribe-with-google',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+						'googlesitekit-modules-reader-revenue-manager',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
+				)
+			);
 
-			if ( Contribute_With_Google_Block::can_register() || Subscribe_With_Google_Block::can_register() ) {
-				// TODO: Find a way to enqueue this stylesheet in the site editor.
-				$assets[] = new Stylesheet(
-					'blocks-reader-revenue-manager-common-editor-styles',
-					array(
-						'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
-						'dependencies'  => array(),
-						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
-					)
-				);
-			}
+			// TODO: Find a way to enqueue this stylesheet in the site editor.
+			$assets[] = new Stylesheet(
+				'blocks-reader-revenue-manager-common-editor-styles',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
+					'dependencies'  => array(),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
 		}
 
 		return $assets;

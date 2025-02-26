@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
-use Google\Site_Kit\Core\Util\Block_Support;
 
 /**
  * Subscribe with Google Gutenberg block.
@@ -63,26 +62,11 @@ class Subscribe_With_Google_Block {
 	}
 
 	/**
-	 * Checks whether the block can be registered.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return bool
-	 */
-	public static function can_register() {
-		return Block_Support::has_block_support();
-	}
-
-	/**
 	 * Register this block.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		if ( ! self::can_register() ) {
-			return;
-		}
-
 		add_action(
 			'init',
 			function () {
