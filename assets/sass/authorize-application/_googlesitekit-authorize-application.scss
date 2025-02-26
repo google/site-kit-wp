@@ -88,7 +88,7 @@
 		}
 
 		code {
-			background-color: $c-authorize-application-gallery;
+			background-color: $c-authorize-application-code-background;
 			border-radius: 4px;
 			color: $c-authorize-application-sys-light-on-surface;
 			display: inline-block;
@@ -161,7 +161,7 @@ html[dir="rtl"] .googlesitekit-authorize-application__footer {
 #wpbody-content,
 #wpfooter {
 	a {
-		color: $c-authorize-application-vivid-blue;
+		color: $c-authorize-application-brand-color;
 	}
 }
 
@@ -211,7 +211,7 @@ html[dir="rtl"] .googlesitekit-authorize-application__footer {
 }
 
 #description-approve {
-	border-bottom: 1px solid $c-authorize-application-pumice;
+	border-bottom: 1px solid $c-authorize-application-divider;
 	margin: 0 0 33px;
 	padding: 0 0 31px;
 }

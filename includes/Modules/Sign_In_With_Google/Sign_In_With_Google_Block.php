@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Block_Support;
 
 /**
  * Sign in with Google Gutenberg Block.
@@ -45,9 +46,7 @@ class Sign_In_With_Google_Block {
 	 * @return bool
 	 */
 	public static function can_register() {
-		$wp_version = get_bloginfo( 'version' );
-		// The block currently requires version WP 5.8 or higher.
-		return (bool) version_compare( '5.8', $wp_version, '<=' );
+		return Block_Support::has_block_support();
 	}
 
 	/**

@@ -1,6 +1,4 @@
 /**
- * Reader Revenue Manager pluign registration.
- *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,42 +17,39 @@
 /**
  * WordPress dependencies
  */
-import { registerPlugin } from '@wordpress-core/plugins';
+import { registerBlockType } from '@wordpress-core/blocks';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { select, resolveSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
-import SettingPanel from './SettingPanel';
 import { CORE_EDIT_SITE } from '../common/constants';
+import metadata from './block.json';
+import Edit from './Edit';
 
-const { select, resolveSelect } = Data;
-
-export function registerReaderRevenueManagerPlugin() {
-	// Only allow the plugin to be registered in the post editor.
-	// TODO: Register the plugin in the site editor for single post pages.
+// Since we aren't currently able to use the Site Kit`useSelect()` in the components,
+// we need to resolve selectors before registering the block
+// to ensure the data is available when the block is rendered.
+Promise.all( [
+	resolveSelect( CORE_MODULES ).getModule( 'reader-revenue-manager' ),
+	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
+] ).then( () => {
 	const isSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
 
-	if ( isSiteEditor ) {
-		return;
-	}
+	registerBlockType( metadata.name, {
+		edit() {
+			// Don't render the block in the site editor. Site editor support will be added in a future issue.
+			if ( isSiteEditor ) {
+				return null;
+			}
 
-	return Promise.all( [
-		resolveSelect( CORE_MODULES ).getModules(),
-		resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
-	] ).then( () => {
-		const isRRMConnected = select( CORE_MODULES ).isModuleConnected(
-			'reader-revenue-manager'
-		);
-
-		if ( ! isRRMConnected ) {
-			return;
-		}
-
-		registerPlugin( 'googlesitekit-rrm-plugin', {
-			render: SettingPanel,
-		} );
+			return <Edit select={ select } />;
+		},
+		supports: {
+			// Don't allow the block to be inserted in the site editor.
+			inserter: ! isSiteEditor,
+		},
 	} );
-}
+} );
