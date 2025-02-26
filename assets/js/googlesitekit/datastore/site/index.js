@@ -35,7 +35,6 @@ import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
 import notifications from './notifications';
-import pluginStatus from './plugin-status';
 import { createErrorStore } from '../../data/create-error-store';
 
 const store = combineStores(
@@ -53,7 +52,6 @@ const store = combineStores(
 	settings,
 	urls,
 	notifications,
-	pluginStatus,
 	cache,
 	createErrorStore( CORE_SITE )
 );

@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_ADS } from './constants';
+import { AVAILABLE_PLUGINS, MODULES_ADS, PLUGINS } from './constants';
 import { controls } from '../../../googlesitekit/datastore/site/info';
 
 function getModuleDataProperty( propName ) {
@@ -35,12 +35,28 @@ function getModuleDataProperty( propName ) {
 	} );
 }
 
+function getPluginStatusProperty( propName, plugin ) {
+	invariant( propName, 'propName is required.' );
+	invariant( plugin, 'plugin is required.' );
+	invariant( AVAILABLE_PLUGINS.includes( plugin ), 'Invalid plugin.' );
+
+	return createRegistrySelector( ( select ) => () => {
+		const { getPluginsData } = select( MODULES_ADS );
+
+		const pluginData = getPluginsData() || [];
+		const pluginStatus = pluginData[ plugin ] || [];
+
+		return pluginStatus[ propName ];
+	} );
+}
+
 // Actions
 const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
 
 export const initialState = {
 	moduleData: {
 		supportedConversionEvents: undefined,
+		plugins: undefined,
 	},
 };
 
@@ -70,8 +86,8 @@ export const actions = {
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { supportedConversionEvents } = payload;
-			const moduleData = { supportedConversionEvents };
+			const { supportedConversionEvents, plugins } = payload;
+			const moduleData = { supportedConversionEvents, plugins };
 
 			return {
 				...state,
@@ -124,6 +140,81 @@ export const selectors = {
 	 */
 	getSupportedConversionEvents: getModuleDataProperty(
 		'supportedConversionEvents'
+	),
+
+	/**
+	 * Gets plugins data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array|undefined} Plugins data array.
+	 */
+	getPluginsData: getModuleDataProperty( 'plugins' ),
+
+	/**
+	 * Determines whether the WooCommerce plugin is installed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
+	 */
+	isWooCommerceInstalled: getPluginStatusProperty(
+		'installed',
+		PLUGINS.WOOCOMMERCE
+	),
+
+	/**
+	 * Determines whether the WooCommerce plugin is activated or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
+	 */
+	isWooCommerceActivated: getPluginStatusProperty(
+		'active',
+		PLUGINS.WOOCOMMERCE
+	),
+
+	/**
+	 * Determines whether the Google for WooCommerce plugin is installed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
+	 */
+	isGoogleForWooCommerceInstalled: getPluginStatusProperty(
+		'installed',
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
+	),
+
+	/**
+	 * Determines whether the Google for WooCommerce plugin is activated or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
+	 */
+	isGoogleForWooCommerceActivated: getPluginStatusProperty(
+		'active',
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
+	),
+
+	/**
+	 * Determines whether the Google for WooCommerce plugin has the linked Ads account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if the plugin has linked Ads account, false if it doesn't have it, and undefined if data is being resolved.
+	 */
+	hasGoogleForWooCommerceAdsAccount: getPluginStatusProperty(
+		'adsConnected',
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
 };
 
