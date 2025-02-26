@@ -30,7 +30,7 @@ function Template( { ...args } ) {
 export const Success = Template.bind( {} );
 Success.storyName = 'Success';
 Success.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	dismissLabel: 'Ok, got it',
 };
 Success.scenario = {};
@@ -38,7 +38,7 @@ Success.scenario = {};
 export const SuccessWithDescription = Template.bind( {} );
 SuccessWithDescription.storyName = 'Success With Description';
 SuccessWithDescription.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 };
@@ -47,7 +47,7 @@ SuccessWithDescription.scenario = {};
 export const SuccessWithCTA = Template.bind( {} );
 SuccessWithCTA.storyName = 'Success With CTA';
 SuccessWithCTA.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
@@ -57,7 +57,7 @@ SuccessWithCTA.scenario = {};
 export const SuccessWithExternalCTA = Template.bind( {} );
 SuccessWithExternalCTA.storyName = 'Success With External CTA';
 SuccessWithExternalCTA.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
@@ -69,7 +69,7 @@ SuccessWithExternalCTA.scenario = {};
 export const SuccessWithCustomIcon = Template.bind( {} );
 SuccessWithCustomIcon.storyName = 'Success With Custom Icon';
 SuccessWithCustomIcon.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
@@ -82,7 +82,7 @@ SuccessWithCustomIcon.scenario = {};
 export const SuccessWithoutIcon = Template.bind( {} );
 SuccessWithoutIcon.storyName = 'Success Without Icon';
 SuccessWithoutIcon.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
 	ctaLink: 'https://sitekit.withgoogle.com/documentation',
@@ -94,7 +94,7 @@ SuccessWithoutIcon.scenario = {};
 export const Warning = Template.bind( {} );
 Warning.storyName = 'Warning';
 Warning.args = {
-	title: 'Warning! Your Conversion Tracking ID was not added to your site',
+	title: 'Warning! Your Conversion ID was not added to your site',
 	dismissLabel: 'Ok, got it',
 	variant: 'warning',
 };
@@ -103,7 +103,7 @@ Warning.scenario = {};
 export const WarningWithDescription = Template.bind( {} );
 WarningWithDescription.storyName = 'Warning With Description';
 WarningWithDescription.args = {
-	title: 'Warning! Your Conversion Tracking ID was not added to your site',
+	title: 'Warning! Your Conversion ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	variant: 'warning',
@@ -113,7 +113,7 @@ WarningWithDescription.scenario = {};
 export const WarningWithCTA = Template.bind( {} );
 WarningWithCTA.storyName = 'Warning With CTA';
 WarningWithCTA.args = {
-	title: 'Warning! Your Conversion Tracking ID was not added to your site',
+	title: 'Warning! Your Conversion ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
@@ -124,7 +124,7 @@ WarningWithCTA.scenario = {};
 export const WarningWithExternalCTA = Template.bind( {} );
 WarningWithExternalCTA.storyName = 'Warning With External CTA';
 WarningWithExternalCTA.args = {
-	title: 'Warning! Your Conversion Tracking ID was not added to your site',
+	title: 'Warning! Your Conversion ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
@@ -137,7 +137,7 @@ WarningWithExternalCTA.scenario = {};
 export const WarningWithCustomIcon = Template.bind( {} );
 WarningWithCustomIcon.storyName = 'Warning With Custom Icon';
 WarningWithCustomIcon.args = {
-	title: 'Warning! Your Conversion Tracking ID was not added to your site',
+	title: 'Warning! Your Conversion ID was not added to your site',
 	description: 'You cannot track conversions for your Ads campaigns',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
@@ -151,7 +151,7 @@ WarningWithCustomIcon.scenario = {};
 export const WarningWithoutIcon = Template.bind( {} );
 WarningWithoutIcon.storyName = 'Warning Without Icon';
 WarningWithoutIcon.args = {
-	title: 'Warning! Your Conversion Tracking ID was added to your site',
+	title: 'Warning! Your Conversion ID was added to your site',
 	dismissLabel: 'Ok, got it',
 	ctaLabel: 'Learn more',
 	ctaLink: 'https://sitekit.withgoogle.com/documentation',
@@ -164,7 +164,7 @@ WarningWithoutIcon.scenario = {};
 export const NonDismissible = Template.bind( {} );
 NonDismissible.storyName = 'Non dismissible';
 NonDismissible.args = {
-	title: 'Success! Your Conversion Tracking ID was added to your site',
+	title: 'Success! Your Conversion ID was added to your site',
 	description: 'You can now track conversions for your Ads campaigns',
 	ctaLabel: 'Learn more',
 	ctaLink: 'https://sitekit.withgoogle.com/documentation',

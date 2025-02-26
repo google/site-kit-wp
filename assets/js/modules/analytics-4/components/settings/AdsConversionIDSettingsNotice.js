@@ -101,7 +101,7 @@ export default function AdsConversionIDSettingsNotice() {
 			Icon={ InfoCircleIcon }
 			notice={ createInterpolateElement(
 				__(
-					'Ads Conversion Tracking ID has been moved to <a>Ads settings</a>',
+					'Ads Conversion ID has been moved to <a>Ads settings</a>',
 					'google-site-kit'
 				),
 				{

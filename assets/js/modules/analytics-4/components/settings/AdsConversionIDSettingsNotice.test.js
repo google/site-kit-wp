@@ -94,7 +94,7 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 		} );
 
 		expect( container ).toHaveTextContent(
-			'Ads Conversion Tracking ID has been moved to Ads settings'
+			'Ads Conversion ID has been moved to Ads settings'
 		);
 
 		expect( container ).toMatchSnapshot();
