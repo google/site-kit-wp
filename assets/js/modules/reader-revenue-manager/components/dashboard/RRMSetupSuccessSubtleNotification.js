@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,6 +33,8 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -36,10 +42,11 @@ import {
 	SYNC_PUBLICATION,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
+import Link from '../../../../components/Link';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -53,6 +60,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
+
+	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
 
 	const actionableOnboardingStates = [
 		PENDING_VERIFICATION,
@@ -115,6 +124,21 @@ export default function RRMSetupSuccessSubtleNotification( {
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
 
+	const paymentOption = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
+	);
+	const productID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
+	);
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const rrmContentSettingsURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'rrm-content-settings'
+		);
+	} );
+
 	const syncPublication = useCallback( async () => {
 		if ( ! shouldSyncPublication ) {
 			return;
@@ -141,6 +165,30 @@ export default function RRMSetupSuccessSubtleNotification( {
 		syncPublicationOnboardingState,
 	] );
 
+	useEffect( () => {
+		if (
+			isRRMV2Enabled &&
+			publicationOnboardingState === ONBOARDING_COMPLETE &&
+			paymentOption === ''
+		) {
+			// If the payment option is not set, show the publication approved notification.
+			setValue(
+				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+				true
+			);
+		} else {
+			setValue(
+				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
+				false
+			);
+		}
+	}, [
+		isRRMV2Enabled,
+		paymentOption,
+		publicationOnboardingState,
+		setValue,
+	] );
+
 	// Sync publication data when user re-focuses window.
 	useRefocus( syncPublication, 15000 );
 
@@ -148,117 +196,225 @@ export default function RRMSetupSuccessSubtleNotification( {
 		gaTrackingEventArgs: { label: publicationOnboardingState },
 	};
 
-	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
-		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up!',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
-						'google-site-kit'
-					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Customize settings',
-								'google-site-kit'
-							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							{ ...gaTrackingProps }
-						/>
-					}
-				/>
-			</Notification>
-		);
+	if ( ! isRRMV2Enabled ) {
+		if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
+			return (
+				<Notification { ...gaTrackingProps }>
+					<SubtleNotification
+						title={ __(
+							'Your Reader Revenue Manager account was successfully set up!',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
+							'google-site-kit'
+						) }
+						dismissCTA={
+							<Dismiss
+								id={ id }
+								primary={ false }
+								dismissLabel={ __(
+									'Got it',
+									'google-site-kit'
+								) }
+								onDismiss={ dismissNotice }
+								{ ...gaTrackingProps }
+							/>
+						}
+						additionalCTA={
+							<CTALinkSubtle
+								id={ id }
+								ctaLabel={ __(
+									'Customize settings',
+									'google-site-kit'
+								) }
+								ctaLink={ serviceURL }
+								onCTAClick={ onCTAClick }
+								isCTALinkExternal
+								{ ...gaTrackingProps }
+							/>
+						}
+					/>
+				</Notification>
+			);
+		}
+
+		if ( publicationOnboardingState === PENDING_VERIFICATION ) {
+			return (
+				<Notification { ...gaTrackingProps }>
+					<SubtleNotification
+						title={ __(
+							'Your Reader Revenue Manager account was successfully set up!',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
+							'google-site-kit'
+						) }
+						dismissCTA={
+							<Dismiss
+								id={ id }
+								primary={ false }
+								dismissLabel={ __(
+									'Got it',
+									'google-site-kit'
+								) }
+								onDismiss={ dismissNotice }
+								{ ...gaTrackingProps }
+							/>
+						}
+						additionalCTA={
+							<CTALinkSubtle
+								id={ id }
+								ctaLabel={ __(
+									'Check publication status',
+									'google-site-kit'
+								) }
+								ctaLink={ serviceURL }
+								onCTAClick={ onCTAClick }
+								isCTALinkExternal
+								{ ...gaTrackingProps }
+							/>
+						}
+					/>
+				</Notification>
+			);
+		}
+
+		if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
+			return (
+				<Notification { ...gaTrackingProps }>
+					<SubtleNotification
+						title={ __(
+							'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
+							'google-site-kit'
+						) }
+						dismissCTA={
+							<Dismiss
+								id={ id }
+								primary={ false }
+								dismissLabel={ __(
+									'Got it',
+									'google-site-kit'
+								) }
+								onDismiss={ dismissNotice }
+								{ ...gaTrackingProps }
+							/>
+						}
+						additionalCTA={
+							<CTALinkSubtle
+								id={ id }
+								ctaLabel={ __(
+									'Complete publication setup',
+									'google-site-kit'
+								) }
+								ctaLink={ serviceURL }
+								onCTAClick={ onCTAClick }
+								isCTALinkExternal
+								{ ...gaTrackingProps }
+							/>
+						}
+						type="warning"
+					/>
+				</Notification>
+			);
+		}
 	}
 
-	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
-		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up!',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
-						'google-site-kit'
-					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Check publication status',
-								'google-site-kit'
-							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							{ ...gaTrackingProps }
-						/>
-					}
-				/>
-			</Notification>
-		);
-	}
+	if (
+		isRRMV2Enabled &&
+		publicationOnboardingState === ONBOARDING_COMPLETE
+	) {
+		const notificationContent = {
+			title: __(
+				'Success! Your Reader Revenue Manager account is set up',
+				'google-site-kit'
+			),
+			description: '',
+			primaryButton: {
+				text: __( 'Manage CTAs', 'google-site-kit' ),
+				ctaLink: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+				isCTALinkExternal: false,
+			},
+			secondaryButton: {
+				text: __( 'Got it', 'google-site-kit' ),
+				onClick: dismissNotice,
+			},
+		};
 
-	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
-		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
-						'google-site-kit'
-					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Complete publication setup',
+		if (
+			paymentOption === 'subscriptions' ||
+			paymentOption === 'contributions'
+		) {
+			if ( paymentOption === 'subscriptions' && productID ) {
+				notificationContent.description = __(
+					'You can edit your settings to manage product IDs and select which of your site’s pages will include a subscription CTA.',
+					'google-site-kit'
+				);
+			} else {
+				// - No product ID (regardless of payment option).
+				// - Contributions with product ID.
+				notificationContent.description = __(
+					'You can edit your settings to manage product IDs and select which of your site’s pages will include a contribution CTA.',
+					'google-site-kit'
+				);
+			}
+		} else if ( paymentOption === 'noPayment' ) {
+			notificationContent.description = createInterpolateElement(
+				__(
+					'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							aria-label={ __(
+								'Learn more about paywalls, subscriptions and contributions',
 								'google-site-kit'
 							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							{ ...gaTrackingProps }
+							href={ rrmContentSettingsURL }
+							external
+							hideExternalIndicator
 						/>
-					}
-					type="warning"
-				/>
-			</Notification>
+					),
+				}
+			);
+			notificationContent.primaryButton = {
+				text: __( 'Get started', 'google-site-kit' ),
+				ctaLink: rrmContentSettingsURL,
+				isCTALinkExternal: true,
+			};
+		} else if ( paymentOption === '' ) {
+			return null;
+		}
+
+		return (
+			<SubtleNotification
+				title={ notificationContent.title }
+				description={ notificationContent.description }
+				dismissCTA={
+					<Dismiss
+						id={ id }
+						primary={ false }
+						dismissLabel={
+							notificationContent.secondaryButton.text
+						}
+						onDismiss={
+							notificationContent.secondaryButton.onClick
+						}
+					/>
+				}
+				additionalCTA={
+					<CTALinkSubtle
+						id={ id }
+						ctaLabel={ notificationContent.primaryButton.text }
+						ctaLink={ notificationContent.primaryButton.ctaLink }
+						isCTALinkExternal={
+							notificationContent.primaryButton.isCTALinkExternal
+						}
+					/>
+				}
+			/>
 		);
 	}
 
