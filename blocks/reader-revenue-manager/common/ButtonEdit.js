@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
@@ -25,7 +30,7 @@ import { Fragment } from '@wordpress-core/element';
  * Internal dependencies
  */
 import EditorButton from './EditorButton';
-import { CORE_EDIT_SITE, CORE_EDITOR } from './constants';
+import { CORE_EDITOR } from './constants';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 
@@ -66,13 +71,7 @@ export default function EditButton( {
 	let notice = '';
 	let disabled = false;
 
-	const isSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
-
-	// If we're in the site editor, we can't determine if the button will be shown
-	// so we disable it to avoid displaying it in the wrong context.
-	if ( isSiteEditor ) {
-		disabled = true;
-	} else if ( paymentOption !== requiredPaymentOption ) {
+	if ( paymentOption !== requiredPaymentOption ) {
 		disabled = true;
 
 		if ( hasModuleAccess ) {
@@ -127,3 +126,13 @@ export default function EditButton( {
 		</Fragment>
 	);
 }
+
+EditButton.propTypes = {
+	select: PropTypes.func.isRequired,
+	buttonLabel: PropTypes.string.isRequired,
+	requiredPaymentOption: PropTypes.string.isRequired,
+	invalidPaymentOptionWithModuleAccessNotice: PropTypes.node.isRequired,
+	invalidPaymentOptionWithoutModuleAccessNotice: PropTypes.node.isRequired,
+	noSnippetWithModuleAccessNotice: PropTypes.node.isRequired,
+	noSnippetWithoutModuleAccessNotice: PropTypes.node.isRequired,
+};

@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { ExternalLink } from '@wordpress-core/components';
@@ -85,3 +90,7 @@ export default function Edit( { select } ) {
 		/>
 	);
 }
+
+Edit.propTypes = {
+	select: PropTypes.func.isRequired,
+};
