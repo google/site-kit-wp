@@ -76,7 +76,7 @@ export default function EnableAutoUpdateBannerNotification( {
 								'Auto-updates have been enabled. Your version of Site Kit will automatically be updated when new versions are available.',
 								'google-site-kit'
 							) }
-							errorText={ enableAutoUpdateError }
+							errorText={ enableAutoUpdateError?.message }
 						/>
 					}
 					actions={
@@ -100,6 +100,7 @@ export default function EnableAutoUpdateBannerNotification( {
 							'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
 							'google-site-kit'
 						) }
+						errorText={ enableAutoUpdateError?.message }
 					/>
 				}
 				actions={
