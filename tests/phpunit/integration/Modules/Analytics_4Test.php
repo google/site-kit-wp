@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Analytics_4Test
  *
@@ -212,8 +213,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register__reset_resource_data_availability_date__on_property_id_change() {
 
-		list(
-			,
+		list(,
 			,
 			,
 			$test_resource_data_availability_transient_audience,
@@ -238,8 +238,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register__reset_resource_data_availability_date__on_measurement_id_change() {
 
-		list(
-			,
+		list(,
 			,
 			,
 			$test_resource_data_availability_transient_audience,
@@ -313,8 +312,7 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register__reset_resource_data_availability_date__on_deactivation() {
 
-		list(
-			,
+		list(,
 			,
 			,
 			$test_resource_data_availability_transient_audience,
@@ -897,7 +895,7 @@ class Analytics_4Test extends TestCase {
 
 		// Ensure the enhanced measurement settings request was made.
 		$this->assertCount( 1, $enhanced_measurement_settings_requests );
-		list( $request ) = array_values( $enhanced_measurement_settings_requests );
+		list($request) = array_values( $enhanced_measurement_settings_requests );
 		$this->assertArrayIntersection(
 			array( 'streamEnabled' => true ),
 			$request['params']
@@ -1246,6 +1244,11 @@ class Analytics_4Test extends TestCase {
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
+				'audience-settings',
+				'create-audience',
+				'save-audience-settings',
+				'save-resource-data-availability-date',
+				'sync-audiences',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -1314,6 +1317,11 @@ class Analytics_4Test extends TestCase {
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
+				'audience-settings',
+				'create-audience',
+				'save-audience-settings',
+				'save-resource-data-availability-date',
+				'sync-audiences',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -1348,7 +1356,6 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
-				'analytics_4_site_kit_audiences',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -4398,46 +4405,6 @@ class Analytics_4Test extends TestCase {
 			0,
 			$this->analytics->get_settings()->get()['availableAudiencesLastSyncedAt']
 		);
-	}
-
-	/**
-	 * @dataProvider data_access_token
-	 */
-	public function test_site_kit_audiences_returned_in_debug_fields( $access_token ) {
-
-		$this->setup_user_authentication( $access_token );
-
-		$property_id = '12345';
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => $property_id,
-			)
-		);
-
-		// Grant scopes so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		$this->fake_handler_and_invoke_register_method( $property_id );
-
-		$this->analytics->set_data( 'sync-audiences', array() );
-		$debug_fields = $this->analytics->get_debug_fields();
-
-		$this->assertArrayHasKey( 'analytics_4_site_kit_audiences', $debug_fields );
-
-		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
-
-		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'] );
-
-		if ( $this->authentication->is_authenticated() ) {
-			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
-			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
-		} else {
-			$this->assertEquals( 'None', $audience_field['value'] );
-			$this->assertEquals( 'none', $audience_field['debug'] );
-		}
 	}
 
 	public function test_register_template_redirect_amp() {
