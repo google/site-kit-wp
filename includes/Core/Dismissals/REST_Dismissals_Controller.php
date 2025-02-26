@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Dismissals;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_Error;
@@ -101,9 +102,13 @@ class REST_Dismissals_Controller {
 				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$slugs = $request['data']['slugs'];
+						if ( empty( $request['data']['slugs'] ) ) {
+							// Schema validation does not catch empty object params
+							// in older versions of WP.
+							return ( new Invalid_Param_Exception( 'data' ) )->to_wp_error();
+						}
 
-						foreach ( $slugs as $slug ) {
+						foreach ( $request['data']['slugs'] as $slug ) {
 							$this->dismissed_items->remove( $slug );
 						}
 

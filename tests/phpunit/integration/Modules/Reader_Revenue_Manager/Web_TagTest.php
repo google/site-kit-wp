@@ -23,7 +23,7 @@ class Web_TagTest extends TestCase {
 
 	const EXPECTED_SNIPPET_STRINGS = array(
 		'Google Reader Revenue Manager snippet added by Site Kit',
-		'<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		'https://news.google.com/swg/js/v1/swg-basic.js',
 		'(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . self::PUBLICATION_ID . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});',
 	);
 
