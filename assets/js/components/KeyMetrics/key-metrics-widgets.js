@@ -375,11 +375,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
 		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
 		description: __(
-			'Traffic source that generates the most purchases',
+			'Channel which brought in the most purchases to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Traffic source that generates the most purchases',
+			'Channel (e.g. social, paid, search) that brought in the most purchases to your site',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
