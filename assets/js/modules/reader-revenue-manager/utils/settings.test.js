@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getPostTypesString } from './settings';
+import { getPostTypesString, getProductIDLabel } from './settings';
 
 describe( 'getPostTypesString', () => {
 	it( 'returns post type labels for postTypes setting slugs', () => {
@@ -105,5 +105,17 @@ describe( 'getPostTypesString', () => {
 		];
 
 		expect( getPostTypesString( false, allPostTypes ) ).toBe( '' );
+	} );
+} );
+
+describe( 'getProductIDLabel', () => {
+	it( 'returns the product ID label', () => {
+		expect( getProductIDLabel( 'publicationID:productID' ) ).toBe(
+			'productID'
+		);
+	} );
+
+	it( 'returns the full product ID if no separator is found', () => {
+		expect( getProductIDLabel( 'productID' ) ).toBe( 'productID' );
 	} );
 } );
