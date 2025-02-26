@@ -35,7 +35,7 @@ Promise.all( [
 	resolveSelect( CORE_MODULES ).getModule( 'reader-revenue-manager' ),
 	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 ] ).then( () => {
-	const isFullSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
+	const isSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
 
 	registerBlockType( metadata.name, {
 		edit() {
@@ -43,7 +43,7 @@ Promise.all( [
 		},
 		supports: {
 			// Only allow the block to be inserted in the post editor.
-			inserter: ! isFullSiteEditor,
+			inserter: ! isSiteEditor,
 		},
 	} );
 } );

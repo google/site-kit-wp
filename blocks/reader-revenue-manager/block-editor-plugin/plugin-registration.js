@@ -35,9 +35,9 @@ const { select, resolveSelect } = Data;
 export function registerReaderRevenueManagerPlugin() {
 	// Only allow the plugin to be registered in the post editor.
 	// TODO: Register the plugin in the site editor for single post pages.
-	const isFullSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
+	const isSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
 
-	if ( isFullSiteEditor ) {
+	if ( isSiteEditor ) {
 		return;
 	}
 

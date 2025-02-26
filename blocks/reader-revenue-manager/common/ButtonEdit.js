@@ -66,11 +66,11 @@ export default function EditButton( {
 	let notice = '';
 	let disabled = false;
 
-	const isFullSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
+	const isSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
 
-	// If we're in the full site editor, we can't determine if the button will be shown
+	// If we're in the site editor, we can't determine if the button will be shown
 	// so we disable it to avoid displaying it in the wrong context.
-	if ( isFullSiteEditor ) {
+	if ( isSiteEditor ) {
 		disabled = true;
 	} else if ( paymentOption !== requiredPaymentOption ) {
 		disabled = true;
