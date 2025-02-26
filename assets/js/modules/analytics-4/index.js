@@ -777,7 +777,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
-		featureFlag: 'audienceSegmentation',
 	},
 };
 

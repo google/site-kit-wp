@@ -117,33 +117,33 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
 
-	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+	public const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
-	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
-	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+	public const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	public const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	public const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
 	 */
-	const MODULE_SLUG = 'analytics-4';
+	public const MODULE_SLUG = 'analytics-4';
 
 	/**
 	 * Prefix used to fetch custom dimensions in reports.
 	 */
-	const CUSTOM_EVENT_PREFIX = 'customEvent:';
+	public const CUSTOM_EVENT_PREFIX = 'customEvent:';
 
 	/**
 	 * Custom dimensions tracked by Site Kit.
 	 */
-	const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
-	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
+	public const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
+	public const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
 
 	/**
 	 * Weights for audience types when sorting audiences in the selection panel
 	 * and within the dashboard widget.
 	 */
-	const AUDIENCE_TYPE_SORT_ORDER = array(
+	public const AUDIENCE_TYPE_SORT_ORDER = array(
 		'USER_AUDIENCE'     => 0,
 		'SITE_KIT_AUDIENCE' => 1,
 		'DEFAULT_AUDIENCE'  => 2,
@@ -244,10 +244,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$conversion_reporting_provider->register();
 		}
 
-		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$this->audience_settings = new Audience_Settings( $this->options );
-			$this->audience_settings->register();
-		}
+		$this->audience_settings = new Audience_Settings( $this->options );
+		$this->audience_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -386,7 +384,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						self::READONLY_SCOPE,
 					)
 				) ) {
-						$needs_tagmanager_scope = true;
+					$needs_tagmanager_scope = true;
 				}
 
 				if ( $needs_tagmanager_scope ) {
@@ -683,27 +681,25 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			$datapoints['POST:create-audience']                      = array(
-				'service'                => 'analyticsaudiences',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
-			);
-			$datapoints['POST:save-resource-data-availability-date'] = array(
-				'service' => '',
-			);
-			$datapoints['POST:sync-audiences']                       = array(
-				'service'   => 'analyticsaudiences',
-				'shareable' => true,
-			);
-			$datapoints['GET:audience-settings']                     = array(
-				'service'   => '',
-				'shareable' => true,
-			);
-			$datapoints['POST:save-audience-settings']               = array(
-				'service' => '',
-			);
-		}
+		$datapoints['POST:create-audience']                      = array(
+			'service'                => 'analyticsaudiences',
+			'scopes'                 => array( self::EDIT_SCOPE ),
+			'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
+		);
+		$datapoints['POST:save-resource-data-availability-date'] = array(
+			'service' => '',
+		);
+		$datapoints['POST:sync-audiences']                       = array(
+			'service'   => 'analyticsaudiences',
+			'shareable' => true,
+		);
+		$datapoints['GET:audience-settings']                     = array(
+			'service'   => '',
+			'shareable' => true,
+		);
+		$datapoints['POST:save-audience-settings']               = array(
+			'service' => '',
+		);
 
 		return $datapoints;
 	}
@@ -1057,7 +1053,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 *
-	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+     * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -2613,7 +2609,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			return array();
 		}
 
-		$site_kit_audiences = array_filter( $audiences, fn( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
+		$site_kit_audiences = array_filter( $audiences, fn ( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
 
 		if ( empty( $site_kit_audiences ) ) {
 			return array();
