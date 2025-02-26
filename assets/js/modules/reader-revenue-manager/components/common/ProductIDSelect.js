@@ -36,6 +36,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { Option, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { getProductIDLabel } from '../../utils/settings';
 
 export default function ProductIDSelect( props ) {
 	const {
@@ -124,7 +125,7 @@ export default function ProductIDSelect( props ) {
 			</Option>
 			{ ( productIDs || [] ).map( ( product ) => (
 				<Option key={ product } value={ product }>
-					{ product }
+					{ getProductIDLabel( product ) }
 				</Option>
 			) ) }
 		</Select>
