@@ -92,7 +92,7 @@ const selectors = {
 	/**
 	 * Gets the create publication link URL for Reader Revenue Manager.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @return {string} Create publication link URL.
 	 */

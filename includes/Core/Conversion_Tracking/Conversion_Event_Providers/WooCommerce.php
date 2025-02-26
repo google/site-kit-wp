@@ -33,7 +33,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @return bool True if WooCommerce is active, false otherwise.
 	 */
 	public function is_active() {
-		return did_action( 'woocommerce_loaded' ) > 0;
+		return class_exists( 'WooCommerce' );
 	}
 
 	/**

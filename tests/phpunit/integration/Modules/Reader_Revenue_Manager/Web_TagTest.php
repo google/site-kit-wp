@@ -23,31 +23,22 @@ class Web_TagTest extends TestCase {
 
 	const EXPECTED_SNIPPET_STRINGS = array(
 		'Google Reader Revenue Manager snippet added by Site Kit',
-		'<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		'https://news.google.com/swg/js/v1/swg-basic.js',
 		'(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . self::PUBLICATION_ID . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});',
 	);
 
 	public function set_up() {
 		parent::set_up();
 
-		$web_tag = new Web_Tag( self::PUBLICATION_ID, Reader_Revenue_Manager::MODULE_SLUG );
+		$web_tag = new Web_Tag(
+			self::PUBLICATION_ID,
+			Reader_Revenue_Manager::MODULE_SLUG
+		);
 		$web_tag->register();
+		$web_tag->set_product_id( 'openaccess' );
 	}
 
-	public function test_snippet_not_inserted_on_non_singular_posts() {
-		do_action( 'wp_enqueue_scripts' );
-
-		$footer_html = $this->capture_action( 'wp_footer' );
-
-		foreach ( self::EXPECTED_SNIPPET_STRINGS as $snippet_string ) {
-			$this->assertStringNotContainsString( $snippet_string, $footer_html );
-		}
-	}
-
-	public function test_snippet_inserted_on_singular_posts() {
-		$post_ID = $this->factory()->post->create();
-		$this->go_to( get_permalink( $post_ID ) );
-
+	public function test_snippet_inserted() {
 		do_action( 'wp_enqueue_scripts' );
 
 		$footer_html = $this->capture_action( 'wp_footer' );

@@ -64,7 +64,12 @@ export default function useEnableAudienceGroup( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
-	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		enableAudienceGroup,
+		fetchSyncAvailableCustomDimensions,
+		determineNeedForAnalytics4EditScope,
+		syncAvailableAudiences,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	if ( ! redirectURL ) {
 		redirectURL = addQueryArgs( global.location.href, {
@@ -72,13 +77,56 @@ export default function useEnableAudienceGroup( {
 		} );
 	}
 
+	const maybeEnableAudienceGroup = useCallback( async () => {
+		const { error: syncAudiencesError } = await syncAvailableAudiences();
+
+		if ( syncAudiencesError ) {
+			return { error: syncAudiencesError };
+		}
+
+		const { error: syncDimensionsError } =
+			await fetchSyncAvailableCustomDimensions();
+
+		if ( syncDimensionsError ) {
+			return { error: syncDimensionsError };
+		}
+
+		if ( ! hasAnalytics4EditScope ) {
+			const { error, needsScope } =
+				await determineNeedForAnalytics4EditScope();
+
+			if ( error ) {
+				return { error };
+			} else if ( needsScope ) {
+				return { needsScope: true };
+			}
+		}
+
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+
+		const { error, failedSiteKitAudienceSlugs } =
+			( await enableAudienceGroup( failedAudiences ) ) || {};
+
+		return { error, failedSiteKitAudienceSlugs };
+	}, [
+		enableAudienceGroup,
+		failedAudiences,
+		fetchSyncAvailableCustomDimensions,
+		hasAnalytics4EditScope,
+		determineNeedForAnalytics4EditScope,
+		setValues,
+		syncAvailableAudiences,
+	] );
+
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
 
-		// If scope is not granted, trigger scope error right away. These are
-		// typically handled automatically based on API responses, but
-		// this particular case has some special handling to improve UX.
-		if ( ! hasAnalytics4EditScope ) {
+		const { error, needsScope, failedSiteKitAudienceSlugs } =
+			await maybeEnableAudienceGroup();
+
+		if ( needsScope ) {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
@@ -99,13 +147,11 @@ export default function useEnableAudienceGroup( {
 				},
 			} );
 
+			// Note that we don't set isSaving to false here, this is to ensure that, when the page begins to navigate to the OAuth flow:
+			// - The in-progress state for the Audience Segmentation Setup CTA is retained.
+			// - The OAuth error modal doesn't disappear when it's shown and the user clicks the "Retry" button.
 			return;
 		}
-
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, { autoSubmit: false } );
-
-		const { error, failedSiteKitAudienceSlugs } =
-			( await enableAudienceGroup( failedAudiences ) ) || {};
 
 		if ( !! error || !! failedSiteKitAudienceSlugs ) {
 			onError?.();
@@ -114,25 +160,27 @@ export default function useEnableAudienceGroup( {
 		}
 
 		if ( isMounted() ) {
+			function newArrayIfNotEmpty( currentArray ) {
+				return currentArray.length ? [] : currentArray;
+			}
+
 			if ( error ) {
 				setApiErrors( [ error ] );
-				setFailedAudiences( [] );
+				setFailedAudiences( newArrayIfNotEmpty );
 			} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
 				setFailedAudiences( failedSiteKitAudienceSlugs );
-				setApiErrors( [] );
+				setApiErrors( newArrayIfNotEmpty );
 			} else {
-				setApiErrors( [] );
-				setFailedAudiences( [] );
+				setApiErrors( newArrayIfNotEmpty );
+				setFailedAudiences( newArrayIfNotEmpty );
 			}
 
 			setIsSaving( false );
 		}
 	}, [
-		hasAnalytics4EditScope,
-		setValues,
-		enableAudienceGroup,
-		failedAudiences,
+		maybeEnableAudienceGroup,
 		isMounted,
+		setValues,
 		setPermissionScopeError,
 		redirectURL,
 		onError,
