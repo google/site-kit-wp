@@ -6,6 +6,5 @@
 	"gm3Components",
 	"privacySandboxModule",
 	"rrmModule",
-	"rrmModuleV2",
-	"signInWithGoogleModule"
+	"rrmModuleV2"
 ]

@@ -52,7 +52,7 @@ export default {
 		withQuery,
 		( Story ) => {
 			return (
-				<WithTestRegistry features={ [ 'signInWithGoogleModule' ] }>
+				<WithTestRegistry>
 					<Story />
 				</WithTestRegistry>
 			);
