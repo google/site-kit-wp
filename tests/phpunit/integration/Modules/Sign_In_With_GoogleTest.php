@@ -319,7 +319,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 	 */
 	protected function get_mock_authenticator( $redirect_to ) {
 		$mock = $this->getMockBuilder( Authenticator_Interface::class )
-					->onlyMethods( array( 'authenticate_user' ) )
+					->setMethods( array( 'authenticate_user' ) )
 					->getMock();
 		$mock->method( 'authenticate_user' )->willReturn( $redirect_to );
 

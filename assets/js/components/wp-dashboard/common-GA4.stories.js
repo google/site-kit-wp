@@ -29,7 +29,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../storybook/utils/zeroReports';
 import { DAY_IN_SECONDS } from '../../util';
 import * as __fixtures__ from '../../modules/analytics-4/datastore/__fixtures__';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
