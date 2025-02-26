@@ -207,10 +207,13 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 			adBlockingRecoverySetupStatus: '',
 		} );
 
-		const { getByRole } = render( <AdBlockingRecoverySetupCTANotice />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SETTINGS,
-		} );
+		const { waitForRegistry, getByRole } = render(
+			<AdBlockingRecoverySetupCTANotice />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
@@ -221,6 +224,8 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 			'settings_adsense-abr-cta-widget',
 			'click_learn_more_link'
 		);
+
+		await waitForRegistry();
 	} );
 
 	it( 'should trigger a survey when rendered', async () => {
