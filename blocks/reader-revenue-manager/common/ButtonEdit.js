@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
 import { Notice } from '@wordpress-core/components';
 import { Fragment } from '@wordpress-core/element';
+import { useSelect } from '@wordpress-core/data';
 
 /**
  * Internal dependencies
@@ -68,6 +69,19 @@ export default function EditButton( {
 
 	const { publicationID, paymentOption, snippetMode, postTypes } = settings;
 
+	const metaKey = `googlesitekit_rrm_${ publicationID }:productID`;
+
+	const postProductID = useSelect(
+		( coreSelect ) =>
+			coreSelect( CORE_EDITOR ).getEditedPostAttribute( 'meta' )?.[
+				metaKey
+			] || ''
+	);
+
+	const postType = useSelect( ( coreSelect ) =>
+		coreSelect( CORE_EDITOR ).getCurrentPostType()
+	);
+
 	let notice = '';
 	let disabled = false;
 
@@ -79,29 +93,19 @@ export default function EditButton( {
 		} else {
 			notice = invalidPaymentOptionWithoutModuleAccessNotice;
 		}
-	} else {
-		const metaKey = `googlesitekit_rrm_${ publicationID }:productID`;
+	} else if (
+		postProductID === 'none' ||
+		( ! postProductID && snippetMode === 'per_post' ) ||
+		( ! postProductID &&
+			snippetMode === 'post_types' &&
+			! postTypes.includes( postType ) )
+	) {
+		disabled = true;
 
-		const postProductID =
-			select( CORE_EDITOR ).getEditedPostAttribute( 'meta' )?.[
-				metaKey
-			] || '';
-		const postType = select( CORE_EDITOR ).getCurrentPostType();
-
-		if (
-			postProductID === 'none' ||
-			( ! postProductID && snippetMode === 'per_post' ) ||
-			( ! postProductID &&
-				snippetMode === 'post_types' &&
-				! postTypes.includes( postType ) )
-		) {
-			disabled = true;
-
-			if ( hasModuleAccess ) {
-				notice = noSnippetWithModuleAccessNotice;
-			} else {
-				notice = noSnippetWithoutModuleAccessNotice;
-			}
+		if ( hasModuleAccess ) {
+			notice = noSnippetWithModuleAccessNotice;
+		} else {
+			notice = noSnippetWithoutModuleAccessNotice;
 		}
 	}
 
