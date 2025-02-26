@@ -143,13 +143,6 @@ export default function SettingsEdit() {
 			'rrm-content-settings'
 		);
 	} );
-	const { categoriesAdminURL, tagsAdminURL } = useSelect( ( select ) => {
-		const adminURL = select( CORE_SITE ).getAdminURL();
-		return {
-			categoriesAdminURL: `${ adminURL }edit-tags.php?taxonomy=category`,
-			tagsAdminURL: `${ adminURL }edit-tags.php?taxonomy=post_tag`,
-		};
-	} );
 	const isOpenAccessNoticeDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
@@ -240,32 +233,10 @@ export default function SettingsEdit() {
 							<SubtleNotification
 								title={ createInterpolateElement(
 									__(
-										'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. You can also configure a different product ID for a group of posts in the <categories>Categories</categories> or <tags>Tags</tags> section. <learnMore>Learn more</learnMore>',
+										'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. <learnMore>Learn more</learnMore>',
 										'google-site-kit'
 									),
 									{
-										categories: (
-											<Link
-												aria-label={ __(
-													'Learn more about Categories',
-													'google-site-kit'
-												) }
-												href={ categoriesAdminURL }
-												external
-												hideExternalIndicator
-											/>
-										),
-										tags: (
-											<Link
-												aria-label={ __(
-													'Learn more about Tags',
-													'google-site-kit'
-												) }
-												href={ tagsAdminURL }
-												external
-												hideExternalIndicator
-											/>
-										),
 										learnMore: (
 											<Link
 												aria-label={ __(
