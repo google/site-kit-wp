@@ -356,6 +356,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
 
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
+
 		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
 			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
 		}
