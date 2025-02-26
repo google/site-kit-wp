@@ -83,6 +83,7 @@ export default function EnableAutoUpdateBannerNotification( {
 						<Dismiss
 							id={ id }
 							dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
+							dismissExpires={ 1 } // Expire the dismissal instantly to allow showing the banner again if auto-updates are disabled later.
 						/>
 					}
 				/>
