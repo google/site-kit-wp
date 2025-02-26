@@ -114,7 +114,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 				desc: true,
 			},
 		],
-		limit: 6,
 	};
 
 	const graphArgs = {
