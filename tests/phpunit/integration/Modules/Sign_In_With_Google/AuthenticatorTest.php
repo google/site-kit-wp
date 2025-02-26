@@ -77,7 +77,7 @@ class AuthenticatorTest extends TestCase {
 	private function do_authenticate_user( $profile_reader_data = array() ) {
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$mock_profile_reader = $this->getMockBuilder( Profile_Reader_Interface::class )
-									->onlyMethods( array( 'get_profile_data' ) )
+									->setMethods( array( 'get_profile_data' ) )
 									->getMock();
 		$mock_profile_reader->method( 'get_profile_data' )->willReturn( $profile_reader_data );
 		$authenticator = new Authenticator( $user_options, $mock_profile_reader );

@@ -11,80 +11,41 @@
 namespace Google\Site_Kit\Core\Util;
 
 /**
- * Plugin_Status class.
+ * Utility class for checking the status of plugins.
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class Plugin_Status {
 
 	/**
-	 * Plugin installed identifier.
-	 *
-	 * @since n.e.x.t
-	 */
-	const PLUGIN_STATUS_INSTALLED = 'installed';
-
-	/**
-	 * Plugin not active identifier.
-	 *
-	 * @since n.e.x.t
-	 */
-	const PLUGIN_STATUS_ACTIVE = 'active';
-
-	/**
-	 * Plugin not installed identifier.
-	 *
-	 * @since n.e.x.t
-	 */
-	const PLUGIN_STATUS_NOT_INSTALLED = 'not-installed';
-
-	/**
-	 * The plugin path of the plugin being checked.
-	 *
-	 * @var string The plugin path of the plugin being checked.
-	 *
-	 * @since n.e.x.t
-	 */
-	public static $plugin_path;
-
-	/**
-	 * Helper method to retrieve plugin installation/activation status.
-	 *
-	 * @param string $plugin_path The plugin path.
-	 * @param string $plugin_url  The plugin URL.
+	 * Determines whether a plugin is installed.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string The status of the plugin.
+	 * @param string|callable $plugin_or_predicate String plugin file to check or
+	 *                                a function that accepts plugin header data and plugin file name to test.
+	 *
+	 * @return bool|string Boolean if checking by plugin file or plugin not found,
+	 *                     String plugin file if checking using a predicate function.
 	 */
-	public static function get_plugin_status( $plugin_path = '', $plugin_url = '' ) {
-		static::$plugin_path = $plugin_path;
-
-		if ( empty( $plugin_path ) && empty( $plugin_url ) ) {
-			return static::PLUGIN_STATUS_NOT_INSTALLED;
-		}
-
+	public static function is_plugin_installed( $plugin_or_predicate ) {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		if ( true === is_plugin_active( $plugin_path ) ) {
-			return static::PLUGIN_STATUS_ACTIVE;
+		if ( is_string( $plugin_or_predicate ) ) {
+			return array_key_exists( $plugin_or_predicate, get_plugins() );
 		}
-
-		$plugins = get_plugins();
-
-		if ( array_key_exists( $plugin_path, $plugins ) ) {
-			return static::PLUGIN_STATUS_INSTALLED;
-		} else {
-			foreach ( $plugins as $plugin_file => $installed_plugin ) {
-				if ( $installed_plugin['PluginURI'] === $plugin_url ) {
-					static::$plugin_path = $plugin_file;
-					return static::PLUGIN_STATUS_INSTALLED;
-				}
+		if ( ! is_callable( $plugin_or_predicate ) ) {
+			return false;
+		}
+		foreach ( get_plugins() as $plugin_file => $data ) {
+			if ( $plugin_or_predicate( $data, $plugin_file ) ) {
+				return $plugin_file;
 			}
 		}
-
-		return static::PLUGIN_STATUS_NOT_INSTALLED;
+		return false;
 	}
 }
