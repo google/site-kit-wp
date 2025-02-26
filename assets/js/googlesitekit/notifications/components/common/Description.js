@@ -35,7 +35,7 @@ export default function Description( {
 	text,
 	learnMoreLink,
 	errorText,
-	AdditionalComponent,
+	children,
 } ) {
 	return (
 		<Fragment>
@@ -51,7 +51,7 @@ export default function Description( {
 				</p>
 			</div>
 			{ errorText && <ErrorText message={ errorText } /> }
-			{ AdditionalComponent }
+			{ children }
 		</Fragment>
 	);
 }
