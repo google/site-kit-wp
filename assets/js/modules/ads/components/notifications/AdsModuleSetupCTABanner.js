@@ -1,5 +1,5 @@
 /**
- * AdsModuleSetupCTAWidget component.
+ * AdsModuleSetupCTABanner component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -51,7 +51,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
-import { WooCommerceRedirectModal } from '../../components/common';
+import { WooCommerceRedirectModal } from '../common';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import {
 	useShowTooltip,
@@ -64,7 +64,7 @@ const breakpointSVGMap = {
 	[ BREAKPOINT_TABLET ]: AdsSetupTabletSVG,
 };
 
-export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
+export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -229,7 +229,7 @@ export default function AdsModuleSetupCTAWidget( { id, Notification } ) {
 	);
 }
 
-AdsModuleSetupCTAWidget.propTypes = {
+AdsModuleSetupCTABanner.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
 };

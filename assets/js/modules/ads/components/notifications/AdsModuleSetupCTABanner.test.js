@@ -1,5 +1,5 @@
 /**
- * AdsModuleSetupCTAWidget component tests.
+ * AdsModuleSetupCTABanner component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -36,26 +36,26 @@ import {
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { ADS_NOTIFICATIONS } from '../../../../modules/ads';
+import { ADS_NOTIFICATIONS } from '../..';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	MODULES_ADS,
-} from '../../../../modules/ads/datastore/constants';
+} from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
+import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { enabledFeatures } from '../../../../features';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
 
-describe( 'AdsModuleSetupCTAWidget', () => {
+describe( 'AdsModuleSetupCTABanner', () => {
 	let registry;
 
 	const notification = ADS_NOTIFICATIONS[ NOTIFICATION_ID ];
 
-	const AdsModuleSetupCTAWidgetComponent = withNotificationComponentProps(
+	const AdsModuleSetupCTABannerComponent = withNotificationComponentProps(
 		NOTIFICATION_ID
-	)( AdsModuleSetupCTAWidget );
+	)( AdsModuleSetupCTABanner );
 
 	const fetchDismissPrompt = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-prompt'
@@ -127,7 +127,7 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 			} );
 
 			const { getByText, waitForRegistry } = render(
-				<AdsModuleSetupCTAWidgetComponent />,
+				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
@@ -163,7 +163,7 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 			} );
 
 			const { getByText, waitForRegistry } = render(
-				<AdsModuleSetupCTAWidgetComponent />,
+				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
@@ -202,7 +202,7 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 			} );
 
 			const { getByText, waitForRegistry } = render(
-				<AdsModuleSetupCTAWidgetComponent />,
+				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
@@ -264,7 +264,7 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 			} );
 
 			const { getByText, waitForRegistry } = render(
-				<AdsModuleSetupCTAWidgetComponent />,
+				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
@@ -316,7 +316,7 @@ describe( 'AdsModuleSetupCTAWidget', () => {
 							Settings
 						</a>
 					</div>
-					<AdsModuleSetupCTAWidgetComponent />
+					<AdsModuleSetupCTABannerComponent />
 				</div>,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);

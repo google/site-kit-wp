@@ -1,5 +1,5 @@
 /**
- * AdsModuleSetupCTAWidget Component Stories.
+ * AdsModuleSetupCTABanner Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -24,13 +24,13 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import AdsModuleSetupCTAWidget from './AdsModuleSetupCTAWidget';
+import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'ads-setup-cta'
-)( AdsModuleSetupCTAWidget );
+)( AdsModuleSetupCTABanner );
 
 function Template() {
 	return <NotificationWithComponentProps />;
@@ -56,7 +56,7 @@ WithAdBlockerDetected.args = {
 WithAdBlockerDetected.scenario = {};
 
 export default {
-	title: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTAWidget',
+	title: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTABanner',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

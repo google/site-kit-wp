@@ -39,6 +39,7 @@ import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
 	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+	AdsModuleSetupCTABanner,
 } from './components/notifications';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import {
@@ -46,7 +47,6 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
-import AdsModuleSetupCTAWidget from '../../components/notifications/AdsModuleSetupCTAWidget';
 
 export { registerStore } from './datastore';
 
@@ -155,7 +155,7 @@ export const ADS_NOTIFICATIONS = {
 		isDismissible: true,
 	},
 	'ads-setup-cta': {
-		Component: AdsModuleSetupCTAWidget,
+		Component: AdsModuleSetupCTABanner,
 		// This notification should be displayed before audience segmentation one,
 		// which has priority of 310
 		priority: 300,
