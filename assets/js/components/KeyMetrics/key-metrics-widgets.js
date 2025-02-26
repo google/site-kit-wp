@@ -339,11 +339,11 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		description: __(
-			'Traffic source that generates the most add to cart events',
+			'Channel which brought in the most add to cart events to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Traffic source that generates the most add to cart events',
+			'Channel (e.g. social, paid, search) that brought in the most add to cart events to your site',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
