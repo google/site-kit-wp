@@ -71,7 +71,9 @@ describe( 'PublicationCreate', () => {
 			} )
 		).toHaveAttribute(
 			'href',
-			registry.select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getCreatePublicationLinkURL()
 		);
 	} );
 

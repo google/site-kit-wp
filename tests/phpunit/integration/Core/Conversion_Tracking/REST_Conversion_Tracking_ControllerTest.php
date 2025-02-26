@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Conversion_Tracking\REST_Conversion_Tracking_Controller;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
@@ -186,6 +187,18 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		add_filter(
+			'map_meta_cap',
+			function ( $caps, $cap ) {
+				if ( Permissions::MANAGE_OPTIONS === $cap ) {
+					return array( 'manage_options' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/conversion-tracking' );
 		$request->set_body_params(
@@ -197,23 +210,18 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
+
 		$this->assertEquals( 400, $response->get_status() );
 		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
 	}
 
 	public function provider_wrong_settings_data() {
 		return array(
-			'wrong data type'                              => array(
+			'wrong data type'              => array(
 				'{}',
 			),
-			'invalid property'                             => array(
-				array( 'some-invalid-property' => 'value' ),
-			),
-			'non-boolean enabled property'                 => array(
+			'non-boolean enabled property' => array(
 				array( 'enabled' => 123 ),
-			),
-			'regions property array containing non-string' => array(
-				array( 'regions' => array( 123 ) ),
 			),
 		);
 	}

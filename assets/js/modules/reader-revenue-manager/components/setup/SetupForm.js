@@ -70,8 +70,8 @@ export default function SetupForm( { onCompleteSetup } ) {
 	const productIDs = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
-	const serviceURL = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
+	const createPublicationURL = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getCreatePublicationLinkURL()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -150,7 +150,11 @@ export default function SetupForm( { onCompleteSetup } ) {
 				) }
 			</div>
 			<PublicationOnboardingStateNotice />
-			<Link external href={ serviceURL } onClick={ handleLinkClick }>
+			<Link
+				external
+				href={ createPublicationURL }
+				onClick={ handleLinkClick }
+			>
 				{ __( 'Create new publication', 'google-site-kit' ) }
 			</Link>
 			<div className="googlesitekit-setup-module__action">

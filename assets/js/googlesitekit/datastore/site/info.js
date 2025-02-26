@@ -170,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
+				siteLocale,
 				timezone,
 				usingProxy,
 				webStoriesActive,
@@ -187,6 +188,7 @@ export const reducer = ( state, { payload, type } ) => {
 				consentModeRegions,
 				anyoneCanRegister,
 				isMultisite,
+				plugins,
 			} = payload.siteInfo;
 
 			return {
@@ -206,6 +208,7 @@ export const reducer = ( state, { payload, type } ) => {
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
+					siteLocale,
 					timezone,
 					usingProxy,
 					webStoriesActive,
@@ -223,6 +226,7 @@ export const reducer = ( state, { payload, type } ) => {
 					consentModeRegions,
 					anyoneCanRegister,
 					isMultisite,
+					plugins,
 				},
 			};
 		}
@@ -297,6 +301,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			usingProxy,
 			webStoriesActive,
@@ -314,6 +319,7 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
+			plugins,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -338,6 +344,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			postTypes,
 			usingProxy: !! usingProxy,
@@ -355,6 +362,7 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
+			plugins,
 		} );
 	},
 };
@@ -652,6 +660,18 @@ export const selectors = {
 	getSiteName: getSiteInfoProperty( 'siteName' ),
 
 	/**
+	 * Gets a site's locale.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return {(string|undefined)} The site locale.
+	 */
+	getSiteLocale: createRegistrySelector(
+		( select ) => () =>
+			select( CORE_SITE ).getSiteInfo()?.siteLocale?.replace( '_', '-' )
+	),
+
+	/**
 	 * Gets a setup error code, if one exists.
 	 *
 	 * @since 1.80.0
@@ -943,6 +963,16 @@ export const selectors = {
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	isMultisite: getSiteInfoProperty( 'isMultisite' ),
+
+	/**
+	 * Gets plugins data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array|undefined} Plugins data array.
+	 */
+	getPluginsData: getSiteInfoProperty( 'plugins' ),
 };
 
 export default {

@@ -171,4 +171,38 @@
 			);
 		}
 	}
+
+	&.googlesitekit-subtle-notification--new-feature {
+		background-color: $c-violet-v-50;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-violet-v-600;
+		}
+
+		.mdc-button {
+
+			&.mdc-button--raised {
+				@include mdc-button-filled-accessible($c-violet-v-600);
+			}
+		}
+
+		/* These styles are inherently at the same specificity as the warning styles above. */
+		/* stylelint-disable-next-line no-descending-specificity */
+		.mdc-button--tertiary {
+
+			@include mdc-button-ink-color( $c-violet-v-600 );
+
+			&:hover {
+				@include mdc-button-filled-accessible( rgba( $c-violet-v-200, 0.6 ) );
+				@include mdc-button-ink-color( $c-violet-v-600 );
+			}
+
+			&:active,
+			&:focus {
+				@include mdc-button-filled-accessible( $c-violet-v-200 );
+				@include mdc-button-ink-color( $c-violet-v-600 );
+			}
+		}
+	}
 }

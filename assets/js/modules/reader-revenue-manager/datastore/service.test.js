@@ -131,5 +131,27 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				);
 			} );
 		} );
+
+		describe( 'getCreatePublicationLinkURL', () => {
+			it( 'should return the service URL that navigates to the create publication screen with the correct query params', () => {
+				const createPublicationLinkURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCreatePublicationLinkURL();
+
+				const expectedURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getServiceURL( {
+						query: {
+							prefill_canonical_domain: 'https://example.com',
+							prefill_lang: 'en-US',
+							app_redirect: 'rrm',
+						},
+					} );
+
+				expect(
+					new URL( decodeServiceURL( createPublicationLinkURL ) )
+				).toEqual( new URL( decodeServiceURL( expectedURL ) ) );
+			} );
+		} );
 	} );
 } );
