@@ -16,7 +16,7 @@ on:
       - 'blocks/**'
       - '**.stories.js'
       - 'tests/backstop/**'
-      - '.storybook/**'
+      - 'storybook/**'
       - '**.scss'
       - '.nvmrc'
       - '**/package.json'

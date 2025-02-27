@@ -57,6 +57,16 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+};
 
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'PendingVerification';
@@ -66,6 +76,13 @@ PendingVerification.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -77,6 +94,12 @@ ActionRequired.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -93,6 +116,13 @@ WithoutModuleAccess.args = {
 				{ access: false },
 				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
 			);
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -127,6 +157,20 @@ WithProductIDWarningNotice.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'subscriptions' );
+	},
+};
+
+export const MissingProductID = Template.bind( {} );
+MissingProductID.storyName = 'MissingProductID';
+MissingProductID.scenario = {};
+MissingProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-c' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b' ] );
 	},
 };
 
