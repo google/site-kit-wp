@@ -118,4 +118,8 @@ describe( 'getProductIDLabel', () => {
 	it( 'returns the full product ID if no separator is found', () => {
 		expect( getProductIDLabel( 'productID' ) ).toBe( 'productID' );
 	} );
+
+	it( 'returns an empty string if productID is falsey', () => {
+		expect( getProductIDLabel( undefined ) ).toBe( '' );
+	} );
 } );

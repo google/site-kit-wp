@@ -61,6 +61,10 @@ export function getPostTypesString( postTypes, allPostTypes ) {
  * @return {string} The product ID label.
  */
 export function getProductIDLabel( productID ) {
+	if ( ! productID ) {
+		return '';
+	}
+
 	const separatorIndex = productID.indexOf( ':' );
 
 	if ( separatorIndex === -1 ) {
