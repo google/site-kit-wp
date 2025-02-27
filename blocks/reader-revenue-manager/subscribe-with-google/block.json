@@ -9,6 +9,6 @@
 	"description": "Allow users to subscribe using Reader Revenue Manager to access content behind a paywall.",
 	"textdomain": "google-site-kit",
 	"supports": {
-		"inserter": false
+		"inserter": true
 	}
 }
