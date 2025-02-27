@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS } from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
@@ -46,10 +46,10 @@ export default {
 				provideSiteInfo( registry );
 				registry.dispatch( MODULES_ADS ).receiveModuleData( {
 					plugins: {
-						woocommerce: {
+						[ PLUGINS.WOOCOMMERCE ]: {
 							active: true,
 						},
-						'google-listings-and-ads': {
+						[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 							active: true,
 							adsConnected: true,
 						},

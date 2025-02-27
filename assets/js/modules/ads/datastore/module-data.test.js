@@ -32,11 +32,11 @@ describe( 'modules/ads module data', () => {
 		ads: {
 			supportedConversionEvents: [ 'add-to-cart' ],
 			plugins: {
-				woocommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: false,
 					installed: false,
 				},
-				'google-listings-and-ads': {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					installed: false,
 					adsConnected: false,

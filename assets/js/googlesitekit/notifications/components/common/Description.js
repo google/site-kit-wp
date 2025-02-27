@@ -61,5 +61,5 @@ Description.propTypes = {
 	text: PropTypes.string,
 	learnMoreLink: PropTypes.node,
 	errorText: PropTypes.string,
-	AdditionalComponent: PropTypes.node,
+	children: PropTypes.node,
 };

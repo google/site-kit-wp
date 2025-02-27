@@ -40,6 +40,7 @@ import { ADS_NOTIFICATIONS } from '../..';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	MODULES_ADS,
+	PLUGINS,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
@@ -77,10 +78,10 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				woocommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: false,
 				},
-				'google-listings-and-ads': {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					adsConnected: false,
 				},
@@ -110,10 +111,10 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		it( 'should trigger WooCommerce redirect modal when WooCommerce is active but Google For WooCommerce is not', async () => {
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					woocommerce: {
+					[ PLUGINS.WOOCOMMERCE ]: {
 						active: true,
 					},
-					'google-listings-and-ads': {
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: false,
 						adsConnected: false,
 					},
@@ -146,10 +147,10 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					woocommerce: {
+					[ PLUGINS.WOOCOMMERCE ]: {
 						active: true,
 					},
-					'google-listings-and-ads': {
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: false,
 					},
@@ -229,10 +230,10 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			provideModuleRegistrations( registry );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					woocommerce: {
+					[ PLUGINS.WOOCOMMERCE ]: {
 						active: true,
 					},
-					'google-listings-and-ads': {
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: false,
 					},
@@ -372,10 +373,10 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		it( 'is not active when Google for WooCommerce Ads account is linked', async () => {
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					woocommerce: {
+					[ PLUGINS.WOOCOMMERCE ]: {
 						active: true,
 					},
-					'google-listings-and-ads': {
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,
 					},

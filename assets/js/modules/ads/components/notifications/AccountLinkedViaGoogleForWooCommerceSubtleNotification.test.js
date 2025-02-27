@@ -34,7 +34,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import { MODULES_ADS } from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 
 const NOTIFICATION_ID = 'account-linked-via-google-for-woocommerce';
@@ -129,10 +129,10 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					woocommerce: {
+					[ PLUGINS.WOOCOMMERCE ]: {
 						active: false,
 					},
-					'google-listings-and-ads': {
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,
 					},
@@ -150,10 +150,10 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return true if the WooCommerce and Google for WooCommerce plugins are active and Ads account ins linked', async () => {
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					woocommerce: {
+					[ PLUGINS.WOOCOMMERCE ]: {
 						active: true,
 					},
-					'google-listings-and-ads': {
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,
 					},

@@ -1,7 +1,7 @@
 /**
  * AdsModuleSetupCTABanner Component Stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,23 +75,9 @@ export default {
 			};
 
 			return (
-				<div
-					style={ {
-						minHeight: '200px',
-						display: 'flex',
-						alignItems: 'center',
-					} }
-				>
-					<div id="adminmenu">
-						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
-						<a href="http://test.test/?page=googlesitekit-settings" />
-					</div>
-					<div style={ { flex: 1 } }>
-						<WithRegistrySetup func={ setupRegistry }>
-							<Story />
-						</WithRegistrySetup>
-					</div>
-				</div>
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
 			);
 		},
 	],

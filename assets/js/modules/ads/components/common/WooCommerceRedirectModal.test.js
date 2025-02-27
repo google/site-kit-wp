@@ -34,6 +34,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	MODULES_ADS,
+	PLUGINS,
 } from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
@@ -62,10 +63,10 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				woocommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: false,
 				},
-				'google-listings-and-ads': {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					adsConnected: false,
 				},
@@ -135,11 +136,11 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				woocommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: true,
 					installed: true,
 				},
-				'google-listings-and-ads': {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					installed: false,
 				},
@@ -162,7 +163,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			expect.stringMatching( /plugin-install\.php/ )
 		);
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /s=google-listings-and-ads/ )
+			expect.stringMatching(
+				new RegExp( `s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }` )
+			)
 		);
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /tab=search/ )
@@ -181,11 +184,11 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				woocommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: true,
 					installed: true,
 				},
-				'google-listings-and-ads': {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: true,
 					installed: true,
 				},

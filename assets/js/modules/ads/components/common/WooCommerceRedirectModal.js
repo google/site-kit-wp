@@ -42,6 +42,7 @@ import {
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	MODULES_ADS,
+	PLUGINS,
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -77,7 +78,7 @@ export default function WooCommerceRedirectModal( {
 
 		if ( isGoogleForWooCommerceActive === false ) {
 			return addQueryArgs( `${ adminURL }/plugin-install.php`, {
-				s: 'google-listings-and-ads',
+				s: PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
 				tab: 'search',
 				type: 'term',
 			} );

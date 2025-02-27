@@ -1,7 +1,7 @@
 /**
  * AdsModuleSetupCTABanner component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,8 +148,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	if ( isTooltipVisible ) {
 		return (
 			<AdminMenuTooltip
-				title=""
-				content={ __(
+				title={ __(
 					'You can always enable Ads from Settings later',
 					'google-site-kit'
 				) }
@@ -221,8 +220,8 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			/>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					dialogActive
 					onDismiss={ onModalDismiss }
+					dialogActive
 				/>
 			) }
 		</Notification>
