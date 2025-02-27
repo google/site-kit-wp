@@ -79,10 +79,12 @@ WithoutAdWordsScope.scenario = {};
 export default {
 	title: 'Modules/Ads/Setup/SetupMainPAX',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				args.setupRegistry?.( registry );
 			};
 
 			return (
