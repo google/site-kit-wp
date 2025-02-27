@@ -40,6 +40,7 @@ describe( 'modules/ads module data', () => {
 					active: false,
 					installed: false,
 					adsConnected: false,
+					conversionID: 'AW-1111',
 				},
 			},
 		},
@@ -171,6 +172,12 @@ describe( 'modules/ads module data', () => {
 				'hasGoogleForWooCommerceAdsAccount',
 				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
 				false,
+			],
+			[
+				'getGoogleForWooCommerceConversionID',
+				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
+				baseData.ads.plugins[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]
+					.conversionID,
 			],
 		] )( '%s', ( selector, pluginKey, value ) => {
 			it( 'uses a resolver to load data then returns the value when this specific selector is used', async () => {
