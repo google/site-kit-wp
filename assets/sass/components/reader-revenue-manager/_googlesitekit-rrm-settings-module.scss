@@ -45,13 +45,14 @@
 
 	.googlesitekit-rrm-settings-edit {
 
-		.googlesitekit-settings-module__fields-group:not(:last-child) .googlesitekit-publication-onboarding-state-notice {
-			margin-bottom: $grid-gap-desktop;
-		}
+		.googlesitekit-settings-module__fields-group:not(:last-child) {
 
-		.googlesitekit-settings-module__fields-group {
-			&:has(+ .googlesitekit-rrm-settings-edit__product-id-container) {
-				border-bottom: 0;
+			.googlesitekit-publication-onboarding-state-notice {
+				margin-bottom: $grid-gap-phone;
+			}
+
+			.googlesitekit-publication-onboarding-state-notice:has(+ .googlesitekit-rrm-settings-edit__product-id-container) {
+				margin-bottom: $grid-gap-desktop;
 			}
 		}
 
@@ -75,10 +76,10 @@
 
 				.googlesitekit-subtle-notification {
 					align-items: center;
-					border-radius: 8px;
+					border-radius: $br-xs;
 					flex-direction: row;
 					gap: $grid-gap-phone;
-					padding: 10px $grid-gap-phone;
+					padding: 8px $grid-gap-phone;
 
 					@media (min-width: $bp-wpAdminBarTablet) {
 						margin-left: $grid-gap-phone;
@@ -101,7 +102,7 @@
 			}
 
 			.googlesitekit-rrm-settings-edit__product-id-info-notice {
-				margin-bottom: $grid-gap-desktop;
+				margin-bottom: $grid-gap-phone;
 			}
 		}
 

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -64,9 +63,6 @@ export default function SetupForm( { onCompleteSetup } ) {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
-	const productID = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
-	);
 	const productIDs = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
@@ -92,6 +88,19 @@ export default function SetupForm( { onCompleteSetup } ) {
 		[ onCompleteSetup ]
 	);
 
+	const autoSelectProductID = useCallback(
+		( { products } ) => {
+			if ( ! isRRMv2Enabled ) {
+				return;
+			}
+
+			if ( products?.length > 0 && !! products[ 0 ].name ) {
+				setProductID( products[ 0 ].name );
+			}
+		},
+		[ isRRMv2Enabled, setProductID ]
+	);
+
 	// Automatically pre-select a publication.
 	useEffect( () => {
 		const autoSelectPublication = async () => {
@@ -99,28 +108,19 @@ export default function SetupForm( { onCompleteSetup } ) {
 
 			if ( matchedPublication ) {
 				selectPublication( matchedPublication );
+				autoSelectProductID( matchedPublication );
 			}
 		};
 
 		if ( ! publicationID ) {
 			autoSelectPublication();
 		}
-	}, [ findMatchedPublication, publicationID, selectPublication ] );
-
-	// Auto-select the first custom product ID if none is selected.
-	useMount( () => {
-		if (
-			productIDs?.length > 0 &&
-			( ! productID || productID === 'openaccess' )
-		) {
-			const firstCustomProductID = productIDs.find(
-				( id ) => id !== 'openaccess'
-			);
-			if ( firstCustomProductID ) {
-				setProductID( firstCustomProductID );
-			}
-		}
-	} );
+	}, [
+		autoSelectProductID,
+		findMatchedPublication,
+		publicationID,
+		selectPublication,
+	] );
 
 	if ( ! publications ) {
 		return null;
@@ -144,7 +144,11 @@ export default function SetupForm( { onCompleteSetup } ) {
 					  ) }
 			</p>
 			<div className="googlesitekit-setup-module__inputs">
-				<PublicationSelect />
+				<PublicationSelect
+					onChange={ ( publication ) =>
+						autoSelectProductID( publication )
+					}
+				/>
 				{ isRRMv2Enabled && productIDs?.length > 0 && (
 					<ProductIDSelect showHelperText={ false } />
 				) }

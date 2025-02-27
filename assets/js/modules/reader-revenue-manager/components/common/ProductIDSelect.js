@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -35,7 +34,6 @@ import Link from '../../../../components/Link';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { Option, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { getProductIDLabel } from '../../utils/settings';
 
 export default function ProductIDSelect( props ) {
@@ -53,11 +51,6 @@ export default function ProductIDSelect( props ) {
 	const productIDs = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
-	const learnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'rrm-content-settings'
-		);
-	} );
 
 	const { setProductID } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
@@ -67,7 +60,7 @@ export default function ProductIDSelect( props ) {
 
 			setProductID( newProductID );
 
-			onChange();
+			onChange( newProductID );
 		},
 		[ setProductID, onChange ]
 	);
@@ -75,7 +68,7 @@ export default function ProductIDSelect( props ) {
 	if ( hasModuleAccess === false ) {
 		return (
 			<Select
-				className={ classnames( className ) }
+				className={ className }
 				label={ __( 'Default Product ID', 'google-site-kit' ) }
 				value={ productID }
 				enhanced
@@ -89,7 +82,7 @@ export default function ProductIDSelect( props ) {
 
 	return (
 		<Select
-			className={ classnames( className ) }
+			className={ className }
 			label={ __( 'Default Product ID', 'google-site-kit' ) }
 			value={ productID }
 			onEnhancedChange={ onProductIDChange }
@@ -107,10 +100,10 @@ export default function ProductIDSelect( props ) {
 								a: (
 									<Link
 										aria-label={ __(
-											'Learn more about Product IDs',
+											'Learn more about product IDs',
 											'google-site-kit'
 										) }
-										href={ learnMoreURL }
+										href="https://support.google.com/news/publisher-center/answer/12345540"
 										external
 										hideExternalIndicator
 									/>

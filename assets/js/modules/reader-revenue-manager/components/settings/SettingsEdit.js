@@ -151,6 +151,13 @@ export default function SettingsEdit() {
 	const isInfoNoticeDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( RRM_PRODUCT_ID_INFO_NOTICE_SLUG )
 	);
+	const publicationsLoaded = useSelect(
+		( select ) =>
+			hasModuleAccess === false ||
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getPublications'
+			)
+	);
 	const hasPaymentSubscription = paymentOption === 'subscriptions';
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -199,72 +206,76 @@ export default function SettingsEdit() {
 						) }
 					/>
 				) }
-			</div>
-			{ isRRMv2Enabled && productIDs?.length > 0 && (
-				<div className="googlesitekit-settings-module__fields-group googlesitekit-rrm-settings-edit__product-id-container">
-					<div className="googlesitekit-rrm-settings-edit__product-id">
-						<ProductIDSelect hasModuleAccess={ hasModuleAccess } />
-					</div>
-					{ hasPaymentSubscription &&
-						productID === 'openaccess' &&
-						! isOpenAccessNoticeDismissed && (
-							<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
-								<SubtleNotification
-									title={ __(
-										'Selecting “open access” will allow your reader to access your content without a subscription',
-										'google-site-kit'
-									) }
-									hideIcon
-									variant="warning"
-									dismissLabel={ __(
-										'Got it',
-										'google-site-kit'
-									) }
-									onDismiss={ () =>
-										dismissItem(
-											RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
-										)
-									}
+				{ isRRMv2Enabled &&
+					publicationsLoaded &&
+					productIDs?.length > 0 && (
+						<div className="googlesitekit-rrm-settings-edit__product-id-container">
+							<div className="googlesitekit-rrm-settings-edit__product-id">
+								<ProductIDSelect
+									hasModuleAccess={ hasModuleAccess }
 								/>
 							</div>
-						) }
-					{ ! isInfoNoticeDismissed && (
-						<div className="googlesitekit-rrm-settings-edit__product-id-info-notice">
-							<SubtleNotification
-								title={ createInterpolateElement(
-									__(
-										'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. <learnMore>Learn more</learnMore>',
-										'google-site-kit'
-									),
-									{
-										learnMore: (
-											<Link
-												aria-label={ __(
-													'Learn more about Product IDs',
-													'google-site-kit'
-												) }
-												href={ learnMoreURL }
-												external
-												hideExternalIndicator
-											/>
-										),
-									}
+							{ hasPaymentSubscription &&
+								productID === 'openaccess' &&
+								! isOpenAccessNoticeDismissed && (
+									<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
+										<SubtleNotification
+											title={ __(
+												'Selecting “open access” will allow your reader to access your content without a subscription',
+												'google-site-kit'
+											) }
+											hideIcon
+											variant="warning"
+											dismissLabel={ __(
+												'Got it',
+												'google-site-kit'
+											) }
+											onDismiss={ () =>
+												dismissItem(
+													RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
+												)
+											}
+										/>
+									</div>
 								) }
-								variant="info"
-								dismissLabel={ __(
-									'Got it',
-									'google-site-kit'
-								) }
-								onDismiss={ () =>
-									dismissItem(
-										RRM_PRODUCT_ID_INFO_NOTICE_SLUG
-									)
-								}
-							/>
+							{ ! isInfoNoticeDismissed && (
+								<div className="googlesitekit-rrm-settings-edit__product-id-info-notice">
+									<SubtleNotification
+										title={ createInterpolateElement(
+											__(
+												'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. <learnMore>Learn more</learnMore>',
+												'google-site-kit'
+											),
+											{
+												learnMore: (
+													<Link
+														aria-label={ __(
+															'Learn more about setting product IDs at a content-level',
+															'google-site-kit'
+														) }
+														href={ learnMoreURL }
+														external
+														hideExternalIndicator
+													/>
+												),
+											}
+										) }
+										variant="info"
+										dismissLabel={ __(
+											'Got it',
+											'google-site-kit'
+										) }
+										onDismiss={ () =>
+											dismissItem(
+												RRM_PRODUCT_ID_INFO_NOTICE_SLUG
+											)
+										}
+									/>
+								</div>
+							) }
 						</div>
 					) }
-				</div>
-			) }
+			</div>
 			{ isRRMv2Enabled && (
 				<div className="googlesitekit-settings-module__fields-group">
 					<h4 className="googlesitekit-settings-module__fields-group-title">

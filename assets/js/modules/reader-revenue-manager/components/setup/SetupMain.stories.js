@@ -24,7 +24,6 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
@@ -131,7 +130,6 @@ export default {
 					},
 				] );
 				provideModuleRegistrations( registry );
-				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				// Call story-specific setup.
 				args?.setupRegistry?.( registry );

@@ -114,7 +114,7 @@ describe( 'ProductIDSelect', () => {
 		} );
 	} );
 
-	it( 'should render "Open access" as the first option if the product ID is "openaccess"', async () => {
+	it( 'should render "Open access" as the first option', async () => {
 		const { getAllByRole, waitForRegistry } = render( <ProductIDSelect />, {
 			registry,
 		} );
@@ -125,7 +125,7 @@ describe( 'ProductIDSelect', () => {
 		expect( listItems[ 0 ].textContent ).toEqual( 'Open access' );
 	} );
 
-	// Test the helper text
+	// Test the helper text.
 	it( 'should render the helper text if showHelperText is true', async () => {
 		const { getByText, waitForRegistry } = render( <ProductIDSelect />, {
 			registry,
