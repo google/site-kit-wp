@@ -218,7 +218,7 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets Google for WooCommerce ads connected conversion ID.
+	 * Gets Google for WooCommerce Ads connected conversion ID.
 	 *
 	 * @since n.e.x.t
 	 *
