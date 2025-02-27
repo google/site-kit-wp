@@ -392,7 +392,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 
 		$debug_fields = array(
 			'ads_conversion_tracking_id' => array(
-				'label' => __( 'Ads: Conversion Tracking ID', 'google-site-kit' ),
+				'label' => __( 'Ads: Conversion ID', 'google-site-kit' ),
 				'value' => $settings['conversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
