@@ -52,7 +52,7 @@
 			}
 
 			.googlesitekit-publication-onboarding-state-notice:has(+ .googlesitekit-rrm-settings-edit__product-id-container) {
-				margin-bottom: $grid-gap-desktop;
+				margin-bottom: 32px;
 			}
 		}
 
@@ -61,6 +61,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			gap: $grid-gap-phone;
+			margin-top: $grid-gap-phone;
 			position: relative;
 
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
@@ -92,6 +93,7 @@
 					p {
 						font-size: $fs-body-sm;
 						font-weight: $fw-normal;
+						margin: 0;
 					}
 				}
 
