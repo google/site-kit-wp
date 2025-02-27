@@ -87,7 +87,6 @@ class Contribute_With_Google_BlockTest extends TestCase {
 
 		$output = $this->block->render_callback();
 
-		$this->assertStringContainsString( '<button swg-standard-button="contribution">', $output );
-		$this->assertStringContainsString( '<div style="margin: 0 auto;">', $output );
+		$this->assertEquals( '<div style="margin: 0 auto;"><button swg-standard-button="contribution"></button></div>', $output );
 	}
 }
