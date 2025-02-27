@@ -16,7 +16,7 @@ exports[`AdsConversionIDSettingsNotice should render the notice 1`] = `
       <div
         class="googlesitekit-settings-notice__text"
       >
-        Ads Conversion ID has been moved to
+        Ads Conversion ID has been moved to 
         <a
           class="googlesitekit-cta-link"
           href="undefined#/connected-services/ads"
