@@ -111,71 +111,33 @@ class Admin_Post_List {
 		$post_product_id = $this->post_product_id->get( $post_id );
 
 		if ( 'none' === $post_product_id ) {
-			esc_html_e( 'Exclude from Reader Revenue Manager', 'google-site-kit' );
-
+			esc_html_e( 'None', 'google-site-kit' );
 			return;
 		}
 
 		if ( ! empty( $post_product_id ) ) {
-			// Extract the product ID from the setting, which is in the format
-			// of `publicationID:productID`.
-			if ( 'openaccess' !== $post_product_id ) {
-				$separator_index = strpos( $post_product_id, ':' );
-
-				if ( false !== $separator_index ) {
-					$post_product_id = substr( $post_product_id, $separator_index + 1 );
-				}
-			}
-
 			if ( 'openaccess' === $post_product_id ) {
-				esc_html_e( 'Use "open access"', 'google-site-kit' );
+				esc_html_e( 'Open access', 'google-site-kit' );
+			} else {
+				$separator_index = strpos( $post_product_id, ':' );
+				$product_id      = ( false !== $separator_index ) ? substr( $post_product_id, $separator_index + 1 ) : $post_product_id;
 
-				return;
+				/* translators: %s: Product ID */
+				echo esc_html( sprintf( __( 'Use "%s"', 'google-site-kit' ), $product_id ) );
 			}
-
-			echo esc_html(
-				sprintf(
-					/* translators: %s: Product ID */
-					__( 'Use "%s"', 'google-site-kit' ),
-					$post_product_id
-				),
-			);
-
 			return;
 		}
 
-		$settings = $this->settings->get();
+		$settings       = $this->settings->get();
+		$snippet_mode   = $settings['snippetMode'];
+		$cta_post_types = apply_filters( 'googlesitekit_reader_revenue_manager_cta_post_types', $settings['postTypes'] );
 
-		if ( 'per_post' === $settings['snippetMode'] ) {
-			esc_html_e( 'Exclude from Reader Revenue Manager', 'google-site-kit' );
-
+		if ( 'per_post' === $snippet_mode || ( 'post_types' === $snippet_mode && ! in_array( get_post_type(), $cta_post_types, true ) ) ) {
+			esc_html_e( 'Excluded from Reader Revenue Manager', 'google-site-kit' );
 			return;
 		}
 
-		/**
-		 * Filters the post types where Reader Revenue Manager CTAs should appear.
-		 *
-		 * @since 1.140.0
-		 *
-		 * @param array $cta_post_types The array of post types.
-		 */
-		$cta_post_types = apply_filters(
-			'googlesitekit_reader_revenue_manager_cta_post_types',
-			$settings['postTypes']
-		);
-
-		if ( 'post_types' === $settings['snippetMode'] &&
-			! in_array( get_post_type(), $cta_post_types, true )
-		) {
-			esc_html_e( 'Exclude from Reader Revenue Manager', 'google-site-kit' );
-
-			return;
-		}
-
-		esc_html_e(
-			'Use default selection',
-			'google-site-kit'
-		);
+		esc_html_e( 'Default', 'google-site-kit' );
 	}
 
 	/**
@@ -184,53 +146,35 @@ class Admin_Post_List {
 	 * @since n.e.x.t
 	 */
 	public function bulk_edit_field() {
-		$settings    = $this->settings->get();
-		$product_ids = $settings['productIDs'];
+		$settings        = $this->settings->get();
+		$product_ids     = $settings['productIDs'] ?? array();
+		$default_options = array(
+			'-1'         => __( '— No Change —', 'google-site-kit' ),
+			''           => __( 'Default', 'google-site-kit' ),
+			'none'       => __( 'None', 'google-site-kit' ),
+			'openaccess' => __( 'Open access', 'google-site-kit' ),
+		);
 		?>
 		<fieldset class="inline-edit-col-right">
 			<div class="inline-edit-col">
-				<label
-					style="display: flex; justify-content: space-between; line-height: 1;">
-					<span>
-						<?php esc_html_e( 'Show Reader Revenue CTAs', 'google-site-kit' ); ?>
-					</span>
+				<label style="display: flex; justify-content: space-between; line-height: 1;">
+					<span><?php esc_html_e( 'Show Reader Revenue CTAs', 'google-site-kit' ); ?></span>
 					<select name="rrm_product_id">
-						<option value="-1">
-							<?php esc_html_e( '— No Change —', 'google-site-kit' ); ?>
-						</option>
-						<option value="">
-							<?php esc_html_e( 'Use default selection', 'google-site-kit' ); ?>
-						</option>
-						<option value="none">
-							<?php
-							esc_html_e(
-								'Exclude from Reader Revenue Manager',
-								'google-site-kit'
-							);
-							?>
-						</option>
-						<option value="openaccess">
-							<?php
-							esc_html_e(
-								'Use "open access"',
-								'google-site-kit'
-							);
-							?>
-						</option>
+						<?php foreach ( $default_options as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>">
+								<?php echo esc_html( $label ); ?>
+							</option>
+						<?php endforeach; ?>
+	
 						<?php foreach ( $product_ids as $product_id ) : ?>
+							<?php list( , $label ) = explode( ':', $product_id, 2 ); ?>
 							<option value="<?php echo esc_attr( $product_id ); ?>">
 								<?php
-								echo esc_html(
-									sprintf(
-										/* translators: %s: Product ID */
-										__( 'Use "%s"', 'google-site-kit' ),
-										$product_id
-									),
-								);
+									echo esc_html( $label );
 								?>
 							</option>
 						<?php endforeach; ?>
-					</select>				
+					</select>
 				</label>
 			</div>
 		</fieldset>
@@ -259,7 +203,7 @@ class Admin_Post_List {
 			return;
 		}
 
-		if ( isset( $_REQUEST['rrm_product_id'] ) ) {
+		if ( isset( $_REQUEST['rrm_product_id'] ) && '-1' !== $_REQUEST['rrm_product_id'] ) {
 			$post_product_id = sanitize_text_field(
 				wp_unslash( $_REQUEST['rrm_product_id'] )
 			);
