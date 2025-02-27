@@ -36,7 +36,7 @@ Promise.all( [
 	resolveSelect( CORE_MODULES ).getModule( 'reader-revenue-manager' ),
 	resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 ] ).then( () => {
-	const isSiteEditor = !! wp.data.select( CORE_EDIT_SITE );
+	const isSiteEditor = !! select( CORE_EDIT_SITE );
 
 	registerBlockType( metadata.name, {
 		edit() {
