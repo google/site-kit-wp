@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import ModuleOverviewWidget from '.';
-import { replaceValuesInAdSenseReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAdSenseReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
 import {
 	provideModuleRegistrations,
 	provideModules,
