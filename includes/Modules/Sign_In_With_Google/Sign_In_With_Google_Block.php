@@ -38,11 +38,28 @@ class Sign_In_With_Google_Block {
 	}
 
 	/**
+	 * Checks whether the block can be registered.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return bool
+	 */
+	public static function can_register() {
+		$wp_version = get_bloginfo( 'version' );
+		// The block currently requires version WP 5.8 or higher.
+		return (bool) version_compare( '5.8', $wp_version, '<=' );
+	}
+
+	/**
 	 * Register this block.
 	 *
 	 * @since 1.147.0
 	 */
 	public function register() {
+		if ( ! self::can_register() ) {
+			return;
+		}
+
 		add_action(
 			'init',
 			function () {

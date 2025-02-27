@@ -44,6 +44,7 @@ import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 export default function SettingsEdit() {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
@@ -51,6 +52,7 @@ export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
+
 	const hasModuleAccess = useSelect( ( select ) => {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
@@ -83,9 +85,35 @@ export default function SettingsEdit() {
 
 		return false;
 	} );
+
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+
+	const missingProductID = useSelect( ( select ) => {
+		const productID = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getProductID();
+
+		if ( productID === undefined ) {
+			return undefined;
+		}
+
+		if ( 'openaccess' === productID ) {
+			return null;
+		}
+
+		const productIDs = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getProductIDs();
+
+		if ( productIDs === undefined ) {
+			return undefined;
+		}
+
+		return productIDs.includes( productID ) ? null : productID;
+	} );
+
 	const publicationAvailable = useSelect( ( select ) => {
 		if ( hasModuleAccess === undefined ) {
 			return undefined;
@@ -128,6 +156,11 @@ export default function SettingsEdit() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager googlesitekit-rrm-settings-edit">
 			<div className="googlesitekit-settings-module__fields-group">
+				<StoreErrorNotices
+					moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+					storeName={ MODULES_READER_REVENUE_MANAGER }
+				/>
+
 				{ hasModuleAccess && false === publicationAvailable && (
 					<ErrorText
 						message={ sprintf(
@@ -140,6 +173,23 @@ export default function SettingsEdit() {
 						) }
 					/>
 				) }
+
+				{ isRRMv2Enabled &&
+					hasModuleAccess &&
+					publicationAvailable &&
+					missingProductID && (
+						<ErrorText
+							message={ sprintf(
+								/* translators: 1: Product ID. */
+								__(
+									'The previously selected product ID %s was not found. Please select a new product ID.',
+									'google-site-kit'
+								),
+								missingProductID
+							) }
+						/>
+					) }
+
 				<div className="googlesitekit-setup-module__inputs">
 					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
 				</div>

@@ -39,7 +39,11 @@ import {
 	DialogFooter,
 	DialogTitle,
 } from 'googlesitekit-components';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+	PLUGINS,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -57,10 +61,10 @@ export default function WooCommerceRedirectModal( {
 		select( CORE_SITE ).getAdminURL()
 	);
 	const isWooCommerceActive = useSelect( ( select ) =>
-		select( CORE_SITE ).isWooCommerceActivated()
+		select( MODULES_ADS ).isWooCommerceActivated()
 	);
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
-		select( CORE_SITE ).isGoogleForWooCommerceActivated()
+		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
 	const isModalDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -75,7 +79,7 @@ export default function WooCommerceRedirectModal( {
 
 		if ( isGoogleForWooCommerceActive === false ) {
 			return addQueryArgs( `${ adminURL }/plugin-install.php`, {
-				s: 'google-listings-and-ads',
+				s: PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
 				tab: 'search',
 				type: 'term',
 			} );

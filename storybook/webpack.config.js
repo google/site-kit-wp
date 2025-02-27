@@ -45,7 +45,7 @@ module.exports = async ( { config } ) => {
 				// Set "googlesitekit-components" to the entry point which can load GM2 or GM3 components.
 				if ( api === 'components' ) {
 					return path.resolve(
-						'.storybook/assets/js/googlesitekit-components.js'
+						'storybook/assets/js/googlesitekit-components.js'
 					);
 				}
 			}
