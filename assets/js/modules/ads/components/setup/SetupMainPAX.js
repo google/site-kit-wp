@@ -340,11 +340,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 						</Fragment>
 					) }
 			</div>
-			<WooCommerceRedirectModal
-				dialogActive={ openDialog }
-				onDismiss={ onModalDismiss }
-				onContinue={ createAccount }
-			/>
+			{ openDialog && (
+				<WooCommerceRedirectModal
+					onDismiss={ onModalDismiss }
+					onContinue={ createAccount }
+					dialogActive
+				/>
+			) }
 		</div>
 	);
 }
