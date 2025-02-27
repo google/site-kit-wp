@@ -31,7 +31,7 @@ import SettingsForm from './SettingsForm';
 
 export default function SettingPanel() {
 	// The `PluginDocumentSettingPanel` component is deprecated/removed in `@wordpress-core/edit-post`, so
-	// we use the version from `@wordpress-core/editor` if available, otherwise fall back tothe version
+	// we use the version from `@wordpress-core/editor` if available, otherwise fall back to the version
 	// from `@wordpress-core/edit-post`.
 	const PluginDocumentSettingPanel =
 		EditorSettingPanel || EditPostSettingPanel;
