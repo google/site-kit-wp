@@ -24,13 +24,24 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
-import { MODULES_ADS } from './constants';
+import { MODULES_ADS, PLUGINS } from './constants';
 
 describe( 'modules/ads module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const baseData = {
 		ads: {
 			supportedConversionEvents: [ 'add-to-cart' ],
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: false,
+					installed: false,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: false,
+					installed: false,
+					adsConnected: false,
+				},
+			},
 		},
 	};
 
@@ -122,6 +133,7 @@ describe( 'modules/ads module data', () => {
 
 		describe.each( [
 			[ 'getSupportedConversionEvents', 'supportedConversionEvents' ],
+			[ 'getPluginsData', 'plugins' ],
 		] )( '%s', ( selector, dataKey ) => {
 			it( 'uses a resolver to load module data then returns the data when this specific selector is used', async () => {
 				registry.select( MODULES_ADS )[ selector ]();
@@ -137,6 +149,49 @@ describe( 'modules/ads module data', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
+				delete global[ baseModulesGlobalName ];
+
+				const result = registry.select( MODULES_ADS )[ selector ]();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				expect( result ).toEqual( undefined );
+			} );
+		} );
+
+		describe.each( [
+			[ 'isWooCommerceInstalled', PLUGINS.WOOCOMMERCE, false ],
+			[ 'isWooCommerceActivated', PLUGINS.WOOCOMMERCE, false ],
+			[
+				'isGoogleForWooCommerceInstalled',
+				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
+				false,
+			],
+			[
+				'hasGoogleForWooCommerceAdsAccount',
+				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
+				false,
+			],
+		] )( '%s', ( selector, pluginKey, value ) => {
+			it( 'uses a resolver to load data then returns the value when this specific selector is used', async () => {
+				registry.select( MODULES_ADS )[ selector ]();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				const moduleData = registry
+					.select( MODULES_ADS )
+					.getModuleData();
+
+				const selectorValue = registry
+					.select( MODULES_ADS )
+					[ selector ]();
+
+				expect( moduleData ).toHaveProperty( 'plugins' );
+				expect( moduleData.plugins ).toHaveProperty( pluginKey );
+				expect( selectorValue ).toEqual( value );
+			} );
+
+			it( 'will return initial state (undefined) when module data is not available', async () => {
 				delete global[ baseModulesGlobalName ];
 
 				const result = registry.select( MODULES_ADS )[ selector ]();
