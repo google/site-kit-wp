@@ -24,6 +24,7 @@ class Subscribe_With_Google_Block {
 	 * Context instance.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @var Context
 	 */
 	protected $context;
