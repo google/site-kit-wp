@@ -160,12 +160,12 @@ class Admin_Post_ListTest extends TestCase {
 	 */
 	public function test_save_field() {
 		$post_id = $this->factory()->post->create();
-		$user_id = $this->factory()->user->create_and_get(
+		$user    = $this->factory()->user->create_and_get(
 			array(
 				'role' => 'editor',
 			)
 		);
-		wp_set_current_user( $user_id );
+		wp_set_current_user( $user->ID );
 		$_REQUEST['_wpnonce']       = wp_create_nonce( 'bulk-posts' );
 		$_REQUEST['rrm_product_id'] = 'ABCD:basic';
 
