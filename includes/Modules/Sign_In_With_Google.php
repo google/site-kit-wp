@@ -388,7 +388,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *                rendered the code to replace buttons.
 	 */
 	private function render_signinwithgoogle() {
-		$is_wp_login          = is_login();
+		// `is_login()` isn't available until WP 6.1.
+		$is_wp_login          = false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$is_woocommerce       = class_exists( 'woocommerce' );
 		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
