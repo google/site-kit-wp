@@ -29,7 +29,7 @@ import { CORE_EDIT_SITE } from '../common/constants';
 import metadata from './block.json';
 import Edit from './Edit';
 
-// Since we aren't currently able to use the Site Kit`useSelect()` in the components,
+// Since we aren't currently able to use the Site Kit `useSelect()` in the components,
 // we need to resolve selectors before registering the block
 // to ensure the data is available when the block is rendered.
 Promise.all( [
