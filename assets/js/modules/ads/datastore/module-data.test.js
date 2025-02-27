@@ -119,5 +119,32 @@ describe( 'modules/ads module data', () => {
 				);
 			} );
 		} );
+
+		describe.each( [
+			[ 'getSupportedConversionEvents', 'supportedConversionEvents' ],
+		] )( '%s', ( selector, dataKey ) => {
+			it( 'uses a resolver to load module data then returns the data when this specific selector is used', async () => {
+				registry.select( MODULES_ADS )[ selector ]();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				const moduleData = registry
+					.select( MODULES_ADS )
+					.getModuleData();
+
+				expect( moduleData ).toHaveProperty( dataKey );
+				expect( moduleData ).toEqual( baseData.ads );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				delete global[ baseModulesGlobalName ];
+
+				const result = registry.select( MODULES_ADS )[ selector ]();
+
+				await untilResolved( registry, MODULES_ADS ).getModuleData();
+
+				expect( result ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );

@@ -266,7 +266,7 @@ const baseActions = {
 	/**
 	 * Sorts account summaries.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */

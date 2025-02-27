@@ -355,7 +355,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the given survey trigger is currently locked.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} triggerID Survey trigger ID.

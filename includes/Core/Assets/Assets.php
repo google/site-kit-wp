@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 use WP_Dependencies;
 use WP_Post_Type;
 
