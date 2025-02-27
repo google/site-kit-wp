@@ -18,6 +18,8 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
  * Subscribe with Google Gutenberg block.
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class Subscribe_With_Google_Block {
 	/**

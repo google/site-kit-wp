@@ -18,6 +18,8 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
  * Contribute with Google Gutenberg block.
  *
  * @since n.e.x.t
+ * @access private
+ * @ignore
  */
 class Contribute_With_Google_Block {
 	/**
