@@ -22,13 +22,14 @@ class Block_Support {
 	/**
 	 * Checks whether blocks are supported in Site Kit based on WordPress version.
 	 *
+	 * We currently require version WP 5.8 or higher to support blocks, as this is the version
+	 * where the `block.json` configuration format was introduced.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @return bool True if blocks are supported, false otherwise.
 	 */
 	public static function has_block_support() {
-		// We currently require version WP 5.8 or higher to support blocks, as this is the version
-		// where the `block.json` configuration format was introduced.
 		return (bool) version_compare( '5.8', get_bloginfo( 'version' ), '<=' );
 	}
 }
