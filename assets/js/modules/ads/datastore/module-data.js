@@ -223,7 +223,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {string|undefined} Ads ID value if present, empty string if not present, and undefined if data is being resolved.
+	 * @return {string|undefined} Ads conversion ID value if present, empty string if not present, and undefined if data is being resolved.
 	 */
 	getGoogleForWooCommerceConversionID: getPluginStatusProperty(
 		'conversionID',
