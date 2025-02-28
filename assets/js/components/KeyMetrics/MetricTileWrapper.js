@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import GetHelpLink from './GetHelpLink';
 import MetricTileLoader from './MetricTileLoader';
 import MetricTileError from './MetricTileError';
@@ -41,6 +40,8 @@ import ReportErrorActions from '../ReportErrorActions';
 import { isInsufficientPermissionsError } from '../../util/errors';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 
 export default function MetricTileWrapper( props ) {
 	const {
@@ -51,10 +52,20 @@ export default function MetricTileWrapper( props ) {
 		moduleSlug,
 		Widget,
 		widgetSlug,
-		title = KEY_METRICS_WIDGETS[ widgetSlug ]?.title,
-		infoTooltip = KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
-			KEY_METRICS_WIDGETS[ widgetSlug ]?.description,
+		title,
+		infoTooltip,
 	} = props;
+
+	const widget = useSelect(
+		( select ) =>
+			widgetSlug && select( CORE_WIDGETS ).getWidget( widgetSlug )
+	);
+
+	const tileTitle = title || widget?.metadata?.title;
+	const tileInfoTooltip =
+		infoTooltip ||
+		widget?.metadata?.infoTooltip ||
+		widget?.metadata?.description;
 
 	const viewContext = useViewContext();
 
@@ -81,7 +92,7 @@ export default function MetricTileWrapper( props ) {
 						: __( 'Data loading failed', 'google-site-kit' )
 				}
 				headerText={ title }
-				infoTooltip={ infoTooltip }
+				infoTooltip={ tileInfoTooltip }
 			>
 				<ReportErrorActions
 					moduleSlug={ moduleSlug }
@@ -107,8 +118,8 @@ export default function MetricTileWrapper( props ) {
 				) }
 			>
 				<MetricTileHeader
-					title={ title }
-					infoTooltip={ infoTooltip }
+					title={ tileTitle }
+					infoTooltip={ tileInfoTooltip }
 					loading={ loading }
 				/>
 				<div className="googlesitekit-km-widget-tile__body">
