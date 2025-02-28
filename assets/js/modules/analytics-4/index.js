@@ -121,6 +121,7 @@ import AudienceSegmentationSetupCTAWidget, {
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
+import { KEY_METRICS_WIDGETS } from '../../components/KeyMetrics/key-metrics-widgets';
 
 export { registerStore } from './datastore';
 
@@ -294,6 +295,8 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -310,6 +313,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_POPULAR_AUTHORS
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -326,6 +330,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CATEGORIES
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -342,6 +347,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_POPULAR_CONTENT
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_CONTENT ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -358,6 +364,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_POPULAR_PRODUCTS
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -374,6 +381,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_PAGES_PER_VISIT
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_PAGES_PER_VISIT ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -390,6 +398,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_VISIT_LENGTH
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISIT_LENGTH ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -406,6 +415,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_VISITS_PER_VISITOR
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_VISITS_PER_VISITOR ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -422,6 +432,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_MOST_ENGAGING_PAGES
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_MOST_ENGAGING_PAGES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -438,6 +449,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_LEAST_ENGAGING_PAGES
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -454,6 +466,8 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -470,6 +484,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_NEW_VISITORS
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_NEW_VISITORS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -486,6 +501,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_RETURNING_VISITORS
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_RETURNING_VISITORS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -502,6 +518,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -518,6 +535,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -534,6 +555,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -550,6 +575,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -566,6 +595,8 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -582,6 +613,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -598,6 +633,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CITIES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -614,6 +650,8 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -630,6 +668,8 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -646,6 +686,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -662,6 +706,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -678,6 +726,10 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES
 				),
+			metadata:
+				KEY_METRICS_WIDGETS[
+					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES
+				],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -694,6 +746,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_COUNTRIES
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_COUNTRIES ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
