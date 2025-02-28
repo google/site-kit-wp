@@ -41,7 +41,10 @@ import {
 	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 	AdsModuleSetupCTABanner,
 } from './components/notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -157,9 +160,10 @@ export const ADS_NOTIFICATIONS = {
 	'ads-setup-cta': {
 		Component: AdsModuleSetupCTABanner,
 		// This notification should be displayed before audience segmentation one,
-		// which has priority of 310
-		priority: 300,
+		// which has priority of 10
+		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
