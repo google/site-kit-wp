@@ -104,24 +104,26 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 
 	const { dismissItem, dismissPrompt } = useDispatch( CORE_USER );
 
+	const onSuccess = useCallback( () => {
+		invalidateResolution( 'getQueuedNotifications', [
+			viewContext,
+			NOTIFICATION_GROUPS.DEFAULT,
+		] );
+		dismissPrompt( id, {
+			expiresInSeconds: 0,
+		} );
+		// Dismiss success notification in settings.
+		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
+	}, [ dismissItem, dismissPrompt, id, invalidateResolution, viewContext ] );
+
+	const onError = useCallback( () => {
+		setShowErrorModal( true );
+	}, [ setShowErrorModal ] );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
-			onSuccess: () => {
-				invalidateResolution( 'getQueuedNotifications', [
-					viewContext,
-					NOTIFICATION_GROUPS.DEFAULT,
-				] );
-				dismissPrompt( id, {
-					expiresInSeconds: 0,
-				} );
-				// Dismiss success notification in settings.
-				dismissItem(
-					SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-				);
-			},
-			onError: () => {
-				setShowErrorModal( true );
-			},
+			onSuccess,
+			onError,
 		} );
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );

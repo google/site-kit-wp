@@ -275,12 +275,17 @@ exports.GOOGLESITEKIT_VERSION = googleSiteKitVersion
 
 const corePackages = [
 	'api-fetch',
+	'components',
+	'block-editor',
+	'blocks',
 	'compose',
 	'data',
 	'dom-ready',
+	'edit-post',
 	'element',
 	'icons',
 	'keycodes',
+	'plugins',
 	'url',
 ];
 
@@ -288,6 +293,9 @@ exports.corePackages = corePackages;
 
 const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+	'googlesitekit-api': [ 'googlesitekit', 'api' ],
+	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 };
 
 exports.gutenbergExternals = gutenbergExternals;

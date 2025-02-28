@@ -15,8 +15,9 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\In_List_Filter;
-use Google\Site_Kit\Modules\Analytics_4\Report\Dimension_Filter\String_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Empty_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Filters\In_List_Filter;
+use Google\Site_Kit\Modules\Analytics_4\Report\Filters\String_Filter;
 use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Numeric_Filter;
 use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Between_Filter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
@@ -392,6 +393,8 @@ class RequestHelpers {
 			if ( isset( $dimension_value['value'] ) ) {
 				$dimension_value = $dimension_value['value'];
 			}
+		} elseif ( 'emptyFilter' === $filter_type ) {
+			$filter_class = Empty_Filter::class;
 		} else {
 			return null;
 		}

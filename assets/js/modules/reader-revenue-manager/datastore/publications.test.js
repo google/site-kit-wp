@@ -347,7 +347,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						registry
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getProductIDs()
-					).toEqual( [ 'product-1', 'product-2' ] );
+					).toEqual( [ 'ABC:product-1', 'DEF:product-2' ] );
 				} );
 
 				it( 'should set an empty product IDs array when products array is empty', () => {
@@ -405,28 +405,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						registry
 							.select( MODULES_READER_REVENUE_MANAGER )
 							.getProductIDs()
-					).toEqual( [ 'product-1', 'product-2' ] );
-				} );
-
-				it( 'should handle products with invalid name format', () => {
-					const products = [
-						{ name: 'ABC:product-1' },
-						{ name: 'invalid-format' }, // No separator
-						{ name: 'DEF:product-2' },
-					];
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
-
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductIDs()
-					).toEqual( [ 'product-1', 'product-2' ] );
+					).toEqual( [ 'ABC:product-1', 'DEF:product-2' ] );
 				} );
 
 				it( 'should set the payment option in state when a payment option is provided', () => {

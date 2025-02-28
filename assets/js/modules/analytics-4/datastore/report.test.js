@@ -497,7 +497,7 @@ describe( 'modules/analytics-4 report', () => {
 					'using the default report args',
 					{
 						expectedReportQueryParams: {
-							startDate: '2024-04-03',
+							startDate: '2024-03-06',
 							endDate: '2024-04-30',
 							'dimensions[0][name]': 'date',
 							'metrics[0][name]': 'totalUsers',
@@ -639,7 +639,7 @@ describe( 'modules/analytics-4 report', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getSampleReportArgs();
 
-				expect( args.startDate ).toBe( '2024-04-03' );
+				expect( args.startDate ).toBe( '2024-03-06' );
 				expect( args.endDate ).toBe( '2024-04-30' );
 				expect( args.metrics?.[ 0 ]?.name ).toBe( 'totalUsers' );
 				expect( args.dimensions?.[ 0 ] ).toBe( 'date' );

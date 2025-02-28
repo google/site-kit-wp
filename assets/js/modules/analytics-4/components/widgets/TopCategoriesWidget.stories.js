@@ -33,7 +33,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCategoriesWidget from './TopCategoriesWidget';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
@@ -44,9 +44,7 @@ const reportOptions = {
 	dimensions: [ 'customEvent:googlesitekit_post_categories' ],
 	dimensionFilters: {
 		'customEvent:googlesitekit_post_categories': {
-			filterType: 'stringFilter',
-			matchType: 'EXACT',
-			value: '(not set)',
+			filterType: 'emptyFilter',
 			notExpression: true,
 		},
 	},

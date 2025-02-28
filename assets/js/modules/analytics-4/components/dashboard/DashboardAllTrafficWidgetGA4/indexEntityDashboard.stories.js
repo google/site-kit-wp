@@ -36,7 +36,7 @@ import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
 
 function limitResponseToSingleDate( analyticsResponse ) {
@@ -146,7 +146,7 @@ const allTrafficReportOptions = [
 	},
 	{
 		// Gathering data check.
-		startDate: '2020-12-09',
+		startDate: '2020-11-11',
 		endDate: '2021-01-05',
 		dimensions: [ 'date' ],
 		metrics: [

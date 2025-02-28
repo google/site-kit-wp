@@ -658,7 +658,7 @@ export const selectors = {
 	/**
 	 * Gets a site's locale.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.147.0
 	 *
 	 * @return {(string|undefined)} The site locale.
 	 */
