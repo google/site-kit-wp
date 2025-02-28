@@ -32,6 +32,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	return (
@@ -144,6 +145,21 @@ PublicationUnavailable.args = {
 	},
 };
 
+export const WithProductIDWarningNotice = Template.bind( {} );
+WithProductIDWarningNotice.storyName = 'WithProductIDWarningNotice';
+WithProductIDWarningNotice.scenario = {};
+WithProductIDWarningNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+	},
+};
+
 export const MissingProductID = Template.bind( {} );
 MissingProductID.storyName = 'MissingProductID';
 MissingProductID.scenario = {};
@@ -188,6 +204,8 @@ export default {
 					publicationOnboardingState:
 						publications[ 0 ].onboardingState,
 					postTypes: [ 'post' ],
+					productID: 'product-1',
+					productIDs: [ 'product-1', 'product-2' ],
 					snippetMode: 'post_types',
 				};
 
@@ -198,6 +216,8 @@ export default {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( settings );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );

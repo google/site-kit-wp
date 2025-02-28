@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { useFeature } from '../../../../hooks/useFeature';
-import { getPostTypesString } from '../../utils/settings';
+import { getPostTypesString, getProductIDLabel } from '../../utils/settings';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
@@ -54,7 +54,7 @@ export default function SettingsView() {
 			return __( 'Open access', 'google-site-kit' );
 		}
 
-		return id;
+		return getProductIDLabel( id );
 	} );
 
 	const snippetMode = useSelect( ( select ) =>

@@ -45,6 +45,7 @@ import SettingsNotice, {
 } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import ProductIDSettings from './ProductIDSettings';
 
 export default function SettingsEdit() {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
@@ -148,6 +149,16 @@ export default function SettingsEdit() {
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
 	);
+	const productIDs = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+	);
+	const publicationsLoaded = useSelect(
+		( select ) =>
+			hasModuleAccess === false ||
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getPublications'
+			)
+	);
 
 	if ( isDoingSubmitChanges || undefined === hasModuleAccess ) {
 		return <ProgressBar />;
@@ -215,6 +226,13 @@ export default function SettingsEdit() {
 						) }
 					/>
 				) }
+				{ isRRMv2Enabled &&
+					publicationsLoaded &&
+					productIDs?.length > 0 && (
+						<ProductIDSettings
+							hasModuleAccess={ hasModuleAccess }
+						/>
+					) }
 			</div>
 			{ isRRMv2Enabled && (
 				<div className="googlesitekit-settings-module__fields-group">

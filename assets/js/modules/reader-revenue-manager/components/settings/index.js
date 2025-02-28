@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
+export { default as ProductIDSettings } from './ProductIDSettings';
 export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsView } from './SettingsView';

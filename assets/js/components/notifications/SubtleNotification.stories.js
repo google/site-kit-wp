@@ -22,6 +22,7 @@
 import SubtleNotification from './SubtleNotification';
 import CustomCheckSVG from '../../../svg/icons/check_circle.svg';
 import CustomWarningSVG from '../../../svg/icons/warning-v2.svg';
+import CustomInfoSVG from '../../../svg/icons/info-icon.svg';
 
 function Template( { ...args } ) {
 	return <SubtleNotification onDismiss={ () => {} } { ...args } />;
@@ -160,6 +161,76 @@ WarningWithoutIcon.args = {
 	hideIcon: true,
 };
 WarningWithoutIcon.scenario = {};
+
+export const Info = Template.bind( {} );
+Info.storyName = 'Info';
+Info.args = {
+	title: 'Your Conversion Tracking ID was not added to your site',
+	dismissLabel: 'Ok, got it',
+	variant: 'info',
+};
+Info.scenario = {};
+
+export const InfoWithDescription = Template.bind( {} );
+InfoWithDescription.storyName = 'Info With Description';
+InfoWithDescription.args = {
+	title: 'Your Conversion Tracking ID was not added to your site',
+	description: 'You cannot track conversions for your Ads campaigns',
+	dismissLabel: 'Ok, got it',
+	variant: 'info',
+};
+InfoWithDescription.scenario = {};
+
+export const InfoWithCTA = Template.bind( {} );
+InfoWithCTA.storyName = 'Info With CTA';
+InfoWithCTA.args = {
+	title: 'Your Conversion Tracking ID was not added to your site',
+	description: 'You cannot track conversions for your Ads campaigns',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	variant: 'info',
+};
+InfoWithCTA.scenario = {};
+
+export const InfoWithExternalCTA = Template.bind( {} );
+InfoWithExternalCTA.storyName = 'Info With External CTA';
+InfoWithExternalCTA.args = {
+	title: 'Your Conversion Tracking ID was not added to your site',
+	description: 'You cannot track conversions for your Ads campaigns',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	variant: 'info',
+};
+InfoWithExternalCTA.scenario = {};
+
+export const InfoWithCustomIcon = Template.bind( {} );
+InfoWithCustomIcon.storyName = 'Info With Custom Icon';
+InfoWithCustomIcon.args = {
+	title: 'Your Conversion Tracking ID was not added to your site',
+	description: 'You cannot track conversions for your Ads campaigns',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	Icon: CustomInfoSVG,
+	variant: 'info',
+};
+InfoWithCustomIcon.scenario = {};
+
+export const InfoWithoutIcon = Template.bind( {} );
+InfoWithoutIcon.storyName = 'Info Without Icon';
+InfoWithoutIcon.args = {
+	title: 'Warning! Your Conversion Tracking ID was added to your site',
+	dismissLabel: 'Ok, got it',
+	ctaLabel: 'Learn more',
+	ctaLink: 'https://sitekit.withgoogle.com/documentation',
+	isCTALinkExternal: true,
+	variant: 'info',
+	hideIcon: true,
+};
+InfoWithoutIcon.scenario = {};
 
 export const NonDismissible = Template.bind( {} );
 NonDismissible.storyName = 'Non dismissible';
