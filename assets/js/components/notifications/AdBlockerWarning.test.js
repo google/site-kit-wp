@@ -67,7 +67,7 @@ describe( 'AdBlockerWarning', () => {
 			container.querySelector( '.googlesitekit-warning-notice' )
 		).not.toEqual( null );
 
-		expect( container.textContent ).toContain( 'to set up AdSense' );
+		expect( container.textContent ).toContain( 'To set up AdSense' );
 	} );
 
 	it( 'should render the warning when an AdBlocker is active and module is connected', () => {
