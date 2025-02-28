@@ -81,7 +81,6 @@ WithGoogleForWooCommerceConflict.storyName = 'WithGoogleForWooCommerceConflict';
 WithGoogleForWooCommerceConflict.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADS ).setSettings( {
-			paxConversionID: 'AW-123456789',
 			conversionID: 'AW-123456789',
 		} );
 
