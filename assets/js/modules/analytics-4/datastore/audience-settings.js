@@ -37,6 +37,14 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 
 const { receiveError, clearError } = errorStoreActions;
 
+/**
+ * Validates audience settings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} audienceSettings Audience settings to validate.
+ * @return {void}
+ */
 function validateAudienceSettings( audienceSettings ) {
 	invariant(
 		isPlainObject( audienceSettings ),
