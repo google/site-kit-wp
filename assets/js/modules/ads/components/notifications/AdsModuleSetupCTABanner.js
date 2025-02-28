@@ -58,6 +58,7 @@ import {
 	useTooltipState,
 	AdminMenuTooltip,
 } from '../../../../components/AdminMenuTooltip';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const breakpointSVGMap = {
 	[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
@@ -69,7 +70,9 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const learnMoreURL = undefined;
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'set-up-ads' )
+	);
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
