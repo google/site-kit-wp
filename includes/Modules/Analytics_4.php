@@ -61,10 +61,6 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
@@ -78,14 +74,17 @@ use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha as Google_Service_GoogleAnalyticsAdminV1alpha;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAudience;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -354,7 +353,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			2
 		);
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ), 10 );
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ) );
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
 
@@ -635,7 +634,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			'GET:account-summaries'                => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                         => array( 'service' => 'analyticsadmin' ),
 			'GET:ads-links'                        => array( 'service' => 'analyticsadmin' ),
-			'GET:adsense-links'                    => array( 'service' => 'analyticsadsenselinks' ),
+			'GET:adsense-links'                    => array( 'service' => 'analyticsadminv1alpha' ),
 			'GET:container-lookup'                 => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -685,9 +684,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			),
 			'GET:webdatastreams'                   => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'             => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'    => array( 'service' => 'analyticsenhancedmeasurement' ),
+			'GET:enhanced-measurement-settings'    => array( 'service' => 'analyticsadmin1alpha' ),
 			'POST:enhanced-measurement-settings'   => array(
-				'service'                => 'analyticsenhancedmeasurement',
+				'service'                => 'analyticsadminv1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', 'google-site-kit' ),
 			),
@@ -709,7 +708,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
 			$datapoints['POST:create-audience']                      = array(
-				'service'                => 'analyticsaudiences',
+				'service'                => 'analyticsadminv1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			);
@@ -717,7 +716,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			);
 			$datapoints['POST:sync-audiences']                       = array(
-				'service'   => 'analyticsaudiences',
+				'service'   => 'analyticsadminv1alpha',
 				'shareable' => true,
 			);
 			$datapoints['GET:audience-settings']                     = array(
@@ -765,7 +764,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$property->setDisplayName( $display_name );
 		$property->setTimeZone( $timezone );
 
-		return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+		return $this->get_analyticsadmin_service()->properties->create( $property );
 	}
 
 	/**
@@ -781,6 +780,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 *     @type string $displayName Display name.
 	 * }
 	 * @return GoogleAnalyticsAdminV1betaDataStream A new web data stream.
+	 * @throws Google_Service_Exception Throw if request fails.
 	 */
 	private function create_webdatastream( $property_id, $options = array() ) {
 		$site_url = $this->context->get_reference_site_url();
@@ -799,10 +799,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$datastream->setType( 'WEB_DATA_STREAM' );
 		$datastream->setWebStreamData( $data );
 
-		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-		$analyticsadmin = $this->get_service( 'analyticsadmin' );
-
-		return $analyticsadmin
+		return $this->get_analyticsadmin_service()
 			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			->create(
 				self::normalize_property_id( $property_id ),
@@ -1086,9 +1083,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
+				return $this->get_analyticsadmin_service()->accounts->listAccounts();
 			case 'GET:account-summaries':
-				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries(
+				return $this->get_analyticsadmin_service()->accountSummaries->listAccountSummaries(
 					array(
 						'pageSize'  => 200,
 						'pageToken' => $data['pageToken'],
@@ -1101,7 +1098,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
-				return $this->get_service( 'analyticsadmin' )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
+				return $this->get_analyticsadmin_service()->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
 			case 'GET:adsense-links':
 				if ( empty( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -1109,7 +1106,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
-				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
+				return $this->get_analyticsadminalpha_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -1151,9 +1148,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
 
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-
-				return $analyticsadmin
+				return $this->get_analyticsadminalpha_service()
 					->properties_audiences
 					->create(
 						$property_id,
@@ -1230,7 +1225,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
+				return $this->get_analyticsadmin_service()->properties->listProperties(
 					array(
 						'filter'   => 'parent:' . self::normalize_account_id( $data['accountID'] ),
 						'pageSize' => 200,
@@ -1246,7 +1241,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+				return $this->get_analyticsadmin_service()->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
@@ -1337,10 +1332,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
-
-				return $analyticsadmin
-					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				return $this->get_analyticsadminalpha_service()
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->getEnhancedMeasurementSettings( $name );
 			case 'POST:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -1401,12 +1394,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$post_body = new EnhancedMeasurementSettingsModel( $data['enhancedMeasurementSettings'] );
+				$post_body = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings(
+					$data['enhancedMeasurementSettings']
+				);
 
-				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
-
-				return $analyticsadmin
-					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				return $this->get_analyticsadminalpha_service()
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->updateEnhancedMeasurementSettings(
 						$name,
 						$post_body,
@@ -1483,9 +1476,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$custom_dimension->setDisallowAdsPersonalization( $custom_dimension_data['disallowAdsPersonalization'] );
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-
-				return $analyticsadmin
+				return $this->get_analyticsadmin_service()
 					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->create(
 						self::normalize_property_id( $data['propertyID'] ),
@@ -1539,10 +1530,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
 
-				return $analyticsadmin
+				return $this->get_analyticsadminalpha_service()
 					->properties_audiences
 					->listPropertiesAudiences( $property_id );
 			case 'POST:sync-custom-dimensions':
@@ -1555,9 +1545,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-
-				return $analyticsadmin
+				return $this->get_analyticsadmin_service()
 					->properties_customDimensions // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesCustomDimensions( self::normalize_property_id( $settings['propertyID'] ) );
 			case 'POST:custom-dimension-data-available':
@@ -1620,9 +1608,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-
-				return $analyticsadmin
+				return $this->get_analyticsadmin_service()
 					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesDataStreams(
 						self::normalize_property_id( $data['propertyID'] )
@@ -1646,7 +1632,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$analyticsadmin = $this->get_analyticsadmin_service();
 				$batch_request  = $analyticsadmin->createBatch();
 
 				foreach ( $data['propertyIDs'] as $property_id ) {
@@ -1672,7 +1658,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinationID'] ) );
+				return $this->get_tagmanager_service()
+					->accounts_containers
+					->lookup(
+						array( 'destinationId' => $data['destinationID'] )
+					);
 			case 'GET:container-destinations':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -1691,9 +1681,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
-					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
-				);
+				return $this->get_tagmanager_service()
+					->accounts_containers_destinations
+					->listAccountsContainersDestinations(
+						"accounts/{$data['accountID']}/containers/{$data['containerID']}"
+					);
 			case 'GET:google-tag-settings':
 				if ( ! isset( $data['measurementID'] ) ) {
 					return new WP_Error(
@@ -1704,7 +1696,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
+				return $this->get_tagmanager_service()
+					->accounts_containers
+					->lookup(
+						array( 'destinationId' => $data['measurementID'] )
+					);
 			case 'GET:conversion-events':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
@@ -1715,10 +1711,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
 
-				return $analyticsadmin
+				return $this->get_analyticsadmin_service()
 					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesConversionEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
@@ -1890,36 +1885,21 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
-	 * Gets the configured Analytics Data service object instance.
+	 * Gets the configured Analytics Admin service instance.
 	 *
-	 * @since 1.110.0
-	 *
-	 * @return PropertiesEnhancedMeasurementService The Analytics Admin API service.
+	 * @return Google_Service_GoogleAnalyticsAdmin
 	 */
-	protected function get_analyticsenhancedmeasurements_service() {
-		return $this->get_service( 'analyticsenhancedmeasurement' );
+	protected function get_analyticsadmin_service(): Google_Service_GoogleAnalyticsAdmin {
+		return $this->get_service( 'analyticsadmin' );
 	}
 
 	/**
-	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
+	 * Gets the configured Analytics Admin v1alpha service instance.
 	 *
-	 * @since 1.120.0
-	 *
-	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
+	 * @return Google_Service_GoogleAnalyticsAdminV1alpha
 	 */
-	protected function get_analyticsadsenselinks_service() {
-		return $this->get_service( 'analyticsadsenselinks' );
-	}
-
-	/**
-	 * Gets the configured Analytics Data service object instance.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @return PropertiesAudiencesService The Analytics Admin API service.
-	 */
-	protected function get_analyticsaudiences_service() {
-		return $this->get_service( 'analyticsaudiences' );
+	protected function get_analyticsadminalpha_service(): Google_Service_GoogleAnalyticsAdminV1alpha {
+		return $this->get_service( 'analyticsadminv1alpha' );
 	}
 
 	/**
@@ -1938,13 +1918,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$google_proxy = $this->authentication->get_google_proxy();
 
 		return array(
-			'analyticsadmin'               => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
-			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
-			'analyticsaudiences'           => new PropertiesAudiencesService( $client ),
-			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
-			'tagmanager'                   => new Google_Service_TagManager( $client ),
+			'analyticsadmin'        => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsadminv1alpha' => new Google_Service_GoogleAnalyticsAdminV1alpha( $client ),
+			'analyticsdata'         => new Google_Service_AnalyticsData( $client ),
+			'analyticsprovisioning' => new AccountProvisioningService( $client, $google_proxy->url() ),
+			'tagmanager'            => new Google_Service_TagManager( $client ),
 		);
 	}
 
@@ -2263,7 +2241,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		$analyticsadmin = $this->get_service( 'analyticsadmin' );
+		$analyticsadmin = $this->get_analyticsadmin_service();
 		$settings       = $this->settings->get();
 
 		try {
