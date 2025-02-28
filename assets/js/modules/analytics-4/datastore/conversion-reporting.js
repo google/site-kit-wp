@@ -87,6 +87,10 @@ export const resolvers = {
 			return;
 		}
 
+		if ( ! global._googlesitekitModulesData?.[ 'analytics-4' ] ) {
+			return;
+		}
+
 		const { newEvents, lostEvents, newBadgeEvents } =
 			global._googlesitekitModulesData[ 'analytics-4' ];
 
