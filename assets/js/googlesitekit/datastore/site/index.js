@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { CORE_SITE } from './constants';
 import cache from './cache';
 import connection from './connection';
 import consentMode from './consent-mode';
@@ -33,7 +34,6 @@ import enableAutoUpdate from './enable-auto-update';
 import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
-import { CORE_SITE } from './constants';
 import notifications from './notifications';
 import { createErrorStore } from '../../data/create-error-store';
 

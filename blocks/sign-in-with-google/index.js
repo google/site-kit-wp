@@ -25,7 +25,7 @@ import metadata from './block.json';
 /**
  * Registers the Sign in with Google block.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  */
 registerBlockType( metadata.name, {
 	edit: Edit,

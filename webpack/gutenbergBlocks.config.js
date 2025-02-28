@@ -41,8 +41,10 @@ const {
 module.exports = ( mode ) => ( {
 	entry: {
 		// Reader Revenue Manager
-		'googlesitekit-reader-revenue-manager-block-editor':
-			'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
+		'reader-revenue-manager/block-editor-plugin/index':
+			'./blocks/reader-revenue-manager/block-editor-plugin/index.js',
+		'reader-revenue-manager/block-editor-plugin/editor-styles':
+			'./blocks/reader-revenue-manager/block-editor-plugin/editor-styles.scss',
 		// Sign in with Google block.
 		'sign-in-with-google/index': './blocks/sign-in-with-google/index.js',
 		'sign-in-with-google/editor-styles':
@@ -50,8 +52,7 @@ module.exports = ( mode ) => ( {
 	},
 	externals: gutenbergExternals,
 	output: {
-		filename:
-			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+		filename: '[name].js',
 		path: rootDir + '/dist/assets/js/blocks',
 		publicPath: '',
 	},
@@ -108,10 +109,7 @@ module.exports = ( mode ) => ( {
 			},
 		} ),
 		new MiniCssExtractPlugin( {
-			filename:
-				'production' === mode
-					? '[name]-[contenthash].min.css'
-					: '[name].css',
+			filename: '[name].css',
 		} ),
 		new ESLintPlugin( {
 			emitError: true,

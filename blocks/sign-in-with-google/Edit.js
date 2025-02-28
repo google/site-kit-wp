@@ -27,7 +27,7 @@ import SignInWithGoogleIcon from './icon.svg';
 /**
  * Sign in with Google Block Edit component.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  *
  * @return {Element} Element to render.
  */
@@ -36,7 +36,10 @@ export default function Edit() {
 
 	return (
 		<div { ...blockProps }>
-			<div className="googlesitekit-blocks-sign-in-with-google">
+			<div
+				className="googlesitekit-blocks-sign-in-with-google"
+				style={ { maxWidth: '180px', minWidth: '120px' } }
+			>
 				<SignInWithGoogleIcon />
 			</div>
 		</div>

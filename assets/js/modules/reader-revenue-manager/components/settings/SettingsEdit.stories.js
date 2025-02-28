@@ -32,6 +32,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	return (
@@ -56,6 +57,16 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+};
 
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'PendingVerification';
@@ -65,6 +76,13 @@ PendingVerification.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -76,6 +94,12 @@ ActionRequired.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -95,6 +119,13 @@ WithoutModuleAccess.args = {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
 	},
 };
@@ -111,6 +142,35 @@ PublicationUnavailable.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
+	},
+};
+
+export const WithProductIDWarningNotice = Template.bind( {} );
+WithProductIDWarningNotice.storyName = 'WithProductIDWarningNotice';
+WithProductIDWarningNotice.scenario = {};
+WithProductIDWarningNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+	},
+};
+
+export const MissingProductID = Template.bind( {} );
+MissingProductID.storyName = 'MissingProductID';
+MissingProductID.scenario = {};
+MissingProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-c' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b' ] );
 	},
 };
 
@@ -144,6 +204,8 @@ export default {
 					publicationOnboardingState:
 						publications[ 0 ].onboardingState,
 					postTypes: [ 'post' ],
+					productID: 'product-1',
+					productIDs: [ 'product-1', 'product-2' ],
 					snippetMode: 'post_types',
 				};
 
@@ -154,6 +216,8 @@ export default {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( settings );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useCallbackOne } from 'use-memo-one';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -28,8 +29,8 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
-	useEffect,
 	useRef,
+	useState,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -40,12 +41,13 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
-import SetupForm from './SetupForm';
+import SetupFormPAX from './SetupFormPAX';
 import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
@@ -58,14 +60,19 @@ import {
 	PAX_SETUP_STEP,
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
-import { useFeature } from '../../../../hooks/useFeature';
+import { Cell, Row } from '../../../../material-components';
+import { WooCommerceRedirectModal } from '../common';
 
 export default function SetupMainPAX( { finishSetup } ) {
+	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
+
+	const [ shouldShowProgressBar, setShouldShowProgressBar ] =
+		useState( false );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -95,6 +102,15 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setPaxConversionID, setExtCustomerID, submitChanges } =
 		useDispatch( MODULES_ADS );
+
+	useMount( () => {
+		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
+			// If the PAX query param indicates the setup is finished on page load,
+			// set the step back to the PAX launch, as values are only temporarily
+			// saved in state after PAX campaign setup signal is received.
+			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
+		}
+	} );
 
 	// Callback to be executed when a campaign is created in PAX.
 	//
@@ -144,26 +160,63 @@ export default function SetupMainPAX( { finishSetup } ) {
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup ] );
 
+	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
+		)
+	);
+	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
+		const {
+			isWooCommerceActivated,
+			isGoogleForWooCommerceActivated,
+			hasGoogleForWooCommerceAdsAccount,
+		} = select( MODULES_ADS );
+
+		return (
+			( isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				! hasGoogleForWooCommerceAdsAccount() ) ||
+			( isWooCommerceActivated() && ! isGoogleForWooCommerceActivated() )
+		);
+	} );
+
+	const onModalDismiss = useCallback( () => {
+		setOpenDialog( false );
+	}, [ setOpenDialog ] );
+
 	const createAccount = useCallback( () => {
+		setShouldShowProgressBar( true );
+
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
 			return;
 		}
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
+
+		setShouldShowProgressBar( false );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	const onLaunch = useCallback( ( app ) => {
 		paxAppRef.current = app;
 	}, [] );
 
-	const isAdsPaxEnabled = useFeature( 'adsPax' );
-
-	useEffect( () => {
-		if ( isAdsPaxEnabled ) {
-			createAccount();
+	const onSetupCallback = useCallback( () => {
+		if (
+			shouldShowWooCommerceRedirectModal &&
+			! isWooCommerceRedirectModalDismissed
+		) {
+			setOpenDialog( true );
+			return;
 		}
-	}, [ isAdsPaxEnabled, createAccount ] );
+
+		createAccount();
+	}, [
+		shouldShowWooCommerceRedirectModal,
+		isWooCommerceRedirectModalDismissed,
+		setOpenDialog,
+		createAccount,
+	] );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
@@ -179,60 +232,55 @@ export default function SetupMainPAX( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
 
-				{ isAdsPaxEnabled && ! showPaxAppStep && <ProgressBar /> }
+				{ shouldShowProgressBar && <ProgressBar /> }
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
 					hasAdwordsScope && (
-						<PAXEmbeddedApp
-							displayMode="setup"
-							onLaunch={ onLaunch }
-							onCampaignCreated={ onCampaignCreated }
-							onFinishAndCloseSignUpFlow={ onCompleteSetup }
-						/>
+						<Row>
+							<Cell mdSize={ 12 } lgSize={ 12 }>
+								<PAXEmbeddedApp
+									displayMode="setup"
+									onLaunch={ onLaunch }
+									onCampaignCreated={ onCampaignCreated }
+									onFinishAndCloseSignUpFlow={
+										onCompleteSetup
+									}
+								/>
+							</Cell>
+						</Row>
 					) }
 
-				{ ! isAdsPaxEnabled &&
-					! isAdBlockerActive &&
+				{ ! isAdBlockerActive &&
 					( ! showPaxAppStep || ! hasAdwordsScope ) && (
 						<Fragment>
-							<p>
-								{ createInterpolateElement(
-									__(
-										'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
-										'google-site-kit'
-									),
-									{
-										a: (
-											<SupportLink
-												path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
-												external
-											/>
-										),
-									}
-								) }
-								<br />
-								{ __(
-									'You can always change this later in Site Kit Settings.',
-									'google-site-kit'
-								) }
-							</p>
-
-							<SetupForm
-								finishSetup={ finishSetup }
-								isNavigatingToOAuthURL={
-									isNavigatingToOAuthURL
-								}
-								createAccountCTA={
+							<Row className="googlesitekit-setup-module--ads--setup-container">
+								<Cell
+									smSize={ 8 }
+									mdSize={ 8 }
+									lgSize={ 5 }
+									className="align-top"
+								>
+									<h3>
+										{ __(
+											'Set up a new Ads account',
+											'google-site-kit'
+										) }
+									</h3>
+									<p className="instructions">
+										{ __(
+											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process.',
+											'google-site-kit'
+										) }
+									</p>
 									<Fragment>
 										<SpinnerButton
-											onClick={ createAccount }
+											onClick={ onSetupCallback }
 											disabled={ isNavigatingToOAuthURL }
 											isSaving={ isNavigatingToOAuthURL }
-											inverse
 										>
 											{ __(
-												'Create an account',
+												'Start setup wizard',
 												'google-site-kit'
 											) }
 										</SpinnerButton>
@@ -245,11 +293,60 @@ export default function SetupMainPAX( { finishSetup } ) {
 											</p>
 										) }
 									</Fragment>
-								}
-							/>
+								</Cell>
+								<Cell
+									className="divider"
+									smSize={ 8 }
+									mdSize={ 8 }
+									lgSize={ 2 }
+								>
+									<span className="divider-line" />
+									<span className="divider-label">
+										{ __( 'OR', 'google-site-kit' ) }
+									</span>
+								</Cell>
+								<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
+									<h3>
+										{ __(
+											'Connect an existing Ads account',
+											'google-site-kit'
+										) }
+									</h3>
+									<p className="instructions">
+										{ createInterpolateElement(
+											__(
+												'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<SupportLink
+														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+														external
+													/>
+												),
+												br: <br />,
+											}
+										) }
+									</p>
+									<SetupFormPAX
+										finishSetup={ finishSetup }
+										isNavigatingToOAuthURL={
+											isNavigatingToOAuthURL
+										}
+									/>
+								</Cell>
+							</Row>
 						</Fragment>
 					) }
 			</div>
+			{ openDialog && (
+				<WooCommerceRedirectModal
+					onDismiss={ onModalDismiss }
+					onContinue={ createAccount }
+					dialogActive
+				/>
+			) }
 		</div>
 	);
 }

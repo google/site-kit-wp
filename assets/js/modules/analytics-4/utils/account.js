@@ -111,7 +111,7 @@ export const populatePropertyAndAccountIds = ( property ) => {
 /**
  * Populates a list of accountSummaries with IDs for accounts and properties.
  *
- * @since n.e.x.t
+ * @since 1.147.0
  *
  * @param {Array|unknown} accountSummaries Account summaries to populate.
  * @return {Array|unknown} Populated account summaries or given value if not an array.

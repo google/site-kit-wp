@@ -1,7 +1,7 @@
 /**
- * Failing stories test runner.
+ * Ads WooCommerceRedirectModal component stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,21 @@
  */
 
 /**
- * Node dependencies
+ * Internal dependencies
  */
-import path from 'path';
+import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
-/**
- * External dependencies
- */
-import initStoryshots from '@storybook/addon-storyshots';
-import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
+function Template() {
+	return <WooCommerceRedirectModal dialogActive />;
+}
 
-initStoryshots( {
-	suite: 'Puppeteer storyshots',
-	test: puppeteerTest( {
-		// eslint-disable-next-line sitekit/acronym-case
-		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
-		setupTimeout: 5000,
-		testTimeout: 5000,
-	} ),
-} );
+export const Default = Template.bind( null );
+Default.storyName = 'Default';
+Default.scenario = {};
+Default.parameters = {
+	features: [ 'adsPax' ],
+};
+
+export default {
+	title: 'Modules/Ads/WooCommerceRedirectModal',
+};

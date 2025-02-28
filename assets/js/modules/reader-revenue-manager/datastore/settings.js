@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
@@ -104,9 +105,10 @@ export function validateCanSubmitChanges( select ) {
 		);
 
 		invariant(
-			Array.isArray( postTypes ) &&
-				postTypes.every( ( item ) => typeof item === 'string' ) &&
-				postTypes.length > 0,
+			snippetMode !== 'post_types' ||
+				( Array.isArray( postTypes ) &&
+					postTypes.every( ( item ) => typeof item === 'string' ) &&
+					postTypes.length > 0 ),
 			INVARIANT_INVALID_POST_TYPES
 		);
 
@@ -126,4 +128,34 @@ export function validateCanSubmitChanges( select ) {
 			INVARIANT_INVALID_PAYMENT_OPTION
 		);
 	}
+}
+
+export async function submitChanges( { dispatch, select } ) {
+	const { getSnippetMode, hasSettingChanged, haveSettingsChanged } = select(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
+	if ( haveSettingsChanged() ) {
+		if (
+			isFeatureEnabled( 'rrmModuleV2' ) &&
+			hasSettingChanged( 'postTypes' ) &&
+			'post_types' !== getSnippetMode()
+		) {
+			await dispatch( MODULES_READER_REVENUE_MANAGER ).rollbackSetting(
+				'postTypes'
+			);
+		}
+
+		const { error } = await dispatch(
+			MODULES_READER_REVENUE_MANAGER
+		).saveSettings();
+
+		if ( error ) {
+			return { error };
+		}
+	}
+
+	await API.invalidateCache( 'modules', 'reader-revenue-manager' );
+
+	return {};
 }
