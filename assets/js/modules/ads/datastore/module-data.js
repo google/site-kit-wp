@@ -216,6 +216,19 @@ export const selectors = {
 		'adsConnected',
 		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
 	),
+
+	/**
+	 * Gets Google for WooCommerce Ads connected conversion ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string|undefined} Ads conversion ID value if present, empty string if not present, and undefined if data is being resolved.
+	 */
+	getGoogleForWooCommerceConversionID: getPluginStatusProperty(
+		'conversionID',
+		PLUGINS.GOOGLE_FOR_WOOCOMMERCE
+	),
 };
 
 export default {
