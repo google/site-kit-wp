@@ -35,6 +35,7 @@ export default function Description( {
 	text,
 	learnMoreLink,
 	errorText,
+	children,
 } ) {
 	return (
 		<Fragment>
@@ -50,6 +51,7 @@ export default function Description( {
 				</p>
 			</div>
 			{ errorText && <ErrorText message={ errorText } /> }
+			{ children }
 		</Fragment>
 	);
 }
@@ -59,4 +61,5 @@ Description.propTypes = {
 	text: PropTypes.string,
 	learnMoreLink: PropTypes.node,
 	errorText: PropTypes.string,
+	children: PropTypes.node,
 };
