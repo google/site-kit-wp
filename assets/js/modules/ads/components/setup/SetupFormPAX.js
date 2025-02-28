@@ -59,12 +59,13 @@ export default function SetupFormPAX( {
 		select( MODULES_ADS ).getConversionID()
 	);
 
-	const glaConnectedAdsID = useSelect( ( select ) =>
+	const googleListingsAndAdsConnectedAdsID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getGoogleForWooCommerceConversionID()
 	);
 
 	const isDuplicateAdsIDDetected =
-		!! currentConversionID && currentConversionID === glaConnectedAdsID;
+		!! currentConversionID &&
+		currentConversionID === googleListingsAndAdsConnectedAdsID;
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -97,7 +98,7 @@ export default function SetupFormPAX( {
 			{ isDuplicateAdsIDDetected && (
 				<WarningNotice className="googlesitekit-ads-setup__ads-id-conflict-warning">
 					{ __(
-						"This Conversion ID is already in use via Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement for your Ads campaign conversions.",
+						'This Conversion ID is already in use via Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement for your Ads campaign conversions.',
 						'google-site-kit'
 					) }
 				</WarningNotice>
