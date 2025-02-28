@@ -79,7 +79,7 @@ export default function SetupFormPAX( {
 			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
 			<div className="googlesitekit-setup-module__inputs">
-				<ConversionIDTextField showHeading={ false } />
+				<ConversionIDTextField hideHeading />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">

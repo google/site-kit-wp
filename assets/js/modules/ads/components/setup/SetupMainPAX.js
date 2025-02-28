@@ -47,6 +47,7 @@ import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarn
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
@@ -60,8 +61,10 @@ import {
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '../../pax/constants';
 import { Cell, Row } from '../../../../material-components';
+import { WooCommerceRedirectModal } from '../common';
 
 export default function SetupMainPAX( { finishSetup } ) {
+	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
 	const showPaxAppStep =
@@ -157,6 +160,30 @@ export default function SetupMainPAX( { finishSetup } ) {
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup ] );
 
+	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
+		)
+	);
+	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
+		const {
+			isWooCommerceActivated,
+			isGoogleForWooCommerceActivated,
+			hasGoogleForWooCommerceAdsAccount,
+		} = select( MODULES_ADS );
+
+		return (
+			( isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				! hasGoogleForWooCommerceAdsAccount() ) ||
+			( isWooCommerceActivated() && ! isGoogleForWooCommerceActivated() )
+		);
+	} );
+
+	const onModalDismiss = useCallback( () => {
+		setOpenDialog( false );
+	}, [ setOpenDialog ] );
+
 	const createAccount = useCallback( () => {
 		setShouldShowProgressBar( true );
 
@@ -173,6 +200,23 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const onLaunch = useCallback( ( app ) => {
 		paxAppRef.current = app;
 	}, [] );
+
+	const onSetupCallback = useCallback( () => {
+		if (
+			shouldShowWooCommerceRedirectModal &&
+			! isWooCommerceRedirectModalDismissed
+		) {
+			setOpenDialog( true );
+			return;
+		}
+
+		createAccount();
+	}, [
+		shouldShowWooCommerceRedirectModal,
+		isWooCommerceRedirectModalDismissed,
+		setOpenDialog,
+		createAccount,
+	] );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
@@ -211,7 +255,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 					( ! showPaxAppStep || ! hasAdwordsScope ) && (
 						<Fragment>
 							<Row className="googlesitekit-setup-module--ads--setup-container">
-								<span className="vertical-line"></span>
 								<Cell
 									smSize={ 8 }
 									mdSize={ 8 }
@@ -220,25 +263,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 								>
 									<h3>
 										{ __(
-											'Ads Setup Wizard',
+											'Set up a new Ads account',
 											'google-site-kit'
 										) }
 									</h3>
-									<strong>
-										{ __(
-											'Don’t have an Ads account yet?',
-											'google-site-kit'
-										) }
-									</strong>
 									<p className="instructions">
 										{ __(
-											'Create your Ads account using a step by step wizard that will help you set up your campaign, define your goals and set billing information. To create new Ads account you’ll be asked to grant Site Kit additional permissions during the account creation process.',
+											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process.',
 											'google-site-kit'
 										) }
 									</p>
 									<Fragment>
 										<SpinnerButton
-											onClick={ createAccount }
+											onClick={ onSetupCallback }
 											disabled={ isNavigatingToOAuthURL }
 											isSaving={ isNavigatingToOAuthURL }
 										>
@@ -263,7 +300,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 									mdSize={ 8 }
 									lgSize={ 2 }
 								>
-									<div className="horizontal-line"></div>
+									<span className="divider-line" />
 									<span className="divider-label">
 										{ __( 'OR', 'google-site-kit' ) }
 									</span>
@@ -271,20 +308,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 								<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
 									<h3>
 										{ __(
-											'Connect Ads Manually',
+											'Connect an existing Ads account',
 											'google-site-kit'
 										) }
 									</h3>
-									<strong>
-										{ __(
-											'Already have an Ads account?',
-											'google-site-kit'
-										) }
-									</strong>
 									<p className="instructions">
 										{ createInterpolateElement(
 											__(
-												'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns.<a>Learn more</a>.<br></br>You can always change this later in Site Kit Settings.',
+												'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
 												'google-site-kit'
 											),
 											{
@@ -309,6 +340,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 						</Fragment>
 					) }
 			</div>
+			{ openDialog && (
+				<WooCommerceRedirectModal
+					onDismiss={ onModalDismiss }
+					onContinue={ createAccount }
+					dialogActive
+				/>
+			) }
 		</div>
 	);
 }

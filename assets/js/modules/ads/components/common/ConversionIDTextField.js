@@ -40,7 +40,7 @@ import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
 
 export default function ConversionIDTextField( {
 	helperText,
-	showHeading = true,
+	hideHeading = false,
 } ) {
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -74,9 +74,9 @@ export default function ConversionIDTextField( {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
-			{ showHeading && (
+			{ ! hideHeading && (
 				<h4 className="googlesitekit-settings-module__fields-group-title">
-					{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+					{ __( 'Conversion ID', 'google-site-kit' ) }
 				</h4>
 			) }
 
@@ -87,7 +87,7 @@ export default function ConversionIDTextField( {
 			) }
 
 			<TextField
-				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+				label={ __( 'Conversion ID', 'google-site-kit' ) }
 				className={ classnames(
 					'googlesitekit-text-field-conversion-tracking-id',
 					{
