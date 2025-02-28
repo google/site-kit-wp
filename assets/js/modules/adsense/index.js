@@ -50,6 +50,7 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '../../components/KeyMetrics/key-metrics-widgets';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -109,41 +110,6 @@ export const registerWidgets = ( widgets ) => {
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 
-	/*
-	 * Key metrics widgets.
-	 */
-	widgets.registerWidget(
-		KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-		{
-			Component: TopEarningContentWidget,
-			width: widgets.WIDGET_WIDTHS.QUARTER,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
-			isActive: ( select ) => {
-				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
-
-				if (
-					! select( CORE_USER ).isKeyMetricActive(
-						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
-					)
-				) {
-					return false;
-				}
-
-				const isAdSenseLinked =
-					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-				if ( isViewOnly && ! isAdSenseLinked ) {
-					return false;
-				}
-
-				return true;
-			},
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
-
 	widgets.registerWidget(
 		'adBlockerWarning',
 		{
@@ -191,5 +157,42 @@ export const registerWidgets = ( widgets ) => {
 			modules: [ 'adsense', 'analytics-4' ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
+
+	/*
+	 * Key metrics widgets.
+	 */
+	widgets.registerWidget(
+		KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+		{
+			Component: TopEarningContentWidget,
+			width: widgets.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'adsense', 'analytics-4' ],
+			isActive: ( select ) => {
+				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
+
+				if (
+					! select( CORE_USER ).isKeyMetricActive(
+						KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
+					)
+				) {
+					return false;
+				}
+
+				const isAdSenseLinked =
+					select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+				if ( isViewOnly && ! isAdSenseLinked ) {
+					return false;
+				}
+
+				return true;
+			},
+			metadata:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 };
