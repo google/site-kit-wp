@@ -147,7 +147,6 @@ const KEY_METRICS_WIDGETS = {
 		),
 		displayInSelectionPanel:
 			shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
-		displayInList: shouldDisplayWidgetWithAnalytics4AndAdSenseLinked,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
@@ -163,7 +162,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredCustomDimensions: [ 'googlesitekit_post_date' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
 		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
-		displayInList: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
@@ -179,7 +177,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
 		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
-		displayInList: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CATEGORIES ]: {
@@ -195,7 +192,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredCustomDimensions: [ 'googlesitekit_post_categories' ],
 		displayInSelectionPanel: shouldDisplayWidgetWithCustomDimensions,
 		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
-		displayInList: shouldDisplayWidgetWithCustomDimensions,
 		metadata: { group: KEY_METRICS_GROUP_CONTENT_PERFORMANCE.SLUG },
 	},
 	[ KM_ANALYTICS_POPULAR_CONTENT ]: {
@@ -349,7 +345,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
@@ -369,7 +364,6 @@ const KEY_METRICS_WIDGETS = {
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
@@ -385,7 +379,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
@@ -441,7 +434,6 @@ const KEY_METRICS_WIDGETS = {
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART ]: {
@@ -457,7 +449,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
@@ -473,7 +464,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
@@ -489,7 +479,6 @@ const KEY_METRICS_WIDGETS = {
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
@@ -529,7 +518,6 @@ const KEY_METRICS_WIDGETS = {
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
-		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 };
