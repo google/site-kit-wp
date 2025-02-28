@@ -24,20 +24,23 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { untilResolved } from '../../../../../tests/js/utils';
+import {
+	untilResolved,
+	waitForDefaultTimeouts,
+} from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 /**
- * To-Do: After the implementation of #8888, we can remove these individual imports
+ * TODO: After the implementation of #8888, we can remove these individual imports
  * and directly use createTestRegistry from 'tests/js/utils' so that all the stores
  * are registered without the duplicate registration issue.
  */
-import AudienceSettingsStore from './audience-settings';
-import AudiencesStore from './audiences';
-import UserAudienceSettingsStore from '../../../googlesitekit/datastore/user/audience-settings';
-import AuthenticationStore from '../../../googlesitekit/datastore/user/authentication';
+import audienceSettingsStore from './audience-settings';
+import audiencesStore from './audiences';
+import userAudienceSettingsStore from '../../../googlesitekit/datastore/user/audience-settings';
+import authenticationStore from '../../../googlesitekit/datastore/user/authentication';
 import { combineStores, commonStore } from 'googlesitekit-data';
 
 describe( 'modules/analytics-4 audience settings', () => {
@@ -52,23 +55,31 @@ describe( 'modules/analytics-4 audience settings', () => {
 	);
 
 	beforeEach( () => {
-		// To-Do: After #8888 is implemented, we can directly use createTestRegistry from 'tests/js/utils'
+		// TODO: After #8888 is implemented, we can directly use `createTestRegistry` from 'tests/js/utils',
+		// rather than registering the stores below.
 		registry = createRegistry();
 
 		registry.registerStore(
 			MODULES_ANALYTICS_4,
-			combineStores( AudienceSettingsStore, commonStore, {
-				...AudiencesStore,
+			combineStores( audienceSettingsStore, commonStore, {
+				audiencesStore,
 				resolvers: {},
+				actions: {
+					*syncAvailableAudiences() {
+						return registry
+							.dispatch( MODULES_ANALYTICS_4 )
+							.fetchSyncAvailableAudiences();
+					},
+				},
 			} )
 		);
 
 		registry.registerStore(
 			CORE_USER,
 			combineStores(
-				AuthenticationStore,
+				authenticationStore,
 				commonStore,
-				UserAudienceSettingsStore
+				userAudienceSettingsStore
 			)
 		);
 
@@ -79,7 +90,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	describe( 'actions', () => {
 		describe( 'setAvailableAudiences', () => {
-			it( 'should set available audiences', () => {
+			it( 'should set availableAudiences', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiencesFixture );
@@ -90,7 +101,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				).toEqual( availableAudiencesFixture );
 			} );
 
-			it( 'should validate available audiences', () => {
+			it( 'should validate availableAudiences', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -100,7 +111,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 		} );
 
 		describe( 'setAudienceSegmentationSetupCompletedBy', () => {
-			it( 'should set audience segmentation setup completed by', () => {
+			it( 'should set setAudienceSegmentationSetupCompletedBy', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAudienceSegmentationSetupCompletedBy( 1 );
@@ -111,13 +122,13 @@ describe( 'modules/analytics-4 audience settings', () => {
 				).toEqual( 1 );
 			} );
 
-			it( 'should validate audience segmentation setup completed by', () => {
+			it( 'should validate setAudienceSegmentationSetupCompletedBy', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setAudienceSegmentationSetupCompletedBy( 'invalid' )
 				).toThrow(
-					'Audience segmentation setup completed by should be an integer.'
+					'audienceSegmentationSetupCompletedBy by should be an integer.'
 				);
 			} );
 		} );
@@ -152,7 +163,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.saveAudienceSettings( settings )
-				).toThrow( 'Available audiences should be an array.' );
+				).toThrow( 'availableAudiences should be an array.' );
 			} );
 		} );
 	} );
@@ -199,6 +210,8 @@ describe( 'modules/analytics-4 audience settings', () => {
 					MODULES_ANALYTICS_4
 				).getAvailableAudiences();
 
+				await waitForDefaultTimeouts();
+
 				expect(
 					fetchMock.calls( syncAvailableAudiencesEndpoint )
 				).toHaveLength( 1 );
@@ -212,7 +225,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 		} );
 
 		describe( 'getAudienceSegmentationSetupCompletedBy', () => {
-			it( 'should return the audience segmentation setup completed by', () => {
+			it( 'should return getAudienceSegmentationSetupCompletedBy', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAudienceSegmentationSetupCompletedBy( 1 );
@@ -223,20 +236,20 @@ describe( 'modules/analytics-4 audience settings', () => {
 						.getAudienceSegmentationSetupCompletedBy()
 				).toEqual( 1 );
 			} );
-			it( 'should return null if audience segmentation setup completed by is not loaded', () => {
+			it( 'should return undefined if getAudienceSegmentationSetupCompletedBy is not loaded', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getAudienceSegmentationSetupCompletedBy()
-				).toBeNull();
+				).toBeUndefined();
 			} );
-			it( 'should throw an error if audience segmentation setup completed by is not an integer', () => {
+			it( 'should throw an error if getAudienceSegmentationSetupCompletedBy is not an integer', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setAudienceSegmentationSetupCompletedBy( 'invalid' )
 				).toThrow(
-					'Audience segmentation setup completed by should be an integer.'
+					'audienceSegmentationSetupCompletedBy by should be an integer.'
 				);
 			} );
 		} );

@@ -37,20 +37,21 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 
 const { receiveError, clearError } = errorStoreActions;
 
-const validateAudienceSettings = ( settings ) => {
+function validateAudienceSettings( audienceSettings ) {
 	invariant(
-		isPlainObject( settings ),
-		'Audience settings should be an object.'
+		isPlainObject( audienceSettings ),
+		'audienceSettings should be an object.'
 	);
 	invariant(
-		Array.isArray( settings.availableAudiences ),
-		'Available audiences should be an array.'
+		Array.isArray( audienceSettings.availableAudiences ),
+		'availableAudiences should be an array.'
 	);
 	invariant(
-		typeof settings.audienceSegmentationSetupCompletedBy === 'number',
-		'Audience segmentation setup completed by should be an integer.'
+		typeof audienceSettings.audienceSegmentationSetupCompletedBy ===
+			'number',
+		'audienceSegmentationSetupCompletedBy should be an integer.'
 	);
-};
+}
 
 const fetchStoreReducerCallback = createReducer(
 	( state, audienceSettings ) => {
@@ -90,6 +91,19 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 	validateParams: validateAudienceSettings,
 } );
 
+const fetchSyncAvailableAudiencesStore = createFetchStore( {
+	baseName: 'syncAvailableAudiences',
+	controlCallback: () =>
+		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
+	reducerCallback: createReducer( ( state, audiences ) => {
+		if ( ! state.audienceSettings ) {
+			state.audienceSettings = {};
+		}
+
+		state.audienceSettings.availableAudiences = audiences;
+	} ),
+} );
+
 // Actions
 const SET_AVAILABLE_AUDIENCES = 'SET_AVAILABLE_AUDIENCES';
 const SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY =
@@ -105,7 +119,7 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Array} availableAudiences Available audiences resource names.
+	 * @param {Array} availableAudiences Available audience resource names.
 	 * @return {Object} Redux-style action.
 	 */
 	setAvailableAudiences( availableAudiences ) {
@@ -121,20 +135,20 @@ const baseActions = {
 	},
 
 	/**
-	 * Sets the audience segmentation setup completed by.
+	 * Sets the user who set up Audience Segmentation.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {number} audienceSegmentationSetupCompletedBy Audience segmentation setup completed by.
+	 * @param {number} audienceSegmentationSetupCompletedBy ID for the user who set up Audience Segmentation.
 	 * @return {Object} Redux-style action.
 	 */
 	setAudienceSegmentationSetupCompletedBy(
 		audienceSegmentationSetupCompletedBy
 	) {
-		// Should be integer.
+		// Should be an integer.
 		invariant(
 			typeof audienceSegmentationSetupCompletedBy === 'number',
-			'Audience segmentation setup completed by should be an integer.'
+			'audienceSegmentationSetupCompletedBy by should be an integer.'
 		);
 
 		return {
@@ -179,51 +193,35 @@ const baseResolvers = {
 
 		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
-		if ( audiences === null ) {
-			const { response, error } = yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
-
-			if ( error ) {
-				return { error };
-			}
-
-			dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( response );
+		if ( audiences === undefined ) {
+			dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
 		}
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_AVAILABLE_AUDIENCES: {
+		case SET_AVAILABLE_AUDIENCES:
 			const { availableAudiences } = payload;
-
-			return {
-				...state,
-				audienceSettings: {
-					...state.audienceSettings,
-					availableAudiences,
-				},
+			state.audienceSettings = {
+				...state.audienceSettings,
+				availableAudiences,
 			};
-		}
+			break;
 
-		case SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY: {
+		case SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY:
 			const { audienceSegmentationSetupCompletedBy } = payload;
-
-			return {
-				...state,
-				audienceSettings: {
-					...state.audienceSettings,
-					audienceSegmentationSetupCompletedBy,
-				},
+			state.audienceSettings = {
+				...state.audienceSettings,
+				audienceSegmentationSetupCompletedBy,
 			};
-		}
+			break;
 
 		default: {
 			return state;
 		}
 	}
-};
+} );
 
 const baseSelectors = {
 	/**
@@ -232,23 +230,21 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|null)} Available audiences, or `null` if not loaded.
+	 * @return {(Array|null)} Available audiences, or `undefined` if not loaded.
 	 */
 	getAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences || null;
+		return state.audienceSettings?.availableAudiences;
 	},
 	/**
-	 * Gets the audience segmentation setup completed by.
+	 * Gets the user who set up Audience Segmentation.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(number|null)} Audience segmentation setup completed by, or `null` if not loaded.
+	 * @return {(number|null)} ID for the user who set up Audience Segmentation, or `undefined` if not loaded.
 	 */
 	getAudienceSegmentationSetupCompletedBy( state ) {
-		return (
-			state.audienceSettings?.audienceSegmentationSetupCompletedBy || null
-		);
+		return state.audienceSettings?.audienceSegmentationSetupCompletedBy;
 	},
 
 	getAudienceSettings( state ) {
@@ -259,6 +255,7 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetAudienceSettingsStore,
 	fetchSaveAudienceSettingsStore,
+	fetchSyncAvailableAudiencesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

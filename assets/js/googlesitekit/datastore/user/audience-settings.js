@@ -57,16 +57,16 @@ const validateUserAudienceSettings = ( settings ) => {
 
 const fetchStoreReducerCallback = createReducer(
 	( state, audienceSettings ) => {
-		if ( ! state.userAudienceSettings ) {
-			state.userAudienceSettings = {};
+		if ( ! state.audienceSettings ) {
+			state.audienceSettings = {};
 		}
 
-		state.userAudienceSettings.settings = audienceSettings;
-		state.userAudienceSettings.savedSettings = audienceSettings;
+		state.audienceSettings.settings = audienceSettings;
+		state.audienceSettings.savedSettings = audienceSettings;
 	}
 );
 
-const fetchGetAudienceSettingsStore = createFetchStore( {
+const fetchGetUserAudienceSettingsStore = createFetchStore( {
 	baseName: 'getUserAudienceSettings',
 	controlCallback() {
 		return API.get(
@@ -98,7 +98,7 @@ const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
 	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
 
 const baseInitialState = {
-	userAudienceSettings: undefined,
+	audienceSettings: undefined,
 };
 
 const baseActions = {
@@ -235,19 +235,19 @@ const baseControls = {};
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RESET_AUDIENCE_SETTINGS: {
-			state.userAudienceSettings = baseInitialState.userAudienceSettings;
+			state.audienceSettings = baseInitialState.audienceSettings;
 			break;
 		}
 
 		case SET_CONFIGURED_AUDIENCES: {
 			const { audienceResourceNames } = payload;
 
-			if ( ! state.userAudienceSettings ) {
-				state.userAudienceSettings = {};
+			if ( ! state.audienceSettings ) {
+				state.audienceSettings = {};
 			}
 
-			state.userAudienceSettings.settings = {
-				...state.userAudienceSettings.settings,
+			state.audienceSettings.settings = {
+				...state.audienceSettings.settings,
 				configuredAudiences: audienceResourceNames,
 			};
 
@@ -257,12 +257,12 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN: {
 			const { isWidgetHidden } = payload;
 
-			if ( ! state.userAudienceSettings ) {
-				state.userAudienceSettings = {};
+			if ( ! state.audienceSettings ) {
+				state.audienceSettings = {};
 			}
 
-			state.userAudienceSettings.settings = {
-				...state.userAudienceSettings.settings,
+			state.audienceSettings.settings = {
+				...state.audienceSettings.settings,
 				isAudienceSegmentationWidgetHidden: isWidgetHidden,
 			};
 
@@ -284,7 +284,7 @@ const baseResolvers = {
 			.getUserAudienceSettings();
 
 		if ( audienceSettings === undefined ) {
-			yield fetchGetAudienceSettingsStore.actions.fetchGetUserAudienceSettings();
+			yield fetchGetUserAudienceSettingsStore.actions.fetchGetUserAudienceSettings();
 		}
 	},
 };
@@ -299,7 +299,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
 	 */
 	getUserAudienceSettings( state ) {
-		return state.userAudienceSettings?.settings;
+		return state.audienceSettings?.settings;
 	},
 
 	/**
@@ -356,7 +356,7 @@ const baseSelectors = {
 	 * @return {boolean} True if configured audiences have changed, otherwise false.
 	 */
 	haveConfiguredAudiencesChanged( state ) {
-		const { settings, savedSettings } = state.userAudienceSettings || {};
+		const { settings, savedSettings } = state.audienceSettings || {};
 
 		return ! isEqual(
 			settings?.configuredAudiences,
@@ -383,7 +383,7 @@ const baseSelectors = {
 };
 
 const store = combineStores(
-	fetchGetAudienceSettingsStore,
+	fetchGetUserAudienceSettingsStore,
 	fetchSaveUserAudienceSettingsStore,
 	{
 		initialState: baseInitialState,

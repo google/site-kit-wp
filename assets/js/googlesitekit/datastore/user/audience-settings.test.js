@@ -164,7 +164,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					},
 				} );
 
-				expect( store.getState().userAudienceSettings ).toMatchObject( {
+				expect( store.getState().audienceSettings ).toMatchObject( {
 					settings: audienceSettingsResponse,
 					savedSettings: audienceSettingsResponse,
 				} );
@@ -219,7 +219,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					},
 				} );
 
-				expect( store.getState().userAudienceSettings ).toMatchObject( {
+				expect( store.getState().audienceSettings ).toMatchObject( {
 					settings: audienceSettings,
 					savedSettings: audienceSettings,
 				} );
