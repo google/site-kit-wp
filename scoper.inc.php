@@ -66,6 +66,16 @@ return array(
 				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
 				$contents = preg_replace( '/"(Google_[^"]+)"/', '\\1::class', $contents );
 			}
+			if ( false !== strpos( $file_path, 'apiclient-services-analyticsadmin-v1alpha' ) ) {
+				// Put v1alpha library in alternate namespace to avoid collision with v1beta for some things.
+				$contents = preg_replace(
+					// Use a regular expression to avoid prefixing those that have V1alpha already.
+					'/GoogleAnalyticsAdmin(V1alpha)?/',
+					'GoogleAnalyticsAdminV1alpha',
+					$contents
+				);
+			}
+
 			if ( false !== strpos( $file_path, 'phpseclib' ) ) {
 				// Use modified prefix just for this patch.
 				$s_prefix = str_replace( '\\', '\\\\', $prefix );
