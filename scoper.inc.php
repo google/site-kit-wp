@@ -10,95 +10,33 @@
 
 use Symfony\Component\Finder\Finder;
 
-// Google API services to include classes for.
-$google_services = implode(
-	'|',
-	array(
-		'Adsense',
-		'AnalyticsData',
-		'GoogleAnalyticsAdmin',
-		'PagespeedInsights',
-		'PeopleService',
-		'SearchConsole',
-		'SiteVerification',
-		'TagManager',
-	)
+$installed             = include __DIR__ . '/vendor/composer/installed.php';
+$non_dev_packages      = array_filter(
+	$installed['versions'],
+	fn ( $pkg ) => ! $pkg['dev_requirement']
 );
+$non_dev_package_names = array_keys( $non_dev_packages );
 
 return array(
 	'prefix'                     => 'Google\\Site_Kit_Dependencies',
 	'finders'                    => array(
-
-		// General dependencies, except Google API services.
+		// All non-dev vendor dependencies.
 		Finder::create()
-			->files()
-			->ignoreVCS( true )
-			->notName( '/LICENSE|.*\\.md|.*\\.dist|Makefile|composer\\.(json|lock)/' )
-			->exclude(
-				array(
-					'doc',
-					'test',
-					'test_old',
-					'tests',
-					'Tests',
-					'vendor-bin',
+				->files()
+				->ignoreVCS( true )
+				->notName( '/LICENSE|.*\\.md|.*\\.dist|Makefile|composer\\.(json|lock)/' )
+				->exclude(
+					array(
+						'doc',
+						'test',
+						'test_old',
+						'tests',
+						'Tests',
+						'vendor-bin',
+					)
 				)
-			)
-			->path( '#^firebase/php-jwt#' )
-			->path( '#^google/apiclient/#' )
-			->path( '#^google/auth/#' )
-			->path( '#^guzzlehttp/#' )
-			->path( '#^monolog/#' )
-			->path( '#^phpseclib/phpseclib/phpseclib/#' )
-			->path( '#^psr/#' )
-			->path( '#^ralouphie/#' )
-			->path( '#^react/#' )
-			->path( '#^symfony/#' )
-			->path( '#^true/#' )
-			->in( 'vendor' ),
-
-		// Google API service infrastructure classes.
-		Finder::create()
-			->files()
-			->ignoreVCS( true )
-			->notName( '/LICENSE|.*\\.md|.*\\.dist|Makefile|composer\\.json|composer\\.lock/' )
-			->exclude(
-				array(
-					'doc',
-					'test',
-					'test_old',
-					'tests',
-					'Tests',
-					'vendor-bin',
-				)
-			)
-			->path( "#^google/apiclient-services/src/($google_services)/#" )
-			->in( 'vendor' ),
-
-		// Google API service entry classes.
-		Finder::create()
-			->files()
-			->ignoreVCS( true )
-			->name( "#^($google_services)\.php$#" )
-			->depth( '== 0' )
-			->in( 'vendor/google/apiclient-services/src' ),
-		Finder::create()
-			->files()
-			->ignoreVCS( true )
-			->name( '#^autoload.php$#' )
-			->depth( '== 0' )
-			->in( 'vendor/google/apiclient-services' ),
-		// Temporary SwG client.
-		Finder::create()
-		->files()
-		->name( '#\.php$#' )
-		->in( 'vendor/google/apiclient-services-subscribewithgoogle' ),
-
-		// Temporary support for `GoogleAnalyticsAdminV1alphaAdSenseLink` as it doesn't exist in the API client yet.
-		Finder::create()
-			->files()
-			->name( '#\.php$#' )
-			->in( 'vendor/google/apiclient-services-adsenselinks' ),
+				->path( $non_dev_package_names )
+				->in( 'vendor' ),
 	),
 	'files-whitelist'            => array(
 		// This dependency is a global function which should remain global.

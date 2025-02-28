@@ -1,0 +1,9 @@
+{
+	"name": "google/apiclient-services-analyticsdata-v1beta",
+	"version": "v0.1",
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	}
+}
