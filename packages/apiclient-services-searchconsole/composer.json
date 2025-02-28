@@ -2,8 +2,5 @@
 	"name": "google/apiclient-services-searchconsole",
 	"version": "v0.1",
 	"autoload": {
-		"classmap": [
-			"src/"
-		]
 	}
 }

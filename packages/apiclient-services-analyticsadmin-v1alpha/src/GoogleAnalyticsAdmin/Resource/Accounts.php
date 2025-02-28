@@ -167,7 +167,10 @@ class Accounts extends \Google\Service\Resource
    * configuration changes like adding a stream or changing a property's time
    * zone. For configuration change history, see [searchChangeHistoryEvents](https
    * ://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/acc
-   * ounts/searchChangeHistoryEvents). (accounts.runAccessReport)
+   * ounts/searchChangeHistoryEvents). To give your feedback on this API, complete
+   * the [Google Analytics Access Reports feedback](https://docs.google.com/forms/
+   * d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform) form.
+   * (accounts.runAccessReport)
    *
    * @param string $entity The Data Access Report supports requesting at the
    * property level or account level. If requested at the account level, Data
@@ -189,7 +192,9 @@ class Accounts extends \Google\Service\Resource
   }
   /**
    * Searches through all changes to an account or its children given the
-   * specified set of filters. (accounts.searchChangeHistoryEvents)
+   * specified set of filters. Only returns the subset of changes supported by the
+   * API. The UI may return additional changes.
+   * (accounts.searchChangeHistoryEvents)
    *
    * @param string $account Required. The account resource for which to return
    * change history resources. Format: accounts/{account} Example: `accounts/100`
