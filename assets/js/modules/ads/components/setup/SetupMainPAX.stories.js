@@ -76,6 +76,30 @@ WithoutAdWordsScope.args = {
 };
 WithoutAdWordsScope.scenario = {};
 
+export const WithGoogleForWooCommerceConflict = Template.bind( {} );
+WithGoogleForWooCommerceConflict.storyName = 'WithGoogleForWooCommerceConflict';
+WithGoogleForWooCommerceConflict.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADS ).setSettings( {
+			paxConversionID: 'AW-123456789',
+			conversionID: 'AW-123456789',
+		} );
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				'google-listings-and-ads': { conversionID: 'AW-123456789' },
+			},
+		} );
+
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
+	},
+};
+WithGoogleForWooCommerceConflict.scenario = {};
+
 export default {
 	title: 'Modules/Ads/Setup/SetupMainPAX',
 	decorators: [
