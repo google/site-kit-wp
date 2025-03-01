@@ -39,7 +39,6 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
@@ -125,29 +124,16 @@ const baseActions = {
 			] )
 		);
 
-		const selectedMetricTiles = registry
-			.select( CORE_USER )
-			.getKeyMetrics();
-
-		// Extract required custom dimensions from selected metric tiles.
-		const requiredCustomDimensions = selectedMetricTiles.flatMap(
-			( tileName ) => {
-				const tile = KEY_METRICS_WIDGETS[ tileName ];
-				return tile?.requiredCustomDimensions || [];
-			}
-		);
-
-		// Deduplicate if any custom dimensions are repeated among tiles.
-		const uniqueRequiredCustomDimensions = [
-			...new Set( requiredCustomDimensions ),
-		];
+		const requiredCustomDimensions = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getRequiredCustomDimensions();
 
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
 
 		// Find out the missing custom dimensions.
-		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
+		const missingCustomDimensions = requiredCustomDimensions.filter(
 			( dimension ) => ! availableCustomDimensions?.includes( dimension )
 		);
 
