@@ -456,6 +456,22 @@ const baseSelectors = {
 			return [ ...new Set( customDimensions ) ];
 		}
 	),
+
+	/**
+	 * Gets the required custom dimensions from the currently
+	 * selected key metric tiles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>} Required custom dimensions.
+	 */
+	getRequiredCustomDimensions: createRegistrySelector( ( select ) => () => {
+		const widgetSlugs = select( CORE_USER ).getKeyMetrics();
+
+		return select( MODULES_ANALYTICS_4 ).getCustomDimensionsForWidgets(
+			widgetSlugs
+		);
+	} ),
 };
 
 const store = combineStores(
