@@ -36,6 +36,7 @@ import { MODULES_ADS } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import WarningNotice from '../../../../components/WarningNotice';
 
 export default function SetupFormPAX( {
 	finishSetup,
@@ -53,6 +54,18 @@ export default function SetupFormPAX( {
 	const { submitChanges } = useDispatch( MODULES_ADS );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
+
+	const currentConversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getConversionID()
+	);
+
+	const googleListingsAndAdsConnectedAdsID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getGoogleForWooCommerceConversionID()
+	);
+
+	const isDuplicateAdsIDDetected =
+		!! currentConversionID &&
+		currentConversionID === googleListingsAndAdsConnectedAdsID;
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -82,9 +95,22 @@ export default function SetupFormPAX( {
 				<ConversionIDTextField hideHeading />
 			</div>
 
+			{ isDuplicateAdsIDDetected && (
+				<WarningNotice className="googlesitekit-ads-setup__ads-id-conflict-warning">
+					{ __(
+						'This Conversion ID is already in use via Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement for your Ads campaign conversions.',
+						'google-site-kit'
+					) }
+				</WarningNotice>
+			) }
+
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
-					disabled={ ! canSubmitChanges || isSaving }
+					disabled={
+						! canSubmitChanges ||
+						isSaving ||
+						isDuplicateAdsIDDetected
+					}
 					isSaving={ isSaving }
 					onClick={ submitForm }
 				>
