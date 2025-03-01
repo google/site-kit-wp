@@ -40,6 +40,7 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const customDimensionFields = [
@@ -422,6 +423,39 @@ const baseSelectors = {
 	getSyncTimeoutID( state ) {
 		return state?.syncTimeoutID;
 	},
+
+	/**
+	 * Gets the required custom dimensions for the provided widget slugs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}        state       Data store's state.
+	 * @param {Array<string>} widgetSlugs Widget slugs to get required custom dimensions for.
+	 * @return {Array<string>} Required custom dimensions.
+	 */
+	getCustomDimensionsForWidgets: createRegistrySelector(
+		( select ) => ( state, widgetSlugs ) => {
+			if ( widgetSlugs === undefined ) {
+				return [];
+			}
+
+			const widgetSlugsArray = Array.isArray( widgetSlugs )
+				? widgetSlugs
+				: [ widgetSlugs ];
+
+			// Extract required custom dimensions from selected metric tiles.
+			const customDimensions = widgetSlugsArray.flatMap(
+				( widgetSlug ) => {
+					const widget =
+						select( CORE_WIDGETS ).getWidget( widgetSlug );
+					return widget?.metadata?.requiredCustomDimensions || [];
+				}
+			);
+
+			// Deduplicate if any custom dimensions are repeated among tiles.
+			return [ ...new Set( customDimensions ) ];
+		}
+	),
 };
 
 const store = combineStores(
