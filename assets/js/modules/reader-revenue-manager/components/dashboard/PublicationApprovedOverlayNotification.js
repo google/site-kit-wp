@@ -28,9 +28,11 @@ import { __ } from '@wordpress/i18n';
 import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import useViewContext from '../../../../hooks/useViewContext';
 import useDashboardType from '../../../../hooks/useDashboardType';
+import { useFeature } from '../../../../hooks/useFeature';
+import useQueryArg from '../../../../hooks/useQueryArg';
+import useViewContext from '../../../../hooks/useViewContext';
+import useViewOnly from '../../../../hooks/useViewOnly';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import { trackEvent } from '../../../../util';
 import { Button } from 'googlesitekit-components';
@@ -45,7 +47,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
-import { useFeature } from '../../../../hooks/useFeature';
 
 const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
@@ -56,6 +57,9 @@ function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
+
+	const [ notification, setNotification ] = useQueryArg( 'notification' );
+	const [ slug, setSlug ] = useQueryArg( 'slug' );
 
 	const dashboardType = useDashboardType();
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
@@ -119,6 +123,15 @@ function PublicationApprovedOverlayNotification() {
 		dismissOverlayNotification(
 			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
 		);
+
+		// If this notification is displayed on succcessful module setup, dismiss accordingly.
+		if (
+			notification === 'authentication_success' &&
+			slug === READER_REVENUE_MANAGER_MODULE_SLUG
+		) {
+			setNotification( undefined );
+			setSlug( undefined );
+		}
 	};
 
 	const dismissNotification = () => {

@@ -77,9 +77,12 @@ OnboardingActionRequired.parameters = {
 };
 OnboardingActionRequired.scenario = {};
 
-export const WithSubscriptionsAndProductID = Template.bind( {} );
-WithSubscriptionsAndProductID.storyName = 'With Subscriptions and Product ID';
-WithSubscriptionsAndProductID.parameters = {
+export const OnboardingCompleteWithSubscriptionAndProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithSubscriptionAndProductID.storyName =
+	'Onboarding Complete - With Subscription and Product ID';
+OnboardingCompleteWithSubscriptionAndProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
 		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -87,7 +90,7 @@ WithSubscriptionsAndProductID.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
-WithSubscriptionsAndProductID.args = {
+OnboardingCompleteWithSubscriptionAndProductID.args = {
 	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
@@ -98,11 +101,14 @@ WithSubscriptionsAndProductID.args = {
 			.setProductID( 'product-1' );
 	},
 };
-WithSubscriptionsAndProductID.scenario = {};
+OnboardingCompleteWithSubscriptionAndProductID.scenario = {};
 
-export const WithContributionsAndProductID = Template.bind( {} );
-WithContributionsAndProductID.storyName = 'With Contributions and Product ID';
-WithContributionsAndProductID.parameters = {
+export const OnboardingCompleteWithSubscriptionAndNoProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithSubscriptionAndNoProductID.storyName =
+	'Onboarding Complete - With Subscription and No Product ID';
+OnboardingCompleteWithSubscriptionAndNoProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
 		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -110,7 +116,33 @@ WithContributionsAndProductID.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
-WithContributionsAndProductID.args = {
+OnboardingCompleteWithSubscriptionAndNoProductID.args = {
+	features: [ 'rrmModuleV2' ],
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
+	},
+};
+OnboardingCompleteWithSubscriptionAndNoProductID.scenario = {};
+
+export const OnboardingCompleteWithContributionAndProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithContributionAndProductID.storyName =
+	'Onboarding Complete - With Contribution and Product ID';
+OnboardingCompleteWithContributionAndProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+OnboardingCompleteWithContributionAndProductID.args = {
 	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
@@ -121,12 +153,14 @@ WithContributionsAndProductID.args = {
 			.setProductID( 'product-1' );
 	},
 };
-WithContributionsAndProductID.scenario = {};
+OnboardingCompleteWithContributionAndProductID.scenario = {};
 
-export const WithContributionsAndNoProductID = Template.bind( {} );
-WithContributionsAndNoProductID.storyName =
-	'With Contributions and No Product ID';
-WithContributionsAndNoProductID.parameters = {
+export const OnboardingCompleteWithContributionAndNoProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithContributionAndNoProductID.storyName =
+	'Onboarding Complete - With Contribution and No Product ID';
+OnboardingCompleteWithContributionAndNoProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
 		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -134,19 +168,23 @@ WithContributionsAndNoProductID.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
-WithContributionsAndNoProductID.args = {
+OnboardingCompleteWithContributionAndNoProductID.args = {
 	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'contributions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
 	},
 };
-WithContributionsAndNoProductID.scenario = {};
+OnboardingCompleteWithContributionAndNoProductID.scenario = {};
 
-export const WithNoPaymentOption = Template.bind( {} );
-WithNoPaymentOption.storyName = 'With No Payment Option';
-WithNoPaymentOption.parameters = {
+export const OnboardingCompleteWithNoMonetization = Template.bind( {} );
+OnboardingCompleteWithNoMonetization.storyName =
+	'Onboarding Complete - With No Monetization';
+OnboardingCompleteWithNoMonetization.parameters = {
 	query: {
 		notification: 'authentication_success',
 		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -154,7 +192,7 @@ WithNoPaymentOption.parameters = {
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
-WithNoPaymentOption.args = {
+OnboardingCompleteWithNoMonetization.args = {
 	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
@@ -162,7 +200,7 @@ WithNoPaymentOption.args = {
 			.setPaymentOption( 'noPayment' );
 	},
 };
-WithNoPaymentOption.scenario = {};
+OnboardingCompleteWithNoMonetization.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
@@ -187,6 +225,7 @@ export default {
 						publicationID: '1234',
 						publicationOnboardingState:
 							parameters.publicationOnboardingState,
+						productIDs: [ 'product-a', 'product-b' ],
 					} );
 
 				args?.setupRegistry?.( registry );

@@ -33,6 +33,7 @@ import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/gr
 import SupportLink from '../../../../components/SupportLink';
 import useDashboardType from '../../../../hooks/useDashboardType';
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import useQueryArg from '../../../../hooks/useQueryArg';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import whenActive from '../../../../util/when-active';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
@@ -53,6 +54,9 @@ export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 function RRMIntroductoryOverlayNotification() {
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
+
+	const [ notification ] = useQueryArg( 'notification' );
+	const [ slug ] = useQueryArg( 'slug' );
 
 	const { publicationID, publicationOnboardingState, paymentOption } =
 		useSelect(
@@ -89,10 +93,15 @@ function RRMIntroductoryOverlayNotification() {
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
+	const showingSuccessNotification =
+		notification === 'authentication_success' &&
+		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
 	const shouldShowNotification =
 		isDismissed === false &&
 		! isViewOnly &&
 		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
+		! showingSuccessNotification &&
 		publicationOnboardingState === ONBOARDING_COMPLETE &&
 		[ 'noPayment', '' ].includes( paymentOption );
 
