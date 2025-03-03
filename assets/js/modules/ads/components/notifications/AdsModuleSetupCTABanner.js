@@ -140,10 +140,16 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		isWooCommerceRedirectModalDismissed,
 	] );
 
-	const onModalDismiss = useCallback( () => {
-		markNotificationDismissed();
-		setOpenDialog( false );
-	}, [ markNotificationDismissed, setOpenDialog ] );
+	const onModalDismiss = useCallback(
+		( skipClosing ) => {
+			markNotificationDismissed();
+
+			if ( ! skipClosing ) {
+				setOpenDialog( false );
+			}
+		},
+		[ markNotificationDismissed, setOpenDialog ]
+	);
 
 	const showTooltip = useShowTooltip( id );
 	const { isTooltipVisible } = useTooltipState( id );
