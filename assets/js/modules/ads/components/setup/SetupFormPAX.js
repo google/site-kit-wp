@@ -88,7 +88,7 @@ export default function SetupFormPAX( {
 	);
 
 	return (
-		<div className="googlesitekit-ads-setup__form">
+		<div className="googlesitekit-ads-setup__form googlesitekit-ads-setup__form--pax">
 			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
 			<div className="googlesitekit-setup-module__inputs">
