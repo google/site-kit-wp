@@ -18,12 +18,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import useNotificationEvents from '../../hooks/useNotificationEvents';
-import { Button } from 'googlesitekit-components';
+import { Button, CircularProgress } from 'googlesitekit-components';
 import ExternalSVG from '../../../../../svg/icons/external.svg';
 
 export default function CTALinkSubtle( {
@@ -34,6 +35,7 @@ export default function CTALinkSubtle( {
 	isCTALinkExternal = false,
 	gaTrackingEventArgs,
 	tertiary = false,
+	isSaving = false,
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
@@ -48,7 +50,10 @@ export default function CTALinkSubtle( {
 
 	return (
 		<Button
-			className="googlesitekit-subtle-notification__cta"
+			className={ classnames( 'googlesitekit-subtle-notification__cta', {
+				'googlesitekit-subtle-notification__cta--spinner__running':
+					isSaving,
+			} ) }
 			href={ ctaLink }
 			onClick={ handleCTAClick }
 			target={ isCTALinkExternal ? '_blank' : '_self' }
@@ -57,6 +62,7 @@ export default function CTALinkSubtle( {
 					<ExternalSVG width={ 14 } height={ 14 } />
 				) : undefined
 			}
+			icon={ isSaving && <CircularProgress size={ 14 } /> }
 			tertiary={ tertiary }
 		>
 			{ ctaLabel }
@@ -76,4 +82,5 @@ CTALinkSubtle.propTypes = {
 		value: PropTypes.string,
 	} ),
 	tertiary: PropTypes.bool,
+	isSaving: PropTypes.bool,
 };
