@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,11 +41,13 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	id,
 	Notification,
 } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onCTAClick = useCallback( () => {
+		setIsSaving( true );
 		dismissNotification( id, { skipHidingFromQueue: true } );
 		onSetupCallback();
 	}, [ onSetupCallback, dismissNotification, id ] );
@@ -70,12 +72,13 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 				additionalCTA={
 					<CTALinkSubtle
 						id={ id }
-						tertiary
 						ctaLabel={ __(
 							'Create new account',
 							'google-site-kit'
 						) }
 						onCTAClick={ onCTAClick }
+						isSaving={ isSaving }
+						tertiary
 					/>
 				}
 				reverseCTAs
