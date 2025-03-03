@@ -102,7 +102,7 @@ describe( 'SettingsModules', () => {
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
