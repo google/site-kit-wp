@@ -19,17 +19,12 @@
 /**
  * External dependencies
  */
-import invariant from 'invariant';
 import { isEqual } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import {
-	commonActions,
-	createRegistrySelector,
-	createReducer,
-} from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -47,99 +42,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from './constants';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
-import { negateDefined } from '../../../util/negate';
 import { safelySort } from '../../../util';
-
-function hasConversionReportingEventsOfType( propName ) {
-	return createRegistrySelector( ( select ) => () => {
-		const inlineData =
-			select(
-				MODULES_ANALYTICS_4
-			).getConversionReportingEventsChange() || {};
-
-		// Here we double-negate the value in order to cast it to a boolean, but only if it's not undefined.
-		return negateDefined( negateDefined( inlineData[ propName ]?.length ) );
-	} );
-}
-
-// Actions.
-const RECEIVE_CONVERSION_REPORTING_INLINE_DATA =
-	'RECEIVE_CONVERSION_REPORTING_INLINE_DATA';
-
-export const initialState = {
-	detectedEventsChange: undefined,
-};
-
-export const resolvers = {
-	*getConversionReportingEventsChange() {
-		const registry = yield commonActions.getRegistry();
-
-		if (
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getConversionReportingEventsChange()
-		) {
-			return;
-		}
-
-		if ( ! global._googlesitekitModulesData ) {
-			global.console.error( 'Could not load modules data.' );
-			return;
-		}
-
-		if ( ! global._googlesitekitModulesData?.[ 'analytics-4' ] ) {
-			return;
-		}
-
-		const { newEvents, lostEvents, newBadgeEvents } =
-			global._googlesitekitModulesData[ 'analytics-4' ];
-
-		yield actions.receiveConversionReportingInlineData( {
-			newEvents,
-			lostEvents,
-			newBadgeEvents,
-		} );
-	},
-};
-
-export const actions = {
-	/**
-	 * Stores conversion reporting inline data in the datastore.
-	 *
-	 * @since 1.140.0
-	 * @private
-	 *
-	 * @param {Object} data Inline data, usually supplied via a global variable from PHP.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveConversionReportingInlineData( data ) {
-		invariant( data, 'data is required.' );
-
-		return {
-			payload: { data },
-			type: RECEIVE_CONVERSION_REPORTING_INLINE_DATA,
-		};
-	},
-};
-
-export const reducer = createReducer( ( state, { payload, type } ) => {
-	switch ( type ) {
-		case RECEIVE_CONVERSION_REPORTING_INLINE_DATA: {
-			const { newEvents, lostEvents, newBadgeEvents } = payload.data;
-
-			state.detectedEventsChange = {
-				newEvents,
-				lostEvents,
-				newBadgeEvents,
-			};
-			break;
-		}
-
-		default: {
-			break;
-		}
-	}
-} );
 
 export const selectors = {
 	/**
@@ -178,23 +81,51 @@ export const selectors = {
 	 * @since 1.140.0
 	 * @private
 	 *
-	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Conversion reporting inline data.
 	 */
-	getConversionReportingEventsChange( state ) {
-		return state.detectedEventsChange;
-	},
+	getConversionReportingEventsChange: createRegistrySelector(
+		( select ) => () => {
+			const { getNewEvents, getLostEvents, getNewBadgeEvents } =
+				select( MODULES_ANALYTICS_4 );
+
+			const newEvents = getNewEvents();
+			const lostEvents = getLostEvents();
+			const newBadgeEvents = getNewBadgeEvents();
+
+			if (
+				newEvents === undefined ||
+				lostEvents === undefined ||
+				newBadgeEvents === undefined
+			) {
+				return undefined;
+			}
+
+			return {
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+			};
+		}
+	),
 
 	/**
 	 * Checks if newEvents are present.
 	 *
 	 * @since 1.140.0
 	 *
-	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} TRUE if `newEvents` are present, FALSE otherwise.
 	 */
-	hasNewConversionReportingEvents:
-		hasConversionReportingEventsOfType( 'newEvents' ),
+	hasNewConversionReportingEvents: createRegistrySelector(
+		( select ) => () => {
+			const newEvents = select( MODULES_ANALYTICS_4 ).getNewEvents();
+
+			if ( newEvents === undefined ) {
+				return undefined;
+			}
+
+			return newEvents.length > 0;
+		}
+	),
 
 	/**
 	 * Checks if lostEvents are present.
@@ -204,22 +135,17 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} TRUE if `lostEvents` are present, FALSE otherwise.
 	 */
-	hasLostConversionReportingEvents:
-		hasConversionReportingEventsOfType( 'lostEvents' ),
+	hasLostConversionReportingEvents: createRegistrySelector(
+		( select ) => () => {
+			const lostEvents = select( MODULES_ANALYTICS_4 ).getLostEvents();
 
-	/**
-	 * Returns newBadgeEvents if present.
-	 *
-	 * @since 1.144.0
-	 *
-	 * @return {Array|undefined} `newBadgeEvents` array if events are present, `undefined` otherwise.
-	 */
-	getNewBadgeEvents: createRegistrySelector( ( select ) => () => {
-		const inlineData =
-			select( MODULES_ANALYTICS_4 ).getConversionReportingEventsChange();
+			if ( lostEvents === undefined ) {
+				return undefined;
+			}
 
-		return inlineData?.newBadgeEvents;
-	} ),
+			return lostEvents.length > 0;
+		}
+	),
 
 	/**
 	 * Checks if there are key metrics widgets connected with the detected events for the supplied purpose answer.
@@ -514,12 +440,6 @@ export const selectors = {
 	),
 };
 
-const store = {
-	initialState,
-	actions,
-	resolvers,
+export default {
 	selectors,
-	reducer,
 };
-
-export default store;
