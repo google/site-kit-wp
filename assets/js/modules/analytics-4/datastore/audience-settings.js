@@ -225,9 +225,8 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			};
 			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
 } );
 
