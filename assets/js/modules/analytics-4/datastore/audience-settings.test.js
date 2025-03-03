@@ -65,6 +65,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				audiencesStore,
 				resolvers: {},
 				actions: {
+					// Provide a minimal implementation of `syncAvailableAudiences` for testing.
 					*syncAvailableAudiences() {
 						return registry
 							.dispatch( MODULES_ANALYTICS_4 )
