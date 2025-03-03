@@ -38,6 +38,7 @@ import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
+import { provideReportWithIncreasedOtherDimension } from './indexMainDashboard.stories';
 
 function limitResponseToSingleDate( analyticsResponse ) {
 	const findFirstDateRangeRow = ( dateRange ) =>
@@ -87,7 +88,6 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
-		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
@@ -102,7 +102,6 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
-		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
@@ -117,7 +116,6 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
-		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
@@ -162,8 +160,12 @@ export const EntityDashboardLoaded = Template.bind( {} );
 EntityDashboardLoaded.storyName = 'Loaded';
 EntityDashboardLoaded.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options ) => {
-			provideAnalytics4MockReport( registry, options );
+		allTrafficReportOptions.forEach( ( options, index ) => {
+			if ( index === 0 ) {
+				provideReportWithIncreasedOtherDimension( registry, options );
+			} else {
+				provideAnalytics4MockReport( registry, options );
+			}
 		} );
 	},
 };
