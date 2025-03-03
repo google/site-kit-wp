@@ -61,7 +61,7 @@ export default function EnableAutoUpdateBannerNotification( {
 		if ( enabledViaCTA === false && siteKitAutoUpdatesEnabled === true ) {
 			setEnabledViaCTA( true );
 		}
-	}, [ enabledViaCTA, siteKitAutoUpdatesEnabled ] );
+	}, [ enabledViaCTA, setEnabledViaCTA, siteKitAutoUpdatesEnabled ] );
 
 	// Render the "Auto Updates enabled successfully" banner variation
 	// if auto updates were enabled using this banner CTA.
