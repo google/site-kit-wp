@@ -75,7 +75,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				const data = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getModuleData();
+					.getConversionReportingEventsChange();
 
 				expect( data ).toEqual( inlineData );
 			} );
