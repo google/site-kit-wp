@@ -42,6 +42,7 @@ export const initialState = {
 		lostEvents: undefined,
 		newBadgeEvents: undefined,
 		hasMismatchedTag: undefined,
+		resourceAvailabilityDates: undefined,
 	},
 };
 
@@ -68,11 +69,24 @@ export const actions = {
 export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { tagIDMismatch, newEvents, lostEvents, newBadgeEvents } =
-				payload;
+			const {
+				tagIDMismatch,
+				resourceAvailabilityDates,
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+			} = payload;
+
+			// Replace empty array value with empty object in resourceAvailabilityDates object.
+			Object.keys( resourceAvailabilityDates ).forEach( ( key ) => {
+				if ( Array.isArray( resourceAvailabilityDates[ key ] ) ) {
+					resourceAvailabilityDates[ key ] = {};
+				}
+			} );
 
 			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
+				resourceAvailabilityDates,
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
@@ -127,6 +141,19 @@ export const selectors = {
 	 * @return {boolean} If GA4 has mismatched Google Tag ID.
 	 */
 	hasMismatchedGoogleTagID: getModuleDataProperty( 'hasMismatchedTag' ),
+
+	/**
+	 * Gets the data availability date for all resources.
+	 *
+	 * @since 1.127.0
+	 * @since n.e.x.t Moved over from partial-data store partial.
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Resource data availability dates. Undefined if not loaded.
+	 */
+	getResourceDataAvailabilityDates: getModuleDataProperty(
+		'resourceAvailabilityDates'
+	),
 
 	/**
 	 * Gets new events data.
