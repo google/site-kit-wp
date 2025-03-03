@@ -38,22 +38,10 @@ import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
-import { provideReportWithIncreasedOtherDimension } from './indexMainDashboard.stories';
-
-function limitResponseToSingleDate( analyticsResponse ) {
-	const findFirstDateRangeRow = ( dateRange ) =>
-		analyticsResponse.rows.find(
-			( { dimensionValues } ) => dimensionValues[ 1 ].value === dateRange
-		);
-
-	return {
-		...analyticsResponse,
-		rows: [
-			findFirstDateRangeRow( 'date_range_0' ),
-			findFirstDateRangeRow( 'date_range_1' ),
-		],
-	};
-}
+import {
+	limitResponseToSingleDate,
+	provideReportWithIncreasedOtherDimension,
+} from './indexMainDashboard.stories';
 
 const widgetComponentProps = getWidgetComponentProps(
 	'analyticsAllTraffic-widget'
