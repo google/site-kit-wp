@@ -62,7 +62,7 @@ export default function CTALinkSubtle( {
 					<ExternalSVG width={ 14 } height={ 14 } />
 				) : undefined
 			}
-			icon={ isSaving && <CircularProgress size={ 14 } /> }
+			icon={ isSaving ? <CircularProgress size={ 14 } /> : undefined }
 			tertiary={ tertiary }
 		>
 			{ ctaLabel }
