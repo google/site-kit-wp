@@ -50,7 +50,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 		setIsSaving( true );
 		dismissNotification( id, { skipHidingFromQueue: true } );
 		onSetupCallback();
-	}, [ onSetupCallback, dismissNotification, id ] );
+	}, [ setIsSaving, onSetupCallback, dismissNotification, id ] );
 
 	return (
 		<Notification>
