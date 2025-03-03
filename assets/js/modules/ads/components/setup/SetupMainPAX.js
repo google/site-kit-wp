@@ -180,9 +180,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 		);
 	} );
 
-	const onModalDismiss = useCallback( () => {
-		setOpenDialog( false );
-	}, [ setOpenDialog ] );
+	const onModalDismiss = useCallback(
+		( skipClosing ) => {
+			if ( ! skipClosing ) {
+				setOpenDialog( false );
+			}
+		},
+		[ setOpenDialog ]
+	);
 
 	const createAccount = useCallback( () => {
 		setShouldShowProgressBar( true );

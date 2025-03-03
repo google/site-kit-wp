@@ -119,8 +119,19 @@
 	}
 
 	.googlesitekit-subtle-notification__cta {
-		svg {
-			margin-inline-start: 6px;
+
+		&:not(.googlesitekit-subtle-notification__cta--spinner__running) {
+
+			svg {
+				margin-inline-start: 6px;
+			}
+		}
+
+		&.googlesitekit-subtle-notification__cta--spinner__running {
+
+			.mdc-button__label {
+				margin-left: 3px;
+			}
 		}
 	}
 

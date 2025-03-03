@@ -85,7 +85,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			propertyID: '123456789',
 		} );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -156,7 +156,10 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 		await act(
 			async () =>
-				await untilResolved( registry, CORE_USER ).getAudienceSettings()
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserAudienceSettings()
 		);
 
 		expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint );
@@ -221,7 +224,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			const { getByRole, getByText } = render( <SetupCTA />, {
 				registry,

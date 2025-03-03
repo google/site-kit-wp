@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo } from '@wordpress/element';
+import { useCallback, useMemo, useRef } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -38,6 +38,7 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
+	CircularProgress,
 } from 'googlesitekit-components';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
@@ -57,6 +58,8 @@ export default function WooCommerceRedirectModal( {
 	onDismiss = null,
 	onContinue = null,
 } ) {
+	const trackIsSavingRef = useRef( false );
+
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
 	);
@@ -92,7 +95,7 @@ export default function WooCommerceRedirectModal( {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const markModalDismissed = useCallback( () => {
-		onDismiss?.();
+		onDismiss?.( trackIsSavingRef.current );
 		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
@@ -101,6 +104,7 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
+		trackIsSavingRef.current = true;
 		markModalDismissed();
 
 		navigateTo( googleForWooCommerceRedirectURI );
@@ -120,7 +124,7 @@ export default function WooCommerceRedirectModal( {
 		onSetupCallback();
 	}, [ markModalDismissed, onSetupCallback, onContinue ] );
 
-	if ( isModalDismissed ) {
+	if ( isModalDismissed && ! trackIsSavingRef.current ) {
 		return null;
 	}
 
@@ -156,6 +160,11 @@ export default function WooCommerceRedirectModal( {
 				</Button>
 				<Button
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					icon={
+						trackIsSavingRef.current ? (
+							<CircularProgress size={ 14 } />
+						) : undefined
+					}
 					onClick={ getGoogleForWooCommerceRedirectURI }
 				>
 					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
