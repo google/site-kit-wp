@@ -25,14 +25,19 @@
 
 		.googlesitekit-publisher-win__desc {
 
-			@media (min-width: $bp-tablet) {
-				font-size: $fs-body-md;
-				line-height: $lh-body-md;
-			}
-
-			@media (min-width: $bp-xlarge) {
-				font-size: $fs-body-lg;
+			p {
+				font-size: $fs-title-sm;
+				letter-spacing: $ls-s;
 				line-height: $lh-body-lg;
+
+				@media (min-width: $bp-desktop) {
+					font-size: $fs-title-md;
+					letter-spacing: $ls-m;
+				}
+
+				a {
+					font-weight: $fw-medium;
+				}
 			}
 		}
 
