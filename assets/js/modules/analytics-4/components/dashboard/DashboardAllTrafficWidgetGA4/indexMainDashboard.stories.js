@@ -160,7 +160,7 @@ const allTrafficReportOptions = [
 ];
 
 /**
- * Processes the first report option with special handling for the '(other)' row.
+ * Provides a report with special handling for the '(other)' row.
  *
  * The function doubles the value of the '(other)' row to ensure it's visible in the pie chart.
  * This is to ensure the special handling of the '(other)' row's tooltip is included in the story.
