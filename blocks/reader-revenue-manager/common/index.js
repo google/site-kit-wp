@@ -1,6 +1,4 @@
 /**
- * Reader Revenue Manager Block Editor plugin entry point.
- *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +14,5 @@
  * limitations under the License.
  */
 
-import { registerReaderRevenueManagerPlugin } from './plugin-registration';
-
-registerReaderRevenueManagerPlugin();
+export { default as EditorButton } from './EditorButton';
+export { default as ButtonEdit } from './ButtonEdit';
