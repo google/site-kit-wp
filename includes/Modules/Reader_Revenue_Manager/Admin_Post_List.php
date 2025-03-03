@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
+
 /**
  * Class for adding RRM elements to the WP Admin post list.
  *
@@ -45,7 +47,7 @@ class Admin_Post_List {
 	 * @param Settings        $settings        Module settings instance.
 	 * @param Post_Product_ID $post_product_id Post Product ID.
 	 */
-	public function __construct( Settings $settings, $post_product_id ) {
+	public function __construct( Settings $settings, Post_Product_ID $post_product_id ) {
 		$this->settings        = $settings;
 		$this->post_product_id = $post_product_id;
 	}
@@ -91,7 +93,7 @@ class Admin_Post_List {
 	 * @return array Modified columns.
 	 */
 	public function add_column( $columns ) {
-		$columns['rrm_product_id'] = __( 'Show Reader Revenue CTAs', 'google-site-kit' );
+		$columns['rrm_product_id'] = __( 'Reader Revenue CTA', 'google-site-kit' );
 		return $columns;
 	}
 
@@ -110,20 +112,23 @@ class Admin_Post_List {
 
 		$post_product_id = $this->post_product_id->get( $post_id );
 
-		if ( 'none' === $post_product_id ) {
-			esc_html_e( 'None', 'google-site-kit' );
-			return;
-		}
-
 		if ( ! empty( $post_product_id ) ) {
-			if ( 'openaccess' === $post_product_id ) {
-				esc_html_e( 'Open access', 'google-site-kit' );
-			} else {
-				$separator_index = strpos( $post_product_id, ':' );
-				$product_id      = ( false !== $separator_index ) ? substr( $post_product_id, $separator_index + 1 ) : $post_product_id;
-
-				/* translators: %s: Product ID */
-				echo esc_html( sprintf( __( 'Use "%s"', 'google-site-kit' ), $product_id ) );
+			switch ( $post_product_id ) {
+				case 'none':
+					esc_html_e( 'None', 'google-site-kit' );
+					break;
+				case 'openaccess':
+					esc_html_e( 'Open access', 'google-site-kit' );
+					break;
+				default:
+					$separator_index = strpos( $post_product_id, ':' );
+					if ( false === $separator_index ) {
+						echo esc_html( $post_product_id );
+					} else {
+						echo esc_html(
+							substr( $post_product_id, $separator_index + 1 )
+						);
+					}
 			}
 			return;
 		}
@@ -133,7 +138,7 @@ class Admin_Post_List {
 		$cta_post_types = apply_filters( 'googlesitekit_reader_revenue_manager_cta_post_types', $settings['postTypes'] );
 
 		if ( 'per_post' === $snippet_mode || ( 'post_types' === $snippet_mode && ! in_array( get_post_type(), $cta_post_types, true ) ) ) {
-			esc_html_e( 'Excluded from Reader Revenue Manager', 'google-site-kit' );
+			esc_html_e( 'None', 'google-site-kit' );
 			return;
 		}
 
@@ -157,8 +162,8 @@ class Admin_Post_List {
 		?>
 		<fieldset class="inline-edit-col-right">
 			<div class="inline-edit-col">
-				<label style="display: flex; justify-content: space-between; line-height: 1;">
-					<span><?php esc_html_e( 'Show Reader Revenue CTAs', 'google-site-kit' ); ?></span>
+				<label style="align-items: center; display: flex; gap: 16px; line-height: 1;">
+					<span><?php esc_html_e( 'Reader Revenue CTA', 'google-site-kit' ); ?></span>
 					<select name="rrm_product_id">
 						<?php foreach ( $default_options as $value => $label ) : ?>
 							<option value="<?php echo esc_attr( $value ); ?>">

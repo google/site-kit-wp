@@ -108,7 +108,7 @@ class Admin_Post_ListTest extends TestCase {
 			'title' => 'Title',
 			'date'  => 'Date',
 		);
-		$expected = array_merge( $columns, array( 'rrm_product_id' => 'Show Reader Revenue CTAs' ) );
+		$expected = array_merge( $columns, array( 'rrm_product_id' => 'Reader Revenue CTA' ) );
 		$filtered = $this->admin_post_list->add_column( $columns );
 		$this->assertEquals( $expected, $filtered );
 	}
@@ -132,7 +132,7 @@ class Admin_Post_ListTest extends TestCase {
 		$this->admin_post_list->fill_column( 'rrm_product_id', $post_id );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'Use "premium"', html_entity_decode( $output ) );
+		$this->assertStringContainsString( 'premium', $output );
 	}
 
 	public function test_fill_column_openaccess() {
@@ -155,9 +155,6 @@ class Admin_Post_ListTest extends TestCase {
 		$this->assertNotEquals( 'ABCD:basic', $this->post_product_id->get( $post_id ) );
 	}
 
-	/**
-	 * @group 10up
-	 */
 	public function test_save_field() {
 		$post_id = $this->factory()->post->create();
 		$user    = $this->factory()->user->create_and_get(
