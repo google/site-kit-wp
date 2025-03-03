@@ -1090,7 +1090,7 @@ describe( 'modules/analytics-4 properties', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).hasMismatchedGoogleTagID();
+				).getModuleData();
 
 				expect(
 					registry
@@ -1718,7 +1718,7 @@ describe( 'modules/analytics-4 properties', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).hasMismatchedGoogleTagID();
+				).getModuleData();
 
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
