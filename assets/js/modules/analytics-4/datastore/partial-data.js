@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -46,6 +47,8 @@ const RESOURCE_TYPES = [
 	RESOURCE_TYPE_PROPERTY,
 ];
 
+const RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES =
+	'RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES';
 const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 	'SET_RESOURCE_DATA_AVAILABILITY_DATE';
 
@@ -82,7 +85,31 @@ const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	},
 } );
 
+const baseInitialState = {
+	resourceAvailabilityDates: undefined,
+};
+
 const baseActions = {
+	/**
+	 * Receives the data availability dates for all resources.
+	 *
+	 * @since 1.127.0
+	 *
+	 * @param {Object} resourceAvailabilityDates Resource data availability dates.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveResourceDataAvailabilityDates( resourceAvailabilityDates ) {
+		invariant(
+			isPlainObject( resourceAvailabilityDates ),
+			'resourceAvailabilityDates must be a plain object.'
+		);
+
+		return {
+			payload: { resourceAvailabilityDates },
+			type: RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES,
+		};
+	},
+
 	/**
 	 * Sets the data availability date for a specific resource.
 	 *
@@ -117,23 +144,35 @@ const baseControls = {};
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
+		case RECEIVE_RESOURCE_DATA_AVAILABILITY_DATES: {
+			const { resourceAvailabilityDates } = payload;
+
+			// Replace empty array value with empty object in resourceAvailabilityDates object.
+			Object.keys( resourceAvailabilityDates ).forEach( ( key ) => {
+				if ( Array.isArray( resourceAvailabilityDates[ key ] ) ) {
+					resourceAvailabilityDates[ key ] = {};
+				}
+			} );
+
+			state.resourceAvailabilityDates = resourceAvailabilityDates;
+			break;
+		}
+
 		case SET_RESOURCE_DATA_AVAILABILITY_DATE: {
 			const { resourceSlug, resourceType, date } = payload;
 
-			if ( state.moduleData.resourceAvailabilityDates === undefined ) {
-				state.moduleData.resourceAvailabilityDates = {};
+			if ( state.resourceAvailabilityDates === undefined ) {
+				state.resourceAvailabilityDates = {};
 			}
 
 			if (
-				state.moduleData.resourceAvailabilityDates[ resourceType ] ===
-				undefined
+				state.resourceAvailabilityDates[ resourceType ] === undefined
 			) {
-				state.moduleData.resourceAvailabilityDates[ resourceType ] = {};
+				state.resourceAvailabilityDates[ resourceType ] = {};
 			}
 
-			state.moduleData.resourceAvailabilityDates[ resourceType ][
-				resourceSlug
-			] = date;
+			state.resourceAvailabilityDates[ resourceType ][ resourceSlug ] =
+				date;
 			break;
 		}
 
@@ -144,6 +183,27 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 } );
 
 const baseResolvers = {
+	*getResourceDataAvailabilityDates() {
+		const { select } = yield commonActions.getRegistry();
+
+		if (
+			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDates() !==
+			undefined
+		) {
+			return;
+		}
+
+		const resourceAvailabilityDatesOnLoad =
+			global._googlesitekitModulesData?.[ 'analytics-4' ]
+				?.resourceAvailabilityDates;
+
+		if ( resourceAvailabilityDatesOnLoad ) {
+			yield baseActions.receiveResourceDataAvailabilityDates(
+				resourceAvailabilityDatesOnLoad
+			);
+		}
+	},
+
 	*getResourceDataAvailabilityDate( resourceSlug, resourceType ) {
 		const { select, resolveSelect } = yield commonActions.getRegistry();
 
@@ -156,15 +216,11 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( select( MODULES_ANALYTICS_4 ).getModuleData() === undefined ) {
-			// Module data needs to be resolved to determine the resource data availability date.
-			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData()
-			);
-		}
-
-		const resourceAvailabilityDates =
-			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDates();
+		const resourceAvailabilityDates = yield commonActions.await(
+			resolveSelect(
+				MODULES_ANALYTICS_4
+			).getResourceDataAvailabilityDates()
+		);
 
 		if (
 			resourceAvailabilityDates[ resourceType ][ resourceSlug ] ===
@@ -290,6 +346,18 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
+	 * Gets the data availability date for all resources.
+	 *
+	 * @since 1.127.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Resource data availability dates. Undefined if not loaded.
+	 */
+	getResourceDataAvailabilityDates( state ) {
+		return state.resourceAvailabilityDates;
+	},
+
+	/**
 	 * Gets the data availability date for a specific resource.
 	 *
 	 * @since 1.127.0
@@ -300,7 +368,7 @@ const baseSelectors = {
 	 * @return {number} Resource data availability date. Undefined if not loaded.
 	 */
 	getResourceDataAvailabilityDate( state, resourceSlug, resourceType ) {
-		return state.moduleData.resourceAvailabilityDates?.[ resourceType ]?.[
+		return state.resourceAvailabilityDates?.[ resourceType ]?.[
 			resourceSlug
 		];
 	},
@@ -488,6 +556,7 @@ const baseSelectors = {
 const store = combineStores( fetchSaveResourceDataAvailabilityDateStore, {
 	actions: baseActions,
 	controls: baseControls,
+	initialState: baseInitialState,
 	reducer: baseReducer,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

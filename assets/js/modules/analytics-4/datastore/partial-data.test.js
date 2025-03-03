@@ -89,6 +89,56 @@ describe( 'modules/analytics-4 partial data', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'receiveResourceDataAvailabilityDates', () => {
+			it( 'requires resourceAvailabilityDates to be a plain object', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveResourceDataAvailabilityDates( 'test' );
+				} ).toThrow(
+					'resourceAvailabilityDates must be a plain object.'
+				);
+			} );
+
+			it( 'receives a plain object and sets it as the resourceDataAvailabilityDates', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates(
+						resourceAvailabilityDates
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getResourceDataAvailabilityDates()
+				).toEqual( resourceAvailabilityDates );
+			} );
+
+			it( 'converts empty array to empty object', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
+						audience: [],
+						customDimension: [],
+						property: {
+							[ testPropertyID ]: 20201218,
+						},
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getResourceDataAvailabilityDates()
+				).toEqual( {
+					audience: {},
+					customDimension: {},
+					property: {
+						[ testPropertyID ]: 20201218,
+					},
+				} );
+			} );
+		} );
+
 		describe( 'setResourceDataAvailabilityDate', () => {
 			it( 'requires resourceSlug to be a non-empty string', () => {
 				expect( () => {
@@ -157,7 +207,7 @@ describe( 'modules/analytics-4 partial data', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getModuleData();
+				).getResourceDataAvailabilityDates();
 
 				expect(
 					registry
@@ -173,7 +223,9 @@ describe( 'modules/analytics-4 partial data', () => {
 			it( 'returns the date for the resource', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveModuleData( { resourceAvailabilityDates } );
+					.receiveResourceDataAvailabilityDates(
+						resourceAvailabilityDates
+					);
 
 				expect(
 					registry
@@ -222,9 +274,11 @@ describe( 'modules/analytics-4 partial data', () => {
 						accountID,
 					} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates(
+						resourceAvailabilityDates
+					);
 
 				registry
 					.select( MODULES_ANALYTICS_4 )
@@ -304,7 +358,9 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveModuleData( { resourceAvailabilityDates } );
+					.receiveResourceDataAvailabilityDates(
+						resourceAvailabilityDates
+					);
 
 				registry
 					.select( MODULES_ANALYTICS_4 )
@@ -397,15 +453,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {
 							[ testAudience1ResourceName ]: 0,
 						},
 						customDimension: {},
 						property: {},
-					},
-				} );
+					} );
 
 				expect(
 					registry
@@ -433,16 +489,16 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, 1 ).replace( /-/g, '' )
 				);
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {
 							[ testAudience1ResourceName ]: audience1Date,
 							[ testAudience2ResourceName ]: audience2Date,
 						},
 						customDimension: {},
 						property: {},
-					},
-				} );
+					} );
 
 				expect(
 					registry
@@ -478,15 +534,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {
 							[ testAudience1ResourceName ]: dataAvailabilityDate,
 						},
 						customDimension: {},
 						property: {},
-					},
-				} );
+					} );
 
 				expect(
 					registry
@@ -513,15 +569,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {
 							[ testAudience1ResourceName ]: dataAvailabilityDate,
 						},
 						customDimension: {},
 						property: {},
-					},
-				} );
+					} );
 
 				expect(
 					registry
@@ -561,15 +617,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {
 							[ testAudience1ResourceName ]: dataAvailabilityDate,
 						},
 						customDimension: {},
 						property: {},
-					},
-				} );
+					} );
 
 				expect(
 					registry
@@ -603,15 +659,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {},
 						customDimension: {
 							[ testCustomDimension ]: dataAvailabilityDate,
 						},
 						property: {},
-					},
-				} );
+					} );
 
 				expect(
 					registry
@@ -645,15 +701,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-					resourceAvailabilityDates: {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveResourceDataAvailabilityDates( {
 						audience: {},
 						customDimension: {},
 						property: {
 							[ testPropertyID ]: dataAvailabilityDate,
 						},
-					},
-				} );
+					} );
 
 				expect(
 					registry
