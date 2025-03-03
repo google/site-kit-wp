@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
+/**
+ * Gets the block editor button's notice and disabled state based on the provided options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  options                                               Options object.
+ * @param {string}  options.paymentOption                                 Payment option.
+ * @param {string}  options.requiredPaymentOption                         Required payment option.
+ * @param {boolean} options.hasModuleAccess                               Whether the user has module access.
+ * @param {string}  options.postProductID                                 Post product ID.
+ * @param {string}  options.snippetMode                                   Snippet mode.
+ * @param {Array}   options.postTypes                                     Post types.
+ * @param {string}  options.postType                                      Post type.
+ * @param {string}  options.invalidPaymentOptionWithModuleAccessNotice    Notice for invalid payment option with module access.
+ * @param {string}  options.invalidPaymentOptionWithoutModuleAccessNotice Notice for invalid payment option without module access.
+ * @param {string}  options.noSnippetWithModuleAccessNotice               Notice for no snippet with module access.
+ * @param {string}  options.noSnippetWithoutModuleAccessNotice            Notice for no snippet without module access.
+ * @return {Object} Object with disabled and notice properties.
+ */
 export function getNoticeAndDisabled( {
 	paymentOption,
 	requiredPaymentOption,
