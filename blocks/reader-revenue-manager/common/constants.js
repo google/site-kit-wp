@@ -17,3 +17,4 @@
  */
 
 export const CORE_EDITOR = 'core/editor';
+export const CORE_EDIT_SITE = 'core/edit-site';

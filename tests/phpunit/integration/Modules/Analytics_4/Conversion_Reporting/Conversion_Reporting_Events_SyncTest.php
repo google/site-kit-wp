@@ -183,6 +183,50 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
 	}
 
+	public function test_sync__new_events_are_removed_from_lost_events() {
+		$this->transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'purchase', 'add_to_cart' ) );
+
+		// Detect purchase as new event.
+		$this->setup_fake_handler_and_analytics(
+			array(
+				array(
+					'dimensionValues' => array(
+						array(
+							'value' => 'contact',
+						),
+					),
+				),
+				array(
+					'dimensionValues' => array(
+						array(
+							'value' => 'purchase',
+						),
+					),
+				),
+			)
+		);
+
+		$event_check = $this->get_instance();
+		$this->settings->merge(
+			array(
+				'detectedEvents' => array( 'contact' ),
+			)
+		);
+		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+
+		$this->assertSame( array( 'purchase', 'add_to_cart' ), $transient_lost_events );
+
+		$event_check->sync_detected_events();
+
+		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+
+		// Since purchase is detected, it should be removed from lost events.
+		$this->assertSame( array( 'add_to_cart' ), $transient_lost_events );
+
+		// Verify that lostConversionEventsLastUpdateAt is updated.
+		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
+	}
+
 	public function get_instance() {
 		return new Conversion_Reporting_Events_Sync(
 			$this->settings,

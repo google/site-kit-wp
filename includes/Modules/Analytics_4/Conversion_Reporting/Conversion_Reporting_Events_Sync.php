@@ -155,6 +155,13 @@ class Conversion_Reporting_Events_Sync {
 			$this->transients->set( self::DETECTED_EVENTS_TRANSIENT, array_values( $new_events ) );
 			$this->new_badge_events_sync->sync_new_badge_events( $new_events );
 			$settings_partial['newConversionEventsLastUpdateAt'] = time();
+
+			// Remove new events from lost events if present.
+			$saved_lost_events = $this->transients->get( self::LOST_EVENTS_TRANSIENT );
+			if ( $saved_lost_events ) {
+				$filtered_lost_events = array_diff( $saved_lost_events, $new_events );
+				$lost_events          = array_merge( $lost_events, $filtered_lost_events );
+			}
 		}
 
 		if ( ! empty( $lost_events ) ) {

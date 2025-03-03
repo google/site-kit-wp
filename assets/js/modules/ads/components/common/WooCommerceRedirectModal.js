@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo } from '@wordpress/element';
+import { useCallback, useMemo, useRef } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -38,8 +38,13 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
+	CircularProgress,
 } from 'googlesitekit-components';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+	PLUGINS,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -50,16 +55,19 @@ import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallba
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
-	onDismiss,
+	onDismiss = null,
+	onContinue = null,
 } ) {
+	const trackIsSavingRef = useRef( false );
+
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
 	);
 	const isWooCommerceActive = useSelect( ( select ) =>
-		select( CORE_SITE ).isWooCommerceActivated()
+		select( MODULES_ADS ).isWooCommerceActivated()
 	);
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
-		select( CORE_SITE ).isGoogleForWooCommerceActivated()
+		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
 	const isModalDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -74,7 +82,7 @@ export default function WooCommerceRedirectModal( {
 
 		if ( isGoogleForWooCommerceActive === false ) {
 			return addQueryArgs( `${ adminURL }/plugin-install.php`, {
-				s: 'google-listings-and-ads',
+				s: PLUGINS.GOOGLE_FOR_WOOCOMMERCE,
 				tab: 'search',
 				type: 'term',
 			} );
@@ -87,7 +95,7 @@ export default function WooCommerceRedirectModal( {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const markModalDismissed = useCallback( () => {
-		onDismiss?.();
+		onDismiss?.( trackIsSavingRef.current );
 		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
@@ -96,6 +104,7 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
+		trackIsSavingRef.current = true;
 		markModalDismissed();
 
 		navigateTo( googleForWooCommerceRedirectURI );
@@ -105,10 +114,17 @@ export default function WooCommerceRedirectModal( {
 
 	const onContinueWithSiteKit = useCallback( () => {
 		markModalDismissed();
-		onSetupCallback();
-	}, [ markModalDismissed, onSetupCallback ] );
 
-	if ( isModalDismissed ) {
+		if ( onContinue ) {
+			// Override default module activation with custom callback.
+			onContinue();
+			return;
+		}
+
+		onSetupCallback();
+	}, [ markModalDismissed, onSetupCallback, onContinue ] );
+
+	if ( isModalDismissed && ! trackIsSavingRef.current ) {
 		return null;
 	}
 
@@ -144,6 +160,11 @@ export default function WooCommerceRedirectModal( {
 				</Button>
 				<Button
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					icon={
+						trackIsSavingRef.current ? (
+							<CircularProgress size={ 14 } />
+						) : undefined
+					}
 					onClick={ getGoogleForWooCommerceRedirectURI }
 				>
 					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
@@ -156,4 +177,5 @@ export default function WooCommerceRedirectModal( {
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
+	onContinue: PropTypes.func,
 };

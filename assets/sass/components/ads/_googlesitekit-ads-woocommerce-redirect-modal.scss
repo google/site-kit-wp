@@ -53,18 +53,27 @@
 				justify-content: flex-end;
 			}
 
+			.mdc-button--raised {
+
+				svg {
+					margin-left: 6px;
+				}
+			}
+
 			button {
 
 				&:last-child {
 					margin-top: 5px;
 				}
-			}
-		}
 
-		.mdc-button--raised {
+				.MuiCircularProgress-colorPrimary {
+					color: $c-white;
+					margin-right: 5px;
 
-			svg {
-				margin-left: 6px;
+					svg {
+						margin: 0;
+					}
+				}
 			}
 		}
 	}

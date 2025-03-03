@@ -31,7 +31,11 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	MODULES_ADS,
+	PLUGINS,
+} from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
 describe( 'WooCommerceRedirectModal', () => {
@@ -56,6 +60,18 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: false,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: false,
+					adsConnected: false,
+				},
+			},
+		} );
 	} );
 
 	it( 'does not render when dismissed', async () => {
@@ -118,13 +134,13 @@ describe( 'WooCommerceRedirectModal', () => {
 			] ),
 		} );
 
-		provideSiteInfo( registry, {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				wooCommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: true,
 					installed: true,
 				},
-				googleForWooCommerce: {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					installed: false,
 				},
@@ -147,7 +163,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			expect.stringMatching( /plugin-install\.php/ )
 		);
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /s=google-listings-and-ads/ )
+			expect.stringMatching(
+				new RegExp( `s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }` )
+			)
 		);
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /tab=search/ )
@@ -164,13 +182,13 @@ describe( 'WooCommerceRedirectModal', () => {
 			] ),
 		} );
 
-		provideSiteInfo( registry, {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				wooCommerce: {
+				[ PLUGINS.WOOCOMMERCE ]: {
 					active: true,
 					installed: true,
 				},
-				googleForWooCommerce: {
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: true,
 					installed: true,
 				},
