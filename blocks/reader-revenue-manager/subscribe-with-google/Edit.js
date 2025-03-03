@@ -33,7 +33,7 @@ import { ButtonEdit } from '../common';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
- * Contribute with Google Block Edit component.
+ * Subscribe with Google Block Edit component.
  *
  * @since n.e.x.t
  *
