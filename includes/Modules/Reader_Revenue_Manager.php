@@ -474,8 +474,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			new Script(
 				'googlesitekit-modules-reader-revenue-manager',
 				array(
-					'src'           => $base_url . 'js/googlesitekit-modules-reader-revenue-manager.js',
-					'dependencies'  => array(
+					'src'          => $base_url . 'js/googlesitekit-modules-reader-revenue-manager.js',
+					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
@@ -485,7 +485,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
 					),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_SITEKIT, Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
 		);
