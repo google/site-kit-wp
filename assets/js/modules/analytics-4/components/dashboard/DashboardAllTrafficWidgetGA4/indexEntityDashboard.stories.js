@@ -41,7 +41,7 @@ import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,
 	provideReportWithIncreasedOtherDimension,
-} from './indexMainDashboard.stories';
+} from './story-utils';
 
 const widgetComponentProps = getWidgetComponentProps(
 	'analyticsAllTraffic-widget'
