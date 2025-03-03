@@ -20,6 +20,10 @@
 
 	.googlesitekit-setup-module--ads {
 
+		.googlesitekit-settings-module__fields-group {
+			width: 100%;
+		}
+
 		.googlesitekit-settings-module__fields-group-title {
 			font-size: $fs-body-md;
 			font-weight: $fw-medium;

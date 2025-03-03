@@ -19,6 +19,13 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-text-field-conversion-tracking-id {
+		@media (min-width: 961px) and (max-width: 1130px) {
+			/**
+			 * Override the default (framework) text field styles on these screens
+			 * to prevent input flowing outside of the container or being too narrow.
+			 */
+			width: 100%;
+		}
 
 		.googlesitekit-text-field-conversion-tracking-id-prefix {
 
