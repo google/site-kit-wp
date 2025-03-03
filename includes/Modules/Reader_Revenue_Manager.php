@@ -544,7 +544,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			);
 
-			// TODO: Find a way to enqueue this stylesheet in the site editor.
 			$assets[] = new Stylesheet(
 				'blocks-reader-revenue-manager-common-editor-styles',
 				array(
