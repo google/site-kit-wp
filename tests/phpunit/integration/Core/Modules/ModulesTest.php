@@ -88,35 +88,6 @@ class ModulesTest extends TestCase {
 		);
 	}
 
-	public function test_get_available_modules__with_siwg_module_feature_flag_enabled() {
-		// Enable the `signInWithGoogleModule` feature flag.
-		$this->enable_feature( 'signInWithGoogleModule' );
-
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$available = array_map(
-			function ( $instance ) {
-				return get_class( $instance );
-			},
-			$modules->get_available_modules()
-		);
-
-		// SiWG module should be available when the feature flag is enabled.
-		$this->assertEqualSetsWithIndex(
-			array(
-				'ads'                 => 'Google\\Site_Kit\\Modules\\Ads',
-				'adsense'             => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics-4'         => 'Google\\Site_Kit\\Modules\\Analytics_4',
-				'pagespeed-insights'  => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-				'search-console'      => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification'   => 'Google\\Site_Kit\\Modules\\Site_Verification',
-				'tagmanager'          => 'Google\\Site_Kit\\Modules\\Tag_Manager',
-				'sign-in-with-google' => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
-			),
-			$available
-		);
-	}
-
 	/**
 	 * @ignore Needs rewriting.
 	 */
