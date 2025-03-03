@@ -84,7 +84,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	private $post_product_id;
 
 	/**
-	 * Contribute_With_Google instance.
+	 * Contribute_With_Google_Block instance.
 	 *
 	 * @since n.e.x.t
 	 *
