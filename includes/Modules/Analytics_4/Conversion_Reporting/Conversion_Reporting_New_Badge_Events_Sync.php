@@ -27,6 +27,11 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 	public const NEW_EVENTS_BADGE_TRANSIENT = 'googlesitekit_conversion_reporting_new_badge_events';
 
 	/**
+	 * The skip new badge events transient name.
+	 */
+	public const SKIP_NEW_BADGE_TRANSIENT = 'googlesitekit_conversion_reporting_skip_new_badge_events';
+
+	/**
 	 * Transients instance.
 	 *
 	 * @since 1.144.0
@@ -55,6 +60,12 @@ class Conversion_Reporting_New_Badge_Events_Sync {
 	 * @param array $new_events New events array.
 	 */
 	public function sync_new_badge_events( $new_events ) {
+		$skip_events_badge = $this->transients->get( self::SKIP_NEW_BADGE_TRANSIENT );
+		if ( $skip_events_badge ) {
+			$this->transients->delete( self::SKIP_NEW_BADGE_TRANSIENT );
+			return;
+		}
+
 		$new_events_badge         = $this->transients->get( self::NEW_EVENTS_BADGE_TRANSIENT );
 		$save_new_badge_transient = fn( $events ) => $this->transients->set(
 			self::NEW_EVENTS_BADGE_TRANSIENT,
