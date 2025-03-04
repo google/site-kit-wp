@@ -172,7 +172,7 @@ export async function submitChanges( { dispatch, select, resolveSelect } ) {
 		return { error };
 	}
 
-	dispatch( CORE_USER ).resetAudienceSettings();
+	dispatch( CORE_USER ).resetUserAudienceSettings();
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
 

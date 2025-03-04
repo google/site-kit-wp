@@ -54,10 +54,10 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		)
 	);
 	const audienceSettings = useInViewSelect( ( select ) =>
-		select( CORE_USER ).getAudienceSettings()
+		select( CORE_USER ).getUserAudienceSettings()
 	);
 	const saveError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveAudienceSettings', [
+		select( CORE_USER ).getErrorForAction( 'saveUserAudienceSettings', [
 			{
 				...audienceSettings,
 				configuredAudiences: selectedItems,
@@ -65,7 +65,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		] )
 	);
 	const isSavingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingAudienceSettings()
+		select( CORE_USER ).isSavingUserAudienceSettings()
 	);
 	const hiddenTileDismissedItems = useInViewSelect( ( select ) => {
 		const dismissedItems = select( CORE_USER ).getDismissedItems();
@@ -78,7 +78,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
 	);
 
-	const { saveAudienceSettings, removeDismissedItems } =
+	const { saveUserAudienceSettings, removeDismissedItems } =
 		useDispatch( CORE_USER );
 
 	const { getConfiguredAudiences } = useSelect( CORE_USER );
@@ -113,7 +113,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		async ( selectedAudiences ) => {
 			setDismissedItemsError( null );
 
-			let { error } = await saveAudienceSettings( {
+			let { error } = await saveUserAudienceSettings( {
 				configuredAudiences: selectedAudiences,
 			} );
 
@@ -156,7 +156,11 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 
 			return { error };
 		},
-		[ hiddenTileDismissedItems, removeDismissedItems, saveAudienceSettings ]
+		[
+			hiddenTileDismissedItems,
+			removeDismissedItems,
+			saveUserAudienceSettings,
+		]
 	);
 
 	const onSaveSuccess = useCallback( () => {

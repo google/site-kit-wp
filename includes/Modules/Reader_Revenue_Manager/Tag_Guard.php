@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 
 /**
  * Class for the Reader Revenue Manager tag guard.
@@ -24,11 +25,11 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 class Tag_Guard extends Module_Tag_Guard {
 
 	/**
-	 * Post product ID.
+	 * Post_Product_ID instance.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @var string
+	 * @var Post_Product_ID
 	 */
 	private $post_product_id;
 
@@ -38,7 +39,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	 * @since n.e.x.t
 	 *
 	 * @param Module_Settings $settings Module settings instance.
-	 * @param string          $post_product_id Post product ID.
+	 * @param Post_Product_ID $post_product_id Post_Product_ID instance.
 	 */
 	public function __construct( Module_Settings $settings, $post_product_id ) {
 		parent::__construct( $settings );
@@ -79,11 +80,13 @@ class Tag_Guard extends Module_Tag_Guard {
 	 * @return bool TRUE if guarded tag can be activated for a singular post, otherwise FALSE.
 	 */
 	private function can_activate_for_singular_post() {
-		if ( 'none' === $this->post_product_id ) {
+		$post_product_id = $this->post_product_id->get( get_the_ID() );
+
+		if ( 'none' === $post_product_id ) {
 			return false;
 		}
 
-		if ( ! empty( $this->post_product_id ) ) {
+		if ( ! empty( $post_product_id ) ) {
 			return true;
 		}
 

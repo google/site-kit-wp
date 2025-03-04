@@ -331,7 +331,7 @@ describe( 'ErrorNotice', () => {
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect(
 					registry

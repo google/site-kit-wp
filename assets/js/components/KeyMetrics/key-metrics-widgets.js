@@ -335,11 +335,11 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		description: __(
-			'Traffic source that generates the most add to cart events',
+			'Channel which brought in the most add to cart events to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Traffic source that generates the most add to cart events',
+			'Channel (e.g. social, paid, search) that brought in the most add to cart events to your site',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
@@ -350,11 +350,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
 		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
 		description: __(
-			'Total number of leads for the top traffic source',
+			'Channel which brought in the most leads to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Total number of leads for the top traffic source',
+			'Channel (e.g. social, paid, search) that brought in the most leads to your site',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -369,11 +369,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
 		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
 		description: __(
-			'Traffic source that generates the most purchases',
+			'Channel which brought in the most purchases to your site',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Traffic source that generates the most purchases',
+			'Channel (e.g. social, paid, search) that brought in the most purchases to your site',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],

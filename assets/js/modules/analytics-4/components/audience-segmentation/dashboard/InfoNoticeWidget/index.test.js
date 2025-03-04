@@ -100,7 +100,7 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences is not loaded', () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -133,7 +133,7 @@ describe( 'InfoNoticeWidget', () => {
 	it( 'should not render when there is no available audience', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -152,7 +152,7 @@ describe( 'InfoNoticeWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -171,7 +171,7 @@ describe( 'InfoNoticeWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -186,7 +186,7 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when there is no matching audience', () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -205,7 +205,7 @@ describe( 'InfoNoticeWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -235,7 +235,7 @@ describe( 'InfoNoticeWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -270,7 +270,7 @@ describe( 'InfoNoticeWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -318,7 +318,7 @@ describe( 'InfoNoticeWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAvailableAudiences( availableAudiences );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -377,7 +377,7 @@ describe( 'InfoNoticeWidget', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [ 'properties/12345/audiences/1' ],
 					isAudienceSegmentationWidgetHidden: false,
 				} );

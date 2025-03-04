@@ -1,7 +1,5 @@
 /**
- * Auto update banner notification constants.
- *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +14,5 @@
  * limitations under the License.
  */
 
-export const NOTIFICATION_ID = 'enable-plugin-auto-update-notification';
-export const CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP =
-	'auto-update-banner-hide-notification-on-first-setup';
-export const DISMISSED_ITEM_KEY = 'auto-update-cta';
+export { default as EditorButton } from './EditorButton';
+export { default as ButtonEdit } from './ButtonEdit';

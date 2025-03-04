@@ -145,13 +145,14 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		Site_Verification::MODULE_SLUG  => Site_Verification::class,
-		Search_Console::MODULE_SLUG     => Search_Console::class,
-		Ads::MODULE_SLUG                => Ads::class,
-		Analytics_4::MODULE_SLUG        => Analytics_4::class,
-		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
-		AdSense::MODULE_SLUG            => AdSense::class,
-		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
+		Site_Verification::MODULE_SLUG   => Site_Verification::class,
+		Search_Console::MODULE_SLUG      => Search_Console::class,
+		Ads::MODULE_SLUG                 => Ads::class,
+		Analytics_4::MODULE_SLUG         => Analytics_4::class,
+		Tag_Manager::MODULE_SLUG         => Tag_Manager::class,
+		AdSense::MODULE_SLUG             => AdSense::class,
+		PageSpeed_Insights::MODULE_SLUG  => PageSpeed_Insights::class,
+		Sign_In_With_Google::MODULE_SLUG => Sign_In_With_Google::class,
 	);
 
 	/**
@@ -181,10 +182,6 @@ final class Modules {
 
 		if ( Feature_Flags::enabled( 'rrmModule' ) ) {
 			$this->core_modules[ Reader_Revenue_Manager::MODULE_SLUG ] = Reader_Revenue_Manager::class;
-		}
-
-		if ( Feature_Flags::enabled( 'signInWithGoogleModule' ) ) {
-			$this->core_modules[ Sign_In_With_Google::MODULE_SLUG ] = Sign_In_With_Google::class;
 		}
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
