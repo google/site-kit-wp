@@ -105,11 +105,7 @@ export default function UserDimensionsPieChart( props ) {
 			}
 
 			const label = target.dataset.rowLabel;
-			if (
-				label === '(other)' ||
-				label === '(not set)' ||
-				label === ''
-			) {
+			if ( label === '(other)' || label === '(not set)' ) {
 				trackEvent(
 					`${ viewContext }_all-traffic-widget`,
 					'help_click',
