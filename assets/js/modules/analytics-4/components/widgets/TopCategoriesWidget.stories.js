@@ -58,6 +58,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	keepEmptyRows: false,
 };
 
 const propertyID = '12345';
@@ -93,6 +94,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/TopCategoriesWidget/Ready',
 };
 

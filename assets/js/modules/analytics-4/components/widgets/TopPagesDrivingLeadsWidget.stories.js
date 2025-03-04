@@ -61,6 +61,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	keepEmptyRows: false,
 };
 
 const pageTitlesReportOptions = {
