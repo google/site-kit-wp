@@ -1,0 +1,23 @@
+{
+	"scripts": {
+		"build": "npm run build:production",
+		"prebuild:dev": "npm run remove-dist",
+		"build:dev": "webpack --mode=development --devtool cheap-module-eval-source-map --output-pathinfo",
+		"prebuild:production": "npm run remove-dist",
+		"build:production": "webpack --mode=production",
+		"build:test": "npm run build:production -- --include-tests",
+		"watch": "npm run build:dev -- --watch"
+	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^3.18.0",
+		"@wordpress/compose": "^3.25.3",
+		"@wordpress/data": "^4.27.3",
+		"@wordpress/dom-ready": "^2.10.0",
+		"@wordpress/element": "^2.20.3",
+		"@wordpress/i18n": "^3.14.0",
+		"@wordpress/icons": "^2.9.0",
+		"@wordpress/keycodes": "^3.2.4",
+		"@wordpress/url": "^3.1.1"
+	},
+	"devDependencies": {}
+}
