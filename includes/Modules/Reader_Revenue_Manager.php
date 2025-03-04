@@ -43,6 +43,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Block_Support;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
@@ -155,6 +156,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$this->post_product_id->register();
+
+			$admin_post_list = new Admin_Post_List(
+				$this->get_settings(),
+				$this->post_product_id
+			);
+			$admin_post_list->register();
 
 			if ( Block_Support::has_block_support() ) {
 				$this->contribute_with_google_block->register();
