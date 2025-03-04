@@ -39,3 +39,5 @@ global.googlesitekit.notifications = Notifications;
 
 // This is only exported for Jest and is not used in production.
 export default Notifications;
+
+export * from './googlesitekit/notifications';
