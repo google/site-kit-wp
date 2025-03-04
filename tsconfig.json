@@ -1,19 +1,20 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "noEmit": true,
-    "paths": {
-      "googlesitekit-data": [
-        "./assets/js/googlesitekit/data"
-      ],
-    }
-  },
-  "exclude": [
-    "coverage",
-    "dist",
-    "node_modules",
-    "php-scoper",
-    "third-party",
-    "vendor",
-  ]
+	"compilerOptions": {
+		"allowJs": true,
+		"noEmit": true,
+		"paths": {
+			"googlesitekit-data": [ "./assets/js/googlesitekit/data" ],
+			"googlesitekit-notifications": [
+				"./assets/js/googlesitekit/notifications"
+			]
+		}
+	},
+	"exclude": [
+		"coverage",
+		"dist",
+		"node_modules",
+		"php-scoper",
+		"third-party",
+		"vendor"
+	]
 }
