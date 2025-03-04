@@ -30,7 +30,6 @@ import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/g
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
 import useDashboardType from '../../../../hooks/useDashboardType';
 import { useFeature } from '../../../../hooks/useFeature';
-import useQueryArg from '../../../../hooks/useQueryArg';
 import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
@@ -57,9 +56,6 @@ function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
-
-	const [ notification, setNotification ] = useQueryArg( 'notification' );
-	const [ slug, setSlug ] = useQueryArg( 'slug' );
 
 	const dashboardType = useDashboardType();
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
@@ -123,15 +119,6 @@ function PublicationApprovedOverlayNotification() {
 		dismissOverlayNotification(
 			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
 		);
-
-		// If this notification is displayed on succcessful module setup, dismiss accordingly.
-		if (
-			notification === 'authentication_success' &&
-			slug === READER_REVENUE_MANAGER_MODULE_SLUG
-		) {
-			setNotification( undefined );
-			setSlug( undefined );
-		}
 	};
 
 	const dismissNotification = () => {

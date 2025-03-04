@@ -121,10 +121,10 @@ export default function RRMSetupSuccessSubtleNotification( {
 		MODULES_READER_REVENUE_MANAGER
 	);
 
-	const dismissNotice = () => {
+	const dismissNotice = useCallback( () => {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}, [ setNotification, setSlug ] );
 
 	const onCTAClick = ( event ) => {
 		event.preventDefault();
@@ -187,8 +187,11 @@ export default function RRMSetupSuccessSubtleNotification( {
 				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 				true
 			);
+
+			dismissNotice();
 		}
 	}, [
+		dismissNotice,
 		isRRMV2Enabled,
 		paymentOption,
 		publicationOnboardingState,
