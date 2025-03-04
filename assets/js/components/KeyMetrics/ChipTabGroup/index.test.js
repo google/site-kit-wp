@@ -112,13 +112,11 @@ describe( 'ChipTabGroup', () => {
 			},
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveConversionReportingInlineData( {
-				newEvents: [],
-				lostEvents: [],
-				newBadgeEvents: [],
-			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			newEvents: [],
+			lostEvents: [],
+			newBadgeEvents: [],
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 

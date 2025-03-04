@@ -332,4 +332,154 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			)
 		).not.toBeInTheDocument();
 	} );
+
+	describe( 'with the rrmModuleV2 feature flag enabled', () => {
+		const notificationContent = [
+			[
+				'subscription model with product ID set',
+				{
+					paymentOption: 'subscriptions',
+					productID: 'product-1',
+				},
+				{
+					title: 'Success! Your Reader Revenue Manager account is set up',
+					description:
+						'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
+					ctaText: 'Manage CTAs',
+				},
+			],
+			[
+				'subscription model with product ID not set',
+				{
+					paymentOption: 'subscriptions',
+					productID: 'openaccess',
+				},
+				{
+					title: 'Success! Your Reader Revenue Manager account is set up',
+					description:
+						'You can edit your settings to manage product IDs and select which of your site’s pages will include a subscription CTA.',
+					ctaText: 'Manage CTAs',
+				},
+			],
+			[
+				'contribution model with no available product IDs',
+				{
+					paymentOption: 'contributions',
+					productIDs: [],
+					productID: 'openaccess',
+				},
+				{
+					title: 'Success! Your Reader Revenue Manager account is set up',
+					description:
+						'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
+					ctaText: 'Manage CTAs',
+				},
+			],
+			[
+				'contribution model with available product IDs but no product ID set',
+				{
+					paymentOption: 'contributions',
+					productIDs: [ 'product-1', 'product-2' ],
+					productID: 'openaccess',
+				},
+				{
+					title: 'Success! Your Reader Revenue Manager account is set up',
+					description:
+						'You can edit your settings to manage product IDs and select which of your site’s pages will include a contribution CTA.',
+					ctaText: 'Manage CTAs',
+				},
+			],
+			[
+				'contribution model with available product IDs and a product ID set',
+				{
+					paymentOption: 'contributions',
+					productIDs: [ 'product-1', 'product-2' ],
+					productID: 'product-1',
+				},
+				{
+					title: 'Success! Your Reader Revenue Manager account is set up',
+					description:
+						'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
+					ctaText: 'Manage CTAs',
+				},
+			],
+			[
+				'non-monetization model',
+				{
+					paymentOption: 'noPayment',
+					productIDs: [],
+					productID: 'openaccess',
+				},
+				{
+					title: 'Success! Your Reader Revenue Manager account is set up',
+					description:
+						'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions.',
+					ctaText: 'Get started',
+				},
+			],
+		];
+
+		it.each( notificationContent )(
+			'should render appropriate content for %s',
+			( _model, settings, { title, description, ctaText } ) => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						...settings,
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+					} );
+
+				const { getByText } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				expect( getByText( title ) ).toBeInTheDocument();
+				expect( getByText( description ) ).toBeInTheDocument();
+				expect( getByText( ctaText ) ).toBeInTheDocument();
+			}
+		);
+
+		it( 'should display overlay notification on successful module setup with a publication that has no CTAs', async () => {
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue(
+						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+					)
+			).toBeUndefined();
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+					paymentOption: '',
+					productIDs: [],
+					productID: 'openaccess',
+				} );
+
+			const { waitForRegistry } = render(
+				<NotificationWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features: [ 'rrmModuleV2' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue(
+						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+					)
+			).toBe( true );
+		} );
+	} );
 } );

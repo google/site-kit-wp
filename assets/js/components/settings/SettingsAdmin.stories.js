@@ -26,7 +26,7 @@ import {
 	provideSiteInfo,
 	WithTestRegistry,
 } from './../../../../tests/js/utils';
-import settingsData from './../../../../.storybook/__fixtures__/_googlesitekitLegacyData';
+import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
 import { CORE_SITE } from './../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 
