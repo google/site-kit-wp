@@ -20,22 +20,25 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	registerStore,
-	createNotifications,
-	registerNotifications,
-} from './googlesitekit/notifications';
+import * as notificationExports from './googlesitekit/notifications';
+const { registerStore, createNotifications, registerNotifications } =
+	notificationExports;
 
 registerStore( Data );
 
 const Notifications = createNotifications( Data );
 registerNotifications( Notifications );
 
+const NotificationsExports = {
+	...notificationExports,
+	...Notifications,
+};
+
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-global.googlesitekit.notifications = Notifications;
+global.googlesitekit.notifications = NotificationsExports;
 
 // This is only exported for Jest and is not used in production.
 export default Notifications;
