@@ -29,6 +29,12 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import {
+	ActionsCTALinkDismiss,
+	Description,
+	LearnMoreLink,
+	SingleColumnNotificationWithSVG,
+} from 'googlesitekit-notifications';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
@@ -46,10 +52,6 @@ import {
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
-import SingleColumnNotificationWithSVG from '../../googlesitekit/notifications/components/layout/SingleColumnNotificationWithSVG';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import useViewContext from '../../hooks/useViewContext';
 
 export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
