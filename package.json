@@ -4,12 +4,13 @@
 	"main": "index.js",
 	"private": true,
 	"scripts": {
-		"build": "npm run build:production",
-		"prebuild:dev": "npm run remove-dist",
-		"build:dev": "webpack --mode=development --devtool cheap-module-eval-source-map --output-pathinfo",
-		"prebuild:production": "npm run remove-dist",
-		"build:production": "webpack --mode=production",
-		"build:test": "npm run build:production -- --include-tests",
+		"build": "npm run -w ./assets build",
+		"prebuild:dev": "npm run -w ./assets prebuild:dev",
+		"build:dev": "npm run -w ./assets build:dev",
+		"prebuild:production": "npm run -w ./assets prebuild:production",
+		"build:production": "npm run -w ./assets build:production",
+		"build:test": "npm run -w ./assets build:test",
+		"watch": "npm run -w ./assets watch",
 		"prebuild:storybook": "npm run remove-dist",
 		"build:storybook": "build-storybook -c storybook -o dist --quiet --loglevel warn",
 		"remove-dist": "rimraf ./dist",
@@ -18,7 +19,6 @@
 		"dev": "npm run build:dev",
 		"predev-zip": "npm run build:dev",
 		"dev-zip": "npm run zip",
-		"watch": "npm run build:dev -- --watch",
 		"prerelease-zip": "npm run build",
 		"release-zip": "npm run zip",
 		"pretest": "npm run build:production -- --display=none",
@@ -252,6 +252,7 @@
 		"webpackbar": "^4.0.0"
 	},
 	"workspaces": [
+		"assets",
 		"tests/backstop",
 		"tests/e2e"
 	]
