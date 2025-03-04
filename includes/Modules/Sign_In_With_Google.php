@@ -163,6 +163,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
 		// Output the Sign in with Google <div> in the WooCommerce login form.
 		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signinwithgoogle_woocommerce' ) );
+		// Output the Sign in with Google <div> in any use of wp_login_form.
+		add_filter( 'login_form_top', $this->get_method_proxy( 'render_button_in_wp_login_form' ) );
 
 		// Delete client ID stored from previous module connection on module reconnection.
 		add_action(
@@ -380,6 +382,28 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
+	 * Checks if the Sign in with Google button can be rendered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the button can be rendered, false otherwise.
+	 */
+	private function can_render_signinwithgoogle() {
+		$settings = $this->get_settings()->get();
+
+		// If there's no client ID available, don't render the button.
+		if ( ! $settings['clientID'] ) {
+			return false;
+		}
+
+		if ( substr( wp_login_url(), 0, 5 ) !== 'https' ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Renders the Sign in with Google JS script tags, One Tap code, and
 	 * buttons.
 	 *
@@ -393,15 +417,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$is_woocommerce       = class_exists( 'woocommerce' );
 		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
-		$settings = $this->get_settings()->get();
-
-		// If there's no client ID available, don't render the button.
-		if ( ! $settings['clientID'] ) {
-			return;
-		}
-
+		$settings  = $this->get_settings()->get();
 		$login_uri = add_query_arg( 'action', self::ACTION_AUTH, wp_login_url() );
-		if ( substr( $login_uri, 0, 5 ) !== 'https' ) {
+
+		if ( ! $this->can_render_signinwithgoogle() ) {
 			return;
 		}
 
@@ -516,6 +535,21 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		BC_Functions::wp_print_inline_script_tag( $inline_script );
 		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
+	}
+
+	/**
+	 * Appends the Sign in with Google button to content of a WordPress filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Existing content.
+	 * @return string Possibly modified content.
+	 */
+	private function render_button_in_wp_login_form( $content ) {
+		if ( $this->can_render_signinwithgoogle() ) {
+			$content .= '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
+		}
+		return $content;
 	}
 
 	/**
