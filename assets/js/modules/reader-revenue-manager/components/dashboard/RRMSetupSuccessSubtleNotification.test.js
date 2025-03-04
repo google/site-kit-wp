@@ -344,7 +344,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				{
 					title: 'Success! Your Reader Revenue Manager account is set up',
 					description:
-						'You can edit your settings and select which of your site’s pages will include subscription CTAs.',
+						'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
 					ctaText: 'Manage CTAs',
 				},
 			],
@@ -371,7 +371,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				{
 					title: 'Success! Your Reader Revenue Manager account is set up',
 					description:
-						'You can edit your settings and select which of your site’s pages will include contribution CTAs.',
+						'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
 					ctaText: 'Manage CTAs',
 				},
 			],
@@ -399,7 +399,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				{
 					title: 'Success! Your Reader Revenue Manager account is set up',
 					description:
-						'You can edit your settings and select which of your site’s pages will include contribution CTAs.',
+						'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
 					ctaText: 'Manage CTAs',
 				},
 			],

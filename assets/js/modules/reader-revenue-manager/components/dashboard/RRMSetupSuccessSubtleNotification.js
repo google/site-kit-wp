@@ -303,7 +303,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 						);
 					} else {
 						notificationContent.description = __(
-							'You can edit your settings and select which of your site’s pages will include subscription CTAs.',
+							'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
 							'google-site-kit'
 						);
 					}
@@ -316,7 +316,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 						);
 					} else {
 						notificationContent.description = __(
-							'You can edit your settings and select which of your site’s pages will include contribution CTAs.',
+							'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
 							'google-site-kit'
 						);
 					}
