@@ -830,21 +830,21 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		if ( $this->context->is_amp() ) : ?>
-			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
-			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-		<?php else : ?>
-			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
+<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
+<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+<?php else : ?>
+<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+	<?php
 			// Opt-out should always use the measurement ID, even when using a GT tag.
 			$tag_id = $this->get_measurement_id();
-			if ( ! empty( $tag_id ) ) {
-				BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
-			}
-			?>
-			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
-			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
+	if ( ! empty( $tag_id ) ) {
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
+	}
+	?>
+	<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
+<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+	<?php
 		endif;
 	}
 
@@ -1984,6 +1984,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
 						'googlesitekit-modules-data',
+						'googlesitekit-notifications',
 					),
 				)
 			),
