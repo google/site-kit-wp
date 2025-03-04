@@ -4372,18 +4372,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		// Verify that the module setting is not set yet.
-		$this->assertEquals(
-			$this->analytics->get_settings()->get()['availableAudiences'],
-			null
-		);
-
-		// Verify that a sync timestamp has not been set yet.
-		$this->assertEquals(
-			$this->analytics->get_settings()->get()['availableAudiencesLastSyncedAt'],
-			0
-		);
-
 		$data = $this->analytics->set_data( 'sync-audiences', array() );
 
 		$this->assertNotWPError( $data );
@@ -4398,19 +4386,6 @@ class Analytics_4Test extends TestCase {
 				'audienceSlug',
 			),
 			array_keys( $data[0] )
-		);
-
-		// Verify that the module setting is updated with correct values
-		// including various audience types and slugs.
-		$this->assertEquals(
-			$this->analytics->get_settings()->get()['availableAudiences'],
-			$expected_available_audiences
-		);
-
-		// Verify that a sync timestamp has been set.
-		$this->assertGreaterThan(
-			0,
-			$this->analytics->get_settings()->get()['availableAudiencesLastSyncedAt']
 		);
 	}
 
@@ -4664,12 +4639,6 @@ class Analytics_4Test extends TestCase {
 			),
 		);
 
-		$default_audience_segmentation_settings = array(
-			'availableAudiences'                   => null,
-			'availableAudiencesLastSyncedAt'       => 0,
-			'audienceSegmentationSetupCompletedBy' => null,
-		);
-
 		$activated_audience_segmentation_settings = array(
 			'availableAudiences'                   => array(
 				array(
@@ -4687,62 +4656,6 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_settings()->merge(
 			$activated_audience_segmentation_settings
 		);
-		$analytics_settings = $this->analytics->get_settings()->get();
-		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
-		}
-
-		// Update the propertyID to trigger reset.
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => 'UA-222222',
-			)
-		);
-
-		// Confirm the module level audience settings have been reset.
-		$analytics_settings = $this->analytics->get_settings()->get();
-		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
-		}
-	}
-
-	public function test_module_level_audience_settings_reset__on_deactivation() {
-		$default_audience_segmentation_settings = array(
-			'availableAudiences'                   => null,
-			'availableAudiencesLastSyncedAt'       => 0,
-			'audienceSegmentationSetupCompletedBy' => null,
-		);
-
-		$activated_audience_segmentation_settings = array(
-			'availableAudiences'                   => array(
-				array(
-					'name' => 'properties/12345678/audiences/12345',
-				),
-				array(
-					'name' => 'properties/12345678/audiences/67890',
-				),
-			),
-			'availableAudiencesLastSyncedAt'       => time(),
-			'audienceSegmentationSetupCompletedBy' => 1,
-		);
-
-		// Set module level audience settings.
-		$this->analytics->get_settings()->merge(
-			$activated_audience_segmentation_settings
-		);
-		$analytics_settings = $this->analytics->get_settings()->get();
-		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
-		}
-
-		// Simulate deactivation effect.
-		$this->analytics->on_deactivation();
-
-		// Confirm the module level audience settings have been reset.
-		$analytics_settings = $this->analytics->get_settings()->get();
-		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
-		}
 	}
 
 	public function block_on_consent_provider_amp() {
@@ -4786,13 +4699,8 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->get_settings()->merge(
 			array(
-				'propertyID'         => $test_resource_slug_property,
-				'measurementID'      => 'A1B2C3D4E5',
-				'availableAudiences' => array(
-					array(
-						'name' => $test_resource_slug_audience,
-					),
-				),
+				'propertyID'    => $test_resource_slug_property,
+				'measurementID' => 'A1B2C3D4E5',
 			)
 		);
 

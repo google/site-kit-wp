@@ -67,8 +67,10 @@ const fetchStoreReducerCallback = createReducer(
 			state.audienceSettings = {};
 		}
 
-		state.audienceSettings.settings = audienceSettings;
-		state.audienceSettings.savedSettings = audienceSettings;
+		state.audienceSettings.availableAudiences =
+			audienceSettings?.availableAudiences;
+		state.audienceSettings.audienceSegmentationSetupCompletedBy =
+			audienceSettings?.audienceSegmentationSetupCompletedBy;
 	}
 );
 
@@ -97,19 +99,6 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateAudienceSettings,
-} );
-
-const fetchSyncAvailableAudiencesStore = createFetchStore( {
-	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
-	reducerCallback: createReducer( ( state, audiences ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
-		}
-
-		state.audienceSettings.availableAudiences = audiences;
-	} ),
 } );
 
 // Actions
@@ -205,6 +194,20 @@ const baseResolvers = {
 			dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
 		}
 	},
+
+	*getAudienceSegmentationSetupCompletedBy() {
+		const registry = yield commonActions.getRegistry();
+		const { select } = registry;
+
+		const audienceSegmentationSetupCompletedBy =
+			select(
+				MODULES_ANALYTICS_4
+			).getAudienceSegmentationSetupCompletedBy();
+
+		if ( audienceSegmentationSetupCompletedBy === undefined ) {
+			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
+		}
+	},
 };
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
@@ -262,7 +265,6 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetAudienceSettingsStore,
 	fetchSaveAudienceSettingsStore,
-	fetchSyncAvailableAudiencesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

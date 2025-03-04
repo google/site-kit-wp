@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -27,6 +28,11 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	 * @var Settings
 	 */
 	protected $settings;
+
+	/**
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
 
 	/**
 	 * @var Resource_Data_Availability_Date
@@ -47,16 +53,22 @@ class Resource_Data_Availability_DateTest extends TestCase {
 		$options                               = new Options( $context );
 		$transients                            = new Transients( $context );
 		$this->settings                        = new Settings( $options );
-		$this->resource_data_availability_date = new Resource_Data_Availability_Date( $transients, $this->settings );
+		$this->audience_settings               = new Audience_Settings( $options );
+		$this->resource_data_availability_date = new Resource_Data_Availability_Date( $transients, $this->settings, $options );
 
 		$this->settings->merge(
 			array(
-				'propertyID'         => $this->test_property_id,
+				'propertyID' => $this->test_property_id,
+			)
+		);
+
+		$this->audience_settings->set(
+			array(
 				'availableAudiences' => array(
-					array(
+					$this->test_audience_1 => array(
 						'name' => $this->test_audience_1,
 					),
-					array(
+					$this->test_audience_2 => array(
 						'name' => $this->test_audience_2,
 					),
 				),
@@ -91,6 +103,8 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	}
 
 	public function test_get_all_resource_dates() {
+		$this->enable_feature( 'audienceSegmentation' );
+
 		$this->assertEquals(
 			array(
 				'audience'        => array(),
@@ -153,6 +167,8 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	}
 
 	public function test_is_valid_resource_slug() {
+		$this->enable_feature( 'audienceSegmentation' );
+
 		$this->assertTrue( $this->resource_data_availability_date->is_valid_resource_slug( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION ) );
 		$this->assertTrue( $this->resource_data_availability_date->is_valid_resource_slug( $this->test_audience_1, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE ) );
 		$this->assertTrue( $this->resource_data_availability_date->is_valid_resource_slug( $this->test_property_id, Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY ) );

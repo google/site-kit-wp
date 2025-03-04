@@ -203,7 +203,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
-		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
+		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->options );
 	}
 
 	/**
@@ -266,12 +266,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$this->get_settings()->on_change(
 			function ( $old_value, $new_value ) {
+				$audiences_settings = $this->audience_settings ? $this->audience_settings->get() : array();
+
 				// Ensure that the data available state is reset when the property ID or measurement ID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
-
-					$available_audiences = $old_value['availableAudiences'] ?? array();
+					$available_audiences = $this->get_available_audiences( $old_value['availableAudiences'] ?? array() );
 
 					$available_audience_names = array_map(
 						function ( $audience ) {
@@ -284,7 +285,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
-				$old_available_audiences = $old_value['availableAudiences'];
+				$old_available_audiences = $this->get_available_audiences( $old_value['availableAudiences'] ?? array() );
 				if ( $old_available_audiences ) {
 					$old_available_audience_names = array_map(
 						function ( $audience ) {
@@ -293,7 +294,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$old_available_audiences
 					);
 
-					$new_available_audiences      = $new_value['availableAudiences'] ?? array();
+					$new_available_audiences      = ! empty( $audiences_settings ) ? $audiences_settings['availableAudiences'] : ( $new_value['availableAudiences'] ?? array() );
 					$new_available_audience_names = array_map(
 						function ( $audience ) {
 							return $audience['name'];
@@ -353,6 +354,16 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$new_value['availableCustomDimensions']            = null;
 					$new_value['availableAudiences']                   = null;
 					$new_value['audienceSegmentationSetupCompletedBy'] = null;
+				}
+
+				if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
+					$this->audience_settings->set(
+						array(
+							'availableAudiences' => null,
+							'availableAudiencesLastSyncedAt' => 0,
+							'audienceSegmentationSetupCompletedBy' => null,
+						)
+					);
 				}
 
 				return $new_value;
@@ -601,7 +612,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// Check if the audienceSegmentation feature is enabled.
 		if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
 			// Return the SITE_KIT_AUDIENCE audiences.
-			$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
+			$available_audiences = $this->get_available_audiences( $settings['availableAudiences'] ?? array() );
+			$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
 
 			$debug_fields['analytics_4_site_kit_audiences'] = array(
 				'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
@@ -2523,7 +2535,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			}
 		);
 
-		$this->get_settings()->merge(
+		$settings_class = ( Feature_Flags::enabled( 'audienceSegmentation' ) ) ? $this->audience_settings : $this->get_settings();
+
+		$settings_class->merge(
 			array(
 				'availableAudiences'             => $available_audiences,
 				'availableAudiencesLastSyncedAt' => time(),
@@ -2651,6 +2665,24 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		return wp_list_pluck( $site_kit_audiences, 'displayName' );
+	}
+
+	/**
+	 * Returns the available audiences.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $fallback_value Fallback value to use if audiences are not available.
+	 *
+	 * @return array List of available audiences.
+	 */
+	private function get_available_audiences( $fallback_value = array() ) {
+		if ( Feature_Flags::enabled( 'audienceSegmentation' ) && $this->audience_settings ) {
+			$audience_settings = $this->audience_settings->get();
+			return $audience_settings['availableAudiences'] ?? array();
+		}
+
+		return $fallback_value;
 	}
 
 	/**
