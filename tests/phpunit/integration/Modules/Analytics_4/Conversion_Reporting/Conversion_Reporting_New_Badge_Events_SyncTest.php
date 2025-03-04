@@ -101,4 +101,17 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 		$this->assertNotEmpty( $result );
 		$this->assertEquals( $new_events, $result['events'] );
 	}
+
+	public function test_sync_new_badge_events__skip_new_badge_transient_is_present() {
+		$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+		$new_events = array( 'event1', 'event2' );
+
+		$this->transients->set( Conversion_Reporting_New_Badge_Events_Sync::SKIP_NEW_BADGE_TRANSIENT, 1 );
+
+		$this->new_badge_events_sync->sync_new_badge_events( $new_events );
+
+		$result = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+
+		$this->assertEmpty( $result );
+	}
 }

@@ -80,7 +80,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		dismissItemSpy.mockImplementation( () => Promise.resolve() );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			isAudienceSegmentationWidgetHidden: false,
 			configuredAudiences: null,
 		} );
@@ -258,7 +258,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 	} );
 
 	it( 'should dismiss the notification if "Visitor groups" toggle is turned off', () => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			isAudienceSegmentationWidgetHidden: true,
 			configuredAudiences: null,
 		} );

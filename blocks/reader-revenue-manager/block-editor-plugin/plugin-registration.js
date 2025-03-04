@@ -26,12 +26,20 @@ import { registerPlugin } from '@wordpress-core/plugins';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_EDIT_SITE } from '../common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import SettingPanel from './SettingPanel';
 
 const { select, resolveSelect } = Data;
 
 export function registerReaderRevenueManagerPlugin() {
+	// Only allow the plugin to be registered in the post editor.
+	const isSiteEditor = !! select( CORE_EDIT_SITE );
+
+	if ( isSiteEditor ) {
+		return;
+	}
+
 	return Promise.all( [
 		resolveSelect( CORE_MODULES ).getModules(),
 		resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),

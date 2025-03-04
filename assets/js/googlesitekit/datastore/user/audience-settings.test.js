@@ -132,7 +132,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 		} );
 
-		describe( 'saveAudienceSettings', () => {
+		describe( 'saveUserAudienceSettings', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -153,7 +153,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 200,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveAudienceSettings();
+				await registry.dispatch( CORE_USER ).saveUserAudienceSettings();
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
@@ -184,12 +184,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 500,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveAudienceSettings();
+				await registry.dispatch( CORE_USER ).saveUserAudienceSettings();
 
 				expect(
 					registry
 						.select( CORE_USER )
-						.getErrorForAction( 'saveAudienceSettings', [] )
+						.getErrorForAction( 'saveUserAudienceSettings', [] )
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
@@ -206,7 +206,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 200,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveAudienceSettings( {
+				await registry.dispatch( CORE_USER ).saveUserAudienceSettings( {
 					isAudienceSegmentationWidgetHidden: true,
 				} );
 
@@ -228,13 +228,15 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 		} );
 
-		describe( 'resetAudienceSettings', () => {
+		describe( 'resetUserAudienceSettings', () => {
 			it( 'should reset the audience settings data in the store', async () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
 
-				await registry.dispatch( CORE_USER ).resetAudienceSettings();
+				await registry
+					.dispatch( CORE_USER )
+					.resetUserAudienceSettings();
 
 				fetchMock.getOnce( audienceSettingsEndpoint, {
 					body: audienceSettingsResponse,
@@ -242,16 +244,16 @@ describe( 'modules/analytics-4 audience settings', () => {
 				} );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettingsResponse );
 
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint );
@@ -260,12 +262,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getAudienceSettings', () => {
+		describe( 'getUserAudienceSettings', () => {
 			it( 'should return undefined while audience settings are loading', async () => {
 				freezeFetch( audienceSettingsEndpoint );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toBeUndefined();
 
 				await waitForDefaultTimeouts();
@@ -274,14 +276,14 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should not make a network request if audience settings exist', async () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
 
-				registry.select( CORE_USER ).getAudienceSettings();
+				registry.select( CORE_USER ).getUserAudienceSettings();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect( fetchMock ).not.toHaveFetched(
 					audienceSettingsEndpoint
@@ -294,12 +296,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 					status: 200,
 				} );
 
-				registry.select( CORE_USER ).getAudienceSettings();
+				registry.select( CORE_USER ).getUserAudienceSettings();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
 					body: {
@@ -308,7 +310,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				} );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toMatchObject( audienceSettingsResponse );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -339,7 +341,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect(
 					registry.select( CORE_USER ).getConfiguredAudiences()
@@ -351,7 +353,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should return the configured audiences from the audience settings', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
 
 				expect(
 					registry.select( CORE_USER ).getConfiguredAudiences()
@@ -387,7 +389,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect(
 					registry
@@ -403,7 +405,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
 
 				expect(
 					registry
@@ -439,7 +441,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 
 				expect( registry.select( CORE_USER ).didSetAudiences() ).toBe(
 					true
@@ -451,7 +453,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should return the `didSetAudiences` flag from the audience settings', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
 
 				expect( registry.select( CORE_USER ).didSetAudiences() ).toBe(
 					true
@@ -463,7 +465,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should compare the current configured audiences with the saved ones', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
 
 				const hasChanged = registry
 					.select( CORE_USER )
@@ -484,10 +486,10 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 		} );
 
-		describe( 'isSavingAudienceSettings', () => {
+		describe( 'isSavingUserAudienceSettings', () => {
 			it( 'should return false if audience settings are not being saved', () => {
 				expect(
-					registry.select( CORE_USER ).isSavingAudienceSettings()
+					registry.select( CORE_USER ).isSavingUserAudienceSettings()
 				).toBe( false );
 			} );
 
@@ -496,16 +498,16 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 				const promise = registry
 					.dispatch( CORE_USER )
-					.fetchSaveAudienceSettings( audienceSettingsResponse );
+					.fetchSaveUserAudienceSettings( audienceSettingsResponse );
 
 				expect(
-					registry.select( CORE_USER ).isSavingAudienceSettings()
+					registry.select( CORE_USER ).isSavingUserAudienceSettings()
 				).toBe( true );
 
 				await promise;
 
 				expect(
-					registry.select( CORE_USER ).isSavingAudienceSettings()
+					registry.select( CORE_USER ).isSavingUserAudienceSettings()
 				).toBe( false );
 			} );
 		} );

@@ -344,7 +344,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( settings );
+					.receiveGetUserAudienceSettings( settings );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -624,7 +624,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
@@ -1859,7 +1859,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
