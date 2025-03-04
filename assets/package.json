@@ -6,7 +6,8 @@
 		"prebuild:production": "npm run remove-dist",
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
-		"watch": "npm run build:dev -- --watch"
+		"watch": "npm run build:dev -- --watch",
+		"remove-dist": "rimraf ../dist"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^3.18.0",
