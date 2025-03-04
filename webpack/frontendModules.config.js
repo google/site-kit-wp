@@ -34,6 +34,7 @@ const {
 } = require( './common' );
 
 module.exports = ( mode ) => ( {
+	context: rootDir,
 	entry: {
 		// Consent Mode
 		'googlesitekit-consent-mode':

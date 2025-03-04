@@ -50,6 +50,7 @@ module.exports = ( mode, rules, ANALYZE ) => {
 	const isProduction = mode === 'production';
 
 	return {
+		context: rootDir,
 		entry: {
 			// New Modules (Post-JSR).
 			'googlesitekit-api': './assets/js/googlesitekit-api.js',
@@ -141,7 +142,7 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				cwd: process.cwd(),
 			} ),
 			new CreateFileWebpack( {
-				path: './dist',
+				path: rootDir + '/dist',
 				fileName: 'config.php',
 				content: configTemplate.replace(
 					'{{features}}',

@@ -39,6 +39,7 @@ const {
 } = require( './common' );
 
 module.exports = ( mode ) => ( {
+	context: rootDir,
 	entry: {
 		// Reader Revenue Manager
 		'reader-revenue-manager/block-editor-plugin/index':

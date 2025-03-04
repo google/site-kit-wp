@@ -27,6 +27,7 @@ const WebpackBar = require( 'webpackbar' );
 const { rootDir, externals, resolve, createRules } = require( './common' );
 
 module.exports = ( mode ) => ( {
+	context: rootDir,
 	entry: {
 		'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
 		'e2e-redux-logger': './tests/e2e/assets/e2e-redux-logger.js',

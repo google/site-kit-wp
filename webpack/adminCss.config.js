@@ -26,15 +26,19 @@ const WebpackBar = require( 'webpackbar' );
 /**
  * Internal dependencies
  */
-const { manifestArgs } = require( './common' );
+const { rootDir, manifestArgs } = require( './common' );
 
 module.exports = ( mode ) => ( {
+	context: rootDir,
 	entry: {
 		'googlesitekit-admin-css': './assets/sass/admin.scss',
 		'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
 		'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
 		'googlesitekit-authorize-application-css':
 			'./assets/sass/authorize-application.scss',
+	},
+	output: {
+		path: rootDir + '/dist',
 	},
 	module: {
 		rules: [
@@ -49,7 +53,7 @@ module.exports = ( mode ) => ( {
 						options: {
 							implementation: require( 'sass' ),
 							sassOptions: {
-								includePaths: [ 'node_modules' ],
+								includePaths: [ rootDir + '/node_modules' ],
 							},
 						},
 					},
