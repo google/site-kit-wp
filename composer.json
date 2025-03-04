@@ -20,14 +20,21 @@
     "php": ">=7.4",
     "ext-json": "*",
     "ext-openssl": "*",
-    "cweagans/composer-patches": "^1.7",
     "google/apiclient": "^2.14.0",
-    "google/apiclient-services-adsenselinks": "^0.1.0",
+    "google/apiclient-services-adsense": "^0.1.0",
+    "google/apiclient-services-analyticsadmin-v1alpha": "^0.1.0",
+    "google/apiclient-services-analyticsadmin-v1beta": "^0.1.0",
+    "google/apiclient-services-analyticsdata-v1beta": "^0.1.0",
+    "google/apiclient-services-pagespeedonline": "^0.1.0",
+    "google/apiclient-services-people": "^0.1.0",
+    "google/apiclient-services-searchconsole": "^0.1.0",
+    "google/apiclient-services-tagmanager": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^6.5.8",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
+    "google/apiclient-services": "*",
     "paragonie/random_compat": ">=2"
   },
   "autoload": {
@@ -47,22 +54,65 @@
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "roots/wordpress-core-installer": true,
-      "cweagans/composer-patches": true
+      "roots/wordpress-core-installer": true
     }
   },
   "extra": {
-    "wordpress-install-dir": "vendor/roots/wordpress",
-    "patches": {
-      "google/apiclient-services": {
-        "Fixes for empty filter": "patches/google-api-client-services-v0.355.0.patch"
-      }
-    }
+    "wordpress-install-dir": "vendor/roots/wordpress"
   },
   "repositories": [
     {
       "type": "path",
-      "url": "packages/apiclient-services-adsenselinks",
+      "url": "packages/apiclient-services-adsense",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-analyticsadmin-v1alpha",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-analyticsadmin-v1beta",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-analyticsdata-v1beta",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-pagespeedonline",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-people",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-searchconsole",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-tagmanager",
       "options": {
         "symlink": false
       }

@@ -23,10 +23,10 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAdSenseLink;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink;
-use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
 
 /**
  * @group Modules
@@ -129,11 +129,11 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 				$property->setName( "properties/{$property_id}" );
 
 				if ( "/v1alpha/properties/{$property_id}/adSenseLinks" === $url['path'] ) {
-					$mock_adSenseLink = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink();
+					$mock_adSenseLink = new GoogleAnalyticsAdminV1alphaAdSenseLink();
 					$mock_adSenseLink->setName( "properties/{$property_id}/adSenseLinks/{$property_id}" );
 					$mock_adSenseLink->setAdClientCode( $client_id );
 
-					$response = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse();
+					$response = new GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse();
 					$response->setAdsenseLinks( array( $mock_adSenseLink ) );
 					return new Response(
 						200,
