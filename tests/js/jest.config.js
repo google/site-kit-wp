@@ -57,6 +57,8 @@ module.exports = {
 		'googlesitekit-data': '<rootDir>assets/js/googlesitekit-data',
 		'googlesitekit-modules': '<rootDir>assets/js/googlesitekit-modules',
 		'googlesitekit-widgets': '<rootDir>assets/js/googlesitekit-widgets',
+		'googlesitekit-notifications':
+			'<rootDir>assets/js/googlesitekit-notifications',
 		// This component has a (temporary) filename override because
 		// it currently references the "GM2+" versions of these components.
 		'googlesitekit-components':
