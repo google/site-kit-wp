@@ -51,6 +51,7 @@ Default.parameters = {
 	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/ConversionReportingNotificationCTAWidget',
 };
 
@@ -77,7 +78,7 @@ export default {
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( data );
+					.receiveModuleData( data );
 				registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( true );
