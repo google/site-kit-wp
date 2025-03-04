@@ -24,19 +24,27 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import EnableAutoUpdateBannerNotification from '.';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from './EnableAutoUpdateBannerNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	ENABLE_AUTO_UPDATES_BANNER_SLUG
+)( EnableAutoUpdateBannerNotification );
 
 function Template() {
-	return <EnableAutoUpdateBannerNotification />;
+	return <NotificationWithComponentProps />;
 }
 
-export const Notification = Template.bind( {} );
+export const Default = Template.bind( {} );
+Default.storyName = 'EnableAutoUpdateBannerNotification';
 
 export default {
-	title: 'Components/EnableAutoUpdateBannerNotification',
+	title: 'Components/Notifications/Banners/EnableAutoUpdateBannerNotification',
 	decorators: [
 		( Story ) => (
 			<div className="googlesitekit-subheader">
