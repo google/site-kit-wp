@@ -17,10 +17,42 @@
 /**
  * Internal dependencies
  */
-import { CORE_NOTIFICATIONS } from './datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	NOTIFICATION_VIEW_CONTEXTS,
+} from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerDefaults as registerNotifications } from './register-defaults';
+
+export {
+	ActionsCTALinkDismiss,
+	BannerIcon,
+	CTALink,
+	CTALinkSubtle,
+	LearnMoreLink,
+	Description,
+	Dismiss,
+	Title,
+} from './components/common';
+
+export {
+	NotificationError,
+	NotificationWithSmallSVG,
+	NotificationWithSVG,
+	SimpleNotification,
+	SingleColumnNotificationWithSVG,
+	SubtleNotification,
+} from './components/layout';
+
+export {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	NOTIFICATION_VIEW_CONTEXTS,
+};
 
 export function createNotifications( registry ) {
 	const { dispatch } = registry;
