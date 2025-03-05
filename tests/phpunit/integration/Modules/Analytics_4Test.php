@@ -4356,6 +4356,45 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_access_token
+	 */
+	public function test_site_kit_audiences_returned_in_debug_fields( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '12345';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$this->analytics->set_data( 'sync-audiences', array() );
+		$debug_fields = $this->analytics->get_debug_fields();
+
+		$this->assertArrayHasKey( 'analytics_4_site_kit_audiences', $debug_fields );
+
+		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
+
+		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'] );
+
+		if ( $this->authentication->is_authenticated() ) {
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
+		} else {
+			$this->assertEquals( 'None', $audience_field['value'] );
+			$this->assertEquals( 'none', $audience_field['debug'] );
+		}
+	}
+
 	public function test_register_template_redirect_amp() {
 		$context   = $this->get_amp_primary_context();
 		$analytics = new Analytics_4( $context );
