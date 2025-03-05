@@ -323,6 +323,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 
 						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
+							// Reset event detection and new badge events.
+							$this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+							$this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+							$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+
+							$this->transients->set( Conversion_Reporting_New_Badge_Events_Sync::SKIP_NEW_BADGE_TRANSIENT, 1 );
+
 							do_action( Conversion_Reporting_Cron::CRON_ACTION );
 						}
 					}
@@ -821,21 +828,21 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		if ( $this->context->is_amp() ) : ?>
-			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
-			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-		<?php else : ?>
-			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
+<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
+<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+<?php else : ?>
+<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+	<?php
 			// Opt-out should always use the measurement ID, even when using a GT tag.
 			$tag_id = $this->get_measurement_id();
-			if ( ! empty( $tag_id ) ) {
-				BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
-			}
-			?>
-			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
-			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<?php
+	if ( ! empty( $tag_id ) ) {
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
+	}
+	?>
+	<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
+<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+	<?php
 		endif;
 	}
 

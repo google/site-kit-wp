@@ -275,12 +275,13 @@ exports.GOOGLESITEKIT_VERSION = googleSiteKitVersion
 
 const corePackages = [
 	'api-fetch',
-	'components',
 	'block-editor',
 	'blocks',
+	'components',
 	'compose',
 	'data',
 	'dom-ready',
+	'editor',
 	'edit-post',
 	'element',
 	'icons',

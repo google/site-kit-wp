@@ -44,7 +44,7 @@ export const WithSetupCTA = Template.bind( {} );
 WithSetupCTA.storyName = 'With setup CTA';
 WithSetupCTA.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -76,7 +76,7 @@ export default {
 						SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
 					] );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [ 'audienceA', 'audienceB' ],
 					isAudienceSegmentationWidgetHidden: false,
 				} );

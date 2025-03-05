@@ -20,6 +20,10 @@
 
 	.googlesitekit-setup-module--ads {
 
+		.googlesitekit-settings-module__fields-group {
+			width: 100%;
+		}
+
 		.googlesitekit-settings-module__fields-group-title {
 			font-size: $fs-body-md;
 			font-weight: $fw-medium;
@@ -108,6 +112,23 @@
 
 			.googlesitekit-ads-setup__form {
 				margin-top: 20px;
+
+				&.googlesitekit-ads-setup__form--pax {
+
+					.googlesitekit-text-field-conversion-tracking-id {
+						@media (min-width: 961px) and (max-width: 1130px) {
+							/**
+							 * Override the default (framework) text field styles on these screens
+							 * to prevent input flowing outside of the container or being too narrow.
+							 */
+							width: 100%;
+						}
+					}
+				}
+
+				.googlesitekit-ads-setup__ads-id-conflict-warning {
+					margin-top: 12px;
+				}
 			}
 		}
 	}
