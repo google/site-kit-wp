@@ -1291,6 +1291,8 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 	public function test_get_debug_fields() {
+		$this->analytics->register();
+
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
@@ -1309,6 +1311,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__AdSense_disabled() {
+		$this->analytics->register();
+
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
@@ -1327,6 +1331,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__AdSense_enabled() {
+		$this->analytics->register();
 
 		$adsense_settings = new AdSense_Settings( $this->options );
 		$adsense_settings->merge(

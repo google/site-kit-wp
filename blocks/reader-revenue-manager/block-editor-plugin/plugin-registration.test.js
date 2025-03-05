@@ -29,6 +29,9 @@ jest.mock(
 jest.mock( '@wordpress-core/edit-post', () => ( {} ), {
 	virtual: true,
 } );
+jest.mock( '@wordpress-core/editor', () => ( {} ), {
+	virtual: true,
+} );
 jest.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );

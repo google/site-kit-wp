@@ -264,13 +264,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$this->get_settings()->on_change(
 			function ( $old_value, $new_value ) {
-				$audiences_settings = $this->audience_settings ? $this->audience_settings->get() : array();
+				$audiences_settings = $this->audience_settings->get();
 
 				// Ensure that the data available state is reset when the property ID or measurement ID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
-					$available_audiences = $this->get_available_audiences( $old_value['availableAudiences'] ?? array() );
+					$available_audiences = $audiences_settings['availableAudiences'] ?? array();
 
 					$available_audience_names = array_map(
 						function ( $audience ) {
@@ -283,7 +283,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
-				$old_available_audiences = $this->get_available_audiences( $old_value['availableAudiences'] ?? array() );
+				$old_available_audiences = $audiences_settings['availableAudiences'] ?? array();
 				if ( $old_available_audiences ) {
 					$old_available_audience_names = array_map(
 						function ( $audience ) {
@@ -606,7 +606,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		// Return the SITE_KIT_AUDIENCE audiences.
-		$available_audiences = $this->get_available_audiences( $settings['availableAudiences'] ?? array() );
+		$available_audiences = $this->audience_settings->get()['availableAudiences'];
 		$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
 
 		$debug_fields['analytics_4_site_kit_audiences'] = array(
