@@ -119,6 +119,7 @@ Default.args = {
 	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Components/KeyMetrics/ChipTabGroup/default',
 };
 
@@ -141,17 +142,16 @@ WithError.args = {
 			[ EFFECTIVE_SELECTION ]: selectedMetrics,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveConversionReportingInlineData( {
-				newEvents: [],
-				lostEvents: [],
-				newBadgeEvents: [],
-			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			newEvents: [],
+			lostEvents: [],
+			newBadgeEvents: [],
+		} );
 	},
 	features: [ 'conversionReporting' ],
 };
 WithError.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Components/KeyMetrics/ChipTabGroup/WithError',
 };
 
@@ -170,6 +170,7 @@ WithSuggestedGroup.args = {
 	features: [ 'conversionReporting' ],
 };
 WithSuggestedGroup.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Components/KeyMetrics/ChipTabGroup/WithSuggestedGroup',
 };
 
@@ -227,13 +228,11 @@ export default {
 						ENUM_CONVERSION_EVENTS.PURCHASE,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						lostEvents: [],
-						newBadgeEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					lostEvents: [],
+					newBadgeEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+				} );
 
 				// Call story-specific setup.
 				if ( args && args?.setupRegistry ) {
