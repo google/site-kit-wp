@@ -55,7 +55,7 @@ export function getPostTypesString( postTypes, allPostTypes ) {
  * Extracts the product ID from the name returned from the API, which is
  * in the format of `publicationID:productID`.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {string} productID The full product ID name.
  * @return {string} The product ID label.

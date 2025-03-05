@@ -27,7 +27,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Post_Product_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Post_Product_ID
 	 */
@@ -36,7 +36,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param Module_Settings $settings Module settings instance.
 	 * @param Post_Product_ID $post_product_id Post_Product_ID instance.
@@ -75,7 +75,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Determines whether the guarded tag can be activated for a singular post or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return bool TRUE if guarded tag can be activated for a singular post, otherwise FALSE.
 	 */

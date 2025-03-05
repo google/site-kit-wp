@@ -78,7 +78,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Post_Product_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Post_Product_ID
 	 */
@@ -87,7 +87,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Contribute_With_Google_Block instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Contribute_With_Google_Block
 	 */
@@ -96,7 +96,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Subscribe_With_Google_Block instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Subscribe_With_Google_Block
 	 */
@@ -105,7 +105,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Tag_Guard instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Tag_Guard
 	 */
@@ -114,7 +114,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.

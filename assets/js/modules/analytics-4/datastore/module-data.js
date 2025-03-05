@@ -49,7 +49,7 @@ export const actions = {
 	/**
 	 * Stores conversion reporting inline data in the datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 * @private
 	 *
 	 * @param {Object} data Inline data, usually supplied via a global variable from PHP.
@@ -107,7 +107,7 @@ export const selectors = {
 	 * Not intended to be used publicly; this is largely here so other selectors can
 	 * request data using the selector/resolver pattern.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -121,7 +121,7 @@ export const selectors = {
 	 * Checks if GA4 has mismatched Google Tag ID.
 	 *
 	 * @since 1.96.0
-	 * @since n.e.x.t Moved over from properties data store partial.
+	 * @since 1.148.0 Moved over from properties data store partial.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} If GA4 has mismatched Google Tag ID.
@@ -131,7 +131,7 @@ export const selectors = {
 	/**
 	 * Gets new events data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} New events array.
@@ -141,7 +141,7 @@ export const selectors = {
 	/**
 	 * Gets lost events data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} Lost events array.
@@ -151,7 +151,7 @@ export const selectors = {
 	/**
 	 * Gets new badge events data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} New badge events array.
