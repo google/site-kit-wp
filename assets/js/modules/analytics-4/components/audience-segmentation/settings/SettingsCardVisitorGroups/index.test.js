@@ -127,7 +127,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 			'^/google-site-kit/v1/core/user/data/audience-settings'
 		);
 
-		beforeEach( () => {
+		beforeEach( async () => {
 			const availableAudiences = [
 				{
 					name: 'audienceA',
@@ -164,10 +164,15 @@ describe( 'SettingsCardVisitorGroups', () => {
 				return { body: data, status: 200 };
 			} );
 
-			const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-			} );
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsCardVisitorGroups />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
 
 			switchControl = getByLabelText(
 				'Display visitor groups in dashboard'
