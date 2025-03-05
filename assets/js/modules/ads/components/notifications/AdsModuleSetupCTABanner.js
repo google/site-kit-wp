@@ -69,6 +69,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ skipHidingBanner, setSkipHidingBanner ] = useState( false );
 
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'set-up-ads' )
@@ -126,9 +127,9 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			! shouldShowWooCommerceRedirectModal ||
 			isWooCommerceRedirectModalDismissed
 		) {
+			setIsSaving( true );
 			markNotificationDismissed();
 			activateModule();
-			setIsSaving( true );
 			return;
 		}
 
@@ -146,9 +147,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 			if ( ! skipClosing ) {
 				setOpenDialog( false );
+			} else {
+				setSkipHidingBanner( true );
 			}
 		},
-		[ markNotificationDismissed, setOpenDialog ]
+		[ markNotificationDismissed, setOpenDialog, setSkipHidingBanner ]
 	);
 
 	const showTooltip = useShowTooltip( id );
@@ -174,7 +177,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	// This is because we don't want the component removed from the DOM as we have to still render
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
 	// checking for the dismissal state here.
-	if ( hideCTABanner ) {
+	if ( hideCTABanner && ! skipHidingBanner ) {
 		return null;
 	}
 

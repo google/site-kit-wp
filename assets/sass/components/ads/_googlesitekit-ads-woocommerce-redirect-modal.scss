@@ -74,6 +74,12 @@
 						margin: 0;
 					}
 				}
+
+				&.mdc-button--tertiary {
+					.MuiCircularProgress-colorPrimary {
+						color: $c-neutral-n-500;
+					}
+				}
 			}
 		}
 	}
