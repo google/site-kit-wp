@@ -176,7 +176,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Audience_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Audience_Settings
 	 */
