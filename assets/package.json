@@ -9,6 +9,9 @@
 		"watch": "npm run build:dev -- --watch",
 		"remove-dist": "rimraf ../dist"
 	},
+	"browserslist": [
+		"extends @wordpress/browserslist-config"
+	],
 	"dependencies": {
 		"@lit-labs/react": "^1.2.0",
 		"@material-ui/core": "^4.11.4",
