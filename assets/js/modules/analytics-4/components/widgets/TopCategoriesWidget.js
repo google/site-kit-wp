@@ -81,6 +81,7 @@ function getReportOptions( select ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 }
 

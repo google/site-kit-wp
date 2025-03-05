@@ -59,6 +59,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	keepEmptyRows: false,
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -85,6 +86,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/TopCitiesDrivingPurchasesWidget/Ready',
 };
 

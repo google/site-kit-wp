@@ -96,6 +96,7 @@ describe( 'TopCategoriesWidget', () => {
 				},
 			],
 			limit: 3,
+			keepEmptyRows: false,
 		} );
 
 		const { container, waitForRegistry } = render(

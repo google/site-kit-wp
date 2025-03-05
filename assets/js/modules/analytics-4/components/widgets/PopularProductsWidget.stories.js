@@ -72,6 +72,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	keepEmptyRows: false,
 };
 
 const pageTitlesReportOptions = {
@@ -140,6 +141,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularProductsWidget/Ready',
 	delay: 250,
 };
@@ -180,6 +182,7 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularProductsWidget/ReadyViewOnly',
 	delay: 250,
 };

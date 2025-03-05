@@ -147,12 +147,14 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_SETUP, { autoSubmit: true } );
 
-		const { container, getByText } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBanner />,
 			{
 				registry,
 			}
 		);
+
+		await waitForRegistry();
 
 		await waitFor( () => expect( container ).toMatchSnapshot() );
 
