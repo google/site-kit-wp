@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-const { createRules } = require( './webpack/common' );
+const { createRules } = require( '../webpack/common' );
 const adminCssConfig = require( './webpack/adminCss.config' );
 const basicModulesConfig = require( './webpack/basicModules.config' );
 const frontendModules = require( './webpack/frontendModules.config' );

@@ -24,13 +24,18 @@ const WebpackBar = require( 'webpackbar' );
 /**
  * Internal dependencies
  */
-const { rootDir, externals, resolve, createRules } = require( './common' );
+const {
+	rootDir,
+	externals,
+	resolve,
+	createRules,
+} = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
 	context: rootDir,
 	entry: {
-		'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
-		'e2e-redux-logger': './tests/e2e/assets/e2e-redux-logger.js',
+		'e2e-api-fetch': rootDir + '/tests/e2e/assets/e2e-api-fetch.js',
+		'e2e-redux-logger': rootDir + '/tests/e2e/assets/e2e-redux-logger.js',
 	},
 	output: {
 		filename: '[name].js',

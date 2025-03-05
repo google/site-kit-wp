@@ -31,7 +31,7 @@ const {
 	externals,
 	resolve,
 	rules,
-} = require( './common' );
+} = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
 	context: rootDir,

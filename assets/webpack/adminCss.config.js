@@ -26,7 +26,7 @@ const WebpackBar = require( 'webpackbar' );
 /**
  * Internal dependencies
  */
-const { rootDir, manifestArgs } = require( './common' );
+const { rootDir, manifestArgs } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
 	context: rootDir,

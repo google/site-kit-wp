@@ -36,7 +36,7 @@ const {
 	gutenbergExternals,
 	createRules,
 	createMinimizerRules,
-} = require( './common' );
+} = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
 	context: rootDir,
