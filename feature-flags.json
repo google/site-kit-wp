@@ -1,10 +1,9 @@
 [
-	"adsPax",
-	"audienceSegmentation",
-	"conversionReporting",
-	"firstPartyMode",
-	"gm3Components",
-	"privacySandboxModule",
-	"rrmModule",
-	"rrmModuleV2"
+  "adsPax",
+  "conversionReporting",
+  "firstPartyMode",
+  "gm3Components",
+  "privacySandboxModule",
+  "rrmModule",
+  "rrmModuleV2"
 ]

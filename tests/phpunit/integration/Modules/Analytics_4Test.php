@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Analytics_4Test
  *
@@ -211,10 +212,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_property_id_change() {
-		$this->enable_feature( 'audienceSegmentation' );
 
-		list(
-			,
+		list(,
 			,
 			,
 			$test_resource_data_availability_transient_audience,
@@ -238,10 +237,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_measurement_id_change() {
-		$this->enable_feature( 'audienceSegmentation' );
 
-		list(
-			,
+		list(,
 			,
 			,
 			$test_resource_data_availability_transient_audience,
@@ -265,7 +262,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_available_audiences_change() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		list(
 			$test_resource_slug_audience,
@@ -315,10 +311,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_deactivation() {
-		$this->enable_feature( 'audienceSegmentation' );
 
-		list(
-			,
+		list(,
 			,
 			,
 			$test_resource_data_availability_transient_audience,
@@ -1250,43 +1244,11 @@ class Analytics_4Test extends TestCase {
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
-			),
-			$this->analytics->get_datapoints()
-		);
-	}
-
-	public function test_get_datapoints__audienceSegmentation() {
-		$this->enable_feature( 'audienceSegmentation' );
-
-		$this->assertEqualSets(
-			array(
-				'account-summaries',
-				'accounts',
-				'ads-links',
-				'adsense-links',
-				'container-lookup',
-				'container-destinations',
-				'google-tag-settings',
-				'conversion-events',
-				'create-property',
-				'create-webdatastream',
-				'pivot-report',
-				'properties',
-				'property',
-				'report',
-				'webdatastreams',
-				'webdatastreams-batch',
-				'create-account-ticket',
-				'enhanced-measurement-settings',
-				'create-custom-dimension',
-				'sync-custom-dimensions',
-				'custom-dimension-data-available',
-				'set-google-tag-id-mismatch',
-				'create-audience',
-				'sync-audiences',
-				'save-resource-data-availability-date',
 				'audience-settings',
+				'create-audience',
 				'save-audience-settings',
+				'save-resource-data-availability-date',
+				'sync-audiences',
 			),
 			$this->analytics->get_datapoints()
 		);
@@ -1319,30 +1281,16 @@ class Analytics_4Test extends TestCase {
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
+				'audience-settings',
+				'create-audience',
+				'save-audience-settings',
+				'save-resource-data-availability-date',
+				'sync-audiences',
 			),
 			$this->analytics->get_datapoints()
 		);
 	}
 	public function test_get_debug_fields() {
-		$this->assertEqualSets(
-			array(
-				'analytics_4_account_id',
-				'analytics_4_property_id',
-				'analytics_4_web_data_stream_id',
-				'analytics_4_measurement_id',
-				'analytics_4_use_snippet',
-				'analytics_4_available_custom_dimensions',
-				'analytics_4_ads_conversion_id',
-				'analytics_4_ads_linked',
-				'analytics_4_ads_linked_last_synced_at',
-			),
-			array_keys( $this->analytics->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__audience_segmentation_enabled() {
-		$this->enable_feature( 'audienceSegmentation' );
-
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
@@ -1371,6 +1319,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_use_snippet',
 				'analytics_4_web_data_stream_id',
 				'analytics_4_ads_linked',
+				'analytics_4_site_kit_audiences',
 				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
@@ -1400,6 +1349,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_adsense_linked',
 				'analytics_4_adsense_linked_last_synced_at',
+				'analytics_4_site_kit_audiences',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -3661,8 +3611,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_inline_module_data__audienceSegmentation() {
-		$this->enable_feature( 'audienceSegmentation' );
+	public function test_inline_module_data__audience_segmentation() {
 
 		// Ensure the module is connected.
 		$this->analytics->get_settings()->merge(
@@ -3970,7 +3919,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_set_data__save_resource_data_availability_date() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		list(
 			$test_resource_slug_audience,
@@ -4050,7 +3998,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_audience__required_scope() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		$property_id = '123456789';
 
@@ -4077,7 +4024,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_audience__required_params() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		$property_id = '123456789';
 
@@ -4099,7 +4045,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_audience__valid_audience_keys() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		$property_id = '123456789';
 
@@ -4304,7 +4249,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_sync_audiences_unauthenticated() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		$property_id = '12345';
 
@@ -4334,8 +4278,6 @@ class Analytics_4Test extends TestCase {
 	public function test_sync_audiences( $access_token, $available_audiences ) {
 		$raw_audiences                = $available_audiences['raw_audiences'];
 		$expected_available_audiences = $available_audiences['expected_available_audiences'];
-
-		$this->enable_feature( 'audienceSegmentation' );
 
 		$this->setup_user_authentication( $access_token );
 
@@ -4393,8 +4335,6 @@ class Analytics_4Test extends TestCase {
 	 * @dataProvider data_access_token
 	 */
 	public function test_site_kit_audiences_returned_in_debug_fields( $access_token ) {
-		$this->enable_feature( 'audienceSegmentation' );
-
 		$this->setup_user_authentication( $access_token );
 
 		$property_id = '12345';
@@ -4687,7 +4627,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	protected function set_test_resource_data_availability_dates() {
-		$this->enable_feature( 'audienceSegmentation' );
 
 		$test_resource_slug_audience         = 'properties/12345678/audiences/12345';
 		$test_resource_slug_custom_dimension = 'googlesitekit_post_type';
