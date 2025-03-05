@@ -58,7 +58,7 @@ export default function WooCommerceRedirectModal( {
 	onDismiss = null,
 	onContinue = null,
 } ) {
-	const trackIsSavingRef = useRef( false );
+	const trackIsSavingRef = useRef( null );
 
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -94,26 +94,30 @@ export default function WooCommerceRedirectModal( {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const markModalDismissed = useCallback( () => {
+	const markModalDismissed = useCallback( async () => {
 		onDismiss?.( trackIsSavingRef.current );
-		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
+		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
 	}, [ onDismiss, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
-		trackIsSavingRef.current = true;
-		markModalDismissed();
+	const getGoogleForWooCommerceRedirectURI = useCallback( async () => {
+		trackIsSavingRef.current = 'primary';
+		await markModalDismissed();
 
 		navigateTo( googleForWooCommerceRedirectURI );
 	}, [ markModalDismissed, navigateTo, googleForWooCommerceRedirectURI ] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
-	const onContinueWithSiteKit = useCallback( () => {
-		markModalDismissed();
+	const onContinueWithSiteKit = useCallback( async () => {
+		if ( ! onContinue ) {
+			trackIsSavingRef.current = 'tertiary';
+		}
+
+		await markModalDismissed();
 
 		if ( onContinue ) {
 			// Override default module activation with custom callback.
@@ -155,13 +159,18 @@ export default function WooCommerceRedirectModal( {
 					className="mdc-dialog__cancel-button"
 					tertiary
 					onClick={ onContinueWithSiteKit }
+					icon={
+						trackIsSavingRef.current === 'tertiary' ? (
+							<CircularProgress size={ 14 } />
+						) : undefined
+					}
 				>
 					{ __( 'Continue with Site Kit', 'google-site-kit' ) }
 				</Button>
 				<Button
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
 					icon={
-						trackIsSavingRef.current ? (
+						trackIsSavingRef.current === 'primary' ? (
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
