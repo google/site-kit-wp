@@ -84,7 +84,7 @@ import {
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
-	const [ showSurveyPortal, setShowSurveyPortal ] = useState( true ); //debug
+	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 	const currentSurvey = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy() &&
 		select( CORE_USER ).areSurveysOnCooldown() === false
