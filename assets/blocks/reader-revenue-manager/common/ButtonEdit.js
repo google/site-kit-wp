@@ -32,8 +32,8 @@ import { useSelect } from '@wordpress-core/data';
  */
 import EditorButton from './EditorButton';
 import { CORE_EDITOR } from './constants';
-import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_MODULES } from '../../../../assets/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import { getNoticeAndDisabled } from './button-edit-utils';
 
 /**

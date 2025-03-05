@@ -25,9 +25,9 @@ import { registerPlugin } from '@wordpress-core/plugins';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../../../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import SettingPanel from './SettingPanel';
 
 const { select, resolveSelect } = Data;

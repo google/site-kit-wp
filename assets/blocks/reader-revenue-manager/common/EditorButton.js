@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../assets/svg/graphics/logo-g.svg';
+import GoogleLogoIcon from '../../../../assets/svg/graphics/logo-g.svg';
 
 export default function EditorButton( { children, disabled } ) {
 	return (

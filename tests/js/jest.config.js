@@ -29,8 +29,6 @@ module.exports = {
 		'<rootDir>/assets/**/__tests__/**/*.js',
 		'<rootDir>/assets/**/test/*.js',
 		'<rootDir>/assets/**/?(*.)test.js',
-		'<rootDir>/blocks/**/test/*.js',
-		'<rootDir>/blocks/**/?(*.)test.js',
 		'<rootDir>/packages/**/__tests__/**/*.js',
 		'<rootDir>/packages/**/test/*.js',
 		'<rootDir>/packages/**/?(*.)test.js',

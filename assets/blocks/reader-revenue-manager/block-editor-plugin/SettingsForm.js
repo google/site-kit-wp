@@ -27,7 +27,7 @@ import { useState } from '@wordpress-core/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_EDITOR } from '../common/constants';
 
 const { select, dispatch } = Data;

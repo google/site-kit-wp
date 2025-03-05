@@ -36,10 +36,10 @@ jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
 
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
-import { provideModules } from '../../../tests/js/utils';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { provideModules } from '../../../../tests/js/utils';
 import { registerPlugin } from '@wordpress-core/plugins';
-import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
+import { registerStore } from '../../../../assets/js/modules/reader-revenue-manager/datastore';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
 
 registerStore( Data );

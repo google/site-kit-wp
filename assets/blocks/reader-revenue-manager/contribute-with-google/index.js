@@ -23,8 +23,8 @@ import { registerBlockType } from '@wordpress-core/blocks';
  * Internal dependencies
  */
 import { select, resolveSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_MODULES } from '../../../../assets/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
 import Edit from './Edit';
 import metadata from './block.json';
