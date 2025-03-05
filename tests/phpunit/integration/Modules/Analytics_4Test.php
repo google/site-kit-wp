@@ -895,7 +895,7 @@ class Analytics_4Test extends TestCase {
 
 		// Ensure the enhanced measurement settings request was made.
 		$this->assertCount( 1, $enhanced_measurement_settings_requests );
-		list($request) = array_values( $enhanced_measurement_settings_requests );
+		list( $request ) = array_values( $enhanced_measurement_settings_requests );
 		$this->assertArrayIntersection(
 			array( 'streamEnabled' => true ),
 			$request['params']
