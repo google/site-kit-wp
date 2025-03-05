@@ -166,41 +166,20 @@ export default function UserDimensionsPieChart( props ) {
 		isTooltipOpen,
 	] );
 
-	const absOthers = {
-		current: report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value,
-		previous: report?.totals?.[ 1 ]?.metricValues?.[ 0 ]?.value,
-	};
-
-	( report?.rows || [] ).forEach( ( { dimensionValues, metricValues } ) => {
-		const dateRangeDimension = dimensionValues[ 1 ].value;
-
-		if ( dateRangeDimension === 'date_range_0' ) {
-			absOthers.current -= metricValues[ 0 ].value;
-		} else if ( dateRangeDimension === 'date_range_1' ) {
-			absOthers.previous -= metricValues[ 0 ].value;
-		}
-	} );
-
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
 		maxSlices: 5,
 		withOthers: true,
 		tooltipCallback: ( row, previousDateRangeRow, rowData ) => {
-			let difference =
-				previousDateRangeRow?.metricValues?.[ 0 ].value > 0
-					? ( row?.metricValues?.[ 0 ].value * 100 ) /
-							previousDateRangeRow?.metricValues?.[ 0 ].value -
+			const difference =
+				previousDateRangeRow.metricValues?.[ 0 ].value > 0
+					? ( row.metricValues?.[ 0 ].value * 100 ) /
+							previousDateRangeRow.metricValues?.[ 0 ].value -
 					  100
 					: 100;
 
-			if ( row === null && absOthers.previous > 0 ) {
-				difference =
-					( absOthers.current * 100 ) / absOthers.previous - 100;
-			}
 			const svgArrow = getChartDifferenceArrow( difference );
-			const absValue = row
-				? row.metricValues[ 0 ].value
-				: absOthers.current;
+			const absValue = row.metricValues[ 0 ].value;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
 				_x(

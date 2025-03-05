@@ -180,9 +180,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 		);
 	} );
 
-	const onModalDismiss = useCallback( () => {
-		setOpenDialog( false );
-	}, [ setOpenDialog ] );
+	const onModalDismiss = useCallback(
+		( skipClosing ) => {
+			if ( ! skipClosing ) {
+				setOpenDialog( false );
+			}
+		},
+		[ setOpenDialog ]
+	);
 
 	const createAccount = useCallback( () => {
 		setShouldShowProgressBar( true );
@@ -268,9 +273,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 										) }
 									</h3>
 									<p className="instructions">
-										{ __(
-											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process.',
-											'google-site-kit'
+										{ createInterpolateElement(
+											__(
+												'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process. <a>Learn more</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<SupportLink
+														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+														external
+													/>
+												),
+											}
 										) }
 									</p>
 									<Fragment>
@@ -284,14 +299,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 												'google-site-kit'
 											) }
 										</SpinnerButton>
-										{ ! hasAdwordsScope && (
-											<p className="googlesitekit-setup-module__permission-notice">
-												{ __(
-													'You’ll be asked to grant Site Kit additional permissions during the account creation process to create a new Ads account.',
-													'google-site-kit'
-												) }
-											</p>
-										) }
 									</Fragment>
 								</Cell>
 								<Cell

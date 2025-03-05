@@ -40,8 +40,12 @@ use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\Block_Support;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
@@ -81,6 +85,33 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	private $post_product_id;
 
 	/**
+	 * Contribute_With_Google_Block instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Contribute_With_Google_Block
+	 */
+	private $contribute_with_google_block;
+
+	/**
+	 * Subscribe_With_Google_Block instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Subscribe_With_Google_Block
+	 */
+	private $subscribe_with_google_block;
+
+	/**
+	 * Tag_Guard instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Tag_Guard
+	 */
+	private $tag_guard;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -100,8 +131,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
-		$post_meta             = new Post_Meta();
-		$this->post_product_id = new Post_Product_ID( $post_meta, $this->get_settings() );
+		$post_meta = new Post_Meta();
+		$settings  = $this->get_settings();
+
+		$this->post_product_id              = new Post_Product_ID( $post_meta, $settings );
+		$this->tag_guard                    = new Tag_Guard( $settings, $this->post_product_id );
+		$this->contribute_with_google_block = new Contribute_With_Google_Block( $this->context, $this->tag_guard, $settings );
+		$this->subscribe_with_google_block  = new Subscribe_With_Google_Block( $this->context, $this->tag_guard, $settings );
 	}
 
 	/**
@@ -120,6 +156,17 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
 			$this->post_product_id->register();
+
+			$admin_post_list = new Admin_Post_List(
+				$this->get_settings(),
+				$this->post_product_id
+			);
+			$admin_post_list->register();
+
+			if ( Block_Support::has_block_support() ) {
+				$this->contribute_with_google_block->register();
+				$this->subscribe_with_google_block->register();
+			}
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
@@ -440,6 +487,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
@@ -448,15 +496,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && Block_Support::has_block_support() ) {
 			$assets[] = new Script(
-				'googlesitekit-reader-revenue-manager-block-editor-plugin',
+				'blocks-reader-revenue-manager-block-editor-plugin',
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/index.js',
 					'dependencies'  => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
+						'googlesitekit-modules-reader-revenue-manager',
 					),
 					'execution'     => 'defer',
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
@@ -464,9 +513,48 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 
 			$assets[] = new Stylesheet(
-				'googlesitekit-block-editor-css',
+				'blocks-reader-revenue-manager-block-editor-plugin-styles',
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/editor-styles.css',
+					'dependencies'  => array(),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			);
+
+			$assets[] = new Script(
+				'blocks-contribute-with-google',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+						'googlesitekit-modules-reader-revenue-manager',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
+				)
+			);
+
+			$assets[] = new Script(
+				'blocks-subscribe-with-google',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
+					'dependencies'  => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-modules',
+						'googlesitekit-modules-reader-revenue-manager',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'execution'     => 'defer',
+				)
+			);
+
+			$assets[] = new Stylesheet(
+				'blocks-reader-revenue-manager-common-editor-styles',
+				array(
+					'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
@@ -502,17 +590,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			return;
 		}
 
-		$post_product_id = '';
-
-		if (
-			Feature_Flags::enabled( 'rrmModuleV2' ) &&
-			is_singular()
-		) {
-			$post_product_id = $this->post_product_id->get( get_the_ID() );
-		}
-
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$tag->use_guard( new Tag_Guard( $module_settings, $post_product_id ) );
+		$tag->use_guard( $this->tag_guard );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( ! $tag->can_register() ) {
@@ -522,10 +601,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$product_id = 'openaccess';
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			$product_id = $settings['productID'];
+			$product_id      = $settings['productID'];
+			$post_product_id = '';
 
-			if ( is_singular() && ! empty( $post_product_id ) ) {
-				$product_id = $post_product_id;
+			if ( is_singular() ) {
+				$post_product_id = $this->post_product_id->get( get_the_ID() );
+
+				if ( ! empty( $post_product_id ) ) {
+					$product_id = $post_product_id;
+				}
 			}
 
 			// Extract the product ID from the setting, which is in the format

@@ -28,9 +28,10 @@ import { __ } from '@wordpress/i18n';
 import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import useViewContext from '../../../../hooks/useViewContext';
 import useDashboardType from '../../../../hooks/useDashboardType';
+import { useFeature } from '../../../../hooks/useFeature';
+import useViewContext from '../../../../hooks/useViewContext';
+import useViewOnly from '../../../../hooks/useViewOnly';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import { trackEvent } from '../../../../util';
 import { Button } from 'googlesitekit-components';
@@ -54,6 +55,8 @@ export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
+	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
+
 	const dashboardType = useDashboardType();
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
@@ -150,6 +153,16 @@ function PublicationApprovedOverlayNotification() {
 		hasResolvedSettings,
 	] );
 
+	const description = isRRMV2Enabled
+		? __(
+				'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups.',
+				'google-site-kit'
+		  )
+		: __(
+				'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups',
+				'google-site-kit'
+		  );
+
 	return (
 		<OverlayNotification
 			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-publication-approved-notification"
@@ -171,12 +184,7 @@ function PublicationApprovedOverlayNotification() {
 						'google-site-kit'
 					) }
 				</h3>
-				<p>
-					{ __(
-						'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups',
-						'google-site-kit'
-					) }
-				</p>
+				<p>{ description }</p>
 			</div>
 			<div className="googlesitekit-overlay-notification__actions">
 				<Button

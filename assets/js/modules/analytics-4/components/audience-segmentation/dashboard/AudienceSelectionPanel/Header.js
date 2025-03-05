@@ -45,7 +45,7 @@ export default function Header( { closePanel } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
 	const isSavingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingAudienceSettings()
+		select( CORE_USER ).isSavingUserAudienceSettings()
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );

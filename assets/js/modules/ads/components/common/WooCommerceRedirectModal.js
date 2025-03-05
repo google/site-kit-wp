@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo } from '@wordpress/element';
+import { useCallback, useMemo, useRef } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -38,6 +38,7 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
+	CircularProgress,
 } from 'googlesitekit-components';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
@@ -57,6 +58,8 @@ export default function WooCommerceRedirectModal( {
 	onDismiss = null,
 	onContinue = null,
 } ) {
+	const trackIsSavingRef = useRef( null );
+
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
 	);
@@ -91,25 +94,30 @@ export default function WooCommerceRedirectModal( {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const markModalDismissed = useCallback( () => {
-		onDismiss?.();
-		dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
+	const markModalDismissed = useCallback( async () => {
+		onDismiss?.( trackIsSavingRef.current );
+		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
 	}, [ onDismiss, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
-		markModalDismissed();
+	const getGoogleForWooCommerceRedirectURI = useCallback( async () => {
+		trackIsSavingRef.current = 'primary';
+		await markModalDismissed();
 
 		navigateTo( googleForWooCommerceRedirectURI );
 	}, [ markModalDismissed, navigateTo, googleForWooCommerceRedirectURI ] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
-	const onContinueWithSiteKit = useCallback( () => {
-		markModalDismissed();
+	const onContinueWithSiteKit = useCallback( async () => {
+		if ( ! onContinue ) {
+			trackIsSavingRef.current = 'tertiary';
+		}
+
+		await markModalDismissed();
 
 		if ( onContinue ) {
 			// Override default module activation with custom callback.
@@ -120,7 +128,7 @@ export default function WooCommerceRedirectModal( {
 		onSetupCallback();
 	}, [ markModalDismissed, onSetupCallback, onContinue ] );
 
-	if ( isModalDismissed ) {
+	if ( isModalDismissed && ! trackIsSavingRef.current ) {
 		return null;
 	}
 
@@ -151,11 +159,21 @@ export default function WooCommerceRedirectModal( {
 					className="mdc-dialog__cancel-button"
 					tertiary
 					onClick={ onContinueWithSiteKit }
+					icon={
+						trackIsSavingRef.current === 'tertiary' ? (
+							<CircularProgress size={ 14 } />
+						) : undefined
+					}
 				>
 					{ __( 'Continue with Site Kit', 'google-site-kit' ) }
 				</Button>
 				<Button
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					icon={
+						trackIsSavingRef.current === 'primary' ? (
+							<CircularProgress size={ 14 } />
+						) : undefined
+					}
 					onClick={ getGoogleForWooCommerceRedirectURI }
 				>
 					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
