@@ -80,7 +80,7 @@ class REST_Audience_Settings_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
-	public function test_get_routes__audience_settings_available() {
+	public function test_get_routes() {
 		$this->controller->register();
 
 		$server = rest_get_server();
