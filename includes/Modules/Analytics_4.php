@@ -117,33 +117,33 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
 
-	public const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
+	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	public const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
-	public const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
-	public const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
 	 */
-	public const MODULE_SLUG = 'analytics-4';
+	const MODULE_SLUG = 'analytics-4';
 
 	/**
 	 * Prefix used to fetch custom dimensions in reports.
 	 */
-	public const CUSTOM_EVENT_PREFIX = 'customEvent:';
+	const CUSTOM_EVENT_PREFIX = 'customEvent:';
 
 	/**
 	 * Custom dimensions tracked by Site Kit.
 	 */
-	public const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
-	public const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
+	const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
+	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
 
 	/**
 	 * Weights for audience types when sorting audiences in the selection panel
 	 * and within the dashboard widget.
 	 */
-	public const AUDIENCE_TYPE_SORT_ORDER = array(
+	const AUDIENCE_TYPE_SORT_ORDER = array(
 		'USER_AUDIENCE'     => 0,
 		'SITE_KIT_AUDIENCE' => 1,
 		'DEFAULT_AUDIENCE'  => 2,
