@@ -28,4 +28,12 @@
 	#wpbody-content > div:not(#screen-meta) + script + .googlesitekit-plugin > & {
 		margin-top: 25px;
 	}
+
+	// Set the max-width of the content column for both the main plugin and the plugin settings.
+	.googlesitekit-page-content,
+	.googlesitekit-module-page {
+		margin: 0 auto;
+		max-width: $page-content-max-width;
+		position: relative;
+	}
 }

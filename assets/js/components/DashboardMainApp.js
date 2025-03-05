@@ -47,8 +47,8 @@ import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
+import CurrentSurvey from './surveys/CurrentSurvey';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
@@ -84,7 +84,13 @@ import {
 export default function DashboardMainApp() {
 	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 
-	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
+	const [ showSurveyPortal, setShowSurveyPortal ] = useState( true ); //debug
+	const currentSurvey = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy() &&
+		select( CORE_USER ).areSurveysOnCooldown() === false
+			? select( CORE_USER ).getCurrentSurvey()
+			: null
+	);
 
 	const viewOnlyDashboard = useViewOnly();
 
@@ -261,62 +267,64 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>
+			<div className="googlesitekit-page-content">
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
 
-			<OverlayNotificationsRenderer />
+				<OverlayNotificationsRenderer />
 
-			{ isKeyMetricsWidgetHidden !== true && (
+				{ isKeyMetricsWidgetHidden !== true && (
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_KEY_METRICS }
+						slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+						className={ classnames( {
+							'googlesitekit-widget-context--last':
+								lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+						} ) }
+					/>
+				) }
 				<WidgetContextRenderer
-					id={ ANCHOR_ID_KEY_METRICS }
-					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+					id={ ANCHOR_ID_TRAFFIC }
+					slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
 					className={ classnames( {
 						'googlesitekit-widget-context--last':
-							lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-			) }
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_CONTENT,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_SPEED,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
-				} ) }
-			/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SPEED }
+					slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SPEED,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_MONETIZATION }
+					slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+					} ) }
+				/>
 
-			<SurveyViewTrigger
-				triggerID="view_dashboard"
-				ttl={ DAY_IN_SECONDS }
-			/>
+				<SurveyViewTrigger
+					triggerID="view_dashboard"
+					ttl={ DAY_IN_SECONDS }
+				/>
 
-			{ showSurveyPortal && <CurrentSurveyPortal /> }
+				{ showSurveyPortal && currentSurvey && <CurrentSurvey /> }
+			</div>
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
