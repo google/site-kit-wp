@@ -1254,42 +1254,6 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_datapoints__audienceSegmentation() {
-
-		$this->assertEqualSets(
-			array(
-				'account-summaries',
-				'accounts',
-				'ads-links',
-				'adsense-links',
-				'container-lookup',
-				'container-destinations',
-				'google-tag-settings',
-				'conversion-events',
-				'create-property',
-				'create-webdatastream',
-				'pivot-report',
-				'properties',
-				'property',
-				'report',
-				'webdatastreams',
-				'webdatastreams-batch',
-				'create-account-ticket',
-				'enhanced-measurement-settings',
-				'create-custom-dimension',
-				'sync-custom-dimensions',
-				'custom-dimension-data-available',
-				'set-google-tag-id-mismatch',
-				'create-audience',
-				'sync-audiences',
-				'save-resource-data-availability-date',
-				'audience-settings',
-				'save-audience-settings',
-			),
-			$this->analytics->get_datapoints()
-		);
-	}
-
 	public function test_get_datapoints__conversionReporting() {
 		$this->enable_feature( 'conversionReporting' );
 
@@ -1339,25 +1303,6 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
-			),
-			array_keys( $this->analytics->get_debug_fields() )
-		);
-	}
-
-	public function test_get_debug_fields__audience_segmentation_enabled() {
-
-		$this->assertEqualSets(
-			array(
-				'analytics_4_account_id',
-				'analytics_4_property_id',
-				'analytics_4_web_data_stream_id',
-				'analytics_4_measurement_id',
-				'analytics_4_use_snippet',
-				'analytics_4_available_custom_dimensions',
-				'analytics_4_ads_conversion_id',
-				'analytics_4_ads_linked',
-				'analytics_4_site_kit_audiences',
-				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() )
 		);
@@ -3666,7 +3611,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_inline_module_data__audienceSegmentation() {
+	public function test_inline_module_data__audience_segmentation() {
 
 		// Ensure the module is connected.
 		$this->analytics->get_settings()->merge(
