@@ -121,13 +121,11 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	describe( 'the "Display visitor groups in dashboard" switch', () => {
-		let switchControl;
-
 		const audienceSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/audience-settings'
 		);
 
-		beforeEach( async () => {
+		beforeEach( () => {
 			const availableAudiences = [
 				{
 					name: 'audienceA',
@@ -163,7 +161,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 				// Return the same settings passed to the API.
 				return { body: data, status: 200 };
 			} );
+		} );
 
+		it( 'should toggle on click and save the audience settings', async () => {
 			const { getByLabelText, waitForRegistry } = render(
 				<SettingsCardVisitorGroups />,
 				{
@@ -174,12 +174,10 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 			await waitForRegistry();
 
-			switchControl = getByLabelText(
+			const switchControl = getByLabelText(
 				'Display visitor groups in dashboard'
 			);
-		} );
 
-		it( 'should toggle on click and save the audience settings', async () => {
 			expect( switchControl ).not.toBeChecked();
 
 			switchControl.click();
@@ -205,6 +203,20 @@ describe( 'SettingsCardVisitorGroups', () => {
 		} );
 
 		it( 'should track an event when toggled', async () => {
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsCardVisitorGroups />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
+
+			const switchControl = getByLabelText(
+				'Display visitor groups in dashboard'
+			);
+
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			switchControl.click();
