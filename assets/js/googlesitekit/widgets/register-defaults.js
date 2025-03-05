@@ -149,38 +149,34 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
 
-	if ( isFeatureEnabled( 'audienceSegmentation' ) ) {
-		widgetsAPI.registerWidgetArea(
-			AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-			{
-				subtitle: __(
-					'Understand how different visitor groups interact with your site',
-					'google-site-kit'
-				),
-				hasNewBadge: true,
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 2,
-				CTA: ChangeGroupsLink,
-				Footer: AudienceAreaFooter,
-				filterActiveWidgets( select, areaWidgets ) {
-					const isAudienceSegmentationWidgetHidden =
-						select(
-							CORE_USER
-						).isAudienceSegmentationWidgetHidden();
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		{
+			subtitle: __(
+				'Understand how different visitor groups interact with your site',
+				'google-site-kit'
+			),
+			hasNewBadge: true,
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 2,
+			CTA: ChangeGroupsLink,
+			Footer: AudienceAreaFooter,
+			filterActiveWidgets( select, areaWidgets ) {
+				const isAudienceSegmentationWidgetHidden =
+					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
-					if (
-						isAudienceSegmentationWidgetHidden === undefined ||
-						isAudienceSegmentationWidgetHidden
-					) {
-						return [];
-					}
+				if (
+					isAudienceSegmentationWidgetHidden === undefined ||
+					isAudienceSegmentationWidgetHidden
+				) {
+					return [];
+				}
 
-					return areaWidgets;
-				},
+				return areaWidgets;
 			},
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC
-		);
-	}
+		},
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC
+	);
 
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
