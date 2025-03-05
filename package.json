@@ -5,9 +5,7 @@
 	"private": true,
 	"scripts": {
 		"build": "npm run -w ./assets build",
-		"prebuild:dev": "npm run -w ./assets prebuild:dev",
 		"build:dev": "npm run -w ./assets build:dev",
-		"prebuild:production": "npm run -w ./assets prebuild:production",
 		"build:production": "npm run -w ./assets build:production",
 		"build:test": "npm run -w ./assets build:test",
 		"watch": "npm run -w ./assets watch",
