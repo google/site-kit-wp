@@ -20,11 +20,14 @@ import {
 	createTestRegistry,
 	provideUserInfo,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { GTM_SCOPE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '../..';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import * as fixtures from '../../datastore/__fixtures__';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 describe( 'GoogleTagIDMismatchNotification', () => {
 	let registry;
@@ -32,6 +35,8 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 		withNotificationComponentProps( 'google-tag-id-mismatch' )(
 			GoogleTagIDMismatchNotification
 		);
+
+	const notification = ANALYTICS_4_NOTIFICATIONS[ 'google-tag-id-mismatch' ];
 
 	const setGoogleTagIDMismatchEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
@@ -62,7 +67,7 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 		const currentMeasurementID = 'G-2B7M8YQ1K6';
 
 		const currentAnalyticsSettingsMock = {
-			ownerID: 0,
+			ownerID: 1,
 			propertyID: '1000',
 			webDataStreamID: '2000',
 			measurementID: currentMeasurementID,
@@ -198,5 +203,19 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when all conditions are met', async () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ GTM_SCOPE ],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
 	} );
 } );
