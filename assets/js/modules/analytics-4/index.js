@@ -844,7 +844,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The getOwnerID() selector relies on the resolution
 				// of the getSettings() resolver.
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-				resolveSelect( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
 			] );
 
 			const ga4ModuleConnected =
