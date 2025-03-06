@@ -379,7 +379,7 @@ class AuthenticationTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$oauth_client->get_client(),
 			function () {
-				return new FulfilledResponse(
+				return new FulfilledPromise(
 					new Response(
 						200,
 						array(),
