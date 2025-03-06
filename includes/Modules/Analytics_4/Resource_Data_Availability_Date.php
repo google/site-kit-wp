@@ -243,7 +243,7 @@ class Resource_Data_Availability_Date {
 	 */
 	private function get_available_audience_resource_names() {
 		$audience_settings   = new Audience_Settings( $this->options );
-		$available_audiences = ( Feature_Flags::enabled( 'audienceSegmentation' ) ) ? $audience_settings->get() : $this->settings->get();
+		$available_audiences = $audience_settings->get();
 		$available_audiences = $available_audiences['availableAudiences'] ?? array();
 
 		return array_map(
