@@ -24,7 +24,7 @@
     "google/apiclient": "^2.14.0",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
-    "guzzlehttp/guzzle": "^7.9.2",
+    "guzzlehttp/guzzle": "7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
