@@ -223,23 +223,25 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 			await waitFor( () => {
 				expect( switchControl ).toBeChecked();
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					'settings_audiences-settings',
-					'audience_widgets_enable'
-				);
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'settings_audiences-settings',
+				'audience_widgets_enable'
+			);
 
 			switchControl.click();
 
 			await waitFor( () => {
 				expect( switchControl ).not.toBeChecked();
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-					'settings_audiences-settings',
-					'audience_widgets_disable'
-				);
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+				'settings_audiences-settings',
+				'audience_widgets_disable'
+			);
 		} );
 	} );
 } );
