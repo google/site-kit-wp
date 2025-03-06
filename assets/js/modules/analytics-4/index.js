@@ -120,7 +120,7 @@ import AudienceSegmentationSetupCTAWidget, {
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
-import GoogleTagIDMismatchNotification from '../../components/notifications/GoogleTagIDMismatchNotification';
+import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 
 export { registerStore } from './datastore';
 

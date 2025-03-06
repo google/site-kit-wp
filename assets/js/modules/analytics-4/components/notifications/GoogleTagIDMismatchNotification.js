@@ -26,14 +26,14 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { isValidMeasurementID } from '../../modules/analytics-4/utils/validation';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
-import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { isValidMeasurementID } from '../../utils/validation';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { getBestTagID } from '../../utils/google-tag';
+import SimpleNotification from '../../../../googlesitekit/notifications/components/layout/SimpleNotification';
+import Description from '../../../../googlesitekit/notifications/components/common/Description';
+import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import CTALink from '../../../../googlesitekit/notifications/components/common/CTALink';
 
 export default function GoogleTagIDMismatchNotification( {
 	id,

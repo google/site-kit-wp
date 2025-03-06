@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import * as fixtures from '../../modules/analytics-4/datastore/__fixtures__';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import * as fixtures from '../../datastore/__fixtures__';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'google-tag-id-mismatch'
