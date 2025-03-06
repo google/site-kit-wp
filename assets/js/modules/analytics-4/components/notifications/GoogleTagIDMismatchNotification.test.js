@@ -137,7 +137,7 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			} );
 	} );
 
-	it( 'should render the Alternative GA4 Config notification version', async () => {
+	it( 'should render the "alternative GA4 Config found" notification variation', async () => {
 		const gtmAccountID = '6065484567';
 		const gtmContainerID = '98369876';
 		const containerDestinationsMock =
@@ -158,6 +158,35 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 					gtmContainerID,
 				}
 			);
+
+		const { container, waitForRegistry } = render(
+			<GoogleTagIDMismatchNotificationComponent />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the "alternative GA4 Config not found" notification variation', async () => {
+		const gtmAccountID = '6065484567';
+		const gtmContainerID = '98369876';
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setGoogleTagAccountID( gtmAccountID );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setGoogleTagContainerID( gtmContainerID );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetGoogleTagContainerDestinations( [], {
+				gtmAccountID,
+				gtmContainerID,
+			} );
 
 		const { container, waitForRegistry } = render(
 			<GoogleTagIDMismatchNotificationComponent />,
