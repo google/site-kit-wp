@@ -236,5 +236,20 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when current logged in user is not analytics-4 module owner', async () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ GTM_SCOPE ],
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setSettings( { ownerID: 2 } );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
