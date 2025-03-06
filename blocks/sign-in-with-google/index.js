@@ -27,6 +27,6 @@ import metadata from './block.json';
  *
  * @since 1.147.0
  */
-registerBlockType( metadata, {
+registerBlockType( metadata.name, {
 	edit: Edit,
 } );

@@ -306,7 +306,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			),
 		);
 
-		if ( Sign_In_With_Google_Block::can_register() ) {
+		if ( Sign_In_With_Google_Block::can_register() && $this->is_connected() ) {
 			$assets[] = new Script(
 				'blocks-sign-in-with-google',
 				array(
