@@ -46,6 +46,9 @@
 		"install-global-npm": "npm install -g npm@7.24.2",
 		"postinstall": "patch-package"
 	},
+	"browserslist": [
+		"extends @wordpress/browserslist-config"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:google/site-kit-wp.git"
