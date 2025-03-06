@@ -217,5 +217,24 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			);
 			expect( isActive ).toBe( true );
 		} );
+
+		it( 'is not active when analytics-4 is not connected', async () => {
+			provideModules( registry, [
+				{
+					active: false,
+					connected: false,
+					slug: 'analytics-4',
+				},
+			] );
+			provideUserAuthentication( registry, {
+				grantedScopes: [ GTM_SCOPE ],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
