@@ -180,9 +180,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			propertyID: testPropertyID,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: null,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );

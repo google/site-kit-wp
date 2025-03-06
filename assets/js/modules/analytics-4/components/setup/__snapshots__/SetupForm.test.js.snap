@@ -214,3 +214,5 @@ exports[`SetupForm renders the form correctly 1`] = `
   </form>
 </div>
 `;
+
+exports[`SetupForm submits the form upon pressing the CTA 1`] = `<div />`;

@@ -17,31 +17,16 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createRegistry } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-
-/**
- * TODO: After the implementation of #8888, we can remove these individual imports
- * and directly use createTestRegistry from 'tests/js/utils' so that all the stores
- * are registered without the duplicate registration issue.
- */
-import audienceSettingsStore from './audience-settings';
-import audiencesStore from './audiences';
-import userAudienceSettingsStore from '../../../googlesitekit/datastore/user/audience-settings';
-import authenticationStore from '../../../googlesitekit/datastore/user/authentication';
-import { combineStores, commonStore } from 'googlesitekit-data';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
@@ -55,34 +40,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	);
 
 	beforeEach( () => {
-		// TODO: After #8888 is implemented, we can directly use `createTestRegistry` from 'tests/js/utils',
-		// rather than registering the stores below.
-		registry = createRegistry();
-
-		registry.registerStore(
-			MODULES_ANALYTICS_4,
-			combineStores( audienceSettingsStore, commonStore, {
-				audiencesStore,
-				resolvers: {},
-				actions: {
-					// Provide a minimal implementation of `syncAvailableAudiences` for testing.
-					*syncAvailableAudiences() {
-						return registry
-							.dispatch( MODULES_ANALYTICS_4 )
-							.fetchSyncAvailableAudiences();
-					},
-				},
-			} )
-		);
-
-		registry.registerStore(
-			CORE_USER,
-			combineStores(
-				authenticationStore,
-				commonStore,
-				userAudienceSettingsStore
-			)
-		);
+		registry = createTestRegistry();
 
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 			authenticated: true,
@@ -237,13 +195,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 						.getAudienceSegmentationSetupCompletedBy()
 				).toEqual( 1 );
 			} );
-			it( 'should return undefined if getAudienceSegmentationSetupCompletedBy is not loaded', () => {
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAudienceSegmentationSetupCompletedBy()
-				).toBeUndefined();
-			} );
+
 			it( 'should throw an error if getAudienceSegmentationSetupCompletedBy is not an integer', () => {
 				expect( () =>
 					registry

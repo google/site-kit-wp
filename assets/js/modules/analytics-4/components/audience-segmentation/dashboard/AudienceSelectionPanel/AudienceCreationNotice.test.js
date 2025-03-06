@@ -91,6 +91,13 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: [
+				availableAudiences[ 2 ],
+				availableAudiences[ 3 ],
+			],
+		} );
+
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );

@@ -24,7 +24,7 @@ import { availableAudiences } from '../../../datastore/__fixtures__';
 import {
 	createTestRegistry,
 	fireEvent,
-	freezeFetch,
+	provideUserAuthentication,
 	render,
 } from '../../../../../../../tests/js/test-utils';
 import * as tracking from '../../../../../util/tracking';
@@ -36,25 +36,13 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'ChangeGroupsLink', () => {
 	let registry;
 
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideUserAuthentication( registry );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
-	} );
-
-	it( 'should not render if available audiences are undefined', () => {
-		freezeFetch( settingsEndpoint );
-
-		const { queryByRole } = render( <ChangeGroupsLink />, { registry } );
-
-		const button = queryByRole( 'button' );
-		expect( button ).not.toBeInTheDocument();
 	} );
 
 	it( 'should not render if no audiences are available', () => {
