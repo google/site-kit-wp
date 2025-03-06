@@ -32,6 +32,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_Screen;
@@ -297,14 +298,16 @@ class AuthenticationTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$oauth_client->get_client(),
 			function () {
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'access_token' => 'new-test-access-token',
-							'expires_in'   => 3599,
-							'token_type'   => 'Bearer',
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
 						)
 					)
 				);
@@ -376,14 +379,16 @@ class AuthenticationTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$oauth_client->get_client(),
 			function () {
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'access_token' => 'new-test-access-token',
-							'expires_in'   => 3599,
-							'token_type'   => 'Bearer',
+				return new FulfilledResponse(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
 						)
 					)
 				);
