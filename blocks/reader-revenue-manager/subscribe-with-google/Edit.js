@@ -35,7 +35,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reade
 /**
  * Subscribe with Google Block Edit component.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {Object} props        Component props.
  * @param {Object} props.select Data store select function.

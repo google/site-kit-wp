@@ -314,7 +314,7 @@ class REST_Consent_Mode_Controller {
 	/**
 	 * Gets the plugin file of the installed WP Consent API if found.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return false|string
 	 */

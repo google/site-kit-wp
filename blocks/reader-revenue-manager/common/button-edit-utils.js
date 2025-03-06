@@ -17,7 +17,7 @@
 /**
  * Gets the block editor button's notice and disabled state based on the provided options.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {Object}  options                                               Options object.
  * @param {string}  options.paymentOption                                 Payment option.

@@ -92,6 +92,7 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 
 	const topCitiesReport = useInViewSelect(

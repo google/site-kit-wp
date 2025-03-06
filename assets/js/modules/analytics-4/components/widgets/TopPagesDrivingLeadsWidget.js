@@ -92,6 +92,7 @@ function TopPagesDrivingLeadsWidget( props ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 
 	const report = useInViewSelect(

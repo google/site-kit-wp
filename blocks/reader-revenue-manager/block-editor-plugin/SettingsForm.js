@@ -106,6 +106,7 @@ export default function SettingsForm() {
 				} ),
 			] }
 			help={ help }
+			__nextHasNoMarginBottom
 		/>
 	);
 }

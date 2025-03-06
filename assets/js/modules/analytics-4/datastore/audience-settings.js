@@ -40,7 +40,7 @@ const { receiveError, clearError } = errorStoreActions;
 /**
  * Validates audience settings.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {Object} audienceSettings Audience settings to validate.
  * @return {void}
@@ -109,7 +109,7 @@ const baseActions = {
 	/**
 	 * Sets the available audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Array} availableAudiences Available audience resource names.
 	 * @return {Object} Redux-style action.
@@ -129,7 +129,7 @@ const baseActions = {
 	/**
 	 * Sets the user who set up Audience Segmentation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {number} audienceSegmentationSetupCompletedBy ID for the user who set up Audience Segmentation.
 	 * @return {Object} Redux-style action.
@@ -152,7 +152,7 @@ const baseActions = {
 	/**
 	 * Saves the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} settings Audience settings to save.
 	 * @return {Object} Object with `response` and `error`.
@@ -233,7 +233,7 @@ const baseSelectors = {
 	/**
 	 * Gets the available audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|null)} Available audiences, or `undefined` if not loaded.
@@ -244,7 +244,7 @@ const baseSelectors = {
 	/**
 	 * Gets the user who set up Audience Segmentation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(number|null)} ID for the user who set up Audience Segmentation, or `undefined` if not loaded.

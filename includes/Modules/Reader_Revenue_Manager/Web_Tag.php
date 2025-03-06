@@ -29,7 +29,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Product ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var string
 	 */
@@ -38,7 +38,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets the product ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param string $product_id Product ID.
 	 */
@@ -83,7 +83,7 @@ class Web_Tag extends Module_Web_Tag {
 		/**
 		 * Filters the Reader Revenue Manager product ID.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.148.0
 		 *
 		 * @param string $product_id The array of post types.
 		 */

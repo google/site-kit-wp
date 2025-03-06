@@ -35,6 +35,7 @@ jest.mock( '@wordpress-core/editor', () => ( {} ), {
 jest.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
+jest.mock( '@wordpress-core/editor', () => ( {} ), { virtual: true } );
 jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
 
 import Data from 'googlesitekit-data';
