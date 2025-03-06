@@ -38,16 +38,7 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 
 	const notification = ANALYTICS_4_NOTIFICATIONS[ 'google-tag-id-mismatch' ];
 
-	const setGoogleTagIDMismatchEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
-	);
-
 	beforeEach( () => {
-		fetchMock.post( setGoogleTagIDMismatchEndpoint, {
-			body: true,
-			status: 200,
-		} );
-
 		registry = createTestRegistry();
 		provideUserInfo( registry );
 		provideModules( registry, [
@@ -59,10 +50,6 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 		] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setHasMismatchedGoogleTagID( true );
 
 		const currentMeasurementID = 'G-2B7M8YQ1K6';
 
@@ -163,6 +150,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 					gtmContainerID,
 				}
 			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveHasMismatchGoogleTagID( true );
 
 		const { container, waitForRegistry } = render(
 			<GoogleTagIDMismatchNotificationComponent />,
@@ -192,6 +182,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 				gtmAccountID,
 				gtmContainerID,
 			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveHasMismatchGoogleTagID( true );
 
 		const { container, waitForRegistry } = render(
 			<GoogleTagIDMismatchNotificationComponent />,
@@ -210,6 +203,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			provideUserAuthentication( registry, {
 				grantedScopes: [ GTM_SCOPE ],
 			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveHasMismatchGoogleTagID( true );
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -229,6 +225,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			provideUserAuthentication( registry, {
 				grantedScopes: [ GTM_SCOPE ],
 			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveHasMismatchGoogleTagID( true );
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -244,6 +243,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setSettings( { ownerID: 2 } );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveHasMismatchGoogleTagID( true );
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -256,7 +258,22 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			provideUserAuthentication( registry );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setSettings( { ownerID: 2 } );
+				.receiveHasMismatchGoogleTagID( true );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when mismatched Google Tag ID is false', async () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ GTM_SCOPE ],
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveHasMismatchGoogleTagID( false );
 
 			const isActive = await notification.checkRequirements(
 				registry,
