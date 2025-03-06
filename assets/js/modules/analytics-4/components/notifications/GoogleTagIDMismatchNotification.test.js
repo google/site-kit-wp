@@ -41,6 +41,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ GTM_SCOPE ],
+		} );
 		provideModules( registry, [
 			{
 				active: true,
@@ -48,8 +51,6 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 				slug: 'analytics-4',
 			},
 		] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 		const currentMeasurementID = 'G-2B7M8YQ1K6';
 
@@ -200,9 +201,6 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'is active when all conditions are met', async () => {
-			provideUserAuthentication( registry, {
-				grantedScopes: [ GTM_SCOPE ],
-			} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveHasMismatchGoogleTagID( true );
@@ -222,9 +220,6 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 					slug: 'analytics-4',
 				},
 			] );
-			provideUserAuthentication( registry, {
-				grantedScopes: [ GTM_SCOPE ],
-			} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveHasMismatchGoogleTagID( true );
@@ -237,9 +232,6 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 		} );
 
 		it( 'is not active when current logged in user is not analytics-4 module owner', async () => {
-			provideUserAuthentication( registry, {
-				grantedScopes: [ GTM_SCOPE ],
-			} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setSettings( { ownerID: 2 } );
@@ -268,9 +260,6 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 		} );
 
 		it( 'is not active when mismatched Google Tag ID is false', async () => {
-			provideUserAuthentication( registry, {
-				grantedScopes: [ GTM_SCOPE ],
-			} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveHasMismatchGoogleTagID( false );
