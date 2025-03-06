@@ -40,9 +40,18 @@ const {
 
 module.exports = ( mode ) => ( {
 	entry: {
-		// Reader Revenue Manager block.
-		'googlesitekit-reader-revenue-manager-block-editor':
-			'./assets/js/googlesitekit-reader-revenue-manager-block-editor.js',
+		// Reader Revenue Manager
+		'reader-revenue-manager/block-editor-plugin/index':
+			'./blocks/reader-revenue-manager/block-editor-plugin/index.js',
+		'reader-revenue-manager/block-editor-plugin/editor-styles':
+			'./blocks/reader-revenue-manager/block-editor-plugin/editor-styles.scss',
+		// Reader Revenue Manager blocks.
+		'reader-revenue-manager/contribute-with-google/index':
+			'./blocks/reader-revenue-manager/contribute-with-google/index.js',
+		'reader-revenue-manager/subscribe-with-google/index':
+			'./blocks/reader-revenue-manager/subscribe-with-google/index.js',
+		'reader-revenue-manager/common/editor-styles':
+			'./blocks/reader-revenue-manager/common/editor-styles.scss',
 		// Sign in with Google block.
 		'sign-in-with-google/index': './blocks/sign-in-with-google/index.js',
 		'sign-in-with-google/editor-styles':

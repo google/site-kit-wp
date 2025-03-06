@@ -131,7 +131,7 @@ const fetchSyncAvailableAudiencesStore = createFetchStore( {
 /**
  * Retrieves the initial set of selected audiences from the existing audiences.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {Object} registry Registry object.
  * @return {Object} Object with `configuredAudiences` or `error`.
@@ -178,7 +178,7 @@ async function getConfiguredAudiencesFromExistingAudiences( registry ) {
  * Retrives the initial set of audiences for selection.
  *
  * @since 1.136.0
- * @since n.e.x.t Extracted to a helper function. Renamed from `retrieveInitialAudienceSelection` to `getInitialConfiguredAudiences`.
+ * @since 1.148.0 Extracted to a helper function. Renamed from `retrieveInitialAudienceSelection` to `getInitialConfiguredAudiences`.
  *
  * @param {Object} registry           Registry object.
  * @param {Array}  availableAudiences List of available audiences.
@@ -413,7 +413,7 @@ const baseActions = {
 	/**
 	 * Checks if the user needs to grant the Analytics 4 edit scope to create audiences or custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return {Object} Object with `needsScope` or `error`.
 	 */
@@ -514,7 +514,7 @@ const baseActions = {
 			}
 
 			yield commonActions.await(
-				resolveSelect( CORE_USER ).getAudienceSettings()
+				resolveSelect( CORE_USER ).getUserAudienceSettings()
 			);
 
 			if ( failedAudiencesToRetry.length > 0 ) {
@@ -598,7 +598,7 @@ const baseActions = {
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( CORE_USER ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveUserAudienceSettings()
 		);
 
 		if ( error ) {
@@ -714,7 +714,7 @@ const baseActions = {
 		dispatch( CORE_USER ).setConfiguredAudiences( configuredAudiences );
 
 		const { error } = yield commonActions.await(
-			dispatch( CORE_USER ).saveAudienceSettings()
+			dispatch( CORE_USER ).saveUserAudienceSettings()
 		);
 
 		if ( error ) {

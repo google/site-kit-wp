@@ -93,7 +93,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Stores the active state of the WooCommerce plugin.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 * @var bool Whether WooCommerce is active or not.
 	 */
 	protected $is_woocommerce_active;
@@ -120,7 +120,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->existing_client_id        = new Existing_Client_ID( $this->options );
-		$this->is_woocommerce_active     = $this->check_is_woocommerce_active();
 		$this->sign_in_with_google_block = new Sign_In_With_Google_Block( $this->context );
 	}
 
@@ -305,23 +304,26 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 					),
 				)
 			),
-			new Script(
+		);
+
+		if ( Sign_In_With_Google_Block::can_register() ) {
+			$assets[] = new Script(
 				'blocks-sign-in-with-google',
 				array(
 					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/index.js' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
-			),
-			new Stylesheet(
+			);
+			$assets[] = new Stylesheet(
 				'blocks-sign-in-with-google-editor-styles',
 				array(
 					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/editor-styles.css' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
-			),
-		);
+			);
+		}
 
 		return $assets;
 	}
@@ -366,10 +368,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		 * Only render the button in a WooCommerce login page if:
 		 *
 		 * - the Sign in with Google module is connected
-		 * - WooCommerce is active
 		 * - the user is not logged in
 		 */
-		if ( ! $this->is_connected() || ! $this->is_woocommerce_active || is_user_logged_in() ) {
+		if ( ! $this->is_connected() || is_user_logged_in() ) {
 			return;
 		}
 
@@ -387,7 +388,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *                rendered the code to replace buttons.
 	 */
 	private function render_signinwithgoogle() {
-		$is_wp_login          = is_login();
+		// `is_login()` isn't available until WP 6.1.
+		$is_wp_login          = false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$is_woocommerce       = class_exists( 'woocommerce' );
 		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
@@ -619,12 +621,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 *
 	 * @since 1.140.0
 	 *
-	 * @return string TRUE if tag is found, FALSE if not.
+	 * @return string|array
 	 */
 	public function get_content_url() {
 		$wp_login_url = wp_login_url();
 
-		if ( $this->is_woocommerce_active ) {
+		if ( $this->is_woocommerce_active() ) {
 			$wc_login_page_id = wc_get_page_id( 'myaccount' );
 			$wc_login_url     = get_permalink( $wc_login_page_id );
 			return array(
@@ -779,10 +781,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$inline_data['existingClientID'] = $existing_client_id;
 		}
 
-		$woocommerce_registration_enabled = $this->is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
+		$is_woocommerce_active            = $this->is_woocommerce_active();
+		$woocommerce_registration_enabled = $is_woocommerce_active ? get_option( 'woocommerce_enable_myaccount_registration' ) : null;
 
-		$inline_data['isWooCommerceActive']              = $this->is_woocommerce_active;
-		$inline_data['isWooCommerceRegistrationEnabled'] = $this->is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
+		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
+		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
 
 		// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
 		$modules_data['sign-in-with-google'] = $inline_data;
@@ -793,10 +796,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Helper method to determine if the WooCommerce plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
+	 *
 	 * @return bool True if active, false if not.
 	 */
-	public function check_is_woocommerce_active() {
-		return Plugin_Status::PLUGIN_STATUS_ACTIVE === Plugin_Status::get_plugin_status( 'woocommerce/woocommerce.php', 'https://woocommerce.com/' );
+	protected function is_woocommerce_active() {
+		return class_exists( 'WooCommerce' );
 	}
 }

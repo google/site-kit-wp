@@ -34,7 +34,6 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
@@ -87,7 +86,6 @@ export default function BannerNotifications() {
 			{ 'ad_blocking_recovery_setup_success' === notification && (
 				<AdBlockingRecoverySetupSuccessBannerNotification />
 			) }
-			<EnableAutoUpdateBannerNotification />
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			{ ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />

@@ -35,7 +35,6 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
-	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
 import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
@@ -98,7 +97,7 @@ describe( 'useEnableAudienceGroup', () => {
 			propertyID: '123456789',
 		} );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -290,17 +289,16 @@ describe( 'useEnableAudienceGroup', () => {
 			.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
-
-		// eslint-disable-next-line require-await
-		await actHook( async () => {
-			renderHook( () => useEnableAudienceGroup(), {
+		const { waitForRegistry } = renderHook(
+			() => useEnableAudienceGroup(),
+			{
 				registry,
-			} );
-		} );
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
-
-		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
@@ -330,9 +328,14 @@ describe( 'useEnableAudienceGroup', () => {
 
 		mockSurveyEndpoints();
 
-		const { result } = renderHook( () => useEnableAudienceGroup(), {
-			registry,
-		} );
+		const { result, waitForRegistry } = renderHook(
+			() => useEnableAudienceGroup(),
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		const { onEnableGroups } = result.current;
 
@@ -341,7 +344,5 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
-
-		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 } );

@@ -90,6 +90,10 @@ function ConfirmSitePurposeChangeModal( {
 			return [];
 		}
 
+		if ( savedPurpose?.purpose?.values?.[ 0 ] === 'other' ) {
+			return select( CORE_USER ).getKeyMetrics();
+		}
+
 		return select( CORE_USER ).getAnswerBasedMetrics(
 			savedPurpose?.purpose?.values?.[ 0 ]
 		);
@@ -184,7 +188,8 @@ function ConfirmSitePurposeChangeModal( {
 		// the previous list shown under current metrics is not changing last moment during update.
 		if (
 			savedPurpose?.purpose?.values?.[ 0 ] &&
-			currentMetricsSnapshot === null
+			currentMetricsSnapshot === null &&
+			currentMetrics !== undefined
 		) {
 			setCurrentMetricsSnapshot( currentMetrics );
 		}

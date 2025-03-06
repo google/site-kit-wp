@@ -451,7 +451,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-		$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html );
 		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 	}
 
@@ -532,7 +532,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		if ( $expected_product_id ) {
 			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 		} else {
 			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
@@ -600,7 +600,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		if ( $expected_product_id ) {
 			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html );
 			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 		} else {
 			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
@@ -726,6 +726,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_block_editor_script_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
 		$this->enable_feature( 'rrmModuleV2' );
 
 		$registerable_asset_handles = array_map(
@@ -735,13 +739,38 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->reader_revenue_manager->get_assets()
 		);
 
-		$this->assertContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
-			$registerable_asset_handles
+		$rrm_block_asset_handles = array(
+			'blocks-reader-revenue-manager-block-editor-plugin',
+			'blocks-reader-revenue-manager-block-editor-plugin-styles',
+			'blocks-contribute-with-google',
+			'blocks-subscribe-with-google',
+			'blocks-reader-revenue-manager-common-editor-styles',
+		);
+
+		$missing_handles = array_diff( $rrm_block_asset_handles, $registerable_asset_handles );
+
+		$this->assertEmpty(
+			$missing_handles,
+			'The following expected asset handles are missing: ' . implode( ', ', $missing_handles )
 		);
 	}
 
-	public function test_block_editor_script_not_enqueued() {
+	/**
+	 * @dataProvider data_block_editor_script_not_enqueued
+	 */
+	public function test_block_editor_script_not_enqueued( $data ) {
+		$wp_version_condition = $data['wpVersionCondition'];
+
+		if ( $wp_version_condition && version_compare( get_bloginfo( 'version' ), $wp_version_condition['version'], $wp_version_condition['operator'] ) === false ) {
+			$this->markTestSkipped( 'This test only runs on WordPress ' . $wp_version_condition['operator'] . ' ' . $wp_version_condition['version'] . '.' );
+		}
+
+		$feature_flag = $data['featureFlag'];
+
+		if ( $feature_flag ) {
+			$this->enable_feature( $feature_flag );
+		}
+
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
 				return $asset->get_handle();
@@ -749,9 +778,38 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->reader_revenue_manager->get_assets()
 		);
 
-		$this->assertNotContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
-			$registerable_asset_handles
+		$rrm_block_asset_handles = array(
+			'blocks-reader-revenue-manager-block-editor-plugin',
+			'blocks-reader-revenue-manager-block-editor-plugin-styles',
+			'blocks-contribute-with-google',
+			'blocks-subscribe-with-google',
+		);
+
+		$present_handles = array_intersect( $rrm_block_asset_handles, $registerable_asset_handles );
+
+		$this->assertEmpty(
+			$present_handles,
+			'The following block editor handles should not be present: ' . implode( ', ', $present_handles )
+		);
+	}
+
+	public function data_block_editor_script_not_enqueued() {
+		return array(
+			'feature flag disabled'                  => array(
+				array(
+					'featureFlag'        => null,
+					'wpVersionCondition' => null,
+				),
+			),
+			'feature flag enabled, WP version < 5.8' => array(
+				array(
+					'featureFlag'        => 'rrmModuleV2',
+					'wpVersionCondition' => array(
+						'version'  => '5.8',
+						'operator' => '<',
+					),
+				),
+			),
 		);
 	}
 

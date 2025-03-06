@@ -114,7 +114,6 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { isFeatureEnabled } from '../../features';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
@@ -197,8 +196,8 @@ export const registerWidgets = ( widgets ) => {
 					return false;
 				}
 
-				const availableAudiences =
-					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				const { availableAudiences } =
+					select( MODULES_ANALYTICS_4 ).getSettings() || {};
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
@@ -711,10 +710,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				CORE_MODULES
 			).isModuleConnected( 'analytics-4' );
 
-			if (
-				! analyticsConnected ||
-				! isFeatureEnabled( 'audienceSegmentation' )
-			) {
+			if ( ! analyticsConnected ) {
 				return false;
 			}
 
@@ -748,7 +744,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 					'analytics-4'
 				),
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
-				select( CORE_USER ).getAudienceSettings(),
+				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 			] );
@@ -782,7 +778,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
-		featureFlag: 'audienceSegmentation',
 	},
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,

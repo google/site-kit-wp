@@ -141,7 +141,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -214,7 +214,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -241,7 +241,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -268,7 +268,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -473,7 +473,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 				</div>,
 				{
 					registry,
-					features: [ 'audienceSegmentation' ],
 				}
 			);
 			// eslint-disable-next-line require-await
@@ -570,7 +569,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			fetchMock.post( syncAvailableAudiencesEndpoint, {
 				status: 200,
@@ -684,7 +683,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			// Set autoSubmit to true.
 			registry
@@ -760,7 +759,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			fetchMock.post( syncAvailableAudiencesEndpoint, {
 				status: 200,
@@ -851,7 +850,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( settings );
+					.receiveGetUserAudienceSettings( settings );
 
 				// Set `autoSubmit` to `true`, as the OAuth error modal will typically be
 				// shown when the user returns from the OAuth flow.

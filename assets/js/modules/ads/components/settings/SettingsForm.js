@@ -73,7 +73,7 @@ export default function SettingsForm() {
 					<div className="googlesitekit-setup-module__inputs">
 						<ConversionIDTextField
 							helperText={ __(
-								'The Conversion Tracking ID will help track the performance of ad campaigns for the corresponding account',
+								'The Conversion ID will help track the performance of ad campaigns for the corresponding account',
 								'google-site-kit'
 							) }
 						/>
@@ -84,10 +84,7 @@ export default function SettingsForm() {
 					<div>
 						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
-								{ __(
-									'Conversion Tracking ID',
-									'google-site-kit'
-								) }
+								{ __( 'Conversion ID', 'google-site-kit' ) }
 							</h5>
 							<p className="googlesitekit-settings-module__meta-item-data">
 								{ conversionIDValue === '' &&

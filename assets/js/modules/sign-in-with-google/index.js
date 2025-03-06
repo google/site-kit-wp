@@ -40,7 +40,6 @@ import {
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
-import { isFeatureEnabled } from '../../features';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
 
 export { registerStore } from './datastore';
@@ -98,59 +97,54 @@ export function registerModule( modules ) {
 }
 
 export const registerNotifications = ( notifications ) => {
-	if ( isFeatureEnabled( 'signInWithGoogleModule' ) ) {
-		notifications.registerNotification( 'sign-in-with-google-setup-cta', {
-			Component: SignInWithGoogleSetupCTABanner,
-			priority: 40,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			checkRequirements: async ( { select, resolveSelect } ) => {
-				await Promise.all( [
-					// The isModuleConnected() relies on the resolution
-					// of the getModules() resolver.
-					resolveSelect( CORE_MODULES ).getModules(),
-					// Ensure the site info is resolved to get the home URL.
-					resolveSelect( CORE_SITE ).getSiteInfo(),
-				] );
+	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
+		Component: SignInWithGoogleSetupCTABanner,
+		priority: 40,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// Ensure the site info is resolved to get the home URL.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+			] );
 
-				const isConnected = select( CORE_MODULES ).isModuleConnected(
-					'sign-in-with-google'
-				);
-				if ( isConnected ) {
-					return false;
-				}
-
-				const homeURL = select( CORE_SITE ).getHomeURL();
-				if ( ! isURLUsingHTTPS( homeURL ) ) {
-					return false;
-				}
-
-				return true;
-			},
-			isDismissible: true,
-		} );
-		notifications.registerNotification( 'setup-success-notification-siwg', {
-			Component: SetupSuccessSubtleNotification,
-			priority: 10,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			checkRequirements: () => {
-				const notification = getQueryArg(
-					location.href,
-					'notification'
-				);
-				const slug = getQueryArg( location.href, 'slug' );
-
-				if (
-					'authentication_success' === notification &&
-					slug === 'sign-in-with-google'
-				) {
-					return true;
-				}
-
+			const isConnected = select( CORE_MODULES ).isModuleConnected(
+				'sign-in-with-google'
+			);
+			if ( isConnected ) {
 				return false;
-			},
-		} );
-	}
+			}
+
+			const homeURL = select( CORE_SITE ).getHomeURL();
+			if ( ! isURLUsingHTTPS( homeURL ) ) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+	} );
+	notifications.registerNotification( 'setup-success-notification-siwg', {
+		Component: SetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if (
+				'authentication_success' === notification &&
+				slug === 'sign-in-with-google'
+			) {
+				return true;
+			}
+
+			return false;
+		},
+	} );
 };

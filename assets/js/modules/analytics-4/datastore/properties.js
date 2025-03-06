@@ -182,7 +182,10 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	reducerCallback( state, hasMismatchedTag ) {
 		return {
 			...state,
-			hasMismatchedTag: !! hasMismatchedTag,
+			moduleData: {
+				...state.moduleData,
+				hasMismatchedTag: !! hasMismatchedTag,
+			},
 		};
 	},
 	argsToParams( hasMismatchedTag ) {
@@ -204,7 +207,6 @@ const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
-	hasMismatchedTag: undefined,
 	isMatchingAccountProperty: false,
 	isWebDataStreamAvailable: true,
 };
@@ -722,7 +724,10 @@ function baseReducer( state, { type, payload } ) {
 		case SET_HAS_MISMATCHED_TAG:
 			return {
 				...state,
-				hasMismatchedTag: payload.hasMismatchedTag,
+				moduleData: {
+					...state.moduleData,
+					hasMismatchedTag: payload.hasMismatchedTag,
+				},
 			};
 		case SET_IS_WEBDATASTREAM_AVAILABLE:
 			return {
@@ -824,28 +829,6 @@ const baseResolvers = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
 	},
-	*hasMismatchedGoogleTagID() {
-		const registry = yield commonActions.getRegistry();
-
-		const hasMismatchedTag = registry
-			.select( MODULES_ANALYTICS_4 )
-			.hasMismatchedGoogleTagID();
-
-		if ( hasMismatchedTag === undefined ) {
-			if ( ! global._googlesitekitModulesData ) {
-				global.console.error(
-					'Could not load modules/analytics-4 data.'
-				);
-				return;
-			}
-
-			const tagIDMismatch =
-				global._googlesitekitModulesData?.[ 'analytics-4' ]
-					?.tagIDMismatch;
-
-			yield actions.receiveHasMismatchGoogleTagID( tagIDMismatch );
-		}
-	},
 };
 
 const baseSelectors = {
@@ -911,18 +894,6 @@ const baseSelectors = {
 	 */
 	isMatchingAccountProperty( state ) {
 		return state.isMatchingAccountProperty;
-	},
-
-	/**
-	 * Checks if GA4 has mismatched Google Tag ID.
-	 *
-	 * @since 1.96.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} If GA4 has mismatched Google Tag ID.
-	 */
-	hasMismatchedGoogleTagID( state ) {
-		return state.hasMismatchedTag;
 	},
 
 	/**

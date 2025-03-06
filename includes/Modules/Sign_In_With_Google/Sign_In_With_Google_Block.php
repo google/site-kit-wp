@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Block_Support;
 
 /**
  * Sign in with Google Gutenberg Block.
@@ -38,11 +39,26 @@ class Sign_In_With_Google_Block {
 	}
 
 	/**
+	 * Checks whether the block can be registered.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return bool
+	 */
+	public static function can_register() {
+		return Block_Support::has_block_support();
+	}
+
+	/**
 	 * Register this block.
 	 *
 	 * @since 1.147.0
 	 */
 	public function register() {
+		if ( ! self::can_register() ) {
+			return;
+		}
+
 		add_action(
 			'init',
 			function () {
