@@ -26,10 +26,22 @@ import { PluginDocumentSettingPanel as EditorSettingPanel } from '@wordpress-cor
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
 import GoogleLogoIcon from '../../../assets/svg/graphics/logo-g.svg';
 import SettingsForm from './SettingsForm';
 
+const { select } = Data;
+
 export default function SettingPanel() {
+	const hasModuleAccess = select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+		'reader-revenue-manager'
+	);
+
+	if ( ! hasModuleAccess ) {
+		return null;
+	}
+
 	// The `PluginDocumentSettingPanel` component is deprecated/removed in `@wordpress-core/edit-post`, so
 	// we use the version from `@wordpress-core/editor` if available, otherwise fall back to the version
 	// from `@wordpress-core/edit-post`.
