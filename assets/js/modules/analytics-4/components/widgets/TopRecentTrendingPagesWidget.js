@@ -116,6 +116,7 @@ export function getReportOptions( referenceDate ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 
 	return reportOptions;

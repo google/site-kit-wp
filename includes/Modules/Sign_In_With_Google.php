@@ -93,7 +93,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Stores the active state of the WooCommerce plugin.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 * @var bool Whether WooCommerce is active or not.
 	 */
 	protected $is_woocommerce_active;
@@ -796,7 +796,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Helper method to determine if the WooCommerce plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return bool True if active, false if not.
 	 */

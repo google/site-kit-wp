@@ -112,7 +112,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Registers functionality independent of module activation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 */
 	public function register_persistent() {
 		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
@@ -202,7 +202,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Populates module data needed independent of Ads module activation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
