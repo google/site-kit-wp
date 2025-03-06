@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Utility class for checking the status of plugins.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Plugin_Status {
 	/**
 	 * Determines whether a plugin is installed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param string|callable $plugin_or_predicate String plugin file to check or
 	 *                                a function that accepts plugin header data and plugin file name to test.
