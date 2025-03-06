@@ -251,5 +251,18 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when user does not have GTM scope', async () => {
+			provideUserAuthentication( registry );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setSettings( { ownerID: 2 } );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
