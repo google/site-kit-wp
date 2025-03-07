@@ -31,7 +31,8 @@
 
 	// Set the max-width of the content column for both the main plugin and the plugin settings.
 	.googlesitekit-page-content,
-	.googlesitekit-module-page {
+	.googlesitekit-module-page,
+	.googlesitekit-setup {
 		margin: 0 auto;
 		max-width: $page-content-max-width;
 	}
