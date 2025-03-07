@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { ExternalLink } from '@wordpress-core/components';
@@ -29,19 +24,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { select } from 'googlesitekit-data';
 import { ButtonEdit } from '../common';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
 
 /**
  * Subscribe with Google Block Edit component.
  *
  * @since 1.148.0
  *
- * @param {Object} props        Component props.
- * @param {Object} props.select Data store select function.
  * @return {Element} Element to render.
  */
-export default function Edit( { select } ) {
+export default function Edit() {
 	const publicationID = select(
 		MODULES_READER_REVENUE_MANAGER
 	).getPublicationID();
@@ -90,7 +84,3 @@ export default function Edit( { select } ) {
 		/>
 	);
 }
-
-Edit.propTypes = {
-	select: PropTypes.func.isRequired,
-};

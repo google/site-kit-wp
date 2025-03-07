@@ -24,16 +24,17 @@ import PropTypes from 'prop-types';
  */
 import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
 import { Notice } from '@wordpress-core/components';
-import { Fragment } from '@wordpress-core/element';
+import { Fragment, useEffect, useState } from '@wordpress-core/element';
 import { useSelect } from '@wordpress-core/data';
 
 /**
  * Internal dependencies
  */
+import { select, resolveSelect } from 'googlesitekit-data';
 import EditorButton from './EditorButton';
 import { CORE_EDITOR } from './constants';
-import { CORE_MODULES } from '../../../../assets/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../../assets/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_MODULES } from '../../../js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
 import { getNoticeAndDisabled } from './button-edit-utils';
 
 /**
@@ -42,7 +43,6 @@ import { getNoticeAndDisabled } from './button-edit-utils';
  * @since 1.148.0
  *
  * @param {Object} props                                               Component props.
- * @param {Object} props.select                                        Data store select function.
  * @param {string} props.buttonLabel                                   Button label.
  * @param {string} props.requiredPaymentOption                         Required payment option.
  * @param {string} props.invalidPaymentOptionWithModuleAccessNotice    Invalid payment option with module access notice.
@@ -52,7 +52,6 @@ import { getNoticeAndDisabled } from './button-edit-utils';
  * @return {Element} Element to render.
  */
 export default function ButtonEdit( {
-	select,
 	buttonLabel,
 	requiredPaymentOption,
 	invalidPaymentOptionWithModuleAccessNotice,
@@ -60,11 +59,28 @@ export default function ButtonEdit( {
 	noSnippetWithModuleAccessNotice,
 	noSnippetWithoutModuleAccessNotice,
 } ) {
+	const [ hasModuleAccess, setHasModuleAccess ] = useState( undefined );
+
 	const blockProps = useBlockProps();
 
-	const hasModuleAccess = select( CORE_MODULES ).hasModuleOwnershipOrAccess(
-		'reader-revenue-manager'
-	);
+	// Determine if the user has access to the module.
+	useEffect( () => {
+		async function getModuleAccess() {
+			let hasModuleOwnershipOrAccess = select(
+				CORE_MODULES
+			).hasModuleOwnership( 'reader-revenue-manager' );
+
+			if ( hasModuleOwnershipOrAccess === false ) {
+				hasModuleOwnershipOrAccess = await resolveSelect(
+					CORE_MODULES
+				).hasModuleAccess( 'reader-revenue-manager' );
+			}
+
+			setHasModuleAccess( hasModuleOwnershipOrAccess );
+		}
+
+		getModuleAccess();
+	}, [] );
 
 	const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
 
@@ -120,7 +136,6 @@ export default function ButtonEdit( {
 }
 
 ButtonEdit.propTypes = {
-	select: PropTypes.func.isRequired,
 	buttonLabel: PropTypes.string.isRequired,
 	requiredPaymentOption: PropTypes.string.isRequired,
 	invalidPaymentOptionWithModuleAccessNotice: PropTypes.node.isRequired,
