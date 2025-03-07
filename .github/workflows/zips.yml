@@ -15,7 +15,6 @@ on:
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
-      - 'blocks/**'
       - 'includes/**'
       - 'google-site-kit.php'
       - 'scoper.inc.php'
@@ -42,7 +41,6 @@ on:
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
-      - 'blocks/**'
       - 'includes/**'
       - 'google-site-kit.php'
       - 'scoper.inc.php'
@@ -108,6 +106,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+      # nvm@7 is the minimum version required for npm workspace support.
+      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
+      # This can be removed once our node base version comes with nvm@7 or greater.
+      - name: Install npm Globally
+        run: npm run install-global-npm
       - name: npm install
         run: |
           npm ci
