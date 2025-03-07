@@ -26,7 +26,7 @@ import { PluginDocumentSettingPanel as EditorSettingPanel } from '@wordpress-cor
 /**
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../../assets/svg/graphics/logo-g.svg';
+import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
 import SettingsForm from './SettingsForm';
 
 export default function SettingPanel() {
