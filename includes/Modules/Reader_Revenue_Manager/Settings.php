@@ -100,7 +100,22 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		return array();
+		$keys = array(
+			'publicationID',
+		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$keys = array_merge(
+				$keys,
+				array(
+					'snippetMode',
+					'postTypes',
+					'paymentOption',
+				)
+			);
+		}
+
+		return $keys;
 	}
 
 	/**
