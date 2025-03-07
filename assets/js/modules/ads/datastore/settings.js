@@ -34,27 +34,12 @@ import {
 import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
-import {
-	isValidAccountOverviewURL,
-	isValidConversionID,
-	isValidCustomerID,
-	isValidUserID,
-} from '../utils/validation';
+import { isValidConversionID } from '../utils/validation';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_CONVERSION_ID =
 	'a valid conversionID is required to submit changes';
-export const INVARIANT_INVALID_CUSTOMER_ID =
-	'a valid customerID is required to submit changes';
-export const INVARIANT_INVALID_EXTERNAL_CUSTOMER_ID =
-	'a valid externalCustomerID is required to submit changes';
-export const INVARIANT_INVALID_FORMATTED_EXTERNAL_CUSTOMER_ID =
-	'a valid formattedExternalCustomerID is required to submit changes';
-export const INVARIANT_INVALID_USER_ID =
-	'a valid userID is required to submit changes';
-export const INVARIANT_INVALID_ACCOUNT_OVERVIEW_URL =
-	'a valid accountOverviewURL is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	const haveSettingsChanged = select( MODULES_ADS ).haveSettingsChanged();
@@ -121,11 +106,6 @@ export function validateCanSubmitChanges( select ) {
 		haveSettingsChanged,
 		getConversionID,
 		getPaxConversionID,
-		getCustomerID,
-		getExtCustomerID,
-		getFormattedExtCustomerID,
-		getUserID,
-		getAccountOverviewURL,
 	} = strictSelect( MODULES_ADS );
 
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
@@ -135,28 +115,6 @@ export function validateCanSubmitChanges( select ) {
 		isValidConversionID( getConversionID() ) ||
 			isValidConversionID( getPaxConversionID() ),
 		INVARIANT_INVALID_CONVERSION_ID
-	);
-
-	invariant(
-		isValidCustomerID( getCustomerID() ),
-		INVARIANT_INVALID_CUSTOMER_ID
-	);
-
-	invariant(
-		isValidCustomerID( getExtCustomerID() ),
-		INVARIANT_INVALID_EXTERNAL_CUSTOMER_ID
-	);
-
-	invariant(
-		isValidCustomerID( getFormattedExtCustomerID() ),
-		INVARIANT_INVALID_FORMATTED_EXTERNAL_CUSTOMER_ID
-	);
-
-	invariant( isValidUserID( getUserID() ), INVARIANT_INVALID_USER_ID );
-
-	invariant(
-		isValidAccountOverviewURL( getAccountOverviewURL() ),
-		INVARIANT_INVALID_ACCOUNT_OVERVIEW_URL
 	);
 }
 
