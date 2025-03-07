@@ -29,13 +29,12 @@ const WebpackBar = require( 'webpackbar' );
 const { rootDir, manifestArgs } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
-	context: rootDir,
 	entry: {
-		'googlesitekit-admin-css': './assets/sass/admin.scss',
-		'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
-		'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
+		'googlesitekit-admin-css': './sass/admin.scss',
+		'googlesitekit-adminbar-css': './sass/adminbar.scss',
+		'googlesitekit-wp-dashboard-css': './sass/wpdashboard.scss',
 		'googlesitekit-authorize-application-css':
-			'./assets/sass/authorize-application.scss',
+			'./sass/authorize-application.scss',
 	},
 	output: {
 		path: rootDir + '/dist',

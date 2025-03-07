@@ -34,12 +34,10 @@ const {
 } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
-	context: rootDir,
 	entry: {
-		'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
+		'googlesitekit-i18n': './js/googlesitekit-i18n.js',
 		// Analytics advanced tracking script to be injected in the frontend.
-		'analytics-advanced-tracking':
-			'./assets/js/analytics-advanced-tracking.js',
+		'analytics-advanced-tracking': './js/analytics-advanced-tracking.js',
 	},
 	externals,
 	output: {

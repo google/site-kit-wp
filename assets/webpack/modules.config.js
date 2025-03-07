@@ -50,64 +50,58 @@ module.exports = ( mode, rules, ANALYZE ) => {
 	const isProduction = mode === 'production';
 
 	return {
-		context: rootDir,
 		entry: {
 			// New Modules (Post-JSR).
-			'googlesitekit-api': './assets/js/googlesitekit-api.js',
-			'googlesitekit-data': './assets/js/googlesitekit-data.js',
+			'googlesitekit-api': './js/googlesitekit-api.js',
+			'googlesitekit-data': './js/googlesitekit-data.js',
 			'googlesitekit-datastore-site':
-				'./assets/js/googlesitekit-datastore-site.js',
+				'./js/googlesitekit-datastore-site.js',
 			'googlesitekit-datastore-user':
-				'./assets/js/googlesitekit-datastore-user.js',
+				'./js/googlesitekit-datastore-user.js',
 			'googlesitekit-datastore-forms':
-				'./assets/js/googlesitekit-datastore-forms.js',
+				'./js/googlesitekit-datastore-forms.js',
 			'googlesitekit-datastore-location':
-				'./assets/js/googlesitekit-datastore-location.js',
-			'googlesitekit-datastore-ui':
-				'./assets/js/googlesitekit-datastore-ui.js',
-			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
+				'./js/googlesitekit-datastore-location.js',
+			'googlesitekit-datastore-ui': './js/googlesitekit-datastore-ui.js',
+			'googlesitekit-modules': './js/googlesitekit-modules.js',
 			'googlesitekit-notifications':
-				'./assets/js/googlesitekit-notifications.js',
-			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
-			'googlesitekit-modules-ads':
-				'./assets/js/googlesitekit-modules-ads.js',
+				'./js/googlesitekit-notifications.js',
+			'googlesitekit-widgets': './js/googlesitekit-widgets.js',
+			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.js',
 			'googlesitekit-modules-adsense':
-				'./assets/js/googlesitekit-modules-adsense.js',
+				'./js/googlesitekit-modules-adsense.js',
 			'googlesitekit-modules-analytics-4':
-				'./assets/js/googlesitekit-modules-analytics-4.js',
+				'./js/googlesitekit-modules-analytics-4.js',
 			'googlesitekit-modules-pagespeed-insights':
-				'assets/js/googlesitekit-modules-pagespeed-insights.js',
+				'js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-reader-revenue-manager':
-				'./assets/js/googlesitekit-modules-reader-revenue-manager.js',
+				'./js/googlesitekit-modules-reader-revenue-manager.js',
 			'googlesitekit-modules-search-console':
-				'./assets/js/googlesitekit-modules-search-console.js',
+				'./js/googlesitekit-modules-search-console.js',
 			'googlesitekit-modules-sign-in-with-google':
-				'./assets/js/googlesitekit-modules-sign-in-with-google.js',
+				'./js/googlesitekit-modules-sign-in-with-google.js',
 			'googlesitekit-modules-tagmanager':
-				'./assets/js/googlesitekit-modules-tagmanager.js',
-			'googlesitekit-user-input':
-				'./assets/js/googlesitekit-user-input.js',
+				'./js/googlesitekit-modules-tagmanager.js',
+			'googlesitekit-user-input': './js/googlesitekit-user-input.js',
 			'googlesitekit-ad-blocking-recovery':
-				'./assets/js/googlesitekit-ad-blocking-recovery.js',
-			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
+				'./js/googlesitekit-ad-blocking-recovery.js',
+			'googlesitekit-polyfills': './js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
-				'./assets/js/googlesitekit-components-gm2.js',
+				'./js/googlesitekit-components-gm2.js',
 			'googlesitekit-components-gm3':
-				'./assets/js/googlesitekit-components-gm3.js',
+				'./js/googlesitekit-components-gm3.js',
 			'googlesitekit-metric-selection':
-				'./assets/js/googlesitekit-metric-selection.js',
+				'./js/googlesitekit-metric-selection.js',
 			// Old Modules
-			'googlesitekit-activation':
-				'./assets/js/googlesitekit-activation.js',
-			'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
-			'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
+			'googlesitekit-activation': './js/googlesitekit-activation.js',
+			'googlesitekit-adminbar': './js/googlesitekit-adminbar.js',
+			'googlesitekit-settings': './js/googlesitekit-settings.js',
 			'googlesitekit-main-dashboard':
-				'./assets/js/googlesitekit-main-dashboard.js',
+				'./js/googlesitekit-main-dashboard.js',
 			'googlesitekit-entity-dashboard':
-				'./assets/js/googlesitekit-entity-dashboard.js',
-			'googlesitekit-splash': './assets/js/googlesitekit-splash.js',
-			'googlesitekit-wp-dashboard':
-				'./assets/js/googlesitekit-wp-dashboard.js',
+				'./js/googlesitekit-entity-dashboard.js',
+			'googlesitekit-splash': './js/googlesitekit-splash.js',
+			'googlesitekit-wp-dashboard': './js/googlesitekit-wp-dashboard.js',
 		},
 		externals,
 		output: {
