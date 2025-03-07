@@ -54,7 +54,6 @@
 		"compare-versions": "^3.6.0",
 		"dompurify": "^2.5.8",
 		"focus-trap-react": "^10.0.0",
-		"formdata-polyfill": "^3.0.20",
 		"immer": "^9.0.15",
 		"intersection-observer": "^0.12.0",
 		"invariant": "^2.2.4",
