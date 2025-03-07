@@ -47,9 +47,13 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'conversionID'    => '',
-			'paxConversionID' => '',
-			'extCustomerID'   => '',
+			'conversionID'           => '',
+			'paxConversionID'        => '',
+			'customerID'             => '',
+			'extCustomerID'          => '',
+			'formattedExtCustomerID' => '',
+			'userID'                 => '',
+			'accountOverviewURL'     => '',
 		);
 	}
 
@@ -66,6 +70,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'conversionID',
 			'paxConversionID',
 			'extCustomerID',
+			'customerID',
+			'formattedExtCustomerID',
+			'userID',
+			'accountOverviewURL',
 		);
 	}
 }
