@@ -57,3 +57,47 @@ export function isValidPaxConversionID( value ) {
 export function isValidExtCustomerID( value ) {
 	return typeof value === 'string';
 }
+
+/**
+ * Checks if the given customerID ID is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value PAX customer ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
+ */
+export function isValidCustomerID( value ) {
+	return typeof value === 'string';
+}
+
+/**
+ * Checks if the given userID is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value User ID to test.
+ * @return {boolean} Whether or not the given user ID is valid.
+ */
+export function isValidUserID( value ) {
+	return (
+		typeof value === 'string' && value !== '' && /^[0-9]+$/.test( value )
+	);
+}
+
+/**
+ * Checks if the given accountOverviewURL ID is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value Ads Account Overview URL to test.
+ * @return {boolean} Whether or not the given URL is valid.
+ */
+export function isValidAccountOverviewURL( value ) {
+	return (
+		typeof value === 'string' &&
+		value !== '' &&
+		/^https:\/\/ads\.google\.com\/aw\/overview\?ocid=[0-9]+&__c=[0-9]+&__u=[0-9]+$/.test(
+			value
+		)
+	);
+}
