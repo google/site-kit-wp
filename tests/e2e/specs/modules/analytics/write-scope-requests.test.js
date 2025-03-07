@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 20 ] */
+
 /**
  * WordPress dependencies
  */
