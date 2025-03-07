@@ -15,6 +15,32 @@
  */
 
 /**
+ * Gets the notice with module access.
+ *
+ * @since n.e.x.t
+ *
+ * @param {boolean} hasModuleAccess           Whether the user has module access.
+ * @param {string}  withModuleAccessNotice    Notice when the user has module access.
+ * @param {string}  withoutModuleAccessNotice Notice when the user does not have module access.
+ * @return {string|null} Notice.
+ */
+function getNoticeWithModuleAccess(
+	hasModuleAccess,
+	withModuleAccessNotice,
+	withoutModuleAccessNotice
+) {
+	if ( hasModuleAccess === undefined ) {
+		return null;
+	}
+
+	if ( hasModuleAccess ) {
+		return withModuleAccessNotice;
+	}
+
+	return withoutModuleAccessNotice;
+}
+
+/**
  * Gets the block editor button's notice and disabled state based on the provided options.
  *
  * @since 1.148.0
@@ -49,9 +75,11 @@ export function getNoticeAndDisabled( {
 	if ( paymentOption !== requiredPaymentOption ) {
 		return {
 			disabled: true,
-			notice: hasModuleAccess
-				? invalidPaymentOptionWithModuleAccessNotice
-				: invalidPaymentOptionWithoutModuleAccessNotice,
+			notice: getNoticeWithModuleAccess(
+				hasModuleAccess,
+				invalidPaymentOptionWithModuleAccessNotice,
+				invalidPaymentOptionWithoutModuleAccessNotice
+			),
 		};
 	}
 
@@ -64,9 +92,11 @@ export function getNoticeAndDisabled( {
 	) {
 		return {
 			disabled: true,
-			notice: hasModuleAccess
-				? noSnippetWithModuleAccessNotice
-				: noSnippetWithoutModuleAccessNotice,
+			notice: getNoticeWithModuleAccess(
+				hasModuleAccess,
+				noSnippetWithModuleAccessNotice,
+				noSnippetWithoutModuleAccessNotice
+			),
 		};
 	}
 
