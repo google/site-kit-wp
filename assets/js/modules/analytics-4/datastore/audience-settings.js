@@ -61,16 +61,15 @@ function validateAudienceSettings( audienceSettings ) {
 	);
 }
 
-const fetchStoreReducerCallback = createReducer(
-	( state, audienceSettings ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
-		}
-
-		state.audienceSettings.settings = audienceSettings;
-		state.audienceSettings.savedSettings = audienceSettings;
+const fetchStoreReducerCallback = createReducer( ( state, settings ) => {
+	if ( ! state.settings ) {
+		state.settings = {};
 	}
-);
+
+	state.settings.availableAudiences = settings?.availableAudiences;
+	state.settings.audienceSegmentationSetupCompletedBy =
+		settings?.audienceSegmentationSetupCompletedBy;
+} );
 
 const fetchGetAudienceSettingsStore = createFetchStore( {
 	baseName: 'getAudienceSettings',
@@ -99,27 +98,12 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 	validateParams: validateAudienceSettings,
 } );
 
-const fetchSyncAvailableAudiencesStore = createFetchStore( {
-	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
-	reducerCallback: createReducer( ( state, audiences ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
-		}
-
-		state.audienceSettings.availableAudiences = audiences;
-	} ),
-} );
-
 // Actions
 const SET_AVAILABLE_AUDIENCES = 'SET_AVAILABLE_AUDIENCES';
 const SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY =
 	'SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY';
 
-const baseInitialState = {
-	audienceSettings: undefined,
-};
+const baseInitialState = {};
 
 const baseActions = {
 	/**
@@ -197,12 +181,27 @@ const baseActions = {
 const baseResolvers = {
 	*getAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
 
-		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
 
 		if ( audiences === undefined ) {
-			dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
+			registry.dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
+		}
+	},
+
+	*getAudienceSegmentationSetupCompletedBy() {
+		const registry = yield commonActions.getRegistry();
+		const { select } = registry;
+
+		const audienceSegmentationSetupCompletedBy =
+			select(
+				MODULES_ANALYTICS_4
+			).getAudienceSegmentationSetupCompletedBy();
+
+		if ( audienceSegmentationSetupCompletedBy === undefined ) {
+			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
 		}
 	},
 };
@@ -211,16 +210,16 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_AVAILABLE_AUDIENCES:
 			const { availableAudiences } = payload;
-			state.audienceSettings = {
-				...state.audienceSettings,
+			state.settings = {
+				...state.settings,
 				availableAudiences,
 			};
 			break;
 
 		case SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY:
 			const { audienceSegmentationSetupCompletedBy } = payload;
-			state.audienceSettings = {
-				...state.audienceSettings,
+			state.settings = {
+				...state.settings,
 				audienceSegmentationSetupCompletedBy,
 			};
 			break;
@@ -240,7 +239,7 @@ const baseSelectors = {
 	 * @return {(Array|null)} Available audiences, or `undefined` if not loaded.
 	 */
 	getAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
+		return state.settings?.availableAudiences;
 	},
 	/**
 	 * Gets the user who set up Audience Segmentation.
@@ -251,18 +250,17 @@ const baseSelectors = {
 	 * @return {(number|null)} ID for the user who set up Audience Segmentation, or `undefined` if not loaded.
 	 */
 	getAudienceSegmentationSetupCompletedBy( state ) {
-		return state.audienceSettings?.audienceSegmentationSetupCompletedBy;
+		return state.settings?.audienceSegmentationSetupCompletedBy;
 	},
 
 	getAudienceSettings( state ) {
-		return state.audienceSettings;
+		return state.settings;
 	},
 };
 
 const store = combineStores(
 	fetchGetAudienceSettingsStore,
 	fetchSaveAudienceSettingsStore,
-	fetchSyncAvailableAudiencesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

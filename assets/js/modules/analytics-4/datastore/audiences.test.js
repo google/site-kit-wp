@@ -2308,6 +2308,10 @@ describe( 'modules/analytics-4 audiences', () => {
 			'properties/12345/audiences/5', // Test audience.
 		];
 
+		beforeEach( () => {
+			provideUserAuthentication( registry );
+		} );
+
 		describe( 'getAvailableAudiences', () => {
 			const availableAudiences = [
 				{
@@ -2332,26 +2336,27 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect( audiences ).toEqual( availableAudiences );
 			} );
 
-			it( 'should sync cached audiences when the availableAudiences setting is null for authenticated user', async () => {
+			it( 'should sync cached audiences when the availableAudiences setting is undefined for authenticated user', async () => {
 				provideUserAuthentication( registry );
-
 				muteFetch( audienceSettingsEndpoint );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					configuredAudiences: [
+						'properties/12345/audiences/1',
+						'properties/12345/audiences/2',
+					],
+				} );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
 					status: 200,
 				} );
 
-				// Simulate a scenario where getAvailableAudiences is null.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( null );
-
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
-				).toBeNull();
+				).toBeUndefined();
 
 				// Wait until the resolver has finished fetching the audiences.
 				await untilResolved(
@@ -2359,14 +2364,14 @@ describe( 'modules/analytics-4 audiences', () => {
 					MODULES_ANALYTICS_4
 				).getAvailableAudiences();
 
+				await waitForDefaultTimeouts();
+
 				const audiences = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAvailableAudiences();
 
 				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
 				expect( audiences ).toEqual( availableAudiences );
-
-				await waitForDefaultTimeouts();
 			} );
 		} );
 
@@ -2419,6 +2424,18 @@ describe( 'modules/analytics-4 audiences', () => {
 
 		describe( 'isSiteKitAudience', () => {
 			it( 'should return `true` if the audience is a Site Kit audience', () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					configuredAudiences: [
+						'properties/12345/audiences/1',
+						'properties/12345/audiences/2',
+					],
+				} );
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					availableAudiences: availableAudiencesFixture,
 				} );
@@ -2466,6 +2483,18 @@ describe( 'modules/analytics-4 audiences', () => {
 
 		describe( 'isUserAudience', () => {
 			it( 'should return `true` if the audience is a user audience', () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					configuredAudiences: [
+						'properties/12345/audiences/1',
+						'properties/12345/audiences/2',
+					],
+				} );
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					availableAudiences: availableAudiencesFixture,
 				} );
@@ -2525,6 +2554,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 			it( 'returns undefined when available audiences have not loaded', async () => {
 				freezeFetch( availableAudiences );
+				freezeFetch( syncAvailableAudiencesEndpoint );
 
 				expect(
 					registry
@@ -2779,6 +2809,18 @@ describe( 'modules/analytics-4 audiences', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					configuredAudiences: [
+						'properties/12345/audiences/1',
+						'properties/12345/audiences/2',
+					],
+				} );
 			} );
 
 			it( 'should return `undefined` if the configurable audiences are not loaded', () => {

@@ -757,19 +757,7 @@ const baseReducer = ( state, { type } ) => {
 	}
 };
 
-const baseResolvers = {
-	*getAvailableAudiences() {
-		const registry = yield commonActions.getRegistry();
-		const { select } = registry;
-
-		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-		// If available audiences not present, sync the audience in state.
-		if ( audiences === null ) {
-			yield baseActions.syncAvailableAudiences();
-		}
-	},
-};
+const baseResolvers = {};
 
 const baseSelectors = {
 	/**
