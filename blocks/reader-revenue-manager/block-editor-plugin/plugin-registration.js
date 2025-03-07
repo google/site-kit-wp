@@ -26,13 +26,14 @@ import { registerPlugin } from '@wordpress-core/plugins';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../assets/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
 import SettingPanel from './SettingPanel';
 
 const { select, resolveSelect } = Data;
 
-export function registerReaderRevenueManagerPlugin() {
+export async function registerReaderRevenueManagerPlugin() {
 	// Only allow the plugin to be registered in the post editor.
 	const isSiteEditor = !! select( CORE_EDIT_SITE );
 
@@ -40,20 +41,35 @@ export function registerReaderRevenueManagerPlugin() {
 		return;
 	}
 
-	return Promise.all( [
+	await Promise.all( [
 		resolveSelect( CORE_MODULES ).getModules(),
+		resolveSelect( CORE_USER ).getUser(),
 		resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
-	] ).then( () => {
-		const isRRMConnected = select( CORE_MODULES ).isModuleConnected(
-			'reader-revenue-manager'
-		);
+	] );
 
-		if ( ! isRRMConnected ) {
-			return;
-		}
+	const isRRMConnected = select( CORE_MODULES ).isModuleConnected(
+		'reader-revenue-manager'
+	);
 
-		registerPlugin( 'googlesitekit-rrm-plugin', {
-			render: SettingPanel,
-		} );
+	if ( ! isRRMConnected ) {
+		return;
+	}
+
+	let hasModuleOwnershipOrAccess = select( CORE_MODULES ).hasModuleOwnership(
+		'reader-revenue-manager'
+	);
+
+	if ( hasModuleOwnershipOrAccess === false ) {
+		hasModuleOwnershipOrAccess = await resolveSelect(
+			CORE_MODULES
+		).hasModuleAccess( 'reader-revenue-manager' );
+	}
+
+	if ( ! hasModuleOwnershipOrAccess ) {
+		return null;
+	}
+
+	registerPlugin( 'googlesitekit-rrm-plugin', {
+		render: SettingPanel,
 	} );
 }

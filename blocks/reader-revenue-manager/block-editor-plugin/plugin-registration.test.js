@@ -29,6 +29,9 @@ jest.mock(
 jest.mock( '@wordpress-core/edit-post', () => ( {} ), {
 	virtual: true,
 } );
+jest.mock( '@wordpress-core/editor', () => ( {} ), {
+	virtual: true,
+} );
 jest.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
@@ -37,32 +40,43 @@ jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../assets/js/modules/reader-revenue-manager/datastore/constants';
-import { provideModules } from '../../../tests/js/utils';
+import { registerStore as registerCoreModulesStore } from '../../../assets/js/googlesitekit/modules';
+import { registerStore as registerCoreUserStore } from '../../../assets/js/googlesitekit/datastore/user';
+import { registerStore as registerReaderRevenueManagerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
+import { provideModules, provideUserInfo } from '../../../tests/js/utils';
 import { registerPlugin } from '@wordpress-core/plugins';
-import { registerStore } from '../../../assets/js/modules/reader-revenue-manager/datastore';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
-
-registerStore( Data );
 
 const { dispatch } = Data;
 
 describe( 'registerReaderRevenueManagerPlugin', () => {
+	const rrmModuleDefaults = {
+		slug: 'reader-revenue-manager',
+		active: true,
+		connected: true,
+		storeName: MODULES_READER_REVENUE_MANAGER,
+		owner: 1,
+	};
+
 	beforeEach( () => {
-		jest.clearAllMocks();
+		registerCoreModulesStore( Data );
+		registerCoreUserStore( Data );
+		registerReaderRevenueManagerStore( Data );
 
 		dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
 			publicationID: 'ABCDEFGH',
+			ownerID: 1,
 		} );
 	} );
 
-	it( 'should register the plugin if the module is connected', async () => {
-		provideModules( Data, [
-			{
-				slug: 'reader-revenue-manager',
-				active: true,
-				connected: true,
-			},
-		] );
+	afterEach( () => {
+		jest.clearAllMocks();
+	} );
+
+	it( 'should register the plugin if the module is connected and the user has ownership', async () => {
+		provideModules( Data, [ rrmModuleDefaults ] );
+
+		provideUserInfo( Data );
 
 		await registerReaderRevenueManagerPlugin();
 
@@ -74,11 +88,53 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		);
 	} );
 
+	it( 'should register the plugin if the module is connected and the user has access', async () => {
+		provideModules( Data, [ rrmModuleDefaults ] );
+
+		provideUserInfo( Data );
+
+		dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			ownerID: 2,
+		} );
+
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
+			{ body: { access: true } }
+		);
+
+		await registerReaderRevenueManagerPlugin();
+
+		expect( registerPlugin ).toHaveBeenCalledWith(
+			'googlesitekit-rrm-plugin',
+			{
+				render: SettingPanel,
+			}
+		);
+	} );
+
+	it( 'should not register the plugin if the module is connected and does not have ownership or access', async () => {
+		provideModules( Data, [ rrmModuleDefaults ] );
+
+		provideUserInfo( Data );
+
+		dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			ownerID: 2,
+		} );
+
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
+			{ body: { access: false } }
+		);
+
+		await registerReaderRevenueManagerPlugin();
+
+		expect( registerPlugin ).not.toHaveBeenCalled();
+	} );
+
 	it( 'should not register the plugin if the module is not connected', async () => {
 		provideModules( Data, [
 			{
-				slug: 'reader-revenue-manager',
-				active: true,
+				...rrmModuleDefaults,
 				connected: false,
 			},
 		] );
