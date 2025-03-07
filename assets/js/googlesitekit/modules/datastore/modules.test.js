@@ -1813,7 +1813,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnership( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
 
@@ -1842,7 +1842,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnership( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
 
@@ -1863,7 +1863,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnership( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
 			} );
@@ -1876,7 +1876,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnership( 'search-console' );
 
 				expect( moduleAccess ).toBe( true );
 			} );
