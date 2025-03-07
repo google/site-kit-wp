@@ -22,7 +22,7 @@
  * @param {boolean} hasModuleAccess           Whether the user has module access.
  * @param {string}  withModuleAccessNotice    Notice when the user has module access.
  * @param {string}  withoutModuleAccessNotice Notice when the user does not have module access.
- * @return {string|null} Notice.
+ * @return {string|null} Notice text. Returns `null` if `hasModuleAccess` is `undefined`.
  */
 function getNoticeWithModuleAccess(
 	hasModuleAccess,

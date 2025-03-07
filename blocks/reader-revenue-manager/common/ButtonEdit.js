@@ -63,6 +63,7 @@ export default function ButtonEdit( {
 
 	const blockProps = useBlockProps();
 
+	// Determine if the user has access to the module.
 	useEffect( () => {
 		async function getModuleAccess() {
 			let hasModuleOwnershipOrAccess = select(

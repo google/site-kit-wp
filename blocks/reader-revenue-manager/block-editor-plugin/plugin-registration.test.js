@@ -50,7 +50,6 @@ import { registerReaderRevenueManagerPlugin } from './plugin-registration';
 const { dispatch } = Data;
 
 describe( 'registerReaderRevenueManagerPlugin', () => {
-	// let registry;
 	const rrmModuleDefaults = {
 		slug: 'reader-revenue-manager',
 		active: true,
