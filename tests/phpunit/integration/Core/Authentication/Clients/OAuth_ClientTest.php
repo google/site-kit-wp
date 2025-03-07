@@ -24,6 +24,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Query;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
@@ -86,24 +87,26 @@ class OAuth_ClientTest extends TestCase {
 			$client->get_client(),
 			function ( Request $request ) use ( $activity_metrics ) {
 				if ( 0 !== strpos( $request->getUri(), 'https://oauth2.googleapis.com/token' ) ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				$body = Query::parse( $request->getBody() );
 
 				// Ensure the token refresh request contains the set of active consumers.
 				if ( $activity_metrics->get_for_refresh_token()['active_consumers'] !== $body['active_consumers'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'access_token' => 'new-test-access-token',
-							'expires_in'   => 3599,
-							'token_type'   => 'Bearer',
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
 						)
 					)
 				);
@@ -466,23 +469,25 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'emailAddresses' => array(
-								array( 'value' => 'fresh@foo.com' ),
-							),
-							'photos'         => array(
-								array( 'url' => 'https://example.com/fresh.jpg' ),
-							),
-							'names'          => array(
-								array( 'displayName' => 'Dr Funkenstein' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
 						)
 					)
 				);
@@ -529,23 +534,25 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'emailAddresses' => array(
-								array( 'value' => 'fresh@foo.com' ),
-							),
-							'photos'         => array(
-								array( 'url' => 'https://example.com/fresh.jpg' ),
-							),
-							'names'          => array(
-								array( 'displayName' => 'Dr Funkenstein' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
 						)
 					)
 				);
@@ -632,10 +639,10 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 				// Return a failing response
-				return new Response( 500 );
+				return new FulfilledPromise( new Response( 500 ) );
 			}
 		);
 
@@ -670,22 +677,24 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'emailAddresses' => array(
-								array( 'value' => 'fresh@foo.com' ),
-							),
-							'photos'         => array(
-								array( 'url' => 'https://example.com/fresh.jpg' ),
-							),
-							'names'          => array(
-								array( 'displayName' => 'Dr Funkenstein' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
 						)
 					)
 				);

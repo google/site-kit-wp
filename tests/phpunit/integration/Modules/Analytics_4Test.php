@@ -58,6 +58,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
@@ -468,17 +469,19 @@ class Analytics_4Test extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				switch ( $url['path'] ) {
 					case '/v1beta/properties':
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'name' => "properties/{$property_id}",
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode(
+									array(
+										'name' => "properties/{$property_id}",
+									)
 								)
 							)
 						);
@@ -490,26 +493,30 @@ class Analytics_4Test extends TestCase {
 						$datastream->setType( 'WEB_DATA_STREAM' );
 						$datastream->setWebStreamData( $data );
 
-						return new Response(
-							200,
-							array(),
-							json_encode( $datastream->toSimpleObject() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $datastream->toSimpleObject() )
+							)
 						);
 					case '/tagmanager/v2/accounts/containers:lookup':
 						$data = new Container();
 						$data->setAccountId( $google_tag_account_id );
 						$data->setContainerId( $google_tag_container_id );
 						$data->setTagIds( $tag_ids );
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								$data->toSimpleObject()
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode(
+									$data->toSimpleObject()
+								)
 							)
 						);
 
 					default:
-						return new Response( 200 );
+						return new FulfilledPromise( new Response( 200 ) );
 				}
 			}
 		);
@@ -611,17 +618,19 @@ class Analytics_4Test extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				switch ( $url['path'] ) {
 					case '/v1beta/properties':
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'name' => "properties/{$property_id}",
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode(
+									array(
+										'name' => "properties/{$property_id}",
+									)
 								)
 							)
 						);
@@ -633,46 +642,50 @@ class Analytics_4Test extends TestCase {
 						$datastream->setType( 'WEB_DATA_STREAM' );
 						$datastream->setWebStreamData( $data );
 
-						return new Response(
-							200,
-							array(),
-							json_encode( $datastream->toSimpleObject() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $datastream->toSimpleObject() )
+							)
 						);
 					case '/tagmanager/v2/accounts/containers:lookup':
-						return new Response(
-							403,
-							array(),
-							json_encode(
-								array(
-									'error' => array(
-										'code'    => 403,
-										'message' => 'Request had insufficient authentication scopes.',
-										'errors'  => array(
-											array(
-												'message' => 'Insufficient Permission',
-												'domain'  => 'global',
-												'reason'  => 'insufficientPermissions',
+						return new FulfilledPromise(
+							new Response(
+								403,
+								array(),
+								json_encode(
+									array(
+										'error' => array(
+											'code'    => 403,
+											'message' => 'Request had insufficient authentication scopes.',
+											'errors'  => array(
+												array(
+													'message' => 'Insufficient Permission',
+													'domain'  => 'global',
+													'reason'  => 'insufficientPermissions',
+												),
 											),
-										),
-										'status'  => 'PERMISSION_DENIED',
-										'details' => array(
-											array(
-												'@type'    => 'type.googleapis.com/google.rpc.ErrorInfo',
-												'reason'   => 'ACCESS_TOKEN_SCOPE_INSUFFICIENT',
-												'domain'   => 'googleapis.com',
-												'metadata' => array(
-													'method'  => 'container_tag.apiary_v2.TagManagerServiceV2.LookupContainer',
-													'service' => 'tagmanager.googleapis.com',
+											'status'  => 'PERMISSION_DENIED',
+											'details' => array(
+												array(
+													'@type'    => 'type.googleapis.com/google.rpc.ErrorInfo',
+													'reason'   => 'ACCESS_TOKEN_SCOPE_INSUFFICIENT',
+													'domain'   => 'googleapis.com',
+													'metadata' => array(
+														'method'  => 'container_tag.apiary_v2.TagManagerServiceV2.LookupContainer',
+														'service' => 'tagmanager.googleapis.com',
+													),
 												),
 											),
 										),
-									),
+									)
 								)
 							)
 						);
 
 					default:
-						return new Response( 200 );
+						return new FulfilledPromise( new Response( 200 ) );
 				}
 			}
 		);
@@ -761,7 +774,7 @@ class Analytics_4Test extends TestCase {
 				);
 
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
-					return new Response( 403 ); // Includes container lookup
+					return new FulfilledPromise( new Response( 403 ) ); // Includes container lookup
 				}
 
 				switch ( $url['path'] ) {
@@ -770,11 +783,13 @@ class Analytics_4Test extends TestCase {
 						$property->setCreateTime( '2022-09-09T09:18:05.968Z' );
 						$property->setName( "properties/{$property_id}" );
 
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								$property
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode(
+									$property
+								)
 							)
 						);
 					case "/v1beta/properties/{$property_id}/dataStreams":
@@ -785,23 +800,27 @@ class Analytics_4Test extends TestCase {
 						$datastream->setType( 'WEB_DATA_STREAM' );
 						$datastream->setWebStreamData( $data );
 
-						return new Response(
-							200,
-							array(),
-							json_encode( $datastream->toSimpleObject() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $datastream->toSimpleObject() )
+							)
 						);
 					case "/v1alpha/properties/{$property_id}/dataStreams/$webdatastream_id/enhancedMeasurementSettings":
 						$body = json_decode( $request->getBody(), true );
 						$data = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings( $body );
 
-						return new Response(
-							200,
-							array(),
-							json_encode( $data->toSimpleObject() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $data->toSimpleObject() )
+							)
 						);
 
 					default:
-						return new Response( 200 );
+						return new FulfilledPromise( new Response( 200 ) );
 				}
 			}
 		);
@@ -929,7 +948,7 @@ class Analytics_4Test extends TestCase {
 					$provision_account_ticket_request = $request;
 				}
 
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
@@ -973,7 +992,7 @@ class Analytics_4Test extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				switch ( $url['path'] ) {
@@ -983,7 +1002,7 @@ class Analytics_4Test extends TestCase {
 						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
 						$response->setAccountTicketId( $account_ticket_id );
 
-						return new Response( 200, array(), json_encode( $response ) );
+						return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 
 					default:
 						throw new Exception( 'Not implemented' );
@@ -1371,7 +1390,7 @@ class Analytics_4Test extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 				switch ( $url['path'] ) {
 					case '/tagmanager/v2/accounts/containers:lookup':
@@ -1379,16 +1398,18 @@ class Analytics_4Test extends TestCase {
 						$data->setAccountId( '123' );
 						$data->setContainerId( '456' );
 						$data->setTagIds( $tag_ids_data[0] );
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								$data->toSimpleObject()
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode(
+									$data->toSimpleObject()
+								)
 							)
 						);
 
 					default:
-						return new Response( 200 );
+						return new FulfilledPromise( new Response( 200 ) );
 				}
 			}
 		);
@@ -2899,13 +2920,15 @@ class Analytics_4Test extends TestCase {
 				$url = parse_url( $request->getUri() );
 				if ( "/v1beta/properties/$property_id/customDimensions" === $url['path'] ) {
 					$custom_dimension = new GoogleAnalyticsAdminV1betaCustomDimension( $raw_custom_dimension );
-					return new Response(
-						200,
-						array(),
-						json_encode( $custom_dimension )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $custom_dimension )
+						)
 					);
 				}
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
@@ -3022,7 +3045,7 @@ class Analytics_4Test extends TestCase {
 					true
 				)
 			) {
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 
 			if ( is_callable( $local_request_handler ) ) {
@@ -3032,46 +3055,50 @@ class Analytics_4Test extends TestCase {
 			switch ( $url['path'] ) {
 				case "/v1beta/properties/$property_id:runReport":
 					// Return a mock report.
-					return new Response(
-						200,
-						array(),
-						json_encode(
-							array(
-								'kind' => 'analyticsData#runReport',
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
 								array(
-									'rows' => array(
-										array(
-											'metricValues' => array(
-												array(
-													'value' => 'some-value',
+									'kind' => 'analyticsData#runReport',
+									array(
+										'rows' => array(
+											array(
+												'metricValues' => array(
+													array(
+														'value' => 'some-value',
+													),
 												),
 											),
 										),
 									),
-								),
+								)
 							)
 						)
 					);
 
 				case "/v1beta/properties/$property_id:runPivotReport":
 					// Return a mock pivot report.
-					return new Response(
-						200,
-						array(),
-						json_encode(
-							array(
-								'kind' => 'analyticsData#runPivotReport',
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
 								array(
-									'rows' => array(
-										array(
-											'metricValues' => array(
-												array(
-													'value' => 'some-value',
+									'kind' => 'analyticsData#runPivotReport',
+									array(
+										'rows' => array(
+											array(
+												'metricValues' => array(
+													array(
+														'value' => 'some-value',
+													),
 												),
 											),
 										),
 									),
-								),
+								)
 							)
 						)
 					);
@@ -3084,10 +3111,12 @@ class Analytics_4Test extends TestCase {
 					$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
 					$conversion_events->setConversionEvents( array( $conversion_event ) );
 
-					return new Response(
-						200,
-						array(),
-						json_encode( $conversion_events )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $conversion_events )
+						)
 					);
 
 				case "/v1beta/properties/$property_id/customDimensions":
@@ -3098,10 +3127,12 @@ class Analytics_4Test extends TestCase {
 					$custom_dimension->setScope( 'EVENT' );
 					$custom_dimension->setDisallowAdsPersonalization( false );
 
-					return new Response(
-						200,
-						array(),
-						json_encode( $custom_dimension )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $custom_dimension )
+						)
 					);
 
 				case "/v1alpha/properties/$property_id/audiences":
@@ -3113,14 +3144,16 @@ class Analytics_4Test extends TestCase {
 					$audiences = new GoogleAnalyticsAdminV1alphaListAudiencesResponse();
 					$audiences->setAudiences( $fixture );
 
-					return new Response(
-						200,
-						array(),
-						json_encode( $audiences )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $audiences )
+						)
 					);
 
 				default:
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 			}
 		};
 	}
@@ -3150,7 +3183,7 @@ class Analytics_4Test extends TestCase {
 					true
 				)
 			) {
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 
 			switch ( $url['path'] ) {
@@ -3172,14 +3205,16 @@ class Analytics_4Test extends TestCase {
 					$custom_dimensions = new GoogleAnalyticsAdminV1betaListCustomDimensionsResponse();
 					$custom_dimensions->setCustomDimensions( array( $custom_dimension1, $custom_dimension2 ) );
 
-					return new Response(
-						200,
-						array(),
-						json_encode( $custom_dimensions )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $custom_dimensions )
+						)
 					);
 
 				default:
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 			}
 		};
 	}
@@ -3211,7 +3246,7 @@ class Analytics_4Test extends TestCase {
 					true
 				)
 			) {
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 
 			switch ( $url['path'] ) {
@@ -3219,14 +3254,16 @@ class Analytics_4Test extends TestCase {
 					$enhanced_measurement_settings = new EnhancedMeasurementSettingsModel();
 					$enhanced_measurement_settings->setStreamEnabled( true );
 
-					return new Response(
-						200,
-						array(),
-						json_encode( $enhanced_measurement_settings )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $enhanced_measurement_settings )
+						)
 					);
 
 				default:
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 			}
 		};
 	}
@@ -3897,7 +3934,7 @@ class Analytics_4Test extends TestCase {
 				$response = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse();
 				$response->setAdsenseLinks( array( $mock_adSenseLink ) );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 
@@ -4303,14 +4340,16 @@ class Analytics_4Test extends TestCase {
 					$audiences = new GoogleAnalyticsAdminV1alphaListAudiencesResponse();
 					$audiences->setAudiences( $raw_audiences );
 
-					return new Response(
-						200,
-						array(),
-						json_encode( $audiences )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $audiences )
+						)
 					);
 				}
 
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
