@@ -35,7 +35,7 @@ export function isValidConversionID( value ) {
 /**
  * Checks if the given paxConversionID ID is valid.
  *
- * @since 1.126.0
+ * @since n.e.x.t
  *
  * @param {*} value Ads Conversion Tracking ID to test.
  * @return {boolean} Whether or not the given ID is valid.
@@ -49,7 +49,7 @@ export function isValidPaxConversionID( value ) {
 /**
  * Checks if the given extCustomerID ID is valid.
  *
- * @since 1.126.0
+ * @since n.e.x.t
  *
  * @param {*} value PAX external customer ID to test.
  * @return {boolean} Whether or not the given ID is valid.
