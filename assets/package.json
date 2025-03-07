@@ -72,8 +72,7 @@
 		"react-router-dom": "^5.2.0",
 		"react-use": "^15.3.4",
 		"react-use-observer": "^2.2.4",
-		"use-memo-one": "^1.1.2",
-		"whatwg-fetch": "^3.2.0"
+		"use-memo-one": "^1.1.2"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.8",
