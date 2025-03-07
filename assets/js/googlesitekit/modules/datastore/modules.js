@@ -1262,17 +1262,18 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if current user has ownership or access to the given module.
+	 * Checks if current user has ownership of the given module.
 	 *
-	 * @since 1.92.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
-	 *                               `false` if the user doesn't have ownership or access.
-	 *                               `undefined` If the state is still being resolved,
+	 * @return {(boolean|null|undefined)} `true` if the user has ownership.
+	 *                               			`false` if the user doesn't have ownership.
+	 *                               			`null` if the module doesn't exist.
+	 *                               			`undefined` If the state is still being resolved,
 	 */
-	hasModuleOwnershipOrAccess: createRegistrySelector(
+	hasModuleOwnership: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
 			const moduleStoreName =
 				select( CORE_MODULES ).getModuleStoreName( moduleSlug );
@@ -1285,7 +1286,7 @@ const baseSelectors = {
 			// This is either caused by a module not being loaded or an incorrect module
 			// name being used.
 			if ( select( moduleStoreName ) === null ) {
-				return false;
+				return null;
 			}
 
 			const moduleOwnerID = select( moduleStoreName ).getOwnerID();
@@ -1298,6 +1299,39 @@ const baseSelectors = {
 
 			if ( moduleOwnerID === loggedInUserID ) {
 				return true;
+			}
+
+			return false;
+		}
+	),
+
+	/**
+	 * Checks if current user has ownership or access to the given module.
+	 *
+	 * @since 1.92.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
+	 *                               `false` if the user doesn't have ownership or access.
+	 *                               `undefined` If the state is still being resolved,
+	 */
+	hasModuleOwnershipOrAccess: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			const hasOwnership =
+				select( CORE_MODULES ).hasModuleOwnership( moduleSlug );
+
+			if ( hasOwnership === true ) {
+				return true;
+			}
+
+			if ( hasOwnership === undefined ) {
+				return undefined;
+			}
+
+			// If the module doesn't exist, the user can't have ownership or access.
+			if ( hasOwnership === null ) {
+				return false;
 			}
 
 			return select( CORE_MODULES ).hasModuleAccess( moduleSlug );
