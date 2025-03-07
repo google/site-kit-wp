@@ -25,6 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,8 +39,6 @@ import SubtleNotification from '../../../../googlesitekit/notifications/componen
 import useQueryArg from '../../../../hooks/useQueryArg';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
-import { useSelect } from '@wordpress/data';
-import { useCallback } from '@wordpress/element';
 
 export default function PAXSetupSuccessSubtleNotification( {
 	id,
