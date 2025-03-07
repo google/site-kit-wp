@@ -128,7 +128,6 @@
 		"@wordpress/icons": "^2.9.0",
 		"@wordpress/keycodes": "^3.2.4",
 		"@wordpress/url": "^3.1.1",
-		"accessible-autocomplete": "^2.0.3",
 		"classnames": "^2.2.6",
 		"clipboard-copy": "^3.1.0",
 		"compare-versions": "^3.6.0",
