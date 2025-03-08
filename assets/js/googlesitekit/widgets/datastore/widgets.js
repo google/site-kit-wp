@@ -84,6 +84,7 @@ export const actions = {
 	 * @param {Function}              [settings.isActive]          Optional. Callback function to determine if the widget is active.
 	 * @param {Function}              [settings.isPreloaded]       Optional. Callback function to determine if the widget should be preloaded if not active (requires isActive).
 	 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
+	 * @param {string|Array.<string>} [settings.metadata]          Optional. Object with additional data for the widget.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -97,6 +98,7 @@ export const actions = {
 			isActive,
 			isPreloaded,
 			hideOnBreakpoints,
+			metadata = {},
 		} = {}
 	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
@@ -121,6 +123,7 @@ export const actions = {
 					isActive,
 					isPreloaded,
 					hideOnBreakpoints,
+					metadata,
 				},
 			},
 			type: REGISTER_WIDGET,
