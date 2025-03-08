@@ -25,16 +25,18 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { getNavigationalScrollTop } from '../../../../util/scroll';
+import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 
@@ -42,31 +44,29 @@ export default function PAXSetupSuccessSubtleNotification( {
 	id,
 	Notification,
 } ) {
-	const breakpoint = useBreakpoint();
-
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
-	const dismissNotice = () => {
+	const dismissNotice = useCallback( () => {
 		setNotification( undefined );
-	};
+	}, [ setNotification ] );
 
-	const scrollToWidget = ( event ) => {
-		event.preventDefault();
+	const accountSelectorWrappedAccountOverviewURL = useSelect( ( select ) => {
+		const accountOverviewURL =
+			select( MODULES_ADS ).getAccountOverviewURL();
 
-		setTimeout( () => {
-			const widgetClass = '.googlesitekit-widget--partnerAdsPAX';
+		if ( !! accountOverviewURL ) {
+			return select( CORE_USER ).getAccountChooserURL(
+				accountOverviewURL
+			);
+		}
+	} );
 
-			global.scrollTo( {
-				top: getNavigationalScrollTop( widgetClass, breakpoint ),
-				behavior: 'smooth',
-			} );
-
-			dismissNotice();
-			dismissNotification( id );
-		}, 50 );
-	};
+	const onPrimaryCTAClickCallback = useCallback( () => {
+		dismissNotice();
+		dismissNotification( id );
+	}, [ dismissNotice, dismissNotification, id ] );
 
 	return (
 		<Notification>
@@ -91,7 +91,9 @@ export default function PAXSetupSuccessSubtleNotification( {
 					<CTALinkSubtle
 						id={ id }
 						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
-						onCTAClick={ scrollToWidget }
+						ctaLink={ accountSelectorWrappedAccountOverviewURL }
+						onCTAClick={ onPrimaryCTAClickCallback }
+						isCTALinkExternal
 					/>
 				}
 			/>

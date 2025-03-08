@@ -100,8 +100,15 @@ export default function SetupMainPAX( { finishSetup } ) {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { setPaxConversionID, setExtCustomerID, submitChanges } =
-		useDispatch( MODULES_ADS );
+	const {
+		setPaxConversionID,
+		setCustomerID,
+		setExtCustomerID,
+		setFormattedExtCustomerID,
+		setUserID,
+		setAccountOverviewURL,
+		submitChanges,
+	} = useDispatch( MODULES_ADS );
 
 	useMount( () => {
 		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
@@ -128,6 +135,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		const { accountService, conversionTrackingIdService } =
 			paxAppRef.current.getServices();
 		const customerData = await accountService.getAccountId( {} );
+		const googleAdsURLData = await accountService.getGoogleAdsUrl( {} );
 		const conversionTrackingData =
 			await conversionTrackingIdService.getConversionTrackingId( {} );
 
@@ -138,8 +146,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
+		setUserID( customerData.userId );
+		setCustomerID( customerData.customerId );
 		setExtCustomerID( customerData.externalCustomerId );
+		setFormattedExtCustomerID( customerData.formattedExternalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
+		setAccountOverviewURL( googleAdsURLData.accountOverviewUrl );
 		/* eslint-enable sitekit/acronym-case */
 
 		// Here we save settings right away but leave final navigation to `onSetupComplete`.
