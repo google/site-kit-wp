@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Config found" notification variation 1`] = `
+<div>
+  <section
+    class="googlesitekit-publisher-win"
+    id="google-tag-id-mismatch"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-12-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+        >
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+          >
+            Update Site Kit's Analytics configuration to continue seeing Analytics data on the dashboard
+          </h3>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p>
+              <span>
+                The Google Tag on your site is no longer associated with your current Google Analytics property "Test GA4 Property (1000)". It is now recording metrics to another Google Analytics property "Another GA4 Property (1001)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.
+              </span>
+               
+            </p>
+          </div>
+          <div
+            class="googlesitekit-publisher-win__actions"
+          >
+            <button
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Use new property
+              </span>
+            </button>
+            <button
+              class="mdc-button mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Keep existing property
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Config not found" notification variation 1`] = `
+<div>
+  <section
+    class="googlesitekit-publisher-win"
+    id="google-tag-id-mismatch"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-12-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+        >
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+          >
+            Your Google tag configuration has changed
+          </h3>
+          <div
+            class="googlesitekit-publisher-win__desc"
+          >
+            <p>
+              <span>
+                The Google tag for your Google Analytics configuration has changed from GT-123 to GT-NBQN9V2. To keep using your current Google Analytics property "Test GA4 Property (1000)", you need to configure Site Kit to place the new Google tag GT-NBQN9V2 instead.
+              </span>
+               
+            </p>
+          </div>
+          <button
+            class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Update Google tag to GT-NBQN9V2
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
