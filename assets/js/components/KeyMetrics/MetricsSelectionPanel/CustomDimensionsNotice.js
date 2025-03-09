@@ -34,7 +34,6 @@ import {
 	EDIT_SCOPE,
 } from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { elementsOverlap } from '../../../util/geometry';
 import whenActive from '../../../util/when-active';
 
@@ -46,9 +45,10 @@ function CustomDimensionsNotice() {
 		)
 	);
 
-	const requiredCustomDimensions = selectedMetrics?.flatMap( ( tileName ) => {
-		const tile = KEY_METRICS_WIDGETS[ tileName ];
-		return tile?.requiredCustomDimensions || [];
+	const requiredCustomDimensions = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).getCustomDimensionsForWidgets(
+			selectedMetrics
+		);
 	} );
 
 	const hasMissingCustomDimensions = useInViewSelect(

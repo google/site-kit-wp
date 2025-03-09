@@ -48,7 +48,6 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
@@ -76,9 +75,10 @@ export default function Footer( {
 	);
 	const trackingCategory = `${ viewContext }_kmw-sidebar`;
 
-	const requiredCustomDimensions = selectedMetrics?.flatMap( ( tileName ) => {
-		const tile = KEY_METRICS_WIDGETS[ tileName ];
-		return tile?.requiredCustomDimensions || [];
+	const requiredCustomDimensions = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).getCustomDimensionsForWidgets(
+			selectedMetrics
+		);
 	} );
 
 	const hasMissingCustomDimensions = useInViewSelect(

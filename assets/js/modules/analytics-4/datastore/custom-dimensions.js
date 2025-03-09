@@ -39,7 +39,7 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const customDimensionFields = [
@@ -124,29 +124,16 @@ const baseActions = {
 			] )
 		);
 
-		const selectedMetricTiles = registry
-			.select( CORE_USER )
-			.getKeyMetrics();
-
-		// Extract required custom dimensions from selected metric tiles.
-		const requiredCustomDimensions = selectedMetricTiles.flatMap(
-			( tileName ) => {
-				const tile = KEY_METRICS_WIDGETS[ tileName ];
-				return tile?.requiredCustomDimensions || [];
-			}
-		);
-
-		// Deduplicate if any custom dimensions are repeated among tiles.
-		const uniqueRequiredCustomDimensions = [
-			...new Set( requiredCustomDimensions ),
-		];
+		const requiredCustomDimensions = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getRequiredCustomDimensions();
 
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableCustomDimensions();
 
 		// Find out the missing custom dimensions.
-		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
+		const missingCustomDimensions = requiredCustomDimensions.filter(
 			( dimension ) => ! availableCustomDimensions?.includes( dimension )
 		);
 
@@ -422,6 +409,55 @@ const baseSelectors = {
 	getSyncTimeoutID( state ) {
 		return state?.syncTimeoutID;
 	},
+
+	/**
+	 * Gets the required custom dimensions for the provided widget slugs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}        state       Data store's state.
+	 * @param {Array<string>} widgetSlugs Widget slugs to get required custom dimensions for.
+	 * @return {Array<string>} Required custom dimensions.
+	 */
+	getCustomDimensionsForWidgets: createRegistrySelector(
+		( select ) => ( state, widgetSlugs ) => {
+			if ( widgetSlugs === undefined ) {
+				return [];
+			}
+
+			const widgetSlugsArray = Array.isArray( widgetSlugs )
+				? widgetSlugs
+				: [ widgetSlugs ];
+
+			// Extract required custom dimensions from selected metric tiles.
+			const customDimensions = widgetSlugsArray.flatMap(
+				( widgetSlug ) => {
+					const widget =
+						select( CORE_WIDGETS ).getWidget( widgetSlug );
+					return widget?.metadata?.requiredCustomDimensions || [];
+				}
+			);
+
+			// Deduplicate if any custom dimensions are repeated among tiles.
+			return [ ...new Set( customDimensions ) ];
+		}
+	),
+
+	/**
+	 * Gets the required custom dimensions from the currently
+	 * selected key metric tiles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>} Required custom dimensions.
+	 */
+	getRequiredCustomDimensions: createRegistrySelector( ( select ) => () => {
+		const widgetSlugs = select( CORE_USER ).getKeyMetrics();
+
+		return select( MODULES_ANALYTICS_4 ).getCustomDimensionsForWidgets(
+			widgetSlugs
+		);
+	} ),
 };
 
 const store = combineStores(
