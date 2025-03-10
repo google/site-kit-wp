@@ -32,6 +32,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
@@ -42,6 +43,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Block_Support;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
@@ -69,6 +71,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Module slug name.
@@ -167,6 +170,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				$this->contribute_with_google_block->register();
 				$this->subscribe_with_google_block->register();
 			}
+
+			add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets_for_non_sitekit_user_on_block_editor_page' ), 40 );
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
@@ -551,6 +556,30 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			);
 
+			if ( $this->is_non_sitekit_user() ) {
+				$assets[] = new Script(
+					'blocks-contribute-with-google-non-sitekit-user',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/non-site-kit-user.js',
+						'dependencies'  => array(
+							'googlesitekit-i18n',
+						),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+						'execution'     => 'defer',
+					)
+				);
+
+				$assets[] = new Script(
+					'blocks-subscribe-with-google-non-sitekit-user',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/non-site-kit-user.js',
+						'dependencies'  => array( 'googlesitekit-i18n' ),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+						'execution'     => 'defer',
+					)
+				);
+			}
+
 			$assets[] = new Stylesheet(
 				'blocks-reader-revenue-manager-common-editor-styles',
 				array(
@@ -562,6 +591,42 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		}
 
 		return $assets;
+	}
+
+	private function is_non_sitekit_user() {
+		return ! ( current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD ) );
+	}
+
+	private function is_block_editor_page() {
+		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+		if ( ! $current_screen ) {
+			return false;
+		}
+
+		if ( 'post' === $current_screen->base && 'add' !== $current_screen->action ) {
+			// We're in the post editor.
+			return true;
+		}
+
+		$current_theme = wp_get_theme();
+		if ( method_exists( $current_theme, 'is_block_theme' ) && $current_theme->is_block_theme() && 'site-editor' === $current_screen->base ) {
+			// We're in the site editor.
+			return true;
+		}
+
+		return false;
+	}
+
+	private function enqueue_assets_for_non_sitekit_user_on_block_editor_page() {
+		if ( $this->is_non_sitekit_user() && $this->is_block_editor_page() ) {
+			// Enqueue styles.
+			$this->assets->enqueue_asset( 'blocks-reader-revenue-manager-common-editor-styles' );
+
+			// Enqueue scripts.
+			$this->assets->enqueue_asset( 'blocks-contribute-with-google-non-sitekit-user' );
+			$this->assets->enqueue_asset( 'blocks-subscribe-with-google-non-sitekit-user' );
+		}
 	}
 
 	/**
