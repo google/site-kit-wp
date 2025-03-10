@@ -1,0 +1,17 @@
+{
+    "scripts": {
+        "test": "npm run test:js:watch",
+        "test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=./jest.config.js --passWithNoTests",
+		"test:js:watch": "npm run test:js -- --watch"
+    },
+    "devDependencies": {
+        "@wordpress/jest-console": "^3.9.0",
+        "amphtml-validator": "^1.0.35",
+        "babel-jest": "^26.6.3",
+        "cross-env": "^7.0.3",
+        "jest": "^26.6.3",
+        "jest-puppeteer": "^6.0.1",
+        "jsdom": "^16.5.0",
+        "lodash": "^4.17.21"
+    }
+}
