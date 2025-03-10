@@ -76,7 +76,10 @@ export default function ButtonEdit( {
 				).hasModuleAccess( 'reader-revenue-manager' );
 			}
 
-			setHasModuleAccess( hasModuleOwnershipOrAccess );
+			// Note:hasModuleOwnershipOrAccess maybe expectedly be undefined if
+			// - ownerID is not set for view-only or non-SK users
+			// - the check-access endpoint returns a 403 error for non-SK users
+			setHasModuleAccess( !! hasModuleOwnershipOrAccess );
 		}
 
 		getModuleAccess();
