@@ -77,6 +77,7 @@ import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from '../../components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '../../util';
+import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -568,6 +569,28 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
+	},
+	'module-recovery-alert': {
+		Component: ModuleRecoveryAlert,
+		priority: 320,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_MODULES ).getRecoverableModules();
+			const recoverableModules =
+				select( CORE_MODULES ).getRecoverableModules();
+			const recoverableModulesList = Object.keys(
+				recoverableModules || {}
+			);
+			if (
+				recoverableModules === undefined ||
+				recoverableModulesList.length === 0
+			) {
+				return false;
+			}
+			return true;
+		},
 	},
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
 		Component: ConsentModeSetupCTAWidget,

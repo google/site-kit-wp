@@ -37,13 +37,18 @@ import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
 import ModuleRecoveryAlert from '.';
 
-function Template( { setupRegistry = () => {}, ...args } ) {
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'module-recovery-alert'
+)( ModuleRecoveryAlert );
+
+function Template( { setupRegistry = () => {} } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<ModuleRecoveryAlert { ...args } />
+				<NotificationWithComponentProps />
 			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
@@ -54,18 +59,6 @@ const provideModulesWithRecoverable = ( registry, recoverableModules ) => {
 		registry,
 		recoverableModules.map( ( slug ) => ( { slug, recoverable: true } ) )
 	);
-};
-
-export const LoadingRecoverableModules = Template.bind( {} );
-LoadingRecoverableModules.storyName = 'Loading Recoverable Modules';
-LoadingRecoverableModules.args = {
-	setupRegistry: ( registry ) => {
-		provideModulesWithRecoverable( registry, [ 'search-console' ] );
-	},
-};
-LoadingRecoverableModules.scenario = {
-	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
-	delay: 250,
 };
 
 export const SingleRecoverableModule = Template.bind( {} );
@@ -82,6 +75,7 @@ SingleRecoverableModule.args = {
 	},
 };
 SingleRecoverableModule.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (with access)',
 	delay: 250,
 };
@@ -110,6 +104,7 @@ MultipleRecoverableModule.args = {
 	},
 };
 MultipleRecoverableModule.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
 	delay: 250,
 };
@@ -129,6 +124,7 @@ SingleRecoverableModuleNoAccess.args = {
 	},
 };
 SingleRecoverableModuleNoAccess.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (no access)',
 	delay: 250,
 };
@@ -157,6 +153,7 @@ MultipleRecoverableModuleNoAccess.args = {
 	},
 };
 MultipleRecoverableModuleNoAccess.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
 	delay: 250,
 };
