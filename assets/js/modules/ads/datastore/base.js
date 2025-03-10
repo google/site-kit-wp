@@ -32,11 +32,9 @@ const baseModuleStore = Modules.createModuleStore( 'ads', {
 	ownedSettingsSlugs: [
 		'conversionID',
 		'paxConversionID',
-		'customerID',
 		'extCustomerID',
-		'formattedExtCustomerID',
-		'userId',
-		'accountOverviewURL',
+		'customerID',
+		'userID',
 	],
 	storeName: MODULES_ADS,
 	settingSlugs: [
