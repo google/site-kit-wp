@@ -76,7 +76,7 @@ export default function ButtonEdit( {
 				).hasModuleAccess( 'reader-revenue-manager' );
 			}
 
-			setHasModuleAccess( hasModuleOwnershipOrAccess );
+			setHasModuleAccess( !! hasModuleOwnershipOrAccess );
 		}
 
 		getModuleAccess();
