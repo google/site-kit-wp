@@ -19,21 +19,31 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Checkbox, ProgressBar } from 'googlesitekit-components';
+import { Checkbox } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { DAY_IN_SECONDS } from '../../../util';
-import BannerNotification from '../../notifications/BannerNotification';
 import Errors from './Errors';
+import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
+import Link from '../../Link';
+import CTALink from '../../../googlesitekit/notifications/components/common/CTALink';
+import CTALinkSubtle from '../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 
-export default function ModuleRecoveryAlert() {
+export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const [ checkboxes, setCheckboxes ] = useState( null );
 	const [ recoveringModules, setRecoveringModules ] = useState( false );
 
@@ -105,9 +115,6 @@ export default function ModuleRecoveryAlert() {
 	const { recoverModules, clearRecoveredModules } =
 		useDispatch( CORE_MODULES );
 
-	const isLoading =
-		userAccessibleModules === undefined || checkboxes === null;
-
 	const updateCheckboxes = useCallback(
 		( slug ) =>
 			setCheckboxes( ( currentCheckboxes ) => ( {
@@ -145,59 +152,134 @@ export default function ModuleRecoveryAlert() {
 		}
 	}, [ checkboxes, userAccessibleModules ] );
 
-	const recoverableModulesList = Object.keys( recoverableModules || {} );
-	if (
-		recoverableModules === undefined ||
-		recoverableModulesList.length === 0
-	) {
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	if ( checkboxes === null ) {
 		return null;
 	}
 
-	let description = null;
-	let children = null;
-	let onCTAClick = null;
-	let isDismissible = true;
+	const userAccessibleModulesList = Object.keys(
+		userAccessibleModules || {}
+	);
+	const recoverableModulesList = Object.keys( recoverableModules || {} );
 
-	if ( isLoading ) {
-		children = <ProgressBar />;
-		isDismissible = false;
-	} else if ( userAccessibleModules.length === 0 ) {
+	let description = null;
+	let actions = null;
+
+	if ( userAccessibleModulesList.length === 0 ) {
 		if ( recoverableModulesList.length === 1 ) {
-			description = sprintf(
-				/* translators: %s: module name. */
-				__(
-					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-					'google-site-kit'
-				),
-				recoverableModules[ recoverableModulesList[ 0 ] ].name
+			description = (
+				<p className="googlesitekit-publisher-win__desc">
+					{ createInterpolateElement(
+						sprintf(
+							/* translators: %s: module name. */
+							__(
+								'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							recoverableModules[ recoverableModulesList[ 0 ] ]
+								.name
+						),
+						{
+							a: (
+								<Link
+									href={ documentationURL }
+									external
+									aria-label={ __(
+										'Learn more',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
+					) }
+				</p>
+			);
+			actions = (
+				<CTALink
+					id={ id }
+					ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					onCTAClick={ () =>
+						dismissNotification( id, {
+							expiresInSeconds: DAY_IN_SECONDS,
+						} )
+					}
+				/>
 			);
 		} else {
-			description = __(
-				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-				'google-site-kit'
+			description = (
+				<p className="googlesitekit-publisher-win__desc">
+					{ createInterpolateElement(
+						__(
+							'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ documentationURL }
+									external
+									aria-label={ __(
+										'Learn more',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
+					) }
+				</p>
 			);
-			children = (
-				<ul className="mdc-list mdc-list--non-interactive">
-					{ recoverableModulesList.map( ( slug ) => (
-						<li className="mdc-list-item" key={ slug }>
-							<span className="mdc-list-item__text">
-								{ recoverableModules[ slug ].name }
-							</span>
-						</li>
-					) ) }
-				</ul>
+			actions = (
+				<Fragment>
+					<ul className="mdc-list mdc-list--non-interactive">
+						{ recoverableModulesList.map( ( slug ) => (
+							<li className="mdc-list-item" key={ slug }>
+								<span className="mdc-list-item__text">
+									{ recoverableModules[ slug ].name }
+								</span>
+							</li>
+						) ) }
+					</ul>
+					<CTALink
+						id={ id }
+						ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
+						onCTAClick={ () =>
+							dismissNotification( id, {
+								expiresInSeconds: DAY_IN_SECONDS,
+							} )
+						}
+					/>
+				</Fragment>
 			);
 		}
-	} else if ( userAccessibleModules.length === 1 ) {
-		description = sprintf(
-			/* translators: %s: module name. */
-			__(
-				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-				'google-site-kit'
-			),
-			recoverableModules[ userAccessibleModules[ 0 ] ].name
+	} else if ( userAccessibleModulesList.length === 1 ) {
+		description = (
+			<p className="googlesitekit-publisher-win__desc">
+				{ createInterpolateElement(
+					sprintf(
+						/* translators: %s: module name. */
+						__(
+							'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						recoverableModules[ userAccessibleModules[ 0 ] ].name
+					),
+					{
+						a: (
+							<Link
+								href={ documentationURL }
+								external
+								aria-label={ __(
+									'Learn more',
+									'google-site-kit'
+								) }
+							/>
+						),
+					}
+				) }
+			</p>
 		);
-		children = (
+		actions = (
 			<Fragment>
 				<p className="googlesitekit-publisher-win__desc">
 					{ __(
@@ -208,15 +290,47 @@ export default function ModuleRecoveryAlert() {
 				{ Object.keys( recoveryErrors ).length > 0 && (
 					<Errors recoveryErrors={ recoveryErrors } />
 				) }
+				<CTALink
+					id={ id }
+					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
+					onCTAClick={ handleRecoverModules }
+				/>
+				<CTALinkSubtle
+					id={ id }
+					ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					onCTAClick={ () =>
+						dismissNotification( id, {
+							expiresInSeconds: DAY_IN_SECONDS,
+						} )
+					}
+					tertiary
+				/>
 			</Fragment>
 		);
-		onCTAClick = handleRecoverModules;
 	} else {
-		description = __(
-			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-			'google-site-kit'
+		description = (
+			<p className="googlesitekit-publisher-win__desc">
+				{ createInterpolateElement(
+					__(
+						'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href={ documentationURL }
+								external
+								aria-label={ __(
+									'Learn more',
+									'google-site-kit'
+								) }
+							/>
+						),
+					}
+				) }
+			</p>
 		);
-		children = (
+		actions = (
 			<Fragment>
 				{ userAccessibleModules.map( ( slug ) => (
 					<div key={ slug }>
@@ -241,29 +355,35 @@ export default function ModuleRecoveryAlert() {
 				{ Object.keys( recoveryErrors ).length > 0 && (
 					<Errors recoveryErrors={ recoveryErrors } />
 				) }
+				<CTALink
+					id={ id }
+					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
+					onCTAClick={ handleRecoverModules }
+				/>
+				<CTALinkSubtle
+					id={ id }
+					ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					onCTAClick={ () =>
+						dismissNotification( id, {
+							expiresInSeconds: DAY_IN_SECONDS,
+						} )
+					}
+					tertiary
+				/>
 			</Fragment>
 		);
-		onCTAClick = handleRecoverModules;
 	}
 
 	return (
-		<BannerNotification
-			id="module-recovery-alert"
-			title={ __(
-				'Dashboard data for some services has been interrupted',
-				'google-site-kit'
-			) }
-			onCTAClick={ onCTAClick }
-			ctaLabel={ onCTAClick ? __( 'Recover', 'google-site-kit' ) : null }
-			ctaLink={ onCTAClick ? '#' : null }
-			description={ description }
-			learnMoreURL={ documentationURL }
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			isDismissible={ isDismissible }
-			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			dismissExpires={ DAY_IN_SECONDS }
-		>
-			{ children }
-		</BannerNotification>
+		<Notification className="googlesitekit-publisher-win">
+			<SimpleNotification
+				title={ __(
+					'Dashboard data for some services has been interrupted',
+					'google-site-kit'
+				) }
+				description={ description }
+				actions={ actions }
+			/>
+		</Notification>
 	);
 }
