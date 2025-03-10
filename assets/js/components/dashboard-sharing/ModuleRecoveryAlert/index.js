@@ -124,6 +124,10 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		[]
 	);
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const recoverableModulesList = Object.keys( recoverableModules || {} );
+
 	const handleRecoverModules = useCallback( async () => {
 		setRecoveringModules( true );
 
@@ -135,10 +139,30 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		await recoverModules( modulesToRecover );
 
 		setRecoveringModules( false );
-		setCheckboxes( null );
 
-		return { dismissOnCTAClick: false };
-	}, [ checkboxes, clearRecoveredModules, recoverModules ] );
+		// Dismiss if all recoverable modules are checked or only one module is available for recovery.
+		if (
+			( checkboxes !== null &&
+				recoverableModulesList.every(
+					( module ) => checkboxes[ module ]
+				) ) ||
+			recoverableModulesList.length === 1
+		) {
+			// Dismiss the notification with a short expiry to remove it from the queue immediately but allow
+			// it to be shown again if the issue reoccurs in future.
+			dismissNotification( id, {
+				expiresInSeconds: 10,
+				skipHidingFromQueue: false,
+			} );
+		}
+	}, [
+		checkboxes,
+		clearRecoveredModules,
+		id,
+		dismissNotification,
+		recoverModules,
+		recoverableModulesList,
+	] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
@@ -152,8 +176,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		}
 	}, [ checkboxes, userAccessibleModules ] );
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-
 	if ( checkboxes === null ) {
 		return null;
 	}
@@ -161,7 +183,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const userAccessibleModulesList = Object.keys(
 		userAccessibleModules || {}
 	);
-	const recoverableModulesList = Object.keys( recoverableModules || {} );
 
 	let description = null;
 	let actions = null;
@@ -294,6 +315,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					id={ id }
 					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
 					onCTAClick={ handleRecoverModules }
+					isSaving={ recoveringModules }
 				/>
 				<CTALinkSubtle
 					id={ id }
@@ -359,6 +381,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					id={ id }
 					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
 					onCTAClick={ handleRecoverModules }
+					isSaving={ recoveringModules }
 				/>
 				<CTALinkSubtle
 					id={ id }
