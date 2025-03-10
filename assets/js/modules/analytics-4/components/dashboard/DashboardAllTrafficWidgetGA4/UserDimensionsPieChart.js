@@ -353,6 +353,7 @@ export default function UserDimensionsPieChart( props ) {
 		const { row } = chart.getSelection()?.[ 0 ] || {};
 
 		if ( row === null || row === undefined ) {
+			setIsTooltipOpen( false );
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',

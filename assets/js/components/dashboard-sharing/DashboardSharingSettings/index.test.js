@@ -27,6 +27,7 @@ import {
 	provideModuleRegistrations,
 	provideSiteConnection,
 	provideUserInfo,
+	waitFor,
 } from '../../../../../tests/js/test-utils';
 import DashboardSharingSettings from '.';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
@@ -148,12 +149,14 @@ describe( 'DashboardSharingSettings', () => {
 
 			await waitForRegistry();
 
-			expect( container ).not.toHaveTextContent(
-				'Who can manage view access'
-			);
-			expect(
-				container.querySelector( '.mdc-select__native-control' )
-			).not.toBeInTheDocument();
+			await waitFor( () => {
+				expect( container ).not.toHaveTextContent(
+					'Who can manage view access'
+				);
+				expect(
+					container.querySelector( '.mdc-select__native-control' )
+				).not.toBeInTheDocument();
+			} );
 		} );
 	} );
 
