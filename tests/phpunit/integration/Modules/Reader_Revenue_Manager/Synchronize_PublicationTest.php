@@ -24,6 +24,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicat
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -131,14 +132,16 @@ class Synchronize_PublicationTest extends TestCase {
 					$response = new ListPublicationsResponse();
 					$response->setPublications( array( $publication ) );
 
-					return new Response(
-						200,
-						array( 'content-type' => 'application/json' ),
-						json_encode( $response )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array( 'content-type' => 'application/json' ),
+							json_encode( $response )
+						)
 					);
 				}
 
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 	}

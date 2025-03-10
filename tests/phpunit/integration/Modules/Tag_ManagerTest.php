@@ -23,6 +23,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
@@ -509,16 +510,18 @@ class Tag_ManagerTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$module->get_client(),
 			function () {
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'container' => array(
-								array( 'publicId' => 'GTM-123456' ),
-								array( 'publicId' => 'GTM-123457' ),
-								array( 'publicId' => 'GTM-123458' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'container' => array(
+									array( 'publicId' => 'GTM-123456' ),
+									array( 'publicId' => 'GTM-123457' ),
+									array( 'publicId' => 'GTM-123458' ),
+								),
+							)
 						)
 					)
 				);
