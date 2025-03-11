@@ -46,4 +46,4 @@ jobs:
           # The sub-match below will be replaced by asterisks.
           # The length of 20 corresponds to webpack's `output.hashDigestLength`.
           strip-hash: "([a-f0-9]{20})(?:\\.min)?\\.(?:css|js)$"
-          minimum-change-threshold: 204800 # 200KB
+          minimum-change-threshold: 1000 # 1KB
