@@ -36,6 +36,7 @@ import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../googlesitekit/datastore/user/constants';
+import { KEY_METRICS_WIDGETS } from '../../components/KeyMetrics/key-metrics-widgets';
 
 export { registerStore } from './datastore';
 
@@ -95,6 +96,7 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
 				),
+			metadata: KEY_METRICS_WIDGETS[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);

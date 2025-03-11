@@ -42,7 +42,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import {
 	InsufficientPermissionsError,
 	MetricTileTable,
@@ -77,7 +77,10 @@ export default function withCustomDimensions( options = {} ) {
 				infoTooltip: definedInfoTooltip,
 				requiredCustomDimensions,
 				title: definedTitle,
-			} = KEY_METRICS_WIDGETS[ widgetSlug ] || {};
+			} = useSelect(
+				( select ) =>
+					select( CORE_WIDGETS ).getWidget( widgetSlug )?.metadata
+			) || {};
 
 			const tileTitle = title || definedTitle;
 			const tileInfoTooltip =
