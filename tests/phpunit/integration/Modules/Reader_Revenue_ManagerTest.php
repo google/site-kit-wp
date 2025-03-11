@@ -625,6 +625,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'reader_revenue_manager_publication_id',
 				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_available_product_ids',
+				'reader_revenue_manager_payment_option',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -632,7 +634,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->enable_feature( 'rrmModuleV2' );
 		$this->reader_revenue_manager->get_settings()->register();
 
-		// Verify `postTypes` field appears when the `snippetMode` is `post_types`.
+		// Verify `postTypes` field appears when the `snippetMode` is `post_types` (default).
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
