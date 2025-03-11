@@ -39,12 +39,15 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
+import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const {
 	ONBOARDING_COMPLETE,
@@ -480,6 +483,161 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
 					)
 			).toBe( true );
+		} );
+
+		describe( 'GA event tracking', () => {
+			beforeEach( async () => {
+				mockTrackEvent.mockClear();
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( id, {
+						Component: NotificationWithComponentProps,
+						areaSlug: 'notification-area-banners-above-nav',
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: false,
+					} );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue( `notification/${ id }/viewed`, true );
+			} );
+
+			it( 'should track the events when the notification is dismissed', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+					} );
+
+				const { getByRole, waitForRegistry } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					1,
+					'mainDashboard_setup-success-notification-rrm',
+					'view_notification',
+					'ONBOARDING_COMPLETE',
+					'ONBOARDING_COMPLETE:subscriptions:yes'
+				);
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /Got it/i } )
+					);
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					2,
+					'mainDashboard_setup-success-notification-rrm',
+					'dismiss_notification',
+					'ONBOARDING_COMPLETE',
+					'ONBOARDING_COMPLETE:subscriptions:yes'
+				);
+			} );
+
+			it( 'should track the event when the "Learn more" link is clicked', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'noPayment',
+						productID: 'advanced',
+					} );
+
+				const { getByText, waitForRegistry } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					1,
+					'mainDashboard_setup-success-notification-rrm',
+					'view_notification',
+					'ONBOARDING_COMPLETE',
+					'ONBOARDING_COMPLETE:noPayment:yes'
+				);
+
+				// "Learn more" link should be present.
+				const learnMoreLink = getByText( 'Learn more' );
+				expect( learnMoreLink ).toBeInTheDocument();
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					fireEvent.click( learnMoreLink );
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					2,
+					'mainDashboard_setup-success-notification-rrm',
+					'click_learn_more_link',
+					'ONBOARDING_COMPLETE',
+					'ONBOARDING_COMPLETE:noPayment:yes'
+				);
+			} );
+
+			it( 'should track the event when the CTA button is clicked', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'noPayment',
+						productID: 'basic',
+					} );
+
+				const { getByText, waitForRegistry } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+						features: [ 'rrmModuleV2' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					1,
+					'mainDashboard_setup-success-notification-rrm',
+					'view_notification',
+					'ONBOARDING_COMPLETE',
+					'ONBOARDING_COMPLETE:noPayment:yes'
+				);
+
+				// CTA button should be present.
+				const ctaButton = getByText( 'Get started' );
+				expect( ctaButton ).toBeInTheDocument();
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					fireEvent.click( ctaButton );
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					2,
+					'mainDashboard_setup-success-notification-rrm',
+					'confirm_notification',
+					'ONBOARDING_COMPLETE',
+					'ONBOARDING_COMPLETE:noPayment:yes'
+				);
+			} );
 		} );
 	} );
 } );

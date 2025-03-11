@@ -43,11 +43,12 @@ import {
 	SYNC_PUBLICATION,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
-import Link from '../../../../components/Link';
+import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewContext from '../../../../hooks/useViewContext';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -59,8 +60,10 @@ export default function RRMSetupSuccessSubtleNotification( {
 	id,
 	Notification,
 } ) {
+	const viewContext = useViewContext();
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
 	const [ slug, setSlug ] = useQueryArg( 'slug' );
+	const trackEventCategory = `${ viewContext }_setup-success-notification-rrm`;
 
 	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
 
@@ -200,7 +203,13 @@ export default function RRMSetupSuccessSubtleNotification( {
 	] );
 
 	const gaTrackingProps = {
-		gaTrackingEventArgs: { label: publicationOnboardingState },
+		gaTrackingEventArgs: {
+			label: publicationOnboardingState,
+			category: trackEventCategory,
+			value: `${ publicationOnboardingState }:${ paymentOption }:${
+				productID ? 'yes' : 'no'
+			}`,
+		},
 	};
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
@@ -332,14 +341,20 @@ export default function RRMSetupSuccessSubtleNotification( {
 						),
 						{
 							a: (
-								<Link
+								<LearnMoreLink
+									id={ id }
 									aria-label={ __(
 										'Learn more about Reader Revenue Manager features',
+										'google-site-kit'
+									) }
+									label={ __(
+										'Learn more',
 										'google-site-kit'
 									) }
 									href="https://support.google.com/news/publisher-center/answer/12813936"
 									external
 									hideExternalIndicator
+									{ ...gaTrackingProps }
 								/>
 							),
 						}
@@ -355,35 +370,41 @@ export default function RRMSetupSuccessSubtleNotification( {
 			}
 
 			return (
-				<SubtleNotification
-					title={ notificationContent.title }
-					description={ notificationContent.description }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={
-								notificationContent.secondaryButton.text
-							}
-							onDismiss={
-								notificationContent.secondaryButton.onClick
-							}
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ notificationContent.primaryButton.text }
-							ctaLink={
-								notificationContent.primaryButton.ctaLink
-							}
-							isCTALinkExternal={
-								notificationContent.primaryButton
-									.isCTALinkExternal
-							}
-						/>
-					}
-				/>
+				<Notification { ...gaTrackingProps }>
+					<SubtleNotification
+						title={ notificationContent.title }
+						description={ notificationContent.description }
+						dismissCTA={
+							<Dismiss
+								id={ id }
+								primary={ false }
+								dismissLabel={
+									notificationContent.secondaryButton.text
+								}
+								onDismiss={
+									notificationContent.secondaryButton.onClick
+								}
+								{ ...gaTrackingProps }
+							/>
+						}
+						additionalCTA={
+							<CTALinkSubtle
+								id={ id }
+								ctaLabel={
+									notificationContent.primaryButton.text
+								}
+								ctaLink={
+									notificationContent.primaryButton.ctaLink
+								}
+								isCTALinkExternal={
+									notificationContent.primaryButton
+										.isCTALinkExternal
+								}
+								{ ...gaTrackingProps }
+							/>
+						}
+					/>
+				</Notification>
 			);
 		}
 

@@ -25,12 +25,21 @@ import PropTypes from 'prop-types';
 import Link from '../../../../components/Link';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function LearnMoreLink( { id, label, url, ariaLabel } ) {
+export default function LearnMoreLink( {
+	id,
+	label,
+	url,
+	ariaLabel,
+	gaTrackingEventArgs,
+} ) {
 	const trackEvents = useNotificationEvents( id );
 
 	const handleLearnMore = ( event ) => {
 		event.persist();
-		trackEvents.clickLearnMore();
+		trackEvents.clickLearnMore(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 	};
 
 	return (
