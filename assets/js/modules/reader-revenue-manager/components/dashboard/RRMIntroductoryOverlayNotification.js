@@ -137,6 +137,10 @@ function RRMIntroductoryOverlayNotification() {
 		} );
 	};
 
+	const handleLearnMoreClick = () => {
+		trackEvent( gaEventCategory, 'click_learn_more_link', gaEventLabel );
+	};
+
 	return (
 		<OverlayNotification
 			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-introductory-notification"
@@ -177,13 +181,7 @@ function RRMIntroductoryOverlayNotification() {
 											path="/news/publisher-center/answer/11449914"
 											external
 											hideExternalIndicator
-											onClick={ () => {
-												trackEvent(
-													gaEventCategory,
-													'click_learn_more_link',
-													gaEventLabel
-												);
-											} }
+											onClick={ handleLearnMoreClick }
 										/>
 									),
 								}
