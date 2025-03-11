@@ -20,10 +20,10 @@
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
 	useCallback,
 	useEffect,
+	useMemo,
 	useState,
 } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
@@ -38,10 +38,10 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { DAY_IN_SECONDS } from '../../../util';
 import Errors from './Errors';
 import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
-import Link from '../../Link';
-import CTALink from '../../../googlesitekit/notifications/components/common/CTALink';
-import CTALinkSubtle from '../../../googlesitekit/notifications/components/common/CTALinkSubtle';
-import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import Description from '../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import Dismiss from '../../../googlesitekit/notifications/components/common/Dismiss';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const [ checkboxes, setCheckboxes ] = useState( null );
@@ -124,10 +124,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		[]
 	);
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-
-	const recoverableModulesList = Object.keys( recoverableModules || {} );
-
 	const handleRecoverModules = useCallback( async () => {
 		setRecoveringModules( true );
 
@@ -138,31 +134,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		await clearRecoveredModules();
 		await recoverModules( modulesToRecover );
 
+		setCheckboxes( null );
 		setRecoveringModules( false );
-
-		// Dismiss if all recoverable modules are checked or only one module is available for recovery.
-		if (
-			( checkboxes !== null &&
-				recoverableModulesList.every(
-					( module ) => checkboxes[ module ]
-				) ) ||
-			recoverableModulesList.length === 1
-		) {
-			// Dismiss the notification with a short expiry to remove it from the queue immediately but allow
-			// it to be shown again if the issue reoccurs in future.
-			dismissNotification( id, {
-				expiresInSeconds: 10,
-				skipHidingFromQueue: false,
-			} );
-		}
-	}, [
-		checkboxes,
-		clearRecoveredModules,
-		id,
-		dismissNotification,
-		recoverModules,
-		recoverableModulesList,
-	] );
+	}, [ checkboxes, clearRecoveredModules, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
@@ -176,84 +150,82 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		}
 	}, [ checkboxes, userAccessibleModules ] );
 
-	if ( checkboxes === null ) {
-		return null;
-	}
+	const disableCTA = useMemo(
+		() =>
+			checkboxes !== null &&
+			! Object.values( checkboxes ).some( ( checked ) => checked ),
+		[ checkboxes ]
+	);
 
 	const userAccessibleModulesList = Object.keys(
 		userAccessibleModules || {}
 	);
 
+	const shouldDismissOnCTAClick = useMemo(
+		() =>
+			userAccessibleModulesList.length ===
+			Object.values( checkboxes || {} ).filter( ( checked ) => checked )
+				.length,
+		[ userAccessibleModulesList, checkboxes ]
+	);
+
+	if ( checkboxes === null ) {
+		return null;
+	}
+
 	let description = null;
 	let actions = null;
 
 	if ( userAccessibleModulesList.length === 0 ) {
-		if ( recoverableModulesList.length === 1 ) {
+		if ( Object.keys( recoverableModules ).length === 1 ) {
 			description = (
-				<p className="googlesitekit-publisher-win__desc">
-					{ createInterpolateElement(
-						sprintf(
-							/* translators: %s: module name. */
-							__(
-								'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access. <a>Learn more</a>',
-								'google-site-kit'
-							),
-							recoverableModules[ recoverableModulesList[ 0 ] ]
-								.name
+				<Description
+					text={ sprintf(
+						/* translators: %s: module name. */
+						__(
+							'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
+							'google-site-kit'
 						),
-						{
-							a: (
-								<Link
-									href={ documentationURL }
-									external
-									aria-label={ __(
-										'Learn more',
-										'google-site-kit'
-									) }
-								/>
-							),
-						}
+						recoverableModules[
+							Object.keys( recoverableModules )[ 0 ]
+						].name
 					) }
-				</p>
+					learnMoreLink={
+						<LearnMoreLink
+							id={ id }
+							label={ __( 'Learn more', 'google-site-kit' ) }
+							url={ documentationURL }
+						/>
+					}
+				/>
 			);
 			actions = (
-				<CTALink
+				<Dismiss
 					id={ id }
-					ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
-					onCTAClick={ () =>
-						dismissNotification( id, {
-							expiresInSeconds: DAY_IN_SECONDS,
-						} )
-					}
+					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					dismissExpires={ DAY_IN_SECONDS }
 				/>
 			);
 		} else {
 			description = (
-				<p className="googlesitekit-publisher-win__desc">
-					{ createInterpolateElement(
-						__(
-							'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access. <a>Learn more</a>',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<Link
-									href={ documentationURL }
-									external
-									aria-label={ __(
-										'Learn more',
-										'google-site-kit'
-									) }
-								/>
-							),
-						}
+				<Description
+					text={ __(
+						'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
+						'google-site-kit'
 					) }
-				</p>
+					learnMoreLink={
+						<LearnMoreLink
+							id={ id }
+							label={ __( 'Learn more', 'google-site-kit' ) }
+							url={ documentationURL }
+						/>
+					}
+				/>
 			);
 			actions = (
 				<Fragment>
 					<ul className="mdc-list mdc-list--non-interactive">
-						{ recoverableModulesList.map( ( slug ) => (
+						{ Object.keys( recoverableModules ).map( ( slug ) => (
 							<li className="mdc-list-item" key={ slug }>
 								<span className="mdc-list-item__text">
 									{ recoverableModules[ slug ].name }
@@ -261,44 +233,36 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 							</li>
 						) ) }
 					</ul>
-					<CTALink
+					<Dismiss
 						id={ id }
-						ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
-						onCTAClick={ () =>
-							dismissNotification( id, {
-								expiresInSeconds: DAY_IN_SECONDS,
-							} )
-						}
+						dismissLabel={ __(
+							'Remind me later',
+							'google-site-kit'
+						) }
+						dismissExpires={ DAY_IN_SECONDS }
 					/>
 				</Fragment>
 			);
 		}
 	} else if ( userAccessibleModulesList.length === 1 ) {
 		description = (
-			<p className="googlesitekit-publisher-win__desc">
-				{ createInterpolateElement(
-					sprintf(
-						/* translators: %s: module name. */
-						__(
-							'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner. <a>Learn more</a>',
-							'google-site-kit'
-						),
-						recoverableModules[ userAccessibleModules[ 0 ] ].name
+			<Description
+				text={ sprintf(
+					/* translators: %s: module name. */
+					__(
+						'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
+						'google-site-kit'
 					),
-					{
-						a: (
-							<Link
-								href={ documentationURL }
-								external
-								aria-label={ __(
-									'Learn more',
-									'google-site-kit'
-								) }
-							/>
-						),
-					}
+					recoverableModules[ userAccessibleModules[ 0 ] ].name
 				) }
-			</p>
+				learnMoreLink={
+					<LearnMoreLink
+						id={ id }
+						label={ __( 'Learn more', 'google-site-kit' ) }
+						url={ documentationURL }
+					/>
+				}
+			/>
 		);
 		actions = (
 			<Fragment>
@@ -311,46 +275,34 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 				{ Object.keys( recoveryErrors ).length > 0 && (
 					<Errors recoveryErrors={ recoveryErrors } />
 				) }
-				<CTALink
+				<ActionsCTALinkDismiss
 					id={ id }
 					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
 					onCTAClick={ handleRecoverModules }
 					isSaving={ recoveringModules }
-				/>
-				<CTALinkSubtle
-					id={ id }
-					ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
-					onCTAClick={ () =>
-						dismissNotification( id, {
-							expiresInSeconds: DAY_IN_SECONDS,
-						} )
-					}
-					tertiary
+					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					dismissOnCTAClick={ shouldDismissOnCTAClick }
+					dismissExpires={ DAY_IN_SECONDS }
+					ctaDismissOptions={ { skipHidingFromQueue: false } }
+					ctaDisabled={ disableCTA }
 				/>
 			</Fragment>
 		);
 	} else {
 		description = (
-			<p className="googlesitekit-publisher-win__desc">
-				{ createInterpolateElement(
-					__(
-						'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<Link
-								href={ documentationURL }
-								external
-								aria-label={ __(
-									'Learn more',
-									'google-site-kit'
-								) }
-							/>
-						),
-					}
+			<Description
+				text={ __(
+					'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
+					'google-site-kit'
 				) }
-			</p>
+				learnMoreLink={
+					<LearnMoreLink
+						id={ id }
+						label={ __( 'Learn more', 'google-site-kit' ) }
+						url={ documentationURL }
+					/>
+				}
+			/>
 		);
 		actions = (
 			<Fragment>
@@ -377,21 +329,16 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 				{ Object.keys( recoveryErrors ).length > 0 && (
 					<Errors recoveryErrors={ recoveryErrors } />
 				) }
-				<CTALink
+				<ActionsCTALinkDismiss
 					id={ id }
 					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
 					onCTAClick={ handleRecoverModules }
 					isSaving={ recoveringModules }
-				/>
-				<CTALinkSubtle
-					id={ id }
-					ctaLabel={ __( 'Remind me later', 'google-site-kit' ) }
-					onCTAClick={ () =>
-						dismissNotification( id, {
-							expiresInSeconds: DAY_IN_SECONDS,
-						} )
-					}
-					tertiary
+					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					dismissOnCTAClick={ shouldDismissOnCTAClick }
+					dismissExpires={ DAY_IN_SECONDS }
+					ctaDismissOptions={ { skipHidingFromQueue: false } }
+					ctaDisabled={ disableCTA }
 				/>
 			</Fragment>
 		);

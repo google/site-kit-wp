@@ -572,14 +572,14 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'module-recovery-alert': {
 		Component: ModuleRecoveryAlert,
-		priority: 320,
+		priority: 270,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( CORE_MODULES ).getRecoverableModules();
-			const recoverableModules =
-				select( CORE_MODULES ).getRecoverableModules();
+		checkRequirements: async ( { resolveSelect } ) => {
+			const recoverableModules = await resolveSelect(
+				CORE_MODULES
+			).getRecoverableModules();
 			const recoverableModulesList = Object.keys(
 				recoverableModules || {}
 			);
