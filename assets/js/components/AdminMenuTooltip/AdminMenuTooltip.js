@@ -1,20 +1,21 @@
 import { useCallback } from '@wordpress/element';
 
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import JoyrideTooltip from '../JoyrideTooltip';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { useTooltipState } from './useTooltipState';
 
 export function AdminMenuTooltip() {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const {
-		isTooltipVisible,
-		rehideAdminMenu,
-		rehideAdminSubMenu,
+		isTooltipVisible = false,
+		rehideAdminMenu = false,
+		rehideAdminSubMenu = false,
 		onDismiss,
 		...tooltipSettings
-	} = useTooltipState();
+	} = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'admin-menu-tooltip' )
+	);
 
 	const handleDismissTooltip = useCallback( async () => {
 		// If the WordPress admin menu was closed, re-close it.
