@@ -1,17 +1,20 @@
 import { useCallback } from '@wordpress/element';
 
-import PropTypes from 'prop-types';
-
 import { useDispatch } from 'googlesitekit-data';
 import JoyrideTooltip from '../JoyrideTooltip';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { useTooltipState } from './useTooltipState';
 
-export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
+export function AdminMenuTooltip() {
 	const { setValue } = useDispatch( CORE_UI );
 
-	const { rehideAdminMenu, rehideAdminSubMenu } =
-		useTooltipState( tooltipStateKey );
+	const {
+		isTooltipVisible,
+		rehideAdminMenu,
+		rehideAdminSubMenu,
+		onDismiss,
+		...tooltipSettings
+	} = useTooltipState();
 
 	const handleDismissTooltip = useCallback( async () => {
 		// If the WordPress admin menu was closed, re-close it.
@@ -32,31 +35,21 @@ export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
 
 		await onDismiss?.();
 
-		setValue( tooltipStateKey, undefined );
-	}, [
-		onDismiss,
-		rehideAdminMenu,
-		rehideAdminSubMenu,
-		setValue,
-		tooltipStateKey,
-	] );
+		setValue( 'admin-menu-tooltip', undefined );
+	}, [ onDismiss, rehideAdminMenu, rehideAdminSubMenu, setValue ] );
+
+	if ( ! isTooltipVisible ) {
+		return null;
+	}
 
 	return (
 		<JoyrideTooltip
+			// Point to the Site Kit Settings menu item by default.
+			target={ '#adminmenu [href*="page=googlesitekit-settings"]' }
 			slug="ga4-activation-banner-admin-menu-tooltip"
 			onDismiss={ handleDismissTooltip }
-			{ ...props }
+			title=""
+			{ ...tooltipSettings }
 		/>
 	);
 }
-
-AdminMenuTooltip.propTypes = {
-	...JoyrideTooltip.propTypes,
-	target: PropTypes.string,
-	tooltipStateKey: PropTypes.string.isRequired,
-};
-
-AdminMenuTooltip.defaultProps = {
-	// Point to the Site Kit Settings menu item by default.
-	target: '#adminmenu [href*="page=googlesitekit-settings"]',
-};
