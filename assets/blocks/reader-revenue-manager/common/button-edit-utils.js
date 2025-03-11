@@ -17,7 +17,7 @@
 /**
  * Gets the notice with module access.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {boolean} hasModuleAccess           Whether the user has module access.
  * @param {string}  withModuleAccessNotice    Notice when the user has module access.
