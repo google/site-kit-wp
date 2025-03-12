@@ -17,9 +17,20 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount, useUnmount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect, useMemo } from '@wordpress/element';
+import {
+	useCallback,
+	useState,
+	useEffect,
+	useMemo,
+	useRef,
+} from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
@@ -55,6 +66,7 @@ import Chip from './Chip';
 import MetricItem from '../MetricsSelectionPanel/MetricItem';
 import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
+import { useDebounce } from '../../../hooks/useDebounce';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
 import Null from '../../../components/Null';
@@ -65,6 +77,7 @@ const icons = {
 };
 
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
+	const containerRef = useRef();
 	const [ isActive, setIsActive ] = useState(
 		KEY_METRICS_GROUP_CURRENT.SLUG
 	);
@@ -224,6 +237,61 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		).getKeyMetricsConversionEventWidgets();
 	} );
 
+	const maybeCuttOffLastTabItem = useCallback( () => {
+		const scrollContainer = containerRef.current?.querySelector(
+			'.mdc-tab-scroller__scroll-content'
+		);
+
+		if ( ! isMobileBreakpoint ) {
+			return;
+		}
+
+		const tabItems = containerRef.current?.querySelectorAll(
+			'.googlesitekit-chip-tab-group__tab-items .mdc-tab'
+		);
+		if ( ! tabItems?.length || ! scrollContainer ) {
+			return;
+		}
+
+		const containerRect = containerRef.current?.getBoundingClientRect();
+
+		const visibleItems = [];
+		tabItems.forEach( ( tabItem, index ) => {
+			const tabItemRect = tabItem.getBoundingClientRect();
+			if (
+				tabItemRect.left >= containerRect.left &&
+				tabItemRect.right <= containerRect.right
+			) {
+				visibleItems.push( index );
+			}
+		} );
+		const nextTabItem = tabItems[ visibleItems.length - 1 + 1 ];
+
+		if ( ! nextTabItem ) {
+			return;
+		}
+
+		const nextTabItemRect = nextTabItem.getBoundingClientRect();
+		// If the next tab item is either completely off-screen or only barely visible
+		// (i.e. cut off by 15px or less, meaning most likely it is still outside the visible area),
+		// reduce the column gap so that the last tab item appears properly truncated.
+		if (
+			nextTabItemRect.left >= containerRect.right ||
+			( nextTabItemRect.left - containerRect.right < 0 &&
+				-( nextTabItemRect.left - containerRect.right ) <= 20 )
+		) {
+			// If there is an inline gap of 2px we already adjusted it once, and the last item is still not
+			// cutoff, then we need to adjust the column gap to 20px to ensure the last item is cutoff.
+			if ( scrollContainer.style.columnGap === '2px' ) {
+				scrollContainer.style.columnGap = '20px';
+			} else {
+				scrollContainer.style.columnGap = '2px';
+			}
+
+			maybeCuttOffLastTabItem();
+		}
+	}, [ isMobileBreakpoint ] );
+
 	// Currently selected group does not include total selected number, so it will
 	// always be 0.
 	const selectedCounts = { [ KEY_METRICS_GROUP_CURRENT.SLUG ]: 0 };
@@ -348,6 +416,10 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			// Reset the unstaged selection when selection panel is closed.
 			resetUnstagedSelection();
 		}
+
+		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
+			maybeCuttOffLastTabItem();
+		}
 	}, [
 		isSelectionPanelOpen,
 		isSelectionPanelOpenPrevious,
@@ -356,7 +428,22 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		isMobileBreakpoint,
 		newlyDetectedMetricsKeys,
 		resetUnstagedSelection,
+		maybeCuttOffLastTabItem,
 	] );
+
+	// Debounce the maybeCuttOffLastTabItem function
+	const debouncedMaybeCuttOffLastTabItem = useDebounce(
+		maybeCuttOffLastTabItem,
+		50
+	);
+
+	useMount( () => {
+		global.addEventListener( 'resize', debouncedMaybeCuttOffLastTabItem );
+	} );
+
+	useUnmount( () =>
+		global.removeEventListener( 'resize', debouncedMaybeCuttOffLastTabItem )
+	);
 
 	const chipItemRows = [
 		[ ...dynamicGroups, ...keyMetricsGroups.slice( 0, 2 ) ],
@@ -365,7 +452,10 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 
 	return (
 		<div className="googlesitekit-chip-tab-group">
-			<div className="googlesitekit-chip-tab-group__tab-items">
+			<div
+				className="googlesitekit-chip-tab-group__tab-items"
+				ref={ containerRef }
+			>
 				{ ! isMobileBreakpoint &&
 					chipItemRows.map( ( row ) => (
 						<div
