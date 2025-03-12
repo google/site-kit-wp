@@ -3,7 +3,7 @@
 exports[`ConnectGA4CTATileWidget should render a title when only a single Connect GA4 CTA is present 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectGA4CTATile googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectGA4CTATile"
   >
     <div
       class="googlesitekit-widget__body"
@@ -61,7 +61,7 @@ exports[`ConnectGA4CTATileWidget should render a title when only a single Connec
 exports[`ConnectGA4CTATileWidget should render the Connect GA4 CTA tile 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectGA4CTATile googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectGA4CTATile"
   >
     <div
       class="googlesitekit-widget__body"

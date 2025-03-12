@@ -3,7 +3,7 @@
 exports[`ConnectAdSenseCTATileWidget should render a title when only a single Connect AdSense CTA is present 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile"
   >
     <div
       class="googlesitekit-widget__body"
@@ -61,7 +61,7 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
 exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile"
   >
     <div
       class="googlesitekit-widget__body"
