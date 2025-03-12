@@ -62,7 +62,7 @@ export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 	// this component and thus sharing the same state), it is wrapped with a `Widget` component - the net
 	// result being the ConnectModuleCTATile is correctly wrapped in a `Widget` in both cases.
 	return (
-		<Widget>
+		<Widget noPadding>
 			<ConnectModuleCTATile { ...metadata } />
 		</Widget>
 	);
