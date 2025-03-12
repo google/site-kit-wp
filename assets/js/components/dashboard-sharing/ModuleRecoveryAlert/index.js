@@ -150,6 +150,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		}
 	}, [ checkboxes, userAccessibleModules ] );
 
+	// Disable the CTA if no modules are selected to be restored.
 	const disableCTA = useMemo(
 		() =>
 			checkboxes !== null &&
@@ -157,82 +158,146 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		[ checkboxes ]
 	);
 
-	const userAccessibleModulesList = Object.keys(
-		userAccessibleModules || {}
-	);
-
+	// Only allow the alert to be dismissed if all recoverable modules are selected.
 	const shouldDismissOnCTAClick = useMemo(
 		() =>
-			userAccessibleModulesList.length ===
+			Object.keys( userAccessibleModules || {} ).length ===
 			Object.values( checkboxes || {} ).filter( ( checked ) => checked )
 				.length,
-		[ userAccessibleModulesList, checkboxes ]
+		[ checkboxes, userAccessibleModules ]
 	);
 
-	if ( checkboxes === null ) {
-		return null;
-	}
+	// The alert renders conditional copy and actions based on:
+	// 1. If there is one or more than one module to recover.
+	// 2. If the user has access to perform the recovery.
+	const hasMultipleRecoverableModules = useMemo(
+		() => Object.keys( recoverableModules || {} ).length > 1,
+		[ recoverableModules ]
+	);
+	const hasUserRecoverableModules = useMemo(
+		() => !! Object.keys( userAccessibleModules || {} ).length,
+		[ userAccessibleModules ]
+	);
 
-	let description = null;
-	let actions = null;
+	const description = useMemo( () => {
+		if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
+			return sprintf(
+				/* translators: %s: module name. */
+				__(
+					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
+					'google-site-kit'
+				),
+				recoverableModules[ userAccessibleModules[ 0 ] ].name
+			);
+		}
+		if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
+			return __(
+				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
+				'google-site-kit'
+			);
+		}
+		if (
+			! hasMultipleRecoverableModules &&
+			! hasUserRecoverableModules &&
+			recoverableModules
+		) {
+			return sprintf(
+				/* translators: %s: module name. */
+				__(
+					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
+					'google-site-kit'
+				),
+				recoverableModules[
+					Object.keys( recoverableModules || {} )[ 0 ]
+				].name
+			);
+		}
+		if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
+			return __(
+				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
+				'google-site-kit'
+			);
+		}
+	}, [
+		hasMultipleRecoverableModules,
+		hasUserRecoverableModules,
+		recoverableModules,
+		userAccessibleModules,
+	] );
 
-	if ( userAccessibleModulesList.length === 0 ) {
-		if ( Object.keys( recoverableModules ).length === 1 ) {
-			description = (
-				<Description
-					text={ sprintf(
-						/* translators: %s: module name. */
-						__(
-							'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-							'google-site-kit'
-						),
-						recoverableModules[
-							Object.keys( recoverableModules )[ 0 ]
-						].name
-					) }
-					learnMoreLink={
-						<LearnMoreLink
-							id={ id }
-							label={ __( 'Learn more', 'google-site-kit' ) }
-							url={ documentationURL }
-						/>
-					}
-				/>
-			);
-			actions = (
-				<Dismiss
-					id={ id }
-					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
-					dismissExpires={ DAY_IN_SECONDS }
-				/>
-			);
-		} else {
-			description = (
-				<Description
-					text={ __(
-						'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-						'google-site-kit'
-					) }
-					learnMoreLink={
-						<LearnMoreLink
-							id={ id }
-							label={ __( 'Learn more', 'google-site-kit' ) }
-							url={ documentationURL }
-						/>
-					}
-				/>
-			);
-			actions = (
+	const actions = (
+		<Fragment>
+			{ hasUserRecoverableModules && (
 				<Fragment>
-					<ul className="mdc-list mdc-list--non-interactive">
-						{ Object.keys( recoverableModules ).map( ( slug ) => (
-							<li className="mdc-list-item" key={ slug }>
-								<span className="mdc-list-item__text">
-									{ recoverableModules[ slug ].name }
-								</span>
-							</li>
-						) ) }
-					</ul>
+					{ hasMultipleRecoverableModules && (
+						<Fragment>
+							{ checkboxes !== null &&
+								userAccessibleModules.map( ( slug ) => (
+									<div key={ slug }>
+										<Checkbox
+											checked={ checkboxes[ slug ] }
+											name="module-recovery-alert-checkbox"
+											id={ `module-recovery-alert-checkbox-${ slug }` }
+											onChange={ () =>
+												updateCheckboxes( slug )
+											}
+											value={ slug }
+											disabled={ recoveringModules }
+										>
+											{ recoverableModules[ slug ].name }
+										</Checkbox>
+									</div>
+								) ) }
+							<p className="googlesitekit-publisher-win__desc">
+								{ __(
+									'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
+									'google-site-kit'
+								) }
+							</p>
+						</Fragment>
+					) }
+					{ ! hasMultipleRecoverableModules && (
+						<p className="googlesitekit-publisher-win__desc">
+							{ __(
+								'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
+								'google-site-kit'
+							) }
+						</p>
+					) }
+					{ Object.keys( recoveryErrors ).length > 0 && (
+						<Errors recoveryErrors={ recoveryErrors } />
+					) }
+					<ActionsCTALinkDismiss
+						id={ id }
+						ctaLabel={ __( 'Recover', 'google-site-kit' ) }
+						onCTAClick={ handleRecoverModules }
+						isSaving={ recoveringModules }
+						dismissLabel={ __(
+							'Remind me later',
+							'google-site-kit'
+						) }
+						dismissOnCTAClick={ shouldDismissOnCTAClick }
+						dismissExpires={ DAY_IN_SECONDS }
+						ctaDismissOptions={ { skipHidingFromQueue: false } }
+						ctaDisabled={ disableCTA }
+					/>
+				</Fragment>
+			) }
+			{ ! hasUserRecoverableModules && (
+				<Fragment>
+					{ hasMultipleRecoverableModules && (
+						<ul className="mdc-list mdc-list--non-interactive">
+							{ Object.keys( recoverableModules ).map(
+								( slug ) => (
+									<li className="mdc-list-item" key={ slug }>
+										<span className="mdc-list-item__text">
+											{ recoverableModules[ slug ].name }
+										</span>
+									</li>
+								)
+							) }
+						</ul>
+					) }
 					<Dismiss
 						id={ id }
 						dismissLabel={ __(
@@ -242,107 +307,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						dismissExpires={ DAY_IN_SECONDS }
 					/>
 				</Fragment>
-			);
-		}
-	} else if ( userAccessibleModulesList.length === 1 ) {
-		description = (
-			<Description
-				text={ sprintf(
-					/* translators: %s: module name. */
-					__(
-						'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-						'google-site-kit'
-					),
-					recoverableModules[ userAccessibleModules[ 0 ] ].name
-				) }
-				learnMoreLink={
-					<LearnMoreLink
-						id={ id }
-						label={ __( 'Learn more', 'google-site-kit' ) }
-						url={ documentationURL }
-					/>
-				}
-			/>
-		);
-		actions = (
-			<Fragment>
-				<p className="googlesitekit-publisher-win__desc">
-					{ __(
-						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
-						'google-site-kit'
-					) }
-				</p>
-				{ Object.keys( recoveryErrors ).length > 0 && (
-					<Errors recoveryErrors={ recoveryErrors } />
-				) }
-				<ActionsCTALinkDismiss
-					id={ id }
-					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
-					onCTAClick={ handleRecoverModules }
-					isSaving={ recoveringModules }
-					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
-					dismissOnCTAClick={ shouldDismissOnCTAClick }
-					dismissExpires={ DAY_IN_SECONDS }
-					ctaDismissOptions={ { skipHidingFromQueue: false } }
-					ctaDisabled={ disableCTA }
-				/>
-			</Fragment>
-		);
-	} else {
-		description = (
-			<Description
-				text={ __(
-					'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-					'google-site-kit'
-				) }
-				learnMoreLink={
-					<LearnMoreLink
-						id={ id }
-						label={ __( 'Learn more', 'google-site-kit' ) }
-						url={ documentationURL }
-					/>
-				}
-			/>
-		);
-		actions = (
-			<Fragment>
-				{ userAccessibleModules.map( ( slug ) => (
-					<div key={ slug }>
-						<Checkbox
-							checked={ checkboxes[ slug ] }
-							name="module-recovery-alert-checkbox"
-							id={ `module-recovery-alert-checkbox-${ slug }` }
-							onChange={ () => updateCheckboxes( slug ) }
-							value={ slug }
-							disabled={ recoveringModules }
-						>
-							{ recoverableModules[ slug ].name }
-						</Checkbox>
-					</div>
-				) ) }
-				<p className="googlesitekit-publisher-win__desc">
-					{ __(
-						'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
-						'google-site-kit'
-					) }
-				</p>
-				{ Object.keys( recoveryErrors ).length > 0 && (
-					<Errors recoveryErrors={ recoveryErrors } />
-				) }
-				<ActionsCTALinkDismiss
-					id={ id }
-					ctaLabel={ __( 'Recover', 'google-site-kit' ) }
-					onCTAClick={ handleRecoverModules }
-					isSaving={ recoveringModules }
-					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
-					dismissOnCTAClick={ shouldDismissOnCTAClick }
-					dismissExpires={ DAY_IN_SECONDS }
-					ctaDismissOptions={ { skipHidingFromQueue: false } }
-					ctaDisabled={ disableCTA }
-				/>
-			</Fragment>
-		);
-	}
+			) }
+		</Fragment>
+	);
 
 	return (
 		<Notification className="googlesitekit-publisher-win">
@@ -351,7 +318,18 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					'Dashboard data for some services has been interrupted',
 					'google-site-kit'
 				) }
-				description={ description }
+				description={
+					<Description
+						text={ description }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ documentationURL }
+							/>
+						}
+					/>
+				}
 				actions={ actions }
 			/>
 		</Notification>
