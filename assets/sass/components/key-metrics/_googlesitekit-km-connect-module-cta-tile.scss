@@ -19,11 +19,6 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-widget--connectModuleCTATile {
-		padding: $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
-		}
 
 		.googlesitekit-km-connect-module-cta-tile {
 			align-items: center;
@@ -39,6 +34,19 @@
 
 		.googlesitekit-km-connect-module-cta-tile__content .googlesitekit-km-connect-module-cta-tile__text {
 			margin: 0 0 4px;
+		}
+
+		&.googlesitekit-km-widget-tile {
+			min-height: auto;
+			padding: 0;
+
+			.googlesitekit-km-connect-module-cta-tile {
+				padding-top: $grid-gap-phone / 2;
+
+				@media (min-width: $bp-tablet) {
+					padding-top: $grid-gap-desktop / 2;
+				}
+			}
 		}
 
 		&.googlesitekit-km-widget-tile.googlesitekit-km-widget-tile--combined {
