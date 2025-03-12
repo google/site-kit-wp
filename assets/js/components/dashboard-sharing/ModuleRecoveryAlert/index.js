@@ -19,43 +19,22 @@
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Checkbox } from 'googlesitekit-components';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { DAY_IN_SECONDS } from '../../../util';
-import Errors from './Errors';
 import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
-import Description from '../../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import Dismiss from '../../../googlesitekit/notifications/components/common/Dismiss';
+import Description from './Description';
+import Actions from './Actions';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
-	const [ checkboxes, setCheckboxes ] = useState( null );
-	const [ recoveringModules, setRecoveringModules ] = useState( false );
-
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
-
-	const documentationURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'dashboard-sharing'
-		);
-	} );
 
 	const userAccessibleModules = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getRecoverableModules();
@@ -82,91 +61,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 			.map( ( { slug } ) => slug );
 	} );
 
-	const recoveryErrors = useSelect( ( select ) => {
-		if ( ! recoverableModules ) {
-			return undefined;
-		}
-
-		const recoveredModules = select( CORE_MODULES ).getRecoveredModules();
-
-		if ( ! recoveredModules ) {
-			return {};
-		}
-
-		const modules = Object.keys( recoverableModules );
-
-		const getRecoveryError = ( module ) =>
-			recoveredModules?.error?.[ module ];
-
-		return modules
-			.filter( ( module ) => !! getRecoveryError( module ) )
-			.reduce(
-				( acc, module ) => ( {
-					...acc,
-					[ module ]: {
-						name: recoverableModules[ module ].name,
-						...getRecoveryError( module ),
-					},
-				} ),
-				{}
-			);
-	} );
-
-	const { recoverModules, clearRecoveredModules } =
-		useDispatch( CORE_MODULES );
-
-	const updateCheckboxes = useCallback(
-		( slug ) =>
-			setCheckboxes( ( currentCheckboxes ) => ( {
-				...currentCheckboxes,
-				[ slug ]: ! currentCheckboxes[ slug ],
-			} ) ),
-		[]
-	);
-
-	const handleRecoverModules = useCallback( async () => {
-		setRecoveringModules( true );
-
-		const modulesToRecover = Object.keys( checkboxes ).filter(
-			( module ) => checkboxes[ module ]
-		);
-
-		await clearRecoveredModules();
-		await recoverModules( modulesToRecover );
-
-		setCheckboxes( null );
-		setRecoveringModules( false );
-	}, [ checkboxes, clearRecoveredModules, recoverModules ] );
-
-	useEffect( () => {
-		if ( userAccessibleModules !== undefined && checkboxes === null ) {
-			const checked = {};
-
-			userAccessibleModules.forEach( ( module ) => {
-				checked[ module ] = true;
-			} );
-
-			setCheckboxes( checked );
-		}
-	}, [ checkboxes, userAccessibleModules ] );
-
-	// Disable the CTA if no modules are selected to be restored.
-	const disableCTA = useMemo(
-		() =>
-			checkboxes !== null &&
-			! Object.values( checkboxes ).some( ( checked ) => checked ),
-		[ checkboxes ]
-	);
-
-	// Only allow the alert to be dismissed if all recoverable modules are selected.
-	const shouldDismissOnCTAClick = useMemo(
-		() =>
-			Object.keys( userAccessibleModules || {} ).length ===
-			Object.values( checkboxes || {} ).filter( ( checked ) => checked )
-				.length,
-		[ checkboxes, userAccessibleModules ]
-	);
-
 	// The alert renders conditional copy and actions based on:
 	// 1. If there is one or more than one module to recover.
 	// 2. If the user has access to perform the recovery.
@@ -179,138 +73,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		[ userAccessibleModules ]
 	);
 
-	const description = useMemo( () => {
-		if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-			return sprintf(
-				/* translators: %s: module name. */
-				__(
-					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-					'google-site-kit'
-				),
-				recoverableModules[ userAccessibleModules[ 0 ] ].name
-			);
-		}
-		if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-			return __(
-				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-				'google-site-kit'
-			);
-		}
-		if (
-			! hasMultipleRecoverableModules &&
-			! hasUserRecoverableModules &&
-			recoverableModules
-		) {
-			return sprintf(
-				/* translators: %s: module name. */
-				__(
-					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-					'google-site-kit'
-				),
-				recoverableModules[
-					Object.keys( recoverableModules || {} )[ 0 ]
-				].name
-			);
-		}
-		if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
-			return __(
-				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-				'google-site-kit'
-			);
-		}
-	}, [
-		hasMultipleRecoverableModules,
-		hasUserRecoverableModules,
-		recoverableModules,
-		userAccessibleModules,
-	] );
-
-	const actions = (
-		<Fragment>
-			{ hasUserRecoverableModules && (
-				<Fragment>
-					{ hasMultipleRecoverableModules && (
-						<Fragment>
-							{ checkboxes !== null &&
-								userAccessibleModules.map( ( slug ) => (
-									<div key={ slug }>
-										<Checkbox
-											checked={ checkboxes[ slug ] }
-											name="module-recovery-alert-checkbox"
-											id={ `module-recovery-alert-checkbox-${ slug }` }
-											onChange={ () =>
-												updateCheckboxes( slug )
-											}
-											value={ slug }
-											disabled={ recoveringModules }
-										>
-											{ recoverableModules[ slug ].name }
-										</Checkbox>
-									</div>
-								) ) }
-							<p className="googlesitekit-publisher-win__desc">
-								{ __(
-									'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
-									'google-site-kit'
-								) }
-							</p>
-						</Fragment>
-					) }
-					{ ! hasMultipleRecoverableModules && (
-						<p className="googlesitekit-publisher-win__desc">
-							{ __(
-								'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
-								'google-site-kit'
-							) }
-						</p>
-					) }
-					{ Object.keys( recoveryErrors ).length > 0 && (
-						<Errors recoveryErrors={ recoveryErrors } />
-					) }
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ __( 'Recover', 'google-site-kit' ) }
-						onCTAClick={ handleRecoverModules }
-						isSaving={ recoveringModules }
-						dismissLabel={ __(
-							'Remind me later',
-							'google-site-kit'
-						) }
-						dismissOnCTAClick={ shouldDismissOnCTAClick }
-						dismissExpires={ DAY_IN_SECONDS }
-						ctaDismissOptions={ { skipHidingFromQueue: false } }
-						ctaDisabled={ disableCTA }
-					/>
-				</Fragment>
-			) }
-			{ ! hasUserRecoverableModules && (
-				<Fragment>
-					{ hasMultipleRecoverableModules && (
-						<ul className="mdc-list mdc-list--non-interactive">
-							{ Object.keys( recoverableModules ).map(
-								( slug ) => (
-									<li className="mdc-list-item" key={ slug }>
-										<span className="mdc-list-item__text">
-											{ recoverableModules[ slug ].name }
-										</span>
-									</li>
-								)
-							) }
-						</ul>
-					) }
-					<Dismiss
-						id={ id }
-						dismissLabel={ __(
-							'Remind me later',
-							'google-site-kit'
-						) }
-						dismissExpires={ DAY_IN_SECONDS }
-					/>
-				</Fragment>
-			) }
-		</Fragment>
-	);
-
 	return (
 		<Notification className="googlesitekit-publisher-win">
 			<SimpleNotification
@@ -320,17 +82,26 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 				) }
 				description={
 					<Description
-						text={ description }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ documentationURL }
-							/>
+						id={ id }
+						recoverableModules={ recoverableModules }
+						userAccessibleModules={ userAccessibleModules }
+						hasUserRecoverableModules={ hasUserRecoverableModules }
+						hasMultipleRecoverableModules={
+							hasMultipleRecoverableModules
 						}
 					/>
 				}
-				actions={ actions }
+				actions={
+					<Actions
+						id={ id }
+						recoverableModules={ recoverableModules }
+						userAccessibleModules={ userAccessibleModules }
+						hasUserRecoverableModules={ hasUserRecoverableModules }
+						hasMultipleRecoverableModules={
+							hasMultipleRecoverableModules
+						}
+					/>
+				}
 			/>
 		</Notification>
 	);
