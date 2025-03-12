@@ -27,17 +27,12 @@ import { Fragment } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import {
-	GTM_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
@@ -60,36 +55,10 @@ export default function BannerNotifications() {
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
-	const ga4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-	const hasGTMScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( GTM_SCOPE )
-	);
 
-	const hasMismatchedGoogleTagID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
-	);
 	const keyMetricsSetupCTARendered = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
 	);
-
-	const isGA4ModuleOwner = useSelect( ( select ) => {
-		// Bail early if we're in view-only dashboard or the GA4 module is not connected.
-		if ( viewOnly || ! ga4ModuleConnected ) {
-			return false;
-		}
-
-		const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-
-		const loggedInUserID = select( CORE_USER ).getID();
-
-		if ( ga4OwnerID === undefined || loggedInUserID === undefined ) {
-			return undefined;
-		}
-
-		return ga4OwnerID === loggedInUserID;
-	} );
 
 	const [ notification ] = useQueryArg( 'notification' );
 	const [ slug ] = useQueryArg( 'slug' );
@@ -118,13 +87,6 @@ export default function BannerNotifications() {
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			{ ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />
-			) }
-			{ ga4ModuleConnected && hasGTMScope && isGA4ModuleOwner && (
-				<Fragment>
-					{ hasMismatchedGoogleTagID && (
-						<GoogleTagIDMismatchNotification />
-					) }
-				</Fragment>
 			) }
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
