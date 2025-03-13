@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { without } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
@@ -115,14 +120,13 @@ export default function RecoverableActions( {
 									name="module-recovery-alert-checkbox"
 									id={ `module-recovery-alert-checkbox-${ slug }` }
 									onChange={ () => {
-										const selected =
-											selectedModuleSlugs.includes(
-												slug
-											);
-										if ( selected ) {
+										if (
+											selectedModuleSlugs.includes( slug )
+										) {
 											setSelectedModuleSlugs(
-												selectedModuleSlugs.filter(
-													( s ) => s !== slug
+												without(
+													selectedModuleSlugs,
+													slug
 												)
 											);
 										} else {
