@@ -109,30 +109,25 @@ return array(
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
 
-			if ( preg_match( '#google/apiclient/src/Google/Http/REST\.php$#', $file_path ) ) {
-				$contents = str_replace( "\\$prefix\\intVal", '\\intval', $contents );
+			// Use double backslashes for class names in strings.
+			$doubled_backslash_prefix = str_replace( '\\', '\\\\', $prefix );
+
+			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
+				$contents = str_replace( "'\\\\GuzzleHttp\\\\ClientInterface", "'\\\\" . $doubled_backslash_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
 			}
-			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) || false !== strpos( $file_path, 'vendor/google/auth/' ) ) {
-				// Use modified prefix just for this patch.
-				$s_prefix = str_replace( '\\', '\\\\', $prefix );
-				$contents = str_replace( "'\\\\GuzzleHttp\\\\ClientInterface", "'\\\\" . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-				$contents = str_replace( '"\\\\GuzzleHttp\\\\ClientInterface', '"\\\\' . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-				$contents = str_replace( '"GuzzleHttp\\\\ClientInterface', '"' . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
+			if ( false !== strpos( $file_path, 'vendor/google/auth/' ) ) {
+				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $doubled_backslash_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
 			}
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
-				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
 			}
 			if ( false !== strpos( $file_path, 'apiclient-services-adsenselinks' ) ) {
 				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
 				$contents = preg_replace( '/"(Google_[^"]+)"/', '\\1::class', $contents );
 			}
 			if ( false !== strpos( $file_path, 'phpseclib' ) ) {
-				// Use modified prefix just for this patch.
-				$s_prefix = str_replace( '\\', '\\\\', $prefix );
-				$contents = str_replace( "'phpseclib3\\\\", "'\\\\" . $s_prefix . '\\\\phpseclib3\\\\', $contents );
-				$contents = str_replace( "'\\\\phpseclib3", "'\\\\" . $s_prefix . '\\\\phpseclib3', $contents );
+				$contents = str_replace( "'phpseclib3\\\\", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3\\\\', $contents );
+				$contents = str_replace( "'\\\\phpseclib3", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3', $contents );
 			}
 
 			if (
