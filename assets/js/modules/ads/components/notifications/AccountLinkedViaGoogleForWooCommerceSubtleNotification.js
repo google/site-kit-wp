@@ -32,6 +32,9 @@ import { useCallback, useState } from '@wordpress/element';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY } from '../../datastore/constants';
+import { HOUR_IN_SECONDS } from '../../../../util';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
@@ -46,11 +49,26 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const dismissWooCommerceRedirectModal = useCallback( () => {
+		return dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
+			expiresInSeconds: HOUR_IN_SECONDS,
+		} );
+	}, [ dismissItem ] );
+
 	const onCTAClick = useCallback( () => {
 		setIsSaving( true );
+		dismissWooCommerceRedirectModal();
 		dismissNotification( id, { skipHidingFromQueue: true } );
 		onSetupCallback();
-	}, [ setIsSaving, onSetupCallback, dismissNotification, id ] );
+	}, [
+		setIsSaving,
+		onSetupCallback,
+		dismissWooCommerceRedirectModal,
+		dismissNotification,
+		id,
+	] );
 
 	return (
 		<Notification>
@@ -67,6 +85,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 							'Keep existing account',
 							'google-site-kit'
 						) }
+						onDismiss={ dismissWooCommerceRedirectModal }
 					/>
 				}
 				additionalCTA={
