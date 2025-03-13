@@ -18,6 +18,8 @@ jobs:
   close-existing-pr:
     name: Close existing PR
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Check if branch exists
         id: check-branch
@@ -47,6 +49,9 @@ jobs:
     needs: close-existing-pr
     if: ${{ needs.close-existing-pr.outputs.delete-branch-outcome == 'success' || needs.close-existing-pr.outputs.check-branch-status == '404' }}
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
