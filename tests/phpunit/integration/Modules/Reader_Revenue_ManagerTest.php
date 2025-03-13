@@ -861,6 +861,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_non_sk_user_scripts_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
 		$this->enable_feature( 'rrmModuleV2' );
 
 		do_action( 'enqueue_block_editor_assets' );
