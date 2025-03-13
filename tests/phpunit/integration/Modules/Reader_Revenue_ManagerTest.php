@@ -879,7 +879,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$present_handles = array_intersect( $non_sk_users_block_editor_scripts, $registerable_asset_handles );
 
-		$this->assertEqualSets(
+		$this->assertEquals(
 			$non_sk_users_block_editor_scripts,
 			$present_handles
 		);
