@@ -250,35 +250,32 @@ const baseActions = {
 				publicationID,
 				publicationOnboardingState: onboardingState,
 				publicationOnboardingStateChanged: false,
+				productIDs: [],
+				paymentOption: '',
 			};
 
-			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
-				settings.productIDs = [];
-				settings.paymentOption = '';
-				settings.productID = 'openaccess';
+			if ( paymentOptions ) {
+				const paymentOption = Object.keys( paymentOptions ).find(
+					( key ) => !! paymentOptions[ key ]
+				);
 
-				if ( paymentOptions ) {
-					const paymentOption = Object.keys( paymentOptions ).find(
-						( key ) => !! paymentOptions[ key ]
-					);
+				if ( paymentOption ) {
+					settings.paymentOption = paymentOption;
+				}
+			}
 
-					if ( paymentOption ) {
-						settings.paymentOption = paymentOption;
+			if ( products ) {
+				settings.productIDs = products.reduce( ( ids, { name } ) => {
+					if ( ! name ) {
+						return ids;
 					}
-				}
 
-				if ( products ) {
-					settings.productIDs = products.reduce(
-						( ids, { name } ) => {
-							if ( ! name ) {
-								return ids;
-							}
+					return [ ...ids, name ];
+				}, [] );
+			}
 
-							return [ ...ids, name ];
-						},
-						[]
-					);
-				}
+			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
+				settings.productID = 'openaccess';
 			}
 
 			return registry

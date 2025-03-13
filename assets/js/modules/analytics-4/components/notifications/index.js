@@ -1,4 +1,6 @@
 /**
+ * Analytics Notification components.
+ *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { Cell, Grid, Row } from '../../../../material-components';
-import Title from '../common/Title';
-
-export default function SimpleNotification( { actions, description, title } ) {
-	return (
-		<Grid>
-			<Row>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 12 }
-					className="googlesitekit-publisher-win__content"
-				>
-					<Title title={ title }></Title>
-					{ description }
-					{ actions }
-				</Cell>
-			</Row>
-		</Grid>
-	);
-}
+export { default as GoogleTagIDMismatchNotification } from './GoogleTagIDMismatchNotification';
