@@ -38,7 +38,7 @@ export default function RecoverableActions( {
 	userRecoverableModuleSlugs,
 	hasMultipleRecoverableModules,
 } ) {
-	const [ selectedModules, setSelectedModules ] = useState( null );
+	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
 	const [ inProgress, setInProgress ] = useState( false );
 
 	const recoveryErrors = useSelect( ( select ) => {
@@ -74,68 +74,63 @@ export default function RecoverableActions( {
 	const { recoverModules, clearRecoveredModules } =
 		useDispatch( CORE_MODULES );
 
-	const updateCheckboxes = useCallback(
-		( slug ) =>
-			setSelectedModules( ( currentCheckboxes ) => ( {
-				...currentCheckboxes,
-				[ slug ]: ! currentCheckboxes[ slug ],
-			} ) ),
-		[]
-	);
-
 	const handleRecoverModules = useCallback( async () => {
 		setInProgress( true );
 
-		const modulesToRecover = Object.keys( selectedModules ).filter(
-			( module ) => selectedModules[ module ]
-		);
-
 		await clearRecoveredModules();
-		await recoverModules( modulesToRecover );
+		await recoverModules( selectedModuleSlugs );
 
-		setSelectedModules( null );
+		setSelectedModuleSlugs( null );
 		setInProgress( false );
-	}, [ selectedModules, clearRecoveredModules, recoverModules ] );
+	}, [ clearRecoveredModules, selectedModuleSlugs, recoverModules ] );
 
 	useEffect( () => {
 		if (
-			userRecoverableModuleSlugs !== undefined &&
-			selectedModules === null
+			selectedModuleSlugs === null &&
+			Array.isArray( userRecoverableModuleSlugs )
 		) {
-			const checked = {};
-
-			userRecoverableModuleSlugs.forEach( ( module ) => {
-				checked[ module ] = true;
-			} );
-
-			setSelectedModules( checked );
+			setSelectedModuleSlugs( userRecoverableModuleSlugs );
 		}
-	}, [ selectedModules, userRecoverableModuleSlugs ] );
+	}, [ selectedModuleSlugs, userRecoverableModuleSlugs ] );
 
 	// Disable the CTA if no modules are selected to be restored.
-	const disableCTA =
-		selectedModules !== null &&
-		! Object.values( selectedModules ).some( ( checked ) => checked );
+	const disableCTA = ! selectedModuleSlugs?.length;
 
 	// Only allow the alert to be dismissed if all recoverable modules are selected.
 	const shouldDismissOnCTAClick =
-		Object.keys( userRecoverableModuleSlugs || [] ).length ===
-		Object.values( selectedModules || {} ).filter( ( checked ) => checked )
-			.length;
+		userRecoverableModuleSlugs?.length === selectedModuleSlugs?.length;
 
 	return (
 		<Fragment>
 			{ hasMultipleRecoverableModules && (
 				<Fragment>
-					{ selectedModules !== null &&
+					{ selectedModuleSlugs &&
 						userRecoverableModuleSlugs.map( ( slug ) => (
 							<div key={ slug }>
 								<Checkbox
-									checked={ selectedModules[ slug ] }
+									checked={ selectedModuleSlugs.includes(
+										slug
+									) }
 									name="module-recovery-alert-checkbox"
 									id={ `module-recovery-alert-checkbox-${ slug }` }
-									onChange={ () => updateCheckboxes( slug ) }
-									value={ slug }
+									onChange={ () => {
+										const selected =
+											selectedModuleSlugs.includes(
+												slug
+											);
+										if ( selected ) {
+											setSelectedModuleSlugs(
+												selectedModuleSlugs.filter(
+													( s ) => s !== slug
+												)
+											);
+										} else {
+											setSelectedModuleSlugs( [
+												...selectedModuleSlugs,
+												slug,
+											] );
+										}
+									} }
 									disabled={ inProgress }
 								>
 									{ recoverableModules[ slug ].name }
