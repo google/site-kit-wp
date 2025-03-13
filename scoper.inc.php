@@ -114,12 +114,10 @@ return array(
 
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
 				$contents = str_replace( "'\\\\GuzzleHttp\\\\ClientInterface", "'\\\\" . $doubled_backslash_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
+				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 			}
 			if ( false !== strpos( $file_path, 'vendor/google/auth/' ) ) {
 				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $doubled_backslash_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-			}
-			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
-				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 			}
 			if ( false !== strpos( $file_path, 'apiclient-services-adsenselinks' ) ) {
 				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
