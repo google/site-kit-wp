@@ -176,7 +176,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 			( isWooCommerceActivated() &&
 				isGoogleForWooCommerceActivated() &&
 				! hasGoogleForWooCommerceAdsAccount() ) ||
-			( isWooCommerceActivated() && ! isGoogleForWooCommerceActivated() )
+			( isWooCommerceActivated() &&
+				! isGoogleForWooCommerceActivated() ) ||
+			( isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				hasGoogleForWooCommerceAdsAccount() )
 		);
 	} );
 
