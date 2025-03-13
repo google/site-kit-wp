@@ -107,6 +107,17 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = function () {
+					return apply_filters( 'googlesitekit_is_module_connected', false, Ads::MODULE_SLUG ) ? true : null;
+				};
+				return $checks;
+			},
+			10
+		);
 	}
 
 	/**
