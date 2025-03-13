@@ -38,28 +38,30 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	);
 
 	const userRecoverableModuleSlugs = useSelect( ( select ) => {
-		const modules = select( CORE_MODULES ).getRecoverableModules();
+		const { getRecoverableModules, hasModuleAccess } =
+			select( CORE_MODULES );
+		const modules = getRecoverableModules();
 
 		if ( modules === undefined ) {
 			return undefined;
 		}
 
-		const accessibleModules = Object.keys( modules ).map( ( slug ) => ( {
+		const slugAccessEntries = Object.keys( modules ).map( ( slug ) => [
 			slug,
-			hasModuleAccess: select( CORE_MODULES ).hasModuleAccess( slug ),
-		} ) );
+			hasModuleAccess( slug ),
+		] );
 
 		if (
-			accessibleModules.some(
-				( { hasModuleAccess } ) => hasModuleAccess === undefined
+			slugAccessEntries.some(
+				( [ , hasAccess ] ) => hasAccess === undefined
 			)
 		) {
 			return undefined;
 		}
 
-		return accessibleModules
-			.filter( ( { hasModuleAccess } ) => hasModuleAccess )
-			.map( ( { slug } ) => slug );
+		return slugAccessEntries
+			.filter( ( [ , hasAccess ] ) => hasAccess )
+			.map( ( [ slug ] ) => slug );
 	} );
 
 	// The alert renders conditional copy and actions based on:
