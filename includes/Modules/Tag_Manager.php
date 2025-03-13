@@ -99,6 +99,33 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = function () {
+					$tag_manager = Modules::instance()->get_module( Tag_Manager::MODULE_SLUG );
+					if ( ! $tag_manager ) {
+						return null;
+					}
+
+					$live_container_version = $tag_manager->get_data( 'live-container-version' );
+					if ( empty( $live_container_version['tag'] ) ) {
+						return null;
+					}
+
+					foreach ( $live_container_version['tag'] as $tag ) {
+						if ( ! empty( $tag['type'] ) && 'awct' === $tag['type'] ) {
+							return true;
+						}
+					}
+
+					return null;
+				};
+				return $checks;
+			},
+			30
+		);
 	}
 
 	/**
