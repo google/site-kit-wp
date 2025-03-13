@@ -42,7 +42,7 @@ export default function Description( {
 		);
 	} );
 
-	const description = () => {
+	const getText = () => {
 		if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
 			return sprintf(
 				/* translators: %s: module name. */
@@ -83,7 +83,7 @@ export default function Description( {
 
 	return (
 		<CommonDescription
-			text={ description() }
+			text={ getText() }
 			learnMoreLink={
 				<LearnMoreLink
 					id={ id }
