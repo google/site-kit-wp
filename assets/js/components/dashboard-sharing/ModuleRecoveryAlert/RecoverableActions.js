@@ -41,6 +41,7 @@ export default function RecoverableActions( {
 	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
 	const [ inProgress, setInProgress ] = useState( false );
 
+	// TODO: Extract to selector.
 	const recoveryErrors = useSelect( ( select ) => {
 		if ( ! recoverableModules ) {
 			return undefined;

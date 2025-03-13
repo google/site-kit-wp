@@ -36,6 +36,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		select( CORE_MODULES ).getRecoverableModules()
 	);
 
+	// TODO: Extract to selector.
 	const userRecoverableModuleSlugs = useSelect( ( select ) => {
 		const { getRecoverableModules, hasModuleAccess } =
 			select( CORE_MODULES );
