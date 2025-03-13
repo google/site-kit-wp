@@ -68,9 +68,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	// 2. If the user has access to perform the recovery.
 	const hasMultipleRecoverableModules =
 		Object.keys( recoverableModules || {} ).length > 1;
-	const hasUserRecoverableModules = !! Object.keys(
-		userRecoverableModuleSlugs || {}
-	).length;
+	const hasUserRecoverableModules = !! userRecoverableModuleSlugs?.length;
 
 	return (
 		<Notification className="googlesitekit-publisher-win">
