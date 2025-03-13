@@ -434,6 +434,36 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				);
 			}
 		);
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = function () {
+					$analytics_connected = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
+					if ( ! $analytics_connected ) {
+						return null;
+					}
+
+					$analytics_settings = ( new self( get_option( 'googlesitekit_analytics_settings' ) ) )->get();
+
+					if ( ! empty( $analytics_settings['adSenseLinked'] ) ) {
+						return true;
+					}
+
+					if ( ! empty( $analytics_settings['googleTagContainerDestinationIDs'] ) ) {
+						foreach ( $analytics_settings['googleTagContainerDestinationIDs'] as $destination_id ) {
+							if ( strpos( $destination_id, 'AW-' ) === 0 ) {
+								return $destination_id;
+							}
+						}
+					}
+
+					return null;
+				};
+				return $checks;
+			},
+			20
+		);
 	}
 
 	/**
