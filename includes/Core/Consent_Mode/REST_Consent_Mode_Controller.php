@@ -257,15 +257,16 @@ class REST_Consent_Mode_Controller {
 							$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
 
 							foreach ( $checks as $check ) {
-								if ( is_callable( $check ) ) {
-									$result = call_user_func( $check );
-									if ( true === $result || ( is_string( $result ) && 0 === strpos( $result, 'AW-' ) ) ) {
-										return new WP_REST_Response( array( 'connected' => true ) );
-									}
+								if ( ! is_callable( $check ) ) {
+									continue;
+								}
+
+								if ( $check() ) {
+									return new WP_REST_Response( array( 'connected' => true ) );
 								}
 							}
-							return new WP_REST_Response( array( 'connected' => false ) );
-						},
+
+							return new WP_REST_Response( array( 'connected' => false ) );                       },
 						'permission_callback' => $can_manage_options,
 					),
 				),
