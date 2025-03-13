@@ -1,5 +1,5 @@
 /**
- * ModuleRecoveryAlert UnRecoverableActions component.
+ * ModuleRecoveryAlert UnrecoverableActions component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { DAY_IN_SECONDS } from '../../../util';
 import Dismiss from '../../../googlesitekit/notifications/components/common/Dismiss';
 
-export default function UnRecoverableActions( {
+export default function UnrecoverableActions( {
 	id,
 	recoverableModules,
 	hasMultipleRecoverableModules,

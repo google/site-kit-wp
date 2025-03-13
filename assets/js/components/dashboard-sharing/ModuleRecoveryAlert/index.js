@@ -29,7 +29,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
 import Description from './Description';
 import RecoverableActions from './RecoverableActions';
-import UnRecoverableActions from './UnRecoverableActions';
+import UnrecoverableActions from './UnrecoverableActions';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const recoverableModules = useSelect( ( select ) =>
@@ -104,7 +104,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 							}
 						/>
 					) : (
-						<UnRecoverableActions
+						<UnrecoverableActions
 							id={ id }
 							recoverableModules={ recoverableModules }
 							userRecoverableModuleSlugs={
