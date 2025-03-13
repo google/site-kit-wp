@@ -210,7 +210,6 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_synchronize_product_ids() {
-		$this->enable_feature( 'rrmModuleV2' );
 		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
@@ -227,7 +226,6 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_synchronize_product_ids_with_non_existent_publication() {
-		$this->enable_feature( 'rrmModuleV2' );
 		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
@@ -250,7 +248,6 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_synchronize_payment_option() {
-		$this->enable_feature( 'rrmModuleV2' );
 		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
@@ -267,7 +264,6 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_synchronize_payment_option_with_non_existent_publication() {
-		$this->enable_feature( 'rrmModuleV2' );
 		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
