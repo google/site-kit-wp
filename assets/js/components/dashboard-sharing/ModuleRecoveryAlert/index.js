@@ -37,7 +37,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		select( CORE_MODULES ).getRecoverableModules()
 	);
 
-	const userRecoverableModulesSlugs = useSelect( ( select ) => {
+	const userRecoverableModuleSlugs = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getRecoverableModules();
 
 		if ( modules === undefined ) {
@@ -70,8 +70,8 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		[ recoverableModules ]
 	);
 	const hasUserRecoverableModules = useMemo(
-		() => !! Object.keys( userRecoverableModulesSlugs || {} ).length,
-		[ userRecoverableModulesSlugs ]
+		() => !! Object.keys( userRecoverableModuleSlugs || {} ).length,
+		[ userRecoverableModuleSlugs ]
 	);
 
 	return (
@@ -85,8 +85,8 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					<Description
 						id={ id }
 						recoverableModules={ recoverableModules }
-						userRecoverableModulesSlugs={
-							userRecoverableModulesSlugs
+						userRecoverableModuleSlugs={
+							userRecoverableModuleSlugs
 						}
 						hasUserRecoverableModules={ hasUserRecoverableModules }
 						hasMultipleRecoverableModules={
@@ -99,8 +99,8 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						<RecoverableActions
 							id={ id }
 							recoverableModules={ recoverableModules }
-							userRecoverableModulesSlugs={
-								userRecoverableModulesSlugs
+							userRecoverableModuleSlugs={
+								userRecoverableModuleSlugs
 							}
 							hasMultipleRecoverableModules={
 								hasMultipleRecoverableModules
@@ -110,8 +110,8 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						<UnRecoverableActions
 							id={ id }
 							recoverableModules={ recoverableModules }
-							userRecoverableModulesSlugs={
-								userRecoverableModulesSlugs
+							userRecoverableModuleSlugs={
+								userRecoverableModuleSlugs
 							}
 							hasMultipleRecoverableModules={
 								hasMultipleRecoverableModules

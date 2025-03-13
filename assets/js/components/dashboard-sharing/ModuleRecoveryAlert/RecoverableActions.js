@@ -35,7 +35,7 @@ import ActionsCTALinkDismiss from '../../../googlesitekit/notifications/componen
 export default function RecoverableActions( {
 	id,
 	recoverableModules,
-	userRecoverableModulesSlugs,
+	userRecoverableModuleSlugs,
 	hasMultipleRecoverableModules,
 } ) {
 	const [ selectedModules, setSelectedModules ] = useState( null );
@@ -99,18 +99,18 @@ export default function RecoverableActions( {
 
 	useEffect( () => {
 		if (
-			userRecoverableModulesSlugs !== undefined &&
+			userRecoverableModuleSlugs !== undefined &&
 			selectedModules === null
 		) {
 			const checked = {};
 
-			userRecoverableModulesSlugs.forEach( ( module ) => {
+			userRecoverableModuleSlugs.forEach( ( module ) => {
 				checked[ module ] = true;
 			} );
 
 			setSelectedModules( checked );
 		}
-	}, [ selectedModules, userRecoverableModulesSlugs ] );
+	}, [ selectedModules, userRecoverableModuleSlugs ] );
 
 	// Disable the CTA if no modules are selected to be restored.
 	const disableCTA =
@@ -119,7 +119,7 @@ export default function RecoverableActions( {
 
 	// Only allow the alert to be dismissed if all recoverable modules are selected.
 	const shouldDismissOnCTAClick =
-		Object.keys( userRecoverableModulesSlugs || [] ).length ===
+		Object.keys( userRecoverableModuleSlugs || [] ).length ===
 		Object.values( selectedModules || {} ).filter( ( checked ) => checked )
 			.length;
 
@@ -128,7 +128,7 @@ export default function RecoverableActions( {
 			{ hasMultipleRecoverableModules && (
 				<Fragment>
 					{ selectedModules !== null &&
-						userRecoverableModulesSlugs.map( ( slug ) => (
+						userRecoverableModuleSlugs.map( ( slug ) => (
 							<div key={ slug }>
 								<Checkbox
 									checked={ selectedModules[ slug ] }

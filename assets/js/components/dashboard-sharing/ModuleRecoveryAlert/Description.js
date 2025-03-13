@@ -32,7 +32,7 @@ import LearnMoreLink from '../../../googlesitekit/notifications/components/commo
 export default function Description( {
 	id,
 	recoverableModules,
-	userRecoverableModulesSlugs,
+	userRecoverableModuleSlugs,
 	hasUserRecoverableModules,
 	hasMultipleRecoverableModules,
 } ) {
@@ -50,7 +50,7 @@ export default function Description( {
 					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
 					'google-site-kit'
 				),
-				recoverableModules[ userRecoverableModulesSlugs[ 0 ] ]?.name
+				recoverableModules[ userRecoverableModuleSlugs[ 0 ] ]?.name
 			);
 		}
 		if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
