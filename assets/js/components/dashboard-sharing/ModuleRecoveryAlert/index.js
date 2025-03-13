@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -67,14 +66,11 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	// The alert renders conditional copy and actions based on:
 	// 1. If there is one or more than one module to recover.
 	// 2. If the user has access to perform the recovery.
-	const hasMultipleRecoverableModules = useMemo(
-		() => Object.keys( recoverableModules || {} ).length > 1,
-		[ recoverableModules ]
-	);
-	const hasUserRecoverableModules = useMemo(
-		() => !! Object.keys( userRecoverableModuleSlugs || {} ).length,
-		[ userRecoverableModuleSlugs ]
-	);
+	const hasMultipleRecoverableModules =
+		Object.keys( recoverableModules || {} ).length > 1;
+	const hasUserRecoverableModules = !! Object.keys(
+		userRecoverableModuleSlugs || {}
+	).length;
 
 	return (
 		<Notification className="googlesitekit-publisher-win">
