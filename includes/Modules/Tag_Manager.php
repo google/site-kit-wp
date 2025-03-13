@@ -100,32 +100,28 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		add_filter(
-			'googlesitekit_ads_measurement_connection_checks',
-			function ( $checks ) {
-				$checks[] = function () {
-					$tag_manager = Modules::instance()->get_module( Tag_Manager::MODULE_SLUG );
-					if ( ! $tag_manager ) {
-						return null;
-					}
+		add_filter( 'googlesitekit_ads_measurement_connection_checks', array( $this, 'check_ads_measurement_connection' ), 30 );
+	}
 
-					$live_container_version = $tag_manager->get_data( 'live-container-version' );
-					if ( empty( $live_container_version['tag'] ) ) {
-						return null;
-					}
+	/**
+	 * Checks if GTM module contains an AWCT tag.
+	 *
+	 * @return bool|null True if found, null otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		$live_container_version = $this->get_data( 'live-container-version' );
 
-					foreach ( $live_container_version['tag'] as $tag ) {
-						if ( ! empty( $tag['type'] ) && 'awct' === $tag['type'] ) {
-							return true;
-						}
-					}
+		if ( empty( $live_container_version['tag'] ) ) {
+			return null;
+		}
 
-					return null;
-				};
-				return $checks;
-			},
-			30
-		);
+		foreach ( $live_container_version['tag'] as $tag ) {
+			if ( ! empty( $tag['type'] ) && 'awct' === $tag['type'] ) {
+				return true;
+			}
+		}
+
+		return null;
 	}
 
 	/**

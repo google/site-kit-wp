@@ -435,35 +435,34 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			}
 		);
 
-		add_filter(
-			'googlesitekit_ads_measurement_connection_checks',
-			function ( $checks ) {
-				$checks[] = function () {
-					$analytics_connected = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
-					if ( ! $analytics_connected ) {
-						return null;
-					}
+		add_filter( 'googlesitekit_ads_measurement_connection_checks', array( $this, 'check_ads_measurement_connection' ), 20 );
+	}
 
-					$analytics_settings = ( new self( get_option( 'googlesitekit_analytics_settings' ) ) )->get();
+	/**
+	 * Checks if GA4 module indicates ads measurement connection.
+	 *
+	 * @return bool|null True if connected, null otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		if ( ! $this->is_connected() ) {
+			return null;
+		}
 
-					if ( ! empty( $analytics_settings['adSenseLinked'] ) ) {
-						return true;
-					}
+		$settings = $this->get_settings()->get();
 
-					if ( ! empty( $analytics_settings['googleTagContainerDestinationIDs'] ) ) {
-						foreach ( $analytics_settings['googleTagContainerDestinationIDs'] as $destination_id ) {
-							if ( strpos( $destination_id, 'AW-' ) === 0 ) {
-								return $destination_id;
-							}
-						}
-					}
+		if ( ! empty( $settings['adSenseLinked'] ) ) {
+			return true;
+		}
 
-					return null;
-				};
-				return $checks;
-			},
-			20
-		);
+		if ( ! empty( $settings['googleTagContainerDestinationIDs'] ) ) {
+			foreach ( $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
+				if ( 0 === strpos( $destination_id, 'AW-' ) ) {
+					return true;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
