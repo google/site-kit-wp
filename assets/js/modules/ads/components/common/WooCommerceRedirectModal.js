@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -114,22 +115,13 @@ export default function WooCommerceRedirectModal( {
 	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
 
 	const { dismissItem } = useDispatch( CORE_USER );
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const markModalDismissed = useCallback( async () => {
 		onDismiss?.( trackIsSavingRef.current );
 		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
-		if ( isGoogleForWooCommerceAdsConnected ) {
-			dismissNotification( 'account-linked-via-google-for-woocommerce' );
-		}
-	}, [
-		onDismiss,
-		dismissItem,
-		isGoogleForWooCommerceAdsConnected,
-		dismissNotification,
-	] );
+	}, [ onDismiss, dismissItem, isGoogleForWooCommerceAdsConnected ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -157,6 +149,14 @@ export default function WooCommerceRedirectModal( {
 
 		onSetupCallback();
 	}, [ markModalDismissed, onSetupCallback, onContinue ] );
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	useMount( () => {
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			dismissNotification( 'account-linked-via-google-for-woocommerce' );
+		}
+	} );
 
 	if ( isModalDismissed && ! trackIsSavingRef.current ) {
 		return null;
