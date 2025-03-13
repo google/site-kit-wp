@@ -324,6 +324,8 @@ export default function DashboardMainApp() {
 				/>
 
 				{ showSurveyPortal && currentSurvey && <CurrentSurvey /> }
+
+				<OfflineNotification />
 			</div>
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
@@ -331,8 +333,6 @@ export default function DashboardMainApp() {
 			{ audienceSegmentationEnabled && configuredAudiences && (
 				<AudienceSelectionPanel />
 			) }
-
-			<OfflineNotification />
 		</Fragment>
 	);
 }

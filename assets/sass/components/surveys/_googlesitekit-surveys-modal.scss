@@ -33,7 +33,7 @@
 	}
 
 	@media (min-width: $page-content-max-width) {
-		// Once the page content reaches it's max-width, fix the overlay notifictation to the
+		// Once the page content reaches it's max-width, fix the overlay notification to the
 		// right had side of the page content.
 		right: calc((100vw - #{$page-content-max-width}) / 2); // NOTE: this doesn't account for the WP menu collapsed state.
 	}
