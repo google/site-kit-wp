@@ -53,6 +53,7 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { HOUR_IN_SECONDS } from '../../../../util';
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
@@ -113,13 +114,22 @@ export default function WooCommerceRedirectModal( {
 	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const markModalDismissed = useCallback( async () => {
 		onDismiss?.( trackIsSavingRef.current );
 		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
-	}, [ onDismiss, dismissItem, isGoogleForWooCommerceAdsConnected ] );
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			dismissNotification( 'account-linked-via-google-for-woocommerce' );
+		}
+	}, [
+		onDismiss,
+		dismissItem,
+		isGoogleForWooCommerceAdsConnected,
+		dismissNotification,
+	] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
