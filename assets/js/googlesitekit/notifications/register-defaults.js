@@ -572,7 +572,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'module-recovery-alert': {
 		Component: ModuleRecoveryAlert,
-		priority: 270,
+		priority: 145,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -583,10 +583,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			const recoverableModulesList = Object.keys(
 				recoverableModules || {}
 			);
-			if (
-				recoverableModules === undefined ||
-				recoverableModulesList.length === 0
-			) {
+			if ( ! recoverableModulesList.length ) {
 				return false;
 			}
 			return true;

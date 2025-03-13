@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
@@ -33,7 +32,7 @@ import LearnMoreLink from '../../../googlesitekit/notifications/components/commo
 export default function Description( {
 	id,
 	recoverableModules,
-	userAccessibleModules,
+	userRecoverableModulesSlugs,
 	hasUserRecoverableModules,
 	hasMultipleRecoverableModules,
 } ) {
@@ -43,7 +42,7 @@ export default function Description( {
 		);
 	} );
 
-	const description = useMemo( () => {
+	const description = () => {
 		if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
 			return sprintf(
 				/* translators: %s: module name. */
@@ -51,7 +50,7 @@ export default function Description( {
 					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
 					'google-site-kit'
 				),
-				recoverableModules[ userAccessibleModules[ 0 ] ].name
+				recoverableModules[ userRecoverableModulesSlugs[ 0 ] ]?.name
 			);
 		}
 		if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
@@ -71,9 +70,7 @@ export default function Description( {
 					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
 					'google-site-kit'
 				),
-				recoverableModules[
-					Object.keys( recoverableModules || {} )[ 0 ]
-				]?.name
+				Object.values( recoverableModules )[ 0 ]?.name
 			);
 		}
 		if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
@@ -82,16 +79,11 @@ export default function Description( {
 				'google-site-kit'
 			);
 		}
-	}, [
-		hasMultipleRecoverableModules,
-		hasUserRecoverableModules,
-		recoverableModules,
-		userAccessibleModules,
-	] );
+	};
 
 	return (
 		<CommonDescription
-			text={ description }
+			text={ description() }
 			learnMoreLink={
 				<LearnMoreLink
 					id={ id }

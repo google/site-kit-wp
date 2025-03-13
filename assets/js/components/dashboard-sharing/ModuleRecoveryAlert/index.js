@@ -29,14 +29,15 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
 import Description from './Description';
-import Actions from './Actions';
+import RecoverableActions from './RecoverableActions';
+import UnRecoverableActions from './UnRecoverableActions';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
 
-	const userAccessibleModules = useSelect( ( select ) => {
+	const userRecoverableModulesSlugs = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getRecoverableModules();
 
 		if ( modules === undefined ) {
@@ -69,8 +70,8 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		[ recoverableModules ]
 	);
 	const hasUserRecoverableModules = useMemo(
-		() => !! Object.keys( userAccessibleModules || {} ).length,
-		[ userAccessibleModules ]
+		() => !! Object.keys( userRecoverableModulesSlugs || {} ).length,
+		[ userRecoverableModulesSlugs ]
 	);
 
 	return (
@@ -84,7 +85,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					<Description
 						id={ id }
 						recoverableModules={ recoverableModules }
-						userAccessibleModules={ userAccessibleModules }
+						userRecoverableModulesSlugs={
+							userRecoverableModulesSlugs
+						}
 						hasUserRecoverableModules={ hasUserRecoverableModules }
 						hasMultipleRecoverableModules={
 							hasMultipleRecoverableModules
@@ -92,15 +95,29 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					/>
 				}
 				actions={
-					<Actions
-						id={ id }
-						recoverableModules={ recoverableModules }
-						userAccessibleModules={ userAccessibleModules }
-						hasUserRecoverableModules={ hasUserRecoverableModules }
-						hasMultipleRecoverableModules={
-							hasMultipleRecoverableModules
-						}
-					/>
+					hasUserRecoverableModules ? (
+						<RecoverableActions
+							id={ id }
+							recoverableModules={ recoverableModules }
+							userRecoverableModulesSlugs={
+								userRecoverableModulesSlugs
+							}
+							hasMultipleRecoverableModules={
+								hasMultipleRecoverableModules
+							}
+						/>
+					) : (
+						<UnRecoverableActions
+							id={ id }
+							recoverableModules={ recoverableModules }
+							userRecoverableModulesSlugs={
+								userRecoverableModulesSlugs
+							}
+							hasMultipleRecoverableModules={
+								hasMultipleRecoverableModules
+							}
+						/>
+					)
 				}
 			/>
 		</Notification>
