@@ -226,42 +226,44 @@ function DashboardEntityApp() {
 
 			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
 
-			<OverlayNotificationsRenderer />
+			<div className="googlesitekit-page-content">
+				<OverlayNotificationsRenderer />
 
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_CONTENT,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_SPEED,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
-				} ) }
-			/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_TRAFFIC }
+					slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SPEED }
+					slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SPEED,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_MONETIZATION }
+					slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+					} ) }
+				/>
 
-			<OfflineNotification />
+				<OfflineNotification />
+			</div>
 		</Fragment>
 	);
 }

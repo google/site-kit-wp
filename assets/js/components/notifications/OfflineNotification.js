@@ -30,16 +30,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { TYPE_WARNING } from '../SettingsNotice';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import SettingsNoticeSingleRow from '../SettingsNotice/SettingsNoticeSingleRow';
 import { Button } from 'googlesitekit-components';
 
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );
 
-	const isOnline = useSelect( ( select ) => select( CORE_UI ).getIsOnline() );
+	// const isOnline = useSelect( ( select ) => select( CORE_UI ).getIsOnline() );
+	const isOnline = false;
 
 	useEffect( () => {
 		if ( isOnline && dismissed ) {
