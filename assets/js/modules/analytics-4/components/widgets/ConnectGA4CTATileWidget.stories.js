@@ -55,11 +55,6 @@ Default.args = {
 		},
 	},
 };
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/ConnectGA4CTATileWidget',
-	delay: 250,
-};
 
 export const WithSingleWidget = Template.bind( {} );
 WithSingleWidget.storyName = 'ConnectGA4CTATileWidget (for single widget)';
@@ -70,7 +65,6 @@ WithSingleWidget.args = {
 		},
 	},
 };
-WithSingleWidget.scenario = {};
 
 export default {
 	title: 'Key Metrics/ConnectGA4CTATileWidget',
