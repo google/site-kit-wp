@@ -26,7 +26,7 @@ import {
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
-	provideNotifications,
+	deprecatedProvideNotifications,
 } from '../../../../tests/js/test-utils';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
@@ -182,7 +182,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 				googlesitekit_update_plugins: true,
 			} );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]:

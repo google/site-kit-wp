@@ -22,7 +22,7 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	provideNotifications,
+	deprecatedProvideNotifications,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
@@ -117,7 +117,7 @@ describe( 'modules/ads settings', () => {
 					FPM_SETUP_CTA_BANNER_NOTIFICATION,
 				] );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -216,7 +216,7 @@ describe( 'modules/ads settings', () => {
 				body: {},
 			} );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -285,7 +285,7 @@ describe( 'modules/ads settings', () => {
 				body: {},
 			} );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -341,7 +341,7 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:

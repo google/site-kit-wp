@@ -468,13 +468,14 @@ export const provideKeyMetricsUserInputSettings = (
  *
  * @since 1.140.0
  * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
+ * @deprecated Use `provideNotifications` instead.
  *
  * @param {Object}  registry            The registry to set up.
  * @param {Object}  [extraData]         Extra data to merge with the default settings.
  * @param {Object}  [options]           Options object.
  * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
  */
-export const provideNotifications = (
+export const deprecatedProvideNotifications = (
 	registry,
 	extraData,
 	{ overwrite = false } = {}
