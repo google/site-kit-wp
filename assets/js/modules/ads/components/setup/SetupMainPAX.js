@@ -178,22 +178,15 @@ export default function SetupMainPAX( { finishSetup } ) {
 		)
 	);
 	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
-		const {
-			isWooCommerceActivated,
-			isGoogleForWooCommerceActivated,
-			hasGoogleForWooCommerceAdsAccount,
-		} = select( MODULES_ADS );
+		const { isWooCommerceActivated } = select( MODULES_ADS );
 
-		return (
-			( isWooCommerceActivated() &&
-				isGoogleForWooCommerceActivated() &&
-				! hasGoogleForWooCommerceAdsAccount() ) ||
-			( isWooCommerceActivated() &&
-				! isGoogleForWooCommerceActivated() ) ||
-			( isWooCommerceActivated() &&
-				isGoogleForWooCommerceActivated() &&
-				hasGoogleForWooCommerceAdsAccount() )
-		);
+		if ( ! isWooCommerceActivated() ) {
+			return false;
+		}
+
+		// Once WooCommerce is active, it doesn’t matter whether Google for WooCommerce is activated or if an ads account exists,
+		// because the conditions simplify to always true.
+		return true;
 	} );
 
 	const onModalDismiss = useCallback(
