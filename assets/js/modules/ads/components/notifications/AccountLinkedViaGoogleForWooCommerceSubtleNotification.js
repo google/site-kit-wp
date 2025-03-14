@@ -33,6 +33,7 @@ import { useCallback, useState } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
@@ -42,7 +43,6 @@ import SubtleNotification from '../../../../googlesitekit/notifications/componen
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { setItem } from '../../../../googlesitekit/api/cache';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
@@ -54,16 +54,17 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { setCacheItem } = useDispatch( CORE_SITE );
 
 	const dismissWooCommerceRedirectModal = useCallback( async () => {
-		await setItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
-			expiresInSeconds: 5 * MINUTE_IN_SECONDS,
+		await setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
+			ttl: 5 * MINUTE_IN_SECONDS,
 		} );
 		// This will be removed as part of #10419.
 		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
-	}, [ dismissItem ] );
+	}, [ dismissItem, setCacheItem ] );
 
 	const onCTAClick = useCallback( async () => {
 		setIsSaving( true );
