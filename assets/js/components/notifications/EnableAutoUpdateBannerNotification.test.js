@@ -26,7 +26,7 @@ import {
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
-	deprecatedProvideNotifications,
+	provideNotifications,
 } from '../../../../tests/js/test-utils';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
@@ -182,16 +182,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 				googlesitekit_update_plugins: true,
 			} );
 
-			deprecatedProvideNotifications(
-				registry,
-				{
-					[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]:
-						DEFAULT_NOTIFICATIONS[
-							ENABLE_AUTO_UPDATES_BANNER_SLUG
-						],
-				},
-				{ overwrite: true }
-			);
+			provideNotifications( registry );
 
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success';
