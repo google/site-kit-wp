@@ -27,12 +27,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useCallback,
-	useMemo,
-	useRef,
-	createInterpolateElement,
-} from '@wordpress/element';
+import { useCallback, useMemo, useRef, Fragment } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -190,20 +185,24 @@ export default function WooCommerceRedirectModal( {
 			</DialogTitle>
 			<DialogContent>
 				<p>
-					{ isGoogleForWooCommerceAdsConnected
-						? createInterpolateElement(
-								__(
-									'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension. <br /> Continue Ads setup with Site Kit only if you do want to create another account.',
-									'google-site-kit'
-								),
-								{
-									br: <br />,
-								}
-						  )
-						: __(
-								'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+					{ isGoogleForWooCommerceAdsConnected ? (
+						<Fragment>
+							{ __(
+								'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
 								'google-site-kit'
-						  ) }
+							) }
+							<br />
+							{ __(
+								'Continue Ads setup with Site Kit only if you do want to create another account.',
+								'google-site-kit'
+							) }
+						</Fragment>
+					) : (
+						__(
+							'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+							'google-site-kit'
+						)
+					) }
 				</p>
 			</DialogContent>
 			<DialogFooter>
