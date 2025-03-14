@@ -121,7 +121,7 @@ export default function WooCommerceRedirectModal( {
 		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
 			expiresInSeconds: HOUR_IN_SECONDS,
 		} );
-	}, [ onDismiss, dismissItem, isGoogleForWooCommerceAdsConnected ] );
+	}, [ onDismiss, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
