@@ -24,15 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModuleRegistrations,
-	provideModules,
-	provideSiteConnection,
-	provideSiteInfo,
-	provideUserAuthentication,
-	WithTestRegistry,
-} from '../../../../../tests/js/utils';
+import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -59,6 +51,22 @@ const provideModulesWithRecoverable = ( registry, recoverableModules ) => {
 		registry,
 		recoverableModules.map( ( slug ) => ( { slug, recoverable: true } ) )
 	);
+};
+
+export const LoadingRecoverableModules = Template.bind( {} );
+LoadingRecoverableModules.storyName = 'Loading Recoverable Modules';
+LoadingRecoverableModules.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+		registry
+			.dispatch( CORE_MODULES )
+			.startResolution( 'getRecoverableModules', [] );
+	},
+};
+LoadingRecoverableModules.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
+	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
+	delay: 250,
 };
 
 export const SingleRecoverableModule = Template.bind( {} );
@@ -252,19 +260,4 @@ MultipleRecoverableModuleErrors.args = {
 export default {
 	title: 'Components/ModuleRecoveryAlert',
 	component: ModuleRecoveryAlert,
-	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideUserAuthentication( registry );
-			provideSiteInfo( registry );
-			provideSiteConnection( registry );
-			provideModuleRegistrations( registry );
-
-			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
 };

@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
+import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
 import Description from './Description';
 import RecoverableActions from './RecoverableActions';
 import UnrecoverableActions from './UnrecoverableActions';
@@ -71,6 +72,11 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		Object.keys( recoverableModules || {} ).length > 1;
 	const hasUserRecoverableModules = !! userRecoverableModuleSlugs?.length;
 
+	// TODO: refactor loading state to use Skeleton components within the sub component.
+	const isLoading =
+		recoverableModules === undefined ||
+		userRecoverableModuleSlugs === undefined;
+
 	return (
 		<Notification className="googlesitekit-publisher-win">
 			<SimpleNotification
@@ -79,20 +85,27 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					'google-site-kit'
 				) }
 				description={
-					<Description
-						id={ id }
-						recoverableModules={ recoverableModules }
-						userRecoverableModuleSlugs={
-							userRecoverableModuleSlugs
-						}
-						hasUserRecoverableModules={ hasUserRecoverableModules }
-						hasMultipleRecoverableModules={
-							hasMultipleRecoverableModules
-						}
-					/>
+					isLoading ? (
+						<ProgressBar />
+					) : (
+						<Description
+							id={ id }
+							recoverableModules={ recoverableModules }
+							userRecoverableModuleSlugs={
+								userRecoverableModuleSlugs
+							}
+							hasUserRecoverableModules={
+								hasUserRecoverableModules
+							}
+							hasMultipleRecoverableModules={
+								hasMultipleRecoverableModules
+							}
+						/>
+					)
 				}
 				actions={
-					hasUserRecoverableModules ? (
+					! isLoading &&
+					( hasUserRecoverableModules ? (
 						<RecoverableActions
 							id={ id }
 							recoverableModules={ recoverableModules }
@@ -114,7 +127,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 								hasMultipleRecoverableModules
 							}
 						/>
-					)
+					) )
 				}
 			/>
 		</Notification>
