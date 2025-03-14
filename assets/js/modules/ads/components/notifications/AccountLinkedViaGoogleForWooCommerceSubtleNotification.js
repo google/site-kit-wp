@@ -57,10 +57,10 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 		} );
 	}, [ dismissItem ] );
 
-	const onCTAClick = useCallback( () => {
+	const onCTAClick = useCallback( async () => {
 		setIsSaving( true );
-		dismissWooCommerceRedirectModal();
-		dismissNotification( id, { skipHidingFromQueue: true } );
+		await dismissNotification( id, { skipHidingFromQueue: true } );
+		await dismissWooCommerceRedirectModal();
 		onSetupCallback();
 	}, [
 		setIsSaving,
