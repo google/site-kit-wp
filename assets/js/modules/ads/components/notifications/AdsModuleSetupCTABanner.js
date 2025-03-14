@@ -142,8 +142,10 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	] );
 
 	const onModalDismiss = useCallback(
-		( skipClosing ) => {
-			markNotificationDismissed();
+		( skipClosing, skipDismissing ) => {
+			if ( ! skipDismissing ) {
+				markNotificationDismissed();
+			}
 
 			if ( ! skipClosing ) {
 				setOpenDialog( false );
