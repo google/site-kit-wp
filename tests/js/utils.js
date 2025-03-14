@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { debounce, mapValues } from 'lodash';
+import { debounce, keyBy, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -461,6 +461,40 @@ export const provideKeyMetricsUserInputSettings = (
 		...defaults,
 		...extraData,
 	} );
+};
+
+/**
+ * Provides notifications data to the given registry.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   registry    The registry to set up.
+ * @param {Object[]} [extraData] List of notification objects to be merged with defaults. Default empty array.
+ */
+export const provideNotifications = ( registry, extraData ) => {
+	const { registerNotification: realRegisterNotification, ...Notifications } =
+		coreNotifications.createNotifications( registry );
+
+	const extraDataByID = keyBy( extraData, 'id' );
+	// Decorate `Notifications.registerNotification` with a function to apply extra data.
+	const registeredNotifications = new Set();
+	const testRegisterNotification = ( id, settings ) => {
+		registeredNotifications.add( id );
+		return realRegisterNotification( id, {
+			...settings,
+			...extraDataByID[ id ],
+		} );
+	};
+	Notifications.registerNotification = testRegisterNotification;
+	// Register defaults with any potential overrides via extraData.
+	coreNotifications.registerNotifications( Notifications );
+
+	// Register any additional notifications provided.
+	Object.entries( extraDataByID )
+		.filter( ( [ id ] ) => ! registeredNotifications.has( id ) )
+		.forEach( ( [ id, settings ] ) =>
+			realRegisterNotification( id, settings )
+		);
 };
 
 /**
