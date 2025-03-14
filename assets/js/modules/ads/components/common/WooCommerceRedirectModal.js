@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -167,7 +168,13 @@ export default function WooCommerceRedirectModal( {
 			open={ dialogActive }
 			aria-describedby={ undefined }
 			tabIndex="-1"
-			className="googlesitekit-dialog-woocommerce-redirect"
+			className={ classnames(
+				'googlesitekit-dialog-woocommerce-redirect',
+				{
+					'googlesitekit-dialog-woocommerce-redirect--ads-connected':
+						isGoogleForWooCommerceAdsConnected,
+				}
+			) }
 			onClose={ markModalDismissed }
 		>
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
@@ -215,7 +222,11 @@ export default function WooCommerceRedirectModal( {
 						: __( 'Continue with Site Kit', 'google-site-kit' ) }
 				</Button>
 				<Button
-					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					trailingIcon={
+						isGoogleForWooCommerceAdsConnected ? undefined : (
+							<ExternalIcon width={ 13 } height={ 13 } />
+						)
+					}
 					icon={
 						trackIsSavingRef.current === 'primary' ? (
 							<CircularProgress size={ 14 } />
