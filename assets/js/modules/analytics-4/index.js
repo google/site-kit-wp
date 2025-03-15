@@ -96,6 +96,7 @@ import { SetupMain } from './components/setup';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
+	EnhancedMeasurementActivationBanner,
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
@@ -778,6 +779,13 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
+	},
+	'enhanced-measurement-notification': {
+		Component: EnhancedMeasurementActivationBanner,
+		priority: 280,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
 	},
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
