@@ -50,14 +50,13 @@ import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
 import { MONTH_IN_SECONDS, trackEvent } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
 } from '../../../utils/validation';
 import useViewContext from '../../../../../hooks/useViewContext';
 
-function EnhancedMeasurementActivationBanner() {
+export default function EnhancedMeasurementActivationBanner() {
 	const viewContext = useViewContext();
 
 	const [ step, setStep ] = useState( ACTIVATION_STEP_SETUP );
@@ -240,7 +239,3 @@ function EnhancedMeasurementActivationBanner() {
 
 	return null;
 }
-
-export default whenActive( { moduleName: 'analytics-4' } )(
-	EnhancedMeasurementActivationBanner
-);
