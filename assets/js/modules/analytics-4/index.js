@@ -874,6 +874,18 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			return ga4ModuleConnected;
+		},
 	},
 };
 
