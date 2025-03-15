@@ -32,7 +32,6 @@ import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
-import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
@@ -81,7 +80,6 @@ export default function BannerNotifications() {
 				<AdBlockingRecoverySetupSuccessBannerNotification />
 			) }
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			<EnhancedMeasurementActivationBanner />
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);

@@ -337,7 +337,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
-		priority: 280,
+		priority: 260,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
