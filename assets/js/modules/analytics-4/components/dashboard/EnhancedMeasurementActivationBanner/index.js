@@ -75,17 +75,18 @@ export default function EnhancedMeasurementActivationBanner() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
+	// See tooltip TODO below being actioned in #10003
 	const isBannerDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
 		)
 	);
-
 	const isDismissingBanner = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
 			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
 		)
 	);
+	const hideCTABanner = isBannerDismissed || isDismissingBanner;
 
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics-4' )
@@ -210,11 +211,16 @@ export default function EnhancedMeasurementActivationBanner() {
 		);
 	}
 
-	if (
-		! isEnhancedMeasurementInitiallyDisabled ||
-		isBannerDismissed ||
-		isDismissingBanner
-	) {
+	// TODO Remove this hack in Issue #10003
+	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
+	// This is because we don't want the component removed from the DOM as we have to still render
+	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
+	// checking for the dismissal state here.
+	if ( hideCTABanner ) {
+		return null;
+	}
+
+	if ( ! isEnhancedMeasurementInitiallyDisabled ) {
 		return null;
 	}
 
