@@ -17,6 +17,7 @@
 /**
  * Internal dependencies
  */
+import { useWindowWidth } from '../../../../hooks/useWindowSize';
 import { Cell, Grid, Row } from '../../../../material-components';
 import Title from '../common/Title';
 
@@ -26,6 +27,14 @@ export default function NotificationWithSmallRightSVG( {
 	title,
 	SVG,
 } ) {
+	// This layout is being used solely by the EnhancedMeasurementActivationBanner component.
+	// This notification does not render the SVG on mobile viewports. This notification is being redesigned
+	// as part of BNR3, so this layout will be removed in the future.
+	const windowWidth = useWindowWidth();
+	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint` and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
+	// which in turn is used by these notifications. This why we are using `useWindowWidth` here, instead of the breakpoint returned by `useBreakpoint`.
+	const isMinWidthTablet = windowWidth >= 600;
+
 	return (
 		<Grid>
 			<Row>
@@ -39,21 +48,23 @@ export default function NotificationWithSmallRightSVG( {
 					{ description }
 					{ actions }
 				</Cell>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 2 }
-					lgSize={ 4 }
-					className="googlesitekit-publisher-win__image"
-				>
-					<div className="googlesitekit-publisher-win__image-small">
-						<SVG
-							style={ {
-								maxWidth: 105,
-								maxHeight: 105,
-							} }
-						/>
-					</div>
-				</Cell>
+				{ isMinWidthTablet && (
+					<Cell
+						smSize={ 4 }
+						mdSize={ 2 }
+						lgSize={ 4 }
+						className="googlesitekit-publisher-win__image"
+					>
+						<div className="googlesitekit-publisher-win__image-small">
+							<SVG
+								style={ {
+									maxWidth: 105,
+									maxHeight: 105,
+								} }
+							/>
+						</div>
+					</Cell>
+				) }
 			</Row>
 		</Grid>
 	);
