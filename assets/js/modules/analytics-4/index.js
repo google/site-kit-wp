@@ -122,6 +122,7 @@ import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
+import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 
 export { registerStore } from './datastore';
 
@@ -879,12 +880,48 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The isModuleConnected() selector relies on the resolution
 				// of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
+				// The hasModuleOwnershipOrAccess() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getPropertyID() and getWebDataStreamID() selectors rely on
+				// the resolution of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 			] );
 
 			const ga4ModuleConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-			return ga4ModuleConnected;
+			if ( ! ga4ModuleConnected ) {
+				return false;
+			}
+
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+			const webDataStreamID =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+			const hasModuleAccess =
+				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+					'analytics-4'
+				);
+
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID ) ||
+				! hasModuleAccess
+			) {
+				return false;
+			}
+
+			// The isEnhancedMeasurementStreamEnabled() selector relies on
+			// the resolution of the getEnhancedMeasurementSettings() resolver.
+			await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+			const isEnhancedMeasurementStreamEnabled = select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
+
+			return isEnhancedMeasurementStreamEnabled === false;
 		},
 	},
 };
