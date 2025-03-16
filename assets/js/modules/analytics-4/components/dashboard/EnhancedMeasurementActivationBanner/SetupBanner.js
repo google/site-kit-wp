@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -32,7 +32,6 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -40,13 +39,22 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { DAY_IN_SECONDS, MONTH_IN_SECONDS } from '../../../../../util';
-import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
-import ErrorNotice from '../../../../../components/ErrorNotice';
-import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
+import Description from '../../../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
 
 export default function SetupBanner( props ) {
-	const { errorNotice, isDismissed, isSaving, onDismiss, onSubmit } = props;
+	const {
+		id,
+		Notification,
+		errorNotice,
+		hideCTABanner,
+		isSaving,
+		onDismiss,
+		onSubmit,
+	} = props;
 
 	// The `enhanced_measurement` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
@@ -119,6 +127,21 @@ export default function SetupBanner( props ) {
 		setValues,
 	] );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		if ( ! hideCTABanner ) {
+			if ( usingProxy ) {
+				triggerSurvey( 'view_enhanced_measurement_cta', {
+					ttl: DAY_IN_SECONDS,
+				} );
+			}
+		}
+	}, [ hideCTABanner, triggerSurvey, usingProxy ] );
+
 	const description = hasEditScope
 		? __(
 				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.',
@@ -130,53 +153,57 @@ export default function SetupBanner( props ) {
 		  );
 
 	return (
-		<BannerNotification
-			id="googlesitekit-enhanced-measurement-activation-banner"
-			className="googlesitekit-enhanced-measurement-setup-banner"
-			title={ __(
-				'Understand how visitors interact with your content',
-				'google-site-kit'
-			) }
-			description={ description }
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL={ documentationURL }
-			ctaComponent={
-				<SpinnerButton
-					onClick={ handleSubmitChanges }
-					isSaving={ isSaving || isNavigatingToOAuthURL }
-				>
-					{ __( 'Enable now', 'google-site-kit' ) }
-				</SpinnerButton>
-			}
-			footer={
-				<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
-					{ __(
-						'You can always add/edit this in the Site Kit Settings',
-						'google-site-kit'
-					) }
-				</p>
-			}
-			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			WinImageSVG={ () => <SuccessGreenSVG /> }
-			format="small"
-			// Although the banner does handle its own dismiss state via a dismissable item, we still need to
-			// provide a value here to ensure BannerNotification's own dismiss state is expired.
-			dismissExpires={ MONTH_IN_SECONDS }
-			onDismiss={ onDismiss }
-		>
-			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
-			{ ! isDismissed && (
-				<SurveyViewTrigger
-					triggerID="view_enhanced_measurement_cta"
-					ttl={ DAY_IN_SECONDS }
-				/>
-			) }
-		</BannerNotification>
+		<Notification className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner">
+			<NotificationWithSmallRightSVG
+				title={ __(
+					'Understand how visitors interact with your content',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						text={ description }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ documentationURL }
+							/>
+						}
+						errorText={ errorNotice?.message }
+					/>
+				}
+				actions={
+					<ActionsCTALinkDismiss
+						id={ id }
+						ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
+						onCTAClick={ handleSubmitChanges }
+						isSaving={ isSaving || isNavigatingToOAuthURL }
+						dismissOnCTAClick={ false }
+						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) } // This dismissal is permanent since the user specifically chose not to enable enhanced measurement.
+						onDismiss={ onDismiss }
+						dismissExpires={ MONTH_IN_SECONDS }
+					/>
+				}
+				footer={
+					<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
+						{ __(
+							'You can always add/edit this in the Site Kit Settings',
+							'google-site-kit'
+						) }
+					</p>
+				}
+				SVG={ () => <SuccessGreenSVG /> }
+			/>
+		</Notification>
 	);
 }
 
 SetupBanner.propTypes = {
-	onSubmitSuccess: PropTypes.func,
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType,
+	errorNotice: PropTypes.object,
+	hideCTABanner: PropTypes.bool,
+	isSaving: PropTypes.bool,
+	onSubmit: PropTypes.func,
 	onDismiss: PropTypes.func,
-	children: PropTypes.node,
 };
