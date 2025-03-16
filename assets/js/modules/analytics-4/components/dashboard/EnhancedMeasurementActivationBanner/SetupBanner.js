@@ -51,14 +51,7 @@ import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigg
 import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function SetupBanner( props ) {
-	const {
-		children,
-		errorNotice,
-		isDismissed,
-		isSaving,
-		onDismiss,
-		onSubmit,
-	} = props;
+	const { errorNotice, isDismissed, isSaving, onDismiss, onSubmit } = props;
 
 	const viewContext = useViewContext();
 
@@ -209,7 +202,6 @@ export default function SetupBanner( props ) {
 					ttl={ DAY_IN_SECONDS }
 				/>
 			) }
-			{ children }
 		</BannerNotification>
 	);
 }
