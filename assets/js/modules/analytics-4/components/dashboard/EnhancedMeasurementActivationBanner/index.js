@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
@@ -50,30 +49,14 @@ import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
 import { MONTH_IN_SECONDS, trackEvent } from '../../../../../util';
-import {
-	isValidPropertyID,
-	isValidWebDataStreamID,
-} from '../../../utils/validation';
 import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function EnhancedMeasurementActivationBanner() {
 	const viewContext = useViewContext();
 
 	const [ step, setStep ] = useState( ACTIVATION_STEP_SETUP );
-	const [
-		isEnhancedMeasurementInitiallyDisabled,
-		setIsEnhancedMeasurementInitiallyDisabled,
-	] = useState( undefined );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ errorNotice, setErrorNotice ] = useState( null );
-
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-
-	const webDataStreamID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-	);
 
 	// See tooltip TODO below being actioned in #10003
 	const isBannerDismissed = useSelect( ( select ) =>
@@ -87,26 +70,6 @@ export default function EnhancedMeasurementActivationBanner() {
 		)
 	);
 	const hideCTABanner = isBannerDismissed || isDismissingBanner;
-
-	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics-4' )
-	);
-
-	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if (
-			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID ) ||
-			! hasModuleAccess ||
-			isBannerDismissed
-		) {
-			return undefined;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
-			propertyID,
-			webDataStreamID
-		);
-	} );
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -163,18 +126,6 @@ export default function EnhancedMeasurementActivationBanner() {
 		setStep( ACTIVATION_STEP_SUCCESS );
 	}, [ setValues, submitChanges, viewContext ] );
 
-	useEffect( () => {
-		if (
-			isEnhancedMeasurementStreamEnabled === false &&
-			isEnhancedMeasurementInitiallyDisabled === undefined
-		) {
-			setIsEnhancedMeasurementInitiallyDisabled( true );
-		}
-	}, [
-		isEnhancedMeasurementInitiallyDisabled,
-		isEnhancedMeasurementStreamEnabled,
-	] );
-
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
@@ -217,10 +168,6 @@ export default function EnhancedMeasurementActivationBanner() {
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
 	// checking for the dismissal state here.
 	if ( hideCTABanner ) {
-		return null;
-	}
-
-	if ( ! isEnhancedMeasurementInitiallyDisabled ) {
 		return null;
 	}
 
