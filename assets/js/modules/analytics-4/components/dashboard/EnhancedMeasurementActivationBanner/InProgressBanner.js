@@ -27,10 +27,12 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CircularProgress } from 'googlesitekit-components';
-import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
+import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
+import Description from '../../../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 
-export default function InProgressBanner() {
+export default function InProgressBanner( { id, Notification } ) {
 	const documentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9216061',
@@ -38,21 +40,27 @@ export default function InProgressBanner() {
 	);
 
 	return (
-		<BannerNotification
-			id="googlesitekit-enhanced-measurement-activation-banner"
-			className="googlesitekit-enhanced-measurement-success-banner"
-			title={ __( 'Setup in progress', 'google-site-kit' ) }
-			description={ __(
-				'Enhanced measurement is being enabled.',
-				'google-site-kit'
-			) }
-			WinImageSVG={ () => <SuccessGreenSVG /> }
-			format="small"
-			type="win-success"
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL={ documentationURL }
-		>
-			<CircularProgress size={ 20 } />
-		</BannerNotification>
+		<Notification className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner">
+			<NotificationWithSmallRightSVG
+				title={ __( 'Setup in progress', 'google-site-kit' ) }
+				description={
+					<Description
+						text={ __(
+							'Enhanced measurement is being enabled.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ documentationURL }
+							/>
+						}
+					/>
+				}
+				actions={ <CircularProgress size={ 20 } /> }
+				SVG={ () => <SuccessGreenSVG /> }
+			/>
+		</Notification>
 	);
 }
