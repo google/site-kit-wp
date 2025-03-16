@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -39,21 +39,14 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import {
-	DAY_IN_SECONDS,
-	MONTH_IN_SECONDS,
-	trackEvent,
-} from '../../../../../util';
+import { DAY_IN_SECONDS, MONTH_IN_SECONDS } from '../../../../../util';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import ErrorNotice from '../../../../../components/ErrorNotice';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
-import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function SetupBanner( props ) {
 	const { errorNotice, isDismissed, isSaving, onDismiss, onSubmit } = props;
-
-	const viewContext = useViewContext();
 
 	// The `enhanced_measurement` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
@@ -126,29 +119,6 @@ export default function SetupBanner( props ) {
 		setValues,
 	] );
 
-	const handleDismiss = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'dismiss_notification'
-		);
-
-		onDismiss?.();
-	}, [ onDismiss, viewContext ] );
-
-	const handleLearnMore = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'click_learn_more_link'
-		);
-	}, [ viewContext ] );
-
-	useEffect( () => {
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'view_notification'
-		);
-	}, [ viewContext ] );
-
 	const description = hasEditScope
 		? __(
 				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.',
@@ -170,7 +140,6 @@ export default function SetupBanner( props ) {
 			description={ description }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreURL={ documentationURL }
-			onLearnMoreClick={ handleLearnMore }
 			ctaComponent={
 				<SpinnerButton
 					onClick={ handleSubmitChanges }
@@ -193,7 +162,7 @@ export default function SetupBanner( props ) {
 			// Although the banner does handle its own dismiss state via a dismissable item, we still need to
 			// provide a value here to ensure BannerNotification's own dismiss state is expired.
 			dismissExpires={ MONTH_IN_SECONDS }
-			onDismiss={ handleDismiss }
+			onDismiss={ onDismiss }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
 			{ ! isDismissed && (
