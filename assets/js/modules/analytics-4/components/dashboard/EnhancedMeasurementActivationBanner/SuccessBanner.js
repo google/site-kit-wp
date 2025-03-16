@@ -20,21 +20,22 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
-import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../util';
+import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
+import Description from '../../../../../googlesitekit/notifications/components/common/Description';
+import CTALink from '../../../../../googlesitekit/notifications/components/common/CTALink';
+import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 
-export default function SuccessBanner() {
+export default function SuccessBanner( { id, Notification } ) {
 	const viewContext = useViewContext();
 
 	const documentationURL = useSelect( ( select ) =>
@@ -43,19 +44,9 @@ export default function SuccessBanner() {
 		} )
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	const handleDismiss = useCallback( () => {
-		dismissItem(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
-		);
-
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-success`,
-			'confirm_notification'
-		);
-	}, [ viewContext, dismissItem ] );
-
+	// This event is not auto-tracked by the new <Notification> component because it
+	// considers EnhancedMeasurementActivationBanner (SetupBanner variant) as already
+	// viewed and doesn't track the view again when the SuccessBanner variant is displayed.
 	useEffect( () => {
 		trackEvent(
 			`${ viewContext }_enhanced-measurement-success`,
@@ -63,25 +54,46 @@ export default function SuccessBanner() {
 		);
 	}, [ viewContext ] );
 
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_enhanced-measurement-success`,
+	};
+
 	return (
-		<BannerNotification
-			id="googlesitekit-enhanced-measurement-activation-banner"
-			className="googlesitekit-enhanced-measurement-success-banner"
-			title={ __(
-				'You successfully enabled enhanced measurement for your site',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement.',
-				'google-site-kit'
-			) }
-			dismiss={ __( 'OK, Got it', 'google-site-kit' ) }
-			onDismiss={ handleDismiss }
-			WinImageSVG={ () => <SuccessGreenSVG /> }
-			format="small"
-			type="win-success"
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL={ documentationURL }
-		/>
+		<Notification className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner">
+			<NotificationWithSmallRightSVG
+				title={ __(
+					'You successfully enabled enhanced measurement for your site',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						text={ __(
+							'Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement.',
+							'google-site-kit'
+						) }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ documentationURL }
+							/>
+						}
+					/>
+				}
+				actions={
+					// Using <CTALink> instead of <Dismiss> to automatically use `confirm_notification`
+					// GA tracking event which was used in the legacy component.
+					<CTALink
+						id={ id }
+						ctaLabel={ __( 'OK, Got it', 'google-site-kit' ) }
+						gaTrackingEventArgs={ gaTrackingEventArgs }
+						dismissOnCTAClick
+						dismissExpires={ 1 } // Expire the dismissal instantly to allow showing the banner again if enhanced measurement is disabled later.
+						dismissOptions={ { skipHidingFromQueue: false } }
+					/>
+				}
+				SVG={ () => <SuccessGreenSVG /> }
+			/>
+		</Notification>
 	);
 }
