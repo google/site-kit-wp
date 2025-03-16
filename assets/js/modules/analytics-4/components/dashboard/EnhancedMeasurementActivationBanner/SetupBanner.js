@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -173,24 +173,29 @@ export default function SetupBanner( props ) {
 					/>
 				}
 				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
-						onCTAClick={ handleSubmitChanges }
-						isSaving={ isSaving || isNavigatingToOAuthURL }
-						dismissOnCTAClick={ false }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) } // This dismissal is permanent since the user specifically chose not to enable enhanced measurement.
-						onDismiss={ onDismiss }
-						dismissExpires={ MONTH_IN_SECONDS }
-					/>
-				}
-				footer={
-					<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
-						{ __(
-							'You can always add/edit this in the Site Kit Settings',
-							'google-site-kit'
-						) }
-					</p>
+					<Fragment>
+						<ActionsCTALinkDismiss
+							id={ id }
+							ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
+							onCTAClick={ handleSubmitChanges }
+							isSaving={ isSaving || isNavigatingToOAuthURL }
+							dismissOnCTAClick={ false }
+							dismissLabel={ __(
+								'Maybe later',
+								'google-site-kit'
+							) } // This dismissal is permanent since the user specifically chose not to enable enhanced measurement.
+							onDismiss={ onDismiss }
+							dismissExpires={ MONTH_IN_SECONDS }
+						/>
+						<div className="googlesitekit-publisher-win__footer">
+							<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
+								{ __(
+									'You can always add/edit this in the Site Kit Settings',
+									'google-site-kit'
+								) }
+							</p>
+						</div>
+					</Fragment>
 				}
 				SVG={ () => <SuccessGreenSVG /> }
 			/>
