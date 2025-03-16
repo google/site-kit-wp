@@ -24,19 +24,35 @@ export default function NotificationWithSmallRightSVG( {
 	actions,
 	description,
 	title,
+	SVG,
 } ) {
 	return (
 		<Grid>
 			<Row>
 				<Cell
 					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 12 }
+					mdSize={ 6 }
+					lgSize={ 8 }
 					className="googlesitekit-publisher-win__content"
 				>
 					<Title title={ title }></Title>
 					{ description }
 					{ actions }
+				</Cell>
+				<Cell
+					smSize={ 4 }
+					mdSize={ 2 }
+					lgSize={ 4 }
+					className="googlesitekit-publisher-win__image"
+				>
+					<div className="googlesitekit-publisher-win__image-small">
+						<SVG
+							style={ {
+								maxWidth: 105,
+								maxHeight: 105,
+							} }
+						/>
+					</div>
 				</Cell>
 			</Row>
 		</Grid>
