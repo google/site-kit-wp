@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
@@ -51,7 +56,10 @@ import SuccessBanner from './SuccessBanner';
 import { MONTH_IN_SECONDS, trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 
-export default function EnhancedMeasurementActivationBanner() {
+export default function EnhancedMeasurementActivationBanner( {
+	id,
+	Notification,
+} ) {
 	const viewContext = useViewContext();
 
 	const [ step, setStep ] = useState( ACTIVATION_STEP_SETUP );
@@ -174,6 +182,9 @@ export default function EnhancedMeasurementActivationBanner() {
 	if ( step === ACTIVATION_STEP_SETUP ) {
 		return (
 			<SetupBanner
+				id={ id }
+				Notification={ Notification }
+				hideCTABanner={ hideCTABanner }
 				errorNotice={ errorNotice }
 				isSaving={ isSaving }
 				onDismiss={ handleDismiss }
@@ -183,12 +194,17 @@ export default function EnhancedMeasurementActivationBanner() {
 	}
 
 	if ( step === ACTIVATION_STEP_IN_PROGRESS ) {
-		return <InProgressBanner />;
+		return <InProgressBanner id={ id } Notification={ Notification } />;
 	}
 
 	if ( step === ACTIVATION_STEP_SUCCESS ) {
-		return <SuccessBanner />;
+		return <SuccessBanner id={ id } Notification={ Notification } />;
 	}
 
 	return null;
 }
+
+EnhancedMeasurementActivationBanner.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};
