@@ -172,7 +172,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			}
 		}
 
-		add_action( 'enqueue_block_editor_assets', $this->get_method_proxy( 'enqueue_assets_for_non_sitekit_user_on_block_editor_page' ), 40 );
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			add_action( 'enqueue_block_editor_assets', $this->get_method_proxy( 'enqueue_block_editor_assets_for_non_sitekit_user' ), 40 );
+		}
+
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
 		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
 
@@ -667,13 +670,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Enqueues assets for non-Site Kit users on block editor pages.
+	 * Enqueues block editor assets for non-Site Kit users.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return void
 	 */
-	private function enqueue_assets_for_non_sitekit_user_on_block_editor_page() {
+	private function enqueue_block_editor_assets_for_non_sitekit_user() {
 		if ( $this->is_non_sitekit_user() ) {
 			// Enqueue styles.
 			$this->assets->enqueue_asset( 'blocks-reader-revenue-manager-common-editor-styles' );

@@ -819,15 +819,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		// Create a user.
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
-		$user->add_cap( Permissions::VIEW_SPLASH );
 		wp_set_current_user( $user->ID );
 
-		$dismissed_items = new \Google\Site_Kit\Core\Dismissals\Dismissed_Items( $this->user_options );
-		$dismissed_items->add( 'shared_dashboard_splash' );
-
-		$user->add_role( 'editor' );
-
-		//simulate the setting of the module sharing setting.
+		// Simulate view-only access to Site Kit for the user.
 		$module_sharing_settings = new \Google\Site_Kit\Core\Modules\Module_Sharing_Settings( $this->options );
 		$module_sharing_settings->set(
 			array(
