@@ -34,9 +34,11 @@ import {
 	createTestRegistry,
 	provideModules,
 } from '../../../../../../tests/js/utils';
+import * as tracking from '../../../../util/tracking';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
@@ -44,12 +46,17 @@ import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'RRMIntroductoryOverlayNotification', () => {
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
+
+	const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -73,7 +80,11 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
-	it( 'should render an introductory overlay notification when payment option is noPayment', async () => {
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
+	it( 'should render an introductory overlay notification when the payment option is "noPayment"', async () => {
 		const { container, waitForRegistry } = render(
 			<RRMIntroductoryOverlayNotification />,
 			{
@@ -89,7 +100,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		);
 	} );
 
-	it( 'should render an introductory overlay notification when payment option is empty', async () => {
+	it( 'should render an introductory overlay notification when the payment option is empty', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( '' );
@@ -109,7 +120,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		);
 	} );
 
-	it( 'should return null when dashboard is not main dashboard', async () => {
+	it( 'should return null when the dashboard is not a main dashboard', async () => {
 		const { container, waitForRegistry } = render(
 			<RRMIntroductoryOverlayNotification />,
 			{
@@ -123,7 +134,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should return null when notification is dismissed', async () => {
+	it( 'should return null when the notification is dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
@@ -143,14 +154,9 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should get dismissed when "Explore features" CTA is clicked', async () => {
+	it( 'should dismiss the notification when the "Explore features" CTA is clicked', async () => {
 		fetchMock.postOnce( dismissItemsEndpoint, {
-			body: {
-				data: {
-					slug: RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
-					expiration: 0,
-				},
-			},
+			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
 			status: 200,
 		} );
 
@@ -174,5 +180,191 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		waitFor( () => {
 			expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
 		} );
+	} );
+
+	it( 'should dismiss the notification when the "Maybe later" button is clicked', async () => {
+		fetchMock.postOnce( dismissItemsEndpoint, {
+			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
+		} );
+
+		waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
+		} );
+	} );
+
+	it( 'should track an event when the notification is viewed', async () => {
+		const { waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-introductory-notification`,
+			'view_notification',
+			`${ ONBOARDING_COMPLETE }:noPayment`
+		);
+	} );
+
+	it( 'should not track an event when the dashboard is not a main dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: 'other-context',
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not track an event when the notification is dismissed', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
+			] );
+
+		const { container, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should track a confirm event when clicking the "Explore features" CTA', async () => {
+		fetchMock.postOnce( dismissItemsEndpoint, {
+			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// The component will track an event when the notification is viewed.
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', { name: /Explore features/i } )
+			);
+		} );
+
+		waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		// Verify that the component is tracking the confirm event.
+		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-introductory-notification`,
+			'confirm_notification',
+			`${ ONBOARDING_COMPLETE }:noPayment`
+		);
+	} );
+
+	it( 'should track a dismiss event when clicking the "Maybe later" button', async () => {
+		fetchMock.postOnce( dismissItemsEndpoint, {
+			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// The component will track an event when the notification is viewed.
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
+		} );
+
+		waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		// Verify that the component is tracking the dismiss event.
+		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-introductory-notification`,
+			'dismiss_notification',
+			`${ ONBOARDING_COMPLETE }:noPayment`
+		);
+	} );
+
+	it( 'should track a click event when clicking the "Learn more" link', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotification />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// The component will track an event when the notification is viewed.
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		// Verify that the component is tracking the click event.
+		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-introductory-notification`,
+			'click_learn_more_link',
+			`${ ONBOARDING_COMPLETE }:noPayment`
+		);
 	} );
 } );
