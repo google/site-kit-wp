@@ -527,8 +527,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					1,
 					'mainDashboard_setup-success-notification-rrm',
 					'view_notification',
-					'ONBOARDING_COMPLETE',
-					'ONBOARDING_COMPLETE:subscriptions:yes'
+					'ONBOARDING_COMPLETE:subscriptions:yes',
+					undefined
 				);
 
 				// eslint-disable-next-line require-await
@@ -542,8 +542,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					2,
 					'mainDashboard_setup-success-notification-rrm',
 					'dismiss_notification',
-					'ONBOARDING_COMPLETE',
-					'ONBOARDING_COMPLETE:subscriptions:yes'
+					'ONBOARDING_COMPLETE:subscriptions:yes',
+					undefined
 				);
 			} );
 
@@ -571,8 +571,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					1,
 					'mainDashboard_setup-success-notification-rrm',
 					'view_notification',
-					'ONBOARDING_COMPLETE',
-					'ONBOARDING_COMPLETE:noPayment:yes'
+					'ONBOARDING_COMPLETE:noPayment:yes',
+					undefined
 				);
 
 				// "Learn more" link should be present.
@@ -588,8 +588,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					2,
 					'mainDashboard_setup-success-notification-rrm',
 					'click_learn_more_link',
-					'ONBOARDING_COMPLETE',
-					'ONBOARDING_COMPLETE:noPayment:yes'
+					'ONBOARDING_COMPLETE:noPayment:yes',
+					undefined
 				);
 			} );
 
@@ -617,8 +617,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					1,
 					'mainDashboard_setup-success-notification-rrm',
 					'view_notification',
-					'ONBOARDING_COMPLETE',
-					'ONBOARDING_COMPLETE:noPayment:yes'
+					'ONBOARDING_COMPLETE:noPayment:yes',
+					undefined
 				);
 
 				// CTA button should be present.
@@ -634,8 +634,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					2,
 					'mainDashboard_setup-success-notification-rrm',
 					'confirm_notification',
-					'ONBOARDING_COMPLETE',
-					'ONBOARDING_COMPLETE:noPayment:yes'
+					'ONBOARDING_COMPLETE:noPayment:yes',
+					undefined
 				);
 			} );
 		} );
