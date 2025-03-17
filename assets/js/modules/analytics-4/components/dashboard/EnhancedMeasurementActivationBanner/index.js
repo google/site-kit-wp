@@ -69,12 +69,12 @@ export default function EnhancedMeasurementActivationBanner( {
 	// See tooltip TODO below being actioned in #10003
 	const isBannerDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			'enhanced-measurement-notification'
 		)
 	);
 	const isDismissingBanner = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			'enhanced-measurement-notification'
 		)
 	);
 	const hideCTABanner = isBannerDismissed || isDismissingBanner;
