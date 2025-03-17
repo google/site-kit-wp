@@ -38,6 +38,7 @@ describe( 'modules/ads woocommerce data store', () => {
 		jest.resetModules();
 
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_ADS ].store;
 		provideSiteInfo( registry );
 	} );
 
@@ -52,12 +53,11 @@ describe( 'modules/ads woocommerce data store', () => {
 			} );
 
 			it( 'sets the woocommerceModalCacheHit in the store', () => {
-				const cacheItem = { cacheHit: true };
 				registry
 					.dispatch( MODULES_ADS )
-					.receiveWoocommerceModalCacheHit( cacheItem );
+					.receiveWoocommerceModalCacheHit( true );
 				expect( store.getState().woocommerceModalCacheHit ).toEqual(
-					cacheItem.cacheHit
+					true
 				);
 			} );
 		} );
