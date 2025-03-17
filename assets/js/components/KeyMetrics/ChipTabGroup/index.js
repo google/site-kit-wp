@@ -237,7 +237,9 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		).getKeyMetricsConversionEventWidgets();
 	} );
 
-	const maybeCuttOffLastTabItem = useCallback( () => {
+	// It is not always clear that tabs are scrollable on mobile, so we need to ensure that the last tab item
+	// is cutoff to indicate that there are more tabs to scroll to.
+	const maybeCutOffLastTabItem = useCallback( () => {
 		const scrollContainer = containerRef.current?.querySelector(
 			'.mdc-tab-scroller__scroll-content'
 		);
@@ -265,7 +267,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				visibleItems.push( index );
 			}
 		} );
-		const nextTabItem = tabItems[ visibleItems.length - 1 + 1 ];
+		const nextTabItem = tabItems[ visibleItems.length ];
 
 		if ( ! nextTabItem ) {
 			return;
@@ -288,7 +290,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				scrollContainer.style.columnGap = '2px';
 			}
 
-			maybeCuttOffLastTabItem();
+			maybeCutOffLastTabItem();
 		}
 	}, [ isMobileBreakpoint ] );
 
@@ -418,7 +420,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		}
 
 		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
-			maybeCuttOffLastTabItem();
+			maybeCutOffLastTabItem();
 		}
 	}, [
 		isSelectionPanelOpen,
@@ -428,21 +430,21 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		isMobileBreakpoint,
 		newlyDetectedMetricsKeys,
 		resetUnstagedSelection,
-		maybeCuttOffLastTabItem,
+		maybeCutOffLastTabItem,
 	] );
 
-	// Debounce the maybeCuttOffLastTabItem function
-	const debouncedMaybeCuttOffLastTabItem = useDebounce(
-		maybeCuttOffLastTabItem,
+	// Debounce the maybeCutOffLastTabItem function
+	const debouncedmaybeCutOffLastTabItem = useDebounce(
+		maybeCutOffLastTabItem,
 		50
 	);
 
 	useMount( () => {
-		global.addEventListener( 'resize', debouncedMaybeCuttOffLastTabItem );
+		global.addEventListener( 'resize', debouncedmaybeCutOffLastTabItem );
 	} );
 
 	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedMaybeCuttOffLastTabItem )
+		global.removeEventListener( 'resize', debouncedmaybeCutOffLastTabItem )
 	);
 
 	const chipItemRows = [
