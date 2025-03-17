@@ -25,15 +25,12 @@
 import {
 	createTestRegistry,
 	render,
-	provideModules,
 	provideUserAuthentication,
 	provideSiteInfo,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { EDIT_SCOPE, MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
-import { properties } from '../../../datastore/__fixtures__';
+import { EDIT_SCOPE } from '../../../datastore/constants';
 import SetupBanner from './SetupBanner';
 import {
 	getViewportWidth,
@@ -46,69 +43,12 @@ describe( 'SetupBanner', () => {
 		'enhanced-measurement-notification'
 	)( SetupBanner );
 
-	const propertyID = '1000';
-	const webDataStreamID = '2000';
-
-	let enabledSettingsMock;
-	let disabledSettingsMock;
 	let registry;
 	let originalViewportWidth;
 
 	beforeEach( () => {
-		enabledSettingsMock = {
-			fileDownloadsEnabled: null,
-			name: 'properties/1000/dataStreams/2000/enhancedMeasurementSettings',
-			outboundClicksEnabled: null,
-			pageChangesEnabled: null,
-			scrollsEnabled: null,
-			searchQueryParameter: 'q,s,search,query,keyword',
-			siteSearchEnabled: null,
-			streamEnabled: true,
-			uriQueryParameter: null,
-			videoEngagementEnabled: null,
-		};
-
-		disabledSettingsMock = {
-			...enabledSettingsMock,
-			streamEnabled: false,
-		};
-
 		registry = createTestRegistry();
-
 		provideUserAuthentication( registry );
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			propertyID,
-			webDataStreamID,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetEnhancedMeasurementSettings( disabledSettingsMock, {
-				propertyID,
-				webDataStreamID,
-			} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperty( properties[ 0 ], { propertyID } );
-
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-			{
-				body: JSON.stringify( [
-					ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-				] ),
-				status: 200,
-			}
-		);
 
 		originalViewportWidth = getViewportWidth();
 		setViewportWidth( 450 );
