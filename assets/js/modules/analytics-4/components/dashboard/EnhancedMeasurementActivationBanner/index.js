@@ -45,7 +45,6 @@ import {
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
-	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 } from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
@@ -53,7 +52,7 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
-import { MONTH_IN_SECONDS, trackEvent } from '../../../../../util';
+import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function EnhancedMeasurementActivationBanner( {
@@ -88,7 +87,6 @@ export default function EnhancedMeasurementActivationBanner( {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { dismissItem } = useDispatch( CORE_USER );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const { isTooltipVisible } = useTooltipState(
@@ -98,16 +96,6 @@ export default function EnhancedMeasurementActivationBanner( {
 	const showTooltip = useShowTooltip(
 		ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY
 	);
-
-	function handleDismiss() {
-		showTooltip();
-		dismissItem(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-			{
-				expiresInSeconds: MONTH_IN_SECONDS,
-			}
-		);
-	}
 
 	const handleSubmit = useCallback( async () => {
 		setIsSaving( true );
@@ -187,7 +175,7 @@ export default function EnhancedMeasurementActivationBanner( {
 				hideCTABanner={ hideCTABanner }
 				errorNotice={ errorNotice }
 				isSaving={ isSaving }
-				onDismiss={ handleDismiss }
+				onDismiss={ showTooltip }
 				onSubmit={ handleSubmit }
 			/>
 		);
