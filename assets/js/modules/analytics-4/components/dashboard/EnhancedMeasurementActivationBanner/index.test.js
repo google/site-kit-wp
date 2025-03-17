@@ -322,5 +322,17 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			);
 			expect( isActive ).toBe( true );
 		} );
+
+		it( 'is not active when the propertyID is invalid', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				propertyID: '',
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
