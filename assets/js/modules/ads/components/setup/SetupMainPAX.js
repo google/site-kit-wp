@@ -177,17 +177,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
 		)
 	);
-	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
-		const { isWooCommerceActivated } = select( MODULES_ADS );
-
-		if ( ! isWooCommerceActivated() ) {
-			return false;
-		}
-
-		// Once WooCommerce is active, it doesn’t matter whether Google for WooCommerce is activated or if an ads account exists,
-		// because the conditions simplify to always true.
-		return true;
-	} );
+	const isWooCommerceActivated = useSelect( ( select ) =>
+		select( MODULES_ADS ).isWooCommerceActivated()
+	);
 
 	const onModalDismiss = useCallback(
 		( skipClosing ) => {
@@ -216,17 +208,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [] );
 
 	const onSetupCallback = useCallback( () => {
-		if (
-			shouldShowWooCommerceRedirectModal &&
-			! isWooCommerceRedirectModalDismissed
-		) {
+		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
 
 		createAccount();
 	}, [
-		shouldShowWooCommerceRedirectModal,
+		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
