@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useCallbackOne } from 'use-memo-one';
 import { useMount } from 'react-use';
 
@@ -236,7 +237,18 @@ export default function SetupMainPAX( { finishSetup } ) {
 	] );
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
+		<div
+			className={ classnames(
+				'googlesitekit-setup-module',
+				'googlesitekit-setup-module--ads',
+				{
+					'has-pax-flow':
+						! isAdBlockerActive &&
+						PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
+						hasAdwordsScope,
+				}
+			) }
+		>
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
 					<AdsIcon width="40" height="40" />
