@@ -49,6 +49,7 @@ import { withNotificationComponentProps } from '../../../../../googlesitekit/not
 import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =
@@ -339,6 +340,25 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				webDataStreamID: '',
 			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the user does not have access to the Analytics 4 module', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				ownerID: 2,
+			} );
+
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'analytics-4' }
+				);
 
 			const isActive = await notification.checkRequirements(
 				registry,
