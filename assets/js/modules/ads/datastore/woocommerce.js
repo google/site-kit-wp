@@ -33,7 +33,7 @@ const RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY =
 	'RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY';
 
 const initialState = {
-	woocommerceModalCacheHit: undefined,
+	woocommerceModalCacheHit: false,
 };
 
 const actions = {
