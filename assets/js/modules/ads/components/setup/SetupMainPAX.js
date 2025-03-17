@@ -177,20 +177,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
 		)
 	);
-	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
-		const {
-			isWooCommerceActivated,
-			isGoogleForWooCommerceActivated,
-			hasGoogleForWooCommerceAdsAccount,
-		} = select( MODULES_ADS );
-
-		return (
-			( isWooCommerceActivated() &&
-				isGoogleForWooCommerceActivated() &&
-				! hasGoogleForWooCommerceAdsAccount() ) ||
-			( isWooCommerceActivated() && ! isGoogleForWooCommerceActivated() )
-		);
-	} );
+	const isWooCommerceActivated = useSelect( ( select ) =>
+		select( MODULES_ADS ).isWooCommerceActivated()
+	);
 
 	const onModalDismiss = useCallback(
 		( skipClosing ) => {
@@ -219,17 +208,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [] );
 
 	const onSetupCallback = useCallback( () => {
-		if (
-			shouldShowWooCommerceRedirectModal &&
-			! isWooCommerceRedirectModalDismissed
-		) {
+		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
 
 		createAccount();
 	}, [
-		shouldShowWooCommerceRedirectModal,
+		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
