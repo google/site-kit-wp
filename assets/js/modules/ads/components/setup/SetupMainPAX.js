@@ -158,9 +158,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 		/* eslint-enable sitekit/acronym-case */
 
 		// Here we save settings right away but leave final navigation to `onSetupComplete`.
-		await submitChanges();
-		setConversionTrackingEnabled( true );
-		await saveConversionTrackingSettings();
+		const { error } = await submitChanges();
+
+		if ( ! error ) {
+			setConversionTrackingEnabled( true );
+			await saveConversionTrackingSettings();
+		}
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
 	const registry = useRegistry();
