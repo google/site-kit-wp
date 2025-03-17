@@ -38,7 +38,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import { DAY_IN_SECONDS, MONTH_IN_SECONDS } from '../../../../../util';
+import { DAY_IN_SECONDS } from '../../../../../util';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
 import Description from '../../../../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
@@ -179,13 +179,11 @@ export default function SetupBanner( props ) {
 							ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
 							onCTAClick={ handleSubmitChanges }
 							isSaving={ isSaving || isNavigatingToOAuthURL }
-							dismissOnCTAClick={ false }
 							dismissLabel={ __(
 								'Maybe later',
 								'google-site-kit'
-							) } // This dismissal is permanent since the user specifically chose not to enable enhanced measurement.
+							) }
 							onDismiss={ onDismiss }
-							dismissExpires={ MONTH_IN_SECONDS }
 						/>
 						<div className="googlesitekit-publisher-win__footer">
 							<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
