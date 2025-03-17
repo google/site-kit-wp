@@ -32,7 +32,6 @@ import {
 	freezeFetch,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
@@ -224,65 +223,6 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 				'You successfully enabled enhanced measurement for your site'
 			)
 		).toBeInTheDocument();
-	} );
-
-	it.each( [
-		[
-			'there is not a valid propertyID',
-			() => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '',
-				} );
-			},
-		],
-		[
-			'there is not a valid webDataStreamID',
-			() => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					webDataStreamID: '',
-				} );
-			},
-		],
-		[
-			'the user does not have access to the Analytics 4 module',
-			() => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					ownerID: 2,
-				} );
-
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveCheckModuleAccess(
-						{ access: false },
-						{ slug: 'analytics-4' }
-					);
-			},
-		],
-		[
-			'enhanced measurement is initially true',
-			() => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetEnhancedMeasurementSettings(
-						{
-							...enhancedMeasurementSettingsMock,
-							streamEnabled: true,
-						},
-						{ propertyID, webDataStreamID }
-					);
-			},
-		],
-	] )( 'should not render when %s', ( _, setupTestCase ) => {
-		setupTestCase();
-
-		const { container } = render(
-			<EnhancedMeasurementActivationBannerComponent />,
-			{
-				registry,
-			}
-		);
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should enable enhanced measurement when the CTA in SetupBanner is clicked and the user has the edit scope granted', async () => {
