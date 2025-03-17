@@ -61,7 +61,6 @@ import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { enabledFeatures } from '../../../../../features';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -108,8 +107,6 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		enabledFeatures.add( 'audienceSegmentation' );
 
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
