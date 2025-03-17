@@ -39,8 +39,13 @@ import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 
 describe( 'SetupBanner', () => {
+	const SetupBannerComponent = withNotificationComponentProps(
+		'enhanced-measurement-notification'
+	)( SetupBanner );
+
 	const propertyID = '1000';
 	const webDataStreamID = '2000';
 
@@ -118,7 +123,7 @@ describe( 'SetupBanner', () => {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
 
-		const { container, getByText } = render( <SetupBanner />, {
+		const { container, getByText } = render( <SetupBannerComponent />, {
 			registry,
 		} );
 
