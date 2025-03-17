@@ -334,5 +334,17 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when the webDataStreamID is invalid', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				webDataStreamID: '',
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
