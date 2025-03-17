@@ -48,6 +48,7 @@ import {
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =
@@ -311,5 +312,15 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when Enhanced Measurement is not enabled', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
 	} );
 } );
