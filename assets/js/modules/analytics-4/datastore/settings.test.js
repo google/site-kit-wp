@@ -53,6 +53,8 @@ import {
 	INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
 } from './settings';
 import * as fixtures from './__fixtures__';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '..';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
@@ -377,6 +379,16 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				it( 'should dismiss the activation banner when the required form setting is set', async () => {
+					const notification =
+						ANALYTICS_4_NOTIFICATIONS[
+							'enhanced-measurement-notification'
+						];
+					registry
+						.dispatch( CORE_NOTIFICATIONS )
+						.registerNotification(
+							'enhanced-measurement-notification',
+							notification
+						);
 					registry
 						.dispatch( CORE_FORMS )
 						.setValues( ENHANCED_MEASUREMENT_FORM, {
