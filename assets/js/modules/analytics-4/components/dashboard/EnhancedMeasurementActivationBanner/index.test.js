@@ -39,7 +39,6 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';
 import EnhancedMeasurementActivationBanner from './index';
 import { properties } from '../../../datastore/__fixtures__';
@@ -251,16 +250,6 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 					);
 			},
 		],
-		[
-			'the banner is dismissed',
-			() => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-					] );
-			},
-		],
 	] )( 'should not render when %s', ( _, setupTestCase ) => {
 		setupTestCase();
 
@@ -343,10 +332,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	it( 'should not render the banner when the prompt is being dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.setIsItemDimissing(
-				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-				true
-			);
+			.setIsItemDimissing( 'enhanced-measurement-notification', true );
 
 		const { container, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBannerComponent />,
