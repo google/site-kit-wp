@@ -47,6 +47,8 @@ import {
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =
@@ -54,11 +56,18 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			EnhancedMeasurementActivationBanner
 		);
 
+	const notification =
+		ANALYTICS_4_NOTIFICATIONS[ 'enhanced-measurement-notification' ];
+
 	const propertyID = '1000';
 	const webDataStreamID = '2000';
 
 	const enhancedMeasurementSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+	);
+
+	const fetchDismissItem = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	let enhancedMeasurementSettingsMock;
@@ -99,6 +108,13 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			},
 		] );
 		provideModuleRegistrations( registry );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'enhanced-measurement-notification',
+				notification
+			);
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID,
@@ -172,6 +188,11 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			body: analytics4Fixtures.defaultEnhancedMeasurementSettings,
 		} );
 
+		fetchMock.postOnce( fetchDismissItem, {
+			status: 200,
+			body: [],
+		} );
+
 		const { container, getByRole, getByText, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBannerComponent />,
 			{
@@ -190,10 +211,11 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 		// Enhanced measurement settings should update when enhanced measurement
 		// is enabled via the "Enable now" CTA.
-		expect( fetchMock ).toHaveBeenCalledTimes(
-			1,
+		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+		expect( fetchMock ).toHaveFetched(
 			enhancedMeasurementSettingsEndpoint
 		);
+		expect( fetchMock ).toHaveFetched( fetchDismissItem );
 
 		expect( container ).toMatchSnapshot();
 
@@ -274,6 +296,11 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
 			status: 200,
 			body: { ...enhancedMeasurementEnabledSettingsMock },
+		} );
+
+		fetchMock.postOnce( fetchDismissItem, {
+			status: 200,
+			body: [],
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: 'Enable now' } ) );
