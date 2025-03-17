@@ -123,6 +123,7 @@ import WebDataStreamNotAvailableNotification, {
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
+import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
 
 export { registerStore } from './datastore';
 
@@ -886,16 +887,16 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The getPropertyID() and getWebDataStreamID() selectors rely on
 				// the resolution of the getSettings() resolver.
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isItemDismissed() selector relies on the resolution
+				// of the getDismissedItems() resolver.
+				resolveSelect( CORE_USER ).getDismissedItems(),
 			] );
 
 			const ga4ModuleConnected =
 				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-			if ( ! ga4ModuleConnected ) {
-				return false;
-			}
-
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
 			const webDataStreamID =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
@@ -904,10 +905,18 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 					'analytics-4'
 				);
 
+			// Check if the prompt with the legacy key used before the banner was refactored
+			// to use the `notification ID` as the dismissal key, is dismissed.
+			const isLegacyDismissed = select( CORE_USER ).isItemDismissed(
+				LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			);
+
 			if (
+				! ga4ModuleConnected ||
 				! isValidPropertyID( propertyID ) ||
 				! isValidWebDataStreamID( webDataStreamID ) ||
-				! hasModuleAccess
+				! hasModuleAccess ||
+				isLegacyDismissed
 			) {
 				return false;
 			}
