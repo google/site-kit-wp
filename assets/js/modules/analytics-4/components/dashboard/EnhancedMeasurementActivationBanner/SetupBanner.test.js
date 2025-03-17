@@ -138,16 +138,20 @@ describe( 'SetupBanner', () => {
 		);
 	} );
 
-	it( 'should render correctly when the user does not have the edit scope granted', () => {
+	it( 'should render correctly when the user does not have the edit scope granted', async () => {
 		mockSurveyEndpoints();
 
 		provideSiteInfo( registry, {
 			usingProxy: true,
 		} );
 
-		const { container, getByText } = render( <SetupBanner />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<SetupBannerComponent />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
