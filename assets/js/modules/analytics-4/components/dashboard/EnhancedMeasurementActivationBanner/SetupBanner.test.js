@@ -48,8 +48,16 @@ describe( 'SetupBanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
 		provideUserAuthentication( registry );
 
+		// Test survey triggering.
+		provideSiteInfo( registry, {
+			usingProxy: true,
+		} );
+		mockSurveyEndpoints();
+
+		// Test that the SVG image is not rendered within JS snapshots in the below tests.
 		originalViewportWidth = getViewportWidth();
 		setViewportWidth( 450 );
 	} );
@@ -78,20 +86,10 @@ describe( 'SetupBanner', () => {
 		);
 	} );
 
-	it( 'should render correctly when the user does not have the edit scope granted', async () => {
-		mockSurveyEndpoints();
-
-		provideSiteInfo( registry, {
-			usingProxy: true,
+	it( 'should render correctly when the user does not have the edit scope granted', () => {
+		const { container, getByText } = render( <SetupBannerComponent />, {
+			registry,
 		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<SetupBannerComponent />,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
