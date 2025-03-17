@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { ADS_NOTIFICATIONS } from '../..';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	render,
@@ -32,6 +33,7 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
@@ -186,5 +188,112 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
 		);
+	} );
+
+	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
+		const dismissNotificationSpy = jest.spyOn(
+			registry.dispatch( CORE_NOTIFICATIONS ),
+			'dismissNotification'
+		);
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+					adsConnected: true,
+				},
+			},
+		} );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { getByText, waitForRegistry } = render(
+			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
+			{ registry }
+		);
+
+		expect( dismissNotificationSpy ).toHaveBeenCalled();
+
+		const viewCurrentAdsAccountButton = getByText(
+			/view current ads account/i
+		);
+		fireEvent.click( viewCurrentAdsAccountButton );
+
+		await waitForRegistry();
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			expect.stringMatching( /page=wc-admin/ )
+		);
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
+		);
+	} );
+
+	it( 'clicking "Create another account" should trigger ads module activation and dismiss the modal', async () => {
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+		const dismissNotificationSpy = jest.spyOn(
+			registry.dispatch( CORE_NOTIFICATIONS ),
+			'dismissNotification'
+		);
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+					adsConnected: true,
+				},
+			},
+		} );
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
+		const { getByRole, waitForRegistry } = render(
+			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
+			{ registry }
+		);
+
+		expect( dismissNotificationSpy ).toHaveBeenCalled();
+
+		const createAnotherAccountButton = getByRole( 'button', {
+			name: /create another account/i,
+		} );
+		fireEvent.click( createAnotherAccountButton );
+
+		await waitForRegistry();
+
+		expect(
+			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+		).toBe( true );
 	} );
 } );

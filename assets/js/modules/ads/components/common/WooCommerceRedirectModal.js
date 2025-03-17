@@ -20,12 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo, useRef } from '@wordpress/element';
+import { useCallback, useMemo, useRef, Fragment } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -43,6 +45,7 @@ import {
 import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
@@ -63,6 +66,21 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
+		const hasGoogleForWooCommerceAdsAccount =
+			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
+
+		if (
+			isWooCommerceActive &&
+			isGoogleForWooCommerceActive &&
+			hasGoogleForWooCommerceAdsAccount
+		) {
+			return true;
+		}
+
+		return false;
+	} );
+
 	const isModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).getWoocommerceModalCacheHit()
 	);
@@ -115,6 +133,14 @@ export default function WooCommerceRedirectModal( {
 		onSetupCallback();
 	}, [ markModalDismissed, onSetupCallback, onContinue ] );
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	useMount( () => {
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			dismissNotification( 'account-linked-via-google-for-woocommerce' );
+		}
+	} );
+
 	if ( isModalDismissed && ! trackIsSavingRef.current ) {
 		return null;
 	}
@@ -124,22 +150,47 @@ export default function WooCommerceRedirectModal( {
 			open={ dialogActive }
 			aria-describedby={ undefined }
 			tabIndex="-1"
-			className="googlesitekit-dialog-woocommerce-redirect"
-			onClose={ () => {
-				onDismiss( { skipClosing: null, skipDismissing: true } );
-			} }
+			className={ classnames(
+				'googlesitekit-dialog-woocommerce-redirect',
+				{
+					'googlesitekit-dialog-woocommerce-redirect--ads-connected':
+						isGoogleForWooCommerceAdsConnected,
+				}
+			) }
+			onClose={ () =>
+				onDismiss( { skipClosing: null, skipDismissing: true } )
+			}
 		>
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
 				<WooLogoIcon width={ 110 } height={ 46 } />
 			</div>
 			<DialogTitle>
-				{ __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
+				{ isGoogleForWooCommerceAdsConnected
+					? __(
+							'Are you sure you want to create another Ads account for this site?',
+							'google-site-kit'
+					  )
+					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
 			<DialogContent>
 				<p>
-					{ __(
-						'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
-						'google-site-kit'
+					{ isGoogleForWooCommerceAdsConnected ? (
+						<Fragment>
+							{ __(
+								'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
+								'google-site-kit'
+							) }
+							<br />
+							{ __(
+								'Continue Ads setup with Site Kit only if you do want to create another account.',
+								'google-site-kit'
+							) }
+						</Fragment>
+					) : (
+						__(
+							'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+							'google-site-kit'
+						)
 					) }
 				</p>
 			</DialogContent>
@@ -154,10 +205,16 @@ export default function WooCommerceRedirectModal( {
 						) : undefined
 					}
 				>
-					{ __( 'Continue with Site Kit', 'google-site-kit' ) }
+					{ isGoogleForWooCommerceAdsConnected
+						? __( 'Create another account', 'google-site-kit' )
+						: __( 'Continue with Site Kit', 'google-site-kit' ) }
 				</Button>
 				<Button
-					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					trailingIcon={
+						isGoogleForWooCommerceAdsConnected ? undefined : (
+							<ExternalIcon width={ 13 } height={ 13 } />
+						)
+					}
 					icon={
 						trackIsSavingRef.current === 'primary' ? (
 							<CircularProgress size={ 14 } />
@@ -165,7 +222,12 @@ export default function WooCommerceRedirectModal( {
 					}
 					onClick={ getGoogleForWooCommerceRedirectURI }
 				>
-					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
+					{ isGoogleForWooCommerceAdsConnected
+						? __( 'View current Ads account', 'google-site-kit' )
+						: __(
+								'Use Google for WooCommerce',
+								'google-site-kit'
+						  ) }
 				</Button>
 			</DialogFooter>
 		</Dialog>
