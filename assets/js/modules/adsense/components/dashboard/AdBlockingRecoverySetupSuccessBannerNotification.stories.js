@@ -22,17 +22,24 @@
 import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-} from '../../modules/adsense/datastore/constants';
-import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
+} from '../../datastore/constants';
+import AdBlockingRecoverySetupSuccessBannerNotification, {
+	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
+} from './AdBlockingRecoverySetupSuccessBannerNotification';
 import {
 	WithTestRegistry,
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
-} from '../../../../tests/js/utils';
+} from '../../../../../../tests/js/utils';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
-function Template( { ...args } ) {
-	return <AdBlockingRecoverySetupSuccessBannerNotification { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID
+)( AdBlockingRecoverySetupSuccessBannerNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const AdBlockingRecoverySetupSuccessBannerNotificationDefault =
