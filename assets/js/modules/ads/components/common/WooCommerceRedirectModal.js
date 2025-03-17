@@ -85,7 +85,7 @@ export default function WooCommerceRedirectModal( {
 	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
 
 	const markModalDismissed = useCallback( () => {
-		onDismiss( trackIsSavingRef.current );
+		onDismiss( { skipClosing: trackIsSavingRef.current } );
 	}, [ onDismiss ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -126,7 +126,7 @@ export default function WooCommerceRedirectModal( {
 			tabIndex="-1"
 			className="googlesitekit-dialog-woocommerce-redirect"
 			onClose={ () => {
-				onDismiss( false, true );
+				onDismiss( { skipClosing: null, skipDismissing: true } );
 			} }
 		>
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">

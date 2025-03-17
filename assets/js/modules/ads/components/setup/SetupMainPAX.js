@@ -193,7 +193,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	} );
 
 	const onModalDismiss = useCallback(
-		( skipClosing ) => {
+		( { skipClosing } ) => {
 			if ( ! skipClosing ) {
 				setOpenDialog( false );
 			}
