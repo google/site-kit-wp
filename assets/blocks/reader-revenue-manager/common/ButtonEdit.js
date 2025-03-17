@@ -76,7 +76,8 @@ export default function ButtonEdit( {
 				).hasModuleAccess( 'reader-revenue-manager' );
 			}
 
-			setHasModuleAccess( hasModuleOwnershipOrAccess );
+			// Note: `hasModuleOwnershipOrAccess` can be expected to be `undefined` if `ownerID` is not set for a view-only user.
+			setHasModuleAccess( !! hasModuleOwnershipOrAccess );
 		}
 
 		getModuleAccess();

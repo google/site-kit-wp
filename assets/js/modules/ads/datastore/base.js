@@ -29,13 +29,23 @@ import {
 } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'ads', {
-	ownedSettingsSlugs: [ 'conversionID', 'paxConversionID', 'extCustomerID' ],
+	ownedSettingsSlugs: [
+		'conversionID',
+		'paxConversionID',
+		'extCustomerID',
+		'customerID',
+		'userID',
+	],
 	storeName: MODULES_ADS,
 	settingSlugs: [
 		'conversionID',
 		'ownerID',
 		'paxConversionID',
+		'customerID',
 		'extCustomerID',
+		'formattedExtCustomerID',
+		'userID',
+		'accountOverviewURL',
 	],
 	requiresSetup: true,
 	submitChanges,

@@ -141,7 +141,8 @@ PublicationUnavailable.args = {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.selectPublication( publications[ 2 ] );
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publications[ 2 ].publicationId );
 	},
 };
 
