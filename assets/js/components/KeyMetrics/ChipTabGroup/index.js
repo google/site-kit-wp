@@ -434,17 +434,17 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	] );
 
 	// Debounce the maybeCutOffLastTabItem function
-	const debouncedmaybeCutOffLastTabItem = useDebounce(
+	const debouncedMaybeCutOffLastTabItem = useDebounce(
 		maybeCutOffLastTabItem,
 		50
 	);
 
 	useMount( () => {
-		global.addEventListener( 'resize', debouncedmaybeCutOffLastTabItem );
+		global.addEventListener( 'resize', debouncedMaybeCutOffLastTabItem );
 	} );
 
 	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedmaybeCutOffLastTabItem )
+		global.removeEventListener( 'resize', debouncedMaybeCutOffLastTabItem )
 	);
 
 	const chipItemRows = [
