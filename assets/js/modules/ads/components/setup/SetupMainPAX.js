@@ -120,6 +120,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 	} );
 
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
+
 	// Callback to be executed when a campaign is created in PAX.
 	//
 	// We use `useCallbackOne` to ensure the function is only created once
@@ -156,7 +159,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 		/* eslint-enable sitekit/acronym-case */
 
 		// Here we save settings right away but leave final navigation to `onSetupComplete`.
-		await submitChanges();
+		const { error } = await submitChanges();
+
+		if ( ! error ) {
+			setConversionTrackingEnabled( true );
+			await saveConversionTrackingSettings();
+		}
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
 	const registry = useRegistry();
