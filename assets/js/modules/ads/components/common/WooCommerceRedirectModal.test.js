@@ -51,6 +51,9 @@ describe( 'WooCommerceRedirectModal', () => {
 	const userAuthenticationEndpoint = RegExp(
 		'^/google-site-kit/v1/core/user/data/authentication'
 	);
+	const dismissItemEndpoint = RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -191,6 +194,7 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
 		const dismissNotificationSpy = jest.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
 			'dismissNotification'
@@ -228,6 +232,9 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
+		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+
 		const viewCurrentAdsAccountButton = getByText(
 			/view current ads account/i
 		);
@@ -244,6 +251,8 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Create another account" should trigger ads module activation and dismiss the modal', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -284,6 +293,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
+
+		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 
 		const createAnotherAccountButton = getByRole( 'button', {
 			name: /create another account/i,
