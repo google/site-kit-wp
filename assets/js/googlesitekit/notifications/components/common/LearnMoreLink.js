@@ -61,4 +61,8 @@ LearnMoreLink.propTypes = {
 	label: PropTypes.string,
 	url: PropTypes.string,
 	ariaLabel: PropTypes.string,
+	gaTrackingEventArgs: PropTypes.shape( {
+		label: PropTypes.string,
+		value: PropTypes.string,
+	} ),
 };

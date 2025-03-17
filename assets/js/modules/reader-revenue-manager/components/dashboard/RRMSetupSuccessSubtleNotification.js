@@ -48,7 +48,6 @@ import SubtleNotification from '../../../../googlesitekit/notifications/componen
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import { useFeature } from '../../../../hooks/useFeature';
-import useViewContext from '../../../../hooks/useViewContext';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -60,10 +59,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 	id,
 	Notification,
 } ) {
-	const viewContext = useViewContext();
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
 	const [ slug, setSlug ] = useQueryArg( 'slug' );
-	const trackEventCategory = `${ viewContext }_setup-success-notification-rrm`;
 
 	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
 
@@ -204,9 +201,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const gaTrackingProps = {
 		gaTrackingEventArgs: {
-			label: publicationOnboardingState,
-			category: trackEventCategory,
-			value: `${ publicationOnboardingState }:${ paymentOption }:${
+			label: `${ publicationOnboardingState }:${ paymentOption }:${
 				productID ? 'yes' : 'no'
 			}`,
 		},
@@ -343,7 +338,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							a: (
 								<LearnMoreLink
 									id={ id }
-									aria-label={ __(
+									ariaLabel={ __(
 										'Learn more about Reader Revenue Manager features',
 										'google-site-kit'
 									) }
@@ -351,8 +346,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 										'Learn more',
 										'google-site-kit'
 									) }
-									href="https://support.google.com/news/publisher-center/answer/12813936"
-									external
+									url="https://support.google.com/news/publisher-center/answer/12813936"
 									hideExternalIndicator
 									{ ...gaTrackingProps }
 								/>
