@@ -47,8 +47,14 @@ import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
+	const EnhancedMeasurementActivationBannerComponent =
+		withNotificationComponentProps( 'enhanced-measurement-notification' )(
+			EnhancedMeasurementActivationBanner
+		);
+
 	const propertyID = '1000';
 	const webDataStreamID = '2000';
 
@@ -125,7 +131,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', async () => {
 		const { container, getByRole } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -148,7 +154,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			.setValues( FORM_SETUP, { autoSubmit: true } );
 
 		const { container, getByText, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -168,7 +174,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 
 		const { container, getByRole, getByText, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -258,16 +264,19 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	] )( 'should not render when %s', ( _, setupTestCase ) => {
 		setupTestCase();
 
-		const { container } = render( <EnhancedMeasurementActivationBanner />, {
-			registry,
-		} );
+		const { container } = render(
+			<EnhancedMeasurementActivationBannerComponent />,
+			{
+				registry,
+			}
+		);
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should enable enhanced measurement when the CTA in SetupBanner is clicked and the user has the edit scope granted', async () => {
 		const { getByRole, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -308,7 +317,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 
 		const { waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -340,7 +349,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			);
 
 		const { container, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
