@@ -167,5 +167,33 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 
 			expect( isActive ).toBe( true );
 		} );
+
+		it( 'should return false if the Ads module is connected', async () => {
+			provideModules( registry, [
+				{
+					slug: 'ads',
+					active: true,
+					connected: true,
+				},
+			] );
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
+				plugins: {
+					[ PLUGINS.WOOCOMMERCE ]: {
+						active: true,
+					},
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+						active: true,
+						adsConnected: true,
+					},
+				},
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
