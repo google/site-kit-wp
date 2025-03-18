@@ -44,9 +44,11 @@ export default function SuccessBanner( { id, Notification } ) {
 		} )
 	);
 
-	// This event is not auto-tracked by the new <Notification> component because it
-	// considers EnhancedMeasurementActivationBanner (SetupBanner variant) as already
-	// viewed and doesn't track the view again when the SuccessBanner variant is displayed.
+	// All three variations (SetupBanner, InProgressBanner and SuccessBanner) are under a single parent
+	// (EnhancedMeasurementActivationBanner). The <Notification> component wrapping all of them share
+	// the same "notification ID". So this event is not auto-tracked by the new <Notification> component.
+	// It considers the EnhancedMeasurementActivationBanner as already viewed when SetupBanner is
+	// rendered and doesn't track the view again when the SuccessBanner variant is rendered.
 	useEffect( () => {
 		trackEvent(
 			`${ viewContext }_enhanced-measurement-success`,
