@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 15 ] */
-
 /**
  * External dependencies
  */
