@@ -32,6 +32,13 @@ import { useCallback, useState } from '@wordpress/element';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+} from '../../datastore/constants';
+import { HOUR_IN_SECONDS, MINUTE_IN_SECONDS } from '../../../../util';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
@@ -46,18 +53,38 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const onCTAClick = useCallback( () => {
+	const { dismissItem } = useDispatch( CORE_USER );
+	const { setCacheItem } = useDispatch( CORE_SITE );
+
+	const dismissWooCommerceRedirectModal = useCallback( async () => {
+		await setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
+			ttl: 5 * MINUTE_IN_SECONDS,
+		} );
+		// This will be removed as part of #10419.
+		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
+			expiresInSeconds: HOUR_IN_SECONDS,
+		} );
+	}, [ dismissItem, setCacheItem ] );
+
+	const onCTAClick = useCallback( async () => {
 		setIsSaving( true );
-		dismissNotification( id, { skipHidingFromQueue: true } );
+		await dismissNotification( id, { skipHidingFromQueue: true } );
+		await dismissWooCommerceRedirectModal();
 		onSetupCallback();
-	}, [ setIsSaving, onSetupCallback, dismissNotification, id ] );
+	}, [
+		setIsSaving,
+		onSetupCallback,
+		dismissWooCommerceRedirectModal,
+		dismissNotification,
+		id,
+	] );
 
 	return (
 		<Notification>
 			<SubtleNotification
 				type="new-feature"
 				description={ __(
-					'We’ve detected an existing Ads account via Google for WooCommerce plugin. Now you can also create a new Ads account using Site Kit.',
+					'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
 					'google-site-kit'
 				) }
 				dismissCTA={
@@ -67,6 +94,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 							'Keep existing account',
 							'google-site-kit'
 						) }
+						onDismiss={ dismissWooCommerceRedirectModal }
 					/>
 				}
 				additionalCTA={

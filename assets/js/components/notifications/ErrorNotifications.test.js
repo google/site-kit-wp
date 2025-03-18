@@ -26,7 +26,7 @@ import {
 	provideUserAuthentication,
 	provideModules,
 	provideSiteInfo,
-	provideNotifications,
+	deprecatedProvideNotifications,
 } from '../../../../tests/js/test-utils';
 import {
 	CORE_USER,
@@ -62,7 +62,7 @@ describe( 'ErrorNotifications', () => {
 				connected: true,
 			},
 		] );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				'authentication-error':
@@ -93,7 +93,7 @@ describe( 'ErrorNotifications', () => {
 				connected: true,
 			},
 		] );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				'authentication-error':
@@ -126,7 +126,7 @@ describe( 'ErrorNotifications', () => {
 			setupErrorCode: 'error_code',
 			setupErrorMessage: 'An error occurred',
 		} );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
@@ -164,7 +164,7 @@ describe( 'ErrorNotifications', () => {
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 			],
 		} );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				'authentication-error':
@@ -202,7 +202,7 @@ describe( 'ErrorNotifications', () => {
 				'https://www.googleapis.com/auth/analytics.readonly',
 			],
 		} );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				'authentication-error':
@@ -241,7 +241,7 @@ describe( 'ErrorNotifications', () => {
 			],
 			authenticated: false,
 		} );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				'authentication-error':
@@ -278,7 +278,7 @@ describe( 'ErrorNotifications', () => {
 			},
 		] );
 		provideUserAuthentication( registry );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				'authentication-error':
@@ -327,7 +327,7 @@ describe( 'ErrorNotifications', () => {
 					],
 				},
 			} );
-		provideNotifications(
+		deprecatedProvideNotifications(
 			registry,
 			{
 				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,

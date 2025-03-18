@@ -121,8 +121,6 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	describe( 'the "Display visitor groups in dashboard" switch', () => {
-		let switchControl;
-
 		const audienceSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/audience-settings'
 		);
@@ -163,18 +161,23 @@ describe( 'SettingsCardVisitorGroups', () => {
 				// Return the same settings passed to the API.
 				return { body: data, status: 200 };
 			} );
-
-			const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-			} );
-
-			switchControl = getByLabelText(
-				'Display visitor groups in dashboard'
-			);
 		} );
 
 		it( 'should toggle on click and save the audience settings', async () => {
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsCardVisitorGroups />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
+
+			const switchControl = getByLabelText(
+				'Display visitor groups in dashboard'
+			);
+
 			expect( switchControl ).not.toBeChecked();
 
 			switchControl.click();
@@ -200,31 +203,43 @@ describe( 'SettingsCardVisitorGroups', () => {
 		} );
 
 		it( 'should track an event when toggled', async () => {
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsCardVisitorGroups />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
+
+			const switchControl = getByLabelText(
+				'Display visitor groups in dashboard'
+			);
+
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			switchControl.click();
 
 			await waitFor( () => {
 				expect( switchControl ).toBeChecked();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'settings_audiences-settings',
+					'audience_widgets_enable'
+				);
 			} );
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'settings_audiences-settings',
-				'audience_widgets_enable'
-			);
 
 			switchControl.click();
 
 			await waitFor( () => {
 				expect( switchControl ).not.toBeChecked();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'settings_audiences-settings',
+					'audience_widgets_disable'
+				);
 			} );
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-			expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-				'settings_audiences-settings',
-				'audience_widgets_disable'
-			);
 		} );
 	} );
 } );

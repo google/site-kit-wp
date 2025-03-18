@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useCallbackOne } from 'use-memo-one';
 import { useMount } from 'react-use';
 
@@ -100,8 +101,15 @@ export default function SetupMainPAX( { finishSetup } ) {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { setPaxConversionID, setExtCustomerID, submitChanges } =
-		useDispatch( MODULES_ADS );
+	const {
+		setPaxConversionID,
+		setCustomerID,
+		setExtCustomerID,
+		setFormattedExtCustomerID,
+		setUserID,
+		setAccountOverviewURL,
+		submitChanges,
+	} = useDispatch( MODULES_ADS );
 
 	useMount( () => {
 		if ( PAX_SETUP_STEP.FINISHED === showPaxAppStep ) {
@@ -111,6 +119,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 		}
 	} );
+
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	// Callback to be executed when a campaign is created in PAX.
 	//
@@ -128,6 +139,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		const { accountService, conversionTrackingIdService } =
 			paxAppRef.current.getServices();
 		const customerData = await accountService.getAccountId( {} );
+		const googleAdsURLData = await accountService.getGoogleAdsUrl( {} );
 		const conversionTrackingData =
 			await conversionTrackingIdService.getConversionTrackingId( {} );
 
@@ -138,12 +150,21 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
+		setUserID( customerData.userId );
+		setCustomerID( customerData.customerId );
 		setExtCustomerID( customerData.externalCustomerId );
+		setFormattedExtCustomerID( customerData.formattedExternalCustomerId );
 		setPaxConversionID( conversionTrackingData.conversionTrackingId );
+		setAccountOverviewURL( googleAdsURLData.accountOverviewUrl );
 		/* eslint-enable sitekit/acronym-case */
 
 		// Here we save settings right away but leave final navigation to `onSetupComplete`.
-		await submitChanges();
+		const { error } = await submitChanges();
+
+		if ( ! error ) {
+			setConversionTrackingEnabled( true );
+			await saveConversionTrackingSettings();
+		}
 	}, [ setExtCustomerID, setPaxConversionID ] );
 
 	const registry = useRegistry();
@@ -165,20 +186,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
 		)
 	);
-	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
-		const {
-			isWooCommerceActivated,
-			isGoogleForWooCommerceActivated,
-			hasGoogleForWooCommerceAdsAccount,
-		} = select( MODULES_ADS );
-
-		return (
-			( isWooCommerceActivated() &&
-				isGoogleForWooCommerceActivated() &&
-				! hasGoogleForWooCommerceAdsAccount() ) ||
-			( isWooCommerceActivated() && ! isGoogleForWooCommerceActivated() )
-		);
-	} );
+	const isWooCommerceActivated = useSelect( ( select ) =>
+		select( MODULES_ADS ).isWooCommerceActivated()
+	);
 
 	const onModalDismiss = useCallback(
 		( skipClosing ) => {
@@ -207,24 +217,32 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [] );
 
 	const onSetupCallback = useCallback( () => {
-		if (
-			shouldShowWooCommerceRedirectModal &&
-			! isWooCommerceRedirectModalDismissed
-		) {
+		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
 
 		createAccount();
 	}, [
-		shouldShowWooCommerceRedirectModal,
+		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
 	] );
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--ads">
+		<div
+			className={ classnames(
+				'googlesitekit-setup-module',
+				'googlesitekit-setup-module--ads',
+				{
+					'has-pax-flow':
+						! isAdBlockerActive &&
+						PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
+						hasAdwordsScope,
+				}
+			) }
+		>
 			<div className="googlesitekit-setup-module__step">
 				<div className="googlesitekit-setup-module__logo">
 					<AdsIcon width="40" height="40" />

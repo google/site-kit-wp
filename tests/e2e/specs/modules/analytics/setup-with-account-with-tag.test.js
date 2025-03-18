@@ -1,3 +1,5 @@
+/* eslint complexity: [ "error", 16 ] */
+
 /**
  * WordPress dependencies
  */

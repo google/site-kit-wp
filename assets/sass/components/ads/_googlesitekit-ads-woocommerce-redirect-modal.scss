@@ -30,6 +30,15 @@
 			}
 		}
 
+		&.googlesitekit-dialog-woocommerce-redirect--ads-connected {
+
+			.mdc-dialog__surface {
+				@media (min-width: $bp-desktop) {
+					max-width: 608px;
+				}
+			}
+		}
+
 		.googlesitekit-dialog-woocommerce-redirect__svg-wrapper {
 			margin-bottom: 10px;
 			text-align: center;

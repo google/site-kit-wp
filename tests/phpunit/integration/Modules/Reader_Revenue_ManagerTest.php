@@ -30,6 +30,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -142,10 +143,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
 						);
 				}
 			}
@@ -195,10 +198,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
 						);
 				}
 			}
@@ -245,10 +250,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
 						);
 				}
 			}
@@ -284,10 +291,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
+							)
 						);
 				}
 			}
@@ -331,10 +340,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( array() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( array() )
+							)
 						);
 				}
 			}
@@ -614,6 +625,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'reader_revenue_manager_publication_id',
 				'reader_revenue_manager_publication_onboarding_state',
+				'reader_revenue_manager_available_product_ids',
+				'reader_revenue_manager_payment_option',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -621,7 +634,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->enable_feature( 'rrmModuleV2' );
 		$this->reader_revenue_manager->get_settings()->register();
 
-		// Verify `postTypes` field appears when the `snippetMode` is `post_types`.
+		// Verify `postTypes` field appears when the `snippetMode` is `post_types` (default).
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
@@ -854,14 +867,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$module->get_client(),
 			function () use ( $status_code ) {
 				if ( 200 === $status_code ) {
-					return new Response(
-						200,
-						array(),
-						json_encode( $this->get_publications_list_response() )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
+						)
 					);
 				}
 
-				return new Response( $status_code );
+				return new FulfilledPromise( new Response( $status_code ) );
 			}
 		);
 	}
