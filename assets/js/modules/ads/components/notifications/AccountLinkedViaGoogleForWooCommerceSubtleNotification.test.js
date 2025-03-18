@@ -127,6 +127,13 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
+			provideModules( registry, [
+				{
+					slug: 'ads',
+					active: true,
+					connected: false,
+				},
+			] );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
 					[ PLUGINS.WOOCOMMERCE ]: {
@@ -148,6 +155,13 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		} );
 
 		it( 'should return true if the WooCommerce and Google for WooCommerce plugins are active and Ads account ins linked', async () => {
+			provideModules( registry, [
+				{
+					slug: 'ads',
+					active: true,
+					connected: false,
+				},
+			] );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
 					[ PLUGINS.WOOCOMMERCE ]: {
