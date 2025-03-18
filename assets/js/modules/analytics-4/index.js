@@ -883,8 +883,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The hasModuleOwnershipOrAccess() selector relies on the resolution
 				// of the getUser() resolver.
 				resolveSelect( CORE_USER ).getUser(),
-				// The getPropertyID() and getWebDataStreamID() selectors rely on
-				// the resolution of the getSettings() resolver.
+				// The hasModuleOwnershipOrAccess(), getPropertyID() and
+				// getWebDataStreamID() selectors rely on the resolution of the
+				// getSettings() resolver.
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 				// The isItemDismissed() selector relies on the resolution
 				// of the getDismissedItems() resolver.
@@ -900,6 +901,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
 			const hasModuleAccess =
+				ga4ModuleConnected &&
 				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
 					'analytics-4'
 				);
@@ -911,7 +913,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			);
 
 			if (
-				! ga4ModuleConnected ||
 				! isValidPropertyID( propertyID ) ||
 				! isValidWebDataStreamID( webDataStreamID ) ||
 				! hasModuleAccess ||
