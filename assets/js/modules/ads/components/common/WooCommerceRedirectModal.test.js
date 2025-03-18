@@ -130,12 +130,6 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
-		} );
-
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -148,42 +142,23 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
-		const { getByText, waitForRegistry } = render(
+		const { container, waitForRegistry } = render(
 			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		const useGoogleForWooCommerceButton = getByText(
-			/use google for woocommerce/i
-		);
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
-
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /plugin-install\.php/ )
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching(
-				new RegExp( `s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }` )
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
 			)
+		).toHaveAttribute(
+			'href',
+			`http://example.com/wp-admin/plugin-install.php?s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }&tab=search&type=term`
 		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /tab=search/ )
-		);
-
-		// Modal should be dismissed.
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active', async () => {
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
-		} );
-
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -196,27 +171,20 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
-		const { getByText, waitForRegistry } = render(
+		const { container, waitForRegistry } = render(
 			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		const useGoogleForWooCommerceButton = getByText(
-			/use google for woocommerce/i
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
+			)
+		).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard'
 		);
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
-
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /page=wc-admin/ )
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
-		);
-
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
