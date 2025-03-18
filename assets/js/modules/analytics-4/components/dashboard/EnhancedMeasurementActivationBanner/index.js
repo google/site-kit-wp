@@ -52,15 +52,11 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
-import { trackEvent } from '../../../../../util';
-import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function EnhancedMeasurementActivationBanner( {
 	id,
 	Notification,
 } ) {
-	const viewContext = useViewContext();
-
 	const [ step, setStep ] = useState( ACTIVATION_STEP_SETUP );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ errorNotice, setErrorNotice ] = useState( null );
@@ -114,13 +110,8 @@ export default function EnhancedMeasurementActivationBanner( {
 			return;
 		}
 
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'confirm_notification'
-		);
-
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ setValues, submitChanges, viewContext ] );
+	}, [ setValues, submitChanges ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
