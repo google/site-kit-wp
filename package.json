@@ -167,6 +167,7 @@
 		"@storybook/react": "^6.5.14",
 		"@svgr/webpack": "^5.4.0",
 		"@testing-library/react": "^10.4.9",
+		"@testing-library/react-hooks": "^3.3.0",
 		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
