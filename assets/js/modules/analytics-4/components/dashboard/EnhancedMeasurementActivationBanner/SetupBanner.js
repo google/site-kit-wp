@@ -178,6 +178,7 @@ export default function SetupBanner( props ) {
 							id={ id }
 							ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
 							onCTAClick={ handleSubmitChanges }
+							dismissOnCTAClick={ false }
 							isSaving={ isSaving || isNavigatingToOAuthURL }
 							dismissLabel={ __(
 								'Maybe later',
