@@ -88,8 +88,7 @@ export default function SuccessBanner( { id, Notification } ) {
 						ctaLabel={ __( 'OK, Got it', 'google-site-kit' ) }
 						gaTrackingEventArgs={ gaTrackingEventArgs }
 						dismissOnCTAClick
-						dismissExpires={ 1 } // Expire the dismissal instantly to allow showing the banner again if enhanced measurement is disabled later.
-						dismissOptions={ { skipHidingFromQueue: false } }
+						dismissOptions={ { skipHidingFromQueue: false } } // We want the notification to now be removed from the queue as this is the final "step".
 					/>
 				}
 				SVG={ () => <SuccessGreenSVG /> }
