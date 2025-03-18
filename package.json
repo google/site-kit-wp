@@ -190,6 +190,7 @@
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",
 		"eslint-scope": "^5.1.0",
 		"eslint-webpack-plugin": "^2.5.1",
+		"faker": "^5.5.3",
 		"fetch-mock": "^9.10.3",
 		"file-loader": "^6.1.1",
 		"fs-extra": "^9.0.1",
