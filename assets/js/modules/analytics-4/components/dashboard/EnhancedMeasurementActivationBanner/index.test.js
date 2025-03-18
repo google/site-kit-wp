@@ -189,11 +189,6 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			body: analytics4Fixtures.defaultEnhancedMeasurementSettings,
 		} );
 
-		fetchMock.postOnce( fetchDismissItem, {
-			status: 200,
-			body: [],
-		} );
-
 		const { container, getByRole, getByText, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBannerComponent />,
 			{
@@ -212,11 +207,10 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 		// Enhanced measurement settings should update when enhanced measurement
 		// is enabled via the "Enable now" CTA.
-		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 		expect( fetchMock ).toHaveFetched(
 			enhancedMeasurementSettingsEndpoint
 		);
-		expect( fetchMock ).toHaveFetched( fetchDismissItem );
 
 		expect( container ).toMatchSnapshot();
 
