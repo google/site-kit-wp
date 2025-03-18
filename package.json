@@ -166,6 +166,7 @@
 		"@storybook/addon-viewport": "^6.3.0",
 		"@storybook/react": "^6.5.14",
 		"@svgr/webpack": "^5.4.0",
+		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.3.0",
 		"@wordpress/babel-preset-default": "^4.17.0",
