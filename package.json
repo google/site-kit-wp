@@ -171,6 +171,7 @@
 		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
+		"@wordpress/jest-preset-default": "7.1.1",
 		"@wordpress/prettier-config": "^2.0",
 		"@wordpress/stylelint-config": "^21.0.0",
 		"archiver": "^5.0.2",
