@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AdBlockingRecoverySetupSuccessBannerNotification should render notification and trigger ACR survey 1`] = `
+exports[`AdBlockingRecoverySetupSuccessNotification should render notification and trigger tracking events and ACR survey 1`] = `
 <div>
   <section
     id="ad-blocking-recovery-setup-success"

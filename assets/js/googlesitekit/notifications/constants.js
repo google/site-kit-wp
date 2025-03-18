@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+export const AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID =
+	'ad-blocking-recovery-setup-success';
+
 export const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
 	'warning-notification-fpm';
 

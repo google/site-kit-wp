@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoverySetupSuccessBannerNotification component tests.
+ * AdBlockingRecoverySetupSuccessNotification component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -20,7 +20,9 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
+	fireEvent,
 	provideModules,
 	provideSiteInfo,
 	render,
@@ -36,11 +38,12 @@ import {
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import * as tracking from '../../../../util/tracking';
-import AdBlockingRecoverySetupSuccessBannerNotification, {
-	AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
-} from './AdBlockingRecoverySetupSuccessBannerNotification';
+import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID } from '../../../../googlesitekit/notifications/constants';
+import { ADSENSE_NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -52,12 +55,12 @@ jest.mock( 'react-use', () => ( {
 	} ),
 } ) );
 
-describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
+describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 	let registry;
-	const AdBlockingRecoverySetupSuccessBannerNotificationComponent =
+	const AdBlockingRecoverySetupSuccessNotificationComponent =
 		withNotificationComponentProps(
 			AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID
-		)( AdBlockingRecoverySetupSuccessBannerNotification );
+		)( AdBlockingRecoverySetupSuccessNotification );
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -76,15 +79,28 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 		} );
 	} );
 
-	it( 'should render notification and trigger ACR survey', async () => {
+	it( 'should render notification and trigger tracking events and ACR survey', async () => {
 		fetchMock.getOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
 		);
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: {} }
+		);
 
 		mockSurveyEndpoints();
+
+		await registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
+				ADSENSE_NOTIFICATIONS[
+					AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID
+				]
+			);
 
 		await registry
 			.dispatch( CORE_UI )
@@ -99,8 +115,8 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 			);
 
-		const { container } = render(
-			<AdBlockingRecoverySetupSuccessBannerNotificationComponent />,
+		const { container, getByRole } = render(
+			<AdBlockingRecoverySetupSuccessNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -119,6 +135,28 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 					},
 				} )
 			)
+		);
+
+		// The tracking event should fire when the notification is viewed.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_ad-blocking-recovery-setup-success',
+			'view_notification',
+			'mainDashboard_adsense-abr-success-notification',
+			'view_notification'
+		);
+		mockTrackEvent.mockClear();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Ok, got it!/i } ) );
+		} );
+
+		// The tracking event should fire when the notification is confirmed.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_ad-blocking-recovery-setup-success',
+			'dismiss_notification',
+			'mainDashboard_adsense-abr-success-notification',
+			'confirm_notification'
 		);
 	} );
 } );
