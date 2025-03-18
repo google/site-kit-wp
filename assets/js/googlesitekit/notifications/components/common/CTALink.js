@@ -45,6 +45,7 @@ export default function CTALink( {
 	dismissExpires = 0,
 	dismissOptions = { skipHidingFromQueue: true },
 	gaTrackingEventArgs,
+	disabled = false,
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
 		useState( false );
@@ -110,7 +111,9 @@ export default function CTALink( {
 			className="googlesitekit-notification__cta"
 			href={ ctaLink }
 			onClick={ handleCTAClick }
-			disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
+			disabled={
+				isAwaitingCTAResponse || isNavigatingToCTALink || disabled
+			}
 			isSaving={
 				isAwaitingCTAResponse || isNavigatingToCTALink || isSaving
 			}
