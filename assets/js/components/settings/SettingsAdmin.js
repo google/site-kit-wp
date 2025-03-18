@@ -39,15 +39,10 @@ import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
 import PreviewBlock from '../PreviewBlock';
 import SettingsCardVisitorGroups from '../../modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
-import { useFeature } from '../../hooks/useFeature';
 
 export default function SettingsAdmin() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-
-	const configuredAudiences = useSelect(
-		( select ) =>
-			audienceSegmentationEnabled &&
-			select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
@@ -152,12 +147,11 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ audienceSegmentationEnabled &&
-				( isAnalyticsConnected || !! configuredAudiences ) && (
-					<Cell size={ 12 }>
-						<SettingsCardVisitorGroups />
-					</Cell>
-				) }
+			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
+				<Cell size={ 12 }>
+					<SettingsCardVisitorGroups />
+				</Cell>
+			) }
 
 			<Cell size={ 12 }>
 				<Layout
