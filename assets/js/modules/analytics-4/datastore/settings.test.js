@@ -23,7 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	provideNotifications,
+	deprecatedProvideNotifications,
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -538,7 +538,7 @@ describe( 'modules/analytics-4 settings', () => {
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -671,7 +671,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -750,7 +750,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -820,7 +820,7 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:

@@ -34,7 +34,6 @@ import {
 } from '../../modules/reader-revenue-manager/components/dashboard';
 
 export default function OverlayNotificationsRenderer() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
 	const readerRevenueManagerV2Enabled = useFeature( 'rrmModuleV2' );
 
@@ -42,9 +41,7 @@ export default function OverlayNotificationsRenderer() {
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
-			{ audienceSegmentationEnabled && (
-				<AudienceSegmentationIntroductoryOverlayNotification />
-			) }
+			<AudienceSegmentationIntroductoryOverlayNotification />
 			{ readerRevenueManagerEnabled && (
 				<PublicationApprovedOverlayNotification />
 			) }
