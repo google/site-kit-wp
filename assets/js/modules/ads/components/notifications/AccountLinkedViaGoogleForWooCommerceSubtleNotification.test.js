@@ -85,7 +85,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 				body: { needsReauthentication: false },
 			}
 		);
-		fetchMock.postOnce( dismissItemEndpoint, {
+		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [ NOTIFICATION_ID ] ),
 		} );
 
@@ -109,7 +109,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		provideModules( registry );
 		provideUserCapabilities( registry );
 
-		fetchMock.postOnce( dismissItemEndpoint, {
+		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [ NOTIFICATION_ID ] ),
 		} );
 
