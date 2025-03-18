@@ -232,6 +232,9 @@ export default function WooCommerceRedirectModal( {
 						) : undefined
 					}
 					onClick={ getGoogleForWooCommerceRedirectURI }
+					target={
+						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
+					}
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'View current Ads account', 'google-site-kit' )
