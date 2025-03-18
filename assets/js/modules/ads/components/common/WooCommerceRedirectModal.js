@@ -208,13 +208,13 @@ export default function WooCommerceRedirectModal( {
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
 					onClick={ onContinueWithSiteKit }
 					icon={
 						trackIsSavingRef.current === 'tertiary' ? (
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
+					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'Create another account', 'google-site-kit' )
@@ -232,6 +232,7 @@ export default function WooCommerceRedirectModal( {
 						) : undefined
 					}
 					onClick={ getGoogleForWooCommerceRedirectURI }
+					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'View current Ads account', 'google-site-kit' )
