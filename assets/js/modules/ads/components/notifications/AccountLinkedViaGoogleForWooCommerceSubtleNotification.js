@@ -84,7 +84,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 			<SubtleNotification
 				type="new-feature"
 				description={ __(
-					'We’ve detected an existing Ads account via Google for WooCommerce plugin. Now you can also create a new Ads account using Site Kit.',
+					'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
 					'google-site-kit'
 				) }
 				dismissCTA={
