@@ -17,7 +17,7 @@
  */
 
 export const AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID =
-	'ad-blocking-recovery-setup-success';
+	'adsense-abr-success-notification';
 
 export const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
 	'warning-notification-fpm';

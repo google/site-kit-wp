@@ -3,7 +3,7 @@
 exports[`AdBlockingRecoverySetupSuccessNotification should render notification and trigger tracking events and ACR survey 1`] = `
 <div>
   <section
-    id="ad-blocking-recovery-setup-success"
+    id="adsense-abr-success-notification"
   >
     <div
       class="mdc-layout-grid"

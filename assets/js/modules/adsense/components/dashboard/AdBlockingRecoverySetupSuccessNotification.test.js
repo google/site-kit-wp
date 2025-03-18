@@ -139,10 +139,10 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 
 		// The tracking event should fire when the notification is viewed.
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_ad-blocking-recovery-setup-success',
-			'view_notification',
 			'mainDashboard_adsense-abr-success-notification',
-			'view_notification'
+			'view_notification',
+			undefined,
+			undefined
 		);
 		mockTrackEvent.mockClear();
 
@@ -153,10 +153,10 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 
 		// The tracking event should fire when the notification is confirmed.
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_ad-blocking-recovery-setup-success',
-			'dismiss_notification',
 			'mainDashboard_adsense-abr-success-notification',
-			'confirm_notification'
+			'dismiss_notification',
+			undefined,
+			undefined
 		);
 	} );
 } );

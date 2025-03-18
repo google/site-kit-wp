@@ -33,14 +33,11 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import Link from '../../../../components/Link';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 export default function AdBlockingRecoverySetupSuccessNotification( {
 	id,
 	Notification,
 } ) {
-	const trackingEventLabel = `${ VIEW_CONTEXT_MAIN_DASHBOARD }_adsense-abr-success-notification`;
-
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const usingProxy = useSelect( ( select ) =>
@@ -64,13 +61,7 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 	}, [ triggerSurvey, usingProxy ] );
 
 	return (
-		<Notification
-			onView={ handleView }
-			gaTrackingEventArgs={ {
-				label: trackingEventLabel,
-				value: 'view_notification',
-			} }
-		>
+		<Notification onView={ handleView }>
 			<SubtleNotification
 				title={ __(
 					'You successfully enabled the ad blocking recovery message',
@@ -91,15 +82,7 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 						),
 					}
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						gaTrackingEventArgs={ {
-							label: trackingEventLabel,
-							value: 'confirm_notification',
-						} }
-					/>
-				}
+				dismissCTA={ <Dismiss id={ id } /> }
 			/>
 		</Notification>
 	);
