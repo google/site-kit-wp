@@ -72,7 +72,9 @@
 			button {
 
 				&:last-child {
-					margin-top: 5px;
+					@media (max-width: $bp-mobileOnly) {
+						margin-top: 5px;
+					}
 				}
 
 				.MuiCircularProgress-colorPrimary {
