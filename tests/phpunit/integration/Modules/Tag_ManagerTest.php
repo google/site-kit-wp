@@ -419,6 +419,20 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Test if Tag Manager module correctly registers Ads Measurement connection check filter.
+	 */
+	public function test_tag_manager_module_adds_measurement_connection_check_filter() {
+		$tag_manager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tag_manager->register();
+
+		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
+
+		$this->assertNotEmpty( $checks );
+		$this->assertIsCallable( $checks[0] );
+	}
+
+
 	public function container_name_provider() {
 		return array(
 			array(
