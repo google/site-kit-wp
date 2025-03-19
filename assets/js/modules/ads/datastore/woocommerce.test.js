@@ -43,20 +43,20 @@ describe( 'modules/ads woocommerce data store', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'receiveWoocommerceModalCacheHit', () => {
+		describe( 'receiveIsWooCommerceRedirectModalDismissed', () => {
 			it( 'requires a cacheHit to be provided', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ADS )
-						.receiveWoocommerceModalCacheHit()
+						.receiveIsWooCommerceRedirectModalDismissed()
 				).toThrow( 'A cacheHit is required.' );
 			} );
 
-			it( 'sets the woocommerceModalCacheHit in the store', () => {
+			it( 'sets the woocommerceModalDismissed in the store', () => {
 				registry
 					.dispatch( MODULES_ADS )
-					.receiveWoocommerceModalCacheHit( true );
-				expect( store.getState().woocommerceModalCacheHit ).toEqual(
+					.receiveIsWooCommerceRedirectModalDismissed( true );
+				expect( store.getState().woocommerceModalDismissed ).toEqual(
 					true
 				);
 			} );
@@ -64,25 +64,27 @@ describe( 'modules/ads woocommerce data store', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getWoocommerceModalCacheHit', () => {
+		describe( 'isWooCommerceRedirectModalDismissed', () => {
 			it( 'returns false if there is no cache key', () => {
-				const woocommerceModalCacheHit = registry
+				const woocommerceModalDismissed = registry
 					.select( MODULES_ADS )
-					.getWoocommerceModalCacheHit();
-				expect( woocommerceModalCacheHit ).toEqual( false );
+					.isWooCommerceRedirectModalDismissed();
+				expect( woocommerceModalDismissed ).toEqual( false );
 			} );
 
-			it( 'returns the getWoocommerceModalCacheHit cacheHit if there is cache item', () => {
+			it( 'returns the isWooCommerceRedirectModalDismissed cacheHit if there is cache item', () => {
 				registry
 					.dispatch( MODULES_ADS )
-					.receiveWoocommerceModalCacheHit( true );
+					.receiveIsWooCommerceRedirectModalDismissed( true );
 
 				expect(
-					registry.select( MODULES_ADS ).getWoocommerceModalCacheHit()
+					registry
+						.select( MODULES_ADS )
+						.isWooCommerceRedirectModalDismissed()
 				).toEqual( true );
 			} );
 
-			it( 'uses a resolver to set getWoocommerceModalCacheHit in the store if there is a value in the cache', async () => {
+			it( 'uses a resolver to set isWooCommerceRedirectModalDismissed in the store if there is a value in the cache', async () => {
 				await registry
 					.dispatch( CORE_SITE )
 					.setCacheItem(
@@ -90,14 +92,18 @@ describe( 'modules/ads woocommerce data store', () => {
 						true
 					);
 
-				registry.select( MODULES_ADS ).getWoocommerceModalCacheHit();
+				registry
+					.select( MODULES_ADS )
+					.isWooCommerceRedirectModalDismissed();
 				await untilResolved(
 					registry,
 					MODULES_ADS
-				).getWoocommerceModalCacheHit();
+				).isWooCommerceRedirectModalDismissed();
 
 				expect(
-					registry.select( MODULES_ADS ).getWoocommerceModalCacheHit()
+					registry
+						.select( MODULES_ADS )
+						.isWooCommerceRedirectModalDismissed()
 				).toBe( true );
 			} );
 		} );
