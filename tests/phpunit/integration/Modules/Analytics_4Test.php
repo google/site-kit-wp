@@ -4724,6 +4724,19 @@ class Analytics_4Test extends TestCase {
 		}
 	}
 
+	/**
+	 * Test if Analytics module correctly registers Ads Measurement connection check filter.
+	 */
+	public function test_analytics_module_adds_measurement_connection_check_filter() {
+		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->register();
+
+		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
+
+		$this->assertNotEmpty( $checks );
+		$this->assertIsCallable( $checks[0] );
+	}
+
 	public function block_on_consent_provider_amp() {
 		return array(
 			'default (disabled)' => array(
