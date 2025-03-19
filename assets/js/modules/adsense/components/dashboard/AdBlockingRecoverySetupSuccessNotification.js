@@ -33,6 +33,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import Link from '../../../../components/Link';
+import useQueryArg from '../../../../hooks/useQueryArg';
 
 export default function AdBlockingRecoverySetupSuccessNotification( {
 	id,
@@ -60,6 +61,12 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
+	const [ , setNotification ] = useQueryArg( 'notification' );
+
+	const dismissNotice = useCallback( () => {
+		setNotification( undefined );
+	}, [ setNotification ] );
+
 	return (
 		<Notification onView={ handleView }>
 			<SubtleNotification
@@ -82,7 +89,7 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 						),
 					}
 				) }
-				dismissCTA={ <Dismiss id={ id } /> }
+				dismissCTA={ <Dismiss onDismiss={ dismissNotice } id={ id } /> }
 			/>
 		</Notification>
 	);

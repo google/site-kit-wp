@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -212,9 +213,12 @@ export const ADSENSE_NOTIFICATIONS = {
 				MODULES_ADSENSE
 			).getAdBlockingRecoverySetupStatus();
 
+			const notification = getQueryArg( location.href, 'notification' );
+
 			if (
 				adBlockingRecoverySetupStatus ===
-				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
+					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED &&
+				notification === 'ad_blocking_recovery_setup_success'
 			) {
 				return true;
 			}
