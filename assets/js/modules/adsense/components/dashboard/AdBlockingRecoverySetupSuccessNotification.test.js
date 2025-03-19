@@ -41,7 +41,6 @@ import * as tracking from '../../../../util/tracking';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import { AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID } from '../../../../googlesitekit/notifications/constants';
 import { ADSENSE_NOTIFICATIONS } from '../..';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
@@ -58,9 +57,9 @@ jest.mock( 'react-use', () => ( {
 describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 	let registry;
 	const AdBlockingRecoverySetupSuccessNotificationComponent =
-		withNotificationComponentProps(
-			AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID
-		)( AdBlockingRecoverySetupSuccessNotification );
+		withNotificationComponentProps( 'adsense-abr-success-notification' )(
+			AdBlockingRecoverySetupSuccessNotification
+		);
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -96,16 +95,14 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 		await registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
-				AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID,
-				ADSENSE_NOTIFICATIONS[
-					AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID
-				]
+				'adsense-abr-success-notification',
+				ADSENSE_NOTIFICATIONS[ 'adsense-abr-success-notification' ]
 			);
 
 		await registry
 			.dispatch( CORE_UI )
 			.setValue(
-				`notification/${ AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID }/viewed`,
+				'notification/adsense-abr-success-notification/viewed',
 				true
 			);
 

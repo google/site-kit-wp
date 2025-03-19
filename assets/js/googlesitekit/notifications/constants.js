@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-export const AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID =
-	'adsense-abr-success-notification';
-
 export const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
 	'warning-notification-fpm';
 

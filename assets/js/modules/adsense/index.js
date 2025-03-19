@@ -56,7 +56,6 @@ import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
-import { AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -202,7 +201,7 @@ export const registerWidgets = ( widgets ) => {
 };
 
 export const ADSENSE_NOTIFICATIONS = {
-	[ AD_BLOCKING_RECOVERY_SETUP_SUCCESS_NOTIFICATION_ID ]: {
+	'adsense-abr-success-notification': {
 		Component: AdBlockingRecoverySetupSuccessNotification,
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
@@ -221,7 +220,6 @@ export const ADSENSE_NOTIFICATIONS = {
 			}
 			return false;
 		},
-		isDismissible: true,
 	},
 };
 
