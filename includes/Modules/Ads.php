@@ -121,7 +121,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 *
 	 * Determines the connection status by applying the 'googlesitekit_is_module_connected' filter.
 	 *
-	 * @since 1.149.0
+	 * @since n.e.x.t
 	 *
 	 * @return bool True if the Ads module is connected, false otherwise.
 	 */
