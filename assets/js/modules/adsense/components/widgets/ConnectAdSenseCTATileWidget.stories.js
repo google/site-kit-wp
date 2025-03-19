@@ -24,6 +24,8 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
+import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -37,15 +39,37 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectAdSenseCTATileWidget';
+Default.args = {
+	keyMetricsWidgets: {
+		[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+			modules: [ 'adsense' ],
+		},
+		secondAdSenseWidget: {
+			modules: [ 'adsense' ],
+		},
+	},
+};
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/ConnectAdSenseCTATileWidget',
 	delay: 250,
 };
 
+export const WithSingleWidget = Template.bind( {} );
+WithSingleWidget.storyName = 'ConnectAdSenseCTATileWidget (for single widget)';
+WithSingleWidget.args = {
+	keyMetricsWidgets: {
+		[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+			modules: [ 'adsense' ],
+		},
+	},
+};
+WithSingleWidget.scenario = {};
+
 export default {
 	title: 'Key Metrics/ConnectAdSenseCTATileWidget',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -55,6 +79,10 @@ export default {
 					},
 				] );
 				provideModuleRegistrations( registry );
+				provideKeyMetricsWidgetRegistrations(
+					registry,
+					args?.keyMetricsWidgets
+				);
 			};
 
 			return (
