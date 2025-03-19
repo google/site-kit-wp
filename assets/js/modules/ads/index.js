@@ -140,17 +140,16 @@ export const ADS_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
 			// on the data being resolved in getModuleData() selector.
-			await resolveSelect( MODULES_ADS ).getModuleData();
-			await resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' );
+			const [ , isModuleConnected ] = await Promise.all( [
+				resolveSelect( MODULES_ADS ).getModuleData(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+			] );
 
 			const {
 				isWooCommerceActivated,
 				isGoogleForWooCommerceActivated,
 				hasGoogleForWooCommerceAdsAccount,
 			} = select( MODULES_ADS );
-
-			const isModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'ads' );
 
 			return (
 				! isModuleConnected &&
