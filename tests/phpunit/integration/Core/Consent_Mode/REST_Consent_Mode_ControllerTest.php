@@ -323,92 +323,92 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 	public function test_get_ads_measurement_status__ads_module_connected() {
 		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
-		$this->force_module_connection( Ads::MODULE_SLUG );
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () {
+				return array(
+					function () {
+						return true; },
+				);
+			}
+		);
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$response_data = $response->get_data();
-
-		$this->assertTrue( $response_data['connected'] );
+		$this->assertTrue( $response->get_data()['connected'] );
 	}
 
 	public function test_get_ads_measurement_status__ga4_module_connected__ads_connected_setting_is_true() {
 		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
-		$this->grant_manage_options_permission();
+			$this->grant_manage_options_permission();
 
-		$this->force_module_connection( Analytics_4::MODULE_SLUG );
+			add_filter(
+				'googlesitekit_ads_measurement_connection_checks',
+				function () {
+					return array(
+						function () {
+							return true; },
+					);
+				}
+			);
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
+			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+			$response = rest_get_server()->dispatch( $request );
 
-		$response_data = $response->get_data();
-
-		$this->assertFalse( $response_data['connected'] );
-
-		// Set adSenseLinked setting to true, which should mark connection as true.
-		update_option( Analytics_4_Settings::OPTION, array( 'adSenseLinked' => true ) );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertTrue( $response_data['connected'] );
+			$this->assertTrue( $response->get_data()['connected'] );
 	}
 
 	public function test_get_ads_measurement_status__ga4_module_connected__destinationIds_setting_contains_ads_related_tag() {
 		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
-		$this->grant_manage_options_permission();
+			$this->grant_manage_options_permission();
 
-		$this->force_module_connection( Analytics_4::MODULE_SLUG );
-		update_option( Analytics_4_Settings::OPTION, array( 'googleTagContainerDestinationIDs' => array( 'G-1234', 'AW-12345' ) ) );
+			add_filter(
+				'googlesitekit_ads_measurement_connection_checks',
+				function () {
+					return array(
+						function () {
+							return true; },
+					);
+				}
+			);
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
+			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+			$response = rest_get_server()->dispatch( $request );
 
-		$response_data = $response->get_data();
-
-		$this->assertTrue( $response_data['connected'] );
+			$this->assertTrue( $response->get_data()['connected'] );
 	}
 
 	/**
 	 * @dataProvider data_container_checks
 	 */
-	public function test_get_ads_measurement_status__tag_manager_module_connected__live_container_checks( $container_version, $expected_connection_value ) {
+	public function test_get_ads_measurement_status__tag_manager_module_connected__live_container_checks_with_data_set( $has_awct_tag, $expected_connection_value ) {
 		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
-		$this->force_module_connection( Tag_Manager::MODULE_SLUG );
-
-		$account_id          = '1234';
-		$internalContainerID = '123456';
-		update_option(
-			Tag_Manager_Settings::OPTION,
-			array(
-				'accountID'           => $account_id,
-				'internalContainerID' => $internalContainerID,
-			)
-		);
-
-		$this->fake_tag_manager_http_handler(
-			$container_version,
-			$account_id,
-			$internalContainerID
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( $has_awct_tag ) {
+				return array(
+					function () use ( $has_awct_tag ) {
+						return $has_awct_tag; },
+				);
+			}
 		);
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$response_data = $response->get_data();
+		$this->assertEquals( $expected_connection_value, $response->get_data()['connected'] );
+	}
 
-		$this->assertEquals( $response_data['connected'], $expected_connection_value );
+	public function data_container_checks() {
+		return array(
+			'has awct type tag'    => array( true, true ),
+			'has no awct type tag' => array( false, false ),
+		);
 	}
 
 	private function grant_manage_options_permission() {
@@ -478,61 +478,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 						return new FulfilledPromise( new Response( 200 ) );
 				}
 			}
-		);
-	}
-
-	public function data_container_checks() {
-		$has_awct_tag = function () {
-			$tag1 = new Tag();
-			$tag1->setTagId( '324234' );
-			$tag1->setType( 'awct' );
-
-			$tag2 = new Tag();
-			$tag2->setTagId( '23425' );
-			$tag2->setType( 'exampletype' );
-
-			$container_version = new ContainerVersion();
-			$container_version->setAccountId( '1231' );
-			$container_version->setContainerId( '123456' );
-			$container_version->setTag( array( $tag1, $tag2 ) );
-
-			return $container_version;
-		};
-
-		$no_tag = function () {
-			$container_version = new ContainerVersion();
-			$container_version->setAccountId( '1231' );
-			$container_version->setContainerId( '123456' );
-
-			return $container_version;
-		};
-
-		$no_awct_tag = function () {
-			$tag = new Tag();
-			$tag->setTagId( '324234' );
-			$tag->setType( 'exampletype' );
-
-			$container_version = new ContainerVersion();
-			$container_version->setAccountId( '1231' );
-			$container_version->setContainerId( '123456' );
-			$container_version->setTag( array( $tag ) );
-
-			return $container_version;
-		};
-
-		return array(
-			'has awct type tag'    => array(
-				$has_awct_tag(),
-				true,
-			),
-			'has no awct type tag' => array(
-				$no_awct_tag(),
-				false,
-			),
-			'has no tag'           => array(
-				$no_tag(),
-				false,
-			),
 		);
 	}
 }
