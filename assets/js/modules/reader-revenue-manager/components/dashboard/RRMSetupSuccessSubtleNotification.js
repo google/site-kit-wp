@@ -199,10 +199,12 @@ export default function RRMSetupSuccessSubtleNotification( {
 		showingSuccessNotification,
 	] );
 
+	const hasCustomProductID = !! productID && productID !== 'openaccess';
+
 	const gaTrackingProps = {
 		gaTrackingEventArgs: {
 			label: `${ publicationOnboardingState }:${ paymentOption }:${
-				productID ? 'yes' : 'no'
+				hasCustomProductID ? 'yes' : 'no'
 			}`,
 		},
 	};
