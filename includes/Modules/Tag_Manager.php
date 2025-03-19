@@ -111,9 +111,15 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
-	 * Checks if GTM module contains an AWCT tag.
+	 * Checks if the Tag Manager module is connected and contains an Ads Conversion Tracking (AWCT) tag.
 	 *
-	 * @return bool|null True if found, null otherwise.
+	 * Verifies the module connection status and retrieves the live container version
+	 * to detect if an AWCT type tag is present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return WP_REST_Response|bool WP_REST_Response object indicating connection status if explicitly determined,
+	 *                               or boolean false if container data is unavailable.
 	 */
 	public function check_ads_measurement_connection() {
 		$tag_manager_connected = apply_filters( 'googlesitekit_is_module_connected', false, self::MODULE_SLUG );
