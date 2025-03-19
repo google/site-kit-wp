@@ -256,17 +256,22 @@ class REST_Consent_Mode_Controller {
 						'callback'            => function () {
 							$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
 
+							if ( ! is_array( $checks ) || empty( $checks ) ) {
+								return new WP_REST_Response( array( 'connected' => false ) );
+							}
+
 							foreach ( $checks as $check ) {
 								if ( ! is_callable( $check ) ) {
 									continue;
 								}
 
-								if ( $check() ) {
-									return new WP_REST_Response( array( 'connected' => true ) );
+								if ( ! $check() ) {
+									return new WP_REST_Response( array( 'connected' => false ) );
 								}
 							}
 
-							return new WP_REST_Response( array( 'connected' => false ) );                       },
+							return new WP_REST_Response( array( 'connected' => true ) );
+						},
 						'permission_callback' => $can_manage_options,
 					),
 				),
