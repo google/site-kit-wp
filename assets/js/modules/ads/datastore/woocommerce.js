@@ -33,11 +33,20 @@ const RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY =
 	'RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY';
 
 const initialState = {
-	woocommerceModalCacheHit: false,
+	woocommerceModalDismissed: false,
 };
 
 const actions = {
-	receiveWoocommerceModalCacheHit( cacheHit ) {
+	/**
+	 * Stores woocommerce modal dismissal in the datastore.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} cacheHit Boolean property extracted fro mthe cache item.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveIsWooCommerceRedirectModalDismissed( cacheHit ) {
 		invariant( cacheHit !== undefined, 'A cacheHit is required.' );
 
 		return {
@@ -52,7 +61,7 @@ const actions = {
 const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY:
-			state.woocommerceModalCacheHit = payload.cacheHit;
+			state.woocommerceModalDismissed = payload.cacheHit;
 			break;
 
 		default:
@@ -62,25 +71,27 @@ const reducer = createReducer( ( state, { type, payload } ) => {
 
 const selectors = {
 	/**
-	 * Gets the WooCommerce modal cache key.
+	 * Gets the WooCommerce modal dismissal status.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean)} WooCommerce modal cache key.
+	 * @return {(boolean)} WooCommerce modal dismissed status.
 	 */
-	getWoocommerceModalCacheHit( state ) {
-		return state.woocommerceModalCacheHit;
+	isWooCommerceRedirectModalDismissed( state ) {
+		return state.woocommerceModalDismissed;
 	},
 };
 
 const resolvers = {
-	*getWoocommerceModalCacheHit() {
+	*isWooCommerceRedirectModalDismissed() {
 		const { cacheHit } = yield commonActions.await(
 			getItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY )
 		);
 
-		yield actions.receiveWoocommerceModalCacheHit( cacheHit || false );
+		yield actions.receiveIsWooCommerceRedirectModalDismissed(
+			cacheHit || false
+		);
 	},
 };
 
