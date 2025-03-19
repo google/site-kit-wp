@@ -251,6 +251,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		const tabItems = containerRef.current?.querySelectorAll(
 			'.googlesitekit-chip-tab-group__tab-items .mdc-tab'
 		);
+
 		if ( ! tabItems?.length || ! scrollContainer ) {
 			return;
 		}
@@ -274,16 +275,19 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		}
 
 		const nextTabItemRect = nextTabItem.getBoundingClientRect();
-		// If the next tab item is either completely off-screen or only barely visible
-		// (i.e. cut off by 15px or less, meaning most likely it is still outside the visible area),
-		// reduce the column gap so that the last tab item appears properly truncated.
+
+		// If the next tab item is either completely off-screen or only barely
+		// visible (i.e. cut off by 15px or less, meaning most likely it is still
+		// outside the visible area), reduce the column gap so that the last tab
+		// item appears properly truncated.
 		if (
 			nextTabItemRect.left >= containerRect.right ||
 			( nextTabItemRect.left - containerRect.right < 0 &&
 				-( nextTabItemRect.left - containerRect.right ) <= 20 )
 		) {
-			// If there is an inline gap of 2px we already adjusted it once, and the last item is still not
-			// cutoff, then we need to adjust the column gap to 20px to ensure the last item is cutoff.
+			// If there is an inline gap of 2px we already adjusted it once, and
+			// the last item is still not cut off, we need to adjust the column
+			// gap to 20px to ensure the last item is cut off.
 			if ( scrollContainer.style.columnGap === '2px' ) {
 				scrollContainer.style.columnGap = '20px';
 			} else {
