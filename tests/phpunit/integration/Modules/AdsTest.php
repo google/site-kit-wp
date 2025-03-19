@@ -321,6 +321,18 @@ class AdsTest extends TestCase {
 			);
 		}
 	}
+	/**
+	 * Test if Ads module correctly registers Ads Measurement connection check filter.
+	 */
+	public function test_ads_module_adds_measurement_connection_check_filter() {
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$ads->register();
+
+		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
+
+		$this->assertNotEmpty( $checks );
+		$this->assertIsCallable( $checks[0] );
+	}
 
 	public function template_redirect_data_provider() {
 		return array(
