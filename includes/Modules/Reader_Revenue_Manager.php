@@ -169,11 +169,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			if ( Block_Support::has_block_support() ) {
 				$this->contribute_with_google_block->register();
 				$this->subscribe_with_google_block->register();
-			}
-		}
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			add_action( 'enqueue_block_editor_assets', $this->get_method_proxy( 'enqueue_block_editor_assets_for_non_sitekit_user' ), 40 );
+				add_action(
+					'enqueue_block_editor_assets',
+					$this->get_method_proxy(
+						'enqueue_block_editor_assets_for_non_sitekit_user'
+					),
+					40
+				);
+			}
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
