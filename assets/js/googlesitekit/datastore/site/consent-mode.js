@@ -129,9 +129,9 @@ const fetchActivateConsentAPI = createFetchStore( {
 
 const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 	baseName: 'getAdsMeasurementStatus',
-	controlCallback: () => {
+	controlCallback: ( params = {} ) => {
 		return API.get( 'core', 'site', 'ads-measurement-status', null, {
-			useCache: false,
+			useCache: params.useCache ?? false,
 		} );
 	},
 	reducerCallback: createReducer( ( state, response ) => {
@@ -356,6 +356,18 @@ const baseSelectors = {
 	isAdsConnected: ( state ) => {
 		return state.consentMode.adsConnected;
 	},
+
+	/**
+	 * Returns true if Google Ads is in use, but ensures fresh data is fetched.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
+	 */
+	isAdsConnectedUncached: ( state ) => {
+		return state.consentMode.adsConnected;
+	},
 };
 
 const baseResolvers = {
@@ -387,6 +399,18 @@ const baseResolvers = {
 		}
 
 		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus();
+	},
+
+	*isAdsConnectedUncached() {
+		const { select } = yield getRegistry();
+
+		if ( select( CORE_SITE ).isAdsConnectedUncached() !== undefined ) {
+			return;
+		}
+
+		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus(
+			{ useCache: false }
+		);
 	},
 };
 
