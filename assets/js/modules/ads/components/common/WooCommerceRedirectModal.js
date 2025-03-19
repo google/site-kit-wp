@@ -83,7 +83,7 @@ export default function WooCommerceRedirectModal( {
 	} );
 
 	const isModalDismissed = useSelect( ( select ) =>
-		select( MODULES_ADS ).getWoocommerceModalCacheHit()
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 
 	const googleForWooCommerceRedirectURI = useMemo( () => {
