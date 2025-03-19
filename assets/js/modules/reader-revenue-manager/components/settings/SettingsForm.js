@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager SettingsEdit component.
+ * Reader Revenue Manager SettingsForm component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ import {
 	PublicationSelect,
 	SnippetModeSelect,
 } from '../common';
+import ProductIDSettings from './ProductIDSettings';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
-import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import ProductIDSettings from './ProductIDSettings';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
