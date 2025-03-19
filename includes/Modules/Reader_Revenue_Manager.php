@@ -638,7 +638,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$settings = $this->get_settings()->get();
 
 		$debug_fields = array(
-			'reader_revenue_manager_publication_id' => array(
+			'reader_revenue_manager_publication_id'        => array(
 				'label' => __( 'Reader Revenue Manager: Publication ID', 'google-site-kit' ),
 				'value' => $settings['publicationID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['publicationID'] ),
@@ -647,6 +647,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'label' => __( 'Reader Revenue Manager: Publication onboarding state', 'google-site-kit' ),
 				'value' => $settings['publicationOnboardingState'],
 				'debug' => $settings['publicationOnboardingState'],
+			),
+			'reader_revenue_manager_available_product_ids' => array(
+				'label' => __( 'Reader Revenue Manager: Available product IDs', 'google-site-kit' ),
+				'value' => implode( ', ', $settings['productIDs'] ),
+				'debug' => implode( ', ', $settings['productIDs'] ),
+			),
+			'reader_revenue_manager_payment_option'        => array(
+				'label' => __( 'Reader Revenue Manager: Payment option', 'google-site-kit' ),
+				'value' => $settings['paymentOption'],
+				'debug' => $settings['paymentOption'],
 			),
 		);
 
@@ -675,18 +685,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'label' => __( 'Reader Revenue Manager: Product ID', 'google-site-kit' ),
 				'value' => $settings['productID'],
 				'debug' => $settings['productID'],
-			);
-
-			$debug_fields['reader_revenue_manager_available_product_ids'] = array(
-				'label' => __( 'Reader Revenue Manager: Available product IDs', 'google-site-kit' ),
-				'value' => implode( ', ', $settings['productIDs'] ),
-				'debug' => implode( ', ', $settings['productIDs'] ),
-			);
-
-			$debug_fields['reader_revenue_manager_payment_option'] = array(
-				'label' => __( 'Reader Revenue Manager: Payment option', 'google-site-kit' ),
-				'value' => $settings['paymentOption'],
-				'debug' => $settings['paymentOption'],
 			);
 		}
 

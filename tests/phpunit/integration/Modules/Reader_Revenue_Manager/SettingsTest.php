@@ -73,8 +73,17 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_view_only_keys() {
-		$this->assertIsArray( $this->settings->get_view_only_keys() );
-		$this->assertEmpty( $this->settings->get_view_only_keys() );
+		$this->enable_feature( 'rrmModuleV2' );
+
+		$this->assertEqualSets(
+			array(
+				'publicationID',
+				'snippetMode',
+				'postTypes',
+				'paymentOption',
+			),
+			$this->settings->get_view_only_keys()
+		);
 	}
 
 	public function data_revenue_manager_settings() {

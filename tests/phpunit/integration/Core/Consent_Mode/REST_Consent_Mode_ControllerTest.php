@@ -29,6 +29,7 @@ use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\ContainerVersion;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Tag;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_REST_Request;
@@ -458,21 +459,23 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				switch ( $url['path'] ) {
 					case "/tagmanager/v2/accounts/{$account_id}/containers/{$container_id}/versions:live":
-						return new Response(
-							200,
-							array(),
-							json_encode(
-								$container_version->toSimpleObject()
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode(
+									$container_version->toSimpleObject()
+								)
 							)
 						);
 
 					default:
-						return new Response( 200 );
+						return new FulfilledPromise( new Response( 200 ) );
 				}
 			}
 		);

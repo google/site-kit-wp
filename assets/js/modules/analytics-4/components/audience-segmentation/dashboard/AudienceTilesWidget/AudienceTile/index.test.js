@@ -596,7 +596,7 @@ describe( 'AudienceTile', () => {
 					);
 
 					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
-					await waitForDefaultTimeouts();
+					await waitForTimeouts( 10 );
 				} );
 			} );
 

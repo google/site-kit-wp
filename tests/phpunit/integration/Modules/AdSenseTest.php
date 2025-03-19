@@ -36,6 +36,7 @@ use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\ListAlertsResponse;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use ReflectionMethod;
 use WP_REST_Request;
@@ -425,7 +426,7 @@ class AdSenseTest extends TestCase {
 				$response->setTag( 'test-recovery-tag' );
 				$response->setErrorProtectionCode( 'test-error-protection-code' );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 
@@ -469,7 +470,7 @@ class AdSenseTest extends TestCase {
 				$response = new ListAlertsResponse();
 				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 
@@ -512,7 +513,7 @@ class AdSenseTest extends TestCase {
 				$response = new ListAlertsResponse();
 				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 

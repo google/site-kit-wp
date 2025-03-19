@@ -26,6 +26,8 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -43,7 +45,13 @@ describe( 'ConnectGA4CTATileWidget', () => {
 		const registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
-		provideModules( registry );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: false,
+				connected: false,
+			},
+		] );
 
 		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 			widgetSlugs: [
@@ -53,12 +61,72 @@ describe( 'ConnectGA4CTATileWidget', () => {
 			isWidgetHidden: false,
 		} );
 
-		const { container, getByText } = render( <WidgetWithComponentProps />, {
+		provideKeyMetricsWidgetRegistrations( registry, {
+			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+				modules: 'analytics-4',
+			},
+			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+				modules: 'analytics-4',
+			},
+		} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
 			registry,
 		} );
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( 'Connect Analytics' ) ).toBeInTheDocument();
+		expect( container ).toHaveTextContent( 'Connect Analytics' );
+
+		expect( container ).toHaveTextContent(
+			'Analytics is disconnected, some of your metrics can’t be displayed'
+		);
+	} );
+
+	it( 'should render a title when only a single Connect GA4 CTA is present', () => {
+		const registry = createTestRegistry();
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: false,
+				connected: false,
+			},
+		] );
+
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ],
+			isWidgetHidden: false,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: [ 'publish_blog' ],
+				scope: 'site',
+			},
+		} );
+
+		provideKeyMetricsWidgetRegistrations( registry, {
+			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+				modules: 'analytics-4',
+			},
+		} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toMatchSnapshot();
+
+		expect( container ).toHaveTextContent( 'Connect Analytics' );
+
+		expect( container ).toHaveTextContent(
+			'Analytics is disconnected, metric can’t be displayed'
+		);
+
+		expect( container ).toHaveTextContent(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]
+				.title
+		);
 	} );
 } );

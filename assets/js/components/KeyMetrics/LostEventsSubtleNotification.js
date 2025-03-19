@@ -42,7 +42,9 @@ export default function LostEventsSubtleNotification( {
 	onDismissCallback,
 } ) {
 	const lostEventsDocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'unavailable-metric-data' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'unavailable-metrics-data'
+		)
 	);
 	return (
 		<SubtleNotification

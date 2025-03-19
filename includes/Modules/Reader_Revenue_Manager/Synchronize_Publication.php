@@ -123,16 +123,13 @@ class Synchronize_Publication {
 
 			$new_settings = array(
 				'publicationOnboardingState' => $new_onboarding_state,
+				'productIDs'                 => $this->get_product_ids( $publication ),
+				'paymentOption'              => $this->get_payment_option( $publication ),
 			);
 
 			// Let the client know if the onboarding state has changed.
 			if ( $new_onboarding_state !== $onboarding_state ) {
 				$new_settings['publicationOnboardingStateChanged'] = true;
-			}
-
-			if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-				$new_settings['productIDs']    = $this->get_product_ids( $publication );
-				$new_settings['paymentOption'] = $this->get_payment_option( $publication );
 			}
 
 			$this->reader_revenue_manager->get_settings()->merge( $new_settings );
