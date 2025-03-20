@@ -25,12 +25,14 @@ import baseModuleStore from './base';
 import adblocker from './adblocker';
 import moduleData from './module-data';
 import woocommerce from './woocommerce';
+import service from './service';
 
 const store = combineStores(
 	baseModuleStore,
 	adblocker,
 	moduleData,
-	woocommerce
+	woocommerce,
+	service
 );
 
 export const initialState = store.initialState;
