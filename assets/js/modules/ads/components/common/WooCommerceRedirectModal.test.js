@@ -146,28 +146,18 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
-		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+		const { container, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
 		await waitForRegistry();
 
-		const useGoogleForWooCommerceButton = getByText(
-			/use google for woocommerce/i
-		);
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
-
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /plugin-install\.php/ )
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching(
-				new RegExp( `s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }` )
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
 			)
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /tab=search/ )
+		).toHaveAttribute(
+			'href',
+			`http://example.com/wp-admin/plugin-install.php?s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }&tab=search&type=term`
 		);
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
@@ -185,25 +175,19 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
-		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+		const { container, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
 		await waitForRegistry();
 
-		const useGoogleForWooCommerceButton = getByText(
-			/use google for woocommerce/i
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
+			)
+		).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard'
 		);
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
-
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /page=wc-admin/ )
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
-		);
-		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
 	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
