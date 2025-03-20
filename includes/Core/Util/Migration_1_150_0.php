@@ -119,11 +119,11 @@ class Migration_1_150_0 {
 
 		$analytics_settings = $this->analytics_settings->get();
 
-		if ( empty( $analytics_settings ) ) {
+		if ( ! is_array( $analytics_settings ) || empty( $analytics_settings ) ) {
 			return;
 		}
 
-		$audience_settings = $this->audience_settings->get();
+		$audience_settings = (array) $this->audience_settings->get();
 
 		$keys_to_migrate = array(
 			'availableAudiences',
