@@ -45,7 +45,10 @@ export async function toHaveValidAMPForVisitor( path ) {
 	const urlToFetch =
 		'object' === typeof path ? path.url() : createURL( path );
 
-	const html = await fetchPageContent( urlToFetch, { credentials: 'omit' } );
+	const html = await fetchPageContent( urlToFetch, {
+		credentials: 'omit',
+		timeout: 10000, // Fetching and evaluating the page is a slow operation so allow additional time to prevent timeouts in CI.
+	} );
 	// Make sure the admin bar is not present.
 	const jsDoc = new JSDOM( html ).window.document;
 	if ( jsDoc.querySelector( '#wpadminbar' ) ) {

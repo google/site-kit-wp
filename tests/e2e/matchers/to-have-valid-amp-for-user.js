@@ -55,7 +55,7 @@ export async function toHaveValidAMPForUser( path ) {
 	const urlToFetch =
 		'object' === typeof path ? path.url() : createURL( path );
 
-	const html = await fetchPageContent( urlToFetch );
+	const html = await fetchPageContent( urlToFetch, { timeout: 10000 } ); // Fetching and evaluating the page is a slow operation so allow additional time to prevent timeouts in CI.
 	const validator = await ampHTMLValidator.getInstance();
 
 	const { status, errors } = validator.validateString( html );
