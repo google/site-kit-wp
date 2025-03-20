@@ -47,6 +47,7 @@ export default function ActionsCTALinkDismiss( {
 	dismissExpires = 0,
 	dismissOptions = {},
 	gaTrackingEventArgs = {},
+	isDisabled = false,
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -67,6 +68,7 @@ export default function ActionsCTALinkDismiss( {
 					dismissOptions={ ctaDismissOptions }
 					gaTrackingEventArgs={ gaTrackingEventArgs }
 					isSaving={ isSaving }
+					isDisabled={ isDisabled }
 				/>
 
 				<Dismiss
@@ -98,4 +100,5 @@ ActionsCTALinkDismiss.propTypes = {
 	dismissExpires: PropTypes.number,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.object,
+	isDisabled: PropTypes.bool,
 };

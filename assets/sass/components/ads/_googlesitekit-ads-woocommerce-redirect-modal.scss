@@ -88,6 +88,10 @@
 					.MuiCircularProgress-colorPrimary {
 						color: $c-neutral-n-500;
 					}
+
+					> svg {
+						margin-left: 5px;
+					}
 				}
 			}
 		}

@@ -23,7 +23,7 @@ import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 /**
  * Limits the response to a single date range.
  *
- * @since n.e.x.t
+ * @since 1.149.0
  *
  * @param {Object} analyticsResponse The Analytics report response.
  * @return {Object} The report response with a single row for each date range.
@@ -54,7 +54,7 @@ export function limitResponseToSingleDate( analyticsResponse ) {
  * The function doubles the value of the '(other)' row to ensure it's visible in the pie chart.
  * This is to ensure the special handling of the '(other)' row's tooltip is included in the story.
  *
- * @since n.e.x.t
+ * @since 1.149.0
  *
  * @param {Object} registry The registry instance.
  * @param {Object} options  The report options.

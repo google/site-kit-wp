@@ -384,7 +384,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Checks if the Sign in with Google button can be rendered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.149.0
 	 *
 	 * @return bool True if the button can be rendered, false otherwise.
 	 */
@@ -540,7 +540,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	/**
 	 * Appends the Sign in with Google button to content of a WordPress filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.149.0
 	 *
 	 * @param string $content Existing content.
 	 * @return string Possibly modified content.
