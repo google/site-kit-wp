@@ -21,6 +21,8 @@
  */
 import {
 	createTestRegistry,
+	muteFetch,
+	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -129,29 +131,78 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getAvailableAudiences', () => {
-			it( 'should not make a network request if audience settings exist', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All visitors',
+					description: 'All users',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
+			const audienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/audience-settings'
+			);
+
+			const analyticsAudienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			);
+
+			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiencesFixture );
+					.setAvailableAudiences( availableAudiences );
 
-				const availableAudiences = registry
+				const audiences = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAvailableAudiences();
 
-				expect( availableAudiences ).toEqual(
-					availableAudiencesFixture
-				);
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( audiences ).toEqual( availableAudiences );
+			} );
+
+			it( 'should sync cached audiences when the audiences settings is undefined for authenticated user', async () => {
+				provideUserAuthentication( registry );
+				muteFetch( audienceSettingsEndpoint );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					configuredAudiences: [
+						'properties/12345/audiences/1',
+						'properties/12345/audiences/2',
+					],
+				} );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
+					availableAudiences,
+				} );
 
 				expect(
-					fetchMock.calls( syncAvailableAudiencesEndpoint )
-				).toHaveLength( 0 );
+					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+				).toBeUndefined();
+
+				// Wait until the resolver has finished fetching the audiences.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
+
+				await waitForDefaultTimeouts();
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
+				expect( audiences ).toEqual( availableAudiences );
 			} );
 
 			it( 'should use a resolver to make a network request if data is not available', async () => {
-				const analyticsAudienceSettingsEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
-				);
-
 				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
 					body: {
 						availableAudiences: availableAudiencesFixture,
