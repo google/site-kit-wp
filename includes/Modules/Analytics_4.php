@@ -266,16 +266,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$this->audience_settings->on_change(
 			function ( $old_value, $new_value ) {
-				$available_audiences      = $new_value['availableAudiences'] ?? array();
-				$available_audience_names = array_map(
-					function ( $audience ) {
-						return $audience['name'];
-					},
-					$available_audiences
-				);
-
-				$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names );
-
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
 				$old_available_audiences = $old_value['availableAudiences'];
 				if ( $old_available_audiences ) {
@@ -310,11 +300,16 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
 
-					$this->audience_settings->merge(
-						array(
-							'availableAudiencesLastSyncedAt'       => 0,
-						)
+					$available_audiences = $old_value['availableAudiences'] ?? array();
+
+					$available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$available_audiences
 					);
+
+					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
 				}
 
 				// Reset property specific settings when propertyID changes.
@@ -326,6 +321,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
 							'detectedEvents'            => array(),
+						)
+					);
+
+					$this->audience_settings->set(
+						array(
+							'availableAudiences' => null,
+							'availableAudiencesLastSyncedAt' => 0,
+							'audienceSegmentationSetupCompletedBy' => null,
 						)
 					);
 
@@ -611,7 +614,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		// Return the SITE_KIT_AUDIENCE audiences.
-		$available_audiences = $this->audience_settings->get()['availableAudiences'];
+		$available_audiences = $this->audience_settings->get()['availableAudiences'] ?? array();
 		$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
 
 		$debug_fields['analytics_4_site_kit_audiences'] = array(

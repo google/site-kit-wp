@@ -61,7 +61,6 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'adsConversionIDMigratedAtMs',
 		'adsLinked',
 		'adsLinkedLastSyncedAt',
-		'availableAudiencesLastSyncedAt',
 		'detectedEvents',
 		'newConversionEventsLastUpdateAt',
 		'lostConversionEventsLastUpdateAt',

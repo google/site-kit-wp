@@ -24,7 +24,6 @@ import { availableAudiences } from '../../../datastore/__fixtures__';
 import {
 	createTestRegistry,
 	fireEvent,
-	provideUserAuthentication,
 	render,
 } from '../../../../../../../tests/js/test-utils';
 import * as tracking from '../../../../../util/tracking';
@@ -38,7 +37,6 @@ describe( 'ChangeGroupsLink', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideUserAuthentication( registry );
 	} );
 
 	afterEach( () => {
@@ -57,7 +55,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should render a button to change groups', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 
@@ -80,7 +78,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should set UI store key correctly when button is clicked', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 

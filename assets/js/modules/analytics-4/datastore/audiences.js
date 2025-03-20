@@ -39,6 +39,7 @@ import { getPreviousDate } from '../../../util';
 import { isInsufficientPermissionsError } from '../../../util/errors';
 import { validateAudience } from '../utils/validation';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
+import { actions as audiencesActions } from './audience-settings';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
@@ -110,21 +111,6 @@ const fetchCreateAudienceStore = createFetchStore( {
 	} ),
 	validateParams: ( { audience } ) => {
 		validateAudience( audience );
-	},
-} );
-
-const fetchSyncAvailableAudiencesStore = createFetchStore( {
-	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
-	reducerCallback: ( state, audiences ) => {
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				availableAudiences: [ ...audiences ],
-			},
-		};
 	},
 } );
 
@@ -315,7 +301,7 @@ const baseActions = {
 		}
 
 		const { response: availableAudiences, error } =
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			yield audiencesActions.fetchSyncAvailableAudiences();
 
 		if ( error ) {
 			return { response: availableAudiences, error };
@@ -366,7 +352,7 @@ const baseActions = {
 		}
 
 		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
 		);
 
 		const availableAudiencesLastSyncedAt =
@@ -1194,18 +1180,14 @@ const baseSelectors = {
 	),
 };
 
-const store = combineStores(
-	fetchCreateAudienceStore,
-	fetchSyncAvailableAudiencesStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: {},
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchCreateAudienceStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: {},
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

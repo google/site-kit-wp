@@ -148,31 +148,29 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 
 			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
+				const analyticsAudienceSettingsEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+				);
+
+				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
+					body: {
+						availableAudiences: availableAudiencesFixture,
+						audienceSegmentationSetupCompletedBy: 1,
+					},
 					status: 200,
 				} );
 
-				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-					configuredAudiences: [
-						'properties/12345/audiences/1',
-						'properties/12345/audiences/2',
-					],
-					availableAudiences: availableAudiencesFixture,
-					audienceSegmentationSetupCompletedBy: 1,
-				} );
-
-				registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getAudienceSettings();
 
 				await waitForDefaultTimeouts();
 
 				expect(
-					fetchMock.calls( syncAvailableAudiencesEndpoint )
+					fetchMock.calls( analyticsAudienceSettingsEndpoint )
 				).toHaveLength( 1 );
 
 				expect(
