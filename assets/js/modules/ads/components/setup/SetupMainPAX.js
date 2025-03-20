@@ -190,15 +190,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		select( MODULES_ADS ).isWooCommerceActivated()
 	);
 
-	const onModalDismiss = useCallback(
-		( skipClosing ) => {
-			if ( ! skipClosing ) {
-				setOpenDialog( false );
-			}
-		},
-		[ setOpenDialog ]
-	);
-
 	const createAccount = useCallback( () => {
 		setShouldShowProgressBar( true );
 
@@ -367,7 +358,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ onModalDismiss }
+					onClose={ () => setOpenDialog( false ) }
 					onContinue={ createAccount }
 					dialogActive
 				/>

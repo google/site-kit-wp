@@ -25,12 +25,22 @@ import PropTypes from 'prop-types';
 import Link from '../../../../components/Link';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 
-export default function LearnMoreLink( { id, label, url, ariaLabel } ) {
+export default function LearnMoreLink( {
+	id,
+	label,
+	url,
+	ariaLabel,
+	gaTrackingEventArgs,
+	...otherProps
+} ) {
 	const trackEvents = useNotificationEvents( id );
 
 	const handleLearnMore = ( event ) => {
 		event.persist();
-		trackEvents.clickLearnMore();
+		trackEvents.clickLearnMore(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 	};
 
 	return (
@@ -39,6 +49,7 @@ export default function LearnMoreLink( { id, label, url, ariaLabel } ) {
 			href={ url }
 			aria-label={ ariaLabel }
 			external
+			{ ...otherProps }
 		>
 			{ label }
 		</Link>
@@ -50,4 +61,8 @@ LearnMoreLink.propTypes = {
 	label: PropTypes.string,
 	url: PropTypes.string,
 	ariaLabel: PropTypes.string,
+	gaTrackingEventArgs: PropTypes.shape( {
+		label: PropTypes.string,
+		value: PropTypes.string,
+	} ),
 };

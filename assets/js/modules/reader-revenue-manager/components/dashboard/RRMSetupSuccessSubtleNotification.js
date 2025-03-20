@@ -43,7 +43,7 @@ import {
 	SYNC_PUBLICATION,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
-import Link from '../../../../components/Link';
+import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
@@ -199,8 +199,14 @@ export default function RRMSetupSuccessSubtleNotification( {
 		showingSuccessNotification,
 	] );
 
+	const hasCustomProductID = !! productID && productID !== 'openaccess';
+
 	const gaTrackingProps = {
-		gaTrackingEventArgs: { label: publicationOnboardingState },
+		gaTrackingEventArgs: {
+			label: `${ publicationOnboardingState }:${ paymentOption }:${
+				hasCustomProductID ? 'yes' : 'no'
+			}`,
+		},
 	};
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
@@ -332,14 +338,19 @@ export default function RRMSetupSuccessSubtleNotification( {
 						),
 						{
 							a: (
-								<Link
-									aria-label={ __(
+								<LearnMoreLink
+									id={ id }
+									ariaLabel={ __(
 										'Learn more about Reader Revenue Manager features',
 										'google-site-kit'
 									) }
-									href="https://support.google.com/news/publisher-center/answer/12813936"
-									external
+									label={ __(
+										'Learn more',
+										'google-site-kit'
+									) }
+									url="https://support.google.com/news/publisher-center/answer/12813936"
 									hideExternalIndicator
+									{ ...gaTrackingProps }
 								/>
 							),
 						}
@@ -355,35 +366,41 @@ export default function RRMSetupSuccessSubtleNotification( {
 			}
 
 			return (
-				<SubtleNotification
-					title={ notificationContent.title }
-					description={ notificationContent.description }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={
-								notificationContent.secondaryButton.text
-							}
-							onDismiss={
-								notificationContent.secondaryButton.onClick
-							}
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ notificationContent.primaryButton.text }
-							ctaLink={
-								notificationContent.primaryButton.ctaLink
-							}
-							isCTALinkExternal={
-								notificationContent.primaryButton
-									.isCTALinkExternal
-							}
-						/>
-					}
-				/>
+				<Notification { ...gaTrackingProps }>
+					<SubtleNotification
+						title={ notificationContent.title }
+						description={ notificationContent.description }
+						dismissCTA={
+							<Dismiss
+								id={ id }
+								primary={ false }
+								dismissLabel={
+									notificationContent.secondaryButton.text
+								}
+								onDismiss={
+									notificationContent.secondaryButton.onClick
+								}
+								{ ...gaTrackingProps }
+							/>
+						}
+						additionalCTA={
+							<CTALinkSubtle
+								id={ id }
+								ctaLabel={
+									notificationContent.primaryButton.text
+								}
+								ctaLink={
+									notificationContent.primaryButton.ctaLink
+								}
+								isCTALinkExternal={
+									notificationContent.primaryButton
+										.isCTALinkExternal
+								}
+								{ ...gaTrackingProps }
+							/>
+						}
+					/>
+				</Notification>
 			);
 		}
 
