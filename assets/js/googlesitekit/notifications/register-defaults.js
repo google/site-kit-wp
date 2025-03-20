@@ -609,7 +609,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			return resolveSelect( CORE_SITE ).isAdsConnected();
+			return resolveSelect( CORE_SITE ).isAdsConnectedUncached();
 		},
 		dismissRetries: 2,
 	},
