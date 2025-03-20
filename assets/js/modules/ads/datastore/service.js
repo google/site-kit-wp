@@ -48,11 +48,7 @@ const selectors = {
 			return undefined;
 		}
 
-		if ( module === null ) {
-			return null;
-		}
-
-		if ( ! module.homepage ) {
+		if ( module === null || ! module.homepage ) {
 			return null;
 		}
 
