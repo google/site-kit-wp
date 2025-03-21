@@ -223,7 +223,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 						} }
 						onDismiss={ showTooltip }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
-						isDisabled={ isAdBlockerActive }
+						ctaDisabled={ isAdBlockerActive }
 					/>
 				}
 				SVG={ breakpointSVGMap[ breakpoint ] || AdsSetupSVG }
