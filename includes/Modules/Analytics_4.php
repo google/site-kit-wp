@@ -434,6 +434,46 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				);
 			}
 		);
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			20
+		);
+	}
+
+	/**
+	 * Checks if the Analytics 4 module is connected and contributing to Ads measurement.
+	 *
+	 * Verifies connection status and settings to determine if Ads-related configurations
+	 * (AdSense linked or Google Tag Container with AW- destination IDs) exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if Analytics 4 is connected and configured for Ads measurement; false otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		if ( ! $this->is_connected() ) {
+			return false;
+		}
+		$settings = $this->get_settings()->get();
+
+		if ( ! empty( $settings['adsenselinked'] ) ) {
+			return true;
+		}
+
+		if ( ! empty( $settings['googletagcontainerdestinationids'] ) ) {
+			foreach ( $settings['googletagcontainerdestinationids'] as $destination_id ) {
+				if ( 0 === strpos( $destination_id, 'aw-' ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
