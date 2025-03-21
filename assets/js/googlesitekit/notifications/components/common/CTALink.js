@@ -45,7 +45,7 @@ export default function CTALink( {
 	dismissExpires = 0,
 	dismissOptions = { skipHidingFromQueue: true },
 	gaTrackingEventArgs,
-	disabled = false,
+	isDisabled = false,
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
 		useState( false );
@@ -112,7 +112,7 @@ export default function CTALink( {
 			href={ ctaLink }
 			onClick={ handleCTAClick }
 			disabled={
-				isAwaitingCTAResponse || isNavigatingToCTALink || disabled
+				isAwaitingCTAResponse || isNavigatingToCTALink || isDisabled
 			}
 			isSaving={
 				isAwaitingCTAResponse || isNavigatingToCTALink || isSaving
@@ -132,4 +132,5 @@ CTALink.propTypes = {
 	dismissOnCTAClick: PropTypes.bool,
 	dismissExpires: PropTypes.number,
 	dismissOptions: PropTypes.object,
+	isDisabled: PropTypes.bool,
 };

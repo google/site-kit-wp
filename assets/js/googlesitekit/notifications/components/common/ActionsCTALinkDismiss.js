@@ -68,7 +68,7 @@ export default function ActionsCTALinkDismiss( {
 					dismissOptions={ ctaDismissOptions }
 					gaTrackingEventArgs={ gaTrackingEventArgs }
 					isSaving={ isSaving }
-					disabled={ ctaDisabled }
+					isDisabled={ ctaDisabled }
 				/>
 
 				<Dismiss
@@ -89,6 +89,7 @@ export default function ActionsCTALinkDismiss( {
 ActionsCTALinkDismiss.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
+	ctaDisabled: PropTypes.bool,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,

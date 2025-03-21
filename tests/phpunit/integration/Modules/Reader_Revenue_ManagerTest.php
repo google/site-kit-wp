@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\URL;
@@ -67,6 +66,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	private $options;
 
 	/**
+	 * User_Options object.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Reader_Revenue_Manager object.
 	 *
 	 * @var Reader_Revenue_Manager
@@ -79,9 +85,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options                = new Options( $this->context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options                 = new User_Options( $this->context, $user->ID );
-		$this->authentication         = new Authentication( $this->context, $this->options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $user_options, $this->authentication );
+		$this->user_options           = new User_Options( $this->context, $user->ID );
+		$this->authentication         = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -803,6 +809,75 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEmpty(
 			$present_handles,
 			'The following block editor handles should not be present: ' . implode( ', ', $present_handles )
+		);
+	}
+
+	public function test_non_sk_user_scripts_not_enqueued_for_sk_users() {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		// Create a user.
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user->ID );
+
+		// Simulate view-only access to Site Kit for the user.
+		$module_sharing_settings = new \Google\Site_Kit\Core\Modules\Module_Sharing_Settings( $this->options );
+		$module_sharing_settings->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		do_action( 'enqueue_block_editor_assets' );
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$non_sk_users_block_editor_scripts = array(
+			'blocks-contribute-with-google-non-sitekit-user',
+			'blocks-subscribe-with-google-non-sitekit-user',
+		);
+
+		$present_handles = array_intersect( $non_sk_users_block_editor_scripts, $registerable_asset_handles );
+
+		$this->assertEmpty(
+			$present_handles,
+			'The following block editor handles should not be present: ' . implode( ', ', $present_handles )
+		);
+	}
+
+	public function test_non_sk_user_scripts_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
+		$this->enable_feature( 'rrmModuleV2' );
+
+		do_action( 'enqueue_block_editor_assets' );
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$non_sk_users_block_editor_scripts = array(
+			'blocks-contribute-with-google-non-sitekit-user',
+			'blocks-subscribe-with-google-non-sitekit-user',
+		);
+
+		$present_handles = array_intersect( $non_sk_users_block_editor_scripts, $registerable_asset_handles );
+
+		$this->assertEquals(
+			$non_sk_users_block_editor_scripts,
+			$present_handles
 		);
 	}
 

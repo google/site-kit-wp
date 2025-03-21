@@ -69,7 +69,6 @@ import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useBreakpoint } from '../hooks/useBreakpoint';
-import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
@@ -82,8 +81,6 @@ import {
 } from '../googlesitekit/notifications/datastore/constants';
 
 export default function DashboardMainApp() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewOnlyDashboard = useViewOnly();
@@ -109,10 +106,8 @@ export default function DashboardMainApp() {
 			grantedScopes.includes( scope )
 		);
 
-	const configuredAudiences = useSelect(
-		( select ) =>
-			audienceSegmentationEnabled &&
-			select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	useMount( () => {
@@ -320,9 +315,7 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ audienceSegmentationEnabled && configuredAudiences && (
-				<AudienceSelectionPanel />
-			) }
+			{ configuredAudiences && <AudienceSelectionPanel /> }
 
 			<OfflineNotification />
 		</Fragment>

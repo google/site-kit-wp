@@ -85,7 +85,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 				body: { needsReauthentication: false },
 			}
 		);
-		fetchMock.postOnce( dismissItemEndpoint, {
+		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [ NOTIFICATION_ID ] ),
 		} );
 
@@ -109,7 +109,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		provideModules( registry );
 		provideUserCapabilities( registry );
 
-		fetchMock.postOnce( dismissItemEndpoint, {
+		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [ NOTIFICATION_ID ] ),
 		} );
 
@@ -127,6 +127,13 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
+			provideModules( registry, [
+				{
+					slug: 'ads',
+					active: true,
+					connected: false,
+				},
+			] );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
 					[ PLUGINS.WOOCOMMERCE ]: {
@@ -148,6 +155,13 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		} );
 
 		it( 'should return true if the WooCommerce and Google for WooCommerce plugins are active and Ads account ins linked', async () => {
+			provideModules( registry, [
+				{
+					slug: 'ads',
+					active: true,
+					connected: false,
+				},
+			] );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
 					[ PLUGINS.WOOCOMMERCE ]: {
@@ -166,6 +180,34 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 			);
 
 			expect( isActive ).toBe( true );
+		} );
+
+		it( 'should return false if the Ads module is connected', async () => {
+			provideModules( registry, [
+				{
+					slug: 'ads',
+					active: true,
+					connected: true,
+				},
+			] );
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
+				plugins: {
+					[ PLUGINS.WOOCOMMERCE ]: {
+						active: true,
+					},
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+						active: true,
+						adsConnected: true,
+					},
+				},
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
 		} );
 	} );
 } );

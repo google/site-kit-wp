@@ -20,12 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo, useRef } from '@wordpress/element';
+import { useCallback, useMemo, Fragment, useState } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -40,25 +42,21 @@ import {
 	DialogTitle,
 	CircularProgress,
 } from 'googlesitekit-components';
-import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-	MODULES_ADS,
-	PLUGINS,
-} from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { HOUR_IN_SECONDS } from '../../../../util';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
+	onClose,
 	onDismiss = null,
 	onContinue = null,
 } ) {
-	const trackIsSavingRef = useRef( null );
+	const [ isSaving, setIsSaving ] = useState( '' );
 
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -69,10 +67,23 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
+		const hasGoogleForWooCommerceAdsAccount =
+			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
+
+		if (
+			isWooCommerceActive &&
+			isGoogleForWooCommerceActive &&
+			hasGoogleForWooCommerceAdsAccount
+		) {
+			return true;
+		}
+
+		return false;
+	} );
+
 	const isModalDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
-		)
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 
 	const googleForWooCommerceRedirectURI = useMemo( () => {
@@ -92,91 +103,144 @@ export default function WooCommerceRedirectModal( {
 		return `${ adminURL }/admin.php?page=wc-admin&path=${ googleDashboardPath }`;
 	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
 
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	const markModalDismissed = useCallback( async () => {
-		onDismiss?.( trackIsSavingRef.current );
-		await dismissItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY, {
-			expiresInSeconds: HOUR_IN_SECONDS,
-		} );
-	}, [ onDismiss, dismissItem ] );
-
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const getGoogleForWooCommerceRedirectURI = useCallback( async () => {
-		trackIsSavingRef.current = 'primary';
-		await markModalDismissed();
+	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
+		setIsSaving( 'primary' );
+		onDismiss?.();
 
 		navigateTo( googleForWooCommerceRedirectURI );
-	}, [ markModalDismissed, navigateTo, googleForWooCommerceRedirectURI ] );
+	}, [
+		setIsSaving,
+		onDismiss,
+		navigateTo,
+		googleForWooCommerceRedirectURI,
+	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
-	const onContinueWithSiteKit = useCallback( async () => {
+	const onContinueWithSiteKit = useCallback( () => {
 		if ( ! onContinue ) {
-			trackIsSavingRef.current = 'tertiary';
+			setIsSaving( 'tertiary' );
+			onDismiss?.();
 		}
-
-		await markModalDismissed();
 
 		if ( onContinue ) {
 			// Override default module activation with custom callback.
+			onClose();
 			onContinue();
 			return;
 		}
 
 		onSetupCallback();
-	}, [ markModalDismissed, onSetupCallback, onContinue ] );
+	}, [ setIsSaving, onDismiss, onClose, onSetupCallback, onContinue ] );
 
-	if ( isModalDismissed && ! trackIsSavingRef.current ) {
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	useMount( () => {
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			dismissNotification( 'account-linked-via-google-for-woocommerce' );
+		}
+	} );
+
+	if ( isModalDismissed && ! isSaving ) {
 		return null;
 	}
 
 	return (
 		<Dialog
+			className={ classnames(
+				'googlesitekit-dialog-woocommerce-redirect',
+				{
+					'googlesitekit-dialog-woocommerce-redirect--ads-connected':
+						isGoogleForWooCommerceAdsConnected,
+				}
+			) }
 			open={ dialogActive }
 			aria-describedby={ undefined }
 			tabIndex="-1"
-			className="googlesitekit-dialog-woocommerce-redirect"
-			onClose={ markModalDismissed }
+			onClose={ onClose }
 		>
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
 				<WooLogoIcon width={ 110 } height={ 46 } />
 			</div>
 			<DialogTitle>
-				{ __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
+				{ isGoogleForWooCommerceAdsConnected
+					? __(
+							'Are you sure you want to create another Ads account for this site?',
+							'google-site-kit'
+					  )
+					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
 			<DialogContent>
 				<p>
-					{ __(
-						'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
-						'google-site-kit'
+					{ isGoogleForWooCommerceAdsConnected ? (
+						<Fragment>
+							{ __(
+								'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
+								'google-site-kit'
+							) }
+							<br />
+							{ __(
+								'Continue Ads setup with Site Kit only if you do want to create another account.',
+								'google-site-kit'
+							) }
+						</Fragment>
+					) : (
+						__(
+							'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+							'google-site-kit'
+						)
 					) }
 				</p>
 			</DialogContent>
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
 					onClick={ onContinueWithSiteKit }
 					icon={
-						trackIsSavingRef.current === 'tertiary' ? (
+						isSaving === 'tertiary' ? (
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
+					tertiary
 				>
-					{ __( 'Continue with Site Kit', 'google-site-kit' ) }
+					{ isGoogleForWooCommerceAdsConnected
+						? __( 'Create another account', 'google-site-kit' )
+						: __( 'Continue with Site Kit', 'google-site-kit' ) }
 				</Button>
 				<Button
-					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
+					trailingIcon={
+						isGoogleForWooCommerceAdsConnected ? undefined : (
+							<ExternalIcon width={ 13 } height={ 13 } />
+						)
+					}
 					icon={
-						trackIsSavingRef.current === 'primary' ? (
+						isSaving === 'primary' ? (
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
-					onClick={ getGoogleForWooCommerceRedirectURI }
+					onClick={
+						isGoogleForWooCommerceAdsConnected
+							? getGoogleForWooCommerceRedirectURI
+							: onClose
+					}
+					href={
+						isGoogleForWooCommerceAdsConnected
+							? null
+							: googleForWooCommerceRedirectURI
+					}
+					target={
+						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
+					}
+					tertiary
 				>
-					{ __( 'Use Google for WooCommerce', 'google-site-kit' ) }
+					{ isGoogleForWooCommerceAdsConnected
+						? __( 'View current Ads account', 'google-site-kit' )
+						: __(
+								'Use Google for WooCommerce',
+								'google-site-kit'
+						  ) }
 				</Button>
 			</DialogFooter>
 		</Dialog>
@@ -186,5 +250,6 @@ export default function WooCommerceRedirectModal( {
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
+	onClose: PropTypes.func.isRequired,
 	onContinue: PropTypes.func,
 };
