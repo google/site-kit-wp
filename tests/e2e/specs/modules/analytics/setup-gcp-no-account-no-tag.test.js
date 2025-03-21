@@ -137,6 +137,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: '[]',
 				} );
 			} else {
+				console.debug( 'No mock available for ', request.url() );
 				request.continue();
 			}
 		} );

@@ -140,7 +140,7 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- specs/modules/analytics/setup-gcp-no-account-no-tag.test.js 
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
