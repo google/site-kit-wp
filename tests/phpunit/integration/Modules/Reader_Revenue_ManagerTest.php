@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
@@ -744,7 +745,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $registered );
 	}
 
-	public function test_block_editor_script_enqueued() {
+	public function test_block_editor_assets_set_up() {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
@@ -775,9 +776,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_block_editor_script_not_enqueued
+	 * @dataProvider data_block_editor_assets_not_set_up
 	 */
-	public function test_block_editor_script_not_enqueued( $data ) {
+	public function test_block_editor_assets_not_set_up( $data ) {
 		$wp_version_condition = $data['wpVersionCondition'];
 
 		if ( $wp_version_condition && version_compare( get_bloginfo( 'version' ), $wp_version_condition['version'], $wp_version_condition['operator'] ) === false ) {
@@ -881,7 +882,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function data_block_editor_script_not_enqueued() {
+	public function data_block_editor_assets_not_set_up() {
 		return array(
 			'feature flag disabled'                  => array(
 				array(
