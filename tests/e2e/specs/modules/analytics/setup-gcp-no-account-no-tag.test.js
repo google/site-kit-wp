@@ -136,8 +136,23 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 					body: '[]',
 				} );
+			} else if ( request.url().match( 'analytics-4/data/settings' ) ) {
+				console.debug( 'DEBUG:  request data/settings called' );
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/account-summaries' )
+			) {
+				console.debug(
+					'DEBUG:  request data/account-summaries called'
+				);
+				request.respond( {
+					status: 200,
+					body: '[]',
+				} );
 			} else {
-				console.debug( 'No mock available for ', request.url() );
 				request.continue();
 			}
 		} );
