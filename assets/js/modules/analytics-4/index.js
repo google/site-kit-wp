@@ -196,8 +196,8 @@ export const registerWidgets = ( widgets ) => {
 					return false;
 				}
 
-				const { availableAudiences } =
-					select( MODULES_ANALYTICS_4 ).getSettings() || {};
+				const availableAudiences =
+					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
@@ -745,7 +745,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
 			] );
 
 			const isDismissed = select( CORE_USER ).isPromptDismissed(

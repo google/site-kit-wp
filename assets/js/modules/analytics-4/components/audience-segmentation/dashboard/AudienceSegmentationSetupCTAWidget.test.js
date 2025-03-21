@@ -177,9 +177,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 			propertyID: testPropertyID,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: null,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
@@ -189,6 +189,14 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					audienceSegmentationSetupCompletedBy: null,
+				} );
+		} );
+
 		it( 'is active when user did not permanently dismissed the prompt', async () => {
 			const isActive = await notification.checkRequirements(
 				registry,

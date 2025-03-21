@@ -69,7 +69,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should render a button to change groups', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 
@@ -92,7 +92,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should set UI store key correctly when button is clicked', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 

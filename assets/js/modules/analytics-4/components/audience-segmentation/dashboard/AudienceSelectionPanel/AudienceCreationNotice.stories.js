@@ -107,8 +107,13 @@ export default {
 					propertyID: '34567',
 					measurementID: '56789',
 					webDataStreamID: '78901',
-					availableAudiences: [],
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: [],
+					} );
 
 				args?.setupRegistry?.( registry );
 			};

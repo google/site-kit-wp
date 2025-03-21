@@ -17,31 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createRegistry } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import {
+	createTestRegistry,
+	muteFetch,
+	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-
-/**
- * TODO: After the implementation of #8888, we can remove these individual imports
- * and directly use createTestRegistry from 'tests/js/utils' so that all the stores
- * are registered without the duplicate registration issue.
- */
-import audienceSettingsStore from './audience-settings';
-import audiencesStore from './audiences';
-import userAudienceSettingsStore from '../../../googlesitekit/datastore/user/audience-settings';
-import authenticationStore from '../../../googlesitekit/datastore/user/authentication';
-import { combineStores, commonStore } from 'googlesitekit-data';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
@@ -55,34 +42,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	);
 
 	beforeEach( () => {
-		// TODO: After #8888 is implemented, we can directly use `createTestRegistry` from 'tests/js/utils',
-		// rather than registering the stores below.
-		registry = createRegistry();
-
-		registry.registerStore(
-			MODULES_ANALYTICS_4,
-			combineStores( audienceSettingsStore, commonStore, {
-				audiencesStore,
-				resolvers: {},
-				actions: {
-					// Provide a minimal implementation of `syncAvailableAudiences` for testing.
-					*syncAvailableAudiences() {
-						return registry
-							.dispatch( MODULES_ANALYTICS_4 )
-							.fetchSyncAvailableAudiences();
-					},
-				},
-			} )
-		);
-
-		registry.registerStore(
-			CORE_USER,
-			combineStores(
-				authenticationStore,
-				commonStore,
-				userAudienceSettingsStore
-			)
-		);
+		registry = createTestRegistry();
 
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 			authenticated: true,
@@ -171,50 +131,97 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getAvailableAudiences', () => {
-			it( 'should not make a network request if audience settings exist', () => {
+			const availableAudiences = [
+				{
+					name: 'properties/123456789/audiences/0987654321',
+					displayName: 'All visitors',
+					description: 'All users',
+					audienceType: 'DEFAULT_AUDIENCE',
+					audienceSlug: 'all-users',
+				},
+			];
+
+			const audienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/audience-settings'
+			);
+
+			const analyticsAudienceSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			);
+
+			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiencesFixture );
+					.setAvailableAudiences( availableAudiences );
 
-				const availableAudiences = registry
+				const audiences = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAvailableAudiences();
 
-				expect( availableAudiences ).toEqual(
-					availableAudiencesFixture
-				);
-
-				expect(
-					fetchMock.calls( syncAvailableAudiencesEndpoint )
-				).toHaveLength( 0 );
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( audiences ).toEqual( availableAudiences );
 			} );
 
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
-					status: 200,
-				} );
+			it( 'should sync cached audiences when the audiences settings is undefined for authenticated user', async () => {
+				provideUserAuthentication( registry );
+				muteFetch( audienceSettingsEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [
 						'properties/12345/audiences/1',
 						'properties/12345/audiences/2',
 					],
-					availableAudiences: availableAudiencesFixture,
-					audienceSegmentationSetupCompletedBy: 1,
 				} );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiences,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
+					availableAudiences,
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+				).toBeUndefined();
+
+				// Wait until the resolver has finished fetching the audiences.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
+
+				await waitForDefaultTimeouts();
+
+				const audiences = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableAudiences();
+
+				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
+				expect( audiences ).toEqual( availableAudiences );
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
+					body: {
+						availableAudiences: availableAudiencesFixture,
+						audienceSegmentationSetupCompletedBy: 1,
+					},
+					status: 200,
+				} );
+
+				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getAudienceSettings();
 
 				await waitForDefaultTimeouts();
 
 				expect(
-					fetchMock.calls( syncAvailableAudiencesEndpoint )
+					fetchMock.calls( analyticsAudienceSettingsEndpoint )
 				).toHaveLength( 1 );
 
 				expect(
@@ -237,13 +244,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 						.getAudienceSegmentationSetupCompletedBy()
 				).toEqual( 1 );
 			} );
-			it( 'should return undefined if getAudienceSegmentationSetupCompletedBy is not loaded', () => {
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAudienceSegmentationSetupCompletedBy()
-				).toBeUndefined();
-			} );
+
 			it( 'should throw an error if getAudienceSegmentationSetupCompletedBy is not an integer', () => {
 				expect( () =>
 					registry
