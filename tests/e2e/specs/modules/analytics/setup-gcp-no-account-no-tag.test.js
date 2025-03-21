@@ -136,22 +136,22 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 					body: '[]',
 				} );
-			} else if ( request.url().match( 'analytics-4/data/settings' ) ) {
-				console.debug( 'DEBUG:  request data/settings called' );
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
-			) {
-				console.debug(
-					'DEBUG:  request data/account-summaries called'
-				);
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
+				// } else if ( request.url().match( 'analytics-4/data/settings' ) ) {
+				// 	console.debug( 'DEBUG:  request data/settings called' );
+				// 	request.respond( {
+				// 		status: 200,
+				// 		body: '[]',
+				// 	} );
+				// } else if (
+				// 	request.url().match( 'analytics-4/data/account-summaries' )
+				// ) {
+				// 	console.debug(
+				// 		'DEBUG:  request data/account-summaries called'
+				// 	);
+				// 	request.respond( {
+				// 		status: 200,
+				// 		body: '[]',
+				// 	} );
 			} else {
 				request.continue();
 			}
@@ -201,6 +201,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			};
 		} );
 
+		await page.waitForNetworkIdle();
 		await pageWait( 1000 );
 
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
@@ -212,6 +213,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 						'google-site-kit/v1/e2e/setup/analytics/account-created'
 					)
 			),
+			page.waitForNetworkIdle(),
 			expect( page ).toClick( '.mdc-button', {
 				text: /Create an account/i,
 			} ),
@@ -221,11 +223,13 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			page.waitForResponse( ( req ) =>
 				req.url().match( 'analytics-4/data/account-summaries' )
 			),
+			page.waitForNetworkIdle(),
 			expect( page ).toClick( '.mdc-button', {
 				text: /Re-fetch My Account/i,
 			} ),
 		] );
 
+		await page.waitForNetworkIdle();
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		await expect( page ).toMatchElement(
@@ -244,6 +248,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			}
 		);
 
+		await page.waitForNetworkIdle();
 		await pageWait( 1000 );
 		await expect( page ).toClick( 'button', {
 			text: /complete setup/i,
