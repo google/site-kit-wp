@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoverySetupSuccessBannerNotification component stories.
+ * AdBlockingRecoverySetupSuccessNotification component stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -22,26 +22,32 @@
 import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-} from '../../modules/adsense/datastore/constants';
-import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
+} from '../../datastore/constants';
+import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import {
 	WithTestRegistry,
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
-} from '../../../../tests/js/utils';
+} from '../../../../../../tests/js/utils';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
-function Template( { ...args } ) {
-	return <AdBlockingRecoverySetupSuccessBannerNotification { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'adsense-abr-success-notification'
+)( AdBlockingRecoverySetupSuccessNotification );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
-export const AdBlockingRecoverySetupSuccessBannerNotificationDefault =
-	Template.bind( {} );
-AdBlockingRecoverySetupSuccessBannerNotificationDefault.storyName = 'Default';
+export const AdBlockingRecoverySetupSuccessNotificationDefault = Template.bind(
+	{}
+);
+AdBlockingRecoverySetupSuccessNotificationDefault.storyName = 'Default';
 
 export default {
-	title: 'Components/AdBlockingRecoverySetupSuccessBannerNotification',
-	component: AdBlockingRecoverySetupSuccessBannerNotification,
+	title: 'Components/AdBlockingRecoverySetupSuccessNotification',
+	component: AdBlockingRecoverySetupSuccessNotification,
 	decorators: [
 		( Story ) => {
 			const registry = createTestRegistry();
