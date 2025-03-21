@@ -56,7 +56,12 @@
 		}
 
 		.mdc-dialog__actions {
+			gap: 5px;
 			justify-content: center;
+
+			@media (min-width: 880px) {
+				gap: 10px;
+			}
 
 			@media (min-width: $bp-desktop) {
 				justify-content: flex-end;
@@ -71,10 +76,6 @@
 
 			button {
 
-				&:last-child {
-					margin-top: 5px;
-				}
-
 				.MuiCircularProgress-colorPrimary {
 					color: $c-white;
 					margin-right: 5px;
@@ -87,6 +88,10 @@
 				&.mdc-button--tertiary {
 					.MuiCircularProgress-colorPrimary {
 						color: $c-neutral-n-500;
+					}
+
+					> svg {
+						margin-left: 5px;
 					}
 				}
 			}
