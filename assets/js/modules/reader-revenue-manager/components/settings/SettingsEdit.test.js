@@ -94,6 +94,10 @@ describe( 'SettingsEdit', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	it( 'should render the "SettingsEdit" component', async () => {
 		const { getByRole, getByText, waitForRegistry } = render(
 			<SettingsEdit />,
@@ -404,81 +408,75 @@ describe( 'SettingsEdit', () => {
 		} );
 	} );
 
-	describe( 'GA event tracking', () => {
-		afterEach( () => {
-			mockTrackEvent.mockClear();
+	it( 'should track an event if snippet mode was changed', async () => {
+		fetchMock.postOnce( settingsEndpoint, {
+			body: {
+				...settings,
+				snippetMode: 'per_post',
+			},
+			status: 200,
 		} );
 
-		it( 'should track an event if snippet mode was changed', async () => {
-			fetchMock.postOnce( settingsEndpoint, () => ( {
-				body: {
-					...settings,
-					snippetMode: 'per_post',
-				},
-				status: 200,
-			} ) );
-
-			const { unmount, waitForRegistry } = render( <SettingsEdit />, {
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-				features: [ 'rrmModuleV2' ],
-			} );
-
-			await waitForRegistry();
-
-			await act( async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSnippetMode( 'per_post' );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.submitChanges();
-			} );
-
-			unmount();
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'settings_rrm-settings',
-				'change_snippet_mode',
-				'Specified pages'
-			);
+		const { unmount, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+			features: [ 'rrmModuleV2' ],
 		} );
 
-		it( 'should track an event if post types were changed', async () => {
-			fetchMock.postOnce( settingsEndpoint, () => ( {
-				body: {
-					...settings,
-					postTypes: [ 'post', 'page' ],
-				},
-				status: 200,
-			} ) );
+		await waitForRegistry();
 
-			const { unmount, waitForRegistry } = render( <SettingsEdit />, {
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-				features: [ 'rrmModuleV2' ],
-			} );
+		await act( async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSnippetMode( 'per_post' );
 
-			await waitForRegistry();
-
-			await act( async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setPostTypes( [ 'post', 'page' ] );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.submitChanges();
-			} );
-
-			unmount();
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'settings_rrm-settings',
-				'change_post_types',
-				'Posts, Pages'
-			);
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
 		} );
+
+		unmount();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_rrm-settings',
+			'change_snippet_mode',
+			'Specified pages'
+		);
+	} );
+
+	it( 'should track an event if post types were changed', async () => {
+		fetchMock.postOnce( settingsEndpoint, {
+			body: {
+				...settings,
+				postTypes: [ 'post', 'page' ],
+			},
+			status: 200,
+		} );
+
+		const { unmount, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+			features: [ 'rrmModuleV2' ],
+		} );
+
+		await waitForRegistry();
+
+		await act( async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setPostTypes( [ 'post', 'page' ] );
+
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
+		} );
+
+		unmount();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_rrm-settings',
+			'change_post_types',
+			'Posts, Pages'
+		);
 	} );
 } );

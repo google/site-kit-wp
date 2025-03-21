@@ -51,6 +51,7 @@ export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges()
 	);
+
 	const hasModuleAccess = useSelect( ( select ) => {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
@@ -83,12 +84,15 @@ export default function SettingsEdit() {
 
 		return false;
 	} );
+
 	const haveSettingsChanged = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).haveSettingsChanged()
 	);
+
 	const allPostTypes = useSelect( ( select ) =>
 		select( CORE_SITE ).getPostTypes()
 	);
+
 	const settings = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSettings()
 	);

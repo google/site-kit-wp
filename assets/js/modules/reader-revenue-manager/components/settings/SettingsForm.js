@@ -52,12 +52,15 @@ export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+
 	const productIDs = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
+
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
 	);
+
 	const missingProductID = useSelect( ( select ) => {
 		const productID = select(
 			MODULES_READER_REVENUE_MANAGER
@@ -77,6 +80,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 		return productIDs.includes( productID ) ? null : productID;
 	} );
+
 	const publicationAvailable = useSelect( ( select ) => {
 		if ( hasModuleAccess === undefined ) {
 			return undefined;
@@ -99,6 +103,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			( { publicationId: id } ) => id === publicationID
 		);
 	} );
+
 	const formattedOwnerName = useSelect( ( select ) => {
 		const module = select( CORE_MODULES ).getModule(
 			READER_REVENUE_MANAGER_MODULE_SLUG
@@ -108,6 +113,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			? `<strong>${ module.owner.login }</strong>`
 			: __( 'Another admin', 'google-site-kit' );
 	} );
+
 	const publicationsLoaded = useSelect(
 		( select ) =>
 			hasModuleAccess === false ||
