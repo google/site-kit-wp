@@ -23,12 +23,12 @@ module.exports = {
 		'element-internals-polyfill',
 	],
 	setupFilesAfterEnv:
-		process.env.NODE_ENV === 'test'
+		process.env.STORYBOOK !== 'test'
 			? [
 					'<rootDir>/tests/js/jest-matchers',
 					'<rootDir>/tests/js/setup-before-after',
 			  ]
-			: [],
+			: undefined,
 	testMatch: [
 		'<rootDir>/assets/**/__tests__/**/*.js',
 		'<rootDir>/assets/**/test/*.js',
