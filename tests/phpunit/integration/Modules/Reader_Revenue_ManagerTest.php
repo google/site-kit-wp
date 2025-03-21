@@ -831,26 +831,28 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
+		$this->enable_feature( 'rrmModule' );
+		$this->enable_feature( 'rrmModuleV2' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_editor_assets' );
+
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
 		do_action( 'enqueue_block_editor_assets' );
 
-		$registerable_asset_handles = array_map(
-			function ( $asset ) {
-				return $asset->get_handle();
-			},
-			$this->reader_revenue_manager->get_assets()
-		);
-
-		$non_sk_users_block_editor_scripts = array(
-			'blocks-contribute-with-google-non-sitekit-user',
-			'blocks-subscribe-with-google-non-sitekit-user',
-		);
-
-		$present_handles = array_intersect( $non_sk_users_block_editor_scripts, $registerable_asset_handles );
-
-		$this->assertEmpty(
-			$present_handles,
-			'The following block editor handles should not be present: ' . implode( ', ', $present_handles )
-		);
+		$this->assertFalse( wp_script_is( 'blocks-contribute-with-google-non-sitekit-user', 'enqueued' ), 'blocks-contribute-with-google-non-sitekit-user should not be enqueued' );
+		$this->assertFalse( wp_script_is( 'blocks-subscribe-with-google-non-sitekit-user', 'enqueued' ), 'blocks-subscribe-with-google-non-sitekit-user should not be enqueued' );
 	}
 
 	public function test_non_sk_user_scripts_enqueued() {
@@ -858,28 +860,55 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
 
+		$this->enable_feature( 'rrmModule' );
 		$this->enable_feature( 'rrmModuleV2' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_editor_assets' );
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
 
 		do_action( 'enqueue_block_editor_assets' );
 
-		$registerable_asset_handles = array_map(
-			function ( $asset ) {
-				return $asset->get_handle();
-			},
-			$this->reader_revenue_manager->get_assets()
+		$this->assertTrue( wp_script_is( 'blocks-contribute-with-google-non-sitekit-user', 'enqueued' ), 'blocks-contribute-with-google-non-sitekit-user should be enqueued' );
+		$this->assertTrue( wp_script_is( 'blocks-subscribe-with-google-non-sitekit-user', 'enqueued' ), 'blocks-subscribe-with-google-non-sitekit-user should be enqueued' );
+	}
+
+	public function test_non_sk_user_has_styles_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
+		$this->enable_feature( 'rrmModule' );
+		$this->enable_feature( 'rrmModuleV2' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_assets' );
+
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
 		);
 
-		$non_sk_users_block_editor_scripts = array(
-			'blocks-contribute-with-google-non-sitekit-user',
-			'blocks-subscribe-with-google-non-sitekit-user',
-		);
+		$this->reader_revenue_manager->register();
 
-		$present_handles = array_intersect( $non_sk_users_block_editor_scripts, $registerable_asset_handles );
+		do_action( 'enqueue_block_assets' );
 
-		$this->assertEquals(
-			$non_sk_users_block_editor_scripts,
-			$present_handles
-		);
+		$this->assertTrue( wp_style_is( 'blocks-reader-revenue-manager-common-editor-styles', 'enqueued' ), 'blocks-reader-revenue-manager-common-editor-styles should be enqueued' );
 	}
 
 	public function data_block_editor_assets_not_set_up() {
