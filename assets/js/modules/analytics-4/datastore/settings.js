@@ -41,7 +41,6 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -266,8 +265,8 @@ async function updateEnhancedMeasurementSettings( {
 		);
 
 		if ( shouldDismissActivationBanner ) {
-			await dispatch( CORE_USER ).dismissItem(
-				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+				'enhanced-measurement-notification'
 			);
 		}
 	}

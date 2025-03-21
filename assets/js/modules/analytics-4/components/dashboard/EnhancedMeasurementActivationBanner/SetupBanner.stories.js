@@ -21,11 +21,16 @@
  */
 import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import { EDIT_SCOPE } from '../../../datastore/constants';
 import SetupBanner from './SetupBanner';
 
-function Template( args ) {
-	return <SetupBanner { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'enhanced-measurement-notification'
+)( SetupBanner );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -33,18 +38,14 @@ Default.storyName = 'Default';
 Default.args = {
 	grantedScopes: [ EDIT_SCOPE ],
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SetupBanner/Default',
-};
+Default.scenario = {};
 
 export const NoEditScope = Template.bind( {} );
 NoEditScope.storyName = 'No Edit Scope';
 NoEditScope.args = {
 	grantedScopes: [],
 };
-NoEditScope.scenario = {
-	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SetupBanner/NoEditScope',
-};
+NoEditScope.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SetupBanner',

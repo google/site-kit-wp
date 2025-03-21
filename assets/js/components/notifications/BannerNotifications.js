@@ -31,11 +31,8 @@ import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
-import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
 import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import Notifications from './Notifications';
 import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../modules/reader-revenue-manager/datastore/constants';
@@ -54,10 +51,6 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
-	);
-
-	const keyMetricsSetupCTARendered = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -85,9 +78,6 @@ export default function BannerNotifications() {
 				<AdBlockingRecoverySetupSuccessBannerNotification />
 			) }
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			{ ! keyMetricsSetupCTARendered && (
-				<EnhancedMeasurementActivationBanner />
-			) }
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);

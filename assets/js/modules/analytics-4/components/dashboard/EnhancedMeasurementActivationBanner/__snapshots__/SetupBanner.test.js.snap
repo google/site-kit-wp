@@ -3,8 +3,8 @@
 exports[`SetupBanner should render correctly when the user does have the edit scope granted 1`] = `
 <div>
   <section
-    class="googlesitekit-enhanced-measurement-setup-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
-    id="googlesitekit-enhanced-measurement-activation-banner"
+    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
+    id="enhanced-measurement-notification"
   >
     <div
       class="mdc-layout-grid"
@@ -15,20 +15,11 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
         <div
           class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
         >
-          <div
-            class="googlesitekit-publisher-win__title-image-wrapper"
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-            >
-              Understand how visitors interact with your content
-            </h3>
-            <div
-              class="googlesitekit-publisher-win__image-small"
-            >
-              <svg />
-            </div>
-          </div>
+            Understand how visitors interact with your content
+          </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
@@ -62,7 +53,7 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
             class="googlesitekit-publisher-win__actions"
           >
             <button
-              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               target="_self"
             >
               <span
@@ -101,8 +92,8 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
 exports[`SetupBanner should render correctly when the user does not have the edit scope granted 1`] = `
 <div>
   <section
-    class="googlesitekit-enhanced-measurement-setup-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
-    id="googlesitekit-enhanced-measurement-activation-banner"
+    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
+    id="enhanced-measurement-notification"
   >
     <div
       class="mdc-layout-grid"
@@ -113,20 +104,11 @@ exports[`SetupBanner should render correctly when the user does not have the edi
         <div
           class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
         >
-          <div
-            class="googlesitekit-publisher-win__title-image-wrapper"
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-            >
-              Understand how visitors interact with your content
-            </h3>
-            <div
-              class="googlesitekit-publisher-win__image-small"
-            >
-              <svg />
-            </div>
-          </div>
+            Understand how visitors interact with your content
+          </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
@@ -160,7 +142,7 @@ exports[`SetupBanner should render correctly when the user does not have the edi
             class="googlesitekit-publisher-win__actions"
           >
             <button
-              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               target="_self"
             >
               <span
