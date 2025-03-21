@@ -41,6 +41,7 @@ class AssetsTest extends TestCase {
 		'wp_print_scripts',
 		'admin_print_styles',
 		'wp_print_styles',
+		'enqueue_block_editor_assets',
 	);
 
 	private $authorized_filters = array(
@@ -111,6 +112,25 @@ class AssetsTest extends TestCase {
 		foreach ( $this->authorized_filters as $hook ) {
 			$this->assertTrue( has_filter( $hook ), "Failed asserting that filter was added to {$hook}." );
 		}
+	}
+
+	public function test_register_enqueue_block_assets() {
+		remove_all_actions( 'enqueue_block_assets' );
+
+		// Ensure the current user can authenticate.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// First, ensure that the action is not added when not in admin context.
+		$this->assertFalse( is_admin() );
+		$this->assets->register();
+		$this->assertFalse( has_action( 'enqueue_block_assets' ), 'Failed asserting that action was not added to enqueue_block_assets.' );
+
+		// Now, set admin context and ensure the action is added.
+		set_current_screen( 'dashboard' );
+		$this->assertTrue( is_admin() );
+		$this->assets->register();
+		$this->assertTrue( has_action( 'enqueue_block_assets' ), 'Failed asserting that action was added to enqueue_block_assets.' );
 	}
 
 	public function test_register_dashboard_sharing() {

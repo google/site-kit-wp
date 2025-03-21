@@ -171,6 +171,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				$this->subscribe_with_google_block->register();
 
 				add_action(
+					'enqueue_block_assets',
+					$this->get_method_proxy(
+						'enqueue_block_assets_for_non_sitekit_user'
+					),
+					40
+				);
+
+				add_action(
 					'enqueue_block_editor_assets',
 					$this->get_method_proxy(
 						'enqueue_block_editor_assets_for_non_sitekit_user'
@@ -591,7 +599,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
 					'dependencies'  => array(),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_BLOCK_EDITOR ),
 				)
 			);
 		}
@@ -674,6 +682,23 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
+	 * Enqueues block assets for non-Site Kit users.
+	 *
+	 * This is used for enqueueing styles to ensure they are loaded in all block editor contexts including iframes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return void
+	 */
+	private function enqueue_block_assets_for_non_sitekit_user() {
+		// Include a check for is_admin() to ensure the styles are only enqueued on admin screens.
+		if ( is_admin() && $this->is_non_sitekit_user() ) {
+			// Enqueue styles.
+			$this->assets->enqueue_asset( 'blocks-reader-revenue-manager-common-editor-styles' );
+		}
+	}
+
+	/**
 	 * Enqueues block editor assets for non-Site Kit users.
 	 *
 	 * @since n.e.x.t
@@ -682,9 +707,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	private function enqueue_block_editor_assets_for_non_sitekit_user() {
 		if ( $this->is_non_sitekit_user() ) {
-			// Enqueue styles.
-			$this->assets->enqueue_asset( 'blocks-reader-revenue-manager-common-editor-styles' );
-
 			// Enqueue scripts.
 			$this->assets->enqueue_asset( 'blocks-contribute-with-google-non-sitekit-user' );
 			$this->assets->enqueue_asset( 'blocks-subscribe-with-google-non-sitekit-user' );
