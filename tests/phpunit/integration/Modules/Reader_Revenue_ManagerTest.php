@@ -895,6 +895,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_assets' );
 
+		// Set admin context.
+		set_current_screen( 'dashboard' );
+
 		$modules = new Modules( $this->context, $this->options, $this->user_options );
 		$modules->register();
 
