@@ -67,7 +67,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
 	const createPublicationURL = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getCreatePublicationLinkURL()
+		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -159,7 +159,12 @@ export default function SetupForm( { onCompleteSetup } ) {
 				href={ createPublicationURL }
 				onClick={ handleLinkClick }
 			>
-				{ __( 'Create new publication', 'google-site-kit' ) }
+				{ publications?.length
+					? __(
+							'Manage publications in Publisher Center',
+							'google-site-kit'
+					  )
+					: __( 'Create new publication', 'google-site-kit' ) }
 			</Link>
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
