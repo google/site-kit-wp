@@ -22,10 +22,13 @@ module.exports = {
 		// See https://github.com/jsdom/jsdom/issues/3444.
 		'element-internals-polyfill',
 	],
-	setupFilesAfterEnv: [
-		'<rootDir>/tests/js/jest-matchers',
-		'<rootDir>/tests/js/setup-before-after',
-	],
+	setupFilesAfterEnv:
+		process.env.NODE_ENV === 'test'
+			? [
+					'<rootDir>/tests/js/jest-matchers',
+					'<rootDir>/tests/js/setup-before-after',
+			  ]
+			: [],
 	testMatch: [
 		'<rootDir>/assets/**/__tests__/**/*.js',
 		'<rootDir>/assets/**/test/*.js',

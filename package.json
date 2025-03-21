@@ -27,7 +27,7 @@
 		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "npm run test:js -w ./tests/js",
 		"test:js:watch": "npm run test:js:watch -w ./tests/js",
-		"test:storybook": "jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
+		"test:storybook": "cross-env BABEL_ENV=test NODE_ENV=storybook-test jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
 		"test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w ./tests/e2e",
 		"test:e2e:interactive": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:interactive -w ./tests/e2e",
 		"test:e2e:watch": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:watch -w ./tests/e2e",
