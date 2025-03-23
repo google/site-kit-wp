@@ -127,18 +127,18 @@ export default function SetupBanner( props ) {
 		setValues,
 	] );
 
-	const usingProxy = useSelect( ( select ) =>
+	const isUsingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		if ( ! hideCTABanner && usingProxy ) {
+		if ( ! hideCTABanner && isUsingProxy ) {
 			triggerSurvey( 'view_enhanced_measurement_cta', {
 				ttl: DAY_IN_SECONDS,
 			} );
 		}
-	}, [ hideCTABanner, triggerSurvey, usingProxy ] );
+	}, [ hideCTABanner, triggerSurvey, isUsingProxy ] );
 
 	const description = hasEditScope
 		? __(
