@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,7 +49,7 @@ export default function SuccessBanner( { id, Notification } ) {
 	// the same "notification ID". So this event is not auto-tracked by the new <Notification> component.
 	// It considers the EnhancedMeasurementActivationBanner as already viewed when SetupBanner is
 	// rendered and doesn't track the view again when the SuccessBanner variant is rendered.
-	useEffect( () => {
+	const handleView = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_enhanced-measurement-success`,
 			'view_notification'
@@ -61,7 +61,10 @@ export default function SuccessBanner( { id, Notification } ) {
 	};
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner">
+		<Notification
+			className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner"
+			onView={ handleView }
+		>
 			<NotificationWithSmallRightSVG
 				title={ __(
 					'You successfully enabled enhanced measurement for your site',

@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -132,7 +132,7 @@ export default function SetupBanner( props ) {
 	);
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	useEffect( () => {
+	const handleView = useCallback( () => {
 		if ( ! hideCTABanner && isUsingProxy ) {
 			triggerSurvey( 'view_enhanced_measurement_cta', {
 				ttl: DAY_IN_SECONDS,
@@ -151,7 +151,10 @@ export default function SetupBanner( props ) {
 		  );
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner">
+		<Notification
+			className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
+			onView={ handleView }
+		>
 			<NotificationWithSmallRightSVG
 				title={ __(
 					'Understand how visitors interact with your content',
