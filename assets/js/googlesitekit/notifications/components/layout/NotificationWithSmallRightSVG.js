@@ -60,12 +60,7 @@ export default function NotificationWithSmallRightSVG( {
 						className="googlesitekit-publisher-win__image"
 					>
 						<div className="googlesitekit-publisher-win__image-small">
-							<SVG
-								style={ {
-									maxWidth: 105,
-									maxHeight: 105,
-								} }
-							/>
+							<SVG />
 						</div>
 					</Cell>
 				) }

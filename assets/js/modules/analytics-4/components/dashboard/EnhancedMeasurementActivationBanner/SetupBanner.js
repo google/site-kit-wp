@@ -197,7 +197,7 @@ export default function SetupBanner( props ) {
 						</div>
 					</Fragment>
 				}
-				SVG={ () => <SuccessGreenSVG /> }
+				SVG={ SuccessGreenSVG }
 			/>
 		</Notification>
 	);
