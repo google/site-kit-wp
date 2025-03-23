@@ -149,11 +149,12 @@ export default function EnhancedMeasurementActivationBanner( {
 		);
 	}
 
-	// TODO Remove this hack in Issue #10003
 	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
 	// This is because we don't want the component removed from the DOM as we have to still render
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
 	// checking for the dismissal state here.
+	//
+	// This will be removed in https://github.com/google/site-kit-wp/issues/10003
 	if ( hideCTABanner ) {
 		return null;
 	}
