@@ -12,9 +12,9 @@ on:
       - synchronize
     paths:
       - '.github/workflows/compressed-size.yml'
-      - 'assets/js/**.js'
-      - '!assets/js/**.test.js'
-      - '!assets/js/**/test/**'
+      - 'assets/**/*.js'
+      - '!assets/**/*.test.js'
+      - '!assets/**/test/**'
       - 'assets/sass/**/*.scss'
       - 'assets/svg/**/*.svg'
       - './*.config.js'

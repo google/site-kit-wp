@@ -141,18 +141,15 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		isWooCommerceRedirectModalDismissed,
 	] );
 
-	const onModalDismiss = useCallback(
-		( skipClosing ) => {
-			markNotificationDismissed();
+	const onModalDismiss = useCallback( () => {
+		markNotificationDismissed();
 
-			if ( ! skipClosing ) {
-				setOpenDialog( false );
-			} else {
-				setSkipHidingBanner( true );
-			}
-		},
-		[ markNotificationDismissed, setOpenDialog, setSkipHidingBanner ]
-	);
+		setSkipHidingBanner( true );
+	}, [ markNotificationDismissed, setSkipHidingBanner ] );
+
+	const onModalClose = useCallback( () => {
+		setOpenDialog( false );
+	}, [ setOpenDialog ] );
 
 	const showTooltip = useShowTooltip( id );
 	const { isTooltipVisible } = useTooltipState( id );
@@ -226,6 +223,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 						} }
 						onDismiss={ showTooltip }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
+						ctaDisabled={ isAdBlockerActive }
 					/>
 				}
 				SVG={ breakpointSVGMap[ breakpoint ] || AdsSetupSVG }
@@ -233,6 +231,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			{ openDialog && (
 				<WooCommerceRedirectModal
 					onDismiss={ onModalDismiss }
+					onClose={ onModalClose }
 					dialogActive
 				/>
 			) }

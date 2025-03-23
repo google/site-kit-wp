@@ -466,7 +466,7 @@ export const provideKeyMetricsUserInputSettings = (
 /**
  * Provides notifications data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.149.0
  *
  * @param {Object}   registry    The registry to set up.
  * @param {Object[]} [extraData] List of notification objects to be merged with defaults. Default empty array.
