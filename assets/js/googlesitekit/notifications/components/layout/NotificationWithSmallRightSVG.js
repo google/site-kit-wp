@@ -26,6 +26,7 @@ export default function NotificationWithSmallRightSVG( {
 	description,
 	title,
 	SVG,
+	footer,
 } ) {
 	// This notification layout (NotificationWithSmallRightSVG) is being used solely by
 	// the EnhancedMeasurementActivationBanner component. This notification does not
@@ -51,6 +52,13 @@ export default function NotificationWithSmallRightSVG( {
 					<Title title={ title }></Title>
 					{ description }
 					{ actions }
+					{ footer && (
+						<div className="googlesitekit-publisher-win__footer">
+							<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
+								{ footer }
+							</p>
+						</div>
+					) }
 				</Cell>
 				{ isMinWidthTablet && (
 					<Cell

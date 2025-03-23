@@ -185,16 +185,12 @@ export default function SetupBanner( props ) {
 							onDismiss={ onDismiss }
 							dismissOptions={ { skipHidingFromQueue: true } }
 						/>
-						<div className="googlesitekit-publisher-win__footer">
-							<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
-								{ __(
-									'You can always add/edit this in the Site Kit Settings',
-									'google-site-kit'
-								) }
-							</p>
-						</div>
 					</Fragment>
 				}
+				footer={ __(
+					'You can always add/edit this in the Site Kit Settings',
+					'google-site-kit'
+				) }
 				SVG={ SuccessGreenSVG }
 			/>
 		</Notification>
