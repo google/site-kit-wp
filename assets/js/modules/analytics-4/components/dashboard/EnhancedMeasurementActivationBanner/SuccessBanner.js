@@ -93,7 +93,7 @@ export default function SuccessBanner( { id, Notification } ) {
 						dismissOptions={ { skipHidingFromQueue: false } } // We want the notification to now be removed from the queue as this is the final "step".
 					/>
 				}
-				SVG={ () => <SuccessGreenSVG /> }
+				SVG={ SuccessGreenSVG }
 			/>
 		</Notification>
 	);

@@ -59,7 +59,7 @@ export default function InProgressBanner( { id, Notification } ) {
 					/>
 				}
 				actions={ <CircularProgress size={ 20 } /> }
-				SVG={ () => <SuccessGreenSVG /> }
+				SVG={ SuccessGreenSVG }
 			/>
 		</Notification>
 	);
