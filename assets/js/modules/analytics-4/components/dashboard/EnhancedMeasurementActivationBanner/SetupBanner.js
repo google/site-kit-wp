@@ -133,12 +133,10 @@ export default function SetupBanner( props ) {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		if ( ! hideCTABanner ) {
-			if ( usingProxy ) {
-				triggerSurvey( 'view_enhanced_measurement_cta', {
-					ttl: DAY_IN_SECONDS,
-				} );
-			}
+		if ( ! hideCTABanner && usingProxy ) {
+			triggerSurvey( 'view_enhanced_measurement_cta', {
+				ttl: DAY_IN_SECONDS,
+			} );
 		}
 	}, [ hideCTABanner, triggerSurvey, usingProxy ] );
 
