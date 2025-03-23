@@ -27,12 +27,16 @@ export default function NotificationWithSmallRightSVG( {
 	title,
 	SVG,
 } ) {
-	// This layout is being used solely by the EnhancedMeasurementActivationBanner component.
-	// This notification does not render the SVG on mobile viewports. This notification is being redesigned
-	// as part of BNR3, so this layout will be removed in the future.
+	// This notification layout (NotificationWithSmallRightSVG) is being used solely by
+	// the EnhancedMeasurementActivationBanner component. This notification does not
+	// render the SVG on mobile viewports and so requires the use of windowWidth.
+	// This notification is being redesigned as part of Banner Notifications Refactoring
+	// Phase 3 epic and this logic here will be removed.
 	const windowWidth = useWindowWidth();
-	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint` and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
-	// which in turn is used by these notifications. This why we are using `useWindowWidth` here, instead of the breakpoint returned by `useBreakpoint`.
+	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint`
+	// and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
+	// which in turn is used by these notifications. This is why we are using `useWindowWidth` here,
+	// instead of the breakpoint returned by `useBreakpoint`.
 	const isMinWidthTablet = windowWidth >= 600;
 
 	return (
