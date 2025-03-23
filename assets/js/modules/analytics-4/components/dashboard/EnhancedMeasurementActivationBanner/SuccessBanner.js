@@ -83,8 +83,6 @@ export default function SuccessBanner( { id, Notification } ) {
 					/>
 				}
 				actions={
-					// Using <CTALink> instead of <Dismiss> to automatically use `confirm_notification`
-					// GA tracking event which was used in the legacy component.
 					<CTALink
 						id={ id }
 						ctaLabel={ __( 'OK, Got it', 'google-site-kit' ) }
