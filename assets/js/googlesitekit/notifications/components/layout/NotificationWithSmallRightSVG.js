@@ -35,7 +35,7 @@ export default function NotificationWithSmallRightSVG( {
 	const windowWidth = useWindowWidth();
 	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint`
 	// and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
-	// which in turn is used by these notifications. This is why we are using `useWindowWidth` here,
+	// which is used by these notifications. This is why we are using `useWindowWidth` here,
 	// instead of the breakpoint returned by `useBreakpoint`.
 	const isMinWidthTablet = windowWidth >= 600;
 
