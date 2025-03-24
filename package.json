@@ -217,7 +217,6 @@
 		"puppeteer": "^10.4.0",
 		"puppeteer-core": "^3.3.0",
 		"rimraf": "^3.0.2",
-		"rxjs": "^6.6.7",
 		"sanitize-filename": "^1.6.3",
 		"sass": "^1.30.0",
 		"sass-loader": "^9.0.2",
