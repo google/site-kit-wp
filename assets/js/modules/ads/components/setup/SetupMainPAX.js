@@ -40,7 +40,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupFormPAX from './SetupFormPAX';
 import SupportLink from '../../../../components/SupportLink';
@@ -71,9 +71,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
-
-	const [ shouldShowProgressBar, setShouldShowProgressBar ] =
-		useState( false );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -191,16 +188,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 	);
 
 	const createAccount = useCallback( () => {
-		setShouldShowProgressBar( true );
-
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
 			return;
 		}
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
-
-		setShouldShowProgressBar( false );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	const onLaunch = useCallback( ( app ) => {
@@ -245,8 +238,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
-
-				{ shouldShowProgressBar && <ProgressBar /> }
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
