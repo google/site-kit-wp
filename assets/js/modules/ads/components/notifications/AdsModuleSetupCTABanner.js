@@ -174,7 +174,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	// This is because we don't want the component removed from the DOM as we have to still render
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
 	// checking for the dismissal state here.
-	if ( hideCTABanner && ! skipHidingBanner ) {
+	if ( hideCTABanner && ! skipHidingBanner && ! isSaving ) {
 		return null;
 	}
 
