@@ -57,6 +57,7 @@ import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -208,6 +209,12 @@ export const ADSENSE_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			const isConnected =
+				select( CORE_MODULES ).isModuleConnected( 'adsense' );
+			if ( ! isConnected ) {
+				return false;
+			}
+
 			await resolveSelect( MODULES_ADSENSE ).getSettings();
 			const adBlockingRecoverySetupStatus = await select(
 				MODULES_ADSENSE

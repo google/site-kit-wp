@@ -40,13 +40,10 @@ function Template() {
 	return <NotificationWithComponentProps />;
 }
 
-export const AdBlockingRecoverySetupSuccessNotificationDefault = Template.bind(
-	{}
-);
-AdBlockingRecoverySetupSuccessNotificationDefault.storyName = 'Default';
+export const Default = Template.bind( {} );
 
 export default {
-	title: 'Components/AdBlockingRecoverySetupSuccessNotification',
+	title: 'Modules/AdSense/Components/Notifications/AdBlockingRecoverySetupSuccessNotification',
 	component: AdBlockingRecoverySetupSuccessNotification,
 	decorators: [
 		( Story ) => {
