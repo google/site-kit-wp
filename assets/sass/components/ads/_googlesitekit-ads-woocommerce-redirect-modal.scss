@@ -89,6 +89,14 @@
 					.MuiCircularProgress-colorPrimary {
 						color: $c-neutral-n-500;
 					}
+				}
+			}
+
+			a,
+			button {
+
+				&.mdc-button--tertiary {
+					border-radius: 100px;
 
 					> svg {
 						margin-left: 5px;
