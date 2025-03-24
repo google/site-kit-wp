@@ -140,7 +140,8 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: npm run test:e2e
+        # Temp loop over failing test to confirm it's passing consistently on CI.
+        run: for i in {1..20}; do npm run test:e2e -- specs/modules/tagmanager/setup.test.js; done
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
