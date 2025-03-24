@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -154,6 +154,16 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const showTooltip = useShowTooltip( id );
 	const { isTooltipVisible } = useTooltipState( id );
 
+	const [ dismissLabel, setDismissLabel ] = useState(
+		__( 'Maybe later', 'google-site-kit' )
+	);
+
+	useEffect( () => {
+		if ( true === isDismissalFinal ) {
+			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
+		}
+	}, [ isDismissalFinal ] );
+
 	if ( isTooltipVisible ) {
 		return (
 			<AdminMenuTooltip
@@ -213,11 +223,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 						onCTAClick={ onSetupCallback }
 						dismissOnCTAClick={ false }
 						isSaving={ isSaving }
-						dismissLabel={
-							isDismissalFinal
-								? __( 'Don’t show again', 'google-site-kit' )
-								: __( 'Maybe later', 'google-site-kit' )
-						}
+						dismissLabel={ dismissLabel }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
