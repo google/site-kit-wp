@@ -56,6 +56,8 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use WP_Error;
 
 /**
@@ -418,11 +420,72 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				$publications = $response->getPublications();
-				return array_values( $publications );
+				$list_publications_response = $response->getPublications();
+				$publications               = array_values(
+					$list_publications_response
+				);
+
+				$this->synchronize_publication_data( $publications );
+
+				return $publications;
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Synchronizes publication data with the module settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Publication[] $publications Publications to synchronize.
+	 * @return void
+	 */
+	public function synchronize_publication_data( $publications ) {
+		// If not connected, return early.
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
+		// If publications is empty, return early.
+		if ( empty( $publications ) ) {
+			return;
+		}
+
+		$settings       = $this->get_settings()->get();
+		$publication_id = $settings['publicationID'];
+
+		$filtered_publications = array_filter(
+			$publications,
+			function ( $pub ) use ( $publication_id ) {
+				return $pub->getPublicationId() === $publication_id;
+			}
+		);
+
+		// If there are no filtered publications, return early.
+		if ( empty( $filtered_publications ) ) {
+			return;
+		}
+
+		// Re-index the filtered array to ensure sequential keys.
+		$filtered_publications = array_values( $filtered_publications );
+		$publication           = $filtered_publications[0];
+
+		$onboarding_state     = $settings['publicationOnboardingState'];
+		$new_onboarding_state = $publication->getOnboardingState();
+
+		$new_settings = array(
+			'publicationOnboardingState' => $new_onboarding_state,
+			'productIDs'                 => $this->get_product_ids( $publication ),
+			'paymentOption'              => $this->get_payment_option( $publication ),
+		);
+
+		// Let the client know if the onboarding state has changed.
+		if ( $new_onboarding_state !== $onboarding_state ) {
+			$new_settings['publicationOnboardingStateChanged'] = true;
+		}
+
+		$this->get_settings()->merge( $new_settings );
 	}
 
 	/**
@@ -753,5 +816,52 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		}
 
 		return $debug_fields;
+	}
+
+	/**
+	 * Returns the products IDs for the given publication.
+	 *
+	 * @since 1.146.0
+	 * @since n.e.x.t Relocated from Synchronize_Publication class.
+	 *
+	 * @param Publication $publication Publication object.
+	 * @return array Product IDs.
+	 */
+	protected function get_product_ids( Publication $publication ) {
+		$products    = $publication->getProducts();
+		$product_ids = array();
+
+		if ( ! empty( $products ) ) {
+			foreach ( $products as $product ) {
+				$product_ids[] = $product->getName();
+			}
+		}
+
+		return $product_ids;
+	}
+
+	/**
+	 * Returns the payment option for the given publication.
+	 *
+	 * @since 1.146.0
+	 * @since n.e.x.t Relocated from Synchronize_Publication class.
+	 *
+	 * @param Publication $publication Publication object.
+	 * @return string Payment option.
+	 */
+	protected function get_payment_option( Publication $publication ) {
+		$payment_options = $publication->getPaymentOptions();
+		$payment_option  = '';
+
+		if ( $payment_options instanceof PaymentOptions ) {
+			foreach ( $payment_options as $option => $value ) {
+				if ( true === $value ) {
+					$payment_option = $option;
+					break;
+				}
+			}
+		}
+
+		return $payment_option;
 	}
 }

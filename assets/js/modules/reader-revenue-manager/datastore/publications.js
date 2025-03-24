@@ -40,6 +40,7 @@ import {
 } from './constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { isFeatureEnabled } from '../../../features';
+import { getPaymentOption, getProductIDs } from '../utils/settings';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -51,7 +52,42 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
+	reducerCallback: createReducer( ( state, publications ) => {
+		const { publicationID } = state?.savedSettings || {};
+
+		const publication = publications.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId } ) => publicationId === publicationID
+		);
+
+		if ( ! publication ) {
+			return {
+				...state,
+				publications,
+			};
+		}
+
+		const { onboardingState, products, paymentOptions } = publication;
+
+		const updatedSettings = {
+			publicationOnboardingState: onboardingState,
+			productIDs: getProductIDs( products ),
+			paymentOption: getPaymentOption( paymentOptions ),
+		};
+
+		return {
+			...state,
+			publications,
+			settings: {
+				...state.settings,
+				...updatedSettings,
+			},
+			savedSettings: {
+				...state.savedSettings,
+				...updatedSettings,
+			},
+		};
+	} ),
 } );
 
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
@@ -255,9 +291,7 @@ const baseActions = {
 			};
 
 			if ( paymentOptions ) {
-				const paymentOption = Object.keys( paymentOptions ).find(
-					( key ) => !! paymentOptions[ key ]
-				);
+				const paymentOption = getPaymentOption( paymentOptions );
 
 				if ( paymentOption ) {
 					settings.paymentOption = paymentOption;
@@ -265,13 +299,7 @@ const baseActions = {
 			}
 
 			if ( products ) {
-				settings.productIDs = products.reduce( ( ids, { name } ) => {
-					if ( ! name ) {
-						return ids;
-					}
-
-					return [ ...ids, name ];
-				}, [] );
+				settings.productIDs = getProductIDs( products );
 			}
 
 			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {

@@ -73,3 +73,43 @@ export function getProductIDLabel( productID ) {
 
 	return productID.substring( separatorIndex + 1 );
 }
+
+/**
+ * Gets an array of product ID names from the products array.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} products Array of products.
+ * @return {Array} Array of product ID names.
+ */
+export function getProductIDs( products ) {
+	if ( ! Array.isArray( products ) || products.length === 0 ) {
+		return [];
+	}
+
+	return products.reduce( ( ids, { name } ) => {
+		if ( ! name ) {
+			return ids;
+		}
+
+		return [ ...ids, name ];
+	}, [] );
+}
+
+/**
+ * Gets the payment option from the payment options object.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} paymentOptions The payment options object.
+ * @return {string} The payment option.
+ */
+export function getPaymentOption( paymentOptions ) {
+	if ( ! paymentOptions ) {
+		return '';
+	}
+
+	return Object.keys( paymentOptions ).find(
+		( key ) => !! paymentOptions[ key ]
+	);
+}
