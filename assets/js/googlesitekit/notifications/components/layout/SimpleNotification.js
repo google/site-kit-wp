@@ -25,9 +25,7 @@ export default function SimpleNotification( { actions, description, title } ) {
 		<Grid>
 			<Row>
 				<Cell
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 12 }
+					size={ 11 }
 					className="googlesitekit-publisher-win__content"
 				>
 					<Title title={ title }></Title>

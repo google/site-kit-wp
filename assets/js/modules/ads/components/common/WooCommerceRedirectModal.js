@@ -220,7 +220,19 @@ export default function WooCommerceRedirectModal( {
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
-					onClick={ getGoogleForWooCommerceRedirectURI }
+					onClick={
+						isGoogleForWooCommerceAdsConnected
+							? getGoogleForWooCommerceRedirectURI
+							: onClose
+					}
+					href={
+						isGoogleForWooCommerceAdsConnected
+							? null
+							: googleForWooCommerceRedirectURI
+					}
+					target={
+						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
+					}
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
