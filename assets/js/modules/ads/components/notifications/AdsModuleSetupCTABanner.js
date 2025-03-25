@@ -184,9 +184,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 								? __( 'Don’t show again', 'google-site-kit' )
 								: __( 'Maybe later', 'google-site-kit' )
 						}
-						dismissOptions={ {
-							skipHidingFromQueue: true,
-						} }
 						onDismiss={ showTooltip }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 						ctaDisabled={ isAdBlockerActive }
