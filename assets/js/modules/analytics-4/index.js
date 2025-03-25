@@ -120,6 +120,7 @@ import AudienceSegmentationSetupCTAWidget, {
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
+import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 
 export { registerStore } from './datastore';
 
@@ -721,7 +722,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			return Array.isArray( configuredAudiences );
 		},
 		isDismissible: true,
-		featureFlag: 'audienceSegmentation',
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
@@ -778,6 +778,94 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		isDismissible: true,
 		dismissRetries: 1,
 	},
+	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
+		Component: WebDataStreamNotAvailableNotification,
+		priority: 290,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isWebDataStreamAvailable property is set within the
+				// syncGoogleTagSettings() action.
+				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const isWebDataStreamAvailable =
+				select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				! isWebDataStreamAvailable
+			);
+		},
+	},
+	'google-tag-id-mismatch': {
+		Component: GoogleTagIDMismatchNotification,
+		priority: 280,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const hasMismatchedGoogleTagID =
+				select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				hasMismatchedGoogleTagID
+			);
+		},
+	},
 };
 
 export const registerNotifications = ( notifications ) => {
@@ -787,57 +875,4 @@ export const registerNotifications = ( notifications ) => {
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
 	}
-
-	notifications.registerNotification(
-		WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
-		{
-			Component: WebDataStreamNotAvailableNotification,
-			priority: 290,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			isDismissible: true,
-			checkRequirements: async ( {
-				select,
-				resolveSelect,
-				dispatch,
-			} ) => {
-				await Promise.all( [
-					// The hasScope() selector relies on the resolution of
-					// the getAuthentication() resolver.
-					resolveSelect( CORE_USER ).getAuthentication(),
-					// The isModuleConnected() selector relies on the resolution
-					// of the getModules() resolver.
-					resolveSelect( CORE_MODULES ).getModules(),
-					// The getID() selector relies on the resolution
-					// of the getUser() resolver.
-					resolveSelect( CORE_USER ).getUser(),
-					// The getOwnerID() selector relies on the resolution
-					// of the getSettings() resolver.
-					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-					// The isWebDataStreamAvailable property is set within the
-					// syncGoogleTagSettings() action.
-					dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
-				] );
-
-				const ga4ModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-				const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
-
-				const loggedInUserID = select( CORE_USER ).getID();
-				const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-				const isGA4ModuleOwner =
-					ga4ModuleConnected && ga4OwnerID === loggedInUserID;
-
-				const isWebDataStreamAvailable =
-					select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
-
-				return (
-					ga4ModuleConnected &&
-					hasGTMScope &&
-					isGA4ModuleOwner &&
-					! isWebDataStreamAvailable
-				);
-			},
-		}
-	);
 };

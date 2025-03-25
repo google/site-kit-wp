@@ -134,6 +134,24 @@ final class Assets {
 			}
 		);
 
+		if ( is_admin() ) {
+			add_action(
+				'enqueue_block_assets',
+				function () {
+					$assets = $this->get_assets();
+
+					array_walk(
+						$assets,
+						function ( $asset ) {
+							if ( $asset->has_context( Asset::CONTEXT_ADMIN_BLOCK_EDITOR ) ) {
+								$this->enqueue_asset( $asset->get_handle() );
+							}
+						}
+					);
+				}
+			);
+		}
+
 		add_action(
 			'enqueue_block_editor_assets',
 			function () {

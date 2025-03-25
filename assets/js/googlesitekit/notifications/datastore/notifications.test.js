@@ -21,7 +21,7 @@
  */
 import {
 	createTestRegistry,
-	provideNotifications,
+	deprecatedProvideNotifications,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
@@ -584,7 +584,7 @@ describe( 'core/notifications Notifications', () => {
 				let isNotificationDismissed;
 				beforeEach( () => {
 					// Register the Gathering Data Notification as a test
-					provideNotifications( registry );
+					deprecatedProvideNotifications( registry );
 
 					( { isNotificationDismissed } =
 						registry.select( CORE_NOTIFICATIONS ) );
@@ -625,7 +625,7 @@ describe( 'core/notifications Notifications', () => {
 			describe( 'when using dismissed prompts', () => {
 				let isNotificationDismissed;
 				beforeEach( () => {
-					provideNotifications( registry, {
+					deprecatedProvideNotifications( registry, {
 						'test-notification-using-prompts': {
 							Component: () => {},
 							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -696,7 +696,7 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'requires notification to be dismissible', () => {
-				provideNotifications( registry, {
+				deprecatedProvideNotifications( registry, {
 					'test-notification': {
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -713,7 +713,7 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns true if notification does not have retries', () => {
-				provideNotifications( registry, {
+				deprecatedProvideNotifications( registry, {
 					'test-notification': {
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -728,7 +728,7 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns true if notification is on the final retry', () => {
-				provideNotifications( registry, {
+				deprecatedProvideNotifications( registry, {
 					'test-notification': {
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -752,7 +752,7 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns false if notification has never been dismissed', () => {
-				provideNotifications( registry, {
+				deprecatedProvideNotifications( registry, {
 					'test-notification': {
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
@@ -768,7 +768,7 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns false if notification is not on the final retry', () => {
-				provideNotifications( registry, {
+				deprecatedProvideNotifications( registry, {
 					'test-notification': {
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,

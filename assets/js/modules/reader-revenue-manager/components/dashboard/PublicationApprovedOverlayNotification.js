@@ -61,11 +61,14 @@ function PublicationApprovedOverlayNotification() {
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
-	const { publicationOnboardingState, publicationOnboardingStateChanged } =
-		useSelect(
-			( select ) =>
-				select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
-		);
+	const {
+		publicationID,
+		publicationOnboardingState,
+		publicationOnboardingStateChanged,
+	} = useSelect(
+		( select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
+	);
 
 	const hasResolvedSettings = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
@@ -81,9 +84,13 @@ function PublicationApprovedOverlayNotification() {
 		)
 	);
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 	const serviceURL = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
+		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+			path: 'reader-revenue-manager',
+			query: {
+				publication: publicationID,
+			},
+		} )
 	);
 
 	const showApprovedNotificationUI = useSelect( ( select ) =>
@@ -115,6 +122,7 @@ function PublicationApprovedOverlayNotification() {
 		)
 	);
 
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 	const dismissNotice = () => {
 		dismissOverlayNotification(
 			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
