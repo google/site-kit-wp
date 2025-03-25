@@ -368,7 +368,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			if ( notification === 'authentication_success' && ! slug ) {
 				await dismissNotification( 'auto-update-cta', {
 					expiresInSeconds: MINUTE_IN_SECONDS * 10,
-					skipHidingFromQueue: true,
 				} );
 				return false;
 			}

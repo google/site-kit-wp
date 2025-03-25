@@ -98,13 +98,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const isCTADismissed = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
-	);
-	const dismissedPromptsLoaded = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
-	);
-
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			AUDIENCE_SEGMENTATION_SETUP_FORM,
@@ -155,20 +148,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
-
-	const hideCTABanner =
-		( isCTADismissed || ! dismissedPromptsLoaded ) && ! isSaving;
-
-	// TODO: Don't use `skipHidingFromQueue` and remove the need to check
-	// if this component should output anything.
-	//
-	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
-	// This is because we don't want the component removed from the DOM as we have to still render
-	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
-	// checking for the dismissal state here.
-	if ( hideCTABanner && ! hasOAuthError && ! showErrorModal ) {
-		return null;
-	}
 
 	const gaTrackingProps = {
 		gaTrackingEventArgs: {

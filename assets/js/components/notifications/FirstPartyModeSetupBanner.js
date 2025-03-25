@@ -148,9 +148,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 							'google-site-kit'
 						) }
 						onCTAClick={ onCTAClick }
-						ctaDismissOptions={ {
-							skipHidingFromQueue: false,
-						} }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						onDismiss={ showTooltip }
 					/>

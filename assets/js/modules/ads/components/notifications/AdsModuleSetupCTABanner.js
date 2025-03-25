@@ -65,7 +65,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ skipHidingBanner, setSkipHidingBanner ] = useState( false );
 
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'set-up-ads' )
@@ -78,13 +77,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
-	const isCTADismissed = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
-	);
-	const dismissedPromptsLoaded = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
-	);
-	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
 
 	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
 		const {
@@ -143,11 +135,9 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 			if ( ! skipClosing ) {
 				setOpenDialog( false );
-			} else {
-				setSkipHidingBanner( true );
 			}
 		},
-		[ markNotificationDismissed, setOpenDialog, setSkipHidingBanner ]
+		[ markNotificationDismissed, setOpenDialog ]
 	);
 
 	const tooltipSettings = {
@@ -159,20 +149,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
-
-	// We no longer need to check for isTooltipVisible or return the AdminMenuTooltip
-	// as it's now rendered elsewhere
-
-	// TODO: Don't use `skipHidingFromQueue` and remove the need to check
-	// if this component should output anything.
-	//
-	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
-	// This is because we don't want the component removed from the DOM as we have to still render
-	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
-	// checking for the dismissal state here.
-	if ( hideCTABanner && ! skipHidingBanner ) {
-		return null;
-	}
 
 	return (
 		<Notification>
