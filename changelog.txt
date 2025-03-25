@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.149.1 =
+
+**Fixed**
+
+* Fix js error that appears on the dashboard when metric values are missing in report results. See [#10520](https://github.com/google/site-kit-wp/issues/10520).
+
 = 1.149.0 =
 
 **Enhanced**
