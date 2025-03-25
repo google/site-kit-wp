@@ -180,7 +180,7 @@ export default function UserDimensionsPieChart( props ) {
 					: 100;
 
 			const svgArrow = getChartDifferenceArrow( difference );
-			const absValue = row?.metricValues[ 0 ]?.value;
+			const absValue = row?.metricValues?.[ 0 ]?.value;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
 				_x(
