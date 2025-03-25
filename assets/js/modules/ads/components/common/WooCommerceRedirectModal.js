@@ -55,6 +55,7 @@ export default function WooCommerceRedirectModal( {
 	onClose,
 	onDismiss = null,
 	onContinue = null,
+	onBeforeSetupCallback = null,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
 
@@ -132,8 +133,16 @@ export default function WooCommerceRedirectModal( {
 			return;
 		}
 
+		onBeforeSetupCallback?.();
 		onSetupCallback();
-	}, [ setIsSaving, onDismiss, onClose, onSetupCallback, onContinue ] );
+	}, [
+		setIsSaving,
+		onDismiss,
+		onClose,
+		onBeforeSetupCallback,
+		onSetupCallback,
+		onContinue,
+	] );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
