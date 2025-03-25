@@ -261,4 +261,5 @@ WooCommerceRedirectModal.propTypes = {
 	onDismiss: PropTypes.func,
 	onClose: PropTypes.func.isRequired,
 	onContinue: PropTypes.func,
+	onBeforeSetupCallback: PropTypes.func,
 };
