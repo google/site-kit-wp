@@ -39,7 +39,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { isFeatureEnabled } from '../../../features';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -274,9 +273,7 @@ const baseActions = {
 				}, [] );
 			}
 
-			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
-				settings.productID = 'openaccess';
-			}
+			settings.productID = 'openaccess';
 
 			return registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

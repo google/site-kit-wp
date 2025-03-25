@@ -35,7 +35,6 @@ import {
 
 export default function OverlayNotificationsRenderer() {
 	const readerRevenueManagerEnabled = useFeature( 'rrmModule' );
-	const readerRevenueManagerV2Enabled = useFeature( 'rrmModuleV2' );
 
 	return (
 		<Fragment>
@@ -43,10 +42,10 @@ export default function OverlayNotificationsRenderer() {
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
 			<AudienceSegmentationIntroductoryOverlayNotification />
 			{ readerRevenueManagerEnabled && (
-				<PublicationApprovedOverlayNotification />
-			) }
-			{ readerRevenueManagerV2Enabled && (
-				<RRMIntroductoryOverlayNotification />
+				<Fragment>
+					<PublicationApprovedOverlayNotification />
+					<RRMIntroductoryOverlayNotification />
+				</Fragment>
 			) }
 		</Fragment>
 	);
