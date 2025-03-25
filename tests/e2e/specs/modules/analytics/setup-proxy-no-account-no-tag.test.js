@@ -110,7 +110,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 	} );
 
 	// DEBUG: run the single failing test 20 times to confirm fix.
-	it.only( 'preserves user-filled values provided and auto-submits after approving permissions', async () => {
+	it( 'preserves user-filled values provided and auto-submits after approving permissions', async () => {
 		await page.waitForSelector( '.googlesitekit-heading-4' );
 
 		// Unfortunately, the view does not have a `form`, otherwise we could use `.toFillForm( el, fields )`
@@ -131,13 +131,13 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			'.googlesitekit-analytics__select-country'
 		);
 
-		await page.waitForNetworkIdle();
+		await page.waitForTimeout( 1000 );
 
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
 			text: /united kingdom/i,
 		} );
 
-		await page.waitForNetworkIdle();
+		await page.waitForTimeout( 1000 );
 
 		await expect( page ).toMatchElement( 'p', {
 			text: /need to give Site Kit permission to create an Analytics account/i,
@@ -149,7 +149,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			} ),
 		] );
 
-		await page.waitForNetworkIdle();
+		await page.waitForTimeout( 1000 );
 
 		// When returning from OAuth, the form will resubmit automatically, so we won't be able to see the form to verify the values there.
 		// Instead, we can ensure that they were passed in the request to `create-account-ticket`
