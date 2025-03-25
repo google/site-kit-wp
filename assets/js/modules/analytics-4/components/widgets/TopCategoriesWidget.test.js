@@ -82,9 +82,7 @@ describe( 'TopCategoriesWidget', () => {
 			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
 			dimensionFilters: {
 				'customEvent:googlesitekit_post_categories': {
-					filterType: 'stringFilter',
-					matchType: 'EXACT',
-					value: '(not set)',
+					filterType: 'emptyFilter',
 					notExpression: true,
 				},
 			},
@@ -98,6 +96,7 @@ describe( 'TopCategoriesWidget', () => {
 				},
 			],
 			limit: 3,
+			keepEmptyRows: false,
 		} );
 
 		const { container, waitForRegistry } = render(

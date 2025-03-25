@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.144.0
+Stable tag:        1.149.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,53 +109,33 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.144.0 =
-
-**Added**
-
-* Add `library_name` parameter to Sign in with Google button. See [#9924](https://github.com/google/site-kit-wp/issues/9924).
-* Add incremental ESLint rule to avoid defining `scenario.label` on stories. See [#9865](https://github.com/google/site-kit-wp/issues/9865).
-* Add option to enable "One-tap" sign-in across site when using Sign in with Google. See [#9861](https://github.com/google/site-kit-wp/issues/9861).
+= 1.149.0 =
 
 **Enhanced**
 
-* Add the `rrmModuleV2` feature flag, this will be used for phase two of the Reader Revenue Manager module's development. See [#9948](https://github.com/google/site-kit-wp/issues/9948).
-* Update FPM health check to use the approach from the measurement script. See [#9916](https://github.com/google/site-kit-wp/issues/9916).
-* Improve Analytics Conversion Reporting new/lost events callouts experience for each Site Kit user. See [#9897](https://github.com/google/site-kit-wp/issues/9897).
-* Update subtle notification padding for consistency with the Figma design. See [#9860](https://github.com/google/site-kit-wp/issues/9860).
-* Add a loading spinner to the "Enable First-party mode" CTA button on the setup banner to indicate progress during the setup process. See [#9856](https://github.com/google/site-kit-wp/issues/9856).
-* Only run the periodic server requirement health checks for First-party mode when the mode is enabled. See [#9842](https://github.com/google/site-kit-wp/issues/9842).
-* Update Partner Ads Experience with knowledge of supported conversion events. See [#9816](https://github.com/google/site-kit-wp/issues/9816).
-* Improve logic for persisting badges in the Key Metrics selection panel. See [#9798](https://github.com/google/site-kit-wp/issues/9798).
-* Add the Suggested group to the key metrics selection panel. See [#9797](https://github.com/google/site-kit-wp/issues/9797).
-* Add a warning notification on the dashboard to alert users when First-party mode is disabled due to failed server requirement checks. See [#9767](https://github.com/google/site-kit-wp/issues/9767).
-* Update to the latest version of the First-party mode proxy script. See [#9710](https://github.com/google/site-kit-wp/issues/9710).
-* Add "Learn more" links for First-party mode. See [#9699](https://github.com/google/site-kit-wp/issues/9699).
-* Introduce GA4 tracking events for the First-party mode feature. See [#9669](https://github.com/google/site-kit-wp/issues/9669).
-* Add loading state with placeholder elements to Site Kit's WP dashboard widget. See [#9570](https://github.com/google/site-kit-wp/issues/9570).
-* Fix issues with Audience Creation Notice when browser viewport is very short. See [#9562](https://github.com/google/site-kit-wp/issues/9562).
-* Improve accuracy of periodic network connection check. See [#9485](https://github.com/google/site-kit-wp/issues/9485).
-* Add badge to new Analytics Conversion Reporting widget tiles and groups. See [#9386](https://github.com/google/site-kit-wp/issues/9386).
-* Update the Setup Error Banner notification to use the new Notifications API. See [#9283](https://github.com/google/site-kit-wp/issues/9283).
-* Move settings edit dependency loading state to module stores. See [#8730](https://github.com/google/site-kit-wp/issues/8730).
-* Improve the "See full details" link in AdSense settings, linking to the list of sites for the account where possible. See [#8076](https://github.com/google/site-kit-wp/issues/8076).
-* Ensure that cities and countries with unset values don't show up in the "Top cities driving traffic" and "Top countries driving traffic" Key Metric tiles. See [#7884](https://github.com/google/site-kit-wp/issues/7884).
+* Update Ads setup via PAX to enable the enhanced conversion tracking by default. See [#10413](https://github.com/google/site-kit-wp/issues/10413).
+* Update the WooCommerce Redirect modal logic to trigger at the Ads setup wizard. See [#10404](https://github.com/google/site-kit-wp/issues/10404).
+* Fix the learn more link in the ACR lost events banner. See [#10397](https://github.com/google/site-kit-wp/issues/10397).
+* Add GA events tracking for user interaction with the Reader Revenue Manager introductory overlay notification. See [#10330](https://github.com/google/site-kit-wp/issues/10330).
+* Unguard the `productIDs` and `paymentOption` module settings to enable publication data synchronization without the `rrmModuleV2` feature flag. See [#10314](https://github.com/google/site-kit-wp/issues/10314).
+* Update text in "Top earning pages" widget. See [#10158](https://github.com/google/site-kit-wp/issues/10158).
+* Remove the `audienceSegmentation` feature flag. See [#10148](https://github.com/google/site-kit-wp/issues/10148).
+* Add support for outputting the Sign in with Google button where `wp_login_form` is used. See [#10047](https://github.com/google/site-kit-wp/issues/10047).
+* Update Google Tag ID mismatch notifications to use new notifications infrastructure to improve reliability/user experience. See [#9292](https://github.com/google/site-kit-wp/issues/9292).
 
 **Changed**
 
-* Remove the deprecated `OAuth_Client::using_proxy` method and its associated tests. See [#8366](https://github.com/google/site-kit-wp/issues/8366).
+* Update Guzzle to v7. See [#10302](https://github.com/google/site-kit-wp/issues/10302).
+* Update the PAX setup success notifications to lead the "Show me" link to the official Google Ads campaigns overview page. See [#10272](https://github.com/google/site-kit-wp/issues/10272).
 
 **Fixed**
 
-* Ensure measurement tracking requests succeed when both the Analytics and Ads modules are connected and First-party mode is enabled. See [#9901](https://github.com/google/site-kit-wp/issues/9901).
-* Improve sort order in module list. See [#9877](https://github.com/google/site-kit-wp/issues/9877).
-* Ensure "Enhanced Measurement" setting is not activated when disabled during Analytics setup. See [#9827](https://github.com/google/site-kit-wp/issues/9827).
-* Fix a glitch where setup CTA banners would momentarily appear again when dismissing their admin settings tooltip. See [#9791](https://github.com/google/site-kit-wp/issues/9791).
-* Fix iPad 10 Safari inconsistencies. See [#9776](https://github.com/google/site-kit-wp/issues/9776).
-* Fix potential for PHP warning related to accessing a property `post_type` on null. See [#9762](https://github.com/google/site-kit-wp/issues/9762).
-* Ensure Site Kit's Google chart on the WordPress dashboard widget correctly adapts to viewport width changes. See [#9756](https://github.com/google/site-kit-wp/issues/9756).
-* Fix the deprecation error in the Ads module related to the creation of a dynamic property in the `Web_Tag` class. See [#9531](https://github.com/google/site-kit-wp/issues/9531).
-* Prevent unnecessary requests on dashboard. See [#9178](https://github.com/google/site-kit-wp/issues/9178).
-* Prevent PHP warnings when creating custom dimensions. See [#7801](https://github.com/google/site-kit-wp/issues/7801).
+* Fix PAX layout issues. See [#10412](https://github.com/google/site-kit-wp/issues/10412).
+* Ensure that warning notices for Reader Revenue Manager blocks appear as expected for view-only Site Kit users. See [#10394](https://github.com/google/site-kit-wp/issues/10394).
+* Fix console warning that could appear when Sign in with Google module is not connected. See [#10325](https://github.com/google/site-kit-wp/issues/10325).
+* Fix the All Traffic pie chart tooltip issue that didn't appear after deselecting a segment. See [#10318](https://github.com/google/site-kit-wp/issues/10318).
+* Fix incorrect user count in the "Others" segment of the Locations pie chart and ensure matching percentages in All Traffic widget pie charts. See [#10243](https://github.com/google/site-kit-wp/issues/10243).
+* Update key metric widgets to skip showing empty rows. See [#10156](https://github.com/google/site-kit-wp/issues/10156).
+* Upgrade Google API client library to avoid deprecation notices on latest versions of PHP. See [#9977](https://github.com/google/site-kit-wp/issues/9977).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 19 ] */
+
 /**
  * WordPress dependencies
  */
@@ -114,7 +116,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 				desc: true,
 			},
 		],
-		limit: 6,
 	};
 
 	const graphArgs = {

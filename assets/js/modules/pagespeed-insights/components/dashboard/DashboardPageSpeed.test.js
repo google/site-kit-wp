@@ -38,77 +38,93 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import { freezeFetch } from '../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+} from '../../../../../../tests/js/utils';
 
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;
-const setupRegistry = ( { dispatch } ) => {
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
-		fixtures.pagespeedMobileNoStackPacks,
-		{
-			url,
-			strategy: STRATEGY_MOBILE,
-		}
-	);
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
-		fixtures.pagespeedDesktopNoStackPacks,
-		{
-			url,
-			strategy: STRATEGY_DESKTOP,
-		}
-	);
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
-		url,
-		STRATEGY_DESKTOP,
-	] );
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
-		url,
-		STRATEGY_MOBILE,
-	] );
-	dispatch( CORE_SITE ).receiveSiteInfo( {
-		referenceSiteURL: url,
-		currentEntityURL: null,
-	} );
-};
-const setupRegistryNoReports = ( { dispatch } ) => {
-	dispatch( CORE_SITE ).receiveSiteInfo( {
-		referenceSiteURL: url,
-		currentEntityURL: null,
-	} );
-};
-const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
-		fixtures.pagespeedMobileNoStackPacks,
-		{
-			url,
-			strategy: STRATEGY_MOBILE,
-		}
-	);
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
-		url,
-		STRATEGY_MOBILE,
-	] );
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
-		fixtures.pagespeedDesktopNoFieldDataNoStackPacks,
-		{
-			url,
-			strategy: STRATEGY_DESKTOP,
-		}
-	);
-	dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
-		url,
-		STRATEGY_DESKTOP,
-	] );
-	dispatch( CORE_SITE ).receiveSiteInfo( {
-		referenceSiteURL: url,
-		currentEntityURL: null,
-	} );
-};
 
 describe( 'DashboardPageSpeed', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		const { dispatch } = registry;
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobileNoStackPacks,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktopNoStackPacks,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+		dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: url,
+			currentEntityURL: null,
+		} );
+	} );
+
 	afterEach( fetchMock.mockClear );
 
+	const setupRegistryNoFieldDataDesktop = () => {
+		registry = createTestRegistry();
+
+		const { dispatch } = registry;
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobileNoStackPacks,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktopNoFieldDataNoStackPacks,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+		dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: url,
+			currentEntityURL: null,
+		} );
+	};
+
 	it( 'renders preview blocks while reports are requested', async () => {
+		registry = createTestRegistry();
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: url,
+			currentEntityURL: null,
+		} );
+
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
@@ -121,7 +137,7 @@ describe( 'DashboardPageSpeed', () => {
 			)
 		);
 		const { container } = render( <DashboardPageSpeed />, {
-			setupRegistry: setupRegistryNoReports,
+			registry,
 		} );
 		const widgetElement = container.querySelector(
 			'#googlesitekit-pagespeed-header'
@@ -143,7 +159,7 @@ describe( 'DashboardPageSpeed', () => {
 		).toHaveProperty( 'metrics' );
 
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			setupRegistry,
+			registry,
 		} );
 
 		expect(
@@ -152,8 +168,10 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'displays lab data by default when field data is not present in both mobile and desktop reports', () => {
+		setupRegistryNoFieldDataDesktop();
+
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			setupRegistry: setupRegistryNoFieldDataDesktop,
+			registry,
 		} );
 
 		expect(
@@ -166,7 +184,7 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'displays the mobile data by default', () => {
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			setupRegistry,
+			registry,
 		} );
 
 		expect( getByLabelText( /mobile/i ) ).toHaveClass( activeClass );
@@ -174,7 +192,7 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'has tabs for toggling the displayed data source', () => {
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			setupRegistry,
+			registry,
 		} );
 
 		const labDataTabLink =
@@ -190,7 +208,7 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'has tabs for toggling the tested device', () => {
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			setupRegistry,
+			registry,
 		} );
 
 		const desktopToggle = getByLabelText( /desktop/i );
@@ -203,6 +221,8 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'displays refreshing states when the `Run test again` button is clicked', async () => {
+		setupRegistryNoFieldDataDesktop();
+
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
@@ -217,7 +237,7 @@ describe( 'DashboardPageSpeed', () => {
 		const { container, getByRole, queryByRole } = render(
 			<DashboardPageSpeed />,
 			{
-				setupRegistry: setupRegistryNoFieldDataDesktop,
+				registry,
 			}
 		);
 
@@ -246,10 +266,12 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
-		const { getByLabelText, queryByText, registry } = render(
+		setupRegistryNoFieldDataDesktop();
+
+		const { getByLabelText, queryByText } = render(
 			<DashboardPageSpeed />,
 			{
-				setupRegistry: setupRegistryNoFieldDataDesktop,
+				registry,
 			}
 		);
 
@@ -283,6 +305,8 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'should disable the `How to improve` button when the test is running', async () => {
+		setupRegistryNoFieldDataDesktop();
+
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
@@ -295,7 +319,7 @@ describe( 'DashboardPageSpeed', () => {
 			)
 		);
 		const { getByRole } = render( <DashboardPageSpeed />, {
-			setupRegistry: setupRegistryNoFieldDataDesktop,
+			registry,
 		} );
 
 		const runTestAgainBtn = getByRole( 'button', {
@@ -316,6 +340,8 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'should disable the data source tabs when the test is running', async () => {
+		setupRegistryNoFieldDataDesktop();
+
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
@@ -328,7 +354,7 @@ describe( 'DashboardPageSpeed', () => {
 			)
 		);
 		const { getByRole } = render( <DashboardPageSpeed />, {
-			setupRegistry: setupRegistryNoFieldDataDesktop,
+			registry,
 		} );
 
 		const runTestAgainBtn = getByRole( 'button', {
@@ -360,6 +386,8 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'should disable the device size tabs when the test is running', async () => {
+		setupRegistryNoFieldDataDesktop();
+
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
@@ -372,7 +400,7 @@ describe( 'DashboardPageSpeed', () => {
 			)
 		);
 		const { getByRole } = render( <DashboardPageSpeed />, {
-			setupRegistry: setupRegistryNoFieldDataDesktop,
+			registry,
 		} );
 
 		const runTestAgainBtn = getByRole( 'button', {

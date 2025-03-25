@@ -91,6 +91,7 @@ function getPopularProductsWidgetReportOptions( select ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 }
 

@@ -53,7 +53,7 @@ import {
 	TopPagesDrivingLeadsWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
-import { MODULES_ANALYTICS_4 } from './datastore/constants';
+import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -109,9 +109,18 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { isFeatureEnabled } from '../../features';
+import AudienceSegmentationSetupCTAWidget, {
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
+import WebDataStreamNotAvailableNotification, {
+	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
+} from '../../components/notifications/WebDataStreamNotAvailableNotification';
+import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 
 export { registerStore } from './datastore';
 
@@ -125,11 +134,11 @@ export const registerModule = ( modules ) => {
 		Icon: AnalyticsIcon,
 		features: [
 			__(
-				'Your site will no longer send data to Google Analytics.',
+				'Your site will no longer send data to Google Analytics',
 				'google-site-kit'
 			),
 			__(
-				'Analytics reports in Site Kit will be disabled.',
+				'Analytics reports in Site Kit will be disabled',
 				'google-site-kit'
 			),
 		],
@@ -187,8 +196,8 @@ export const registerWidgets = ( widgets ) => {
 					return false;
 				}
 
-				const availableAudiences =
-					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				const { availableAudiences } =
+					select( MODULES_ANALYTICS_4 ).getSettings() || {};
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
@@ -690,33 +699,180 @@ export const registerWidgets = ( widgets ) => {
 	);
 };
 
-export const registerNotifications = ( notifications ) => {
-	if ( isFeatureEnabled( 'audienceSegmentation' ) ) {
-		notifications.registerNotification(
-			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-			{
-				Component: AudienceSegmentationSetupSuccessSubtleNotification,
-				priority: 10,
-				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-				checkRequirements: async ( { select, resolveSelect } ) => {
-					const analyticsConnected = await resolveSelect(
-						CORE_MODULES
-					).isModuleConnected( 'analytics-4' );
+export const ANALYTICS_4_NOTIFICATIONS = {
+	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
+		Component: AudienceSegmentationSetupSuccessSubtleNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const analyticsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
 
-					if ( ! analyticsConnected ) {
-						return false;
-					}
-
-					await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-					const configuredAudiences =
-						select( CORE_USER ).getConfiguredAudiences();
-
-					// Only show this notification if the user has a set of configured audiences.
-					return Array.isArray( configuredAudiences );
-				},
-				isDismissible: true,
+			if ( ! analyticsConnected ) {
+				return false;
 			}
+
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+
+			// Only show this notification if the user has a set of configured audiences.
+			return Array.isArray( configuredAudiences );
+		},
+		isDismissible: true,
+	},
+	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+		Component: AudienceSegmentationSetupCTAWidget,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const analyticsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( 'analytics-4' );
+
+			if ( ! analyticsConnected ) {
+				return false;
+			}
+
+			await Promise.all( [
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					'analytics-4'
+				),
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				select( CORE_USER ).getUserAudienceSettings(),
+				select( MODULES_ANALYTICS_4 ).isGatheringData(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+			] );
+
+			const isDismissed = select( CORE_USER ).isPromptDismissed(
+				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
+			);
+
+			const configuredAudiences =
+				select( CORE_USER ).getConfiguredAudiences();
+
+			const analyticsIsDataAvailableOnLoad =
+				select( MODULES_ANALYTICS_4 ).isDataAvailableOnLoad();
+
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+
+			if (
+				audienceSegmentationSetupCompletedBy !== null ||
+				configuredAudiences === undefined ||
+				configuredAudiences?.length ||
+				! analyticsIsDataAvailableOnLoad ||
+				isDismissed
+			) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		dismissRetries: 1,
+	},
+	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
+		Component: WebDataStreamNotAvailableNotification,
+		priority: 290,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isWebDataStreamAvailable property is set within the
+				// syncGoogleTagSettings() action.
+				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const isWebDataStreamAvailable =
+				select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				! isWebDataStreamAvailable
+			);
+		},
+	},
+	'google-tag-id-mismatch': {
+		Component: GoogleTagIDMismatchNotification,
+		priority: 280,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const hasMismatchedGoogleTagID =
+				select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				hasMismatchedGoogleTagID
+			);
+		},
+	},
+};
+
+export const registerNotifications = ( notifications ) => {
+	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
+		notifications.registerNotification(
+			notificationID,
+			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
 	}
 };

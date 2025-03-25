@@ -67,9 +67,7 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 		dimensionFilters: {
 			// Make sure that we select only rows without (not set) records.
 			'customEvent:googlesitekit_post_author': {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
+				filterType: 'emptyFilter',
 				notExpression: true,
 			},
 		},
@@ -81,6 +79,7 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 }
 

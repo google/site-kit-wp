@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
 import {
 	createTestRegistry,
 	provideKeyMetrics,
@@ -36,98 +35,24 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
-	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
 		provideModules( registry );
-
-		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
 	} );
 
 	afterEach( () => {
 		global._googlesitekitModulesData = undefined;
 	} );
 
-	describe( 'actions', () => {
-		describe( 'receiveConversionReportingInlineData', () => {
-			it( 'requires the data param', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveConversionReportingInlineData();
-				} ).toThrow( 'data is required.' );
-			} );
-
-			it( 'receives and sets inline data', async () => {
-				const data = {
-					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-					lostEvents: [],
-					newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-				};
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( data );
-				expect( store.getState().detectedEventsChange ).toMatchObject(
-					data
-				);
-			} );
-		} );
-	} );
-
 	describe( 'selectors', () => {
-		describe( 'hasConversionReportingEvents', () => {
-			it( 'returns false when no conversion reporting events are available', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setSettings( { detectedEvents: [] } );
-
-				const hasConversionReportingEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.hasConversionReportingEvents( [ 'test-event' ] );
-
-				expect( hasConversionReportingEvents ).toBe( false );
-			} );
-
-			it( 'returns true when provided conversion reporting event is available', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					detectedEvents: [ 'test-event', 'test-event-2' ],
-				} );
-
-				const hasConversionReportingEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.hasConversionReportingEvents( [ 'test-event' ] );
-
-				expect( hasConversionReportingEvents ).toBe( true );
-			} );
-
-			it( 'returns true when some of provided conversion reporting events are available', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					detectedEvents: [
-						'test-event',
-						'test-event-2',
-						'test-event-3',
-					],
-				} );
-
-				const hasConversionReportingEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.hasConversionReportingEvents( [
-						'no-event',
-						'test-event',
-					] );
-
-				expect( hasConversionReportingEvents ).toBe( true );
-			} );
-		} );
-
 		describe( 'getConversionReportingEventsChange', () => {
 			it( 'uses a resolver to load conversion reporting inline data from a global variable by default', async () => {
 				const inlineData = {
@@ -146,7 +71,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getConversionReportingEventsChange();
+				).getModuleData();
 
 				const data = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -165,10 +90,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getConversionReportingEventsChange();
+				).getModuleData();
 
 				expect( data ).toBe( undefined );
-				expect( console ).toHaveErrored();
 			} );
 		} );
 
@@ -200,20 +124,45 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				undefined,
 			],
 		] )( '%s', ( selector, dataKey, events, expectedReturn ) => {
-			it( 'uses a resolver to load conversion reporting data then returns the data when this specific selector is used', () => {
+			it( 'uses a resolver to load data then returns the value when this specific selector is used', async () => {
 				const inlineData = {
 					[ dataKey ]: events,
 				};
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( inlineData );
+				global._googlesitekitModulesData = {
+					'analytics-4': inlineData,
+				};
 
-				const data = registry
+				registry.select( MODULES_ANALYTICS_4 )[ selector ]();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getModuleData();
+
+				const moduleData = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getModuleData();
+
+				const selectorValue = registry
 					.select( MODULES_ANALYTICS_4 )
 					[ selector ]();
 
-				expect( data ).toEqual( expectedReturn );
+				expect( moduleData ).toHaveProperty( dataKey );
+				expect( selectorValue ).toEqual( expectedReturn );
+			} );
+
+			it( 'will return initial state (undefined) when module data is not available', async () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					[ selector ]();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getModuleData();
+
+				expect( result ).toEqual( undefined );
 			} );
 		} );
 
@@ -254,13 +203,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 
 			it( 'should return true when new detected events have an event associated with ACR KWM for the passed purpose when useNewEvents is passed', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						lostEvents: [],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				const haveConversionEventsForTailoredMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -289,13 +236,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 
 			it( 'should return false when new detected events do not have an event associated with ACR KWM for the passed purpose when useNewEvents is passed', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
-						lostEvents: [],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				const haveConversionEventsForTailoredMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -346,6 +291,96 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 		} );
 
+		describe( 'shouldIncludeConversionTailoredMetrics', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'conversionReporting' );
+
+				provideKeyMetricsUserInputSettings( registry );
+
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'analytics-4',
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'conversionReporting' );
+			} );
+
+			it( 'should return empty array if Analytics module is not connected', () => {
+				provideModules( registry, [
+					{
+						active: true,
+						connected: false,
+						slug: 'analytics-4',
+					},
+				] );
+
+				const shouldIncludeConversionTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.shouldIncludeConversionTailoredMetrics();
+
+				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [] );
+			} );
+
+			it( 'should return empty array if haveConversionEventsForTailoredMetrics is false', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				// Since by default site purpose is `publish_blog` and we have no events detected
+				// (or detected events are not matching this site purpose), haveConversionEventsForTailoredMetrics
+				// will be false.
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					false
+				);
+
+				const shouldIncludeConversionTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.shouldIncludeConversionTailoredMetrics();
+
+				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [] );
+			} );
+
+			it( 'should return detected events haveConversionEventsForTailoredMetrics is true and there are detected events', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				const haveConversionEventsForTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.haveConversionEventsForTailoredMetrics();
+
+				expect( haveConversionEventsForTailoredMetrics ).toEqual(
+					true
+				);
+
+				const shouldIncludeConversionTailoredMetrics = registry
+					.select( MODULES_ANALYTICS_4 )
+					.shouldIncludeConversionTailoredMetrics();
+
+				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+				] );
+			} );
+		} );
+
 		describe( 'haveLostEventsForCurrentMetrics', () => {
 			beforeEach( () => {
 				enabledFeatures.add( 'conversionReporting' );
@@ -377,13 +412,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					newBadgeEvents: [],
+				} );
 
 				const haveLostEventsForCurrentMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -410,13 +443,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [],
-						lostEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [],
+					lostEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					newBadgeEvents: [],
+				} );
 
 				const haveLostEventsForCurrentMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -438,13 +469,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					newBadgeEvents: [],
+				} );
 
 				const haveLostEventsForCurrentMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -467,13 +496,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					lostEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					newBadgeEvents: [],
+				} );
 
 				const haveLostEventsForCurrentMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -496,13 +523,11 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						lostEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						newBadgeEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					lostEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					newBadgeEvents: [],
+				} );
 
 				const haveLostEventsForCurrentMetrics = registry
 					.select( MODULES_ANALYTICS_4 )

@@ -31,7 +31,7 @@ const WidgetWithComponentProps =
 
 function Template( { setupRegistry = () => {}, ...args } ) {
 	function setupRegistryCallback( registry ) {
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 		} );
 

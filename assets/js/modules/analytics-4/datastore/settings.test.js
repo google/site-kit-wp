@@ -23,11 +23,10 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	provideNotifications,
+	deprecatedProvideNotifications,
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
-	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
@@ -528,7 +527,7 @@ describe( 'modules/analytics-4 settings', () => {
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -661,7 +660,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -730,10 +729,8 @@ describe( 'modules/analytics-4 settings', () => {
 						},
 					},
 				} );
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
-
-				await waitForTimeouts( 30 );
 			} );
+
 			it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
@@ -742,7 +739,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -812,7 +809,7 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -898,20 +895,20 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
+					.receiveGetUserAudienceSettings( audienceSettings );
 
 				registry
 					.dispatch( CORE_USER )
-					.finishResolution( 'getAudienceSettings', [] );
+					.finishResolution( 'getUserAudienceSettings', [] );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettings );
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				// We can ignore the subsequent GET for the `audience-settings` endpoint,
-				// this is covered in the test for `resetAudienceSettings()`.
+				// this is covered in the test for `resetUserAudienceSettings()`.
 				muteFetch(
 					new RegExp(
 						'^/google-site-kit/v1/core/user/data/audience-settings'
@@ -920,13 +917,13 @@ describe( 'modules/analytics-4 settings', () => {
 
 				// Verify that the audience settings have been reset.
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 			} );
 
 			it( 'should not reset audience settings in the store when Analytics settings have not successfully saved', async () => {
@@ -953,21 +950,21 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
+					.receiveGetUserAudienceSettings( audienceSettings );
 
 				registry
 					.dispatch( CORE_USER )
-					.finishResolution( 'getAudienceSettings', [] );
+					.finishResolution( 'getUserAudienceSettings', [] );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettings );
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				// Verify that the audience settings have not been reset.
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettings );
 
 				expect( console ).toHaveErroredWith(

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Post_Product_ID_Test
+ * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Post_Product_IDTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -10,11 +10,14 @@
 
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Tests\TestCase;
 
-class Post_Product_ID_Test extends TestCase {
+class Post_Product_IDTest extends TestCase {
 
 	/**
 	 * @var Post_Product_ID
@@ -25,7 +28,17 @@ class Post_Product_ID_Test extends TestCase {
 		parent::set_up();
 
 		$post_meta     = new Post_Meta();
-		$this->setting = new Post_Product_ID( $post_meta, 'test_publication_id' );
+		$options       = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$settings      = new Settings( $options );
+		$this->setting = new Post_Product_ID( $post_meta, $settings );
+
+		$settings->register();
+		$settings->merge(
+			array(
+				'publicationID' => 'test_publication_id',
+			)
+		);
+
 		$this->setting->register();
 	}
 

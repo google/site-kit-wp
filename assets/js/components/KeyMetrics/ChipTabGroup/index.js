@@ -43,13 +43,6 @@ import {
 	UNSTAGED_SELECTION,
 } from '../constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import Chip from './Chip';
-import MetricItem from '../MetricsSelectionPanel/MetricItem';
-import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import CheckMark from '../../../../svg/icons/check-2.svg';
-import StarFill from '../../../../svg/icons/star-fill.svg';
-import Null from '../../../components/Null';
 import {
 	ENUM_CONVERSION_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
@@ -58,6 +51,13 @@ import {
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import Chip from './Chip';
+import MetricItem from '../MetricsSelectionPanel/MetricItem';
+import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
+import CheckMark from '../../../../svg/icons/check-2.svg';
+import StarFill from '../../../../svg/icons/star-fill.svg';
+import Null from '../../../components/Null';
 
 const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
@@ -99,9 +99,6 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
-	const answerBasedMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getAnswerBasedMetrics()
-	);
 
 	const currentlyActiveEvents = useSelect( ( select ) => {
 		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
@@ -138,6 +135,14 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 
 		return select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 	} );
+
+	const answerBasedMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics( null, [
+			...( currentlyActiveEvents || [] ),
+			...( detectedEvents || [] ),
+		] )
+	);
+
 	const hasGeneratingLeadsGroup = [
 		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 		ENUM_CONVERSION_EVENTS.CONTACT,
@@ -171,12 +176,12 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	}, [ hasGeneratingLeadsGroup, hasSellingProductsGroup ] );
 
 	const dynamicGroups = useMemo( () => {
-		if ( isUserInputCompleted ) {
+		if ( isUserInputCompleted && answerBasedMetrics?.length ) {
 			return [ KEY_METRICS_GROUP_CURRENT, KEY_METRICS_GROUP_SUGGESTED ];
 		}
 
 		return [ KEY_METRICS_GROUP_CURRENT ];
-	}, [ isUserInputCompleted ] );
+	}, [ isUserInputCompleted, answerBasedMetrics ] );
 
 	const allGroups = useMemo(
 		() => [ ...dynamicGroups, ...keyMetricsGroups ],

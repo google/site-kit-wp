@@ -239,7 +239,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		// of the `is_endpoint_healthy()` method. The rest of the controller's behaviour remains unmocked.
 		$mock_controller = $this->getMockBuilder( First_Party_Mode::class )
 			->setConstructorArgs( array( $this->context ) )
-			->onlyMethods( array( 'is_endpoint_healthy' ) )
+			->setMethods( array( 'is_endpoint_healthy' ) )
 			->getMock();
 
 		$expected_calls = array_map(

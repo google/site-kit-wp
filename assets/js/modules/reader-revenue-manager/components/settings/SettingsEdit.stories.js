@@ -19,9 +19,12 @@
 /**
  * Internal dependencies
  */
-import { provideModuleRegistrations } from '../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideSiteInfo,
+	WithTestRegistry,
+} from '../../../../../../tests/js/utils';
 import { Grid, Row, Cell } from '../../../../material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -29,6 +32,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	return (
@@ -53,6 +57,16 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+};
 
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'PendingVerification';
@@ -62,6 +76,13 @@ PendingVerification.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -73,6 +94,12 @@ ActionRequired.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 	},
 };
 
@@ -92,6 +119,13 @@ WithoutModuleAccess.args = {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-a' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
 	},
 };
@@ -107,7 +141,37 @@ PublicationUnavailable.args = {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.selectPublication( publications[ 2 ] );
+			// eslint-disable-next-line sitekit/acronym-case
+			.setPublicationID( publications[ 2 ].publicationId );
+	},
+};
+
+export const WithProductIDWarningNotice = Template.bind( {} );
+WithProductIDWarningNotice.storyName = 'WithProductIDWarningNotice';
+WithProductIDWarningNotice.scenario = {};
+WithProductIDWarningNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+	},
+};
+
+export const MissingProductID = Template.bind( {} );
+MissingProductID.storyName = 'MissingProductID';
+MissingProductID.scenario = {};
+MissingProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-c' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b' ] );
 	},
 };
 
@@ -116,6 +180,14 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry, {
+					postTypes: [
+						{ slug: 'post', label: 'Posts' },
+						{ slug: 'page', label: 'Pages' },
+						{ slug: 'products', label: 'Products' },
+					],
+				} );
+
 				const extraData = [
 					{
 						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -132,6 +204,10 @@ export default {
 					publicationID: publications[ 0 ].publicationId,
 					publicationOnboardingState:
 						publications[ 0 ].onboardingState,
+					postTypes: [ 'post' ],
+					productID: 'product-1',
+					productIDs: [ 'product-1', 'product-2' ],
+					snippetMode: 'post_types',
 				};
 
 				registry
@@ -142,15 +218,20 @@ export default {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( settings );
 
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithTestRegistry
+					callback={ setupRegistry }
+					features={ [ 'rrmModuleV2' ] }
+				>
 					<Story />
-				</WithRegistrySetup>
+				</WithTestRegistry>
 			);
 		},
 	],

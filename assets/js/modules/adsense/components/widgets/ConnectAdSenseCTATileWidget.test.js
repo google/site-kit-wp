@@ -20,10 +20,14 @@
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
+import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -33,21 +37,68 @@ describe( 'ConnectAdSenseCTATileWidget', () => {
 	)( ConnectAdSenseCTATileWidget );
 
 	it( 'should render the Connect AdSense CTA tile', () => {
-		const { container } = render( <WidgetWithComponentProps />, {
-			setupRegistry: ( registry ) => {
-				provideUserCapabilities( registry );
-				provideModules( registry, [
-					{
-						slug: 'adsense',
-						active: false,
-						connected: false,
-					},
-				] );
+		const registry = createTestRegistry();
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: false,
+				connected: false,
 			},
+		] );
+		provideKeyMetricsWidgetRegistrations( registry, {
+			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+				modules: [ 'adsense' ],
+			},
+			secondAdSenseWidget: {
+				modules: [ 'adsense' ],
+			},
+		} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
 		} );
 
 		expect( container ).toMatchSnapshot();
 
 		expect( container ).toHaveTextContent( 'Connect AdSense' );
+
+		expect( container ).toHaveTextContent(
+			'AdSense is disconnected, some of your metrics can’t be displayed'
+		);
+	} );
+
+	it( 'should render a title when only a single Connect AdSense CTA is present', () => {
+		const registry = createTestRegistry();
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: 'adsense',
+				active: false,
+				connected: false,
+			},
+		] );
+		provideKeyMetricsWidgetRegistrations( registry, {
+			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+				modules: [ 'adsense' ],
+			},
+		} );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		expect( container ).toMatchSnapshot();
+
+		expect( container ).toHaveTextContent( 'Connect AdSense' );
+
+		expect( container ).toHaveTextContent(
+			'AdSense is disconnected, metric can’t be displayed'
+		);
+
+		expect( container ).toHaveTextContent(
+			KEY_METRICS_WIDGETS[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]
+				.title
+		);
 	} );
 } );

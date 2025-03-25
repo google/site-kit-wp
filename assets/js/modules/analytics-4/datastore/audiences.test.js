@@ -344,7 +344,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( settings );
+					.receiveGetUserAudienceSettings( settings );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -615,7 +615,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: null,
+					availableAudiences: availableAudiencesFixture,
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
 				} );
@@ -624,7 +624,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
@@ -635,16 +635,6 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
@@ -699,62 +689,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				);
 			} );
 
-			it( 'syncs `availableAudiences`', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
-				fetchMock.postOnce( audienceSettingsEndpoint, {
-					body: {
-						configuredAudiences: [],
-						isAudienceSegmentationWidgetHidden,
-					},
-					status: 200,
-				} );
-
-				muteFetch( expirableItemEndpoint );
-
-				const options = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAudiencesUserCountReportOptions(
-						[ availableUserAudienceFixture ],
-						{ startDate, endDate: referenceDate }
-					);
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetReport( {}, { options } );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getReport', [ options ] );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.enableAudienceGroup();
-
-				expect( fetchMock ).toHaveFetchedTimes(
-					1,
-					syncAvailableAudiencesEndpoint
-				);
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
-				).toEqual( availableAudiencesFixture );
-
-				await waitFor( () =>
-					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint )
-				);
-			} );
-
 			it.each( [
 				[
 					'the top 1 from 1 of 3 candidate user audiences with data over the past 90 days', // Test description differentiator.
@@ -803,15 +737,9 @@ describe( 'modules/analytics-4 audiences', () => {
 					_,
 					{ totalUsersByAudience, expectedConfiguredAudiences }
 				) => {
-					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: availableUserAudiences,
-						status: 200,
-					} );
-
-					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-						body: [ 'googlesitekit_post_type' ],
-						status: 200,
-					} );
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setAvailableAudiences( availableUserAudiences );
 
 					fetchMock.postOnce( audienceSettingsEndpoint, {
 						body: {
@@ -910,18 +838,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					_,
 					{ totalUsersByAudience, expectedConfiguredAudiences }
 				) => {
-					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: [
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setAvailableAudiences( [
 							...availableAudiencesFixture,
 							...availableUserAudiences.slice( 1 ),
-						],
-						status: 200,
-					} );
-
-					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-						body: [ 'googlesitekit_post_type' ],
-						status: 200,
-					} );
+						] );
 
 					fetchMock.postOnce( audienceSettingsEndpoint, {
 						body: {
@@ -1005,30 +927,14 @@ describe( 'modules/analytics-4 audiences', () => {
 					],
 				];
 
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableUserAudiences );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: finalAvailableAudiences,
 					status: 200,
 				} );
-
-				fetchMock.post(
-					{
-						url: syncAvailableAudiencesEndpoint,
-						repeat: 2,
-					},
-					() => {
-						const callCount = fetchMock.calls(
-							syncAvailableAudiencesEndpoint
-						).length;
-
-						return {
-							body:
-								callCount === 1
-									? availableUserAudiences
-									: finalAvailableAudiences,
-							status: 200,
-						};
-					}
-				);
 
 				const expectedConfiguredAudiences = [
 					createdNewVisitorsAudienceName,
@@ -1092,7 +998,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.enableAudienceGroup();
 
 				expect( fetchMock ).toHaveFetchedTimes(
-					2,
+					1,
 					syncAvailableAudiencesEndpoint
 				);
 
@@ -1176,16 +1082,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						property: {},
 					} );
 
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
-
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAudiencesUserCountReportOptions( [ userAudience ], {
@@ -1247,18 +1143,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableReturningVisitorsAudienceFixture.name,
 				];
 
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: [
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( [
 						...availableAudiencesFixture,
 						...availableUserAudiences.slice( 1 ),
-					],
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
+					] );
 
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
@@ -1326,18 +1216,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableReturningVisitorsAudienceFixture.name,
 				];
 
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: [
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( [
 						availableNewVisitorsAudienceFixture,
 						availableReturningVisitorsAudienceFixture,
-					],
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-					body: [ 'googlesitekit_post_type' ],
-					status: 200,
-				} );
+					] );
 
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
@@ -1379,18 +1263,13 @@ describe( 'modules/analytics-4 audiences', () => {
 					provideUserCapabilities( registry );
 
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-						availableAudiences: null,
-						availableCustomDimensions: null,
+						availableAudiences: availableAudiencesFixture,
+						availableCustomDimensions: [],
 						propertyID: testPropertyID,
 					} );
 				} );
 
 				it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", async () => {
-					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: availableAudiencesFixture,
-						status: 200,
-					} );
-
 					fetchMock.postOnce( audienceSettingsEndpoint, {
 						body: {
 							configuredAudiences: [],
@@ -1399,27 +1278,12 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.post(
-						{
-							url: syncAvailableCustomDimensionsEndpoint,
-							repeat: 2,
-						},
-						() => {
-							const callCount = fetchMock.calls(
-								syncAvailableCustomDimensionsEndpoint
-							).length;
-
-							return {
-								body:
-									callCount === 1
-										? []
-										: [
-												CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-										  ],
-								status: 200,
-							};
-						}
-					);
+					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+						body: [
+							CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+						],
+						status: 200,
+					} );
 
 					fetchMock.postOnce( createCustomDimensionEndpoint, {
 						body: CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
@@ -1462,7 +1326,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					);
 
 					expect( fetchMock ).toHaveFetchedTimes(
-						2,
+						1,
 						syncAvailableCustomDimensionsEndpoint
 					);
 
@@ -1498,42 +1362,9 @@ describe( 'modules/analytics-4 audiences', () => {
 				};
 
 				beforeEach( () => {
-					fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
-						body: [ 'googlesitekit_post_type' ],
-						status: 200,
-					} );
-				} );
-
-				it( 'should return and dispatch an error if syncing available audiences request fails', async () => {
-					fetchMock.post( syncAvailableAudiencesEndpoint, {
-						body: errorResponse,
-						status: 500,
-					} );
-
-					fetchMock.get( audienceSettingsEndpoint, {
-						body: {
-							data: {
-								configuredAudiences: [],
-							},
-						},
-					} );
-
-					const { response, error } = await registry
+					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.enableAudienceGroup();
-
-					await waitForDefaultTimeouts();
-
-					expect( response ).toBeUndefined();
-					expect( error ).toEqual( errorResponse );
-
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.getErrorForAction( 'syncAvailableAudiences' )
-					).toEqual( errorResponse );
-
-					expect( console ).toHaveErrored();
+						.setAvailableAudiences( [] );
 				} );
 
 				it( 'should return failed audience names when creating new visitors and returning visitors audiences fails', async () => {
@@ -1541,11 +1372,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						'new-visitors',
 						'returning-visitors',
 					];
-
-					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: [],
-						status: 200,
-					} );
 
 					// Mocking createAudience API call with failure response.
 					fetchMock.post(
@@ -1606,11 +1432,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						}
 					);
 
-					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: [],
-						status: 200,
-					} );
-
 					const result = await registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.enableAudienceGroup( failedAudiencesToRetry );
@@ -1631,16 +1452,15 @@ describe( 'modules/analytics-4 audiences', () => {
 						createAudienceEndpoint
 					);
 
-					expect( fetchMock ).toHaveFetchedTimes(
-						1,
-						syncAvailableAudiencesEndpoint
-					);
-
 					// Ensure conse error is logged only once.
 					expect( console ).toHaveErrored();
 				} );
 
 				it( 'should create provided "failedSiteKitAudienceSlugs" correctly', async () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setAvailableAudiences( availableUserAudiences );
+
 					const failedAudiencesToRetry = [
 						'new-visitors',
 						'returning-visitors',
@@ -1670,25 +1490,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						],
 					];
 
-					fetchMock.post(
-						{
-							url: syncAvailableAudiencesEndpoint,
-							repeat: 2,
-						},
-						() => {
-							const callCount = fetchMock.calls(
-								syncAvailableAudiencesEndpoint
-							).length;
-
-							return {
-								body:
-									callCount === 1
-										? availableUserAudiences
-										: finalAvailableAudiences,
-								status: 200,
-							};
-						}
-					);
+					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+						body: finalAvailableAudiences,
+						status: 200,
+					} );
 
 					fetchMock.postOnce( audienceSettingsEndpoint, {
 						body: {
@@ -1727,7 +1532,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						.enableAudienceGroup( failedAudiencesToRetry );
 
 					expect( fetchMock ).toHaveFetchedTimes(
-						2,
+						1,
 						syncAvailableAudiencesEndpoint
 					);
 
@@ -1791,11 +1596,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						},
 					};
 
-					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: [],
-						status: 200,
-					} );
-
 					// Mocking createAudience API call with insufficient permissions error.
 					fetchMock.post(
 						{ url: createAudienceEndpoint, repeat: 2 },
@@ -1820,6 +1620,94 @@ describe( 'modules/analytics-4 audiences', () => {
 					).toBeNull();
 
 					expect( console ).toHaveErrored();
+					expect( console ).toHaveErrored();
+				} );
+
+				it( 'should return and dispatch an error if syncing available audiences request fails', async () => {
+					const createdNewVisitorsAudienceName =
+						'properties/12345/audiences/888';
+					const createdReturningVisitorsAudienceName =
+						'properties/12345/audiences/999';
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setAvailableAudiences( availableUserAudiences );
+
+					fetchMock.post( syncAvailableAudiencesEndpoint, {
+						body: errorResponse,
+						status: 500,
+					} );
+
+					const expectedConfiguredAudiences = [
+						createdNewVisitorsAudienceName,
+						createdReturningVisitorsAudienceName,
+					];
+
+					fetchMock.postOnce( audienceSettingsEndpoint, {
+						body: {
+							configuredAudiences: expectedConfiguredAudiences,
+							isAudienceSegmentationWidgetHidden,
+						},
+						status: 200,
+					} );
+
+					fetchMock.post(
+						{ url: createAudienceEndpoint, repeat: 2 },
+						( url, opts ) => {
+							return {
+								body: opts.body.includes( 'new_visitors' )
+									? {
+											...SITE_KIT_AUDIENCE_DEFINITIONS[
+												'new-visitors'
+											],
+											name: createdNewVisitorsAudienceName,
+									  }
+									: {
+											...SITE_KIT_AUDIENCE_DEFINITIONS[
+												'returning-visitors'
+											],
+											name: createdReturningVisitorsAudienceName,
+									  },
+								status: 200,
+							};
+						}
+					);
+
+					muteFetch( expirableItemEndpoint );
+
+					const options = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudiencesUserCountReportOptions(
+							availableUserAudiences,
+							{ startDate, endDate: referenceDate }
+						);
+
+					registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+						createAudiencesTotalUsersMockReport( {
+							[ availableUserAudiences[ 0 ].name ]: 0,
+							[ availableUserAudiences[ 1 ].name ]: 0,
+							[ availableUserAudiences[ 2 ].name ]: 0,
+						} ),
+						{ options }
+					);
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.finishResolution( 'getReport', [ options ] );
+
+					const { response, error } = await registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.enableAudienceGroup();
+
+					expect( response ).toBeUndefined();
+					expect( error ).toEqual( errorResponse );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getErrorForAction( 'syncAvailableAudiences' )
+					).toEqual( errorResponse );
+
 					expect( console ).toHaveErrored();
 				} );
 			} );
@@ -1971,7 +1859,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
-				registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );

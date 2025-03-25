@@ -26,6 +26,8 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 const selectors = {
 	/**
@@ -65,6 +67,45 @@ const selectors = {
 
 				return accountChooserBaseURI;
 			}
+	),
+
+	/**
+	 * Gets the details link URL for the module.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @return {string} Details link URL.
+	 */
+	getDetailsLinkURL: createRegistrySelector( ( select ) => () => {
+		const publicationID = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublicationID();
+
+		return select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+			path: 'reader-revenue-manager',
+			query: {
+				publication: publicationID,
+			},
+		} );
+	} ),
+
+	/**
+	 * Gets the create publication link URL for Reader Revenue Manager.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return {string} Create publication link URL.
+	 */
+	getCreatePublicationLinkURL: createRegistrySelector(
+		( select ) => () =>
+			select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+				query: {
+					prefill_canonical_domain:
+						select( CORE_SITE ).getReferenceSiteURL(),
+					prefill_lang: select( CORE_SITE ).getSiteLocale(),
+					app_redirect: 'rrm',
+				},
+			} )
 	),
 };
 

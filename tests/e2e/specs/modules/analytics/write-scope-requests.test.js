@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 20 ] */
+
 /**
  * WordPress dependencies
  */
@@ -149,6 +151,16 @@ describe( 'Analytics write scope requests', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( fixtures.googleTagSettings ),
+				} );
+			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [
+							fixtures.availableAudiences[ 2 ].name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					} ),
 				} );
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )

@@ -1,5 +1,5 @@
-!/.storybook
-/.storybook/data/*
+!/storybook
+/storybook/data/*
 /dist/*
 /tests/backstop/html_report/*
 /php-scoper/*

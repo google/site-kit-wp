@@ -22,6 +22,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -183,6 +184,50 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
 	}
 
+	public function test_sync__new_events_are_removed_from_lost_events() {
+		$this->transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'purchase', 'add_to_cart' ) );
+
+		// Detect purchase as new event.
+		$this->setup_fake_handler_and_analytics(
+			array(
+				array(
+					'dimensionValues' => array(
+						array(
+							'value' => 'contact',
+						),
+					),
+				),
+				array(
+					'dimensionValues' => array(
+						array(
+							'value' => 'purchase',
+						),
+					),
+				),
+			)
+		);
+
+		$event_check = $this->get_instance();
+		$this->settings->merge(
+			array(
+				'detectedEvents' => array( 'contact' ),
+			)
+		);
+		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+
+		$this->assertSame( array( 'purchase', 'add_to_cart' ), $transient_lost_events );
+
+		$event_check->sync_detected_events();
+
+		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+
+		// Since purchase is detected, it should be removed from lost events.
+		$this->assertSame( array( 'add_to_cart' ), $transient_lost_events );
+
+		// Verify that lostConversionEventsLastUpdateAt is updated.
+		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
+	}
+
 	public function get_instance() {
 		return new Conversion_Reporting_Events_Sync(
 			$this->settings,
@@ -235,20 +280,22 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 			switch ( $url['path'] ) {
 				case "/v1beta/properties/$property_id:runReport":
 					// Return a mock report.
-					return new Response(
-						200,
-						array(),
-						json_encode(
-							array(
-								'kind'     => 'analyticsData#runReport',
-								'rowCount' => 1,
-								'rows'     => $report_rows,
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'kind'     => 'analyticsData#runReport',
+									'rowCount' => 1,
+									'rows'     => $report_rows,
+								)
 							)
 						)
 					);
 
 				default:
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 			}
 		};
 	}

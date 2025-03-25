@@ -10,55 +10,70 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
+use Google\Site_Kit\Core\Storage\Meta_Setting_Trait;
 use Google\Site_Kit\Core\Storage\Post_Meta;
-use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 
 /**
  * Class for associating product ID to post meta.
  *
- * @since n.e.x.t
+ * @since 1.145.0
  * @access private
  * @ignore
  */
-class Post_Product_ID extends Post_Meta_Setting {
+class Post_Product_ID {
+
+	use Meta_Setting_Trait;
+
 	/**
-	 * Publication ID.
+	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
-	 * @var string
+	 * @var Settings
 	 */
-	private string $publication_id;
+	private $settings;
 
 	/**
 	 * Post_Product_ID constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param Post_Meta $post_meta Post_Meta instance.
-	 * @param string    $publication_id Publication ID.
+	 * @param Settings  $settings  Reader Revenue Manager module settings instance.
 	 */
-	public function __construct( Post_Meta $post_meta, string $publication_id ) {
-		parent::__construct( $post_meta );
-
-		$this->publication_id = $publication_id;
+	public function __construct( Post_Meta $post_meta, Settings $settings ) {
+		$this->meta     = $post_meta;
+		$this->settings = $settings;
 	}
 
 	/**
 	 * Gets the meta key for the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return string Meta key.
 	 */
 	protected function get_meta_key(): string {
-		return 'googlesitekit_rrm_' . $this->publication_id . ':productID';
+		$publication_id = $this->settings->get()['publicationID'];
+		return 'googlesitekit_rrm_' . $publication_id . ':productID';
+	}
+
+	/**
+	 * Returns the object type.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @return string Object type.
+	 */
+	protected function get_object_type(): string {
+		return 'post';
 	}
 
 	/**
 	 * Gets the `show_in_rest` value for this postmeta setting value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return bool|Array Any valid value for the `show_in_rest`
 	 */

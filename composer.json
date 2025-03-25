@@ -20,10 +20,11 @@
     "php": ">=7.4",
     "ext-json": "*",
     "ext-openssl": "*",
-    "google/apiclient": "^2.14.0",
+    "cweagans/composer-patches": "^1.7",
+    "google/apiclient": "^2.16",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
-    "guzzlehttp/guzzle": "^6.5.8",
+    "guzzlehttp/guzzle": "^7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
@@ -46,11 +47,17 @@
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "roots/wordpress-core-installer": true
+      "roots/wordpress-core-installer": true,
+      "cweagans/composer-patches": true
     }
   },
   "extra": {
-    "wordpress-install-dir": "vendor/roots/wordpress"
+    "wordpress-install-dir": "vendor/roots/wordpress",
+    "patches": {
+      "google/apiclient-services": {
+        "Fixes for empty filter": "patches/google-api-client-services-v0.355.0.patch"
+      }
+    }
   },
   "repositories": [
     {

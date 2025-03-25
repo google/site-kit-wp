@@ -67,9 +67,7 @@ function getReportOptions( select ) {
 		dimensionFilters: {
 			// Make sure that we select only rows without (not set) records.
 			'customEvent:googlesitekit_post_categories': {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
+				filterType: 'emptyFilter',
 				notExpression: true,
 			},
 		},
@@ -83,6 +81,7 @@ function getReportOptions( select ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 }
 

@@ -75,7 +75,7 @@ export default function PublicationSelect( props ) {
 
 			selectPublication( publication );
 
-			onChange();
+			onChange( publication );
 		},
 		[ publications, selectPublication, onChange ]
 	);

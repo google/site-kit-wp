@@ -78,9 +78,7 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 				value: eventNames,
 			},
 			city: {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
+				filterType: 'emptyFilter',
 				notExpression: true,
 			},
 		},
@@ -94,6 +92,7 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 
 	const topCitiesReport = useInViewSelect(

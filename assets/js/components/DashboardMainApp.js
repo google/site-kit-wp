@@ -42,17 +42,13 @@ import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
-import {
-	AudienceSegmentationSetupCTAWidget,
-	AudienceSelectionPanel,
-} from '../modules/analytics-4/components/audience-segmentation/dashboard';
+import { AudienceSelectionPanel } from '../modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import {
@@ -73,7 +69,6 @@ import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useBreakpoint } from '../hooks/useBreakpoint';
-import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
@@ -86,8 +81,6 @@ import {
 } from '../googlesitekit/notifications/datastore/constants';
 
 export default function DashboardMainApp() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewOnlyDashboard = useViewOnly();
@@ -113,10 +106,8 @@ export default function DashboardMainApp() {
 			grantedScopes.includes( scope )
 		);
 
-	const configuredAudiences = useSelect(
-		( select ) =>
-			audienceSegmentationEnabled &&
-			select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	useMount( () => {
@@ -265,15 +256,6 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 
-			{ ! viewOnlyDashboard && (
-				<Fragment>
-					{ audienceSegmentationEnabled && (
-						<AudienceSegmentationSetupCTAWidget />
-					) }
-					<ConsentModeSetupCTAWidget />
-				</Fragment>
-			) }
-
 			<Notifications
 				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
 				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
@@ -333,9 +315,7 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ audienceSegmentationEnabled && configuredAudiences && (
-				<AudienceSelectionPanel />
-			) }
+			{ configuredAudiences && <AudienceSelectionPanel /> }
 
 			<OfflineNotification />
 		</Fragment>

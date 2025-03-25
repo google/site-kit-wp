@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { getQueryArg } from '@wordpress/url';
+
+/**
+ * Internal dependencies
+ */
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -39,6 +47,7 @@ import { CORE_SITE } from '../datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+	PERMISSION_UPDATE_PLUGINS,
 } from '../datastore/user/constants';
 import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
@@ -62,7 +71,12 @@ import FirstPartyModeSetupBanner, {
 	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
 } from '../../components/notifications/FirstPartyModeSetupBanner';
 import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
-import { isFeatureEnabled } from '../../features';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
+import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from '../../components/notifications/EnableAutoUpdateBannerNotification';
+import { MINUTE_IN_SECONDS } from '../../util';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -321,6 +335,67 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
+	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
+		Component: EnableAutoUpdateBannerNotification,
+		priority: 280,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			await Promise.all( [
+				// The hasCapability() selector relies on the resolution
+				// of the getCapabilities() resolver.
+				resolveSelect( CORE_USER ).getCapabilities(),
+				// The hasChangePluginAutoUpdatesCapacity() and
+				// getSiteKitAutoUpdatesEnabled() selectors rely on the
+				// resolution of the getSiteInfo() resolver.
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+			] );
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			const { dismissNotification } = dispatch( CORE_NOTIFICATIONS );
+
+			/**
+			 * If the user just set up Site Kit (i.e. just returned from the
+			 * initial OAuth sign-in flow) and is seeing the dashboard
+			 * for the first time, we want to hide (dismiss) this notification for 10
+			 * minutes so they aren't immediately bothered by this CTA.
+			 */
+			if ( notification === 'authentication_success' && ! slug ) {
+				await dismissNotification( 'auto-update-cta', {
+					expiresInSeconds: MINUTE_IN_SECONDS * 10,
+					skipHidingFromQueue: true,
+				} );
+				return false;
+			}
+
+			const hasUpdatePluginCapability = select( CORE_USER ).hasCapability(
+				PERMISSION_UPDATE_PLUGINS
+			);
+			const hasChangePluginAutoUpdatesCapacity =
+				select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity();
+			const siteKitAutoUpdatesEnabled =
+				select( CORE_SITE ).getSiteKitAutoUpdatesEnabled();
+
+			// Don't render anything if the user has no permission to update plugin,
+			// auto-updates can not be enabled for Site Kit, or auto updates are already
+			// enabled for Site Kit.
+			if (
+				hasUpdatePluginCapability &&
+				hasChangePluginAutoUpdatesCapacity &&
+				! siteKitAutoUpdatesEnabled
+			) {
+				return true;
+			}
+
+			return false;
+		},
+		isDismissible: true,
+	},
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
 		priority: 300,
@@ -494,6 +569,29 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
+	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
+		Component: ConsentModeSetupCTAWidget,
+		priority: 20,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The isConsentModeEnabled selector relies on the resolution
+			// of the getConsentModeSettings() resolver.
+			await resolveSelect( CORE_SITE ).getConsentModeSettings();
+
+			const isConsentModeEnabled =
+				select( CORE_SITE ).isConsentModeEnabled();
+
+			if ( isConsentModeEnabled !== false ) {
+				return false;
+			}
+
+			return resolveSelect( CORE_SITE ).isAdsConnected();
+		},
+		dismissRetries: 2,
+	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: 30,
@@ -531,8 +629,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'firstPartyMode',
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
@@ -562,8 +658,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'firstPartyMode',
 	},
 	'setup-success-notification-fpm': {
@@ -577,8 +671,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
 			);
 		},
-		// Not officially part of the notifications API, just added here for the conditional
-		// registration of this notification based on the feature flag.
 		featureFlag: 'firstPartyMode',
 	},
 };
@@ -592,15 +684,6 @@ export const DEFAULT_NOTIFICATIONS = {
  */
 export function registerDefaults( notificationsAPI ) {
 	for ( const notificationID in DEFAULT_NOTIFICATIONS ) {
-		if (
-			DEFAULT_NOTIFICATIONS[ notificationID ]?.featureFlag &&
-			! isFeatureEnabled(
-				DEFAULT_NOTIFICATIONS[ notificationID ]?.featureFlag
-			)
-		) {
-			continue;
-		}
-
 		notificationsAPI.registerNotification(
 			notificationID,
 			DEFAULT_NOTIFICATIONS[ notificationID ]

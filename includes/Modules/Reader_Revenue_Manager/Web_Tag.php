@@ -27,6 +27,26 @@ class Web_Tag extends Module_Web_Tag {
 	use Tag_With_DNS_Prefetch_Trait;
 
 	/**
+	 * Product ID.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @var string
+	 */
+	private $product_id;
+
+	/**
+	 * Sets the product ID.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @param string $product_id Product ID.
+	 */
+	public function set_product_id( $product_id ) {
+		$this->product_id = $product_id;
+	}
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since 1.132.0
@@ -60,10 +80,22 @@ class Web_Tag extends Module_Web_Tag {
 	protected function enqueue_swg_script() {
 		$locale = str_replace( '_', '-', get_locale() );
 
+		/**
+		 * Filters the Reader Revenue Manager product ID.
+		 *
+		 * @since 1.148.0
+		 *
+		 * @param string $product_id The array of post types.
+		 */
+		$product_id = apply_filters(
+			'googlesitekit_reader_revenue_manager_product_id',
+			$this->product_id
+		);
+
 		$subscription = array(
 			'type'              => 'NewsArticle',
 			'isPartOfType'      => array( 'Product' ),
-			'isPartOfProductId' => $this->tag_id . ':openaccess',
+			'isPartOfProductId' => $this->tag_id . ':' . $product_id,
 			'clientOptions'     => array(
 				'theme' => 'light',
 				'lang'  => $locale,
@@ -86,21 +118,7 @@ class Web_Tag extends Module_Web_Tag {
 		wp_script_add_data( 'google_swgjs', 'strategy', 'async' );
 		wp_add_inline_script( 'google_swgjs', $swg_inline_script, 'before' );
 
-		/**
-		 * Filters the post types where Reader Revenue Manager CTAs should appear.
-		 *
-		 * @since 1.140.0
-		 *
-		 * @param array $cta_post_types The array of post types.
-		 */
-		$cta_post_types = apply_filters(
-			'googlesitekit_reader_revenue_manager_cta_post_types',
-			array( 'post' )
-		);
-
-		if ( is_singular( $cta_post_types ) ) {
-			wp_enqueue_script( 'google_swgjs' );
-		}
+		wp_enqueue_script( 'google_swgjs' );
 	}
 
 	/**

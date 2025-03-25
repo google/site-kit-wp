@@ -25,25 +25,48 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Button } from 'googlesitekit-components';
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Warning from '../../../svg/icons/warning.svg';
+import Link from '../Link';
 
 export default function LostEventsSubtleNotification( {
 	onSelectMetricsCallback,
 	onDismissCallback,
 } ) {
+	const lostEventsDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'unavailable-metrics-data'
+		)
+	);
 	return (
 		<SubtleNotification
 			className="googlesitekit-acr-subtle-notification googlesitekit-acr-subtle-notification__lost-events"
 			title={ __( 'Unavailable metrics data', 'google-site-kit' ) }
-			description={ __(
-				'We couldn’t detect any events for some of your metrics in over 90 days. You can select other metrics for your dashboard',
-				'google-site-kit'
+			description={ createInterpolateElement(
+				__(
+					'We couldn’t detect any events for some of your metrics in over 90 days. You can select other metrics for your dashboard. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href={ lostEventsDocumentationURL }
+							external
+							aria-label={ __(
+								'Learn more about unavailable metric data',
+								'google-site-kit'
+							) }
+						/>
+					),
+				}
 			) }
 			dismissCTA={
 				<Button tertiary onClick={ onDismissCallback }>

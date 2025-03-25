@@ -119,7 +119,7 @@ describe( 'Ads module setup', () => {
 		await expect( page ).toMatchElement(
 			'.googlesitekit-subtle-notification',
 			{
-				text: /success! your conversion tracking id was added to your site/i,
+				text: /success! your conversion id was added to your site/i,
 			}
 		);
 

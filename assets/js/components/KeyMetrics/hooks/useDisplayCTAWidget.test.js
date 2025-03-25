@@ -97,7 +97,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 	} );
 
 	it( 'should return false if the Analytics data is not available on load', async () => {
-		registry
+		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsDataAvailableOnLoad( false );
 
@@ -107,9 +107,14 @@ describe( 'useDisplayCTAWidget hook', () => {
 			)
 		);
 
-		const { result } = await renderHook( () => useDisplayCTAWidget(), {
-			registry,
-		} );
+		const { result, waitForRegistry } = await renderHook(
+			() => useDisplayCTAWidget(),
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( result.current ).toBe( false );
 	} );
@@ -125,10 +130,14 @@ describe( 'useDisplayCTAWidget hook', () => {
 			)
 		);
 
-		const { result } = await renderHook( () => useDisplayCTAWidget(), {
-			registry,
-		} );
+		const { result, waitForRegistry } = await renderHook(
+			() => useDisplayCTAWidget(),
+			{
+				registry,
+			}
+		);
 
+		await waitForRegistry();
 		expect( result.current ).toBe( false );
 	} );
 } );

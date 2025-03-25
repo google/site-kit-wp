@@ -21,13 +21,13 @@
  */
 import {
 	AnyoneCanRegisterReadOnly,
-	AnyoneCanRegisterDisabledNotice,
 	ButtonShapeSelect,
 	ButtonTextSelect,
 	ButtonThemeSelect,
 	ClientIDTextField,
 	OneTapToggles,
 	Preview,
+	SettingsNotice,
 } from '../common';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -81,7 +81,7 @@ export default function SettingsForm() {
 					</Cell>
 					<Cell size={ 12 }>
 						<AnyoneCanRegisterReadOnly />
-						<AnyoneCanRegisterDisabledNotice />
+						<SettingsNotice />
 					</Cell>
 				</Row>
 			</Grid>

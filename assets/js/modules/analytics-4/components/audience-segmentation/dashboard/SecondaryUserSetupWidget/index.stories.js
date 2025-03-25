@@ -139,7 +139,7 @@ export default {
 
 				await registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
+					.receiveGetUserAudienceSettings( audienceSettings );
 
 				await args?.setupRegistry( registry );
 			};

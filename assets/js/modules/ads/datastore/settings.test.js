@@ -22,9 +22,8 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	provideNotifications,
+	deprecatedProvideNotifications,
 	provideUserAuthentication,
-	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
@@ -118,7 +117,7 @@ describe( 'modules/ads settings', () => {
 					FPM_SETUP_CTA_BANNER_NOTIFICATION,
 				] );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -161,8 +160,6 @@ describe( 'modules/ads settings', () => {
 					},
 				},
 			} );
-
-			await waitForDefaultTimeouts();
 		} );
 
 		it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
@@ -219,7 +216,7 @@ describe( 'modules/ads settings', () => {
 				body: {},
 			} );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -276,9 +273,6 @@ describe( 'modules/ads settings', () => {
 					},
 				},
 			} );
-			expect( fetchMock ).toHaveFetchedTimes( 3 );
-
-			await waitForDefaultTimeouts();
 		} );
 
 		it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
@@ -291,7 +285,7 @@ describe( 'modules/ads settings', () => {
 				body: {},
 			} );
 
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -344,12 +338,10 @@ describe( 'modules/ads settings', () => {
 
 			expect( submitChangesError ).toEqual( error );
 			expect( console ).toHaveErrored();
-
-			await waitForDefaultTimeouts();
 		} );
 
 		it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-			provideNotifications(
+			deprecatedProvideNotifications(
 				registry,
 				{
 					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:

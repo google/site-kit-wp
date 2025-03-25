@@ -110,7 +110,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the redirect URL for the error page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param string $code Error code.
 	 * @return string Redirect URL.
@@ -122,7 +122,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the redirect URL after the user signs in with Google.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param WP_User $user User object.
 	 * @param Input   $input Input instance.
@@ -133,14 +133,9 @@ class Authenticator implements Authenticator_Interface {
 		$redirect_to = admin_url();
 
 		// If we have the redirect URL in the cookie, use it as the main redirect_to URL.
-		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::COOKIE_REDIRECT_TO );
+		$cookie_redirect_to = $this->get_cookie_redirect( $input );
 		if ( ! empty( $cookie_redirect_to ) ) {
 			$redirect_to = $cookie_redirect_to;
-
-			if ( ! headers_sent() ) {
-				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-				setcookie( self::COOKIE_REDIRECT_TO, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
-			}
 		}
 
 		// Redirect to HTTPS if user wants SSL.
@@ -168,7 +163,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Signs in the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param WP_User $user User object.
 	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
@@ -200,7 +195,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Finds an existing user using the Google user ID and email.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|null User object if found, null otherwise.
@@ -239,7 +234,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Create a new user using the Google auth payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
@@ -284,7 +279,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Gets the hashed Google user ID from the provided payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return string Hashed Google user ID.
@@ -296,7 +291,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Checks if the registration is open.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @return bool True if registration is open, false otherwise.
 	 */
@@ -311,7 +306,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Gets the default role for new users.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Updated the function visibility to protected.
+	 * @since 1.145.0 Updated the function visibility to protected.
 	 *
 	 * @return string Default role.
 	 */
@@ -333,5 +328,23 @@ class Authenticator implements Authenticator_Interface {
 	 */
 	public static function get_cookie_path() {
 		return dirname( wp_parse_url( wp_login_url(), PHP_URL_PATH ) );
+	}
+
+	/**
+	 * Gets the redirect URL from the cookie and clears the cookie.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Redirect URL.
+	 */
+	protected function get_cookie_redirect( $input ) {
+		$cookie_redirect_to = $input->filter( INPUT_COOKIE, self::COOKIE_REDIRECT_TO );
+		if ( ! empty( $cookie_redirect_to ) && ! headers_sent() ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( self::COOKIE_REDIRECT_TO, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+		}
+
+		return $cookie_redirect_to;
 	}
 }

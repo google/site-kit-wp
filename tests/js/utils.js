@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { debounce, mapValues } from 'lodash';
+import { debounce, keyBy, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -466,15 +466,50 @@ export const provideKeyMetricsUserInputSettings = (
 /**
  * Provides notifications data to the given registry.
  *
+ * @since 1.149.0
+ *
+ * @param {Object}   registry    The registry to set up.
+ * @param {Object[]} [extraData] List of notification objects to be merged with defaults. Default empty array.
+ */
+export const provideNotifications = ( registry, extraData ) => {
+	const { registerNotification: realRegisterNotification, ...Notifications } =
+		coreNotifications.createNotifications( registry );
+
+	const extraDataByID = keyBy( extraData, 'id' );
+	// Decorate `Notifications.registerNotification` with a function to apply extra data.
+	const registeredNotifications = new Set();
+	const testRegisterNotification = ( id, settings ) => {
+		registeredNotifications.add( id );
+		return realRegisterNotification( id, {
+			...settings,
+			...extraDataByID[ id ],
+		} );
+	};
+	Notifications.registerNotification = testRegisterNotification;
+	// Register defaults with any potential overrides via extraData.
+	coreNotifications.registerNotifications( Notifications );
+
+	// Register any additional notifications provided.
+	Object.entries( extraDataByID )
+		.filter( ( [ id ] ) => ! registeredNotifications.has( id ) )
+		.forEach( ( [ id, settings ] ) =>
+			realRegisterNotification( id, settings )
+		);
+};
+
+/**
+ * Provides notifications data to the given registry.
+ *
  * @since 1.140.0
  * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
+ * @deprecated Use `provideNotifications` instead.
  *
  * @param {Object}  registry            The registry to set up.
  * @param {Object}  [extraData]         Extra data to merge with the default settings.
  * @param {Object}  [options]           Options object.
  * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
  */
-export const provideNotifications = (
+export const deprecatedProvideNotifications = (
 	registry,
 	extraData,
 	{ overwrite = false } = {}
@@ -521,7 +556,7 @@ export const muteFetch = ( matcher, response = {} ) => {
  * Useful for simulating a loading state.
  *
  * @since 1.12.0
- * @since n.e.x.t Added `repeat` option.
+ * @since 1.145.0 Added `repeat` option.
  * @private
  *
  * @param {(string|RegExp|Function|URL|Object)} matcher          Criteria for deciding which requests to mock.

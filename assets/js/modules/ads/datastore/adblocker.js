@@ -55,13 +55,13 @@ export const selectors = {
 
 		if ( isModuleConnected ) {
 			return __(
-				'Ad blocker detected; please disable it to get the latest Ads data',
+				'To get the latest Ads data you will need to disable your Ad blocker',
 				'google-site-kit'
 			);
 		}
 
 		return __(
-			'Ad blocker detected; please disable it to set up Ads',
+			'To set up Ads you will need to disable your Ad blocker',
 			'google-site-kit'
 		);
 	} ),

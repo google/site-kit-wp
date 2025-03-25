@@ -43,6 +43,10 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '../../../../../googlesitekit/constants';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-width-utils';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -55,6 +59,7 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	let registry;
+	let originalViewportWidth;
 
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -79,15 +84,19 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [],
 			isAudienceSegmentationWidgetHidden: false,
 			didSetAudiences: true,
 		} );
+
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render an introductory overlay notification', async () => {

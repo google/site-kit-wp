@@ -280,6 +280,13 @@ class TestCase extends WP_UnitTestCase {
 		$this->assertEquals( $meta_value, $meta['meta_value'], "Failed to assert that post $post_id has \"$meta_key\" meta with \"$meta_value\" value." );
 	}
 
+	protected function assertTermMetaNotExists( $term_id, $meta_key ) {
+		$this->assertNull(
+			$this->queryTermMeta( $term_id, $meta_key ),
+			"Failed to assert that '$meta_key' does not exist for term ID: $term_id."
+		);
+	}
+
 	protected function queryPostMeta( $post_id, $meta_key ) {
 		global $wpdb;
 
@@ -287,6 +294,19 @@ class TestCase extends WP_UnitTestCase {
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s",
 				$post_id,
+				$meta_key
+			),
+			ARRAY_A
+		);
+	}
+
+	protected function queryTermMeta( $term_id, $meta_key ) {
+		global $wpdb;
+
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->termmeta} WHERE term_id = %d AND meta_key = %s",
+				$term_id,
 				$meta_key
 			),
 			ARRAY_A

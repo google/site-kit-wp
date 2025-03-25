@@ -60,6 +60,9 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+	const syncAvailableCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -82,7 +85,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 			propertyID: '123456789',
 		} );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -153,10 +156,16 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 		await act(
 			async () =>
-				await untilResolved( registry, CORE_USER ).getAudienceSettings()
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserAudienceSettings()
 		);
 
 		expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetched(
+			syncAvailableCustomDimensionsEndpoint
+		);
 
 		await act( waitForDefaultTimeouts );
 	} );
@@ -185,6 +194,16 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 	describe( 'AudienceErrorModal', () => {
 		it( 'should show the OAuth error modal when the required scopes are not granted', async () => {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				body: [],
+				status: 200,
+			} );
+
+			fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+				body: [],
+				status: 200,
+			} );
+
 			provideSiteInfo( registry, {
 				setupErrorCode: 'access_denied',
 			} );
@@ -205,7 +224,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetAudienceSettings( settings );
+				.receiveGetUserAudienceSettings( settings );
 
 			const { getByRole, getByText } = render( <SetupCTA />, {
 				registry,
@@ -221,13 +240,13 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 				);
 			} );
 
-			// Allow the `trackEvent()` promise to resolve.
-			await waitForDefaultTimeouts();
-
-			// Verify the error is an OAuth error variant.
-			expect(
-				getByText( /Analytics update failed/i )
-			).toBeInTheDocument();
+			// Wait for the error modal to be displayed.
+			await waitFor( () => {
+				// Verify the error is an OAuth error variant.
+				expect(
+					getByText( /Analytics update failed/i )
+				).toBeInTheDocument();
+			} );
 
 			// Verify the "Get help" link is displayed.
 			expect( getByText( /get help/i ) ).toBeInTheDocument();
@@ -252,7 +271,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 			};
 
-			fetchMock.post( syncAvailableAudiencesEndpoint, {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 				body: errorResponse,
 				status: 500,
 			} );
@@ -292,7 +311,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 				data: { status: 500 },
 			};
 
-			fetchMock.post( syncAvailableAudiencesEndpoint, {
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 				body: errorResponse,
 				status: 500,
 			} );

@@ -92,6 +92,38 @@ export default function SettingsView() {
 				<AdBlockerWarning moduleSlug="ads" />
 			</div>
 
+			{ ! isAdBlockerActive && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Conversion ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ conversionIDValue === '' &&
+							__( 'None', 'google-site-kit' ) }
+						{ conversionIDValue ||
+							( typeof conversionIDValue === 'undefined' && (
+								<DisplaySetting value={ conversionIDValue } />
+							) ) }
+					</p>
+				</div>
+			) }
+
+			{ ! isAdBlockerActive && isPaxView && (
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Customer ID', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ extCustomerID === '' &&
+							__( 'None', 'google-site-kit' ) }
+						{ extCustomerID ||
+							( typeof extCustomerID === 'undefined' && (
+								<DisplaySetting value={ extCustomerID } />
+							) ) }
+					</p>
+				</div>
+			) }
+
 			<SettingsStatuses
 				statuses={
 					fpmEnabled
@@ -122,38 +154,6 @@ export default function SettingsView() {
 						  ]
 				}
 			/>
-
-			{ ! isAdBlockerActive && (
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ conversionIDValue === '' &&
-							__( 'None', 'google-site-kit' ) }
-						{ conversionIDValue ||
-							( typeof conversionIDValue === 'undefined' && (
-								<DisplaySetting value={ conversionIDValue } />
-							) ) }
-					</p>
-				</div>
-			) }
-
-			{ ! isAdBlockerActive && isPaxView && (
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Customer ID', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ extCustomerID === '' &&
-							__( 'None', 'google-site-kit' ) }
-						{ extCustomerID ||
-							( typeof extCustomerID === 'undefined' && (
-								<DisplaySetting value={ extCustomerID } />
-							) ) }
-					</p>
-				</div>
-			) }
 		</div>
 	);
 }

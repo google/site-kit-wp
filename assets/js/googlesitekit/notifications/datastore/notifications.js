@@ -39,6 +39,7 @@ import {
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';
+import { isFeatureEnabled } from '../../../features';
 
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
@@ -58,6 +59,7 @@ export const actions = {
 	 * Registers a notification with a given `id` slug and settings.
 	 *
 	 * @since 1.132.0
+	 * @since 1.146.0 Added `featureFlag` parameter.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
@@ -69,6 +71,7 @@ export const actions = {
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
 	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
+	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
 	 * @return {Object} Redux-style action.
 	 */
 	registerNotification(
@@ -82,6 +85,7 @@ export const actions = {
 			checkRequirements,
 			isDismissible,
 			dismissRetries = 0,
+			featureFlag = '',
 		}
 	) {
 		invariant(
@@ -120,6 +124,7 @@ export const actions = {
 					checkRequirements,
 					isDismissible,
 					dismissRetries,
+					featureFlag,
 				},
 			},
 			type: REGISTER_NOTIFICATION,
@@ -272,6 +277,11 @@ export const controls = {
 				await registry.resolveSelect( CORE_USER ).getDismissedItems();
 
 				let potentialNotifications = Object.values( notifications )
+					.filter( ( notification ) =>
+						notification?.featureFlag
+							? isFeatureEnabled( notification.featureFlag )
+							: true
+					)
 					.filter(
 						( notification ) => notification.groupID === groupID
 					)
@@ -458,7 +468,7 @@ export const selectors = {
 	 * Determines whether a notification that can reappear again for a fixed number of times
 	 * on dismissal is at its final appearance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.145.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} id    Notification id.

@@ -42,6 +42,10 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../modules/analytics-4/datastore/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import * as tracking from '../../util/tracking';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -56,9 +60,10 @@ import {
 } from '../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { enabledFeatures } from '../../features';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ConversionReportingNotificationCTAWidget', () => {
 	let registry;
@@ -90,12 +95,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			},
 		] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveConversionReportingInlineData( {
-				newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-				lostEvents: [],
-			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+			lostEvents: [],
+			newBadgeEvents: [],
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetConversionReportingSettings( {
 			newEventsCalloutDismissedAt: 0,
@@ -113,6 +117,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setLostConversionEventsLastUpdateAt( 0 );
+	} );
+
+	afterEach( () => {
+		afterEach( () => {
+			jest.clearAllMocks();
+		} );
 	} );
 
 	afterAll( () => {
@@ -581,7 +591,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -611,6 +621,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					features: [ 'conversionReporting' ],
 				}
 			);
@@ -626,6 +637,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					getByRole( 'button', { name: 'Select metrics' } )
 				);
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_kmw-manual-conversion-events-detected-notification',
+				'confirm_select_new_conversion_metrics',
+				'conversion_reporting'
+			);
 
 			await waitForRegistry();
 
@@ -663,12 +680,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					ENUM_CONVERSION_EVENTS.PURCHASE,
 				] );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveConversionReportingInlineData( {
-					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-					lostEvents: [],
-				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+				lostEvents: [],
+				newBadgeEvents: [],
+			} );
 
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
@@ -678,13 +694,14 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				isWidgetHidden: false,
 			} );
 
-			const { getByRole, waitForRegistry } = render(
+			const { getByRole, getByText, waitForRegistry } = render(
 				<ConversionReportingNotificationCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
 				/>,
 				{
 					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					features: [ 'conversionReporting' ],
 				}
 			);
@@ -694,12 +711,29 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				getByRole( 'button', { name: 'View metrics' } )
 			).toBeInTheDocument();
 
+			expect(
+				getByText(
+					( content, testElement ) =>
+						testElement.tagName.toLowerCase() === 'p' &&
+						testElement.className ===
+							'googlesitekit-subtle-notification__secondary_description' &&
+						content ===
+							'We’ve extended your metrics selection based on your website events'
+				)
+			).toBeInTheDocument();
+
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
 					getByRole( 'button', { name: 'View metrics' } )
 				);
 			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_kmw-manual-new-conversion-events-detected-notification',
+				'confirm_view_new_conversion_metrics',
+				'conversion_reporting'
+			);
 
 			expect(
 				registry
@@ -749,12 +783,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				const newMetrics = registry
 					.select( CORE_USER )
@@ -816,12 +849,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.PURCHASE,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				const { container, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
@@ -902,12 +934,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.PURCHASE,
 						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 					] );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				const { container, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
@@ -968,12 +999,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.PURCHASE,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				const { getByRole, waitForRegistry } = render(
 					<ConversionReportingNotificationCTAWidget
@@ -1010,12 +1040,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
@@ -1061,12 +1090,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.PURCHASE,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
@@ -1113,12 +1141,11 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 					] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveConversionReportingInlineData( {
-						newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-						lostEvents: [],
-					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+					lostEvents: [],
+					newBadgeEvents: [],
+				} );
 
 				// There is a third leads metric that is not selected. This scenario simulates
 				// edge case in which user had 2 out of 3 leads metrics selected, then lost the `contact` event`

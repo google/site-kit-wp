@@ -40,15 +40,20 @@ export default function CTALink( {
 	ctaLink,
 	ctaLabel,
 	onCTAClick,
+	isSaving,
 	dismissOnCTAClick = false,
 	dismissExpires = 0,
 	dismissOptions = { skipHidingFromQueue: true },
+	gaTrackingEventArgs,
 } ) {
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
 		useState( false );
 	const isMounted = useMountedState();
 
-	const trackEvents = useNotificationEvents( id );
+	const trackEvents = useNotificationEvents(
+		id,
+		gaTrackingEventArgs?.category
+	);
 
 	const isNavigatingToCTALink = useSelect( ( select ) => {
 		return ctaLink
@@ -106,7 +111,9 @@ export default function CTALink( {
 			href={ ctaLink }
 			onClick={ handleCTAClick }
 			disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
-			isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
+			isSaving={
+				isAwaitingCTAResponse || isNavigatingToCTALink || isSaving
+			}
 		>
 			{ ctaLabel }
 		</SpinnerButton>

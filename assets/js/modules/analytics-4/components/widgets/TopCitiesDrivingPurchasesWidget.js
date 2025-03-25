@@ -59,9 +59,7 @@ function TopCitiesDrivingPurchasesWidget( { Widget } ) {
 		dimensions: [ 'city' ],
 		dimensionFilters: {
 			city: {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
+				filterType: 'emptyFilter',
 				notExpression: true,
 			},
 		},
@@ -81,6 +79,7 @@ function TopCitiesDrivingPurchasesWidget( { Widget } ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 
 	const topCitiesReport = useInViewSelect(

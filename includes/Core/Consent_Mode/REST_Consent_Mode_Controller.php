@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
@@ -187,46 +188,35 @@ class REST_Consent_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$is_active  = function_exists( 'wp_set_consent' );
-							$installed  = $is_active;
-							$plugin_uri = 'https://wordpress.org/plugins/wp-consent-api';
-							$plugin     = 'wp-consent-api/wp-consent-api.php';
-
-							$response = array(
+							// Here we intentionally use a non-plugin-specific detection strategy.
+							$is_active = function_exists( 'wp_set_consent' );
+							$response  = array(
 								'hasConsentAPI' => $is_active,
 							);
 
+							// Alternate wp_nonce_url without esc_html breaking query parameters.
+							$nonce_url = function ( $action_url, $action ) {
+								return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
+							};
+
 							if ( ! $is_active ) {
-								if ( ! function_exists( 'get_plugins' ) ) {
-									require_once ABSPATH . 'wp-admin/includes/plugin.php';
-								}
+								$installed_plugin = $this->get_consent_api_plugin_file();
 
-								$plugins = get_plugins();
-
-								if ( array_key_exists( $plugin, $plugins ) ) {
-									$installed = true;
-								} else {
-									foreach ( $plugins as $plugin_file => $installed_plugin ) {
-										if ( $installed_plugin['PluginURI'] === $plugin_uri ) {
-											$plugin    = $plugin_file;
-											$installed = true;
-											break;
-										}
-									}
-								}
-
-								// Alternate wp_nonce_url without esc_html breaking query parameters.
-								$nonce_url = function ( $action_url, $action ) {
-									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
-								};
-								$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
-								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
-
-								$response['wpConsentPlugin'] = array(
-									'installed'   => $installed,
-									'activateURL' => current_user_can( 'activate_plugin', $plugin ) ? esc_url_raw( $activate_url ) : false,
-									'installURL'  => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
+								$consent_plugin = array(
+									'installed'   => (bool) $installed_plugin,
+									'installURL'  => false,
+									'activateURL' => false,
 								);
+
+								if ( ! $installed_plugin && current_user_can( 'install_plugins' ) ) {
+									$consent_plugin['installURL'] = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
+								}
+
+								if ( $installed_plugin && current_user_can( 'activate_plugin', $installed_plugin ) ) {
+									$consent_plugin['activateURL'] = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $installed_plugin ), 'activate-plugin_' . $installed_plugin );
+								}
+
+								$response['wpConsentPlugin'] = $consent_plugin;
 							}
 
 							return new WP_REST_Response( $response );
@@ -318,6 +308,25 @@ class REST_Consent_Mode_Controller {
 					),
 				),
 			),
+		);
+	}
+
+	/**
+	 * Gets the plugin file of the installed WP Consent API if found.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @return false|string
+	 */
+	protected function get_consent_api_plugin_file() {
+		// Check the default location first.
+		if ( Plugin_Status::is_plugin_installed( 'wp-consent-api/wp-consent-api.php' ) ) {
+			return 'wp-consent-api/wp-consent-api.php';
+		}
+
+		// Here we make an extra effort to attempt to detect the plugin if installed in a non-standard location.
+		return Plugin_Status::is_plugin_installed(
+			fn ( $installed_plugin ) => 'https://wordpress.org/plugins/wp-consent-api' === $installed_plugin['PluginURI']
 		);
 	}
 }

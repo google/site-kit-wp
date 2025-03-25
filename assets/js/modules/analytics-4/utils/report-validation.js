@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 17 ] */
+
 /**
  * External dependencies
  */
@@ -116,7 +118,19 @@ export function isValidDimensionFilters( filters ) {
 
 		if ( isPlainObject( filters[ dimension ] ) ) {
 			const props = Object.keys( filters[ dimension ] );
-			return props.includes( 'filterType' ) && props.includes( 'value' );
+
+			if ( ! props.includes( 'filterType' ) ) {
+				return false;
+			}
+
+			if (
+				filters[ dimension ].filterType !== 'emptyFilter' &&
+				! props.includes( 'value' )
+			) {
+				return false;
+			}
+
+			return true;
 		}
 
 		return false;

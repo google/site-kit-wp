@@ -11,7 +11,7 @@ on:
       - includes/**
       - tests/phpunit/**
       - '**.php'
-      - 'phpcs.xml.dist'
+      - 'phpcs.xml*'
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
@@ -26,7 +26,7 @@ on:
       - includes/**
       - tests/phpunit/**
       - '**.php'
-      - 'phpcs.xml.dist'
+      - 'phpcs.xml*'
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
@@ -77,13 +77,20 @@ jobs:
       fail-fast: false
       matrix:
         composer_php_version: ['']
+        composer_dev_require: ['']
         php_version: ['7.4', '8.1']
         wp_multisite: ['']
         wp_version: ['latest']
         include:
+          # Min supported PHP + WP Oldest
+          - php_version: '7.4'
+            wp_version: '5.3.18' # PHP 7.4 support
+            composer_dev_require: 'phpunit/phpunit:^7 yoast/phpunit-polyfills:^1'
+          # Min supported PHP + WP Latest Multisite
           - php_version: '7.4'
             wp_multisite: '1'
             wp_version: 'latest'
+          # Min supported PHP + WP Nightly
           - php_version: '7.4'
             wp_version: 'nightly'
     services:
@@ -133,6 +140,10 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+
+      - name: Configure Composer Dev Packages
+        if: ${{ matrix.composer_dev_require }}
+        run: composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress

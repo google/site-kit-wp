@@ -29,17 +29,27 @@ export default function Chip( {
 	onClick,
 	selected,
 	className,
+	CheckMark = ChipCheckmark,
+	disabled,
 	...props
 } ) {
 	return (
 		<MuiChip
-			chipCheckmark={ <ChipCheckmark /> }
+			chipCheckmark={ <CheckMark /> }
 			data-chip-id={ id }
 			id={ id }
 			label={ label }
-			onClick={ onClick }
+			onClick={ ( event ) => {
+				if ( disabled ) {
+					return;
+				}
+
+				onClick?.( event );
+			} }
 			selected={ selected }
-			className={ classnames( 'googlesitekit-chip', className ) }
+			className={ classnames( 'googlesitekit-chip', className, {
+				'googlesitekit-chip--disabled': disabled,
+			} ) }
 			{ ...props }
 		/>
 	);
@@ -51,4 +61,5 @@ Chip.propTypes = {
 	onClick: PropTypes.func,
 	selected: PropTypes.bool,
 	className: PropTypes.string,
+	CheckMark: PropTypes.elementType,
 };

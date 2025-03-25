@@ -74,17 +74,17 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'publicationID'                     => '',
 			'publicationOnboardingState'        => '',
 			'publicationOnboardingStateChanged' => false,
+			'productIDs'                        => array(),
+			'paymentOption'                     => '',
 		);
 
 		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
 			$defaults = array_merge(
 				$defaults,
 				array(
-					'snippetMode'   => 'post_types',
-					'postTypes'     => array( 'post' ),
-					'productID'     => 'openaccess',
-					'productIDs'    => array(),
-					'paymentOption' => '',
+					'snippetMode' => 'post_types',
+					'postTypes'   => array( 'post' ),
+					'productID'   => 'openaccess',
 				)
 			);
 		}
@@ -100,7 +100,22 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array An array of keys for view-only settings.
 	 */
 	public function get_view_only_keys() {
-		return array();
+		$keys = array(
+			'publicationID',
+		);
+
+		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
+			$keys = array_merge(
+				$keys,
+				array(
+					'snippetMode',
+					'postTypes',
+					'paymentOption',
+				)
+			);
+		}
+
+		return $keys;
 	}
 
 	/**
@@ -137,6 +152,25 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				}
 			}
 
+			if ( isset( $option['productIDs'] ) ) {
+				if ( ! is_array( $option['productIDs'] ) ) {
+					$option['productIDs'] = array();
+				} else {
+					$option['productIDs'] = array_values(
+						array_filter(
+							$option['productIDs'],
+							'is_string'
+						)
+					);
+				}
+			}
+
+			if ( isset( $option['paymentOption'] ) ) {
+				if ( ! is_string( $option['paymentOption'] ) ) {
+					$option['paymentOption'] = '';
+				}
+			}
+
 			if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
 				if ( isset( $option['snippetMode'] ) ) {
 					$valid_snippet_modes = array( 'post_types', 'per_post', 'sitewide' );
@@ -164,25 +198,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['productID'] ) ) {
 					if ( ! is_string( $option['productID'] ) ) {
 						$option['productID'] = 'openaccess';
-					}
-				}
-
-				if ( isset( $option['productIDs'] ) ) {
-					if ( ! is_array( $option['productIDs'] ) ) {
-						$option['productIDs'] = array();
-					} else {
-						$option['productIDs'] = array_values(
-							array_filter(
-								$option['productIDs'],
-								'is_string'
-							)
-						);
-					}
-				}
-
-				if ( isset( $option['paymentOption'] ) ) {
-					if ( ! is_string( $option['paymentOption'] ) ) {
-						$option['paymentOption'] = '';
 					}
 				}
 			}

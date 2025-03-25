@@ -1,0 +1,81 @@
+/**
+ * Sign in with Google RegistrationDisabledNotice styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-registration-disabled-notice {
+
+		&.googlesitekit-anyone-can-register-disabled-notice {
+			padding: $fs-body-sm $grid-gap-desktop;
+
+			@media (min-width: $bp-desktop) {
+				padding-bottom: $fs-body-md;
+				padding-top: $fs-body-md;
+			}
+		}
+
+		.googlesitekit-settings-notice__icon {
+			margin-right: 16px;
+
+			svg {
+				height: 24px;
+				width: 24px;
+			}
+		}
+
+		.googlesitekit-settings-notice__text {
+			font-size: $fs-body-sm;
+			font-weight: $fw-normal;
+			line-height: $lh-body-md;
+
+			@media (min-width: $bp-desktop) {
+				font-size: $fs-body-md;
+			}
+		}
+
+		&.googlesitekit-registration-disabled-notice--with-outer-cta {
+			flex-direction: column;
+
+			@media (min-width: $bp-tablet) {
+				flex-direction: initial;
+			}
+
+			.googlesitekit-settings-notice__text {
+				margin: 6px 0 $grid-gap-phone 0;
+
+				@media (min-width: $bp-desktop) {
+					margin: 0 $grid-gap-desktop 0 0;
+					max-width: 718px;
+				}
+			}
+
+			.mdc-button {
+				background-color: $c-utility-on-warning-container;
+				border-radius: 100px;
+				color: #fff;
+				font-weight: $fw-medium;
+				min-height: 32px;
+				padding: 6px 16px;
+
+				svg {
+					margin-left: 6px;
+				}
+			}
+		}
+	}
+}
