@@ -89,8 +89,6 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
 </div>
 `;
 
-exports[`AdminBarWidgets should render the Admin Bar Widgets for the view only user if the module is shared 1`] = `<div />`;
-
 exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Activate Analytics CTA 1`] = `
 <div>
   <div
