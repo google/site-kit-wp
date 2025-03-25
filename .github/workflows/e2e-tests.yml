@@ -140,9 +140,7 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-      # DEBUG: run the single failing test 20 times to confirm fix.
-        run: for i in {1..10}; do echo "Debug iteration $i" && npm run test:e2e || true; done
-        continue-on-error: true
+        run: npm run test:e2e
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
