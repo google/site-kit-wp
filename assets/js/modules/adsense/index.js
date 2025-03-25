@@ -215,9 +215,8 @@ export const ADSENSE_NOTIFICATIONS = {
 			}
 
 			await resolveSelect( MODULES_ADSENSE ).getSettings();
-			const adBlockingRecoverySetupStatus = await select(
-				MODULES_ADSENSE
-			).getAdBlockingRecoverySetupStatus();
+			const adBlockingRecoverySetupStatus =
+				select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
 
 			const notification = getQueryArg( location.href, 'notification' );
 
