@@ -544,8 +544,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
 		}
 
-		// Store the redirect URL in transients to prevent duplicate setups.
-		// This needs to be done before the redirect.
+		// Store the redirect URL in transients using the authorization code hash as the key.
+		// This prevents duplicate setup attempts if the user clicks the setup CTA button multiple times,
+		// as subsequent requests with the same code will be redirected to the stored URL.
+		// Must be done before the redirect to ensure the URL is available for any duplicate requests.
 		if ( ! empty( $code ) && ! empty( $redirect_url ) ) {
 			$code_hash = md5( $code );
 			$this->transients->set( $code_hash, $redirect_url, 5 * MINUTE_IN_SECONDS );
