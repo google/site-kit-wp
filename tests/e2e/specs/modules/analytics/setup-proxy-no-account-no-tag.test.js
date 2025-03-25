@@ -109,7 +109,8 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		} );
 	} );
 
-	it( 'preserves user-filled values provided and auto-submits after approving permissions', async () => {
+	// DEBUG: run the single failing test 20 times to confirm fix.
+	it.only( 'preserves user-filled values provided and auto-submits after approving permissions', async () => {
 		await page.waitForSelector( '.googlesitekit-heading-4' );
 
 		// Unfortunately, the view does not have a `form`, otherwise we could use `.toFillForm( el, fields )`

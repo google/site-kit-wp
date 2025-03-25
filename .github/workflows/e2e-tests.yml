@@ -140,7 +140,8 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: npm run test:e2e
+      # DEBUG: run the single failing test 20 times to confirm fix.
+        run: for i in {1..10}; do echo "Debug iteration $i" && npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-proxy-no-account-no-tag.test.js; done
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
