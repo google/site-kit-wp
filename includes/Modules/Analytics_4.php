@@ -300,7 +300,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					$this->reset_data_available();
 					$this->custom_dimensions_data_available->reset_data_available();
 
-					$available_audiences = $old_value['availableAudiences'] ?? array();
+					$audience_settings   = $this->audience_settings->get();
+					$available_audiences = $audience_settings['availableAudiences'] ?? array();
 
 					$available_audience_names = array_map(
 						function ( $audience ) {
@@ -362,14 +363,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
 					$new_value['availableCustomDimensions'] = null;
-
-					$this->audience_settings->set(
-						array(
-							'availableAudiences' => null,
-							'availableAudiencesLastSyncedAt' => 0,
-							'audienceSegmentationSetupCompletedBy' => null,
-						)
-					);
 				}
 
 				return $new_value;

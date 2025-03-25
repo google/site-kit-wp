@@ -28,10 +28,8 @@ import InfoNoticeWidget from '.';
 import {
 	createTestRegistry,
 	fireEvent,
-	freezeFetch,
 	muteFetch,
 	provideModules,
-	provideUserAuthentication,
 	render,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
@@ -71,7 +69,6 @@ describe( 'InfoNoticeWidget', () => {
 				slug: 'analytics-4',
 			},
 		] );
-		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		dismissPromptSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
@@ -91,16 +88,8 @@ describe( 'InfoNoticeWidget', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
-	const syncAudiencesRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
-	);
-
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
 		muteFetch( audienceSettingsRegExp );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences: [],
-		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
@@ -116,8 +105,6 @@ describe( 'InfoNoticeWidget', () => {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-
-		freezeFetch( syncAudiencesRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
@@ -204,8 +191,6 @@ describe( 'InfoNoticeWidget', () => {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-
-		freezeFetch( syncAudiencesRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 

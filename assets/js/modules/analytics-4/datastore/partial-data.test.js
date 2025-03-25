@@ -87,14 +87,7 @@ describe( 'modules/analytics-4 partial data', () => {
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences: [
-				{
-					name: testAudience1ResourceName,
-				},
-				{
-					name: testAudience2ResourceName,
-				},
-			],
+			availableAudiences: [ testAudience1, testAudience2 ],
 		} );
 	} );
 

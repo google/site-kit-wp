@@ -162,7 +162,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect( audiences ).toEqual( availableAudiences );
 			} );
 
-			it( 'should sync cached audiences when the audiences settings is undefined for authenticated user', async () => {
+			it( 'should sync cached audiences when availableAudiences is null for authenticated user', async () => {
 				provideUserAuthentication( registry );
 				muteFetch( audienceSettingsEndpoint );
 

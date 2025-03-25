@@ -103,8 +103,6 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	}
 
 	public function test_get_all_resource_dates() {
-		$this->enable_feature( 'audienceSegmentation' );
-
 		$this->assertEquals(
 			array(
 				'audience'        => array(),
@@ -167,8 +165,6 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	}
 
 	public function test_is_valid_resource_slug() {
-		$this->enable_feature( 'audienceSegmentation' );
-
 		$this->assertTrue( $this->resource_data_availability_date->is_valid_resource_slug( 'googlesitekit_post_type', Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION ) );
 		$this->assertTrue( $this->resource_data_availability_date->is_valid_resource_slug( $this->test_audience_1, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE ) );
 		$this->assertTrue( $this->resource_data_availability_date->is_valid_resource_slug( $this->test_property_id, Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY ) );
