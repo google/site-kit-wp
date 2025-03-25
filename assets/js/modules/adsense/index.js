@@ -209,9 +209,8 @@ export const ADSENSE_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			const isConnected =
-				select( CORE_MODULES ).isModuleConnected( 'adsense' );
-			if ( ! isConnected ) {
+			const { isModuleConnected } = resolveSelect( CORE_MODULES );
+			if ( ! ( await isModuleConnected( 'adsense' ) ) ) {
 				return false;
 			}
 
