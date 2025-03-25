@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,11 +43,7 @@ import {
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
-import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../../../../../components/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { trackEvent, WEEK_IN_SECONDS } from '../../../../../util';
 import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
@@ -79,8 +75,24 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const showTooltip = useShowTooltip( id );
-	const { isTooltipVisible } = useTooltipState( id );
+	const onTooltipDismiss = useCallback( () => {
+		trackEvent( trackEventCategory, 'tooltip_dismiss' );
+	}, [ trackEventCategory ] );
+
+	const tooltipSettings = {
+		tooltipSlug: id,
+		title: __(
+			'You can always enable groups from Settings later',
+			'google-site-kit'
+		),
+		content: __(
+			'The visitors group section will be added to your dashboard once you set it up.',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+		onDismiss: onTooltipDismiss,
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
@@ -143,34 +155,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
-
-	useEffect( () => {
-		if ( isTooltipVisible ) {
-			trackEvent( trackEventCategory, 'tooltip_view' );
-		}
-	}, [ isTooltipVisible, trackEventCategory ] );
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title={ __(
-						'You can always enable groups from Settings later',
-						'google-site-kit'
-					) }
-					content={ __(
-						'The visitors group section will be added to your dashboard once you set it up.',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ () => {
-						trackEvent( trackEventCategory, 'tooltip_dismiss' );
-					} }
-					tooltipStateKey={ id }
-				/>
-			</Fragment>
-		);
-	}
 
 	const hideCTABanner =
 		( isCTADismissed || ! dismissedPromptsLoaded ) && ! isSaving;

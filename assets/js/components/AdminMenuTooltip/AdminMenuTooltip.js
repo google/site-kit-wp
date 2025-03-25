@@ -37,8 +37,11 @@ export function AdminMenuTooltip() {
 		rehideAdminSubMenu = false,
 		onDismiss,
 		...tooltipSettings
-	} = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'admin-menu-tooltip' )
+	} = useSelect(
+		( select ) =>
+			select( CORE_UI ).getValue( 'admin-menu-tooltip' ) || {
+				isTooltipVisible: false,
+			}
 	);
 
 	const handleDismissTooltip = useCallback( async () => {

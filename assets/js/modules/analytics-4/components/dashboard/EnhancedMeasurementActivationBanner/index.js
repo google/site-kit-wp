@@ -43,9 +43,7 @@ import {
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 } from '../../../constants';
-import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
-import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
-import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
@@ -120,13 +118,19 @@ function EnhancedMeasurementActivationBanner() {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const { isTooltipVisible } = useTooltipState(
-		ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY
-	);
-
-	const showTooltip = useShowTooltip(
-		ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY
-	);
+	const tooltipSettings = {
+		tooltipSlug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
+		title: __(
+			'Enable enhanced measurement later here',
+			'google-site-kit'
+		),
+		content: __(
+			'You can always turn on enhanced measurement later in Site Kit Settings',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	function handleDismiss() {
 		showTooltip();
@@ -191,25 +195,6 @@ function EnhancedMeasurementActivationBanner() {
 			handleAutoSubmit();
 		}
 	}, [ hasEditScope, setValues, handleSubmit, autoSubmit ] );
-
-	if ( isTooltipVisible ) {
-		return (
-			<AdminMenuTooltip
-				title={ __(
-					'Enable enhanced measurement later here',
-					'google-site-kit'
-				) }
-				content={ __(
-					'You can always turn on enhanced measurement later in Site Kit Settings',
-					'google-site-kit'
-				) }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				tooltipStateKey={
-					ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY
-				}
-			/>
-		);
-	}
 
 	if (
 		! isEnhancedMeasurementInitiallyDisabled ||

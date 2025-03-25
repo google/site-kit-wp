@@ -53,11 +53,7 @@ import {
 } from '../../../../hooks/useBreakpoint';
 import { WooCommerceRedirectModal } from '../common';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import {
-	useShowTooltip,
-	useTooltipState,
-	AdminMenuTooltip,
-} from '../../../../components/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const breakpointSVGMap = {
@@ -154,21 +150,18 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		[ markNotificationDismissed, setOpenDialog, setSkipHidingBanner ]
 	);
 
-	const showTooltip = useShowTooltip( id );
-	const { isTooltipVisible } = useTooltipState( id );
+	const tooltipSettings = {
+		tooltipSlug: id,
+		title: __(
+			'You can always enable Ads from Settings later',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
-	if ( isTooltipVisible ) {
-		return (
-			<AdminMenuTooltip
-				title={ __(
-					'You can always enable Ads from Settings later',
-					'google-site-kit'
-				) }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				tooltipStateKey={ id }
-			/>
-		);
-	}
+	// We no longer need to check for isTooltipVisible or return the AdminMenuTooltip
+	// as it's now rendered elsewhere
 
 	// TODO: Don't use `skipHidingFromQueue` and remove the need to check
 	// if this component should output anything.
@@ -221,9 +214,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 								? __( 'Don’t show again', 'google-site-kit' )
 								: __( 'Maybe later', 'google-site-kit' )
 						}
-						dismissOptions={ {
-							skipHidingFromQueue: true,
-						} }
 						onDismiss={ showTooltip }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>
