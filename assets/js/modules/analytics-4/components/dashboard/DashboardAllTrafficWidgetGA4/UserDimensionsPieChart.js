@@ -171,9 +171,10 @@ export default function UserDimensionsPieChart( props ) {
 		maxSlices: 5,
 		withOthers: true,
 		tooltipCallback: ( row, previousDateRangeRow, rowData ) => {
+			const rowValue = row?.metricValues?.[ 0 ]?.value || 0;
 			const difference =
-				previousDateRangeRow.metricValues?.[ 0 ].value > 0
-					? ( row.metricValues?.[ 0 ].value * 100 ) /
+				previousDateRangeRow?.metricValues?.[ 0 ].value > 0
+					? ( rowValue * 100 ) /
 							previousDateRangeRow.metricValues?.[ 0 ].value -
 					  100
 					: 100;
