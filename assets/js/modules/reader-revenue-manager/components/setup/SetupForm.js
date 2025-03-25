@@ -66,7 +66,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 	const productIDs = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
-	const createPublicationURL = useSelect( ( select ) =>
+	const managePublicationsURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
@@ -133,15 +133,10 @@ export default function SetupForm( { onCompleteSetup } ) {
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">
-				{ publications.length === 1
-					? __(
-							'Site Kit will connect your existing publication',
-							'google-site-kit'
-					  )
-					: __(
-							'Select your preferred publication to connect with Site Kit',
-							'google-site-kit'
-					  ) }
+				{ __(
+					'Manage publications in Publisher Center',
+					'google-site-kit'
+				) }
 			</p>
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationSelect
@@ -156,7 +151,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 			<PublicationOnboardingStateNotice />
 			<Link
 				external
-				href={ createPublicationURL }
+				href={ managePublicationsURL }
 				onClick={ handleLinkClick }
 			>
 				{ publications?.length
