@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	muteFetch,
-	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -35,10 +34,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	const saveAudienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
-	);
-
-	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 
 	beforeEach( () => {
@@ -141,15 +136,11 @@ describe( 'modules/analytics-4 audience settings', () => {
 				},
 			];
 
-			const audienceSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/audience-settings'
+			const syncAvailableAudiences = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 			);
 
-			const analyticsAudienceSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
-			);
-
-			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
+			it( 'should not sync cached audiences when the availableAudiences setting is not undefined', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( availableAudiences );
@@ -163,8 +154,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 
 			it( 'should sync cached audiences when availableAudiences is null for authenticated user', async () => {
-				provideUserAuthentication( registry );
-				muteFetch( audienceSettingsEndpoint );
+				muteFetch( syncAvailableAudiences );
 
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [
@@ -173,55 +163,40 @@ describe( 'modules/analytics-4 audience settings', () => {
 					],
 				} );
 
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
-				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
-					availableAudiences,
-				} );
-
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
 				).toBeUndefined();
 
 				// Wait until the resolver has finished fetching the audiences.
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAudienceSettings();
+				).getAvailableAudiences();
 
 				await waitForDefaultTimeouts();
 
-				const audiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
-
-				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
-				expect( audiences ).toEqual( availableAudiences );
+				expect( fetchMock ).toHaveFetched( syncAvailableAudiences );
 			} );
 
 			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.getOnce( analyticsAudienceSettingsEndpoint, {
-					body: {
-						availableAudiences: availableAudiencesFixture,
-						audienceSegmentationSetupCompletedBy: 1,
-					},
+				fetchMock.postOnce( syncAvailableAudiences, {
+					body: JSON.stringify( availableAudiencesFixture ),
 					status: 200,
 				} );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+				registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAudienceSettings();
+				).getAvailableAudiences();
 
 				await waitForDefaultTimeouts();
 
 				expect(
-					fetchMock.calls( analyticsAudienceSettingsEndpoint )
+					fetchMock.calls( syncAvailableAudiences )
 				).toHaveLength( 1 );
 
 				expect(

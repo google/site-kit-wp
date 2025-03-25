@@ -196,8 +196,8 @@ export const registerWidgets = ( widgets ) => {
 					return false;
 				}
 
-				const availableAudiences =
-					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				const { availableAudiences } =
+					select( MODULES_ANALYTICS_4 ).getSettings() || {};
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();

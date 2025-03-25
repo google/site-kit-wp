@@ -129,15 +129,11 @@ const baseActions = {
 				...settings,
 			};
 
-			yield commonActions.await(
+			const availableAudiences = yield commonActions.await(
 				registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAudienceSettings()
+					.getAvailableAudiences()
 			);
-
-			const availableAudiences = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getAvailableAudiences();
 
 			const sortedConfiguredAudiences = [
 				...finalSettings.configuredAudiences,

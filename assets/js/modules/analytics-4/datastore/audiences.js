@@ -655,9 +655,7 @@ const baseActions = {
 		const { dispatch, resolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
+			yield baseActions.syncAvailableAudiences();
 
 		if ( syncError ) {
 			return { error: syncError };

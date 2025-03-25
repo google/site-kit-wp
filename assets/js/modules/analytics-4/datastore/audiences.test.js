@@ -66,10 +66,6 @@ describe( 'modules/analytics-4 audiences', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
-	const analyticsAudienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
-	);
-
 	const analyticsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
@@ -2017,6 +2013,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					authenticated: false,
 				} );
 
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
+
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
@@ -2025,7 +2027,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				muteFetch( analyticsAudienceSettingsEndpoint );
 				muteFetch( expirableItemEndpoint );
 
 				const options = registry
@@ -2445,7 +2446,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {} );
+					.startResolution( 'getAvailableAudiences', [] );
 
 				const isDefaultAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2508,7 +2509,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {} );
+					.startResolution( 'getAvailableAudiences', [] );
 
 				const isSiteKitAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2569,7 +2570,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {} );
+					.startResolution( 'getAvailableAudiences', [] );
 
 				const isUserAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2682,7 +2683,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {} );
+					.startResolution( 'getAvailableAudiences', [] );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2883,7 +2884,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.startResolution( 'getAvailableAudiences', [] );
 
 				const [
 					siteKitUserCountReportError,

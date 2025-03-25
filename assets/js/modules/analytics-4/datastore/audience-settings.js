@@ -207,6 +207,18 @@ const baseResolvers = {
 			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
 		}
 	},
+
+	*getAvailableAudiences() {
+		const registry = yield commonActions.getRegistry();
+
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
+
+		if ( audiences === undefined ) {
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+		}
+	},
 };
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {

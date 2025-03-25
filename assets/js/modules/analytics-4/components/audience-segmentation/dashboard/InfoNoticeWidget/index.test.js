@@ -30,6 +30,7 @@ import {
 	fireEvent,
 	muteFetch,
 	provideModules,
+	provideUserAuthentication,
 	render,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
@@ -70,6 +71,7 @@ describe( 'InfoNoticeWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideUserAuthentication( registry );
 		dismissPromptSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissPrompt'
@@ -89,7 +91,13 @@ describe( 'InfoNoticeWidget', () => {
 	);
 
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
-		muteFetch( audienceSettingsRegExp );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences: null,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
@@ -101,6 +109,10 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences is not loaded', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/1' ],
 			isAudienceSegmentationWidgetHidden: false,
@@ -187,6 +199,10 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when there is no matching audience', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences,
+		} );
+
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
