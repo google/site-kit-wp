@@ -131,13 +131,13 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			'.googlesitekit-analytics__select-country'
 		);
 
-		await page.waitForTimeout( 1000 );
+		await page.waitForSelector( '.mdc-menu-surface--open' );
 
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
 			text: /united kingdom/i,
 		} );
 
-		await page.waitForTimeout( 1000 );
+		await page.waitForNetworkIdle();
 
 		await expect( page ).toMatchElement( 'p', {
 			text: /need to give Site Kit permission to create an Analytics account/i,
