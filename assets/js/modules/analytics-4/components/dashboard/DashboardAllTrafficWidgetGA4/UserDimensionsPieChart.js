@@ -175,7 +175,7 @@ export default function UserDimensionsPieChart( props ) {
 			const difference =
 				previousDateRangeRow?.metricValues?.[ 0 ]?.value > 0
 					? ( rowValue * 100 ) /
-							previousDateRangeRow?.metricValues?.[ 0 ]?.value -
+							previousDateRangeRow.metricValues[ 0 ].value -
 					  100
 					: 100;
 
