@@ -26,7 +26,8 @@ import {
 	provideUserAuthentication,
 	provideModules,
 	provideSiteInfo,
-	deprecatedProvideNotifications,
+	provideNotifications,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import {
 	CORE_USER,
@@ -36,16 +37,33 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
+
+	const permissionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/permissions'
+	);
+
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	const searchAnalyticsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		muteFetch( permissionsEndpoint );
+		muteFetch( reportEndpoint );
+		muteFetch( searchAnalyticsEndpoint );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', async () => {
@@ -62,14 +80,8 @@ describe( 'ErrorNotifications', () => {
 				connected: true,
 			},
 		] );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				'authentication-error':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
+
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -93,14 +105,7 @@ describe( 'ErrorNotifications', () => {
 				connected: true,
 			},
 		] );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				'authentication-error':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
@@ -126,13 +131,7 @@ describe( 'ErrorNotifications', () => {
 			setupErrorCode: 'error_code',
 			setupErrorMessage: 'An error occurred',
 		} );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 		const { container, getByRole, waitForRegistry } = render(
 			<ErrorNotifications />,
 			{
@@ -164,16 +163,7 @@ describe( 'ErrorNotifications', () => {
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 			],
 		} );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				'authentication-error':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
-				'authentication-error-gte':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
@@ -202,16 +192,7 @@ describe( 'ErrorNotifications', () => {
 				'https://www.googleapis.com/auth/analytics.readonly',
 			],
 		} );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				'authentication-error':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
-				'authentication-error-gte':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
@@ -241,17 +222,7 @@ describe( 'ErrorNotifications', () => {
 			],
 			authenticated: false,
 		} );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				'authentication-error':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
-				'authentication-error-gte':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
-				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 		provideSiteInfo( registry, {
 			setupErrorRedoURL: '#',
 			setupErrorCode: 'access_denied',
@@ -278,17 +249,7 @@ describe( 'ErrorNotifications', () => {
 			},
 		] );
 		provideUserAuthentication( registry );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				'authentication-error':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error' ],
-				'authentication-error-gte':
-					DEFAULT_NOTIFICATIONS[ 'authentication-error-gte' ],
-				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',
 			setupErrorMessage:
@@ -327,13 +288,7 @@ describe( 'ErrorNotifications', () => {
 					],
 				},
 			} );
-		deprecatedProvideNotifications(
-			registry,
-			{
-				setup_plugin_error: DEFAULT_NOTIFICATIONS.setup_plugin_error,
-			},
-			{ overwrite: true }
-		);
+		provideNotifications( registry );
 
 		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
