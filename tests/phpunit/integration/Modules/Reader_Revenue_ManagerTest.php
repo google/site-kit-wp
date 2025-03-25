@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\URL;
@@ -67,6 +67,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	private $options;
 
 	/**
+	 * User_Options object.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Reader_Revenue_Manager object.
 	 *
 	 * @var Reader_Revenue_Manager
@@ -79,9 +86,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options                = new Options( $this->context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options                 = new User_Options( $this->context, $user->ID );
-		$this->authentication         = new Authentication( $this->context, $this->options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $user_options, $this->authentication );
+		$this->user_options           = new User_Options( $this->context, $user->ID );
+		$this->authentication         = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -738,7 +745,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $registered );
 	}
 
-	public function test_block_editor_script_enqueued() {
+	public function test_block_editor_assets_set_up() {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
@@ -769,9 +776,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_block_editor_script_not_enqueued
+	 * @dataProvider data_block_editor_assets_not_set_up
 	 */
-	public function test_block_editor_script_not_enqueued( $data ) {
+	public function test_block_editor_assets_not_set_up( $data ) {
 		$wp_version_condition = $data['wpVersionCondition'];
 
 		if ( $wp_version_condition && version_compare( get_bloginfo( 'version' ), $wp_version_condition['version'], $wp_version_condition['operator'] ) === false ) {
@@ -806,7 +813,108 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	public function data_block_editor_script_not_enqueued() {
+	public function test_non_sk_user_scripts_not_enqueued_for_sk_users() {
+		$this->enable_feature( 'rrmModuleV2' );
+
+		// Create a user.
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user->ID );
+
+		// Simulate view-only access to Site Kit for the user.
+		$module_sharing_settings = new \Google\Site_Kit\Core\Modules\Module_Sharing_Settings( $this->options );
+		$module_sharing_settings->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		$this->enable_feature( 'rrmModule' );
+		$this->enable_feature( 'rrmModuleV2' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_editor_assets' );
+
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		do_action( 'enqueue_block_editor_assets' );
+
+		$this->assertFalse( wp_script_is( 'blocks-contribute-with-google-non-sitekit-user', 'enqueued' ), 'blocks-contribute-with-google-non-sitekit-user should not be enqueued' );
+		$this->assertFalse( wp_script_is( 'blocks-subscribe-with-google-non-sitekit-user', 'enqueued' ), 'blocks-subscribe-with-google-non-sitekit-user should not be enqueued' );
+	}
+
+	public function test_non_sk_user_scripts_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
+		$this->enable_feature( 'rrmModule' );
+		$this->enable_feature( 'rrmModuleV2' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_editor_assets' );
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		do_action( 'enqueue_block_editor_assets' );
+
+		$this->assertTrue( wp_script_is( 'blocks-contribute-with-google-non-sitekit-user', 'enqueued' ), 'blocks-contribute-with-google-non-sitekit-user should be enqueued' );
+		$this->assertTrue( wp_script_is( 'blocks-subscribe-with-google-non-sitekit-user', 'enqueued' ), 'blocks-subscribe-with-google-non-sitekit-user should be enqueued' );
+	}
+
+	public function test_non_sk_user_has_styles_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
+		$this->enable_feature( 'rrmModule' );
+		$this->enable_feature( 'rrmModuleV2' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_assets' );
+
+		// Set admin context.
+		set_current_screen( 'dashboard' );
+
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+
+		do_action( 'enqueue_block_assets' );
+
+		$this->assertTrue( wp_style_is( 'blocks-reader-revenue-manager-common-editor-styles', 'enqueued' ), 'blocks-reader-revenue-manager-common-editor-styles should be enqueued' );
+	}
+
+	public function data_block_editor_assets_not_set_up() {
 		return array(
 			'feature flag disabled'                  => array(
 				array(

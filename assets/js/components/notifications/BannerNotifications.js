@@ -30,11 +30,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
-import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import AdSenseAlerts from './AdSenseAlerts';
 import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
@@ -77,15 +75,11 @@ export default function BannerNotifications() {
 	return (
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
-			<ModuleRecoveryAlert />
 			{ /* This ensures that the `SetupSuccessBannerNotification` is not rendered for the modules that are using the `SubtleNotification` to display their success notification. */ }
 			{ 'authentication_success' === notification &&
 				! MODULES_USING_SUBTLE_NOTIFICATIONS.includes( slug ) && (
 					<SetupSuccessBannerNotification />
 				) }
-			{ 'ad_blocking_recovery_setup_success' === notification && (
-				<AdBlockingRecoverySetupSuccessBannerNotification />
-			) }
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			{ ! keyMetricsSetupCTARendered && (
 				<EnhancedMeasurementActivationBanner />

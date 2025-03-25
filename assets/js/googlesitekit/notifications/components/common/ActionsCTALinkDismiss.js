@@ -38,6 +38,7 @@ export default function ActionsCTALinkDismiss( {
 	className = 'googlesitekit-publisher-win__actions',
 	ctaLink,
 	ctaLabel,
+	ctaDisabled = false,
 	onCTAClick,
 	ctaDismissOptions,
 	isSaving = false,
@@ -67,6 +68,7 @@ export default function ActionsCTALinkDismiss( {
 					dismissOptions={ ctaDismissOptions }
 					gaTrackingEventArgs={ gaTrackingEventArgs }
 					isSaving={ isSaving }
+					isDisabled={ ctaDisabled }
 				/>
 
 				<Dismiss
@@ -87,6 +89,7 @@ export default function ActionsCTALinkDismiss( {
 ActionsCTALinkDismiss.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
+	ctaDisabled: PropTypes.bool,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	onCTAClick: PropTypes.func,
