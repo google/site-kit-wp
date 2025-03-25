@@ -119,14 +119,14 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Checks if the Ads module is connected and contributing to Ads measurement.
 	 *
-	 * Determines the connection status by applying the 'googlesitekit_is_module_connected' filter.
+	 * Determines the connection status by returning is_connected value.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return bool True if the Ads module is connected, false otherwise.
 	 */
 	public function check_ads_measurement_connection() {
-		return apply_filters( 'googlesitekit_is_module_connected', false, self::MODULE_SLUG ) ? true : false;
+		return $this->is_connected();
 	}
 
 	/**

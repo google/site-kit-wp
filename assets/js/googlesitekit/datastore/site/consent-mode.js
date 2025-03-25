@@ -129,12 +129,20 @@ const fetchActivateConsentAPI = createFetchStore( {
 
 const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 	baseName: 'getAdsMeasurementStatus',
+	argsToParams: ( useCache = true ) => ( { useCache } ),
 	controlCallback: ( params = {} ) => {
 		return API.get( 'core', 'site', 'ads-measurement-status', null, {
-			useCache: params.useCache ?? false,
+			useCache: params.useCache ?? true,
 		} );
 	},
-	reducerCallback: createReducer( ( state, response ) => {
+	reducerCallback: createReducer( ( state, response, { params } ) => {
+		const isUncached = params?.useCache === false;
+
+		if ( isUncached ) {
+			state.consentMode.adsConnectedUncached = response.connected;
+			return;
+		}
+
 		state.consentMode.adsConnected = response.connected;
 	} ),
 } );
@@ -146,6 +154,7 @@ const baseInitialState = {
 		apiInstallResponse: undefined,
 		isApiFetching: undefined,
 		adsConnected: undefined,
+		adsConnectedUncached: undefined,
 	},
 };
 
@@ -366,7 +375,7 @@ const baseSelectors = {
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
 	 */
 	isAdsConnectedUncached: ( state ) => {
-		return state.consentMode.adsConnected;
+		return state.consentMode.adsConnectedUncached;
 	},
 };
 
