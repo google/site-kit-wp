@@ -209,6 +209,12 @@ export const ADSENSE_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// Check the query arg first as the simplest condition using global location.
+			const notification = getQueryArg( location.href, 'notification' );
+			if ( notification !== 'ad_blocking_recovery_setup_success' ) {
+				return false;
+			}
+
 			const { isModuleConnected } = resolveSelect( CORE_MODULES );
 			if ( ! ( await isModuleConnected( 'adsense' ) ) ) {
 				return false;
@@ -218,15 +224,13 @@ export const ADSENSE_NOTIFICATIONS = {
 			const adBlockingRecoverySetupStatus =
 				select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
 
-			const notification = getQueryArg( location.href, 'notification' );
-
 			if (
 				adBlockingRecoverySetupStatus ===
-					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED &&
-				notification === 'ad_blocking_recovery_setup_success'
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
 			) {
 				return true;
 			}
+
 			return false;
 		},
 	},
