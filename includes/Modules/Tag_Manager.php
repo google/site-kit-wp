@@ -122,9 +122,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 *                               or boolean false if container data is unavailable.
 	 */
 	public function check_ads_measurement_connection() {
-		$tag_manager_connected = apply_filters( 'googlesitekit_is_module_connected', false, self::MODULE_SLUG );
-		if ( ! $tag_manager_connected ) {
-			return new WP_REST_Response( array( 'connected' => false ) );
+		if ( ! $this->is_connected() ) {
+			return false;
 		}
 
 		$settings = $this->get_settings()->get();
@@ -139,10 +138,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		$has_ads_tag = array_search( 'awct', array_column( $live_containers_versions->tag, 'type' ), true );
 		if ( false !== $has_ads_tag ) {
-			return new WP_REST_Response( array( 'connected' => true ) );
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**

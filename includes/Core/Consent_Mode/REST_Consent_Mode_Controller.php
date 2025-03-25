@@ -256,7 +256,7 @@ class REST_Consent_Mode_Controller {
 						'callback'            => function () {
 							$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
 
-							if ( ! is_array( $checks ) || empty( $checks ) ) {
+							if ( ! is_array( $checks ) ) {
 								return new WP_REST_Response( array( 'connected' => false ) );
 							}
 
@@ -265,12 +265,12 @@ class REST_Consent_Mode_Controller {
 									continue;
 								}
 
-								if ( ! $check() ) {
-									return new WP_REST_Response( array( 'connected' => false ) );
+								if ( $check() ) {
+									return new WP_REST_Response( array( 'connected' => true ) );
 								}
 							}
 
-							return new WP_REST_Response( array( 'connected' => true ) );
+							return new WP_REST_Response( array( 'connected' => false ) );
 						},
 						'permission_callback' => $can_manage_options,
 					),

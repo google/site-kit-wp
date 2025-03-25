@@ -325,14 +325,15 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
 
-		add_filter(
-			'googlesitekit_ads_measurement_connection_checks',
-			function () {
-				return array(
-					function () {
-						return true; },
-				);
-			}
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$ads = new Ads( $this->context );
+		$ads->register();
+
+		$ads->get_settings()->merge(
+			array(
+				'conversionID' => 'AW-123456789',
+			)
 		);
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
@@ -345,12 +346,13 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->setup_rest();
 			$this->grant_manage_options_permission();
 
+			remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
 			add_filter(
 				'googlesitekit_ads_measurement_connection_checks',
 				function () {
 					return array(
-						function () {
-							return true; },
+						fn() => true,
 					);
 				}
 			);
@@ -365,12 +367,13 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->setup_rest();
 			$this->grant_manage_options_permission();
 
+			remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
 			add_filter(
 				'googlesitekit_ads_measurement_connection_checks',
 				function () {
 					return array(
-						function () {
-							return true; },
+						fn() => true,
 					);
 				}
 			);
@@ -387,6 +390,8 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	public function test_get_ads_measurement_status__tag_manager_module_connected__live_container_checks_with_data_set( $has_awct_tag, $expected_connection_value ) {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
+
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		add_filter(
 			'googlesitekit_ads_measurement_connection_checks',
