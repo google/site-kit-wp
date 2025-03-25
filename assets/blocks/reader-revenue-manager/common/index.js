@@ -16,3 +16,6 @@
 
 export { default as EditorButton } from './EditorButton';
 export { default as ButtonEdit } from './ButtonEdit';
+
+// eslint-disable-next-line no-console
+console.log( 'Hello, world!' );
