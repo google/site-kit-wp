@@ -38,21 +38,11 @@ import {
 } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
 
 import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );
-	const viewContext = useViewContext();
-
-	const handleDismissTooltip = useCallback( async () => {
-		await trackEvent(
-			`${ viewContext }_adsense-cta-widget`,
-			'dismiss_tooltip'
-		);
-	}, [ viewContext ] );
 
 	const tooltipSettings = {
 		tooltipSlug: ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
@@ -65,7 +55,6 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		onDismiss: handleDismissTooltip,
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 

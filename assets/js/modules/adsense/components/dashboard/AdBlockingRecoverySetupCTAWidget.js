@@ -24,11 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useEffect,
-	useCallback,
-} from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -72,10 +68,6 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const inView = useInView();
 	const viewContext = useViewContext();
 
-	const handleDismissTooltip = useCallback( () => {
-		trackEvent( `${ viewContext }_adsense-abr`, 'dismiss_tooltip' );
-	}, [ viewContext ] );
-
 	const tooltipSettings = {
 		tooltipSlug: AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 		title: __(
@@ -83,7 +75,6 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		onDismiss: handleDismissTooltip,
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 

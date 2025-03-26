@@ -27,8 +27,11 @@ import { useCallback } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import JoyrideTooltip from '../JoyrideTooltip';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 export function AdminMenuTooltip() {
+	const viewContext = useViewContext();
 	const { setValue } = useDispatch( CORE_UI );
 
 	const {
@@ -36,6 +39,7 @@ export function AdminMenuTooltip() {
 		rehideAdminMenu = false,
 		rehideAdminSubMenu = false,
 		onDismiss,
+		tooltipSlug,
 		...tooltipSettings
 	} = useSelect(
 		( select ) =>
@@ -43,6 +47,10 @@ export function AdminMenuTooltip() {
 				isTooltipVisible: false,
 			}
 	);
+
+	const handleViewTooltip = () => {
+		trackEvent( `${ viewContext }_${ tooltipSlug }`, 'view_tooltip' );
+	};
 
 	const handleDismissTooltip = useCallback( async () => {
 		// If the WordPress admin menu was closed, re-close it.
@@ -61,10 +69,25 @@ export function AdminMenuTooltip() {
 			document.querySelector( 'body' ).click();
 		}
 
+		// Track dismiss event
+		if ( tooltipSlug ) {
+			trackEvent(
+				`${ viewContext }_${ tooltipSlug }`,
+				'dismiss_tooltip'
+			);
+		}
+
 		await onDismiss?.();
 
 		setValue( 'admin-menu-tooltip', undefined );
-	}, [ onDismiss, rehideAdminMenu, rehideAdminSubMenu, setValue ] );
+	}, [
+		onDismiss,
+		rehideAdminMenu,
+		rehideAdminSubMenu,
+		setValue,
+		tooltipSlug,
+		viewContext,
+	] );
 
 	if ( ! isTooltipVisible ) {
 		return null;
@@ -75,6 +98,7 @@ export function AdminMenuTooltip() {
 			// Point to the Site Kit Settings menu item by default.
 			target={ '#adminmenu [href*="page=googlesitekit-settings"]' }
 			slug="ga4-activation-banner-admin-menu-tooltip"
+			onView={ handleViewTooltip }
 			onDismiss={ handleDismissTooltip }
 			title=""
 			{ ...tooltipSettings }
