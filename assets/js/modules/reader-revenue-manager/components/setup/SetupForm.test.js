@@ -64,7 +64,9 @@ describe( 'SetupForm', () => {
 
 		expect( getByText( 'Publication' ) ).toBeInTheDocument();
 		expect(
-			getByRole( 'button', { name: /create new publication/i } )
+			getByRole( 'button', {
+				name: /Manage publications in Publisher Center/i,
+			} )
 		).toBeInTheDocument();
 	} );
 
