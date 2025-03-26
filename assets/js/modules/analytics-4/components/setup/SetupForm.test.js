@@ -36,7 +36,6 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../analytics-4/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
@@ -197,9 +196,7 @@ describe( 'SetupForm', () => {
 
 		fetchMock.post( REGEX_REST_DISMISS_ITEM, {
 			status: 200,
-			body: JSON.stringify( [
-				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-			] ),
+			body: JSON.stringify( [ 'enhanced-measurement-notification' ] ),
 		} );
 
 		act( () => {
