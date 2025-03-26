@@ -129,21 +129,20 @@ const fetchActivateConsentAPI = createFetchStore( {
 
 const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 	baseName: 'getAdsMeasurementStatus',
-	argsToParams: ( useCache = true ) => ( { useCache } ),
+	argsToParams: ( { useCache = true } = {} ) => ( { useCache } ),
 	controlCallback: ( params = {} ) => {
 		return API.get( 'core', 'site', 'ads-measurement-status', null, {
 			useCache: params.useCache ?? true,
 		} );
 	},
-	reducerCallback: createReducer( ( state, response, { params } ) => {
+	reducerCallback: createReducer( ( state, response, params ) => {
 		const isUncached = params?.useCache === false;
+
+		state.consentMode.adsConnected = response.connected;
 
 		if ( isUncached ) {
 			state.consentMode.adsConnectedUncached = response.connected;
-			return;
 		}
-
-		state.consentMode.adsConnected = response.connected;
 	} ),
 } );
 
