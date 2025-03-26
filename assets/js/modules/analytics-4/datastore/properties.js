@@ -659,14 +659,18 @@ const baseActions = {
 
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
+		// The "last synced" value should reflect the real time this action
+		// was performed, so we don't use the reference date here.
+		const timestamp = Date.now(); // eslint-disable-line sitekit/no-direct-date
+
 		if (
 			!! googleTagLastSyncedAtMs &&
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
+			timestamp - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
 		) {
 			return;
 		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs( timestamp );
 
 		const googleTagID = getGoogleTagID();
 
@@ -704,12 +708,9 @@ const baseActions = {
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			googleTagContainerDestinationIDs,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
-		} );
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagContainerDestinationIDs(
+			googleTagContainerDestinationIDs
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
