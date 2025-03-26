@@ -644,20 +644,10 @@ class OAuth_ClientTest extends TestCase {
 
 		// Verify the redirect URL was stored in transients.
 		$stored_redirect = $transients->get( $code_hash );
-		$this->assertNotEmpty( $stored_redirect, 'Redirect URL was not stored in transients' );
-		$this->assertEquals( $redirect_url, $stored_redirect );
+		$this->assertEquals( $redirect_url, $stored_redirect, 'The redirect URL should be stored in transients with the correct hash' );
 
 		// Verify the key behavior: that the transient is stored with the correct hash and has the right value.
-		$this->assertEquals(
-			$redirect_url,
-			$transients->get( $code_hash ),
-			'The redirect URL should be stored in transients with the correct hash'
-		);
-
-		// For the early exit path, verify the key pieces are in place:
 		$this->assertEquals( md5( 'test-code' ), $code_hash, 'Code is properly hashed' );
-		$this->assertNotEmpty( $stored_redirect, 'Redirect URL is stored for later use' );
-		$this->assertEquals( $redirect_url, $stored_redirect, 'Stored redirect matches expected URL' );
 	}
 
 	public function test_should_update_owner_id() {
