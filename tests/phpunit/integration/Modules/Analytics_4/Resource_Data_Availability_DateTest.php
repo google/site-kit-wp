@@ -62,16 +62,18 @@ class Resource_Data_Availability_DateTest extends TestCase {
 			)
 		);
 
+		$available_audiences = array(
+			array(
+				'name' => $this->test_audience_1,
+			),
+			array(
+				'name' => $this->test_audience_2,
+			),
+		);
+
 		$this->audience_settings->set(
 			array(
-				'availableAudiences' => array(
-					$this->test_audience_1 => array(
-						'name' => $this->test_audience_1,
-					),
-					$this->test_audience_2 => array(
-						'name' => $this->test_audience_2,
-					),
-				),
+				'availableAudiences' => $available_audiences,
 			)
 		);
 	}
