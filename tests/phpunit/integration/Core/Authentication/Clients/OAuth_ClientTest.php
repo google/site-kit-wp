@@ -584,7 +584,8 @@ class OAuth_ClientTest extends TestCase {
 		$_GET['code'] = 'test-code';
 		$code_hash    = md5( 'test-code' );
 
-		// First run - Normal authorization flow.
+		// FIRST AUTHORIZATION ATTEMPT.
+
 		$client           = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
@@ -646,8 +647,52 @@ class OAuth_ClientTest extends TestCase {
 		$stored_redirect = $transients->get( $code_hash );
 		$this->assertEquals( $redirect_url, $stored_redirect, 'The redirect URL should be stored in transients with the correct hash' );
 
-		// Verify the key behavior: that the transient is stored with the correct hash and has the right value.
-		$this->assertEquals( md5( 'test-code' ), $code_hash, 'Code is properly hashed' );
+		// SECOND AUTHORIZATION ATTEMPT.
+
+		// Create a new client instance to test the second attempt.
+		$client2 = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
+		$client2->get_authentication_url( $success_redirect );
+
+		// Intercept the redirect to verify the URL is the same as the first attempt.
+		add_filter(
+			'wp_redirect',
+			function ( $location ) use ( $stored_redirect ) {
+				// When `wp_safe_redirect` is called, check the location matches our transient.
+				$this->assertEquals( $stored_redirect, $location, 'Second call should redirect to stored URL' );
+
+				// Throw a RedirectException to simulate the behavior of `wp_redirect`.
+				throw new RedirectException( $location );
+			},
+			10,
+			1
+		);
+
+		// For the second client, we can verify it never calls `fetchAccessTokenWithAuthCode`
+		// by setting up a mock that will fail the test if called.
+		$google_client_mock2 = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+
+		$google_client_mock2->expects( $this->never() )
+			->method( 'fetchAccessTokenWithAuthCode' );
+
+		$this->force_set_property( $client2, 'google_client', $google_client_mock2 );
+
+		// Now call `authorize_user` a second time.
+		try {
+			$client2->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException on second attempt!' );
+		} catch ( RedirectException $redirect2 ) {
+			// Our filter above already verified the URL matches, but we should
+			// explicitly assert something here to avoid empty catch block errors.
+			$this->assertInstanceOf(
+				RedirectException::class,
+				$redirect2,
+				'Second call should throw a RedirectException'
+			);
+		} finally {
+			// Clean up our filter.
+			remove_all_filters( 'wp_redirect' );
+		}
 	}
 
 	public function test_should_update_owner_id() {
