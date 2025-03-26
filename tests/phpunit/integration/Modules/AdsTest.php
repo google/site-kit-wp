@@ -321,10 +321,13 @@ class AdsTest extends TestCase {
 			);
 		}
 	}
+
 	/**
 	 * Test if Ads module correctly registers Ads Measurement connection check filter.
 	 */
 	public function test_ads_module_adds_measurement_connection_check_filter() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
 		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$ads->register();
 
@@ -332,7 +335,26 @@ class AdsTest extends TestCase {
 
 		$this->assertNotEmpty( $checks );
 		$this->assertIsCallable( $checks[0] );
+
+		$mock_settings = $this->createMock( Settings::class );
+
+		$mock_settings->method( 'get' )
+					->willReturn( array( 'conversionID' => 'AW-123456789' ) );
+
+		$reflection = new \ReflectionProperty( Ads::class, 'settings' );
+		$reflection->setAccessible( true );
+		$reflection->setValue( $ads, $mock_settings );
+
+		$this->assertTrue( call_user_func( $checks[0] ) );
+
+		$mock_settings = $this->createMock( Settings::class );
+		$mock_settings->method( 'get' )
+					->willReturn( array( 'conversionID' => '' ) );
+		$reflection->setValue( $ads, $mock_settings );
+
+		$this->assertFalse( call_user_func( $checks[0] ) );
 	}
+
 
 	public function template_redirect_data_provider() {
 		return array(
