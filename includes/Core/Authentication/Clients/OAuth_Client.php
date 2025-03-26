@@ -418,6 +418,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) ?? '' );
 
 		// If we have a code, check if there's a stored redirect URL to prevent duplicate setups.
+		// The OAuth2 spec requires that an authorization code can only be used once.
+		// If `fetchAccessTokenWithAuthCode()` is called more than once with the same code, Google will return an error.
+		// This commonly happens when users click the final setup button multiple times or
+		// if there are concurrent requests with the same authorization code.
+		// By storing the successful redirect URL in transients and reusing it for duplicate
+		// requests with the same code, we ensure a smooth setup experience even when
+		// the same code is encountered multiple times.
 		if ( ! empty( $code ) ) {
 			$code_hash       = md5( $code );
 			$stored_redirect = $this->transients->get( $code_hash );
