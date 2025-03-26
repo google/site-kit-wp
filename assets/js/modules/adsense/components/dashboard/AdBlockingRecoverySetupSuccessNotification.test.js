@@ -1,5 +1,5 @@
 /**
- * AdBlockingRecoverySetupSuccessBannerNotification component tests.
+ * AdBlockingRecoverySetupSuccessNotification component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -27,18 +27,22 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '../../../../../../tests/js/test-utils';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+} from '../../../../../../tests/js/mock-survey-endpoints';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
-} from '../../modules/adsense/datastore/constants';
-import * as tracking from '../../util/tracking';
-import AdBlockingRecoverySetupSuccessBannerNotification from './AdBlockingRecoverySetupSuccessBannerNotification';
+} from '../../datastore/constants';
+import * as tracking from '../../../../util/tracking';
+import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { ADSENSE_NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -50,8 +54,12 @@ jest.mock( 'react-use', () => ( {
 	} ),
 } ) );
 
-describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
+describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 	let registry;
+	const AdBlockingRecoverySetupSuccessNotificationComponent =
+		withNotificationComponentProps( 'adsense-abr-success-notification' )(
+			AdBlockingRecoverySetupSuccessNotification
+		);
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -70,35 +78,33 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 		} );
 	} );
 
-	it( 'should not render notification if ad blocking recovery setup status is not "setup-confirmed"', () => {
-		registry
-			.dispatch( MODULES_ADSENSE )
-			.setAdBlockingRecoverySetupStatus(
-				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.TAG_PLACED
-			);
-
-		const { container } = render(
-			<AdBlockingRecoverySetupSuccessBannerNotification />,
-			{
-				registry,
-			}
-		);
-
-		expect( container ).toBeEmptyDOMElement();
-
-		// If the notification is not rendered, no tracking event should fire.
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
-	} );
-
-	it( 'should render notification otherwise', async () => {
+	it( 'should render notification and trigger tracking events and ACR survey', async () => {
 		fetchMock.getOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
 		);
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: {} }
+		);
 
 		mockSurveyEndpoints();
+
+		await registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'adsense-abr-success-notification',
+				ADSENSE_NOTIFICATIONS[ 'adsense-abr-success-notification' ]
+			);
+
+		await registry
+			.dispatch( CORE_UI )
+			.setValue(
+				'notification/adsense-abr-success-notification/viewed',
+				true
+			);
 
 		registry
 			.dispatch( MODULES_ADSENSE )
@@ -107,33 +113,16 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 			);
 
 		const { container, getByRole } = render(
-			<AdBlockingRecoverySetupSuccessBannerNotification />,
+			<AdBlockingRecoverySetupSuccessNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
-		expect( container.childElementCount ).toBe( 1 );
+		expect( container ).toMatchSnapshot();
 
-		// The tracking event should fire when the notification is viewed.
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_adsense-abr-success-notification',
-			'view_notification'
-		);
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: /Ok, got it!/i } ) );
-		} );
-
-		// The tracking event should fire when the notification is confirmed.
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_adsense-abr-success-notification',
-			'confirm_notification'
-		);
-
-		// The survey trigger endpoint should be called.
+		// The survey trigger endpoint should be called on view.
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched(
 				surveyTriggerEndpoint,
@@ -143,6 +132,28 @@ describe( 'AdBlockingRecoverySetupSuccessBannerNotification', () => {
 					},
 				} )
 			)
+		);
+
+		// The tracking event should fire when the notification is viewed.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_adsense-abr-success-notification',
+			'view_notification',
+			undefined,
+			undefined
+		);
+		mockTrackEvent.mockClear();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Ok, got it!/i } ) );
+		} );
+
+		// The tracking event should fire when the notification is confirmed.
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_adsense-abr-success-notification',
+			'dismiss_notification',
+			undefined,
+			undefined
 		);
 	} );
 } );

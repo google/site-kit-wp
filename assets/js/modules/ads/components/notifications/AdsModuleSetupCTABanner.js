@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -154,6 +154,16 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const showTooltip = useShowTooltip( id );
 	const { isTooltipVisible } = useTooltipState( id );
 
+	const [ dismissLabel, setDismissLabel ] = useState(
+		__( 'Maybe later', 'google-site-kit' )
+	);
+
+	useEffect( () => {
+		if ( true === isDismissalFinal ) {
+			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
+		}
+	}, [ isDismissalFinal ] );
+
 	if ( isTooltipVisible ) {
 		return (
 			<AdminMenuTooltip
@@ -174,7 +184,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	// This is because we don't want the component removed from the DOM as we have to still render
 	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
 	// checking for the dismissal state here.
-	if ( hideCTABanner && ! skipHidingBanner ) {
+	if ( hideCTABanner && ! skipHidingBanner && ! isSaving ) {
 		return null;
 	}
 
@@ -213,11 +223,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 						onCTAClick={ onSetupCallback }
 						dismissOnCTAClick={ false }
 						isSaving={ isSaving }
-						dismissLabel={
-							isDismissalFinal
-								? __( 'Don’t show again', 'google-site-kit' )
-								: __( 'Maybe later', 'google-site-kit' )
-						}
+						dismissLabel={ dismissLabel }
 						dismissOptions={ {
 							skipHidingFromQueue: true,
 						} }

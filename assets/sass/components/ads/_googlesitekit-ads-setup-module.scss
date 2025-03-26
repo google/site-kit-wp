@@ -130,6 +130,14 @@
 					margin-top: 12px;
 				}
 			}
+
+			button.googlesitekit-button-icon--spinner {
+				svg {
+					circle {
+						stroke: rgba(0, 0, 0, 0.37);
+					}
+				}
+			}
 		}
 
 		&.has-pax-flow {
