@@ -95,6 +95,7 @@ describe( 'BannerNotifications', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [] );

@@ -53,6 +53,7 @@ describe( 'core/notifications Notifications', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
 		( { registerNotification } = registry.dispatch( CORE_NOTIFICATIONS ) );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'actions', () => {
@@ -640,14 +641,36 @@ describe( 'core/notifications Notifications', () => {
 				} );
 
 				it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
+					// Create a fresh registry for this test to ensure getDismissedPrompts is not resolved
+					const testRegistry = createTestRegistry();
+
+					// Register the notification on the new registry
+					deprecatedProvideNotifications( testRegistry, {
+						'test-notification-using-prompts': {
+							Component: () => {},
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							priority: 11,
+							checkRequirements: () => true,
+							isDismissible: false,
+							dismissRetries: 1,
+						},
+					} );
+
+					// Get the selector from the new registry
+					const testIsNotificationDismissed =
+						testRegistry.select(
+							CORE_NOTIFICATIONS
+						).isNotificationDismissed;
+
 					fetchMock.getOnce( dismissedPromptsEndpoint, { body: [] } );
 					expect(
-						isNotificationDismissed(
+						testIsNotificationDismissed(
 							'test-notification-using-prompts'
 						)
 					).toBeUndefined();
 					await untilResolved(
-						registry,
+						testRegistry,
 						CORE_USER
 					).getDismissedPrompts();
 				} );

@@ -46,6 +46,7 @@ describe( 'ErrorNotifications', () => {
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', async () => {
