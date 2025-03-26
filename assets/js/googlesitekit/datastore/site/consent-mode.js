@@ -134,12 +134,10 @@ const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 			useCache,
 		} );
 	},
-	reducerCallback: createReducer( ( state, response, params ) => {
-		const isUncached = params?.useCache === false;
-
+	reducerCallback: createReducer( ( state, response, { useCache } ) => {
 		state.consentMode.adsConnected = response.connected;
 
-		if ( isUncached ) {
+		if ( ! useCache ) {
 			state.consentMode.adsConnectedUncached = response.connected;
 		}
 	} ),
