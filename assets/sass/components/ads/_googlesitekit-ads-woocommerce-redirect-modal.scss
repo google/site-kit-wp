@@ -103,6 +103,16 @@
 					}
 				}
 			}
+
+			a.mdc-button--tertiary {
+				@media (max-width: $bp-mobileOnly) {
+					padding: 8px 5px;
+				}
+
+				@media (min-width: 389px) and (max-width: $bp-mobileOnly) {
+					padding: 8px 10px;
+				}
+			}
 		}
 	}
 }
