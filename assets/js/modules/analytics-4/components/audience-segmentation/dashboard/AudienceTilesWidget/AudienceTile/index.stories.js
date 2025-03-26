@@ -45,6 +45,9 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: [],
+		} );
 		setupRegistry( registry );
 	};
 
