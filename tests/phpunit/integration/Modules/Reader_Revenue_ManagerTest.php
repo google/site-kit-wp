@@ -646,11 +646,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'publicationID' => 'test-publication-id',
 				'productIDs'    => array(
-					'test-publication-id:product1',
-					'standalone-product',
-					'test-publication-id:product2',
+					'test-publication-id:product1',  // Combined format..
+					'standalone-product',            // Standalone format
+					'test-publication-id:product2',  // Another combined format.
 				),
-				'productID'     => 'test-publication-id:main-product',
+				'productID'     => 'test-publication-id:main-product',  // Main product in combined format.
 			)
 		);
 
@@ -678,27 +678,25 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		// Test product IDs redaction - should redact publication ID but keep product ID.
-		$debug_product_ids = $debug_fields['reader_revenue_manager_available_product_ids']['debug'];
-
-		$this->assertMatchesRegularExpression(
-			'/test[•]+:product1/',  // Match "test" followed by any number of bullets, then ":product1".
-			$debug_product_ids,
-			'First product ID should have redacted publication ID'
+		$this->assertStringContainsString(
+			'test•••••••••••••••:product1',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Publication ID should be partially redacted in debug output'
 		);
 
 		$this->assertStringContainsString(
 			'standalone-product',
-			$debug_product_ids,
-			'Standalone product ID should not be changed'
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Standalone product ID should not be changed in debug output'
 		);
 
-		$this->assertMatchesRegularExpression(
-			'/test[•]+:product2/',
-			$debug_product_ids,
-			'Second product ID should have redacted publication ID'
+		$this->assertStringContainsString(
+			'test•••••••••••••••:product2',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Second publication ID should be partially redacted in debug output'
 		);
 
-		// Test main product ID extraction - should only show the product ID part.
+		// Test main product ID extraction.
 		$this->assertEquals(
 			'main-product',
 			$debug_fields['reader_revenue_manager_product_id']['value'],
@@ -706,10 +704,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		// Test main product ID redaction - should redact publication ID but keep product ID.
-		$this->assertMatchesRegularExpression(
-			'/^test[•]+:main-product$/',  // Exact match with ^ and $ anchors.
+		$this->assertEquals(
+			'test•••••••••••••••:main-product',
 			$debug_fields['reader_revenue_manager_product_id']['debug'],
-			'Main product ID should have redacted publication ID'
+			'Publication ID should be partially redacted in main product ID debug output'
 		);
 
 		// Set `snippetMode` to `per_post`.
