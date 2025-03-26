@@ -59,6 +59,10 @@ Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
+		publications[ 0 ].products.push( {
+			name: 'product-b',
+		} );
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductID( 'product-b' );
@@ -73,6 +77,10 @@ PendingVerification.storyName = 'PendingVerification';
 PendingVerification.scenario = {};
 PendingVerification.args = {
 	setupRegistry: ( registry ) => {
+		publications[ 1 ].products.push( {
+			name: 'product-a',
+		} );
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
@@ -91,6 +99,9 @@ ActionRequired.storyName = 'ActionRequired';
 ActionRequired.scenario = {};
 ActionRequired.args = {
 	setupRegistry: ( registry ) => {
+		publications[ 2 ].products.push( {
+			name: 'product-a',
+		} );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 2 ] );
@@ -137,6 +148,9 @@ PublicationUnavailable.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-1' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [ publications[ 0 ], publications[ 1 ] ] );
 
 		registry
@@ -166,6 +180,9 @@ MissingProductID.storyName = 'MissingProductID';
 MissingProductID.scenario = {};
 MissingProductID.args = {
 	setupRegistry: ( registry ) => {
+		publications[ 0 ].products.push( {
+			name: 'product-c',
+		} );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductID( 'product-c' );
