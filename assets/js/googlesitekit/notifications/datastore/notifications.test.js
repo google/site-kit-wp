@@ -35,6 +35,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '../../constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 describe( 'core/notifications Notifications', () => {
 	const fetchGetDismissedItems = new RegExp(
@@ -42,9 +43,6 @@ describe( 'core/notifications Notifications', () => {
 	);
 	const fetchDismissItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
-	const fetchGetDismissedPrompts = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-prompts'
 	);
 
 	let registry;
@@ -642,7 +640,7 @@ describe( 'core/notifications Notifications', () => {
 				} );
 
 				it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
-					fetchMock.getOnce( fetchGetDismissedPrompts, { body: [] } );
+					fetchMock.getOnce( dismissedPromptsEndpoint, { body: [] } );
 					expect(
 						isNotificationDismissed(
 							'test-notification-using-prompts'
