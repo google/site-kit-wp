@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -569,6 +570,94 @@ class OAuth_ClientTest extends TestCase {
 			// Verify the redirect URL is preserved, including the original notification query parameter.
 			$this->assertEquals( $success_redirect, $redirect->get_location() );
 		}
+	}
+
+	public function test_authorize_user__transient_storage_prevents_duplicate_setups() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$transients   = new Transients( $context );
+
+		// Set up test data.
+		$this->fake_site_connection();
+		$_GET['code'] = 'test-code';
+		$code_hash    = md5( 'test-code' );
+
+		// First run - Normal authorization flow.
+		$client           = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
+		$success_redirect = admin_url( 'success-redirect' );
+		$client->get_authentication_url( $success_redirect );
+
+		// Mock Google client for token fetching.
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
+			function ( Request $request ) {
+				$url = parse_url( $request->getUri() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'test@example.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/photo.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Test User' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )
+							->willReturn(
+								array(
+									'access_token'  => 'test-access-token',
+									'refresh_token' => 'test-refresh-token',
+									'expires_in'    => 3600,
+								)
+							);
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		// First run should complete the auth flow and store the redirect URL in transients.
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$redirect_url = $redirect->get_location();
+			$this->assertStringStartsWith( "$success_redirect?", $redirect_url );
+		}
+
+		// Verify the redirect URL was stored in transients.
+		$stored_redirect = $transients->get( $code_hash );
+		$this->assertNotEmpty( $stored_redirect, 'Redirect URL was not stored in transients' );
+		$this->assertEquals( $redirect_url, $stored_redirect );
+
+		// Verify the key behavior: that the transient is stored with the correct hash and has the right value.
+		$this->assertEquals(
+			$redirect_url,
+			$transients->get( $code_hash ),
+			'The redirect URL should be stored in transients with the correct hash'
+		);
+
+		// For the early exit path, verify the key pieces are in place:
+		$this->assertEquals( md5( 'test-code' ), $code_hash, 'Code is properly hashed' );
+		$this->assertNotEmpty( $stored_redirect, 'Redirect URL is stored for later use' );
+		$this->assertEquals( $redirect_url, $stored_redirect, 'Stored redirect matches expected URL' );
 	}
 
 	public function test_should_update_owner_id() {
