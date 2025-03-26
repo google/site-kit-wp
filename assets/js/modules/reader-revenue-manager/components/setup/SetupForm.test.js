@@ -178,7 +178,6 @@ describe( 'SetupForm', () => {
 			<SetupForm onCompleteSetup={ onCompleteSetup } />,
 			{
 				registry,
-				features: [ 'rrmModuleV2' ],
 			}
 		);
 

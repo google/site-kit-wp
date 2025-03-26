@@ -40,7 +40,6 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -467,30 +466,24 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( '' );
 			} );
 
-			describe( 'with the rrmModuleV2 feature flag enabled', () => {
-				beforeEach( () => {
-					setEnabledFeatures( [ 'rrmModuleV2' ] );
-				} );
+			it( 'should set productID to "openaccess" when different publication is selected', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
 
-				it( 'should set productID to "openaccess" when different publication is selected', () => {
-					const products = [
-						{ name: 'ABC:product-1' },
-						{ name: 'DEF:product-2' },
-					];
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
-
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductID()
-					).toEqual( 'openaccess' );
-				} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductID()
+				).toEqual( 'openaccess' );
 			} );
 		} );
 	} );

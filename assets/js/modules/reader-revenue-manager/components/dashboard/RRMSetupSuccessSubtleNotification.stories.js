@@ -91,7 +91,6 @@ OnboardingCompleteWithSubscriptionAndProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithSubscriptionAndProductID.args = {
-	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -117,7 +116,6 @@ OnboardingCompleteWithSubscriptionAndNoProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithSubscriptionAndNoProductID.args = {
-	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -143,7 +141,6 @@ OnboardingCompleteWithContributionAndProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithContributionAndProductID.args = {
-	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -169,7 +166,6 @@ OnboardingCompleteWithContributionAndNoProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithContributionAndNoProductID.args = {
-	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -193,7 +189,6 @@ OnboardingCompleteWithNoMonetization.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithNoMonetization.args = {
-	features: [ 'rrmModuleV2' ],
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )

@@ -113,9 +113,6 @@ WithProductIDSetting.args = {
 	},
 };
 WithProductIDSetting.scenario = {};
-WithProductIDSetting.parameters = {
-	features: [ 'rrmModuleV2' ],
-};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMain',
