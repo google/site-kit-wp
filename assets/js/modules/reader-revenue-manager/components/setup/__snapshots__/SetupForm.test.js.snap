@@ -58,7 +58,7 @@ exports[`SetupForm should render the form correctly 1`] = `
       <span
         class="googlesitekit-cta-link__contents"
       >
-        Create new publication
+        Manage publications in Publisher Center
       </span>
       <span
         class="googlesitekit-icon-wrapper"
