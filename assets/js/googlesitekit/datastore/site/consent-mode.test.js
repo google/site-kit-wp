@@ -360,7 +360,7 @@ describe( 'core/site Consent Mode', () => {
 				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
 			);
 
-			it( 'uses a resolver to make a network request with useCache: false', async () => {
+			it( 'uses a resolver to make a network request with useCache', async () => {
 				const response = { connected: true };
 
 				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
@@ -378,14 +378,15 @@ describe( 'core/site Consent Mode', () => {
 					CORE_SITE
 				).isAdsConnectedUncached();
 
-				const isAdsConnectedUncached = registry
-					.select( CORE_SITE )
-					.isAdsConnectedUncached();
-				expect( isAdsConnectedUncached ).toEqual( response.connected );
-
 				expect( fetchMock ).toHaveFetched(
 					adsMeasurementStatusEndpointRegExp
 				);
+
+				const isAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+
+				expect( isAdsConnectedUncached ).toEqual( response.connected );
 			} );
 
 			it( 'returns undefined if the request fails', async () => {
