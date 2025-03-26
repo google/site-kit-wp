@@ -133,10 +133,15 @@ export default function SetupForm( { onCompleteSetup } ) {
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">
-				{ __(
-					'Manage publications in Publisher Center',
-					'google-site-kit'
-				) }
+				{ publications.length === 1
+					? __(
+							'Site Kit will connect your existing publication',
+							'google-site-kit'
+					  )
+					: __(
+							'Select your preferred publication to connect with Site Kit',
+							'google-site-kit'
+					  ) }
 			</p>
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationSelect
@@ -154,12 +159,10 @@ export default function SetupForm( { onCompleteSetup } ) {
 				href={ managePublicationsURL }
 				onClick={ handleLinkClick }
 			>
-				{ publications?.length
-					? __(
-							'Manage publications in Publisher Center',
-							'google-site-kit'
-					  )
-					: __( 'Create new publication', 'google-site-kit' ) }
+				{ __(
+					'Manage publications in Publisher Center',
+					'google-site-kit'
+				) }
 			</Link>
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
