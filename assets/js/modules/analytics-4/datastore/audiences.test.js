@@ -628,6 +628,12 @@ describe( 'modules/analytics-4 audiences', () => {
 				} );
 
 				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
+
+				registry
 					.dispatch( CORE_USER )
 					.setReferenceDate( referenceDate );
 
@@ -651,41 +657,11 @@ describe( 'modules/analytics-4 audiences', () => {
 				} );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
+					body: JSON.stringify( availableUserAudiences ),
 					status: 200,
 				} );
 
 				muteFetch( expirableItemEndpoint );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						availableAudiences: [ availableUserAudienceFixture ],
-						availableAudiencesLastSyncedAt:
-							( Date.now() - 1000 ) / 1000,
-					} );
-
-				fetchMock.post(
-					{ url: createAudienceEndpoint, repeat: 2 },
-					( url, opts ) => {
-						return {
-							body: opts.body.includes( 'new_visitors' )
-								? {
-										...SITE_KIT_AUDIENCE_DEFINITIONS[
-											'new-visitors'
-										],
-										name: audiencesFixture[ 2 ].name,
-								  }
-								: {
-										...SITE_KIT_AUDIENCE_DEFINITIONS[
-											'returning-visitors'
-										],
-										name: audiencesFixture[ 3 ].name,
-								  },
-							status: 200,
-						};
-					}
-				);
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1953,16 +1929,16 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiencesFixture,
-					status: 200,
-				} );
-
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
 					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: JSON.stringify( availableAudiencesFixture ),
 					status: 200,
 				} );
 
