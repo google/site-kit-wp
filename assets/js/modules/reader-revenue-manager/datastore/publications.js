@@ -30,6 +30,7 @@ import {
 	commonActions,
 	combineStores,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -324,6 +325,43 @@ const baseSelectors = {
 	getPublications( state ) {
 		return state.publications;
 	},
+
+	/**
+	 * Gets the current publication IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<string> | undefined)} An array of product IDs; `undefined` if publications are not loaded.
+	 */
+	getCurrentProductIDs: createRegistrySelector( ( select ) => ( state ) => {
+		if ( ! state.publications ) {
+			return undefined;
+		}
+
+		const publicationID = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublicationID();
+
+		if ( ! publicationID ) {
+			return [];
+		}
+
+		const selectedPublication = state.publications.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		if ( ! selectedPublication || ! selectedPublication.products ) {
+			return [];
+		}
+
+		return selectedPublication.products.reduce( ( acc, product ) => {
+			const productID = product.name;
+			acc.push( productID );
+			return acc;
+		}, [] );
+	} ),
 };
 
 const store = combineStores(

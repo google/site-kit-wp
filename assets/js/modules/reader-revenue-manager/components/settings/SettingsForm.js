@@ -54,7 +54,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 	);
 
 	const productIDs = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
 	);
 
 	const snippetMode = useSelect( ( select ) =>
