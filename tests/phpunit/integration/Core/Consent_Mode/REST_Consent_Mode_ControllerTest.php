@@ -321,94 +321,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-	public function test_get_ads_measurement_status__ads_module_connected() {
-		$this->setup_rest();
-		$this->grant_manage_options_permission();
-
-		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-
-		$ads = new Ads( $this->context );
-		$ads->register();
-
-		$ads->get_settings()->merge(
-			array(
-				'conversionID' => 'AW-123456789',
-			)
-		);
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertTrue( $response->get_data()['connected'] );
-	}
-
-	public function test_get_ads_measurement_status__ga4_module_connected__ads_connected_setting_is_true() {
-		$this->setup_rest();
-			$this->grant_manage_options_permission();
-
-			remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-
-			add_filter(
-				'googlesitekit_ads_measurement_connection_checks',
-				function () {
-					return array(
-						fn() => true,
-					);
-				}
-			);
-
-			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-			$response = rest_get_server()->dispatch( $request );
-
-			$this->assertTrue( $response->get_data()['connected'] );
-	}
-
-	public function test_get_ads_measurement_status__ga4_module_connected__destinationIds_setting_contains_ads_related_tag() {
-		$this->setup_rest();
-			$this->grant_manage_options_permission();
-
-			remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-
-			add_filter(
-				'googlesitekit_ads_measurement_connection_checks',
-				function () {
-					return array(
-						fn() => true,
-					);
-				}
-			);
-
-			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-			$response = rest_get_server()->dispatch( $request );
-
-			$this->assertTrue( $response->get_data()['connected'] );
-	}
-
-	/**
-	 * @dataProvider data_container_checks
-	 */
-	public function test_get_ads_measurement_status__tag_manager_module_connected__live_container_checks_with_data_set( $has_awct_tag, $expected_connection_value ) {
-		$this->setup_rest();
-		$this->grant_manage_options_permission();
-
-		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-
-		add_filter(
-			'googlesitekit_ads_measurement_connection_checks',
-			function () use ( $has_awct_tag ) {
-				return array(
-					function () use ( $has_awct_tag ) {
-						return $has_awct_tag; },
-				);
-			}
-		);
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( $expected_connection_value, $response->get_data()['connected'] );
-	}
-
 	public function data_container_checks() {
 		return array(
 			'has awct type tag'    => array( true, true ),
@@ -484,5 +396,150 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 				}
 			}
 		);
+	}
+
+
+	/// New Tests to core/site/data/ads-measurement-status
+
+	public function test_get_ads_measurement_status__requires_authenticated_admin() {
+		$this->setup_rest();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	public function test_get_ads_measurement_status__no_checks() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
+	}
+
+	public function test_get_ads_measurement_status__early_return_on_first_passing_check() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		$check_calls = array(
+			'first'  => 0,
+			'second' => 0,
+			'third'  => 0,
+		);
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( &$check_calls ) {
+				return array(
+					function () use ( &$check_calls ) {
+						$check_calls['first']++;
+						return false;
+					},
+					function () use ( &$check_calls ) {
+						$check_calls['second']++;
+						return true;
+					},
+					function () use ( &$check_calls ) {
+						$check_calls['third']++;
+						return false;
+					},
+				);
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertTrue( $response_data['connected'] );
+		$this->assertEquals( 1, $check_calls['first'] );
+		$this->assertEquals( 1, $check_calls['second'] );
+		$this->assertEquals( 0, $check_calls['third'] );
+	}
+
+	public function test_get_ads_measurement_status__handles_empty_checks_array() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () {
+				return array();
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
+	}
+
+	public function test_get_ads_measurement_status__handles_non_callable_checks() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () {
+				return array(
+					'not-a-callable',
+					123,
+					array( 'also', 'not', 'callable' ),
+					fn() => true,
+				);
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertTrue( $response_data['connected'] );
+	}
+
+	public function test_get_ads_measurement_status__handles_non_array_filter_result() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		$test_cases = array(
+			'string'  => 'not-an-array',
+			'integer' => 123,
+			'boolean' => true,
+			'null'    => null,
+		);
+
+		foreach ( $test_cases as $type => $value ) {
+			remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+			add_filter(
+				'googlesitekit_ads_measurement_connection_checks',
+				function () use ( $value ) {
+					return $value;
+				}
+			);
+
+			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+			$response = rest_get_server()->dispatch( $request );
+
+			$response_data = $response->get_data();
+
+			$this->assertFalse( $response_data['connected'], "Failed for type: $type" );
+		}
+	}
+
+	public function tear_down_after_ads_measurement_tests() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		parent::tear_down();
 	}
 }
