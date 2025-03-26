@@ -46,7 +46,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GCS_BUCKET: site-kit-github-artifacts
+  GCS_BUCKET: site-kit-storybook
 
 jobs:
   build-storybook:
