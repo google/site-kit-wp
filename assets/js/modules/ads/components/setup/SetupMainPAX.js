@@ -40,10 +40,9 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupFormPAX from './SetupFormPAX';
-import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -63,6 +62,7 @@ import {
 } from '../../pax/constants';
 import { Cell, Row } from '../../../../material-components';
 import { WooCommerceRedirectModal } from '../common';
+import Link from '../../../../components/Link';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -71,9 +71,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
-
-	const [ shouldShowProgressBar, setShouldShowProgressBar ] =
-		useState( false );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -191,16 +188,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 	);
 
 	const createAccount = useCallback( () => {
-		setShouldShowProgressBar( true );
-
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
 			return;
 		}
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
-
-		setShouldShowProgressBar( false );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	const onLaunch = useCallback( ( app ) => {
@@ -220,6 +213,17 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setOpenDialog,
 		createAccount,
 	] );
+
+	const setupNewAdsAccountSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'ads-set-up-a-new-ads-account'
+		)
+	);
+	const setupExistingAdsAccountSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'ads-connect-an-existing-ads-account'
+		)
+	);
 
 	return (
 		<div
@@ -245,8 +249,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
-
-				{ shouldShowProgressBar && <ProgressBar /> }
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
@@ -289,8 +291,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 											),
 											{
 												a: (
-													<SupportLink
-														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+													<Link
+														href={
+															setupNewAdsAccountSupportURL
+														}
 														external
 													/>
 												),
@@ -336,8 +340,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 											),
 											{
 												a: (
-													<SupportLink
-														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+													<Link
+														href={
+															setupExistingAdsAccountSupportURL
+														}
 														external
 													/>
 												),
