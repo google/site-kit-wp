@@ -1289,10 +1289,15 @@ describe( 'modules/analytics-4 audiences', () => {
 					provideUserCapabilities( registry );
 
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-						availableAudiences: availableAudiencesFixture,
 						availableCustomDimensions: [],
 						propertyID: testPropertyID,
 					} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetAudienceSettings( {
+							availableAudiences: availableAudiencesFixture,
+						} );
 				} );
 
 				it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", async () => {
@@ -1319,41 +1324,9 @@ describe( 'modules/analytics-4 audiences', () => {
 					muteFetch( expirableItemEndpoint );
 
 					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-						body: availableAudiencesFixture,
+						body: JSON.stringify( availableAudiencesFixture ),
 						status: 200,
 					} );
-
-					fetchMock.post(
-						{ url: createAudienceEndpoint, repeat: 2 },
-						( url, opts ) => {
-							return {
-								body: opts.body.includes( 'new_visitors' )
-									? {
-											...SITE_KIT_AUDIENCE_DEFINITIONS[
-												'new-visitors'
-											],
-											name: audiencesFixture[ 2 ].name,
-									  }
-									: {
-											...SITE_KIT_AUDIENCE_DEFINITIONS[
-												'returning-visitors'
-											],
-											name: audiencesFixture[ 3 ].name,
-									  },
-								status: 200,
-							};
-						}
-					);
-
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetAudienceSettings( {
-							availableAudiences: [
-								availableUserAudienceFixture,
-							],
-							availableAudiencesLastSyncedAt:
-								( Date.now() - 1000 ) / 1000,
-						} );
 
 					const options = registry
 						.select( MODULES_ANALYTICS_4 )
