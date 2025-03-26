@@ -103,8 +103,9 @@ jobs:
       - name: Upload files
         uses: google-github-actions/upload-cloud-storage@v2
         with:
-          path: ${{ env.TARGET_DIR }}
-          destination: ${{ env.GCS_BUCKET }}
+          path: dist
+          destination: ${{ env.GCS_BUCKET }}/${{ env.TARGET_DIR }}
+          parent: false
           process_gcloudignore: false
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
