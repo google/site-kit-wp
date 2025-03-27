@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -41,6 +42,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
+import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -585,6 +587,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 		describe( 'getCurrentProductIDs', () => {
 			it( 'should return undefined if publications are not loaded', () => {
+				freezeFetch( publicationsEndpoint );
+
 				const productIDs = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getCurrentProductIDs();
@@ -610,8 +614,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should return products for the current publication', () => {
-				const publications = fixtures.publications;
-
+				const publications = cloneDeep( fixtures.publications );
 				publications[ 0 ].products = [
 					{ name: 'ABC:product-1' },
 					{ name: 'DEF:product-2' },

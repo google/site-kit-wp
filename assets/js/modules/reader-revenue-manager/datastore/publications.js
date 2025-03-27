@@ -335,7 +335,11 @@ const baseSelectors = {
 	 * @return {(Array.<string> | undefined)} An array of product IDs; `undefined` if publications are not loaded.
 	 */
 	getCurrentProductIDs: createRegistrySelector( ( select ) => ( state ) => {
-		if ( ! state.publications ) {
+		const publications = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublications();
+
+		if ( publications === undefined ) {
 			return undefined;
 		}
 
@@ -356,11 +360,7 @@ const baseSelectors = {
 			return [];
 		}
 
-		return selectedPublication.products.reduce( ( acc, product ) => {
-			const productID = product.name;
-			acc.push( productID );
-			return acc;
-		}, [] );
+		return selectedPublication.products.map( ( product ) => product.name );
 	} ),
 };
 

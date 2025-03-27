@@ -33,6 +33,7 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { cloneDeep } from 'lodash';
 
 function Template() {
 	return (
@@ -54,14 +55,30 @@ function Template() {
 	);
 }
 
+function setupPublicationsWithProduct(
+	registry,
+	publicationIndex,
+	productName
+) {
+	const publicationsWithProducts = cloneDeep( publications );
+
+	publicationsWithProducts[ publicationIndex ].products.push( {
+		name: productName,
+	} );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublications( publicationsWithProducts );
+
+	return publicationsWithProducts;
+}
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
-		publications[ 0 ].products.push( {
-			name: 'product-b',
-		} );
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -77,9 +94,7 @@ PendingVerification.storyName = 'PendingVerification';
 PendingVerification.scenario = {};
 PendingVerification.args = {
 	setupRegistry: ( registry ) => {
-		publications[ 1 ].products.push( {
-			name: 'product-a',
-		} );
+		setupPublicationsWithProduct( registry, 1, 'product-a' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -99,12 +114,15 @@ ActionRequired.storyName = 'ActionRequired';
 ActionRequired.scenario = {};
 ActionRequired.args = {
 	setupRegistry: ( registry ) => {
-		publications[ 2 ].products.push( {
-			name: 'product-a',
-		} );
+		const publicationsWithProducts = setupPublicationsWithProduct(
+			registry,
+			2,
+			'product-a'
+		);
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.selectPublication( publications[ 2 ] );
+			.selectPublication( publicationsWithProducts[ 2 ] );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductID( 'product-a' );
