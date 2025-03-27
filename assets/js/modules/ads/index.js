@@ -162,8 +162,8 @@ export const ADS_NOTIFICATIONS = {
 	'ads-setup-cta': {
 		Component: AdsModuleSetupCTABanner,
 		// This notification should be displayed before audience segmentation one,
-		// which has priority of 10
-		priority: PRIORITY.SETUP_CTA_LOW,
+		// which has priority of PRIORITY.SETUP_CTA_LOW
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
