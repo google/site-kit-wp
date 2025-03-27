@@ -400,7 +400,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
-		priority: 300,
+		priority: PRIORITY.INFO,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -478,7 +478,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'zero-data-notification': {
 		Component: ZeroDataNotification,
-		priority: 310,
+		priority: PRIORITY.INFO,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
