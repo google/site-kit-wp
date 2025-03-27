@@ -38,6 +38,7 @@ module.exports = {
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',
 		'<rootDir>/node_modules',
+		'<rootDir>/assets/node_modules',
 		'<rootDir>/build',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
