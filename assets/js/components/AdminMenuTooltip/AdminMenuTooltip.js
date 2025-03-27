@@ -49,7 +49,7 @@ export function AdminMenuTooltip() {
 	);
 
 	const handleViewTooltip = () => {
-		trackEvent( `${ viewContext }_${ tooltipSlug }`, 'view_tooltip' );
+		trackEvent( `${ viewContext }_${ tooltipSlug }`, 'tooltip_view' );
 	};
 
 	const handleDismissTooltip = useCallback( async () => {
@@ -69,11 +69,11 @@ export function AdminMenuTooltip() {
 			document.querySelector( 'body' ).click();
 		}
 
-		// Track dismiss event
+		// Track dismiss event.
 		if ( tooltipSlug ) {
 			trackEvent(
 				`${ viewContext }_${ tooltipSlug }`,
-				'dismiss_tooltip'
+				'tooltip_dismiss'
 			);
 		}
 

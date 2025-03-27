@@ -61,10 +61,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
 
-	const onTooltipDismiss = useCallback( () => {
-		trackEvent( `${ viewContext }_kmw`, 'tooltip_dismiss' );
-	}, [ viewContext ] );
-
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
 		title: __(
@@ -76,7 +72,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		onDismiss: onTooltipDismiss,
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 

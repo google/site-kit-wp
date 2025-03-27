@@ -45,7 +45,7 @@ import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { trackEvent, WEEK_IN_SECONDS } from '../../../../../util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
 import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
 import AudienceErrorModal from './AudienceErrorModal';
 import NotificationWithSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
@@ -75,10 +75,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const onTooltipDismiss = useCallback( () => {
-		trackEvent( trackEventCategory, 'tooltip_dismiss' );
-	}, [ trackEventCategory ] );
-
 	const tooltipSettings = {
 		tooltipSlug: id,
 		title: __(
@@ -90,7 +86,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		onDismiss: onTooltipDismiss,
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 

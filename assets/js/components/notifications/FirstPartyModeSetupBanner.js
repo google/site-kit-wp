@@ -47,7 +47,7 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import { DAY_IN_SECONDS } from '../../util';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -59,10 +59,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
 
-	const onTooltipDismiss = useCallback( () => {
-		trackEvent( `${ viewContext }_fpm-setup-cta`, 'tooltip_dismiss' );
-	}, [ viewContext ] );
-
 	const tooltipSettings = {
 		tooltipSlug: id,
 		title: '',
@@ -71,7 +67,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		onDismiss: onTooltipDismiss,
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 
