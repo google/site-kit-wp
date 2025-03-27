@@ -215,7 +215,7 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS_4 )
 			.getAvailableAudiences();
 
-		if ( audiences === undefined ) {
+		if ( audiences === null ) {
 			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
 	},
