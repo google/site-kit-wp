@@ -30,7 +30,6 @@ import {
 	fireEvent,
 	muteFetch,
 	provideModules,
-	provideUserAuthentication,
 	render,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
@@ -71,7 +70,6 @@ describe( 'InfoNoticeWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		provideUserAuthentication( registry );
 		dismissPromptSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissPrompt'
@@ -82,6 +80,14 @@ describe( 'InfoNoticeWidget', () => {
 		mockTrackEvent.mockClear();
 	} );
 
+	const userAudienceSettingsRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/audience-settings'
+	);
+
+	const analyticsAudienceSettingsRegExp = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
+
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceInfoNotice'
 	)( InfoNoticeWidget );
@@ -91,13 +97,8 @@ describe( 'InfoNoticeWidget', () => {
 	);
 
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences: null,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-			configuredAudiences: null,
-		} );
+		muteFetch( userAudienceSettingsRegExp );
+		muteFetch( analyticsAudienceSettingsRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
@@ -109,14 +110,8 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences is not loaded', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences: null,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
+		muteFetch( analyticsAudienceSettingsRegExp );
+		muteFetch( userAudienceSettingsRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 

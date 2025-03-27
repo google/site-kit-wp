@@ -156,6 +156,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should sync cached audiences when availableAudiences is null for authenticated user', async () => {
 				muteFetch( syncAvailableAudiences );
 
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: null,
+					} );
+
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [
 						'properties/12345/audiences/1',
@@ -167,7 +173,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getAvailableAudiences()
-				).toBeUndefined();
+				).toBeNull();
 
 				// Wait until the resolver has finished fetching the audiences.
 				await untilResolved(
@@ -185,6 +191,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 					body: JSON.stringify( availableAudiencesFixture ),
 					status: 200,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: null,
+					} );
 
 				registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 

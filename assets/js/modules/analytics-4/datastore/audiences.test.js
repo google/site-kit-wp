@@ -2350,10 +2350,6 @@ describe( 'modules/analytics-4 audiences', () => {
 			'properties/12345/audiences/5', // Test audience.
 		];
 
-		beforeEach( () => {
-			provideUserAuthentication( registry );
-		} );
-
 		describe( 'isDefaultAudience', () => {
 			it( 'should return `true` if the audience is a default audience', () => {
 				registry
@@ -2557,9 +2553,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'returns false when available audiences are null or not set', async () => {
-				provideUserAuthentication( registry, {
-					authenticated: false,
-				} );
+				muteFetch( syncAvailableAudiencesEndpoint );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -2642,9 +2636,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return empty array if loaded `availableAudiences` is not an array', async () => {
-				provideUserAuthentication( registry, {
-					authenticated: false,
-				} );
+				muteFetch( syncAvailableAudiencesEndpoint );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
