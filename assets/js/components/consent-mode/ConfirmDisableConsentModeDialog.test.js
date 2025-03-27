@@ -68,7 +68,7 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 			.dispatch( CORE_SITE )
 			.receiveGetAdsMeasurementStatus(
 				{ connected: true },
-				{ useCache: true }
+				{ useCache: false }
 			);
 
 		const { getByText, waitForRegistry } = render(
@@ -87,6 +87,10 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 			getByText(
 				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:/i
 			)
+		).toBeInTheDocument();
+
+		expect(
+			getByText( /How visitors interact with your site via Analytics/i )
 		).toBeInTheDocument();
 	} );
 } );
