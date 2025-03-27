@@ -92,10 +92,6 @@ describe( 'InfoNoticeWidget', () => {
 		'analyticsAudienceInfoNotice'
 	)( InfoNoticeWidget );
 
-	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
-	);
-
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
 		muteFetch( userAudienceSettingsRegExp );
 		muteFetch( analyticsAudienceSettingsRegExp );
@@ -123,11 +119,8 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when configuredAudiences is not loaded', () => {
-		muteFetch( audienceSettingsRegExp );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		muteFetch( userAudienceSettingsRegExp );
+		muteFetch( analyticsAudienceSettingsRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
