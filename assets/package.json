@@ -102,7 +102,6 @@
 		"eslint-scope": "^5.1.0",
 		"eslint-webpack-plugin": "^2.5.1",
 		"glob-to-regexp": "^0.4.1",
-		"google-pax-sdk": "1.1.0",
 		"mini-css-extract-plugin": "^1.2.1",
 		"natives": "^1.1.6",
 		"patch-package": "^8.0.0",

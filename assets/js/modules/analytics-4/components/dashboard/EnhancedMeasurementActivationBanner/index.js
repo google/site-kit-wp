@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
@@ -27,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
@@ -41,7 +45,6 @@ import {
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
-	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 } from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
@@ -49,64 +52,27 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import InProgressBanner from './InProgressBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
-import { MONTH_IN_SECONDS, trackEvent } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
-import {
-	isValidPropertyID,
-	isValidWebDataStreamID,
-} from '../../../utils/validation';
-import useViewContext from '../../../../../hooks/useViewContext';
 
-function EnhancedMeasurementActivationBanner() {
-	const viewContext = useViewContext();
-
+export default function EnhancedMeasurementActivationBanner( {
+	id,
+	Notification,
+} ) {
 	const [ step, setStep ] = useState( ACTIVATION_STEP_SETUP );
-	const [
-		isEnhancedMeasurementInitiallyDisabled,
-		setIsEnhancedMeasurementInitiallyDisabled,
-	] = useState( undefined );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ errorNotice, setErrorNotice ] = useState( null );
 
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-
-	const webDataStreamID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
-	);
-
+	// See tooltip TODO below being actioned in #10003
 	const isBannerDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			'enhanced-measurement-notification'
 		)
 	);
-
 	const isDismissingBanner = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			'enhanced-measurement-notification'
 		)
 	);
-
-	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics-4' )
-	);
-
-	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if (
-			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID ) ||
-			! hasModuleAccess ||
-			isBannerDismissed
-		) {
-			return undefined;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
-			propertyID,
-			webDataStreamID
-		);
-	} );
+	const hideCTABanner = isBannerDismissed || isDismissingBanner;
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -117,7 +83,6 @@ function EnhancedMeasurementActivationBanner() {
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { dismissItem } = useDispatch( CORE_USER );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const { isTooltipVisible } = useTooltipState(
@@ -127,16 +92,6 @@ function EnhancedMeasurementActivationBanner() {
 	const showTooltip = useShowTooltip(
 		ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY
 	);
-
-	function handleDismiss() {
-		showTooltip();
-		dismissItem(
-			ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-			{
-				expiresInSeconds: MONTH_IN_SECONDS,
-			}
-		);
-	}
 
 	const handleSubmit = useCallback( async () => {
 		setIsSaving( true );
@@ -155,25 +110,8 @@ function EnhancedMeasurementActivationBanner() {
 			return;
 		}
 
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'confirm_notification'
-		);
-
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ setValues, submitChanges, viewContext ] );
-
-	useEffect( () => {
-		if (
-			isEnhancedMeasurementStreamEnabled === false &&
-			isEnhancedMeasurementInitiallyDisabled === undefined
-		) {
-			setIsEnhancedMeasurementInitiallyDisabled( true );
-		}
-	}, [
-		isEnhancedMeasurementInitiallyDisabled,
-		isEnhancedMeasurementStreamEnabled,
-	] );
+	}, [ setValues, submitChanges ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
@@ -211,36 +149,42 @@ function EnhancedMeasurementActivationBanner() {
 		);
 	}
 
-	if (
-		! isEnhancedMeasurementInitiallyDisabled ||
-		isBannerDismissed ||
-		isDismissingBanner
-	) {
+	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
+	// This is because we don't want the component removed from the DOM as we have to still render
+	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
+	// checking for the dismissal state here.
+	//
+	// This will be removed in https://github.com/google/site-kit-wp/issues/10003
+	if ( hideCTABanner ) {
 		return null;
 	}
 
 	if ( step === ACTIVATION_STEP_SETUP ) {
 		return (
 			<SetupBanner
+				id={ id }
+				Notification={ Notification }
+				hideCTABanner={ hideCTABanner }
 				errorNotice={ errorNotice }
 				isSaving={ isSaving }
-				onDismiss={ handleDismiss }
+				onDismiss={ showTooltip }
 				onSubmit={ handleSubmit }
 			/>
 		);
 	}
 
 	if ( step === ACTIVATION_STEP_IN_PROGRESS ) {
-		return <InProgressBanner />;
+		return <InProgressBanner id={ id } Notification={ Notification } />;
 	}
 
 	if ( step === ACTIVATION_STEP_SUCCESS ) {
-		return <SuccessBanner />;
+		return <SuccessBanner id={ id } Notification={ Notification } />;
 	}
 
 	return null;
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
-	EnhancedMeasurementActivationBanner
-);
+EnhancedMeasurementActivationBanner.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};

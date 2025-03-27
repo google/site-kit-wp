@@ -3,8 +3,8 @@
 exports[`EnhancedMeasurementActivationBanner should render the in progress step when enhanced measurement is being enabled after the user returns from the OAuth flow 1`] = `
 <div>
   <section
-    class="googlesitekit-enhanced-measurement-success-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--win-success googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
-    id="googlesitekit-enhanced-measurement-activation-banner"
+    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner"
+    id="enhanced-measurement-notification"
   >
     <div
       class="mdc-layout-grid"
@@ -15,20 +15,11 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
         <div
           class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
         >
-          <div
-            class="googlesitekit-publisher-win__title-image-wrapper"
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-            >
-              Setup in progress
-            </h3>
-            <div
-              class="googlesitekit-publisher-win__image-small"
-            >
-              <svg />
-            </div>
-          </div>
+            Setup in progress
+          </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
@@ -87,8 +78,8 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
 exports[`EnhancedMeasurementActivationBanner should render the setup step when enhanced measurement is initially false and the banner is not dismissed 1`] = `
 <div>
   <section
-    class="googlesitekit-enhanced-measurement-setup-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
-    id="googlesitekit-enhanced-measurement-activation-banner"
+    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
+    id="enhanced-measurement-notification"
   >
     <div
       class="mdc-layout-grid"
@@ -99,20 +90,11 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
         <div
           class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
         >
-          <div
-            class="googlesitekit-publisher-win__title-image-wrapper"
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-            >
-              Understand how visitors interact with your content
-            </h3>
-            <div
-              class="googlesitekit-publisher-win__image-small"
-            >
-              <svg />
-            </div>
-          </div>
+            Understand how visitors interact with your content
+          </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
@@ -146,7 +128,7 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
             class="googlesitekit-publisher-win__actions"
           >
             <button
-              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
               target="_self"
             >
               <span
@@ -185,8 +167,8 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
 exports[`EnhancedMeasurementActivationBanner should render the success step when the the setup form is successfully submitted 1`] = `
 <div>
   <section
-    class="googlesitekit-enhanced-measurement-success-banner googlesitekit-publisher-win--small googlesitekit-publisher-win--win-success googlesitekit-publisher-win--is-open googlesitekit-publisher-win"
-    id="googlesitekit-enhanced-measurement-activation-banner"
+    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner"
+    id="enhanced-measurement-notification"
   >
     <div
       class="mdc-layout-grid"
@@ -197,20 +179,11 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
         <div
           class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
         >
-          <div
-            class="googlesitekit-publisher-win__title-image-wrapper"
+          <h3
+            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-            >
-              You successfully enabled enhanced measurement for your site
-            </h3>
-            <div
-              class="googlesitekit-publisher-win__image-small"
-            >
-              <svg />
-            </div>
-          </div>
+            You successfully enabled enhanced measurement for your site
+          </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
@@ -240,20 +213,16 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
               </a>
             </p>
           </div>
-          <div
-            class="googlesitekit-publisher-win__actions"
+          <button
+            class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+            target="_self"
           >
-            <button
-              class="mdc-button mdc-button--raised"
-              target="_self"
+            <span
+              class="mdc-button__label"
             >
-              <span
-                class="mdc-button__label"
-              >
-                OK, Got it
-              </span>
-            </button>
-          </div>
+              OK, Got it
+            </span>
+          </button>
         </div>
       </div>
     </div>
