@@ -420,7 +420,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// If we have a code, check if there's a stored redirect URL to prevent duplicate setups.
 		// The OAuth2 spec requires that an authorization code can only be used once.
 		// If `fetchAccessTokenWithAuthCode()` is called more than once with the same code, Google will return an error.
-		// This commonly happens when users click the final setup button multiple times or
+		// This may happen when users click the final setup button multiple times or
 		// if there are concurrent requests with the same authorization code.
 		// By storing the successful redirect URL in transients and reusing it for duplicate
 		// requests with the same code, we ensure a smooth setup experience even when
