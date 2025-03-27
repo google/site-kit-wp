@@ -41,6 +41,7 @@ import {
 import {
 	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
@@ -182,7 +183,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_error: {
 		Component: SetupErrorNotification,
-		priority: 140,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -213,7 +214,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
-		priority: 140,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -248,7 +249,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'auth-error': {
 		Component: AuthError,
-		priority: 130,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
