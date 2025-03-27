@@ -646,8 +646,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'publicationID' => 'test-publication-id',
 				'productIDs'    => array(
-					'test-publication-id:product1',  // Combined format..
-					'standalone-product',            // Standalone format
+					'test-publication-id:product1',  // Combined format.
+					'standalone-product',            // Standalone format.
 					'test-publication-id:product2',  // Another combined format.
 				),
 				'productID'     => 'test-publication-id:main-product',  // Main product in combined format.
