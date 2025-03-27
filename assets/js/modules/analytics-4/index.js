@@ -124,6 +124,7 @@ import WebDataStreamNotAvailableNotification, {
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -828,7 +829,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'google-tag-id-mismatch': {
 		Component: GoogleTagIDMismatchNotification,
-		priority: 280,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
