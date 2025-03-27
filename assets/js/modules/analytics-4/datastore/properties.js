@@ -543,17 +543,21 @@ const baseActions = {
 			return;
 		}
 
-		const { response, error } =
-			yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagSettings(
 				measurementID
-			);
+			)
+		);
 
-		if ( error ) {
+		const googleTagSettings =
+			select( MODULES_ANALYTICS_4 ).getGoogleTagSettings();
+
+		if ( ! googleTagSettings ) {
 			return;
 		}
 
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
-			response;
+			googleTagSettings;
 
 		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
 		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
@@ -829,6 +833,24 @@ const baseResolvers = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
 	},
+	*getGoogleTagSettings( measurementID ) {
+		const registry = yield commonActions.getRegistry();
+		const googleTagSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagSettings();
+
+		if ( googleTagSettings !== undefined ) {
+			return googleTagSettings;
+		}
+
+		if ( ! measurementID ) {
+			return;
+		}
+
+		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+			measurementID
+		);
+	},
 };
 
 const baseSelectors = {
@@ -883,6 +905,18 @@ const baseSelectors = {
 			return account ? account.propertySummaries : [];
 		}
 	),
+
+	/**
+	 * Gets a Google tag settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
+	 */
+	getGoogleTagSettings( state ) {
+		return state.googleTagSettings;
+	},
 
 	/**
 	 * Determines whether we are matching account property or not.
