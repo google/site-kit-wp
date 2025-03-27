@@ -96,6 +96,7 @@ import { SetupMain } from './components/setup';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
+	EnhancedMeasurementActivationBanner,
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
@@ -121,6 +122,9 @@ import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
+import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
+import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -702,7 +706,6 @@ export const registerWidgets = ( widgets ) => {
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -725,7 +728,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
-		priority: 10,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -780,7 +783,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
-		priority: 290,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -825,7 +828,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'google-tag-id-mismatch': {
 		Component: GoogleTagIDMismatchNotification,
-		priority: 280,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
@@ -864,6 +867,71 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				isGA4ModuleOwner &&
 				hasMismatchedGoogleTagID
 			);
+		},
+	},
+	'enhanced-measurement-notification': {
+		Component: EnhancedMeasurementActivationBanner,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The hasModuleOwnershipOrAccess() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The hasModuleOwnershipOrAccess(), getPropertyID() and
+				// getWebDataStreamID() selectors rely on the resolution of the
+				// getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isItemDismissed() selector relies on the resolution
+				// of the getDismissedItems() resolver.
+				resolveSelect( CORE_USER ).getDismissedItems(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			const webDataStreamID =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+			const hasModuleAccess =
+				ga4ModuleConnected &&
+				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+					'analytics-4'
+				);
+
+			// Check if the prompt with the legacy key used before the banner was refactored
+			// to use the `notification ID` as the dismissal key, is dismissed.
+			const isLegacyDismissed = select( CORE_USER ).isItemDismissed(
+				LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			);
+
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID ) ||
+				! hasModuleAccess ||
+				isLegacyDismissed
+			) {
+				return false;
+			}
+
+			// The isEnhancedMeasurementStreamEnabled() selector relies on
+			// the resolution of the getEnhancedMeasurementSettings() resolver.
+			await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+			const isEnhancedMeasurementStreamEnabled = select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
+
+			return isEnhancedMeasurementStreamEnabled === false;
 		},
 	},
 };

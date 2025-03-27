@@ -32,14 +32,12 @@ import {
 	freezeFetch,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';
 import EnhancedMeasurementActivationBanner from './index';
 import { properties } from '../../../datastore/__fixtures__';
@@ -47,13 +45,30 @@ import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
+	const EnhancedMeasurementActivationBannerComponent =
+		withNotificationComponentProps( 'enhanced-measurement-notification' )(
+			EnhancedMeasurementActivationBanner
+		);
+
+	const notification =
+		ANALYTICS_4_NOTIFICATIONS[ 'enhanced-measurement-notification' ];
+
 	const propertyID = '1000';
 	const webDataStreamID = '2000';
 
 	const enhancedMeasurementSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+	);
+
+	const fetchDismissItem = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	let enhancedMeasurementSettingsMock;
@@ -95,6 +110,13 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		] );
 		provideModuleRegistrations( registry );
 
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'enhanced-measurement-notification',
+				notification
+			);
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID,
 			webDataStreamID,
@@ -125,7 +147,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 	it( 'should render the setup step when enhanced measurement is initially false and the banner is not dismissed', async () => {
 		const { container, getByRole } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -148,7 +170,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			.setValues( FORM_SETUP, { autoSubmit: true } );
 
 		const { container, getByText, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -168,7 +190,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 
 		const { container, getByRole, getByText, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -185,8 +207,8 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 		// Enhanced measurement settings should update when enhanced measurement
 		// is enabled via the "Enable now" CTA.
-		expect( fetchMock ).toHaveBeenCalledTimes(
-			1,
+		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+		expect( fetchMock ).toHaveFetched(
 			enhancedMeasurementSettingsEndpoint
 		);
 
@@ -199,75 +221,9 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		).toBeInTheDocument();
 	} );
 
-	it.each( [
-		[
-			'there is not a valid propertyID',
-			() => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					propertyID: '',
-				} );
-			},
-		],
-		[
-			'there is not a valid webDataStreamID',
-			() => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					webDataStreamID: '',
-				} );
-			},
-		],
-		[
-			'the user does not have access to the Analytics 4 module',
-			() => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					ownerID: 2,
-				} );
-
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveCheckModuleAccess(
-						{ access: false },
-						{ slug: 'analytics-4' }
-					);
-			},
-		],
-		[
-			'enhanced measurement is initially true',
-			() => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetEnhancedMeasurementSettings(
-						{
-							...enhancedMeasurementSettingsMock,
-							streamEnabled: true,
-						},
-						{ propertyID, webDataStreamID }
-					);
-			},
-		],
-		[
-			'the banner is dismissed',
-			() => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-					] );
-			},
-		],
-	] )( 'should not render when %s', ( _, setupTestCase ) => {
-		setupTestCase();
-
-		const { container } = render( <EnhancedMeasurementActivationBanner />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should enable enhanced measurement when the CTA in SetupBanner is clicked and the user has the edit scope granted', async () => {
 		const { getByRole, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -276,6 +232,11 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
 			status: 200,
 			body: { ...enhancedMeasurementEnabledSettingsMock },
+		} );
+
+		fetchMock.postOnce( fetchDismissItem, {
+			status: 200,
+			body: [],
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: 'Enable now' } ) );
@@ -308,7 +269,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 
 		const { waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -334,13 +295,10 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	it( 'should not render the banner when the prompt is being dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.setIsItemDimissing(
-				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-				true
-			);
+			.setIsItemDimissing( 'enhanced-measurement-notification', true );
 
 		const { container, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBanner />,
+			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
 			}
@@ -349,5 +307,76 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when Enhanced Measurement is not enabled', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when the propertyID is invalid', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				propertyID: '',
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the webDataStreamID is invalid', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				webDataStreamID: '',
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the user does not have access to the Analytics 4 module', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				ownerID: 2,
+			} );
+
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'analytics-4' }
+				);
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active enhanced measurement is initially true', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...enhancedMeasurementSettingsMock,
+						streamEnabled: true,
+					},
+					{ propertyID, webDataStreamID }
+				);
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
