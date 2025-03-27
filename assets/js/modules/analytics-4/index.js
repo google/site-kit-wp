@@ -124,6 +124,7 @@ import WebDataStreamNotAvailableNotification, {
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -705,7 +706,6 @@ export const registerWidgets = ( widgets ) => {
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -728,7 +728,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
-		priority: 10,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -783,7 +783,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
-		priority: 290,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -828,7 +828,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'google-tag-id-mismatch': {
 		Component: GoogleTagIDMismatchNotification,
-		priority: 280,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
@@ -871,8 +871,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
-		priority: 270,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
