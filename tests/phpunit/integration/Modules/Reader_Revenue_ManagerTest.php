@@ -591,18 +591,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_debug_fields() {
 		$this->reader_revenue_manager->get_settings()->register();
 
-		$this->assertEqualSets(
-			array(
-				'reader_revenue_manager_publication_id',
-				'reader_revenue_manager_publication_onboarding_state',
-				'reader_revenue_manager_available_product_ids',
-				'reader_revenue_manager_payment_option',
-			),
-			array_keys( $this->reader_revenue_manager->get_debug_fields() )
-		);
-
-		$this->reader_revenue_manager->get_settings()->register();
-
 		// Verify `postTypes` field appears when the `snippetMode` is `post_types` (default).
 		$this->assertEqualSets(
 			array(
@@ -689,22 +677,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $registered );
 	}
 
-	public function test_feature_disabled_product_id_setting_not_registered() {
-		$publication_id = 'ABCDEFGH';
-
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID' => $publication_id,
-			)
-		);
-
-		$this->reader_revenue_manager->register();
-
-		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
-
-		$this->assertFalse( $registered );
-	}
-
 	public function test_block_editor_assets_set_up() {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
@@ -733,14 +705,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_block_editor_assets_not_set_up
-	 */
-	public function test_block_editor_assets_not_set_up( $data ) {
-		$wp_version_condition = $data['wpVersionCondition'];
-
-		if ( $wp_version_condition && version_compare( get_bloginfo( 'version' ), $wp_version_condition['version'], $wp_version_condition['operator'] ) === false ) {
-			$this->markTestSkipped( 'This test only runs on WordPress ' . $wp_version_condition['operator'] . ' ' . $wp_version_condition['version'] . '.' );
+	public function test_block_editor_assets_not_set_up() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) === false ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 <.' );
 		}
 
 		$registerable_asset_handles = array_map(
@@ -859,24 +826,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		do_action( 'enqueue_block_assets' );
 
 		$this->assertTrue( wp_style_is( 'blocks-reader-revenue-manager-common-editor-styles', 'enqueued' ), 'blocks-reader-revenue-manager-common-editor-styles should be enqueued' );
-	}
-
-	public function data_block_editor_assets_not_set_up() {
-		return array(
-			'no WP version condition' => array(
-				array(
-					'wpVersionCondition' => null,
-				),
-			),
-			'WP version < 5.8'        => array(
-				array(
-					'wpVersionCondition' => array(
-						'version'  => '5.8',
-						'operator' => '<',
-					),
-				),
-			),
-		);
 	}
 
 	/**
