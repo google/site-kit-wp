@@ -81,6 +81,9 @@ export default function WooCommerceRedirectModal( {
 
 		return false;
 	} );
+	const isWooCommerceActivated = useSelect( ( select ) =>
+		select( MODULES_ADS ).isWooCommerceActivated()
+	);
 
 	const isModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
@@ -138,7 +141,7 @@ export default function WooCommerceRedirectModal( {
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	useMount( () => {
-		if ( isGoogleForWooCommerceAdsConnected ) {
+		if ( isWooCommerceActivated ) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
 	} );
