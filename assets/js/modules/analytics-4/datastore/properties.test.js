@@ -660,7 +660,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect( store.getState().settings ).toMatchObject(
+				expect( store.getState().googleTagSettings ).toMatchObject(
 					fixtures.googleTagSettings
 				);
 			} );
