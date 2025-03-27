@@ -2435,7 +2435,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAvailableAudiences', [] );
+					.receiveGetAudienceSettings( {} );
 
 				const isSiteKitAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2484,7 +2484,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAvailableAudiences', [] );
+					.receiveGetAudienceSettings( {} );
 
 				const isUserAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2595,7 +2595,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAvailableAudiences', [] );
+					.receiveGetAudienceSettings( {} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2782,7 +2782,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.startResolution( 'getAvailableAudiences', [] );
+					.receiveGetAudienceSettings( {} );
 
 				const [
 					siteKitUserCountReportError,
