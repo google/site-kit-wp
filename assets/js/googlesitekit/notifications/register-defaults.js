@@ -339,7 +339,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
-		priority: 260,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -615,7 +615,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
-		priority: 30,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],

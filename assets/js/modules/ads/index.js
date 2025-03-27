@@ -50,6 +50,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -165,7 +166,7 @@ export const ADS_NOTIFICATIONS = {
 		Component: AdsModuleSetupCTABanner,
 		// This notification should be displayed before audience segmentation one,
 		// which has priority of 10
-		priority: 9,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],

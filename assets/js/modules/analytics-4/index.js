@@ -729,7 +729,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
-		priority: 10,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -872,7 +872,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
-		priority: 270,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
