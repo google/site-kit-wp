@@ -24,12 +24,17 @@ import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import {
 	createTestRegistry,
 	fireEvent,
+	muteFetch,
 	render,
 } from '../../../../../../tests/js/test-utils';
 
 describe( 'ProductIDSelect', () => {
 	let registry;
 	const productIDs = [ 'product-1', 'product-2' ];
+
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -40,6 +45,8 @@ describe( 'ProductIDSelect', () => {
 				productID: 'product-1',
 				productIDs,
 			} );
+
+		muteFetch( publicationsEndpoint );
 	} );
 
 	it( 'should render a select field', async () => {
