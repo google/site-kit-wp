@@ -592,7 +592,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
 		Component: ConsentModeSetupCTAWidget,
-		priority: 20,
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
