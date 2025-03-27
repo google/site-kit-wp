@@ -41,18 +41,6 @@ function Template() {
 	return <NotificationWithComponentProps />;
 }
 
-export const OnboardingComplete = Template.bind( {} );
-OnboardingComplete.storyName = 'Onboarding Complete';
-OnboardingComplete.parameters = {
-	query: {
-		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
-	},
-	publicationOnboardingState:
-		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-};
-OnboardingComplete.scenario = {};
-
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'Pending Verification';
 PendingVerification.parameters = {
