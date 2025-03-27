@@ -52,8 +52,6 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_get_default() {
-		$this->enable_feature( 'rrmModuleV2' );
-
 		$this->settings->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -73,8 +71,6 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_view_only_keys() {
-		$this->enable_feature( 'rrmModuleV2' );
-
 		$this->assertEqualSets(
 			array(
 				'publicationID',
@@ -136,7 +132,6 @@ class SettingsTest extends SettingsTestCase {
 	 * @dataProvider data_revenue_manager_settings
 	 */
 	public function test_reader_revenue_manager_settings_sanitization( $setting, $value, $expected_value ) {
-		$this->enable_feature( 'rrmModuleV2' );
 		$this->settings->register();
 
 		$options_key = $this->get_option_name();

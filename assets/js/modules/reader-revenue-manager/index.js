@@ -220,7 +220,6 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
-		featureFlag: 'rrmModuleV2',
 	},
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
@@ -236,7 +235,6 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
-		featureFlag: 'rrmModuleV2',
 	},
 };
 

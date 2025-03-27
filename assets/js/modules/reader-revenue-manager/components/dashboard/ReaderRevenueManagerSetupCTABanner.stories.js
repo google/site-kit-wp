@@ -93,10 +93,7 @@ export default {
 						<a href="http://test.test/?page=googlesitekit-settings" />
 					</div>
 					<div style={ { flex: 1 } }>
-						<WithTestRegistry
-							callback={ setupRegistry }
-							features={ [ 'rrmModuleV2' ] }
-						>
+						<WithTestRegistry callback={ setupRegistry }>
 							<Story />
 						</WithTestRegistry>
 					</div>

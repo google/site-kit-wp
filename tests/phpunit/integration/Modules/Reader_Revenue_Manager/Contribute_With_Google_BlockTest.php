@@ -56,6 +56,7 @@ class Contribute_With_Google_BlockTest extends TestCase {
 			array(
 				'paymentOption' => 'subscriptions',
 				'publicationID' => 'test-publication-id',
+				'snippetMode'   => 'sitewide',
 			)
 		);
 
@@ -69,6 +70,7 @@ class Contribute_With_Google_BlockTest extends TestCase {
 			array(
 				'paymentOption' => 'contributions',
 				'publicationID' => '',
+				'snippetMode'   => 'sitewide',
 			)
 		);
 
@@ -82,6 +84,7 @@ class Contribute_With_Google_BlockTest extends TestCase {
 			array(
 				'paymentOption' => 'contributions',
 				'publicationID' => 'test-publication-id',
+				'snippetMode'   => 'sitewide',
 			)
 		);
 

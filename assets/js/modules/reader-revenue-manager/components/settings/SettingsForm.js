@@ -26,7 +26,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { useFeature } from '../../../../hooks/useFeature';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -47,8 +46,6 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function SettingsForm( { hasModuleAccess } ) {
-	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
-
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
@@ -143,21 +140,18 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					/>
 				) }
 
-				{ isRRMv2Enabled &&
-					hasModuleAccess &&
-					publicationAvailable &&
-					missingProductID && (
-						<ErrorText
-							message={ sprintf(
-								/* translators: 1: Product ID. */
-								__(
-									'The previously selected product ID %s was not found. Please select a new product ID.',
-									'google-site-kit'
-								),
-								missingProductID
-							) }
-						/>
-					) }
+				{ hasModuleAccess && publicationAvailable && missingProductID && (
+					<ErrorText
+						message={ sprintf(
+							/* translators: 1: Product ID. */
+							__(
+								'The previously selected product ID %s was not found. Please select a new product ID.',
+								'google-site-kit'
+							),
+							missingProductID
+						) }
+					/>
+				) }
 
 				<div className="googlesitekit-setup-module__inputs">
 					<PublicationSelect hasModuleAccess={ hasModuleAccess } />
@@ -184,39 +178,29 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						) }
 					/>
 				) }
-				{ isRRMv2Enabled &&
-					publicationsLoaded &&
-					productIDs?.length > 0 && (
-						<ProductIDSettings
-							hasModuleAccess={ hasModuleAccess }
-						/>
-					) }
+				{ publicationsLoaded && productIDs?.length > 0 && (
+					<ProductIDSettings hasModuleAccess={ hasModuleAccess } />
+				) }
 			</div>
-			{ isRRMv2Enabled && (
-				<div className="googlesitekit-settings-module__fields-group">
-					<h4 className="googlesitekit-settings-module__fields-group-title">
-						{ __( 'CTA Placement', 'google-site-kit' ) }
-					</h4>
-					<div className="googlesitekit-rrm-settings-edit__snippet-mode">
-						<SnippetModeSelect
-							hasModuleAccess={ hasModuleAccess }
-						/>
-					</div>
-					{ snippetMode === 'post_types' && (
-						<div className="googlesitekit-rrm-settings-edit__post-types">
-							<h5>
-								{ __(
-									'Select the content types where you want your CTAs to appear:',
-									'google-site-kit'
-								) }
-							</h5>
-							<PostTypesSelect
-								hasModuleAccess={ hasModuleAccess }
-							/>
-						</div>
-					) }
+			<div className="googlesitekit-settings-module__fields-group">
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'CTA Placement', 'google-site-kit' ) }
+				</h4>
+				<div className="googlesitekit-rrm-settings-edit__snippet-mode">
+					<SnippetModeSelect hasModuleAccess={ hasModuleAccess } />
 				</div>
-			) }
+				{ snippetMode === 'post_types' && (
+					<div className="googlesitekit-rrm-settings-edit__post-types">
+						<h5>
+							{ __(
+								'Select the content types where you want your CTAs to appear:',
+								'google-site-kit'
+							) }
+						</h5>
+						<PostTypesSelect hasModuleAccess={ hasModuleAccess } />
+					</div>
+				) }
+			</div>
 		</Fragment>
 	);
 }

@@ -54,23 +54,6 @@ class Tag_GuardTest extends TestCase {
 		$this->post_product_id = new Post_Product_ID( $post_meta, $this->settings );
 	}
 
-	public function test_can_activate() {
-		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
-
-		$this->assertTrue( $guard->can_activate() );
-	}
-
-	public function test_can_not_activate_when_publication_id_is_unset() {
-		$this->settings->merge( array( 'publicationID' => '' ) );
-
-		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
-
-		$this->assertFalse(
-			$guard->can_activate(),
-			'should return FALSE when publicationID is not set.'
-		);
-	}
-
 	public function data_configurations__singular() {
 		return array(
 			'no publication id'         => array(
@@ -144,13 +127,11 @@ class Tag_GuardTest extends TestCase {
 	/**
 	 * @dataProvider data_configurations__singular
 	 */
-	public function test_can_activate__singular__rrmModuleV2(
+	public function test_can_activate__singular(
 		$settings,
 		$post_product_id,
 		$expected
 	) {
-		$this->enable_feature( 'rrmModuleV2' );
-
 		$this->settings->merge( $settings );
 
 		// Navigate to a singular post.
@@ -200,12 +181,10 @@ class Tag_GuardTest extends TestCase {
 	/**
 	 * @dataProvider data_configurations__non_singular
 	 */
-	public function test_can_activate__non_singular__rrmModuleV2(
+	public function test_can_activate__non_singular(
 		$settings,
 		$expected
 	) {
-		$this->enable_feature( 'rrmModuleV2' );
-
 		$this->settings->merge( $settings );
 
 		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
