@@ -46,15 +46,8 @@ import ActionsCTALinkDismiss from '../../../../../googlesitekit/notifications/co
 import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
 
 export default function SetupBanner( props ) {
-	const {
-		id,
-		Notification,
-		errorNotice,
-		hideCTABanner,
-		isSaving,
-		onDismiss,
-		onSubmit,
-	} = props;
+	const { id, Notification, errorNotice, isSaving, onDismiss, onSubmit } =
+		props;
 
 	// The `enhanced_measurement` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
@@ -133,12 +126,12 @@ export default function SetupBanner( props ) {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const handleView = useCallback( () => {
-		if ( ! hideCTABanner && isUsingProxy ) {
+		if ( isUsingProxy ) {
 			triggerSurvey( 'view_enhanced_measurement_cta', {
 				ttl: DAY_IN_SECONDS,
 			} );
 		}
-	}, [ hideCTABanner, triggerSurvey, isUsingProxy ] );
+	}, [ triggerSurvey, isUsingProxy ] );
 
 	const description = hasEditScope
 		? __(
@@ -204,7 +197,6 @@ SetupBanner.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType,
 	errorNotice: PropTypes.object,
-	hideCTABanner: PropTypes.bool,
 	isSaving: PropTypes.bool,
 	onSubmit: PropTypes.func,
 	onDismiss: PropTypes.func,

@@ -50,6 +50,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/site/data/connection' )

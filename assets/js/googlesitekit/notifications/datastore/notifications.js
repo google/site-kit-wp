@@ -274,7 +274,10 @@ export const controls = {
 					.getNotifications();
 
 				// Wait for all dismissed items to be available before filtering.
-				await registry.resolveSelect( CORE_USER ).getDismissedItems();
+				await Promise.all( [
+					registry.resolveSelect( CORE_USER ).getDismissedItems(),
+					registry.resolveSelect( CORE_USER ).getDismissedPrompts(),
+				] );
 
 				let potentialNotifications = Object.values( notifications )
 					.filter( ( notification ) =>

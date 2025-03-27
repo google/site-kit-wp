@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdminMenuTooltip should render when isTooltipVisible is true and track view event 1`] = `
+<div
+  aria-modal="true"
+  class="googlesitekit-tour-tooltip"
+  role="alertdialog"
+>
+  <div
+    class="mdc-card googlesitekit-tooltip-card"
+  >
+    <div
+      class="googlesitekit-tooltip-body"
+    >
+      <h2
+        class="googlesitekit-tooltip-title"
+      >
+        Test Title
+      </h2>
+      <div
+        class="googlesitekit-tooltip-content"
+      >
+        Test Content
+      </div>
+    </div>
+    <div
+      class="mdc-card__actions googlesitekit-tooltip-actions"
+    >
+      <ul
+        class="googlesitekit-tooltip-indicators"
+      />
+      <div
+        class="googlesitekit-tooltip-buttons"
+      >
+        <button
+          aria-label="Got it"
+          class="mdc-button googlesitekit-tooltip-button"
+          data-action="primary"
+          role="button"
+          target="_self"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Got it
+          </span>
+        </button>
+      </div>
+    </div>
+    <button
+      aria-label="Close"
+      class="mdc-button googlesitekit-tooltip-close"
+      target="_self"
+    >
+      <svg />
+    </button>
+  </div>
+</div>
+`;

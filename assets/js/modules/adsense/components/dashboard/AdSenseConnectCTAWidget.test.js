@@ -19,6 +19,13 @@
 /**
  * Internal dependencies
  */
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
+
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 import {
 	act,
@@ -89,35 +96,7 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should open the tooltip', () => {
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should close the tooltip on clicking the close button', async () => {
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector( '.googlesitekit-tooltip-close' )
-				);
-			} );
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on clicking the dismiss button', async () => {
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector(
-						'.googlesitekit-tooltip-buttons > button'
-					)
-				);
-			} );
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
+			expect( mockShowTooltip ).toHaveBeenCalled();
 		} );
 	} );
 

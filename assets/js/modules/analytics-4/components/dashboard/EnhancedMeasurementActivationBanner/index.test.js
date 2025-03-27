@@ -50,6 +50,7 @@ import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =
@@ -292,23 +293,6 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		);
 	} );
 
-	it( 'should not render the banner when the prompt is being dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.setIsItemDimissing( 'enhanced-measurement-notification', true );
-
-		const { container, waitForRegistry } = render(
-			<EnhancedMeasurementActivationBannerComponent />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	describe( 'checkRequirements', () => {
 		it( 'is active when Enhanced Measurement is not enabled', async () => {
 			const isActive = await notification.checkRequirements(
@@ -316,6 +300,20 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when user has dismissed using the legacy dismissed items', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+				] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
 		} );
 
 		it( 'is not active when the propertyID is invalid', async () => {

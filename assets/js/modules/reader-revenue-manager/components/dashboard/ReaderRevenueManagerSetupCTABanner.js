@@ -47,11 +47,7 @@ import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../datastore/constants';
 import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
-import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../../../../components/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
@@ -69,8 +65,16 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		READER_REVENUE_MANAGER_MODULE_SLUG
 	);
 
-	const showTooltip = useShowTooltip( id );
-	const { isTooltipVisible } = useTooltipState( id );
+	const tooltipSettings = {
+		tooltipSlug: 'rrm-setup-notification',
+		title: '',
+		content: __(
+			'You can always enable Reader Revenue Manager from Settings later',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
@@ -78,45 +82,9 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	// See TODO note below.
-	const isCTADismissed = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
-	);
-	const dismissedPromptsLoaded = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
-	);
-	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
-
 	useEffect( () => {
-		if ( ! hideCTABanner ) {
-			triggerSurvey( 'view_reader_revenue_manager_cta' );
-		}
-	}, [ hideCTABanner, triggerSurvey ] );
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title=""
-					content={ __(
-						'You can always enable Reader Revenue Manager from Settings later',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={ id }
-				/>
-			</Fragment>
-		);
-	}
-
-	// TODO Remove this hack
-	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
-	// This is because we don't want the component removed from the DOM as we have to still render
-	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
-	// checking for the dismissal state here.
-	if ( hideCTABanner ) {
-		return null;
-	}
+		triggerSurvey( 'view_reader_revenue_manager_cta' );
+	}, [ triggerSurvey ] );
 
 	const breakpointSVGMap = {
 		[ BREAKPOINT_SMALL ]: SetupMobileSVG,
@@ -185,9 +153,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 								: __( 'Maybe later', 'google-site-kit' )
 						}
 						onDismiss={ showTooltip }
-						dismissOptions={ {
-							skipHidingFromQueue: true,
-						} }
 						dismissExpires={ 2 * WEEK_IN_SECONDS }
 					/>
 				}
