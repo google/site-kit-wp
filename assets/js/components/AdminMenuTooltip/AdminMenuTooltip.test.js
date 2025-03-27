@@ -114,7 +114,7 @@ describe( 'AdminMenuTooltip', () => {
 		// The tracking event should fire when the tooltip is viewed.
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
-			'view_tooltip'
+			'tooltip_view'
 		);
 	} );
 
@@ -175,7 +175,7 @@ describe( 'AdminMenuTooltip', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
-			'dismiss_tooltip'
+			'tooltip_dismiss'
 		);
 	} );
 
@@ -237,7 +237,7 @@ describe( 'AdminMenuTooltip', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
-			'dismiss_tooltip'
+			'tooltip_dismiss'
 		);
 	} );
 } );
