@@ -117,7 +117,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		// Make sure that description is present in the component.
 		expect(
 			getByText(
-				/Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups/
+				/Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups/
 			)
 		).toBeInTheDocument();
 

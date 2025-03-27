@@ -99,17 +99,14 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	it( 'should render the "SettingsEdit" component', async () => {
-		const { getByRole, getByText, waitForRegistry } = render(
-			<SettingsEdit />,
-			{
-				registry,
-			}
-		);
+		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
 		// Ensure publication select is rendered.
-		expect( getByRole( 'menu', { hidden: true } ) ).toBeInTheDocument();
+		expect( getByText( 'Publication' ) ).toBeInTheDocument();
 
 		// Ensure the publication onboarding state notice is displayed.
 		getByText(

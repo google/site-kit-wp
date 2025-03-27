@@ -43,7 +43,10 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
+			.receiveGetSettings( {
+				snippetMode: 'post_types',
+				postTypes: [ 'post' ],
+			} );
 	} );
 
 	it( 'should render the form correctly', async () => {

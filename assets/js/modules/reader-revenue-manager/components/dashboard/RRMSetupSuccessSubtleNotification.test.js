@@ -70,9 +70,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const publicationStatesData = [
 		[
 			ONBOARDING_COMPLETE,
-			'Customize settings',
+			'Manage CTAs',
 			'Got it',
-			'Your Reader Revenue Manager account was successfully set up!',
+			'Success! Your Reader Revenue Manager account is set up',
 		],
 		[
 			PENDING_VERIFICATION,
@@ -271,7 +271,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		// state is not displayed.
 		expect(
 			queryByText(
-				'Your Reader Revenue Manager account was successfully set up!'
+				'Success! Your Reader Revenue Manager account is set up'
 			)
 		).not.toBeInTheDocument();
 
@@ -323,7 +323,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		// state is displayed.
 		expect(
 			getByText(
-				'Your Reader Revenue Manager account was successfully set up!'
+				'Success! Your Reader Revenue Manager account is set up'
 			)
 		).toBeInTheDocument();
 
