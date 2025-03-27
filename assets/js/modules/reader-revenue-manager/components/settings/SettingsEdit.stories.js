@@ -180,9 +180,6 @@ MissingProductID.storyName = 'MissingProductID';
 MissingProductID.scenario = {};
 MissingProductID.args = {
 	setupRegistry: ( registry ) => {
-		publications[ 0 ].products.push( {
-			name: 'product-c',
-		} );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductID( 'product-c' );
