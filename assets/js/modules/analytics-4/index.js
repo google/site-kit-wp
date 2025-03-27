@@ -706,7 +706,6 @@ export const registerWidgets = ( widgets ) => {
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {

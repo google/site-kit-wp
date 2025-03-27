@@ -265,7 +265,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'top-earning-pages-success-notification': {
 		Component: GA4AdSenseLinkedNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -654,7 +653,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -683,7 +681,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-fpm': {
 		Component: FirstPartyModeSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,

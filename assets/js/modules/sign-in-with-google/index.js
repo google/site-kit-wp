@@ -131,7 +131,6 @@ export const registerNotifications = ( notifications ) => {
 	} );
 	notifications.registerNotification( 'setup-success-notification-siwg', {
 		Component: SetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
