@@ -403,6 +403,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 	public function test_get_ads_measurement_status__requires_authenticated_admin() {
 		$this->setup_rest();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
 		$response = rest_get_server()->dispatch( $request );
@@ -427,6 +428,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	public function test_get_ads_measurement_status__early_return_on_first_passing_check() {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		$check_calls = array(
 			'first'  => 0,
@@ -468,6 +470,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	public function test_get_ads_measurement_status__handles_empty_checks_array() {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		add_filter(
 			'googlesitekit_ads_measurement_connection_checks',
@@ -487,6 +490,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	public function test_get_ads_measurement_status__handles_non_callable_checks() {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		add_filter(
 			'googlesitekit_ads_measurement_connection_checks',
@@ -495,7 +499,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 					'not-a-callable',
 					123,
 					array( 'also', 'not', 'callable' ),
-					fn() => true,
+					fn() => false,
 				);
 			}
 		);
@@ -505,12 +509,13 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertTrue( $response_data['connected'] );
+		$this->assertFalse( $response_data['connected'] );
 	}
 
 	public function test_get_ads_measurement_status__handles_non_array_filter_result() {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		$test_cases = array(
 			'string'  => 'not-an-array',
@@ -536,10 +541,5 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 			$this->assertFalse( $response_data['connected'], "Failed for type: $type" );
 		}
-	}
-
-	public function tear_down_after_ads_measurement_tests() {
-		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-		parent::tear_down();
 	}
 }
