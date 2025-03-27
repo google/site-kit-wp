@@ -57,6 +57,7 @@ import {
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -128,7 +129,7 @@ async function checkRequirementsForProductIDNotification(
 export const NOTIFICATIONS = {
 	[ RRM_SETUP_NOTIFICATION_ID ]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
-		priority: 50,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -174,7 +175,6 @@ export const NOTIFICATIONS = {
 	},
 	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {

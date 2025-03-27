@@ -41,6 +41,7 @@ import {
 import {
 	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
@@ -82,7 +83,7 @@ import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecove
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
-		priority: 150,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -135,7 +136,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
-		priority: 150,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -182,7 +183,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_error: {
 		Component: SetupErrorNotification,
-		priority: 140,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -213,7 +214,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
-		priority: 140,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -248,7 +249,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'auth-error': {
 		Component: AuthError,
-		priority: 130,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -264,7 +265,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'top-earning-pages-success-notification': {
 		Component: GA4AdSenseLinkedNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -338,8 +338,9 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
-		priority: 280,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -399,7 +400,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
-		priority: 300,
+		priority: PRIORITY.INFO,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -477,7 +478,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'zero-data-notification': {
 		Component: ZeroDataNotification,
-		priority: 310,
+		priority: PRIORITY.INFO,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -572,7 +573,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'module-recovery-alert': {
 		Component: ModuleRecoveryAlert,
-		priority: 145,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -591,7 +592,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
 		Component: ConsentModeSetupCTAWidget,
-		priority: 20,
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -614,7 +615,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
-		priority: 30,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -653,7 +654,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -682,7 +682,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-fpm': {
 		Component: FirstPartyModeSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
