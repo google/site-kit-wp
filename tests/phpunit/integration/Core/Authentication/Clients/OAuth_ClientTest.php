@@ -653,20 +653,6 @@ class OAuth_ClientTest extends TestCase {
 		$client2 = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
 		$client2->get_authentication_url( $success_redirect );
 
-		// Intercept the redirect to verify the URL is the same as the first attempt.
-		add_filter(
-			'wp_redirect',
-			function ( $location ) use ( $stored_redirect ) {
-				// When `wp_safe_redirect` is called, check the location matches our transient.
-				$this->assertEquals( $stored_redirect, $location, 'Second call should redirect to stored URL' );
-
-				// Throw a RedirectException to simulate the behavior of `wp_redirect`.
-				throw new RedirectException( $location );
-			},
-			10,
-			1
-		);
-
 		// For the second client, we can verify it never calls `fetchAccessTokenWithAuthCode`
 		// by setting up a mock that will fail the test if called.
 		$google_client_mock2 = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
@@ -682,16 +668,8 @@ class OAuth_ClientTest extends TestCase {
 			$client2->authorize_user();
 			$this->fail( 'Expected to throw a RedirectException on second attempt!' );
 		} catch ( RedirectException $redirect2 ) {
-			// Our filter above already verified the URL matches, but we should
-			// explicitly assert something here to avoid empty catch block errors.
-			$this->assertInstanceOf(
-				RedirectException::class,
-				$redirect2,
-				'Second call should throw a RedirectException'
-			);
-		} finally {
-			// Clean up our filter.
-			remove_all_filters( 'wp_redirect' );
+			// Verify the stored URL is used for the redirect.
+			$this->assertEquals( $stored_redirect, $redirect2->get_location() );
 		}
 	}
 
