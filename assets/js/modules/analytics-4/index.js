@@ -784,7 +784,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
-		priority: 290,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
