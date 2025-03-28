@@ -29,6 +29,7 @@ import {
 	fireEvent,
 	muteFetch,
 	act,
+	freezeFetch,
 } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import * as tracking from '../../../../../../util/tracking';
@@ -91,6 +92,8 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
+		freezeFetch( syncAvailableAudiencesEndpoint );
+
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
@@ -99,6 +102,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if the user has dismissed the notice', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences,
+		} );
+
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );
@@ -153,6 +160,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -197,6 +207,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: availableAudiences.filter(
 				( { displayName } ) => displayName !== 'Returning visitors'
 			),
@@ -265,8 +278,13 @@ describe( 'AudienceCreationNotice', () => {
 				propertyID: '34567',
 				measurementID: '56789',
 				webDataStreamID: '78901',
-				availableAudiences: filteredAudiences,
 			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					availableAudiences: filteredAudiences,
+				} );
 
 			const { getByRole, waitForRegistry } = render(
 				<AudienceCreationNotice />,
@@ -315,6 +333,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -365,6 +386,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -415,6 +439,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 

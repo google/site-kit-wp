@@ -26,7 +26,11 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { commonActions, createReducer } from 'googlesitekit-data';
+import {
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -61,16 +65,17 @@ function validateAudienceSettings( audienceSettings ) {
 	);
 }
 
-const fetchStoreReducerCallback = createReducer(
-	( state, audienceSettings ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
-		}
-
-		state.audienceSettings.settings = audienceSettings;
-		state.audienceSettings.savedSettings = audienceSettings;
+const fetchStoreReducerCallback = createReducer( ( state, settings ) => {
+	if ( ! state.audienceSettings ) {
+		state.audienceSettings = {};
 	}
-);
+
+	state.audienceSettings.availableAudiences = settings?.availableAudiences;
+	state.audienceSettings.audienceSegmentationSetupCompletedBy =
+		settings?.audienceSegmentationSetupCompletedBy;
+	state.audienceSettings.availableAudiencesLastSyncedAt =
+		settings?.availableAudiencesLastSyncedAt;
+} );
 
 const fetchGetAudienceSettingsStore = createFetchStore( {
 	baseName: 'getAudienceSettings',
@@ -195,14 +200,27 @@ const baseActions = {
 };
 
 const baseResolvers = {
+	*getAudienceSettings() {
+		const registry = yield commonActions.getRegistry();
+		const { select } = registry;
+
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
+		if ( audienceSettings === undefined ) {
+			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
+		}
+	},
+
 	*getAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
-		const { select, dispatch } = registry;
 
-		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
 
-		if ( audiences === undefined ) {
-			dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
+		if ( audiences === null ) {
+			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
 		}
 	},
 };
@@ -242,21 +260,42 @@ const baseSelectors = {
 	getAvailableAudiences( state ) {
 		return state.audienceSettings?.availableAudiences;
 	},
-	/**
-	 * Gets the user who set up Audience Segmentation.
-	 *
-	 * @since 1.148.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(number|null)} ID for the user who set up Audience Segmentation, or `undefined` if not loaded.
-	 */
-	getAudienceSegmentationSetupCompletedBy( state ) {
-		return state.audienceSettings?.audienceSegmentationSetupCompletedBy;
-	},
 
 	getAudienceSettings( state ) {
 		return state.audienceSettings;
 	},
+
+	/**
+	 * Gets the last time the available audiences were synced.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} Last time the available audiences were synced, or `undefined` if not loaded.
+	 */
+	getAvailableAudiencesLastSyncedAt: createRegistrySelector(
+		( select ) => () => {
+			const audienceSettings =
+				select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+			return audienceSettings.availableAudiencesLastSyncedAt;
+		}
+	),
+
+	/**
+	 * Gets the user who set up Audience Segmentation.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|null)} ID for the user who set up Audience Segmentation, or `undefined` if not loaded.
+	 */
+	getAudienceSegmentationSetupCompletedBy: createRegistrySelector(
+		( select ) => () => {
+			const audienceSettings =
+				select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+			return audienceSettings.audienceSegmentationSetupCompletedBy;
+		}
+	),
 };
 
 const store = combineStores(

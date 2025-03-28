@@ -836,24 +836,26 @@ describe( 'AudienceSelectionPanel', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			// Verify the dismissed item for the first configured audience is cleared.
-			expect( fetchMock ).toHaveFetched(
-				dismissedItemsEndpoint,
-				{
-					body: {
-						data: {
-							slugs: [
-								'audience-tile-properties/12345/audiences/1',
-							],
+			await waitFor( () => {
+				// Verify the dismissed item for the first configured audience is cleared.
+				expect( fetchMock ).toHaveFetched(
+					dismissedItemsEndpoint,
+					{
+						body: {
+							data: {
+								slugs: [
+									'audience-tile-properties/12345/audiences/1',
+								],
+							},
 						},
 					},
-				},
-				{
-					headers: {
-						'X-HTTP-Method-Override': 'DELETE',
-					},
-				}
-			);
+					{
+						headers: {
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+			} );
 
 			// Verify there is a "Temporarily hidden" badge for the remaining hidden audience.
 			assertExpectedTemporarilyHiddenBadges( [
@@ -1414,6 +1416,10 @@ describe( 'AudienceSelectionPanel', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
 				registry
@@ -1832,6 +1838,10 @@ describe( 'AudienceSelectionPanel', () => {
 		] )(
 			'should display an %s while retrieving user count',
 			async ( _, error, expectedTexts ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
 				commonSetup( error, () => {
 					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 						body: availableAudiences,
