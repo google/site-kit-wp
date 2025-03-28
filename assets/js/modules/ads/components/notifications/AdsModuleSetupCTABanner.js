@@ -20,11 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -158,11 +159,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		__( 'Maybe later', 'google-site-kit' )
 	);
 
-	useEffect( () => {
+	useMount( () => {
 		if ( true === isDismissalFinal ) {
 			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
 		}
-	}, [ isDismissalFinal ] );
+	} );
 
 	if ( isTooltipVisible ) {
 		return (
