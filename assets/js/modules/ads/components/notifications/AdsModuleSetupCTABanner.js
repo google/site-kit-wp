@@ -20,11 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,9 +34,9 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
+import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
 import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
 } from '../../datastore/constants';
 import AdsSetupSVG from '../../../../../svg/graphics/ads-setup.svg';
@@ -106,9 +107,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	} );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
-		)
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
@@ -119,6 +118,13 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			expiresInSeconds: 2 * WEEK_IN_SECONDS,
 		} );
 	}, [ id, dismissNotification ] );
+
+	const { setCacheItem } = useDispatch( CORE_SITE );
+	const dismissWooCommerceRedirectModal = useCallback( () => {
+		setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
+			ttl: 5 * MINUTE_IN_SECONDS,
+		} );
+	}, [ setCacheItem ] );
 
 	const activateModule = useActivateModuleCallback( 'ads' );
 
@@ -158,11 +164,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		__( 'Maybe later', 'google-site-kit' )
 	);
 
-	useEffect( () => {
+	useMount( () => {
 		if ( true === isDismissalFinal ) {
 			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
 		}
-	}, [ isDismissalFinal ] );
+	} );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -238,6 +244,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 				<WooCommerceRedirectModal
 					onDismiss={ onModalDismiss }
 					onClose={ onModalClose }
+					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
 					dialogActive
 				/>
 			) }
