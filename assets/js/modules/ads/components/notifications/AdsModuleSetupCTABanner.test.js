@@ -48,11 +48,16 @@ import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { enabledFeatures } from '../../../../features';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
+const ACCOUNT_LINKED_NOTIFICATION_ID =
+	'account-linked-via-google-for-woocommerce';
 
 describe( 'AdsModuleSetupCTABanner', () => {
 	let registry;
 
 	const notification = ADS_NOTIFICATIONS[ NOTIFICATION_ID ];
+
+	const accountLinkedNotification =
+		ADS_NOTIFICATIONS[ ACCOUNT_LINKED_NOTIFICATION_ID ];
 
 	const AdsModuleSetupCTABannerComponent = withNotificationComponentProps(
 		NOTIFICATION_ID
@@ -60,6 +65,9 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 	const fetchDismissPrompt = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+	);
+	const dismissItemEndpoint = RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {
@@ -121,11 +129,20 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				},
 			} );
 
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification(
+					'account-linked-via-google-for-woocommerce',
+					accountLinkedNotification
+				);
+
 			fetchMock.postOnce( fetchDismissPrompt, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {} );
 
 			const { getByText, waitForRegistry } = render(
 				<AdsModuleSetupCTABannerComponent />,
@@ -140,8 +157,8 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			expect(
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
-			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			// 'account-linked-via-google-for-woocommerce' should be dismissed.
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
@@ -157,11 +174,20 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				},
 			} );
 
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification(
+					'account-linked-via-google-for-woocommerce',
+					accountLinkedNotification
+				);
+
 			fetchMock.postOnce( fetchDismissPrompt, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {} );
 
 			const { getByText, waitForRegistry } = render(
 				<AdsModuleSetupCTABannerComponent />,
@@ -177,8 +203,8 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
 
-			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			// 'account-linked-via-google-for-woocommerce' should be dismissed.
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {
