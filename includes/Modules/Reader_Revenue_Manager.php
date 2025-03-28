@@ -186,6 +186,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					40
 				);
 			}
+
+			add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets_for_non_sitekit_user_on_block_editor_page' ), 40 );
 		}
 
 		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
@@ -605,6 +607,42 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		}
 
 		return $assets;
+	}
+
+	private function is_non_sitekit_user() {
+		return ! ( current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD ) );
+	}
+
+	private function is_block_editor_page() {
+		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+		if ( ! $current_screen ) {
+			return false;
+		}
+
+		if ( 'post' === $current_screen->base && 'add' !== $current_screen->action ) {
+			// We're in the post editor.
+			return true;
+		}
+
+		$current_theme = wp_get_theme();
+		if ( method_exists( $current_theme, 'is_block_theme' ) && $current_theme->is_block_theme() && 'site-editor' === $current_screen->base ) {
+			// We're in the site editor.
+			return true;
+		}
+
+		return false;
+	}
+
+	private function enqueue_assets_for_non_sitekit_user_on_block_editor_page() {
+		if ( $this->is_non_sitekit_user() && $this->is_block_editor_page() ) {
+			// Enqueue styles.
+			$this->assets->enqueue_asset( 'blocks-reader-revenue-manager-common-editor-styles' );
+
+			// Enqueue scripts.
+			$this->assets->enqueue_asset( 'blocks-contribute-with-google-non-sitekit-user' );
+			$this->assets->enqueue_asset( 'blocks-subscribe-with-google-non-sitekit-user' );
+		}
 	}
 
 	/**
