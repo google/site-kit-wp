@@ -543,14 +543,11 @@ const baseActions = {
 			return;
 		}
 
-		yield commonActions.await(
+		const googleTagSettings = yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagSettings(
 				measurementID
 			)
 		);
-
-		const googleTagSettings =
-			select( MODULES_ANALYTICS_4 ).getGoogleTagSettings();
 
 		if ( ! googleTagSettings ) {
 			return;
@@ -834,6 +831,10 @@ const baseResolvers = {
 			.setPropertyCreateTime( property.createTime );
 	},
 	*getGoogleTagSettings( measurementID ) {
+		if ( ! measurementID ) {
+			return;
+		}
+
 		const registry = yield commonActions.getRegistry();
 		const googleTagSettings = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -841,10 +842,6 @@ const baseResolvers = {
 
 		if ( googleTagSettings !== undefined ) {
 			return googleTagSettings;
-		}
-
-		if ( ! measurementID ) {
-			return;
 		}
 
 		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
@@ -907,7 +904,7 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets a Google tag settings.
+	 * Gets Google tag settings.
 	 *
 	 * @since n.e.x.t
 	 *
