@@ -90,12 +90,12 @@ export default function WooCommerceRedirectModal( {
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 
-	const dismissedItems = useSelect( ( select ) =>
-		select( CORE_USER ).getDismissedItems()
+	const isAccountLinkedViaGoogleForWoocommerceNoticeDismissed = useSelect(
+		( select ) =>
+			select( CORE_USER ).isItemDismissed(
+				'account-linked-via-google-for-woocommerce'
+			)
 	);
-
-	const isAccountLinkedViaGoogleForWoocommerceNoticeDismissed =
-		dismissedItems?.includes( 'account-linked-via-google-for-woocommerce' );
 
 	const googleForWooCommerceRedirectURI = useMemo( () => {
 		if ( ! adminURL || ! isWooCommerceActive ) {
