@@ -322,6 +322,32 @@ class AdsTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Test if Ads module correctly registers Ads Measurement connection check filter.
+	 */
+
+	public function test_ads_module_adds_measurement_connection_check_filter() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$ads->register();
+
+		$settings = $ads->get_settings();
+
+		$settings->merge( array( 'conversionID' => 'AW-123456789' ) );
+		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
+
+		$this->assertNotEmpty( $checks );
+		$this->assertIsCallable( $checks[0] );
+		$this->assertTrue( call_user_func( $checks[0] ) );
+
+		$settings->merge( array( 'conversionID' => '' ) );
+
+		$this->assertFalse( call_user_func( $checks[0] ) );
+	}
+
+
+
 	public function template_redirect_data_provider() {
 		return array(
 			'empty ads conversion ID' => array(

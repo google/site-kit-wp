@@ -354,5 +354,69 @@ describe( 'core/site Consent Mode', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'isAdsConnectedUncached', () => {
+			const adsMeasurementStatusEndpointRegExp = new RegExp(
+				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+			);
+
+			it( 'uses a resolver to make a network request with useCache', async () => {
+				const response = { connected: true };
+
+				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
+					body: response,
+					status: 200,
+				} );
+
+				const initialIsAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+				expect( initialIsAdsConnectedUncached ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).isAdsConnectedUncached();
+
+				expect( fetchMock ).toHaveFetched(
+					adsMeasurementStatusEndpointRegExp
+				);
+
+				const isAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+
+				expect( isAdsConnectedUncached ).toEqual( response.connected );
+			} );
+
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
+				} );
+
+				const initialIsAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+				expect( initialIsAdsConnectedUncached ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).isAdsConnectedUncached();
+
+				const isAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+
+				expect( isAdsConnectedUncached ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetched(
+					adsMeasurementStatusEndpointRegExp
+				);
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
 	} );
 } );

@@ -99,6 +99,49 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			30
+		);
+	}
+
+	/**
+	 * Checks if the Tag Manager module is connected and contains an Ads Conversion Tracking (AWCT) tag.
+	 *
+	 * Verifies the module connection status and retrieves the live container version
+	 * to detect if an AWCT type tag is present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return WP_REST_Response|bool WP_REST_Response object indicating connection status if explicitly determined,
+	 *                               or boolean false if container data is unavailable.
+	 */
+	public function check_ads_measurement_connection() {
+		if ( ! $this->is_connected() ) {
+			return false;
+		}
+
+		$settings = $this->get_settings()->get();
+
+		$live_containers_versions = $this->get_tagmanager_service()->accounts_containers_versions->live(
+			"accounts/{$settings['accountID']}/containers/{$settings['internalContainerID']}"
+		);
+
+		if ( empty( $live_containers_versions->tag ) ) {
+			return false;
+		}
+
+		$has_ads_tag = array_search( 'awct', array_column( $live_containers_versions->tag, 'type' ), true );
+		if ( false !== $has_ads_tag ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
