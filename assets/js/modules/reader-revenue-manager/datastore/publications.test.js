@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -41,6 +42,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
+import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -580,6 +582,68 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.getPublications();
 				expect( publications ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getCurrentProductIDs', () => {
+			it( 'should return undefined if publications are not loaded', () => {
+				freezeFetch( publicationsEndpoint );
+
+				const productIDs = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCurrentProductIDs();
+				expect( productIDs ).toBeUndefined();
+			} );
+
+			it( 'should return empty array if no publications are not available', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( {
+						publicationID: '',
+						publicationOnboardingState: '',
+					} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [] );
+
+				const productIDs = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCurrentProductIDs();
+				expect( productIDs ).toEqual( [] );
+			} );
+
+			it( 'should return products for the current publication', () => {
+				const publications = cloneDeep( fixtures.publications );
+				publications[ 0 ].products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+					{ name: 'GHI:product-3' },
+				];
+				publications[ 1 ].products = [
+					{ name: 'JKL:product-4' },
+					{ name: 'MNO:product-5' },
+				];
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( {
+						publicationID: publications[ 0 ].publicationId,
+						publicationOnboardingState: 'onboarding-state',
+					} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				const productIDs = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCurrentProductIDs();
+				expect( productIDs ).toEqual( [
+					'ABC:product-1',
+					'DEF:product-2',
+					'GHI:product-3',
+				] );
 			} );
 		} );
 	} );
