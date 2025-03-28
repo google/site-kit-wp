@@ -49,6 +49,7 @@ import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/data
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -82,9 +83,19 @@ export default function WooCommerceRedirectModal( {
 
 		return false;
 	} );
+	const isWooCommerceActivated = useSelect( ( select ) =>
+		select( MODULES_ADS ).isWooCommerceActivated()
+	);
 
 	const isModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
+	);
+
+	const isAccountLinkedViaGoogleForWoocommerceNoticeDismissed = useSelect(
+		( select ) =>
+			select( CORE_USER ).isItemDismissed(
+				'account-linked-via-google-for-woocommerce'
+			)
 	);
 
 	const googleForWooCommerceRedirectURI = useMemo( () => {
@@ -147,7 +158,10 @@ export default function WooCommerceRedirectModal( {
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	useMount( () => {
-		if ( isGoogleForWooCommerceAdsConnected ) {
+		if (
+			isWooCommerceActivated &&
+			! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
+		) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
 	} );

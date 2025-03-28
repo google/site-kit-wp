@@ -168,6 +168,22 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+		const dismissNotificationSpy = jest.spyOn(
+			registry.dispatch( CORE_NOTIFICATIONS ),
+			'dismissNotification'
+		);
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -180,9 +196,18 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
 		const { container, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
+
+		expect( dismissNotificationSpy ).toHaveBeenCalled();
+
+		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+
 		await waitForRegistry();
 
 		expect(
@@ -197,6 +222,22 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+		const dismissNotificationSpy = jest.spyOn(
+			registry.dispatch( CORE_NOTIFICATIONS ),
+			'dismissNotification'
+		);
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -212,6 +253,12 @@ describe( 'WooCommerceRedirectModal', () => {
 		const { container, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
+
+		expect( dismissNotificationSpy ).toHaveBeenCalled();
+
+		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+
 		await waitForRegistry();
 
 		expect(
