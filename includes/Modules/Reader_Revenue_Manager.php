@@ -723,6 +723,19 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
+		$extract_product_id = function ( $product_id ) {
+			$parts = explode( ':', $product_id );
+			return isset( $parts[1] ) ? $parts[1] : $product_id;
+		};
+
+		$redact_pub_in_product_id = function ( $product_id ) {
+			$parts = explode( ':', $product_id );
+			if ( isset( $parts[1] ) ) {
+				return Debug_Data::redact_debug_value( $parts[0] ) . ':' . $parts[1];
+			}
+			return $product_id;
+		};
+
 		$debug_fields = array(
 			'reader_revenue_manager_publication_id'        => array(
 				'label' => __( 'Reader Revenue Manager: Publication ID', 'google-site-kit' ),
@@ -736,8 +749,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 			'reader_revenue_manager_available_product_ids' => array(
 				'label' => __( 'Reader Revenue Manager: Available product IDs', 'google-site-kit' ),
-				'value' => implode( ', ', $settings['productIDs'] ),
-				'debug' => implode( ', ', $settings['productIDs'] ),
+				'value' => implode( ', ', array_map( $extract_product_id, $settings['productIDs'] ) ),
+				'debug' => implode( ', ', array_map( $redact_pub_in_product_id, $settings['productIDs'] ) ),
 			),
 			'reader_revenue_manager_payment_option'        => array(
 				'label' => __( 'Reader Revenue Manager: Payment option', 'google-site-kit' ),
@@ -769,8 +782,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$debug_fields['reader_revenue_manager_product_id'] = array(
 				'label' => __( 'Reader Revenue Manager: Product ID', 'google-site-kit' ),
-				'value' => $settings['productID'],
-				'debug' => $settings['productID'],
+				'value' => $extract_product_id( $settings['productID'] ),
+				'debug' => $redact_pub_in_product_id( $settings['productID'] ),
 			);
 		}
 

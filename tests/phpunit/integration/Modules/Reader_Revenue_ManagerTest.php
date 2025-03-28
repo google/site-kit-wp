@@ -641,6 +641,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->enable_feature( 'rrmModuleV2' );
 		$this->reader_revenue_manager->get_settings()->register();
 
+		// Set up product IDs in different formats for testing extraction and redaction.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'test-publication-id',
+				'productIDs'    => array(
+					'test-publication-id:product1',  // Combined format.
+					'standalone-product',            // Standalone format.
+					'test-publication-id:product2',  // Another combined format.
+				),
+				'productID'     => 'test-publication-id:main-product',  // Main product in combined format.
+			)
+		);
+
 		// Verify `postTypes` field appears when the `snippetMode` is `post_types` (default).
 		$this->assertEqualSets(
 			array(
@@ -653,6 +666,48 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_payment_option',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+
+		// Test product IDs extraction - should only show the product ID part.
+		$this->assertEquals(
+			'product1, standalone-product, product2',
+			$debug_fields['reader_revenue_manager_available_product_ids']['value'],
+			'Available product IDs should be extracted correctly'
+		);
+
+		// Test product IDs redaction - should redact publication ID but keep product ID.
+		$this->assertStringContainsString(
+			'test•••••••••••••••:product1',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Publication ID should be partially redacted in debug output'
+		);
+
+		$this->assertStringContainsString(
+			'standalone-product',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Standalone product ID should not be changed in debug output'
+		);
+
+		$this->assertStringContainsString(
+			'test•••••••••••••••:product2',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Second publication ID should be partially redacted in debug output'
+		);
+
+		// Test main product ID extraction.
+		$this->assertEquals(
+			'main-product',
+			$debug_fields['reader_revenue_manager_product_id']['value'],
+			'Main product ID should be extracted correctly'
+		);
+
+		// Test main product ID redaction - should redact publication ID but keep product ID.
+		$this->assertEquals(
+			'test•••••••••••••••:main-product',
+			$debug_fields['reader_revenue_manager_product_id']['debug'],
+			'Publication ID should be partially redacted in main product ID debug output'
 		);
 
 		// Set `snippetMode` to `per_post`.
