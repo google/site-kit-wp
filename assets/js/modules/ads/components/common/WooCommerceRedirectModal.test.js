@@ -106,7 +106,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'clicking "Continue with Site Kit" should trigger ads module activation and dismiss the modal', async () => {
+	it( 'clicking "Continue with Site Kit" should trigger ads module activation and invoke onDismiss callback', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -131,6 +131,40 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect(
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
 		).toBe( true );
+	} );
+
+	it( 'clicking "Continue with Site Kit" should invoke onBeforeSetupCallback if passed', async () => {
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+
+		const onBeforeSetupCallback = jest.fn();
+
+		const { getByText, waitForRegistry } = render(
+			<WooCommerceRedirectModal
+				dialogActive
+				onDismiss={ onDismiss }
+				onClose={ onClose }
+				onBeforeSetupCallback={ onBeforeSetupCallback }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const continueWithSiteKitButton = getByText(
+			/continue with site kit/i
+		);
+		fireEvent.click( continueWithSiteKitButton );
+
+		await waitForRegistry();
+
+		expect( onDismiss ).toHaveBeenCalled();
+		expect( onBeforeSetupCallback ).toHaveBeenCalled();
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
