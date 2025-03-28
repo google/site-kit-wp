@@ -53,7 +53,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
 			} );
 
@@ -125,7 +125,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getAvailableAudiences', () => {
+		describe( 'getOrSyncAvailableAudiences', () => {
 			const availableAudiences = [
 				{
 					name: 'properties/123456789/audiences/0987654321',
@@ -147,7 +147,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 				const audiences = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
+					.getOrSyncAvailableAudiences();
 
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 				expect( audiences ).toEqual( availableAudiences );
@@ -172,14 +172,14 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toBeNull();
 
 				// Wait until the resolver has finished fetching the audiences.
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 
 				await waitForDefaultTimeouts();
 
@@ -198,12 +198,14 @@ describe( 'modules/analytics-4 audience settings', () => {
 						availableAudiences: null,
 					} );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getOrSyncAvailableAudiences();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 
 				await waitForDefaultTimeouts();
 
@@ -214,7 +216,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
 			} );
 		} );
