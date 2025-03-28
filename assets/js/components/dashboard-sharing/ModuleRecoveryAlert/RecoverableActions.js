@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { without } from 'lodash';
+import { useMountedState } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -33,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { DAY_IN_SECONDS } from '../../../util';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 import Errors from './Errors';
 import ActionsCTALinkDismiss from '../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 
@@ -45,6 +46,7 @@ export default function RecoverableActions( {
 } ) {
 	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
 	const [ inProgress, setInProgress ] = useState( false );
+	const isMounted = useMountedState();
 
 	// TODO: Extract to selector.
 	const recoveryErrors = useSelect( ( select ) => {
@@ -80,15 +82,39 @@ export default function RecoverableActions( {
 	const { recoverModules, clearRecoveredModules } =
 		useDispatch( CORE_MODULES );
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
 	const handleRecoverModules = useCallback( async () => {
 		setInProgress( true );
 
 		await clearRecoveredModules();
-		await recoverModules( selectedModuleSlugs );
+		const recoveryResponse = await recoverModules( selectedModuleSlugs );
 
-		setSelectedModuleSlugs( null );
-		setInProgress( false );
-	}, [ clearRecoveredModules, selectedModuleSlugs, recoverModules ] );
+		// Only dismiss the notification if all modules were recovered successfully.
+		const successfullyRecoveredModules = Object.keys(
+			recoveryResponse?.response?.success || {}
+		).filter( ( slug ) => recoveryResponse.response.success[ slug ] );
+		if (
+			userRecoverableModuleSlugs.length ===
+			successfullyRecoveredModules.length
+		) {
+			dismissNotification( id, { skipHidingFromQueue: false } );
+		}
+
+		// Only update state if the component is still mounted
+		if ( isMounted() ) {
+			setSelectedModuleSlugs( null );
+			setInProgress( false );
+		}
+	}, [
+		id,
+		isMounted,
+		clearRecoveredModules,
+		dismissNotification,
+		recoverModules,
+		selectedModuleSlugs,
+		userRecoverableModuleSlugs,
+	] );
 
 	useEffect( () => {
 		if (
@@ -101,10 +127,6 @@ export default function RecoverableActions( {
 
 	// Disable the CTA if no modules are selected to be restored.
 	const disableCTA = ! selectedModuleSlugs?.length;
-
-	// Only allow the alert to be dismissed if all recoverable modules are selected.
-	const shouldDismissOnCTAClick =
-		userRecoverableModuleSlugs?.length === selectedModuleSlugs?.length;
 
 	return (
 		<Fragment>
@@ -137,6 +159,7 @@ export default function RecoverableActions( {
 										}
 									} }
 									disabled={ inProgress }
+									value={ slug }
 								>
 									{ recoverableModules[ slug ].name }
 								</Checkbox>
@@ -164,11 +187,10 @@ export default function RecoverableActions( {
 			<ActionsCTALinkDismiss
 				id={ id }
 				ctaLabel={ __( 'Recover', 'google-site-kit' ) }
-				onCTAClick={ handleRecoverModules }
 				isSaving={ inProgress }
+				onCTAClick={ handleRecoverModules }
+				dismissOnCTAClick={ false }
 				dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
-				dismissOnCTAClick={ shouldDismissOnCTAClick }
-				dismissExpires={ DAY_IN_SECONDS }
 				ctaDismissOptions={ { skipHidingFromQueue: false } }
 				ctaDisabled={ disableCTA }
 			/>
