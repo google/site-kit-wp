@@ -361,7 +361,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.setIsPromptDimissing(
+				.setIsPromptDismissing(
 					AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 					true
 				);
