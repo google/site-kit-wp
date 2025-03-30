@@ -35,7 +35,7 @@ import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg'
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import SetupSuccessNotification from './components/dashboard/SetupSuccessNotification';
+import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';
 
 export { registerStore } from './datastore';
 
