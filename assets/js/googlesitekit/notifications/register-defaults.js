@@ -79,6 +79,7 @@ import EnableAutoUpdateBannerNotification, {
 } from '../../components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '../../util';
 import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
+import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -335,6 +336,21 @@ export const DEFAULT_NOTIFICATIONS = {
 			return true;
 		},
 		isDismissible: true,
+	},
+	'setup-success-notification-site-kit': {
+		Component: SiteKitSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if ( 'authentication_success' === notification && ! slug ) {
+				return true;
+			}
+
+			return false;
+		},
 	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
