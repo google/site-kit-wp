@@ -46,6 +46,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 	} );
 };
 
