@@ -60,7 +60,7 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 				title={ sprintf(
 					/* translators: %s: module name */
 					__(
-						'Congrats on completing the setup for %s',
+						'Congrats on completing the setup for %s!',
 						'google-site-kit'
 					),
 					module?.name
