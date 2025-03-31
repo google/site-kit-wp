@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -130,10 +129,21 @@ export default function WooCommerceRedirectModal( {
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
 	const onContinueWithSiteKit = useCallback( () => {
 		if ( ! onContinue ) {
 			setIsSaving( 'tertiary' );
 			onDismiss?.();
+			if (
+				( isWooCommerceActivated ||
+					isGoogleForWooCommerceAdsConnected ) &&
+				! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
+			) {
+				dismissNotification(
+					'account-linked-via-google-for-woocommerce'
+				);
+			}
 		}
 
 		if ( onContinue ) {
@@ -144,18 +154,17 @@ export default function WooCommerceRedirectModal( {
 		}
 
 		onSetupCallback();
-	}, [ setIsSaving, onDismiss, onClose, onSetupCallback, onContinue ] );
-
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-
-	useMount( () => {
-		if (
-			isWooCommerceActivated &&
-			! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
-		) {
-			dismissNotification( 'account-linked-via-google-for-woocommerce' );
-		}
-	} );
+	}, [
+		setIsSaving,
+		onDismiss,
+		onClose,
+		onSetupCallback,
+		onContinue,
+		isWooCommerceActivated,
+		isGoogleForWooCommerceAdsConnected,
+		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
+		dismissNotification,
+	] );
 
 	if ( isModalDismissed && ! isSaving ) {
 		return null;
@@ -234,11 +243,22 @@ export default function WooCommerceRedirectModal( {
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
-					onClick={
-						isGoogleForWooCommerceAdsConnected
-							? getGoogleForWooCommerceRedirectURI
-							: onClose
-					}
+					onClick={ () => {
+						if ( isGoogleForWooCommerceAdsConnected ) {
+							getGoogleForWooCommerceRedirectURI();
+							if (
+								( isWooCommerceActivated ||
+									isGoogleForWooCommerceAdsConnected ) &&
+								! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
+							) {
+								dismissNotification(
+									'account-linked-via-google-for-woocommerce'
+								);
+							}
+						} else {
+							onClose();
+						}
+					} }
 					href={
 						isGoogleForWooCommerceAdsConnected
 							? null
