@@ -50,6 +50,10 @@ export default function whenHasChangedConversionEvents() {
 			return WidgetNull && <WidgetNull />;
 		}
 
+		WhenHasChangedConversionEvents.displayName = `WhenHasChangedConversionEvents(${
+			WrappedComponent.displayName || WrappedComponent.name || 'Component'
+		})`;
+
 		return WhenHasChangedConversionEvents;
 	};
 }
