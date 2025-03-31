@@ -300,7 +300,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isAuthenticated() &&
 				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
@@ -321,7 +320,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 				const isGA4Connected =
