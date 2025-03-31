@@ -46,7 +46,8 @@ export default function whenHasChangedConversionEvents() {
 				return <WrappedComponent { ...props } />;
 			}
 
-			return props.WidgetNull || null;
+			const { WidgetNull = null } = props;
+			return WidgetNull && <WidgetNull />;
 		}
 
 		return WhenHasChangedConversionEvents;
