@@ -40,22 +40,22 @@ import { compose, usePrevious } from '@wordpress/compose';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { conversionReportingDetectedEventsTracking } from './utils';
-import ConversionReportingDashboardSubtleNotification from './ConversionReportingDashboardSubtleNotification';
-import LostEventsSubtleNotification from './LostEventsSubtleNotification';
-import whenActive from '../../util/when-active';
-import useViewContext from '../../hooks/useViewContext';
-import useDisplayNewEventsCalloutForTailoredMetrics from './hooks/useDisplayNewEventsCalloutForTailoredMetrics';
-import useDisplayNewEventsCalloutForUserPickedMetrics from './hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
-import useDisplayNewEventsCalloutAfterInitialDetection from './hooks/useDisplayNewEventsCalloutAfterInitialDetection';
-import { trackEvent } from '../../util';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Link from '../Link';
-import whenHasChangedConversionEvents from '../../modules/analytics-4/components/util/whenHasChangedConversionEvents';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
+import { conversionReportingDetectedEventsTracking } from '../../../../components/KeyMetrics/utils';
+import ConversionReportingDashboardSubtleNotification from '../../../../components/KeyMetrics/ConversionReportingDashboardSubtleNotification';
+import LostEventsSubtleNotification from '../../../../components/KeyMetrics/LostEventsSubtleNotification';
+import whenActive from '../../../../util/when-active';
+import useViewContext from '../../../../hooks/useViewContext';
+import useDisplayNewEventsCalloutForTailoredMetrics from '../../../../components/KeyMetrics/hooks/useDisplayNewEventsCalloutForTailoredMetrics';
+import useDisplayNewEventsCalloutForUserPickedMetrics from '../../../../components/KeyMetrics/hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
+import useDisplayNewEventsCalloutAfterInitialDetection from '../../../../components/KeyMetrics/hooks/useDisplayNewEventsCalloutAfterInitialDetection';
+import { trackEvent } from '../../../../util';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../components/Link';
+import whenHasChangedConversionEvents from '../util/whenHasChangedConversionEvents';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
