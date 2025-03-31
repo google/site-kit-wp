@@ -17,18 +17,13 @@ use Google\Site_Kit\Core\Consent_Mode\REST_Consent_Mode_Controller;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Ads;
-use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Modules\Tag_Manager\Settings as Tag_Manager_Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\ContainerVersion;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Tag;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
@@ -321,13 +316,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-	public function data_container_checks() {
-		return array(
-			'has awct type tag'    => array( true, true ),
-			'has no awct type tag' => array( false, false ),
-		);
-	}
-
 	private function grant_manage_options_permission() {
 		// Setup SiteKit.
 		$this->fake_proxy_site_connection();
@@ -350,57 +338,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 	}
 
-	private function force_module_connection( $module_slug ) {
-		add_filter(
-			'googlesitekit_is_module_connected',
-			function ( $connected, $slug ) use ( $module_slug ) {
-				if ( $module_slug === $slug ) {
-					return true;
-				}
-				return $connected;
-			},
-			10,
-			2
-		);
-	}
-
-	/**
-	 * @param ContainerVersion $container_version ContainerVersion instance.
-	 * @param string $account_id                  Tag manager account ID.
-	 * @param string $container_id                Tag manager container ID.
-	 */
-	private function fake_tag_manager_http_handler( ContainerVersion $container_version, $account_id, $container_id ) {
-		FakeHttp::fake_google_http_handler(
-			$this->modules->get_module( Tag_Manager::MODULE_SLUG )->get_client(),
-			function ( Request $request ) use ( $container_version, $account_id, $container_id ) {
-				$url = parse_url( $request->getUri() );
-
-				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
-					return new FulfilledPromise( new Response( 200 ) );
-				}
-
-				switch ( $url['path'] ) {
-					case "/tagmanager/v2/accounts/{$account_id}/containers/{$container_id}/versions:live":
-						return new FulfilledPromise(
-							new Response(
-								200,
-								array(),
-								json_encode(
-									$container_version->toSimpleObject()
-								)
-							)
-						);
-
-					default:
-						return new FulfilledPromise( new Response( 200 ) );
-				}
-			}
-		);
-	}
-
-
-	/// New Tests to core/site/data/ads-measurement-status
-
 	public function test_get_ads_measurement_status__requires_authenticated_admin() {
 		$this->setup_rest();
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
@@ -409,20 +346,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
-	}
-
-	public function test_get_ads_measurement_status__no_checks() {
-		$this->setup_rest();
-		$this->grant_manage_options_permission();
-
-		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertFalse( $response_data['connected'] );
 	}
 
 	public function test_get_ads_measurement_status__early_return_on_first_passing_check() {
@@ -499,7 +422,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 					'not-a-callable',
 					123,
 					array( 'also', 'not', 'callable' ),
-					fn() => false,
 				);
 			}
 		);

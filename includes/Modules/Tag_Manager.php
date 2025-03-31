@@ -128,8 +128,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		$settings = $this->get_settings()->get();
 
-		$live_containers_versions = $this->get_tagmanager_service()->accounts_containers_versions->live(
-			"accounts/{$settings['accountID']}/containers/{$settings['internalContainerID']}"
+		$live_containers_versions = $this->get_data(
+			'live-container-version',
+			array(
+				'accountID'           => $settings['accountID'],
+				'internalContainerID' => $settings['internalContainerID'],
+			)
 		);
 
 		if ( empty( $live_containers_versions->tag ) ) {

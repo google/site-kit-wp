@@ -67,6 +67,8 @@ class AdsTest extends TestCase {
 
 		$this->assertTrue( has_action( 'template_redirect' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
+
+		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ) );
 	}
 
 	public function test_is_connected__when_ads_conversion_id_is_set() {
@@ -286,8 +288,6 @@ class AdsTest extends TestCase {
 			self::enable_feature( $feature_flag );
 		}
 
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
 
@@ -299,8 +299,8 @@ class AdsTest extends TestCase {
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
 		remove_all_actions( 'template_redirect' );
-		$ads->register();
-		$ads->get_settings()->set( $settings );
+		$this->ads->register();
+		$this->ads->get_settings()->set( $settings );
 
 		do_action( 'template_redirect' );
 
@@ -325,16 +325,13 @@ class AdsTest extends TestCase {
 	/**
 	 * Test if Ads module correctly registers Ads Measurement connection check filter.
 	 */
-
-	public function test_ads_module_adds_measurement_connection_check_filter() {
+	public function test_ads_module_measurement_check_callback_respects_conversion_id() {
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		$this->ads->register();
 
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$ads->register();
-
-		$settings = $ads->get_settings();
-
+		$settings = $this->ads->get_settings();
 		$settings->merge( array( 'conversionID' => 'AW-123456789' ) );
+
 		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
 
 		$this->assertNotEmpty( $checks );
@@ -345,8 +342,6 @@ class AdsTest extends TestCase {
 
 		$this->assertFalse( call_user_func( $checks[0] ) );
 	}
-
-
 
 	public function template_redirect_data_provider() {
 		return array(
