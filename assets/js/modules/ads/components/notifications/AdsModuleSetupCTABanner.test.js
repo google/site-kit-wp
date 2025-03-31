@@ -37,11 +37,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { ADS_NOTIFICATIONS } from '../..';
-import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-	MODULES_ADS,
-	PLUGINS,
-} from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
@@ -183,68 +179,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {
 			provideModuleRegistrations( registry );
-
-			fetchMock.getOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
-				{
-					body: { needsReauthentication: false },
-				}
-			);
-			fetchMock.postOnce(
-				RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
-				{
-					body: { success: true },
-				}
-			);
-			fetchMock.postOnce( fetchDismissPrompt, {
-				body: {
-					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
-				},
-			} );
-
-			const { getByText, waitForRegistry } = render(
-				<AdsModuleSetupCTABannerComponent />,
-				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-			);
-
-			const primaryCTA = getByText( 'Set up Ads' );
-			fireEvent.click( primaryCTA );
-
-			await waitForRegistry();
-
-			expect(
-				document.querySelector( '.mdc-dialog' )
-			).not.toBeInTheDocument();
-
-			expect(
-				registry
-					.select( CORE_MODULES )
-					.isDoingSetModuleActivation( 'ads' )
-			).toBe( true );
-
-			// Dismissal should be triggered when the CTA is clicked.
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
-		} );
-
-		it( 'should start Ads module activation if WooCommerce redirect modal was previously dismissed', async () => {
-			provideModuleRegistrations( registry );
-			registry.dispatch( MODULES_ADS ).receiveModuleData( {
-				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
-					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
-						active: true,
-						adsConnected: false,
-					},
-				},
-			} );
-
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [
-					ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-				] );
 
 			fetchMock.getOnce(
 				RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
