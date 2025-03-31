@@ -32,7 +32,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
-	freezeFetch,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -579,13 +579,18 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'getCurrentProductIDs', () => {
-			it( 'should return undefined if publications are not loaded', () => {
-				freezeFetch( publicationsEndpoint );
+			it( 'should return undefined if publications are not loaded', async () => {
+				muteFetch( publicationsEndpoint );
 
 				const productIDs = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getCurrentProductIDs();
 				expect( productIDs ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublications();
 			} );
 
 			it( 'should return empty array if no publications are not available', () => {
