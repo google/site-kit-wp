@@ -63,7 +63,7 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 		<Notification>
 			<SubtleNotification
 				title={ __(
-					'Congrats on completing the setup for PageSpeed Insights',
+					'Congrats on completing the setup for PageSpeed Insights!',
 					'google-site-kit'
 				) }
 				description={ __(
