@@ -12,10 +12,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 
 /**
  * Class for synchronizing the onboarding state.
@@ -85,102 +82,10 @@ class Synchronize_Publication {
 		$restore_user = $this->user_options->switch_user( $owner_id );
 
 		if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
-			$connected = $this->reader_revenue_manager->is_connected();
-
-			// If not connected, return early.
-			if ( ! $connected ) {
-				return;
-			}
-
-			$publications = $this->reader_revenue_manager->get_data( 'publications' );
-
-			// If publications is empty, return early.
-			if ( empty( $publications ) ) {
-				return;
-			}
-
-			$settings       = $this->reader_revenue_manager->get_settings()->get();
-			$publication_id = $settings['publicationID'];
-
-			$filtered_publications = array_filter(
-				$publications,
-				function ( $pub ) use ( $publication_id ) {
-					return $pub->getPublicationId() === $publication_id;
-				}
-			);
-
-			// If there are no filtered publications, return early.
-			if ( empty( $filtered_publications ) ) {
-				return;
-			}
-
-			// Re-index the filtered array to ensure sequential keys.
-			$filtered_publications = array_values( $filtered_publications );
-			$publication           = $filtered_publications[0];
-
-			$onboarding_state     = $settings['publicationOnboardingState'];
-			$new_onboarding_state = $publication->getOnboardingState();
-
-			$new_settings = array(
-				'publicationOnboardingState' => $new_onboarding_state,
-				'productIDs'                 => $this->get_product_ids( $publication ),
-				'paymentOption'              => $this->get_payment_option( $publication ),
-			);
-
-			// Let the client know if the onboarding state has changed.
-			if ( $new_onboarding_state !== $onboarding_state ) {
-				$new_settings['publicationOnboardingStateChanged'] = true;
-			}
-
-			$this->reader_revenue_manager->get_settings()->merge( $new_settings );
+			$this->reader_revenue_manager->get_data( 'publications' );
 		}
 
 		$restore_user();
-	}
-
-	/**
-	 * Returns the products IDs for the given publication.
-	 *
-	 * @since 1.146.0
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return array Product IDs.
-	 */
-	protected function get_product_ids( Publication $publication ) {
-		$products    = $publication->getProducts();
-		$product_ids = array();
-
-		if ( ! empty( $products ) ) {
-			foreach ( $products as $product ) {
-				$product_ids[] = $product->getName();
-			}
-		}
-
-		return $product_ids;
-	}
-
-	/**
-	 * Returns the payment option for the given publication.
-	 *
-	 * @since 1.146.0
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return string Payment option.
-	 */
-	protected function get_payment_option( Publication $publication ) {
-		$payment_options = $publication->getPaymentOptions();
-		$payment_option  = '';
-
-		if ( $payment_options instanceof PaymentOptions ) {
-			foreach ( $payment_options as $option => $value ) {
-				if ( true === $value ) {
-					$payment_option = $option;
-					break;
-				}
-			}
-		}
-
-		return $payment_option;
 	}
 
 	/**
