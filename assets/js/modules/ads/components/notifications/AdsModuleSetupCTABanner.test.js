@@ -44,11 +44,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { ADS_NOTIFICATIONS } from '../..';
-import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-	MODULES_ADS,
-	PLUGINS,
-} from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
@@ -246,9 +242,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [
-					ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-				] );
+				.receiveGetDismissedItems( [ 'ads-setup-cta' ] );
 
 			fetchMock.getOnce(
 				RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),

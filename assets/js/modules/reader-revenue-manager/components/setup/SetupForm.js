@@ -64,7 +64,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 	const productIDs = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
 	);
 	const managePublicationsURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()

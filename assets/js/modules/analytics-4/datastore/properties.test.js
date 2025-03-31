@@ -660,7 +660,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect( store.getState().settings ).toMatchObject(
+				expect( store.getState().googleTagSettings ).toMatchObject(
 					fixtures.googleTagSettings
 				);
 			} );
@@ -1529,6 +1529,90 @@ describe( 'modules/analytics-4 properties', () => {
 				const property = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getProperty( propertyID );
+				expect( property ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getGoogleTagSettings', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( googleTagSettingsEndpoint, {
+					body: fixtures.googleTagSettings,
+					status: 200,
+				} );
+
+				const measurementID = 'abcd';
+				const initialTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				expect( initialTagID ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagSettings( measurementID );
+				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
+					query: { measurementID },
+				} );
+
+				const googleTagSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				expect( googleTagSettings ).toEqual(
+					fixtures.googleTagSettings
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a network request if the google tag settings are already present', async () => {
+				const measurementID = 'abcd';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagSettings( fixtures.googleTagSettings, {
+						measurementID,
+					} );
+
+				const googleTagSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagSettings( measurementID );
+
+				expect( fetchMock ).not.toHaveFetched(
+					googleTagSettingsEndpoint
+				);
+				expect( googleTagSettings ).toEqual(
+					fixtures.googleTagSettings
+				);
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				const measurementID = 'abcd';
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagSettings( measurementID );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const property = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
 				expect( property ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
