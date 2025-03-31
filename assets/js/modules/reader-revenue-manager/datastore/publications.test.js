@@ -32,7 +32,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
-	freezeFetch,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -41,7 +41,6 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
 import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
@@ -469,30 +468,24 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( '' );
 			} );
 
-			describe( 'with the rrmModuleV2 feature flag enabled', () => {
-				beforeEach( () => {
-					setEnabledFeatures( [ 'rrmModuleV2' ] );
-				} );
+			it( 'should set productID to "openaccess" when different publication is selected', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
 
-				it( 'should set productID to "openaccess" when different publication is selected', () => {
-					const products = [
-						{ name: 'ABC:product-1' },
-						{ name: 'DEF:product-2' },
-					];
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
-
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductID()
-					).toEqual( 'openaccess' );
-				} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductID()
+				).toEqual( 'openaccess' );
 			} );
 		} );
 	} );
@@ -586,13 +579,18 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'getCurrentProductIDs', () => {
-			it( 'should return undefined if publications are not loaded', () => {
-				freezeFetch( publicationsEndpoint );
+			it( 'should return undefined if publications are not loaded', async () => {
+				muteFetch( publicationsEndpoint );
 
 				const productIDs = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getCurrentProductIDs();
 				expect( productIDs ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublications();
 			} );
 
 			it( 'should return empty array if no publications are not available', () => {
