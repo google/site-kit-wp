@@ -34,7 +34,7 @@ import {
 	useRef,
 	useState,
 } from '@wordpress/element';
-import { usePrevious } from '@wordpress/compose';
+import { compose, usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -55,6 +55,7 @@ import useDisplayNewEventsCalloutAfterInitialDetection from './hooks/useDisplayN
 import { trackEvent } from '../../util';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
+import whenHasChangedConversionEvents from '../../modules/analytics-4/components/util/whenHasChangedConversionEvents';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -438,6 +439,7 @@ ConversionReportingNotificationCTAWidget.propTypes = {
 	WidgetNull: PropTypes.elementType,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
-	ConversionReportingNotificationCTAWidget
-);
+export default compose(
+	whenActive( { moduleName: 'analytics-4' } ),
+	whenHasChangedConversionEvents()
+)( ConversionReportingNotificationCTAWidget );
