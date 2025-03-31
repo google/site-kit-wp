@@ -45,6 +45,7 @@ import SettingsNotice, {
 } from '../../../../components/SettingsNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
@@ -154,7 +155,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 									'The previously selected product ID %s was not found. Please select a new product ID.',
 									'google-site-kit'
 								),
-								missingProductID
+								getProductIDLabel( missingProductID )
 							) }
 						/>
 					) }
