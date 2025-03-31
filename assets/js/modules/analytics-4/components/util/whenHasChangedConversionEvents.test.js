@@ -37,23 +37,21 @@ describe( 'whenHasChangedConversionEvents', () => {
 		const { getModuleData } = select( MODULES_ANALYTICS_4 );
 		const { receiveModuleData } = dispatch( MODULES_ANALYTICS_4 );
 
-		provideNewEvents = ( newEvents ) => {
+		provideNewEvents = ( ...newEvents ) =>
 			receiveModuleData( {
 				...( getModuleData() || {} ),
 				newEvents,
 			} );
-		};
-		provideLostEvents = ( lostEvents ) => {
+		provideLostEvents = ( ...lostEvents ) =>
 			receiveModuleData( {
 				...( getModuleData() || {} ),
 				lostEvents,
 			} );
-		};
 	} );
 
 	it( 'renders nothing if there are no changed conversion events', () => {
-		provideNewEvents( [] );
-		provideLostEvents( [] );
+		provideNewEvents();
+		provideLostEvents();
 		const OutterComponent =
 			whenHasChangedConversionEvents()( TestComponent );
 
@@ -65,8 +63,8 @@ describe( 'whenHasChangedConversionEvents', () => {
 	} );
 
 	it( 'renders if there are new conversion events', () => {
-		provideNewEvents( [ 'foo' ] );
-		provideLostEvents( [] );
+		provideNewEvents( 'foo' );
+		provideLostEvents();
 		const OutterComponent =
 			whenHasChangedConversionEvents()( TestComponent );
 
@@ -78,8 +76,8 @@ describe( 'whenHasChangedConversionEvents', () => {
 	} );
 
 	it( 'renders if there are lost conversion events', () => {
-		provideNewEvents( [] );
-		provideLostEvents( [ 'bar' ] );
+		provideNewEvents();
+		provideLostEvents( 'bar' );
 		const OutterComponent =
 			whenHasChangedConversionEvents()( TestComponent );
 
@@ -91,8 +89,8 @@ describe( 'whenHasChangedConversionEvents', () => {
 	} );
 
 	it( 'renders if there are new and lost conversion events', () => {
-		provideNewEvents( [ 'foo' ] );
-		provideLostEvents( [ 'bar', 'baz' ] );
+		provideNewEvents( 'foo' );
+		provideLostEvents( 'bar', 'baz' );
 		const OutterComponent =
 			whenHasChangedConversionEvents()( TestComponent );
 
@@ -104,8 +102,8 @@ describe( 'whenHasChangedConversionEvents', () => {
 	} );
 
 	it( 'renders `WidgetNull` from the components ownProps if available when no changed conversion events', () => {
-		provideNewEvents( [] );
-		provideLostEvents( [] );
+		provideNewEvents();
+		provideLostEvents();
 		const OutterComponent =
 			whenHasChangedConversionEvents()( TestComponent );
 
@@ -123,8 +121,8 @@ describe( 'whenHasChangedConversionEvents', () => {
 	} );
 
 	it( 'never renders inner component when no changed conversion events', () => {
-		provideNewEvents( [] );
-		provideLostEvents( [] );
+		provideNewEvents();
+		provideLostEvents();
 		const InnerComponent = jest.fn();
 		const OutterComponent =
 			whenHasChangedConversionEvents()( InnerComponent );
