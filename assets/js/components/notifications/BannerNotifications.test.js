@@ -105,46 +105,6 @@ describe( 'BannerNotifications', () => {
 			.receiveHasMismatchGoogleTagID( false );
 	} );
 
-	it( 'should render the `authentication_success` notification if the `authentication_success` query param value is passed', async () => {
-		global.location.href =
-			'http://example.com/wp-admin/admin.php?notification=authentication_success';
-
-		const { getByText, waitForRegistry } = render(
-			<BannerNotifications />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText( /congrats on completing the setup for/i )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should not render the `setup complete` notification if the `custom_dimensions` query arg value is passed', async () => {
-		// Add arbitrary value for `notification` to prevent the server appending `authentication_success`
-		// on the redirect, so the setup completed notification does not show.
-		global.location.href =
-			'http://example.com/wp-admin/admin.php?notification=custom_dimensions';
-
-		const { queryByText, waitForRegistry } = render(
-			<BannerNotifications />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			queryByText( /congrats on completing the setup for/i )
-		).not.toBeInTheDocument();
-	} );
-
 	it( 'prioritizes alerts over regular notifications', async () => {
 		// Trigger the gathering data notification using the new registration process
 		act( () => {
@@ -162,10 +122,6 @@ describe( 'BannerNotifications', () => {
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 		} );
-
-		// Ensure setup completed notification is added.
-		global.location.href =
-			'http://example.com/wp-admin/admin.php?notification=authentication_success';
 
 		activateAdsenseModule();
 
@@ -189,8 +145,8 @@ describe( 'BannerNotifications', () => {
 		);
 
 		// Default notification for search console gathering data
-		// is also present, together with setup completed and adSense alert.
-		expect( notificationBanners.length ).toBe( 3 );
+		// is present and adSense alert.
+		expect( notificationBanners.length ).toBe( 2 );
 
 		// The first (visible) notification should be alert,
 		// taking precedence over other notifications.
