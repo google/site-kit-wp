@@ -49,7 +49,7 @@ export default function ProductIDSelect( props ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
 	);
 	const productIDs = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
 	);
 
 	const { setProductID } = useDispatch( MODULES_READER_REVENUE_MANAGER );
