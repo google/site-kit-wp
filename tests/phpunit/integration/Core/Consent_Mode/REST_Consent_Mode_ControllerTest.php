@@ -410,19 +410,31 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-	public function test_get_ads_measurement_status__handles_non_callable_checks() {
+
+	public function data_non_callable_checks_provider() {
+		return array(
+			'undefined function name'    => array( 'maybe_mistyped_function_name' ),
+			'invalid class method array' => array( array( 'MissingClass', 'staticMethod' ) ),
+			'numeric literal'            => array( 42 ),
+			'incorrect array format'     => array( array( 'too', 'many', 'args' ) ),
+			'object without __invoke'    => array( new \stdClass() ),
+			'null value'                 => array( null ),
+		);
+	}
+
+
+	/**
+	* @dataProvider data_non_callable_checks_provider
+	*/
+	public function test_get_ads_measurement_status__handles_non_callable_checks( $non_callable_check ) {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		add_filter(
 			'googlesitekit_ads_measurement_connection_checks',
-			function () {
-				return array(
-					'not-a-callable',
-					123,
-					array( 'also', 'not', 'callable' ),
-				);
+			function () use ( $non_callable_check ) {
+				return array( $non_callable_check );
 			}
 		);
 
@@ -434,34 +446,42 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-	public function test_get_ads_measurement_status__handles_non_array_filter_result() {
+
+	public function data_non_array_filter_result_provider() {
+		return array(
+			'single callable instead of array' => array(
+				function () {
+					return true; },
+			),
+			'empty string'                     => array( '' ),
+			'JSON string'                      => array( '["callback"]' ),
+			'boolean true'                     => array( true ),
+			'boolean false'                    => array( false ),
+			'null'                             => array( null ),
+			'stdClass object'                  => array( new \stdClass() ),
+		);
+	}
+
+	/**
+	* @dataProvider data_non_array_filter_result_provider
+	*/
+	public function test_get_ads_measurement_status__handles_non_array_filter_result( $non_array_value ) {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
-		$test_cases = array(
-			'string'  => 'not-an-array',
-			'integer' => 123,
-			'boolean' => true,
-			'null'    => null,
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( $non_array_value ) {
+				return $non_array_value;
+			}
 		);
 
-		foreach ( $test_cases as $type => $value ) {
-			remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
 
-			add_filter(
-				'googlesitekit_ads_measurement_connection_checks',
-				function () use ( $value ) {
-					return $value;
-				}
-			);
+		$response_data = $response->get_data();
 
-			$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-			$response = rest_get_server()->dispatch( $request );
-
-			$response_data = $response->get_data();
-
-			$this->assertFalse( $response_data['connected'], "Failed for type: $type" );
-		}
+		$this->assertFalse( $response_data['connected'] );
 	}
 }
