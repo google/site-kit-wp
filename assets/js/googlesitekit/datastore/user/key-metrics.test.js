@@ -64,7 +64,6 @@ import {
 	ENUM_CONVERSION_EVENTS,
 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
-import { enabledFeatures } from '../../../features';
 
 describe( 'core/user key metrics', () => {
 	let registry;
@@ -164,10 +163,12 @@ describe( 'core/user key metrics', () => {
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
 				).toMatchObject( [
-					KM_ANALYTICS_RETURNING_VISITORS,
-					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_TOP_CATEGORIES,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 				] );
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
@@ -233,8 +234,6 @@ describe( 'core/user key metrics', () => {
 			} );
 
 			it( 'should not filter out ACR metrics from the user-selected key metrics if the conversionReporting feature flag is enabled', async () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
 						widgetSlugs: [
@@ -534,8 +533,6 @@ describe( 'core/user key metrics', () => {
 					expectedMetricsIncludingConversionTailored,
 					conversionEvents
 				) => {
-					enabledFeatures.add( 'conversionReporting' );
-
 					provideModules( registry, [
 						{
 							active: true,
@@ -594,8 +591,6 @@ describe( 'core/user key metrics', () => {
 					expect(
 						registry.select( CORE_USER ).getAnswerBasedMetrics()
 					).toEqual( expectedMetricsIncludingConversionTailored );
-
-					enabledFeatures.delete( 'conversionReporting' );
 				}
 			);
 
@@ -627,7 +622,6 @@ describe( 'core/user key metrics', () => {
 			] )(
 				'should return the correct metrics when getAnswerBasedMetrics() is overridden',
 				async ( currentPurpose, purposeOverride, expectedMetrics ) => {
-					enabledFeatures.add( 'conversionReporting' );
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setDetectedEvents( [] );
