@@ -79,6 +79,8 @@ import EnableAutoUpdateBannerNotification, {
 } from '../../components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '../../util';
 import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
+import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
+import ModuleSetupSuccessNotification from '../../components/notifications/ModuleSetupSuccessNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -335,6 +337,47 @@ export const DEFAULT_NOTIFICATIONS = {
 			return true;
 		},
 		isDismissible: true,
+	},
+	'setup-success-notification-site-kit': {
+		Component: SiteKitSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if ( 'authentication_success' === notification && ! slug ) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+	'setup-success-notification-module': {
+		Component: ModuleSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getModule() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			if (
+				'authentication_success' === notification &&
+				false === module.overrideSetupSuccessNotification &&
+				module.active
+			) {
+				return true;
+			}
+
+			return false;
+		},
 	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
