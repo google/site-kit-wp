@@ -612,10 +612,6 @@ describe( 'AudienceTilesWidget', () => {
 			status: 200,
 		} );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences,
-		} );
-
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,
@@ -647,10 +643,6 @@ describe( 'AudienceTilesWidget', () => {
 				},
 			},
 			status: 403,
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences,
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {

@@ -33,6 +33,7 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { cloneDeep } from 'lodash';
 
 function Template() {
 	return (
@@ -54,11 +55,31 @@ function Template() {
 	);
 }
 
+function setupPublicationsWithProduct(
+	registry,
+	publicationIndex,
+	productName
+) {
+	const publicationsWithProducts = cloneDeep( publications );
+
+	publicationsWithProducts[ publicationIndex ].products.push( {
+		name: productName,
+	} );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublications( publicationsWithProducts );
+
+	return publicationsWithProducts;
+}
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductID( 'product-b' );
@@ -73,6 +94,8 @@ PendingVerification.storyName = 'PendingVerification';
 PendingVerification.scenario = {};
 PendingVerification.args = {
 	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 1, 'product-a' );
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.selectPublication( publications[ 1 ] );
@@ -91,9 +114,15 @@ ActionRequired.storyName = 'ActionRequired';
 ActionRequired.scenario = {};
 ActionRequired.args = {
 	setupRegistry: ( registry ) => {
+		const publicationsWithProducts = setupPublicationsWithProduct(
+			registry,
+			2,
+			'product-a'
+		);
+
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.selectPublication( publications[ 2 ] );
+			.selectPublication( publicationsWithProducts[ 2 ] );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductID( 'product-a' );
@@ -135,6 +164,9 @@ PublicationUnavailable.storyName = 'PublicationUnavailable';
 PublicationUnavailable.scenario = {};
 PublicationUnavailable.args = {
 	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-1' );
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [ publications[ 0 ], publications[ 1 ] ] );
@@ -226,10 +258,7 @@ export default {
 			};
 
 			return (
-				<WithTestRegistry
-					callback={ setupRegistry }
-					features={ [ 'rrmModuleV2' ] }
-				>
+				<WithTestRegistry callback={ setupRegistry }>
 					<Story />
 				</WithTestRegistry>
 			);

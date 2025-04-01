@@ -125,6 +125,13 @@ class Analytics_4Test extends TestCase {
 	private $analytics;
 
 	/**
+	 * Audience settings instance.
+	 *
+	 * @var Audience_Settings
+	 */
+	private $audience_settings;
+
+	/**
 	 * Fake HTTP request handler calls.
 	 *
 	 * @var array
@@ -135,12 +142,14 @@ class Analytics_4Test extends TestCase {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options   = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options           = new Options( $this->context );
+		$this->user              = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options      = new User_Options( $this->context, $this->user->ID );
+		$this->authentication    = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->analytics         = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->audience_settings = new Audience_Settings( $this->options );
+
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( $this->options ) )->register();
@@ -286,6 +295,9 @@ class Analytics_4Test extends TestCase {
 					array(
 						'name' => $test_resource_slug_audience,
 					),
+					array(
+						'name' => 'properties/12345678/audiences/67890',
+					),
 				),
 			)
 		);
@@ -304,6 +316,10 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+
+		// Should not reset other resources.
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_deactivation() {
@@ -4338,6 +4354,18 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
+		// Verify that the module setting is not set yet.
+		$this->assertEquals(
+			$this->audience_settings->get()['availableAudiences'],
+			null
+		);
+
+		// Verify that a sync timestamp has not been set yet.
+		$this->assertEquals(
+			$this->audience_settings->get()['availableAudiencesLastSyncedAt'],
+			0
+		);
+
 		$data = $this->analytics->set_data( 'sync-audiences', array() );
 
 		$this->assertNotWPError( $data );
@@ -4352,6 +4380,19 @@ class Analytics_4Test extends TestCase {
 				'audienceSlug',
 			),
 			array_keys( $data[0] )
+		);
+
+		// Verify that the module setting is updated with correct values
+		// including various audience types and slugs.
+		$this->assertEquals(
+			$this->audience_settings->get()['availableAudiences'],
+			$expected_available_audiences
+		);
+
+		// Verify that a sync timestamp has been set.
+		$this->assertGreaterThan(
+			0,
+			$this->audience_settings->get()['availableAudiencesLastSyncedAt']
 		);
 	}
 
@@ -4603,6 +4644,12 @@ class Analytics_4Test extends TestCase {
 			),
 		);
 
+		$default_audience_segmentation_settings = array(
+			'availableAudiences'                   => null,
+			'availableAudiencesLastSyncedAt'       => 0,
+			'audienceSegmentationSetupCompletedBy' => null,
+		);
+
 		$activated_audience_segmentation_settings = array(
 			'availableAudiences'                   => array(
 				array(
@@ -4617,9 +4664,14 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Set module level audience settings.
-		$this->analytics->get_settings()->merge(
+		$this->audience_settings->merge(
 			$activated_audience_segmentation_settings
 		);
+
+		$audience_settings = $this->audience_settings->get();
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+		}
 	}
 
 	public function block_on_consent_provider_amp() {

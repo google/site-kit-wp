@@ -128,9 +128,9 @@ describe( 'AudienceSelectionPanel', () => {
 		};
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences,
@@ -836,26 +836,24 @@ describe( 'AudienceSelectionPanel', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			await waitFor( () => {
-				// Verify the dismissed item for the first configured audience is cleared.
-				expect( fetchMock ).toHaveFetched(
-					dismissedItemsEndpoint,
-					{
-						body: {
-							data: {
-								slugs: [
-									'audience-tile-properties/12345/audiences/1',
-								],
-							},
+			// Verify the dismissed item for the first configured audience is cleared.
+			expect( fetchMock ).toHaveFetched(
+				dismissedItemsEndpoint,
+				{
+					body: {
+						data: {
+							slugs: [
+								'audience-tile-properties/12345/audiences/1',
+							],
 						},
 					},
-					{
-						headers: {
-							'X-HTTP-Method-Override': 'DELETE',
-						},
-					}
-				);
-			} );
+				},
+				{
+					headers: {
+						'X-HTTP-Method-Override': 'DELETE',
+					},
+				}
+			);
 
 			// Verify there is a "Temporarily hidden" badge for the remaining hidden audience.
 			assertExpectedTemporarilyHiddenBadges( [

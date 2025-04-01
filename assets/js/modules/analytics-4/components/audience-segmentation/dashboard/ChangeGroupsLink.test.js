@@ -44,12 +44,6 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should not render if available audiences are undefined', () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveSyncAvailableAudiences( {
-				availableAudiences: undefined,
-			} );
-
 		const { queryByRole } = render( <ChangeGroupsLink />, { registry } );
 
 		const button = queryByRole( 'button' );

@@ -29,7 +29,6 @@ import {
 	fireEvent,
 	muteFetch,
 	act,
-	freezeFetch,
 } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import * as tracking from '../../../../../../util/tracking';
@@ -92,8 +91,6 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
-		freezeFetch( syncAvailableAudiencesEndpoint );
-
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
@@ -102,10 +99,6 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if the user has dismissed the notice', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences,
-		} );
-
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );

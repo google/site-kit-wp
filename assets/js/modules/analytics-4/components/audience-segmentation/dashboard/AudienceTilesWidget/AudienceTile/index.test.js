@@ -57,7 +57,6 @@ import {
 	setViewportWidth,
 } from '../../../../../../../../../tests/js/viewport-width-utils';
 import { getPreviousDate } from '../../../../../../../util';
-import { availableAudiences } from '../../../../../datastore/__fixtures__';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -186,7 +185,7 @@ describe( 'AudienceTile', () => {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences,
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
