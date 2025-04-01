@@ -125,6 +125,8 @@ import GoogleTagIDMismatchNotification from './components/notifications/GoogleTa
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -698,6 +700,18 @@ export const registerWidgets = ( widgets ) => {
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_COUNTRIES
 				),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'keyMetricsEventDetectionCalloutNotification',
+		{
+			Component: ConversionReportingNotificationCTAWidget,
+			width: [ widgets.WIDGET_WIDTHS.FULL ],
+			priority: 0,
+			modules: [ 'analytics-4' ],
+			isActive: () => isFeatureEnabled( 'conversionReporting' ),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
