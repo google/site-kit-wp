@@ -179,7 +179,7 @@ export default function SetupBanner( props ) {
 								'google-site-kit'
 							) }
 							onDismiss={ onDismiss }
-							dismissOptions={ { skipHidingFromQueue: true } }
+							ctaDismissOptions={ { skipHidingFromQueue: true } }
 						/>
 					</Fragment>
 				}

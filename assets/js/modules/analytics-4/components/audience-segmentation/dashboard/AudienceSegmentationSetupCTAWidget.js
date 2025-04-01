@@ -188,10 +188,12 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 									: __( 'Maybe later', 'google-site-kit' )
 							}
 							onDismiss={ showTooltip }
-							dismissOptions={ {
+							ctaDismissOptions={ {
 								skipHidingFromQueue: true,
 							} }
-							dismissExpires={ 2 * WEEK_IN_SECONDS }
+							dismissExpires={
+								isDismissalFinal ? 0 : 2 * WEEK_IN_SECONDS
+							}
 							{ ...gaTrackingProps }
 						/>
 					}

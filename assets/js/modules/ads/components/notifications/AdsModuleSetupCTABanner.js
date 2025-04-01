@@ -195,7 +195,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 						dismissOnCTAClick={ false }
 						isSaving={ isSaving }
 						dismissLabel={ dismissLabel }
-						dismissOptions={ {
+						ctaDismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
 						onDismiss={ showTooltip }
