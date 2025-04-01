@@ -247,7 +247,7 @@ const baseSelectors = {
 	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|null)} Available audiences, or `undefined` if not loaded.
+	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
 	getAvailableAudiences( state ) {
 		return state.audienceSettings?.availableAudiences;
@@ -259,7 +259,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Audience settings, or `undefined` if not loaded.
+	 * @return {Object|undefined} Audience settings, or `undefined` if not loaded.
 	 */
 	getAudienceSettings( state ) {
 		return state.audienceSettings;
@@ -287,7 +287,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(number|null)} ID for the user who set up Audience Segmentation, or `undefined` if not loaded.
+	 * @return {(number|null|undefined)} ID for the user who set up Audience Segmentation, `null` if not set, or `undefined` if not loaded.
 	 */
 	getAudienceSegmentationSetupCompletedBy: createRegistrySelector(
 		( select ) => () => {

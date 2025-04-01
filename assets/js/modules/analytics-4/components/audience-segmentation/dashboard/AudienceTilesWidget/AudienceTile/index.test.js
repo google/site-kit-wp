@@ -182,7 +182,6 @@ describe( 'AudienceTile', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions: [],
-			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
