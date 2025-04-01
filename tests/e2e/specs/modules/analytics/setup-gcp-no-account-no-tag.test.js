@@ -39,12 +39,68 @@ import {
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
+/* Suggested refactor to fix the ESLint complexity error:
+const requestHandlers = [
+	{
+		matchURL: ( url ) =>
+			url.startsWith( 'https://accounts.google.com/o/oauth2/v2/auth' ),
+		respond: ( request ) => {
+			request.respond( {
+				status: 302,
+				headers: {
+					location: createURL(
+						'/wp-admin/index.php',
+						[
+							'oauth2callback=1',
+							'code=valid-test-code',
+							'e2e-site-verification=1',
+							'scope=TEST_ALL_SCOPES',
+						].join( '&' )
+					),
+				},
+			} );
+		},
+	},
+	{
+		matchURL: ( url ) =>
+			url.match( 'analytics-4/data/properties' ) ||
+			url.match( 'analytics-4/data/conversion-events' ) ||
+			url.match( 'user/data/survey-timeouts' ) ||
+			url.match( 'search-console/data/searchanalytics' ),
+		respond: ( request ) => {
+			request.respond( { status: 200, body: '[]' } );
+		},
+	},
+	// Rest of the handlers...
+];
+
+useRequestInterception( ( request ) => {
+	const handler = requestHandlers.find( ( { matchURL } ) =>
+		matchURL( request.url() )
+	);
+	if ( handler ) {
+		handler.respond( request );
+	} else {
+		request.continue();
+	}
+} );
+*/
+
 describe( 'setting up the Analytics module using GCP auth with no existing account and no existing tag', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
+		// FIXME: Refactor this code rather than disabling the rule.
+		// eslint-disable-next-line complexity
 		useRequestInterception( ( request ) => {
 			const measurementID = 'G-2B7M8YQ1K6';
 			const containerMock = fixtures.container[ measurementID ];
+
+			const gtmAccountID = '6065484567';
+			const gtmContainerID = '98369876';
+			const containerDestinationsMock =
+				fixtures.containerDestinations[ gtmAccountID ][
+					gtmContainerID
+				];
 
 			const url = request.url();
 			if (
@@ -122,6 +178,13 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			) {
 				request.respond( {
 					body: JSON.stringify( containerMock ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				request.respond( {
+					body: JSON.stringify( containerDestinationsMock ),
 					status: 200,
 				} );
 			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
