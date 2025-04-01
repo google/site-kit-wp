@@ -393,14 +393,9 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	public function test_get_ads_measurement_status__handles_empty_checks_array() {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
-		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
-		add_filter(
-			'googlesitekit_ads_measurement_connection_checks',
-			function () {
-				return array();
-			}
-		);
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		add_filter( 'googlesitekit_ads_measurement_connection_checks', '__return_empty_array' );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
 		$response = rest_get_server()->dispatch( $request );
