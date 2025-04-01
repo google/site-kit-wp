@@ -81,7 +81,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 	it( 'should not render the widget when it is being dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.setIsPromptDimissing( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, true );
+			.setIsPromptDismissing( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, true );
 
 		const { container, waitForRegistry } = render(
 			<ConsentModeSetupCTAWidgetComponent />,
