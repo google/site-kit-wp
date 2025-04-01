@@ -141,7 +141,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const tooltipSettings = {
 		tooltipSlug: 'ads-setup-notification',
-		title: '',
 		content: __(
 			'You can always enable Ads from Settings later',
 			'google-site-kit'

@@ -72,7 +72,6 @@ export default function EnhancedMeasurementActivationBanner( {
 
 	const tooltipSettings = {
 		tooltipSlug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
-		title: '',
 		content: __(
 			'You can always enable Enhanced Measurement from Settings later',
 			'google-site-kit'

@@ -38,9 +38,10 @@ export function AdminMenuTooltip() {
 		isTooltipVisible = false,
 		rehideAdminMenu = false,
 		rehideAdminSubMenu = false,
-		onDismiss,
 		tooltipSlug,
-		...tooltipSettings
+		title,
+		content,
+		dismissLabel,
 	} = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( 'admin-menu-tooltip' ) || {
@@ -52,7 +53,7 @@ export function AdminMenuTooltip() {
 		trackEvent( `${ viewContext }_${ tooltipSlug }`, 'tooltip_view' );
 	};
 
-	const handleDismissTooltip = useCallback( async () => {
+	const handleDismissTooltip = useCallback( () => {
 		// If the WordPress admin menu was closed, re-close it.
 		if ( rehideAdminMenu ) {
 			const isAdminMenuOpen =
@@ -77,11 +78,8 @@ export function AdminMenuTooltip() {
 			);
 		}
 
-		await onDismiss?.();
-
 		setValue( 'admin-menu-tooltip', undefined );
 	}, [
-		onDismiss,
 		rehideAdminMenu,
 		rehideAdminSubMenu,
 		setValue,
@@ -98,10 +96,11 @@ export function AdminMenuTooltip() {
 			// Point to the Site Kit Settings menu item by default.
 			target={ '#adminmenu [href*="page=googlesitekit-settings"]' }
 			slug="ga4-activation-banner-admin-menu-tooltip"
+			title={ title }
+			content={ content }
+			dismissLabel={ dismissLabel }
 			onView={ handleViewTooltip }
 			onDismiss={ handleDismissTooltip }
-			title=""
-			{ ...tooltipSettings }
 		/>
 	);
 }
