@@ -24,11 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	Fragment,
-	useEffect,
-} from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
