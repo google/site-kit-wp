@@ -40,11 +40,9 @@ useViewContext.mockImplementation( () => 'test-context' );
 
 describe( 'AdminMenuTooltip', () => {
 	let registry;
-	const mockOnDismiss = jest.fn();
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
-		mockOnDismiss.mockClear();
 		registry = createTestRegistry();
 		jest.useFakeTimers();
 	} );
@@ -125,7 +123,6 @@ describe( 'AdminMenuTooltip', () => {
 			title: 'Test Title',
 			content: 'Test Content',
 			dismissLabel: 'Got it',
-			onDismiss: mockOnDismiss,
 			tooltipSlug,
 		} );
 
@@ -167,8 +164,6 @@ describe( 'AdminMenuTooltip', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		expect( mockOnDismiss ).toHaveBeenCalled();
-
 		expect(
 			registry.select( CORE_UI ).getValue( 'admin-menu-tooltip' )
 		).toBeUndefined();
@@ -186,7 +181,6 @@ describe( 'AdminMenuTooltip', () => {
 			title: 'Test Title',
 			content: 'Test Content',
 			dismissLabel: 'Got it',
-			onDismiss: mockOnDismiss,
 			tooltipSlug,
 		} );
 
@@ -228,8 +222,6 @@ describe( 'AdminMenuTooltip', () => {
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).not.toBeInTheDocument();
 		} );
-
-		expect( mockOnDismiss ).toHaveBeenCalled();
 
 		expect(
 			registry.select( CORE_UI ).getValue( 'admin-menu-tooltip' )
