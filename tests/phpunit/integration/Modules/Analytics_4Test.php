@@ -4674,6 +4674,46 @@ class Analytics_4Test extends TestCase {
 		}
 	}
 
+	public function test_module_level_audience_settings_reset__on_deactivation() {
+		$default_audience_segmentation_settings = array(
+			'availableAudiences'                   => null,
+			'availableAudiencesLastSyncedAt'       => 0,
+			'audienceSegmentationSetupCompletedBy' => null,
+		);
+
+		$activated_audience_segmentation_settings = array(
+			'availableAudiences'                   => array(
+				array(
+					'name' => 'properties/12345678/audiences/12345',
+				),
+				array(
+					'name' => 'properties/12345678/audiences/67890',
+				),
+			),
+			'availableAudiencesLastSyncedAt'       => time(),
+			'audienceSegmentationSetupCompletedBy' => 1,
+		);
+
+		// Set module level audience settings.
+		$this->audience_settings->merge(
+			$activated_audience_segmentation_settings
+		);
+		$analytics_settings = $this->audience_settings->get();
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
+		}
+
+		// Simulate deactivation effect.
+		$this->analytics->on_deactivation();
+
+		// Confirm the module level audience settings have been reset.
+		$audience_settings = $this->audience_settings->get();
+
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+		}
+	}
+
 	public function block_on_consent_provider_amp() {
 		return array(
 			'default (disabled)' => array(

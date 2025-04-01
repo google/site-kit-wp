@@ -100,6 +100,19 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	}
 
 	/**
+	 * Gets the settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The settings.
+	 */
+	public function get() {
+		$option = $this->options->get( self::OPTION );
+
+		return false === $option ? $this->get_default() : $option;
+	}
+
+	/**
 	 * Sanitizes the settings.
 	 *
 	 * @since 1.148.0
@@ -108,7 +121,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	 *
 	 * @return array The sanitized settings.
 	 */
-	private function sanitize( $option ) {
+	private function sanitize( $option = array() ) {
 		$new_option = $this->get();
 
 		if ( isset( $option['availableAudiences'] ) ) {

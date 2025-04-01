@@ -100,10 +100,10 @@ class Migration_1_150_0Test extends TestCase {
 
 		$audience_settings_after = $this->audience_settings->get();
 
-		$this->assertEmpty( $audience_settings_after );
+		$this->assertEquals( $audience_settings_after, $this->audience_settings->get_default() );
 	}
 
-	public function test_migrate_audience_settings_empty_analytics_settings() {
+	public function test_migrate_audience_settings_default_analytics_settings() {
 		$migration = $this->get_new_migration_instance();
 
 		$this->analytics_settings->set( array() );
@@ -112,7 +112,7 @@ class Migration_1_150_0Test extends TestCase {
 
 		$audience_settings_after = $this->audience_settings->get();
 
-		$this->assertEmpty( $audience_settings_after );
+		$this->assertEquals( $audience_settings_after, $this->audience_settings->get_default() );
 	}
 
 	protected function get_db_version() {
