@@ -24,11 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	createInterpolateElement,
-	useEffect,
-} from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,11 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import AdsenseAdBlockingRecoverySVG from '../../../../../svg/graphics/adsense-ad-blocking-recovery.svg';
-import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../../../../components/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 import Link from '../../../../components/Link';
 import Banner from '../../../../components/notifications/BannerNotification/Banner';
 import BannerActions from '../../../../components/notifications/BannerNotification/BannerActions';
@@ -76,12 +68,15 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const inView = useInView();
 	const viewContext = useViewContext();
 
-	const showTooltip = useShowTooltip(
-		AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
-	);
-	const { isTooltipVisible } = useTooltipState(
-		AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
-	);
+	const tooltipSettings = {
+		tooltipSlug: AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+		title: __(
+			'You can always set up ad blocking recovery from Settings later',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isPromptDismissed(
@@ -169,12 +164,6 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	}, [ inView, shouldShowWidget, viewContext ] );
 
-	useEffect( () => {
-		if ( isTooltipVisible ) {
-			trackEvent( `${ viewContext }_adsense-abr`, 'view_tooltip' );
-		}
-	}, [ isTooltipVisible, viewContext ] );
-
 	const handleCTAClick = async () => {
 		await trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
@@ -209,29 +198,6 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			'click_learn_more_link'
 		);
 	};
-
-	const handleDismissTooltip = () => {
-		trackEvent( `${ viewContext }_adsense-abr`, 'dismiss_tooltip' );
-	};
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<WidgetNull />
-				<AdminMenuTooltip
-					title={ __(
-						'You can always set up ad blocking recovery from Settings later',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ handleDismissTooltip }
-					tooltipStateKey={
-						AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY
-					}
-				/>
-			</Fragment>
-		);
-	}
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
