@@ -202,35 +202,6 @@ describe( 'core/user key metrics', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
-
-			it( 'should not filter out ACR metrics from the user-selected key metrics if the conversionReporting feature flag is enabled', async () => {
-				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
-					body: {
-						widgetSlugs: [
-							KM_ANALYTICS_RETURNING_VISITORS,
-							KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-						],
-						isWidgetHidden: false,
-					},
-					status: 200,
-				} );
-
-				registry.select( CORE_USER ).getKeyMetrics();
-
-				await untilResolved(
-					registry,
-					CORE_USER
-				).getKeyMetricsSettings();
-
-				expect(
-					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [
-					KM_ANALYTICS_RETURNING_VISITORS,
-					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-				] );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
 		} );
 
 		describe( 'getAnswerBasedMetrics', () => {
@@ -642,9 +613,9 @@ describe( 'core/user key metrics', () => {
 					registry.select( CORE_USER ).getAnswerBasedMetrics()
 				).toEqual( [
 					KM_ANALYTICS_POPULAR_PRODUCTS,
-					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 				] );
 			} );
 		} );
