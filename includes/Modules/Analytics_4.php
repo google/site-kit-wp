@@ -465,11 +465,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			return true;
 		}
 
-		if ( ! empty( $settings['googleTagContainerDestinationIDs'] ) ) {
-			foreach ( $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
-				if ( 0 === strpos( $destination_id, 'AW-' ) ) {
-					return true;
-				}
+		foreach ( $settings['googleTagContainerDestinationIDs'] ?? array() as $destination_id ) {
+			if ( 0 === strpos( $destination_id, 'AW-' ) ) {
+				return true;
 			}
 		}
 
