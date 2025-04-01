@@ -203,36 +203,6 @@ describe( 'core/user key metrics', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should filter out ACR metrics from the user-selected key metrics if the conversionReporting feature flag is not enabled', async () => {
-				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
-					body: {
-						widgetSlugs: [
-							KM_ANALYTICS_RETURNING_VISITORS,
-							KM_ANALYTICS_NEW_VISITORS,
-							KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-						],
-						isWidgetHidden: false,
-					},
-					status: 200,
-				} );
-
-				registry.select( CORE_USER ).getKeyMetrics();
-
-				await untilResolved(
-					registry,
-					CORE_USER
-				).getKeyMetricsSettings();
-
-				expect(
-					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [
-					KM_ANALYTICS_RETURNING_VISITORS,
-					KM_ANALYTICS_NEW_VISITORS,
-				] );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
 			it( 'should not filter out ACR metrics from the user-selected key metrics if the conversionReporting feature flag is enabled', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: {
