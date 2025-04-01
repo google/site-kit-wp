@@ -4672,6 +4672,18 @@ class Analytics_4Test extends TestCase {
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
 			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
 		}
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-222222',
+			)
+		);
+
+		$audience_settings = $this->audience_settings->get();
+
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+		}
 	}
 
 	public function test_module_level_audience_settings_reset__on_deactivation() {
