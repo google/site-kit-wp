@@ -1,4 +1,3 @@
-import { isFeatureEnabled } from '../../features';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
@@ -22,10 +21,6 @@ export function shouldDisplayWidgetWithConversionEvent(
 	isViewOnlyDashboard,
 	slug
 ) {
-	if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-		return false;
-	}
-
 	return (
 		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
 			// This property is available to the widget object that requires the
