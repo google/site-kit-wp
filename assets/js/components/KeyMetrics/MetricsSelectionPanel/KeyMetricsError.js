@@ -36,18 +36,14 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
-	MAX_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
 	MIN_SELECTED_METRICS_COUNT,
 } from '../constants';
 import SelectionPanelError from '../../SelectionPanel/SelectionPanelError';
 import { safelySort } from '../../../util';
 import whenActive from '../../../util/when-active';
-import { useFeature } from '../../../hooks/useFeature';
 
 function KeyMetricsError( { savedMetrics } ) {
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
-
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -77,9 +73,8 @@ function KeyMetricsError( { savedMetrics } ) {
 	);
 
 	const selectedMetricsCount = selectedMetrics?.length || 0;
-	const maxSelectedMetricsLimit = isConversionReportingEnabled
-		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
-		: MAX_SELECTED_METRICS_COUNT;
+	const maxSelectedMetricsLimit =
+		MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS;
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
