@@ -120,7 +120,6 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences,
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -156,7 +155,9 @@ describe( 'AudienceCreationNotice', () => {
 		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences: [],
+			availableAudiences: availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			),
 		} );
 
 		const { container, waitForRegistry } = render(
