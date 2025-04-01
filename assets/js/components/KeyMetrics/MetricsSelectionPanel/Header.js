@@ -38,11 +38,9 @@ import { MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS } from '../constants'
 import Link from '../../Link';
 import { SelectionPanelHeader } from '../../SelectionPanel';
 import useViewOnly from '../../../hooks/useViewOnly';
-import { useFeature } from '../../../hooks/useFeature';
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -60,20 +58,16 @@ export default function Header( { closePanel } ) {
 
 	return (
 		<SelectionPanelHeader
-			title={
-				isConversionReportingEnabled
-					? sprintf(
-							/* translators: %d: number of max allowed metrics */
-							_n(
-								'Select up to %d metric',
-								'Select up to %d metrics',
-								MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
-								'google-site-kit'
-							),
-							MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
-					  )
-					: __( 'Select your metrics', 'google-site-kit' )
-			}
+			title={ sprintf(
+				/* translators: %d: number of max allowed metrics */
+				_n(
+					'Select up to %d metric',
+					'Select up to %d metrics',
+					MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
+					'google-site-kit'
+				),
+				MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
+			) }
 			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
