@@ -124,7 +124,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getAvailableAudiences', () => {
+		describe( 'getOrSyncAvailableAudiences', () => {
 			const syncAvailableAudiences = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 			);
