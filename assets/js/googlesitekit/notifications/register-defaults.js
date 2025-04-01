@@ -339,7 +339,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -576,7 +576,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		isDismissible: true,
+		isDismissible: false,
 		checkRequirements: async ( { resolveSelect } ) => {
 			const recoverableModules = await resolveSelect(
 				CORE_MODULES
