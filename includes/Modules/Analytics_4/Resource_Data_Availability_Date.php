@@ -59,9 +59,9 @@ class Resource_Data_Availability_Date {
 	 * Options instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Options_Interface
+	 * @var Audience_Settings
 	 */
-	protected $options;
+	protected $audience_settings;
 
 	/**
 	 * Constructor.
@@ -70,12 +70,12 @@ class Resource_Data_Availability_Date {
 	 *
 	 * @param Transients        $transients Transients instance.
 	 * @param Module_Settings   $settings Module settings instance.
-	 * @param Options_Interface $options Options_Interface instance.
+	 * @param Audience_Settings $audience_settings Audience_Settings instance.
 	 */
-	public function __construct( Transients $transients, Module_Settings $settings, Options_Interface $options ) {
-		$this->transients = $transients;
-		$this->settings   = $settings;
-		$this->options    = $options;
+	public function __construct( Transients $transients, Module_Settings $settings, Audience_Settings $audience_settings ) {
+		$this->transients        = $transients;
+		$this->settings          = $settings;
+		$this->audience_settings = $audience_settings;
 	}
 
 	/**
@@ -242,8 +242,7 @@ class Resource_Data_Availability_Date {
 	 * @return array List of available audience resource names.
 	 */
 	private function get_available_audience_resource_names() {
-		$audience_settings   = new Audience_Settings( $this->options );
-		$available_audiences = $audience_settings->get();
+		$available_audiences = $this->audience_settings->get();
 		$available_audiences = $available_audiences['availableAudiences'] ?? array();
 
 		return array_map(

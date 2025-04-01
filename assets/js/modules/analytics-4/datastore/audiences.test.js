@@ -622,7 +622,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: availableAudiencesFixture,
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
 				} );
@@ -653,11 +652,6 @@ describe( 'modules/analytics-4 audiences', () => {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
 					},
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: JSON.stringify( availableUserAudiences ),
 					status: 200,
 				} );
 
@@ -1084,12 +1078,6 @@ describe( 'modules/analytics-4 audiences', () => {
 					userAudience,
 					availableAudiencesFixture[ 1 ], // Purchaser
 				];
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						availableAudiences,
-					} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -1878,7 +1866,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: null,
 					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
@@ -1895,16 +1882,16 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
+				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+					body: availableAudiencesFixture,
+					status: 200,
+				} );
+
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
 					},
-					status: 200,
-				} );
-
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: JSON.stringify( availableAudiencesFixture ),
 					status: 200,
 				} );
 
@@ -1954,12 +1941,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry, {
 					authenticated: false,
 				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( {
-						availableAudiences: availableAudiencesFixture,
-					} );
 
 				fetchMock.postOnce( audienceSettingsEndpoint, {
 					body: {
@@ -2522,7 +2503,9 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'returns false when available audiences are null or not set', async () => {
-				muteFetch( syncAvailableAudiencesEndpoint );
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -2536,12 +2519,10 @@ describe( 'modules/analytics-4 audiences', () => {
 						.hasAudiences( testAudience1ResourceName )
 				).toBe( false );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
-
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAudienceSettings();
+				).getAvailableAudiences();
 			} );
 
 			it( 'returns true when all provided audiences are available', () => {
@@ -2605,6 +2586,9 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return empty array if loaded `availableAudiences` is not an array', async () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
 				muteFetch( syncAvailableAudiencesEndpoint );
 
 				registry
@@ -2619,12 +2603,10 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				expect( configurableAudiences ).toEqual( [] );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
-
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAudienceSettings();
+				).getAvailableAudiences();
 			} );
 
 			it( 'should not include "Purchasers" if it has no data', () => {

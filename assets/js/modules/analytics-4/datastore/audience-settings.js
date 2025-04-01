@@ -66,15 +66,7 @@ function validateAudienceSettings( audienceSettings ) {
 }
 
 const fetchStoreReducerCallback = createReducer( ( state, settings ) => {
-	if ( ! state.audienceSettings ) {
-		state.audienceSettings = {};
-	}
-
-	state.audienceSettings.availableAudiences = settings?.availableAudiences;
-	state.audienceSettings.audienceSegmentationSetupCompletedBy =
-		settings?.audienceSegmentationSetupCompletedBy;
-	state.audienceSettings.availableAudiencesLastSyncedAt =
-		settings?.availableAudiencesLastSyncedAt;
+	state.audienceSettings = settings;
 } );
 
 const fetchGetAudienceSettingsStore = createFetchStore( {
@@ -220,7 +212,7 @@ const baseResolvers = {
 			.getAvailableAudiences();
 
 		if ( audiences === null ) {
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			registry.dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
 		}
 	},
 };
@@ -261,6 +253,14 @@ const baseSelectors = {
 		return state.audienceSettings?.availableAudiences;
 	},
 
+	/**
+	 * Gets the audience settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Audience settings, or `undefined` if not loaded.
+	 */
 	getAudienceSettings( state ) {
 		return state.audienceSettings;
 	},

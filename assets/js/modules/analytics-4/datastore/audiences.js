@@ -39,7 +39,6 @@ import { getPreviousDate } from '../../../util';
 import { isInsufficientPermissionsError } from '../../../util/errors';
 import { validateAudience } from '../utils/validation';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
-import { actions as audiencesActions } from './audience-settings';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
@@ -301,7 +300,9 @@ const baseActions = {
 		}
 
 		const { response: availableAudiences, error } =
-			yield audiencesActions.fetchSyncAvailableAudiences();
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableAudiences()
+			);
 
 		if ( error ) {
 			return { response: availableAudiences, error };

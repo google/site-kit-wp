@@ -54,7 +54,7 @@ class Resource_Data_Availability_DateTest extends TestCase {
 		$transients                            = new Transients( $context );
 		$this->settings                        = new Settings( $options );
 		$this->audience_settings               = new Audience_Settings( $options );
-		$this->resource_data_availability_date = new Resource_Data_Availability_Date( $transients, $this->settings, $options );
+		$this->resource_data_availability_date = new Resource_Data_Availability_Date( $transients, $this->settings, $this->audience_settings );
 
 		$this->settings->merge(
 			array(

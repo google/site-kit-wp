@@ -744,10 +744,6 @@ export default {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiences );
-
-				registry
 					.dispatch( CORE_USER )
 					.setConfiguredAudiences( configuredAudiences );
 

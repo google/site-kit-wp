@@ -205,7 +205,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
-		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->options );
+		$this->audience_settings                = new Audience_Settings( $this->options );
+		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
 
 	/**
@@ -246,7 +247,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$conversion_reporting_provider->register();
 		}
 
-		$this->audience_settings = new Audience_Settings( $this->options );
 		$this->audience_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -507,6 +507,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
+		$this->audience_settings->delete();
 	}
 
 	/**
