@@ -47,6 +47,11 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
+	const onDismiss = () => {
+		setNotification( undefined );
+		setSlug( undefined );
+	};
+
 	const anchorLink = `#${ ANCHOR_ID_SPEED }`;
 	const onJumpLinkClick = ( event ) => {
 		event.preventDefault();
@@ -59,11 +64,6 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 			top: getNavigationalScrollTop( anchorLink, breakpoint ),
 			behavior: 'smooth',
 		} );
-	};
-
-	const onDismiss = () => {
-		setNotification( undefined );
-		setSlug( undefined );
 	};
 
 	return (
