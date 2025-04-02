@@ -41,6 +41,7 @@ describe( 'Header', () => {
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( [] );
 	} );
 

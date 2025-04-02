@@ -71,6 +71,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
 				.resolveSelect( CORE_USER )
