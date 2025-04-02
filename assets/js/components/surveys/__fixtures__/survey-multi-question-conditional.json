@@ -1,124 +1,165 @@
 {
   "survey_payload": {
-    "language": "en_US",
+    "completion": [
+      {
+        "completion_ordinal": 1,
+        "completion_title": "Default completion!",
+        "completion_text": "Because you picked answer 3 for the first question.",
+        "follow_up_text": "Let’s go",
+        "follow_up_url": "#new-url",
+        "trigger_condition": []
+      },
+      {
+        "completion_ordinal": 2,
+        "completion_title": "First completion!",
+        "completion_text": "Because you picked answer 4 or 5 for the first question.",
+        "follow_up_text": "Let’s go",
+        "follow_up_url": "#new-url",
+        "trigger_condition": [
+          {
+            "question_ordinal": 3,
+            "answer_ordinal": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "completion_ordinal": 3,
+        "completion_title": "Second completion!",
+        "completion_text": "Because you picked answer 1 or 2 for the first question.",
+        "follow_up_text": "Get help",
+        "follow_up_url": "#new-url-2",
+        "trigger_condition": [
+          {
+            "question_ordinal": 2,
+            "answer_ordinal": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "completion_ordinal": 3,
+        "completion_title": "Third completion!",
+        "completion_text": "Default completion with no condtions.",
+        "follow_up_text": "Get help",
+        "follow_up_url": "#new-url-3"
+      }
+    ],
     "question": [
       {
         "question_ordinal": 1,
-        "question_text": "Have you tried the new Reader Revenue Manager functionality in Site Kit?",
-        "question_type": "single_select",
-        "trigger_condition": [],
+        "question_text": "First question",
+        "question_type": "rating",
         "question": {
           "answer_choice": [
             {
               "answer_ordinal": 1,
-              "text": "Yes",
-              "write_in": false
+              "text": "Unhappy"
             },
-            { "answer_ordinal": 2, "text": "No", "write_in": false }
+            {
+              "answer_ordinal": 2,
+              "text": "Dissatisfied"
+            },
+            {
+              "answer_ordinal": 3,
+              "text": "Neutral"
+            },
+            {
+              "answer_ordinal": 4,
+              "text": "Satisfied"
+            },
+            {
+              "answer_ordinal": 5,
+              "text": "Delighted"
+            }
           ]
         }
       },
       {
         "question_ordinal": 2,
-        "question_text": "Which feature have you tried to enable?",
-        "question_type": "multi_select",
-        "trigger_condition": [
-          { "question_ordinal": 1, "answer_ordinal": [ 1 ] }
-        ],
+        "question_text": "Second question",
+        "question_type": "rating",
         "question": {
           "answer_choice": [
             {
               "answer_ordinal": 1,
-              "text": "Subscription (paywall)",
-              "write_in": false
+              "text": "Unhappy"
             },
             {
               "answer_ordinal": 2,
-              "text": "Contributions",
-              "write_in": false
+              "text": "Dissatisfied"
             },
             {
               "answer_ordinal": 3,
-              "text": "Surveys",
-              "write_in": false
+              "text": "Neutral"
             },
             {
               "answer_ordinal": 4,
-              "text": "Newsletter subscription",
-              "write_in": false
+              "text": "Satisfied"
+            },
+            {
+              "answer_ordinal": 5,
+              "text": "Delighted"
             }
-          ],
-          "min_choices": 1,
-          "max_choices": 4
-        }
+          ]
+        },
+        "trigger_condition": [
+          {
+            "question_ordinal": 1,
+            "answer_ordinal": [
+              1,
+              2
+            ]
+          }
+        ]
       },
       {
         "question_ordinal": 3,
-        "question_text": "What was your experience with the Reader Revenue Manager functionality?",
-        "question_type": "multi_select",
-        "trigger_condition": [
-          { "question_ordinal": 2, "answer_ordinal": [ 1, 2, 3, 4 ] }
-        ],
+        "question_text": "Third question",
+        "question_type": "rating",
         "question": {
           "answer_choice": [
             {
               "answer_ordinal": 1,
-              "text": "I tried it, but ultimately it’s not the right option for my site so disabled it again",
-              "write_in": false
+              "text": "Unhappy"
             },
             {
               "answer_ordinal": 2,
-              "text": "I tried, but was not able to complete the setup (e.g. got an error)",
-              "write_in": false
+              "text": "Dissatisfied"
             },
             {
               "answer_ordinal": 3,
-              "text": "Other (please specify)",
-              "write_in": true
+              "text": "Neutral"
+            },
+            {
+              "answer_ordinal": 4,
+              "text": "Satisfied"
+            },
+            {
+              "answer_ordinal": 5,
+              "text": "Delighted"
             }
-          ],
-          "min_choices": 1,
-          "max_choices": 3
-        }
-      },
-      {
-        "question_ordinal": 4,
-        "question_text": "Why haven't you enabled the new Reader Revenue Manager functionality?",
-        "question_type": "multi_select",
+          ]
+        },
         "trigger_condition": [
-          { "question_ordinal": 1, "answer_ordinal": [ 2 ] }
-        ],
-        "question": {
-          "answer_choice": [
-            {
-              "answer_ordinal": 1,
-              "text": "I haven't noticed the message about this new feature on the Site Kit dashboard",
-              "write_in": false
-            },
-            {
-              "answer_ordinal": 2,
-              "text": "I don't need to add subscriptions, reader contributions, or surveys to my site",
-              "write_in": false
-            },
-            {
-              "answer_ordinal": 3,
-              "text": "Other (please specify)",
-              "write_in": true
-            }
-          ],
-          "min_choices": 1,
-          "max_choices": 3
-        }
-      }
-    ],
-    "completion": [
-      {
-        "completion_ordinal": 1,
-        "completion_title": "Thank you for testing new Site Kit features with us! Your feedback makes us tick!",
-        "completion_text": "If you have more feedback about Reader Revenue Manager, find us on our WordPress.org support forum.",
-        "follow_up_text": "Let’s go",
-        "follow_up_url": "https://wordpress.org/support/plugin/google-site-kit/#new-topic-0",
-        "trigger_condition": null
+          {
+            "question_ordinal": 1,
+            "answer_ordinal": [
+              4,
+              5
+            ]
+          }
+        ]
       }
     ]
   },
