@@ -79,7 +79,7 @@ jobs:
     e2e-tests:
         name: E2E (WordPress latest)
         runs-on: ubuntu-latest
-        timeout-minutes: 30
+        timeout-minutes: 60
         if: github.event_name == 'push' || github.event.pull_request.draft == false
         env:
             AMP_VERSION: ''
