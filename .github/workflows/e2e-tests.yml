@@ -100,7 +100,18 @@ jobs:
             - name: Install npm Globally
               run: npm run install-global-npm
 
+            - name: Cache npm dependencies
+              uses: actions/cache@v4
+              id: npm-cache
+              with:
+                  path: |
+                      ~/.npm
+                      node_modules
+                  key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: ${{ runner.os }}-npm-
+
             - name: npm install
+              if: steps.npm-cache.outputs.cache-hit != 'true'
               run: npm ci
 
             - name: Build
