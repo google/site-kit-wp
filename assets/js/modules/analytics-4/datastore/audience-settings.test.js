@@ -52,7 +52,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
 			} );
 
@@ -124,7 +124,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getAvailableAudiences', () => {
+		describe( 'getOrSyncAvailableAudiences', () => {
 			const syncAvailableAudiences = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 			);
@@ -136,7 +136,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 				const availableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
+					.getOrSyncAvailableAudiences();
 
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 				expect( availableAudiences ).toEqual(
@@ -166,14 +166,14 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toBeNull();
 
 				// Wait until the resolver has finished fetching the audiences.
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 
 				await waitForDefaultTimeouts();
 
@@ -182,7 +182,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
 			} );
 		} );
