@@ -53,7 +53,11 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 } from '../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
+import {
+	EFFECTIVE_SELECTION,
+	KEY_METRICS_SELECTION_FORM,
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
+} from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
@@ -669,6 +673,8 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 			fireEvent.click( checkbox );
 
+			await waitForRegistry();
+
 			expect(
 				getByText(
 					/The metrics you selected require more data tracking. We will update your Analytics property after saving your selection./i
@@ -702,13 +708,23 @@ describe( 'MetricsSelectionPanel', () => {
 				registry,
 			} );
 
+			act( () => {
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( KEY_METRICS_SELECTION_FORM, {
+						[ EFFECTIVE_SELECTION ]: [
+							KM_ANALYTICS_RETURNING_VISITORS,
+						],
+					} );
+			} );
+
+			await waitForRegistry();
+
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-button-icon--spinner'
 				)
 			).toBeDisabled();
-
-			await waitForRegistry();
 		} );
 
 		it( 'should display error message when less than two metrics are checked', async () => {
@@ -732,6 +748,8 @@ describe( 'MetricsSelectionPanel', () => {
 			const checkbox = await findByLabelText( 'Returning visitors' );
 			fireEvent.click( checkbox );
 
+			await waitForRegistry();
+
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-error-text'
@@ -740,6 +758,8 @@ describe( 'MetricsSelectionPanel', () => {
 
 			// // Select 2 key metrics.
 			fireEvent.click( checkbox );
+			await waitForRegistry();
+
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-error-text'
