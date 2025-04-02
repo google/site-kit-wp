@@ -35,4 +35,5 @@ export default function Description( { className, children } ) {
 
 Description.propTypes = {
 	className: PropTypes.string,
+	children: PropTypes.node,
 };
