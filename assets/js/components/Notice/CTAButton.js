@@ -24,9 +24,9 @@ import PropTypes from 'prop-types';
  */
 import { Button } from 'googlesitekit-components';
 
-export default function CTAButton( { label, onCallback } ) {
+export default function CTAButton( { label, onClick } ) {
 	return (
-		<Button onClick={ onCallback } primary>
+		<Button onClick={ onClick } primary>
 			{ label }
 		</Button>
 	);
