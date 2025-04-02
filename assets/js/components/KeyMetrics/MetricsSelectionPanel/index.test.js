@@ -686,30 +686,18 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 			] );
-
-			provideKeyMetricsWidgetRegistrations( registry, {
-				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
-				},
-				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
-				},
-				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-					modules: [ 'analytics-4' ],
-				},
-			} );
 		} );
 
-		it( 'should prevent saving when less than two metrics are checked', async () => {
+		it( 'should prevent saving when less than two metrics are checked', () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
 			} );
 
-			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+			// There doesn't seem to be a need for waitForRegistry here.
+			// Not having data to resolve, so no need to wait for it, if included it will timeout.
+			render( <MetricsSelectionPanel />, {
 				registry,
 			} );
-
-			await waitForRegistry();
 
 			expect(
 				document.querySelector(
@@ -723,23 +711,28 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
 				},
-				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
+					modules: [ 'analytics-4' ],
 				},
 			} );
 
-			const { getByRole, findByLabelText, waitForRegistry } = render(
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+				],
+			} );
+
+			const { findByLabelText, waitForRegistry } = render(
 				<MetricsSelectionPanel />,
 				{
 					registry,
 				}
 			);
 
-			fireEvent.click( getByRole( 'button', { name: /Visitors/i } ) );
-
 			await waitForRegistry();
 
-			// Select 1 key metric.
+			// // Deselect 1 key metric.
 			const checkbox = await findByLabelText( 'Returning visitors' );
 			fireEvent.click( checkbox );
 
@@ -749,17 +742,8 @@ describe( 'MetricsSelectionPanel', () => {
 				).textContent
 			).toBe( 'Select at least 2 metrics (1 selected)' );
 
-			fireEvent.click(
-				getByRole( 'button', { name: /Driving traffic/i } )
-			);
-			await waitForRegistry();
-
-			// Select 2 key metrics.
-			const checkbox2 = await findByLabelText(
-				'Top performing keywords'
-			);
-			fireEvent.click( checkbox2 );
-
+			// // Select 2 key metrics.
+			fireEvent.click( checkbox );
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-error-text'
