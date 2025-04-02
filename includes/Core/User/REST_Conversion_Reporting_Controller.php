@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
