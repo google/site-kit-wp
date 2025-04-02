@@ -325,13 +325,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						)
 					);
 
-					$this->audience_settings->set(
-						array(
-							'availableAudiences' => null,
-							'availableAudiencesLastSyncedAt' => 0,
-							'audienceSegmentationSetupCompletedBy' => null,
-						)
-					);
+					$this->audience_settings->delete();
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );

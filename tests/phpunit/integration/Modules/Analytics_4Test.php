@@ -4670,7 +4670,7 @@ class Analytics_4Test extends TestCase {
 
 		$audience_settings = $this->audience_settings->get();
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} is not equal before property change" );
 		}
 
 		$this->analytics->get_settings()->merge(
@@ -4682,7 +4682,7 @@ class Analytics_4Test extends TestCase {
 		$audience_settings = $this->audience_settings->get();
 
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} is not equal after property change" );
 		}
 	}
 
