@@ -28,7 +28,7 @@ const selectors = {
 	/**
 	 * Overrides the details link URL for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @return {string} Details link URL.
 	 */

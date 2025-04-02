@@ -907,7 +907,7 @@ const baseSelectors = {
 	/**
 	 * Gets Google tag settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
