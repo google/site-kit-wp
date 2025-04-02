@@ -51,6 +51,7 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
@@ -89,6 +90,14 @@ describe( 'MetricsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {},
+			postFrequency: {},
+			goals: {},
+		} );
 
 		// jsdom does not support scrollIntoView which is used by the last metric item
 		// to prevent it from hiding underneath the Custom Dimensions warning notice.
@@ -197,16 +206,15 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
 				)
 			).toHaveTextContent( 'Returning visitors' );
-
-			expect(
-				document.querySelector(
-					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-items'
-				)
-			).toHaveTextContent( 'Top performing keywords' );
 		} );
 
 		it( 'should render a single module disconnect notice when required module for a widget is disconnected', async () => {
-			provideKeyMetrics( registry );
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_RETURNING_VISITORS,
+				],
+			} );
 
 			provideModules( registry, [
 				{
@@ -246,7 +254,9 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should render a multiple module disconnect notice when required module for a widget is disconnected', async () => {
-			provideKeyMetrics( registry );
+			provideKeyMetrics( registry, [
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			] );
 
 			provideModules( registry, [
 				{
@@ -285,59 +295,7 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 		} );
 
-		it( 'should not disable unchecked metrics when four metrics are checked', async () => {
-			const metrics = [
-				KM_ANALYTICS_RETURNING_VISITORS,
-				KM_ANALYTICS_NEW_VISITORS,
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-				KM_ANALYTICS_POPULAR_CONTENT,
-			];
-
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			provideKeyMetricsWidgetRegistrations(
-				registry,
-				metrics.reduce(
-					( acc, widget ) => ( {
-						...acc,
-						[ widget ]: {
-							modules: [ 'analytics-4' ],
-						},
-					} ),
-					{}
-				)
-			);
-
-			// Set the first four metrics as selected.
-			provideKeyMetrics( registry, {
-				widgetSlugs: metrics.slice( 0, 4 ),
-			} );
-
-			const { getByRole, waitForRegistry } = render(
-				<MetricsSelectionPanel />,
-				{
-					registry,
-				}
-			);
-
-			await waitForRegistry();
-
-			// Verify that the fifth metric is disabled.
-			expect(
-				getByRole( 'checkbox', {
-					name: /Most popular content/i,
-				} )
-			).not.toBeDisabled();
-		} );
-
-		it( 'should not disable unchecked metrics when conversionReporting feature flag is enabled and eight metrics are checked', async () => {
+		it( 'should not disable unchecked metrics when eight metrics are checked', async () => {
 			const metrics = [
 				KM_ANALYTICS_RETURNING_VISITORS,
 				KM_ANALYTICS_NEW_VISITORS,
@@ -371,12 +329,12 @@ describe( 'MetricsSelectionPanel', () => {
 				)
 			);
 
-			// Set the first four metrics as selected.
+			// Set the first eight metrics as selected.
 			provideKeyMetrics( registry, {
 				widgetSlugs: metrics.slice( 0, 8 ),
 			} );
 
-			const { getByRole, waitForRegistry } = render(
+			const { queryByText, waitForRegistry } = render(
 				<MetricsSelectionPanel />,
 				{
 					registry,
@@ -385,12 +343,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			await waitForRegistry();
 
-			// Verify that the fifth metric is disabled.
+			// Verify that the eight metric is not selected - not present in the current selection tab.
 			expect(
-				getByRole( 'checkbox', {
-					name: /Most popular content/i,
-				} )
-			).not.toBeDisabled();
+				queryByText( /Most popular content/i )
+			).not.toBeInTheDocument();
 		} );
 
 		it( 'should disable metrics that depend on a disconnected module', async () => {
@@ -416,7 +372,7 @@ describe( 'MetricsSelectionPanel', () => {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 					modules: [ 'search-console' ],
 				},
-				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+				[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 					modules: [ 'analytics-4' ],
 				},
 				[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
@@ -428,7 +384,7 @@ describe( 'MetricsSelectionPanel', () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 				],
 			} );
 
@@ -439,14 +395,18 @@ describe( 'MetricsSelectionPanel', () => {
 				}
 			);
 
+			fireEvent.click(
+				getByRole( 'button', { name: /content performance/i } )
+			);
+
 			await waitForRegistry();
 
-			// Verify the limit of 4 metrics is not reached.
+			// Verify the limit of 8 metrics is not reached.
 			expect(
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer__item-count'
 				)
-			).toHaveTextContent( '2 selected (up to 4)' );
+			).toHaveTextContent( '2 selected (up to 8)' );
 
 			// Verify that the metric dependent on a disconnected adsense module is disabled.
 			expect(
@@ -458,9 +418,15 @@ describe( 'MetricsSelectionPanel', () => {
 			// Verify that the metric dependent on a connected analytics-4 module is enabled.
 			expect(
 				getByRole( 'checkbox', {
-					name: /Returning visitors/i,
+					name: /Least engaging pages/i,
 				} )
 			).not.toBeDisabled();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /driving traffic/i } )
+			);
+
+			await waitForRegistry();
 
 			// Verify that the metric dependent on a connected search-console module is enabled.
 			expect(
@@ -529,7 +495,12 @@ describe( 'MetricsSelectionPanel', () => {
 				.dispatch( CORE_USER )
 				.receiveIsUserInputCompleted( false );
 
-			provideKeyMetrics( registry );
+			provideKeyMetrics( registry, {
+				widgetSlugs: [
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+			} );
 
 			provideModules( registry, [
 				{
@@ -634,10 +605,19 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should display appropriate notice when a metric requires custom dimensions and does not have edit scope', async () => {
-			const { container, getByText, findByLabelText, waitForRegistry } =
-				render( <MetricsSelectionPanel />, {
-					registry,
-				} );
+			const {
+				container,
+				getByRole,
+				getByText,
+				findByLabelText,
+				waitForRegistry,
+			} = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /content performance/i } )
+			);
 
 			await waitForRegistry();
 
@@ -663,10 +643,19 @@ describe( 'MetricsSelectionPanel', () => {
 				grantedScopes: EDIT_SCOPE,
 			} );
 
-			const { container, getByText, findByLabelText, waitForRegistry } =
-				render( <MetricsSelectionPanel />, {
-					registry,
-				} );
+			const {
+				container,
+				getByRole,
+				getByText,
+				findByLabelText,
+				waitForRegistry,
+			} = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /content performance/i } )
+			);
 
 			await waitForRegistry();
 
@@ -712,6 +701,10 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should prevent saving when less than two metrics are checked', async () => {
+			provideKeyMetrics( registry, {
+				widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
+			} );
+
 			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 			} );
@@ -726,19 +719,28 @@ describe( 'MetricsSelectionPanel', () => {
 		} );
 
 		it( 'should display error message when less than two metrics are checked', async () => {
-			const { findByLabelText, waitForRegistry } = render(
+			provideKeyMetricsWidgetRegistrations( registry, {
+				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+					modules: [ 'analytics-4' ],
+				},
+				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
+					modules: [ 'search-console' ],
+				},
+			} );
+
+			const { getByRole, findByLabelText, waitForRegistry } = render(
 				<MetricsSelectionPanel />,
 				{
 					registry,
 				}
 			);
 
+			fireEvent.click( getByRole( 'button', { name: /Visitors/i } ) );
+
 			await waitForRegistry();
 
 			// Select 1 key metric.
-			const checkbox = await findByLabelText(
-				'Top recent trending pages'
-			);
+			const checkbox = await findByLabelText( 'Returning visitors' );
 			fireEvent.click( checkbox );
 
 			expect(
@@ -746,6 +748,11 @@ describe( 'MetricsSelectionPanel', () => {
 					'.googlesitekit-km-selection-panel .googlesitekit-error-text'
 				).textContent
 			).toBe( 'Select at least 2 metrics (1 selected)' );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /Driving traffic/i } )
+			);
+			await waitForRegistry();
 
 			// Select 2 key metrics.
 			const checkbox2 = await findByLabelText(
