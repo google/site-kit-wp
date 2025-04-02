@@ -18,10 +18,6 @@
  * External dependencies
  */
 import classnames from 'classnames';
-
-/**
- * External dependencies
- */
 import PropTypes from 'prop-types';
 
 export default function Description( { className, children } ) {
