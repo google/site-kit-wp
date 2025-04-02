@@ -45,8 +45,6 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		// FIXME: Refactor this code rather than disabling the rule.
-		// eslint-disable-next-line complexity
 		useRequestInterception( ( request ) => {
 			const measurementID = 'G-2B7M8YQ1K6';
 			const containerMock = fixtures.container[ measurementID ];
