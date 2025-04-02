@@ -145,7 +145,7 @@ export default function CurrentSurvey() {
 					return false;
 				}
 
-				// If the answer is multi-choise, we check whether any of its values
+				// If the answer is multiple-choice, check whether any of its values
 				// is in the allowed answers and return early if none of answer values
 				// are included in the allowed answers list.
 				if ( Array.isArray( answer ) ) {
