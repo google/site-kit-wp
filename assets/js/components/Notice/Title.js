@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
 export default function Title( { className, children } ) {
 	return <p className={ className }>{ children }</p>;
 }
+
+Title.propTypes = {
+	className: PropTypes.string,
+};
