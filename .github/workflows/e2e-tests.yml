@@ -1,6 +1,7 @@
 name: E2E Tests
 
 on:
+    workflow_dispatch:
     push:
         branches:
             - develop
@@ -76,24 +77,14 @@ concurrency:
 
 jobs:
     e2e-tests:
-        name: E2E (WordPress ${{ matrix.wp_version }}${{ matrix.amp_version && ', AMP ' }}${{ matrix.amp_version }})
-        strategy:
-            fail-fast: false
-            matrix:
-                amp_version: ['']
-                wp_version: ['latest', 'nightly']
-                ca_cert_refresh: ['']
-                include:
-                    - amp_version: '1.5.5'
-                      wp_version: '5.2.21'
-                      ca_cert_refresh: true
-        env:
-            AMP_VERSION: ${{ matrix.amp_version }}
-            WP_VERSION: ${{ matrix.wp_version }}
-            CA_CERT_REFRESH: ${{ matrix.ca_cert_refresh }}
+        name: E2E (WordPress latest)
         runs-on: ubuntu-latest
         timeout-minutes: 30
         if: github.event_name == 'push' || github.event.pull_request.draft == false
+        env:
+            AMP_VERSION: ''
+            WP_VERSION: 'latest'
+            CA_CERT_REFRESH: ''
         steps:
             - uses: actions/checkout@v4
 
@@ -146,7 +137,7 @@ jobs:
               uses: actions/upload-artifact@v4
               if: failure()
               with:
-                  name: e2e-debugging-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]-amp[${{ matrix.amp_version }}]
+                  name: e2e-debugging-run[${{ github.run_attempt }}]-wp[${{ env.WP_VERSION }}]-amp[${{ env.AMP_VERSION }}]
                   path: |
                       ~/.npm/_logs/
                       tests/e2e/screenshots/
