@@ -48,8 +48,6 @@ import {
 	ChangeGroupsLink,
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import ConversionReportingNotificationCTAWidget from '../../components/KeyMetrics/ConversionReportingNotificationCTAWidget';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -297,7 +295,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isAuthenticated() &&
 				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
@@ -318,7 +315,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 				const isGA4Connected =
@@ -441,31 +437,6 @@ export function registerDefaults( widgetsAPI ) {
 				}
 
 				return keyMetrics.length < 6;
-			},
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
-
-	widgetsAPI.registerWidget(
-		'keyMetricsEventDetectionCalloutNotification',
-		{
-			Component: ConversionReportingNotificationCTAWidget,
-			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-			priority: 0,
-			modules: [ 'analytics-4' ],
-			isActive: ( select ) => {
-				if (
-					! select(
-						MODULES_ANALYTICS_4
-					).hasNewConversionReportingEvents() &&
-					! select(
-						MODULES_ANALYTICS_4
-					).hasLostConversionReportingEvents()
-				) {
-					return false;
-				}
-
-				return true;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

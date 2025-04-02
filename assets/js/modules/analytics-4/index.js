@@ -125,6 +125,8 @@ import GoogleTagIDMismatchNotification from './components/notifications/GoogleTa
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -701,6 +703,18 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
+
+	widgets.registerWidget(
+		'keyMetricsEventDetectionCalloutNotification',
+		{
+			Component: ConversionReportingNotificationCTAWidget,
+			width: [ widgets.WIDGET_WIDTHS.FULL ],
+			priority: 0,
+			modules: [ 'analytics-4' ],
+			isActive: () => isFeatureEnabled( 'conversionReporting' ),
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 };
 
 export const ANALYTICS_4_NOTIFICATIONS = {
@@ -872,7 +886,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,

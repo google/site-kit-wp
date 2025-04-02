@@ -22,11 +22,11 @@
 import {
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+} from '../../../../../../tests/js/test-utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

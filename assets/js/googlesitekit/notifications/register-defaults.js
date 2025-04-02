@@ -79,6 +79,8 @@ import EnableAutoUpdateBannerNotification, {
 } from '../../components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '../../util';
 import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
+import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
+import ModuleSetupSuccessNotification from '../../components/notifications/ModuleSetupSuccessNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -336,10 +338,51 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
+	'setup-success-notification-site-kit': {
+		Component: SiteKitSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if ( 'authentication_success' === notification && ! slug ) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+	'setup-success-notification-module': {
+		Component: ModuleSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getModule() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			if (
+				'authentication_success' === notification &&
+				false === module.overrideSetupSuccessNotification &&
+				module.active
+			) {
+				return true;
+			}
+
+			return false;
+		},
+	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -370,7 +413,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			if ( notification === 'authentication_success' && ! slug ) {
 				await dismissNotification( 'auto-update-cta', {
 					expiresInSeconds: MINUTE_IN_SECONDS * 10,
-					skipHidingFromQueue: true,
 				} );
 				return false;
 			}
@@ -598,6 +640,18 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// TODO: refactor this component to use dismissed items rather than prompts once the concepts are combined.
+			await resolveSelect( CORE_USER ).getDismissedPrompts();
+			const isPromptDismissed = select( CORE_USER ).isPromptDismissed(
+				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+			);
+			const isDismissingPrompt = select( CORE_USER ).isDismissingPrompt(
+				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+			);
+			if ( isPromptDismissed || isDismissingPrompt ) {
+				return false;
+			}
+
 			// The isConsentModeEnabled selector relies on the resolution
 			// of the getConsentModeSettings() resolver.
 			await resolveSelect( CORE_SITE ).getConsentModeSettings();

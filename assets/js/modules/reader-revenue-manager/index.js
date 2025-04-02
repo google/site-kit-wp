@@ -74,6 +74,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			// Ensure the site info is resolved to get the home URL.
 			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
@@ -220,7 +221,6 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
-		featureFlag: 'rrmModuleV2',
 	},
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
@@ -236,7 +236,6 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
-		featureFlag: 'rrmModuleV2',
 	},
 };
 
