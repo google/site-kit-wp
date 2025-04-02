@@ -261,7 +261,17 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			),
 			'too many widget slugs' => array(
 				array(
-					'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4' ),
+					'widgetSlugs'    => array(
+						'widget0',
+						'widget1',
+						'widget2',
+						'widget3',
+						'widget4',
+						'widget5',
+						'widget6',
+						'widget7',
+						'widget8',
+					),
 					'isWidgetHidden' => true,
 				),
 			),
