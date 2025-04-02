@@ -50,3 +50,26 @@ export function getPostTypesString( postTypes, allPostTypes ) {
 
 	return enabledPostTypes.map( ( postType ) => postType.label ).join( ', ' );
 }
+
+/**
+ * Extracts the product ID from the name returned from the API, which is
+ * in the format of `publicationID:productID`.
+ *
+ * @since 1.148.0
+ *
+ * @param {string} productID The full product ID name.
+ * @return {string} The product ID label.
+ */
+export function getProductIDLabel( productID ) {
+	if ( ! productID ) {
+		return '';
+	}
+
+	const separatorIndex = productID.indexOf( ':' );
+
+	if ( separatorIndex === -1 ) {
+		return productID;
+	}
+
+	return productID.substring( separatorIndex + 1 );
+}

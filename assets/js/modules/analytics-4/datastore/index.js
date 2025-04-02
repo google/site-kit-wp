@@ -38,12 +38,14 @@ import service from './service';
 import settings from './settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
+import moduleData from './module-data';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 
 const store = combineStores(
 	accounts,
 	audiences,
 	baseModuleStore,
+	moduleData,
 	containers,
 	conversionEvents,
 	conversionReporting,

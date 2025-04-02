@@ -30,7 +30,7 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -67,6 +67,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	keepEmptyRows: false,
 };
 
 const propertyID = '12345';
@@ -79,6 +80,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
 };
 
@@ -121,6 +123,7 @@ GatheringData.args = {
 // custom dimensions, this is the sole scenario and should not be added to any
 // other generic `MetricTile___` or KMW component.
 GatheringData.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
 };
 
@@ -138,6 +141,7 @@ ErrorMissingCustomDimensions.args = {
 // that require custom dimensions, this is the sole scenario and should not be
 // added to any other generic `MetricTile___` or KMW component.
 ErrorMissingCustomDimensions.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
 	delay: 250,
 };
@@ -167,6 +171,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 // all KMW tiles that require custom dimensions,, this is the sole scenario and should
 // not be added to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
@@ -196,6 +201,7 @@ ErrorCustomDimensionsGeneric.args = {
 // that require custom dimensions, this is the sole scenario and should not be added
 // to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsGeneric.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };

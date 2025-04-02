@@ -127,7 +127,7 @@ class AdsTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals(
+		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
@@ -157,7 +157,7 @@ class AdsTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals(
+		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
@@ -226,7 +226,7 @@ class AdsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'ads_conversion_tracking_id' => array(
-					'label' => 'Ads: Conversion Tracking ID',
+					'label' => 'Ads: Conversion ID',
 					'value' => 'AW-123456789',
 					'debug' => 'AW-1••••••••',
 				),

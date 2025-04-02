@@ -33,8 +33,11 @@ import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/gr
 import SupportLink from '../../../../components/SupportLink';
 import useDashboardType from '../../../../hooks/useDashboardType';
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import useQueryArg from '../../../../hooks/useQueryArg';
+import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import whenActive from '../../../../util/when-active';
+import { trackEvent } from '../../../../util';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
@@ -53,6 +56,10 @@ export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 function RRMIntroductoryOverlayNotification() {
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
+	const viewContext = useViewContext();
+
+	const [ notification ] = useQueryArg( 'notification' );
+	const [ slug ] = useQueryArg( 'slug' );
 
 	const { publicationID, publicationOnboardingState, paymentOption } =
 		useSelect(
@@ -89,15 +96,49 @@ function RRMIntroductoryOverlayNotification() {
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
+	const showingSuccessNotification =
+		notification === 'authentication_success' &&
+		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
 	const shouldShowNotification =
 		isDismissed === false &&
 		! isViewOnly &&
 		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
+		! showingSuccessNotification &&
 		publicationOnboardingState === ONBOARDING_COMPLETE &&
 		[ 'noPayment', '' ].includes( paymentOption );
 
 	const dismissNotice = () => {
 		dismissOverlayNotification( RRM_INTRODUCTORY_OVERLAY_NOTIFICATION );
+	};
+
+	const gaEventCategory = `${ viewContext }_rrm-introductory-notification`;
+	const gaEventLabel = `${ publicationOnboardingState }:${
+		paymentOption || ''
+	}`;
+
+	const handleDismiss = () => {
+		trackEvent(
+			gaEventCategory,
+			'dismiss_notification',
+			gaEventLabel
+		).finally( () => {
+			dismissNotice();
+		} );
+	};
+
+	const handleCTAClick = () => {
+		trackEvent(
+			gaEventCategory,
+			'confirm_notification',
+			gaEventLabel
+		).finally( () => {
+			dismissNotice();
+		} );
+	};
+
+	const handleLearnMoreClick = () => {
+		trackEvent( gaEventCategory, 'click_learn_more_link', gaEventLabel );
 	};
 
 	return (
@@ -107,6 +148,13 @@ function RRMIntroductoryOverlayNotification() {
 			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
 			shouldShowNotification={ shouldShowNotification }
 			notificationID={ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION }
+			onShow={ () => {
+				trackEvent(
+					gaEventCategory,
+					'view_notification',
+					gaEventLabel
+				);
+			} }
 		>
 			<div className="googlesitekit-overlay-notification__body">
 				<h3>
@@ -133,6 +181,7 @@ function RRMIntroductoryOverlayNotification() {
 											path="/news/publisher-center/answer/11449914"
 											external
 											hideExternalIndicator
+											onClick={ handleLearnMoreClick }
 										/>
 									),
 								}
@@ -147,7 +196,7 @@ function RRMIntroductoryOverlayNotification() {
 				<Button
 					tertiary
 					disabled={ isDismissing }
-					onClick={ dismissNotice }
+					onClick={ handleDismiss }
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
@@ -157,7 +206,7 @@ function RRMIntroductoryOverlayNotification() {
 					href={
 						paymentOption === 'noPayment' ? serviceURL : supportURL
 					}
-					onClick={ dismissNotice }
+					onClick={ handleCTAClick }
 					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
 					target="_blank"
 				>

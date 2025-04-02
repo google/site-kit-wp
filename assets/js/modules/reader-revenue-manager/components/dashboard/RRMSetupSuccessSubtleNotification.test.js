@@ -39,12 +39,15 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
+import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const {
 	ONBOARDING_COMPLETE,
@@ -67,9 +70,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const publicationStatesData = [
 		[
 			ONBOARDING_COMPLETE,
-			'Customize settings',
+			'Manage CTAs',
 			'Got it',
-			'Your Reader Revenue Manager account was successfully set up!',
+			'Success! Your Reader Revenue Manager account is set up',
 		],
 		[
 			PENDING_VERIFICATION,
@@ -268,7 +271,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		// state is not displayed.
 		expect(
 			queryByText(
-				'Your Reader Revenue Manager account was successfully set up!'
+				'Success! Your Reader Revenue Manager account is set up'
 			)
 		).not.toBeInTheDocument();
 
@@ -320,7 +323,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		// state is displayed.
 		expect(
 			getByText(
-				'Your Reader Revenue Manager account was successfully set up!'
+				'Success! Your Reader Revenue Manager account is set up'
 			)
 		).toBeInTheDocument();
 
@@ -331,5 +334,298 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
 			)
 		).not.toBeInTheDocument();
+	} );
+
+	const notificationContent = [
+		[
+			'subscription model with product ID set',
+			{
+				paymentOption: 'subscriptions',
+				productID: 'product-1',
+			},
+			{
+				title: 'Success! Your Reader Revenue Manager account is set up',
+				description:
+					'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
+				ctaText: 'Manage CTAs',
+			},
+		],
+		[
+			'subscription model with product ID not set',
+			{
+				paymentOption: 'subscriptions',
+				productID: 'openaccess',
+			},
+			{
+				title: 'Success! Your Reader Revenue Manager account is set up',
+				description:
+					'You can edit your settings to manage product IDs and select which of your site’s pages will include a subscription CTA.',
+				ctaText: 'Manage CTAs',
+			},
+		],
+		[
+			'contribution model with no available product IDs',
+			{
+				paymentOption: 'contributions',
+				productIDs: [],
+				productID: 'openaccess',
+			},
+			{
+				title: 'Success! Your Reader Revenue Manager account is set up',
+				description:
+					'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
+				ctaText: 'Manage CTAs',
+			},
+		],
+		[
+			'contribution model with available product IDs but no product ID set',
+			{
+				paymentOption: 'contributions',
+				productIDs: [ 'product-1', 'product-2' ],
+				productID: 'openaccess',
+			},
+			{
+				title: 'Success! Your Reader Revenue Manager account is set up',
+				description:
+					'You can edit your settings to manage product IDs and select which of your site’s pages will include a contribution CTA.',
+				ctaText: 'Manage CTAs',
+			},
+		],
+		[
+			'contribution model with available product IDs and a product ID set',
+			{
+				paymentOption: 'contributions',
+				productIDs: [ 'product-1', 'product-2' ],
+				productID: 'product-1',
+			},
+			{
+				title: 'Success! Your Reader Revenue Manager account is set up',
+				description:
+					'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
+				ctaText: 'Manage CTAs',
+			},
+		],
+		[
+			'non-monetization model',
+			{
+				paymentOption: 'noPayment',
+				productIDs: [],
+				productID: 'openaccess',
+			},
+			{
+				title: 'Success! Your Reader Revenue Manager account is set up',
+				description:
+					'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions.',
+				ctaText: 'Get started',
+			},
+		],
+	];
+
+	it.each( notificationContent )(
+		'should render appropriate content for %s',
+		( _model, settings, { title, description, ctaText } ) => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+				} );
+
+			const { getByText } = render( <NotificationWithComponentProps />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( getByText( title ) ).toBeInTheDocument();
+			expect( getByText( description ) ).toBeInTheDocument();
+			expect( getByText( ctaText ) ).toBeInTheDocument();
+		}
+	);
+
+	it( 'should display overlay notification on successful module setup with a publication that has no CTAs', async () => {
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue(
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+				)
+		).toBeUndefined();
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationOnboardingState: ONBOARDING_COMPLETE,
+				paymentOption: '',
+				productIDs: [],
+				productID: 'openaccess',
+			} );
+
+		const { waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue(
+					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
+				)
+		).toBe( true );
+	} );
+
+	describe( 'GA event tracking', () => {
+		beforeEach( async () => {
+			mockTrackEvent.mockClear();
+
+			await registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification( id, {
+					Component: NotificationWithComponentProps,
+					areaSlug: 'notification-area-banners-above-nav',
+					viewContexts: [ 'mainDashboard' ],
+					isDismissible: false,
+				} );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( `notification/${ id }/viewed`, true );
+		} );
+
+		it( 'should track the events when the notification is dismissed', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+					paymentOption: 'subscriptions',
+					productID: 'basic',
+				} );
+
+			const { getByRole, waitForRegistry } = render(
+				<NotificationWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'mainDashboard_setup-success-notification-rrm',
+				'view_notification',
+				'ONBOARDING_COMPLETE:subscriptions:yes',
+				undefined
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				'mainDashboard_setup-success-notification-rrm',
+				'dismiss_notification',
+				'ONBOARDING_COMPLETE:subscriptions:yes',
+				undefined
+			);
+		} );
+
+		it( 'should track the event when the "Learn more" link is clicked', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+					paymentOption: 'noPayment',
+					productID: 'advanced',
+				} );
+
+			const { getByText, waitForRegistry } = render(
+				<NotificationWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'mainDashboard_setup-success-notification-rrm',
+				'view_notification',
+				'ONBOARDING_COMPLETE:noPayment:yes',
+				undefined
+			);
+
+			// "Learn more" link should be present.
+			const learnMoreLink = getByText( 'Learn more' );
+			expect( learnMoreLink ).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( learnMoreLink );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				'mainDashboard_setup-success-notification-rrm',
+				'click_learn_more_link',
+				'ONBOARDING_COMPLETE:noPayment:yes',
+				undefined
+			);
+		} );
+
+		it( 'should track the event when the CTA button is clicked', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+					paymentOption: 'noPayment',
+					productID: 'basic',
+				} );
+
+			const { getByText, waitForRegistry } = render(
+				<NotificationWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'mainDashboard_setup-success-notification-rrm',
+				'view_notification',
+				'ONBOARDING_COMPLETE:noPayment:yes',
+				undefined
+			);
+
+			// CTA button should be present.
+			const ctaButton = getByText( 'Get started' );
+			expect( ctaButton ).toBeInTheDocument();
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click( ctaButton );
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				'mainDashboard_setup-success-notification-rrm',
+				'confirm_notification',
+				'ONBOARDING_COMPLETE:noPayment:yes',
+				undefined
+			);
+		} );
 	} );
 } );

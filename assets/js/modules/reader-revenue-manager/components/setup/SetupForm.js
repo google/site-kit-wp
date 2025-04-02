@@ -41,7 +41,11 @@ import {
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
-import { PublicationOnboardingStateNotice, PublicationSelect } from '../common';
+import {
+	ProductIDSelect,
+	PublicationOnboardingStateNotice,
+	PublicationSelect,
+} from '../common';
 
 export default function SetupForm( { onCompleteSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -56,14 +60,16 @@ export default function SetupForm( { onCompleteSetup } ) {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
-	const createPublicationURL = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getCreatePublicationLinkURL()
+	const productIDs = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
+	);
+	const managePublicationsURL = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { findMatchedPublication, selectPublication } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
+	const { findMatchedPublication, selectPublication, setProductID } =
+		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const handleLinkClick = useCallback( () => {
 		setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
@@ -79,6 +85,15 @@ export default function SetupForm( { onCompleteSetup } ) {
 		[ onCompleteSetup ]
 	);
 
+	const autoSelectProductID = useCallback(
+		( { products } ) => {
+			if ( products?.length > 0 && !! products[ 0 ].name ) {
+				setProductID( products[ 0 ].name );
+			}
+		},
+		[ setProductID ]
+	);
+
 	// Automatically pre-select a publication.
 	useEffect( () => {
 		const autoSelectPublication = async () => {
@@ -86,13 +101,19 @@ export default function SetupForm( { onCompleteSetup } ) {
 
 			if ( matchedPublication ) {
 				selectPublication( matchedPublication );
+				autoSelectProductID( matchedPublication );
 			}
 		};
 
 		if ( ! publicationID ) {
 			autoSelectPublication();
 		}
-	}, [ findMatchedPublication, publicationID, selectPublication ] );
+	}, [
+		autoSelectProductID,
+		findMatchedPublication,
+		publicationID,
+		selectPublication,
+	] );
 
 	if ( ! publications ) {
 		return null;
@@ -116,15 +137,25 @@ export default function SetupForm( { onCompleteSetup } ) {
 					  ) }
 			</p>
 			<div className="googlesitekit-setup-module__inputs">
-				<PublicationSelect />
+				<PublicationSelect
+					onChange={ ( publication ) =>
+						autoSelectProductID( publication )
+					}
+				/>
+				{ productIDs?.length > 0 && (
+					<ProductIDSelect showHelperText={ false } />
+				) }
 			</div>
 			<PublicationOnboardingStateNotice />
 			<Link
 				external
-				href={ createPublicationURL }
+				href={ managePublicationsURL }
 				onClick={ handleLinkClick }
 			>
-				{ __( 'Create new publication', 'google-site-kit' ) }
+				{ __(
+					'Manage publications in Publisher Center',
+					'google-site-kit'
+				) }
 			</Link>
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton

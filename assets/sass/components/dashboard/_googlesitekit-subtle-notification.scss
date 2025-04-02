@@ -16,6 +16,21 @@
  * limitations under the License.
  */
 
+@mixin mdc-button-tertiary-styles( $ink-color, $hover-bg, $focus-bg ) {
+	@include mdc-button-ink-color( $ink-color );
+
+	&:hover {
+		@include mdc-button-filled-accessible( $hover-bg );
+		@include mdc-button-ink-color( $ink-color );
+	}
+
+	&:active,
+	&:focus {
+		@include mdc-button-filled-accessible( $focus-bg );
+		@include mdc-button-ink-color( $ink-color );
+	}
+}
+
 .googlesitekit-subtle-notification {
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
@@ -104,8 +119,43 @@
 	}
 
 	.googlesitekit-subtle-notification__cta {
-		svg {
-			margin-inline-start: 6px;
+
+		&:not(.googlesitekit-subtle-notification__cta--spinner__running) {
+
+			svg {
+				margin-inline-start: 6px;
+			}
+		}
+
+		&.googlesitekit-subtle-notification__cta--spinner__running {
+
+			.mdc-button__label {
+				margin-left: 3px;
+			}
+		}
+	}
+
+	&.googlesitekit-subtle-notification--info {
+		background-color: $c-surfaces-background;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-surfaces-on-surface;
+		}
+
+		.mdc-button {
+
+			&.googlesitekit-subtle-notification__cta {
+				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
+			}
+		}
+
+		.mdc-button--tertiary {
+			@include mdc-button-tertiary-styles(
+				$c-surfaces-on-surface,
+				$c-interactive-tertiary-hover,
+				$c-interactive-tertiary-focus
+			);
 		}
 	}
 
@@ -125,19 +175,11 @@
 		}
 
 		.mdc-button--tertiary {
-
-			@include mdc-button-ink-color( $c-utility-on-warning-container );
-
-			&:hover {
-				@include mdc-button-filled-accessible( $c-interactive-callout-warning-hover );
-				@include mdc-button-ink-color( $c-utility-on-warning-container );
-			}
-
-			&:active,
-			&:focus {
-				@include mdc-button-filled-accessible( $c-interactive-callout-warning-focus );
-				@include mdc-button-ink-color( $c-utility-on-warning-container );
-			}
+			@include mdc-button-tertiary-styles(
+				$c-utility-on-warning-container,
+				$c-interactive-callout-warning-hover,
+				$c-interactive-callout-warning-focus
+			);
 		}
 	}
 
@@ -151,7 +193,7 @@
 
 		.mdc-button {
 
-			&.googlesitekit-subtle-notification__cta {
+			&.mdc-button--raised {
 				@include mdc-button-filled-accessible($c-violet-v-600);
 			}
 		}

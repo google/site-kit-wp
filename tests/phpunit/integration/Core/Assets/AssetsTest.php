@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\PluginStatusTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -29,7 +28,6 @@ use Google\Site_Kit\Tests\TestCase;
 class AssetsTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
-	use PluginStatusTrait;
 
 	/**
 	 * @var Assets
@@ -43,6 +41,7 @@ class AssetsTest extends TestCase {
 		'wp_print_scripts',
 		'admin_print_styles',
 		'wp_print_styles',
+		'enqueue_block_editor_assets',
 	);
 
 	private $authorized_filters = array(
@@ -70,8 +69,6 @@ class AssetsTest extends TestCase {
 		if ( post_type_exists( 'product' ) ) {
 			unregister_post_type( 'product' );
 		}
-
-		$this->deactivate_all_test_plugins();
 	}
 
 	public function test_register() {
@@ -115,6 +112,25 @@ class AssetsTest extends TestCase {
 		foreach ( $this->authorized_filters as $hook ) {
 			$this->assertTrue( has_filter( $hook ), "Failed asserting that filter was added to {$hook}." );
 		}
+	}
+
+	public function test_register_enqueue_block_assets() {
+		remove_all_actions( 'enqueue_block_assets' );
+
+		// Ensure the current user can authenticate.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// First, ensure that the action is not added when not in admin context.
+		$this->assertFalse( is_admin() );
+		$this->assets->register();
+		$this->assertFalse( has_action( 'enqueue_block_assets' ), 'Failed asserting that action was not added to enqueue_block_assets.' );
+
+		// Now, set admin context and ensure the action is added.
+		set_current_screen( 'dashboard' );
+		$this->assertTrue( is_admin() );
+		$this->assets->register();
+		$this->assertTrue( has_action( 'enqueue_block_assets' ), 'Failed asserting that action was added to enqueue_block_assets.' );
 	}
 
 	public function test_register_dashboard_sharing() {
@@ -279,67 +295,5 @@ class AssetsTest extends TestCase {
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'] );
-	}
-
-	public function test_base_data__plugins_default_data_with_ads_pax_feature_flag() {
-		self::enable_feature( 'adsPax' );
-		$data                 = $this->get_inline_base_data();
-		$default_plugins_data = array(
-			'wooCommerce'          => array(
-				'installed' => false,
-				'active'    => false,
-			),
-			'googleForWooCommerce' => array(
-				'installed'    => false,
-				'active'       => false,
-				'adsConnected' => false,
-			),
-		);
-
-		$this->assertEquals( $default_plugins_data, $data['plugins'] );
-	}
-
-	public function test_base_data__plugins_default_data_without_ads_pax_feature_flag() {
-		$data = $this->get_inline_base_data();
-		$this->assertArrayNotHasKey( 'plugins', $data );
-	}
-
-	public function test_base_data__plugins_default_data_with_woocommerce_active() {
-		self::enable_feature( 'adsPax' );
-		$this->activate_plugin( 'woocommerce/woocommerce.php' );
-
-		$data                 = $this->get_inline_base_data();
-		$default_plugins_data = array(
-			'wooCommerce'          => array(
-				'installed' => true,
-				'active'    => true,
-			),
-			'googleForWooCommerce' => array(
-				'installed'    => false,
-				'active'       => false,
-				'adsConnected' => false,
-			),
-		);
-
-		$this->assertEquals( $default_plugins_data, $data['plugins'] );
-	}
-
-	public function test_base_data__plugins_default_data_with_google_for_woocommerce_active() {
-		self::enable_feature( 'adsPax' );
-		$this->activate_plugin( 'google-listings-and-ads/google-listings-and-ads.php' );
-		$data                 = $this->get_inline_base_data();
-		$default_plugins_data = array(
-			'wooCommerce'          => array(
-				'installed' => false,
-				'active'    => false,
-			),
-			'googleForWooCommerce' => array(
-				'installed'    => true,
-				'active'       => true,
-				'adsConnected' => false,
-			),
-		);
-
-		$this->assertEquals( $default_plugins_data, $data['plugins'] );
 	}
 }

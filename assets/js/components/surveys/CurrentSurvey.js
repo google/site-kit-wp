@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 19 ] */
+
 /**
  * External dependencies
  */
@@ -121,11 +123,41 @@ export default function CurrentSurvey() {
 
 		if ( Array.isArray( conditions ) && conditions.length > 0 ) {
 			for ( const condition of conditions ) {
+				// Get the answer for the question in the condition and return
+				// early if there is no answer for that question yet.
 				const answer = ordinalAnswerMap[ condition.question_ordinal ];
-				const allowedAnswers = condition.answer_ordinal || [];
-				if ( ! answer || ! allowedAnswers.includes( answer ) ) {
+				if ( ! answer ) {
 					currentQuestionOrdinal++;
 					return false;
+				}
+
+				// If we have the answer, check if it is one of the expected answers
+				// for the condition.
+				const allowedAnswers = condition.answer_ordinal || [];
+
+				// If the answer is a single number, we check whether it is in the
+				// allowed answers and return early if it is not.
+				if (
+					! Array.isArray( answer ) &&
+					! allowedAnswers.includes( answer )
+				) {
+					currentQuestionOrdinal++;
+					return false;
+				}
+
+				// If the answer is multiple-choice, check whether any of its values
+				// is in the allowed answers and return early if none of answer values
+				// are included in the allowed answers list.
+				if ( Array.isArray( answer ) ) {
+					const hasAnswers = answer.some(
+						( { answer_ordinal: answerOrdinal } ) =>
+							allowedAnswers.includes( answerOrdinal )
+					);
+
+					if ( ! hasAnswers ) {
+						currentQuestionOrdinal++;
+						break;
+					}
 				}
 			}
 		}

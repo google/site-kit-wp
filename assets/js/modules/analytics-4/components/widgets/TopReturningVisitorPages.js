@@ -69,6 +69,7 @@ function TopReturningVisitorPages( props ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 
 	const report = useInViewSelect(

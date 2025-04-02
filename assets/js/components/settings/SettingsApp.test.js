@@ -57,6 +57,7 @@ describe( 'SettingsApp', () => {
 			.dispatch( CORE_USER )
 			.receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry
 			.dispatch( CORE_SITE )
@@ -120,7 +121,7 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -174,7 +175,7 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );

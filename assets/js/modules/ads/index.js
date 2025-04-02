@@ -29,6 +29,7 @@ import AdsIcon from '../../../svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
@@ -37,13 +38,19 @@ import { isFeatureEnabled } from '../../features';
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
+	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+	AdsModuleSetupCTABanner,
 } from './components/notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -64,6 +71,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
 				.resolveSelect( CORE_USER )
@@ -88,10 +96,9 @@ export const registerModule = ( modules ) => {
 
 export const registerWidgets = () => {};
 
-export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'setup-success-notification-ads', {
+export const ADS_NOTIFICATIONS = {
+	'setup-success-notification-ads': {
 		Component: SetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -107,10 +114,9 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
-	} );
-	notifications.registerNotification( 'setup-success-notification-pax', {
+	},
+	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -125,5 +131,79 @@ export const registerNotifications = ( notifications ) => {
 
 			return false;
 		},
-	} );
+	},
+	'account-linked-via-google-for-woocommerce': {
+		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
+			// on the data being resolved in getModuleData() selector.
+			const [ , isModuleConnected ] = await Promise.all( [
+				resolveSelect( MODULES_ADS ).getModuleData(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+			] );
+
+			const {
+				isWooCommerceActivated,
+				isGoogleForWooCommerceActivated,
+				hasGoogleForWooCommerceAdsAccount,
+			} = select( MODULES_ADS );
+
+			return (
+				! isModuleConnected &&
+				isWooCommerceActivated() &&
+				isGoogleForWooCommerceActivated() &&
+				hasGoogleForWooCommerceAdsAccount()
+			);
+		},
+		featureFlag: 'adsPax',
+		isDismissible: true,
+	},
+	'ads-setup-cta': {
+		Component: AdsModuleSetupCTABanner,
+		// This notification should be displayed before audience segmentation one,
+		// which has priority of PRIORITY.SETUP_CTA_LOW
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isPromptDismissed selector relies on the resolution
+				// of the getDismissedPrompts() resolver.
+				resolveSelect( CORE_USER ).getDismissedPrompts(),
+				// isGoogleForWooCommerceLinked is relying
+				// on the data being resolved in getModuleData() selector.
+				resolveSelect( MODULES_ADS ).getModuleData(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
+			] );
+
+			const { isModuleConnected } = select( CORE_MODULES );
+			const { isPromptDismissed } = select( CORE_USER );
+			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
+
+			const isAdsConnected = isModuleConnected( 'ads' );
+			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
+
+			return (
+				isAdsConnected === false &&
+				isDismissed === false &&
+				hasGoogleForWooCommerceAdsAccount() === false
+			);
+		},
+		isDismissible: true,
+		dismissRetries: 1,
+		featureFlag: 'adsPax',
+	},
+};
+
+export const registerNotifications = ( notifications ) => {
+	for ( const notificationID in ADS_NOTIFICATIONS ) {
+		notifications.registerNotification(
+			notificationID,
+			ADS_NOTIFICATIONS[ notificationID ]
+		);
+	}
 };

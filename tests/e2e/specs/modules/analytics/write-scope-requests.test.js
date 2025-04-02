@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 20 ] */
+
 /**
  * WordPress dependencies
  */
@@ -354,11 +356,14 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForSelector( '.googlesitekit-publisher-win__title', {
-			timeout: 5_000,
-		} );
+		await page.waitForSelector(
+			'.googlesitekit-subtle-notification__content p',
+			{
+				timeout: 5_000,
+			}
+		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
@@ -437,7 +442,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForNavigation();
 		await page.waitForTimeout( 5000 );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}

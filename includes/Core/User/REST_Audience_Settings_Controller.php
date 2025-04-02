@@ -62,16 +62,12 @@ class REST_Audience_Settings_Controller {
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
 			function ( $paths ) {
-				if ( Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-					return array_merge(
-						$paths,
-						array(
-							'/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings',
-						)
-					);
-				}
-
-				return $paths;
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/audience-settings',
+					)
+				);
 			}
 		);
 	}
@@ -87,10 +83,6 @@ class REST_Audience_Settings_Controller {
 		$can_view_dashboard = function () {
 			return current_user_can( Permissions::VIEW_DASHBOARD );
 		};
-
-		if ( ! Feature_Flags::enabled( 'audienceSegmentation' ) ) {
-			return array();
-		}
 
 		return array(
 			new REST_Route(

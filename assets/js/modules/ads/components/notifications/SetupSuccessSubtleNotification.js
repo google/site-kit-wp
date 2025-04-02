@@ -41,7 +41,7 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 		<Notification>
 			<SubtleNotification
 				title={ __(
-					'Success! Your Conversion Tracking ID was added to your site',
+					'Success! Your Conversion ID was added to your site',
 					'google-site-kit'
 				) }
 				description={ __(

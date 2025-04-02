@@ -32,6 +32,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	provideModuleRegistrations,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
@@ -40,7 +41,7 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
+import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -325,172 +326,166 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( false );
 			} );
 
-			describe( 'with the rrmModuleV2 feature flag enabled', () => {
-				beforeEach( () => {
-					setEnabledFeatures( [ 'rrmModuleV2' ] );
-				} );
+			it( 'should set the product IDs in state when products are provided', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
 
-				it( 'should set the product IDs in state when products are provided', () => {
-					const products = [
-						{ name: 'ABC:product-1' },
-						{ name: 'DEF:product-2' },
-					];
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [ 'ABC:product-1', 'DEF:product-2' ] );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductIDs()
-					).toEqual( [ 'ABC:product-1', 'DEF:product-2' ] );
-				} );
+			it( 'should set an empty product IDs array when products array is empty', () => {
+				const products = [];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
 
-				it( 'should set an empty product IDs array when products array is empty', () => {
-					const products = [];
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [] );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductIDs()
-					).toEqual( [] );
-				} );
+			it( 'should handle products with a missing name property', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{}, // Missing name
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
 
-				it( 'should set productID to "openaccess" when different publication is selected', () => {
-					const products = [
-						{ name: 'ABC:product-1' },
-						{ name: 'DEF:product-2' },
-					];
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductIDs()
+				).toEqual( [ 'ABC:product-1', 'DEF:product-2' ] );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductID()
-					).toEqual( 'openaccess' );
-				} );
+			it( 'should set the payment option in state when a payment option is provided', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions: {
+							contributions: null,
+							subscriptions: true,
+							noPayment: null,
+							thankStickers: null,
+						},
+					} );
 
-				it( 'should handle products with a missing name property', () => {
-					const products = [
-						{ name: 'ABC:product-1' },
-						{}, // Missing name
-						{ name: 'DEF:product-2' },
-					];
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							products,
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( 'subscriptions' );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getProductIDs()
-					).toEqual( [ 'ABC:product-1', 'DEF:product-2' ] );
-				} );
+			it( 'should set the first true payment option when multiple options are provided', () => {
+				const paymentOptions = {
+					subscriptions: null,
+					contributions: true,
+					noPayment: true,
+					thankStickers: null,
+				};
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions,
+					} );
 
-				it( 'should set the payment option in state when a payment option is provided', () => {
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							paymentOptions: {
-								contributions: null,
-								subscriptions: true,
-								noPayment: null,
-								thankStickers: null,
-							},
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( 'contributions' );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getPaymentOption()
-					).toEqual( 'subscriptions' );
-				} );
+			it( 'should default to an empty string when all payment options are null', () => {
+				const paymentOptions = {
+					subscriptions: null,
+					contributions: null,
+					noPayment: null,
+					thankStickers: null,
+				};
 
-				it( 'should set the first true payment option when multiple options are provided', () => {
-					const paymentOptions = {
-						subscriptions: null,
-						contributions: true,
-						noPayment: true,
-						thankStickers: null,
-					};
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions,
+					} );
+
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							paymentOptions,
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( '' );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getPaymentOption()
-					).toEqual( 'contributions' );
-				} );
+			it( 'should default to an empty string when the payment options object is empty', () => {
+				const paymentOptions = {};
 
-				it( 'should default to an empty string when all payment options are null', () => {
-					const paymentOptions = {
-						subscriptions: null,
-						contributions: null,
-						noPayment: null,
-						thankStickers: null,
-					};
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						paymentOptions,
+					} );
 
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							paymentOptions,
-						} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPaymentOption()
+				).toEqual( '' );
+			} );
 
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getPaymentOption()
-					).toEqual( '' );
-				} );
+			it( 'should set productID to "openaccess" when different publication is selected', () => {
+				const products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+				];
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						products,
+					} );
 
-				it( 'should default to an empty string when the payment options object is empty', () => {
-					const paymentOptions = {};
-
+				expect(
 					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.selectPublication( {
-							publicationId: 'publication-id',
-							onboardingState: 'onboarding-state',
-							paymentOptions,
-						} );
-
-					expect(
-						registry
-							.select( MODULES_READER_REVENUE_MANAGER )
-							.getPaymentOption()
-					).toEqual( '' );
-				} );
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getProductID()
+				).toEqual( 'openaccess' );
 			} );
 		} );
 	} );
@@ -580,6 +575,73 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.getPublications();
 				expect( publications ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getCurrentProductIDs', () => {
+			it( 'should return undefined if publications are not loaded', async () => {
+				muteFetch( publicationsEndpoint );
+
+				const productIDs = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCurrentProductIDs();
+				expect( productIDs ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublications();
+			} );
+
+			it( 'should return empty array if no publications are not available', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( {
+						publicationID: '',
+						publicationOnboardingState: '',
+					} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [] );
+
+				const productIDs = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCurrentProductIDs();
+				expect( productIDs ).toEqual( [] );
+			} );
+
+			it( 'should return products for the current publication', () => {
+				const publications = cloneDeep( fixtures.publications );
+				publications[ 0 ].products = [
+					{ name: 'ABC:product-1' },
+					{ name: 'DEF:product-2' },
+					{ name: 'GHI:product-3' },
+				];
+				publications[ 1 ].products = [
+					{ name: 'JKL:product-4' },
+					{ name: 'MNO:product-5' },
+				];
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( {
+						publicationID: publications[ 0 ].publicationId,
+						publicationOnboardingState: 'onboarding-state',
+					} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( publications );
+
+				const productIDs = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getCurrentProductIDs();
+				expect( productIDs ).toEqual( [
+					'ABC:product-1',
+					'DEF:product-2',
+					'GHI:product-3',
+				] );
 			} );
 		} );
 	} );

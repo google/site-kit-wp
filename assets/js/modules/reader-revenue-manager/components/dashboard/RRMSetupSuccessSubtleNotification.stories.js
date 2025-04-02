@@ -23,6 +23,7 @@ import { withQuery } from '@storybook/addon-queryparams';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import {
@@ -30,7 +31,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -40,18 +40,6 @@ const NotificationWithComponentProps = withNotificationComponentProps(
 function Template() {
 	return <NotificationWithComponentProps />;
 }
-
-export const OnboardingComplete = Template.bind( {} );
-OnboardingComplete.storyName = 'Onboarding Complete';
-OnboardingComplete.parameters = {
-	query: {
-		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
-	},
-	publicationOnboardingState:
-		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-};
-OnboardingComplete.scenario = {};
 
 export const PendingVerification = Template.bind( {} );
 PendingVerification.storyName = 'Pending Verification';
@@ -77,12 +65,132 @@ OnboardingActionRequired.parameters = {
 };
 OnboardingActionRequired.scenario = {};
 
+export const OnboardingCompleteWithSubscriptionAndProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithSubscriptionAndProductID.storyName =
+	'Onboarding Complete - With Subscription and Product ID';
+OnboardingCompleteWithSubscriptionAndProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+OnboardingCompleteWithSubscriptionAndProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-1' );
+	},
+};
+OnboardingCompleteWithSubscriptionAndProductID.scenario = {};
+
+export const OnboardingCompleteWithSubscriptionAndNoProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithSubscriptionAndNoProductID.storyName =
+	'Onboarding Complete - With Subscription and No Product ID';
+OnboardingCompleteWithSubscriptionAndNoProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+OnboardingCompleteWithSubscriptionAndNoProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'subscriptions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
+	},
+};
+OnboardingCompleteWithSubscriptionAndNoProductID.scenario = {};
+
+export const OnboardingCompleteWithContributionAndProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithContributionAndProductID.storyName =
+	'Onboarding Complete - With Contribution and Product ID';
+OnboardingCompleteWithContributionAndProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+OnboardingCompleteWithContributionAndProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'contributions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-1' );
+	},
+};
+OnboardingCompleteWithContributionAndProductID.scenario = {};
+
+export const OnboardingCompleteWithContributionAndNoProductID = Template.bind(
+	{}
+);
+OnboardingCompleteWithContributionAndNoProductID.storyName =
+	'Onboarding Complete - With Contribution and No Product ID';
+OnboardingCompleteWithContributionAndNoProductID.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+OnboardingCompleteWithContributionAndNoProductID.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'contributions' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'openaccess' );
+	},
+};
+OnboardingCompleteWithContributionAndNoProductID.scenario = {};
+
+export const OnboardingCompleteWithNoMonetization = Template.bind( {} );
+OnboardingCompleteWithNoMonetization.storyName =
+	'Onboarding Complete - With No Monetization';
+OnboardingCompleteWithNoMonetization.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
+};
+OnboardingCompleteWithNoMonetization.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPaymentOption( 'noPayment' );
+	},
+};
+OnboardingCompleteWithNoMonetization.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
 	component: RRMSetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,
-		( Story, { parameters } ) => {
+		( Story, { args, parameters } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -100,13 +208,19 @@ export default {
 						publicationID: '1234',
 						publicationOnboardingState:
 							parameters.publicationOnboardingState,
+						productIDs: [ 'product-a', 'product-b' ],
 					} );
+
+				args?.setupRegistry?.( registry );
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
+				<WithTestRegistry
+					callback={ setupRegistry }
+					features={ args?.features || [] }
+				>
 					<Story />
-				</WithRegistrySetup>
+				</WithTestRegistry>
 			);
 		},
 	],

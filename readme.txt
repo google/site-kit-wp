@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.7
 Requires PHP:      7.4
-Stable tag:        1.147.0
+Stable tag:        1.149.1
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,34 +109,10 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.147.0 =
-
-**Enhanced**
-
-* Retain the publication ID prefix for product IDs when storing them in Reader Revenue Manager settings. See [#10228](https://github.com/google/site-kit-wp/issues/10228).
-* Update URL for RRM publication creation to streamline configuration. See [#10166](https://github.com/google/site-kit-wp/issues/10166).
-* Update the Analytics zero-data report to include the comparison date range, ensuring we check for data across both the  previous and current date range when determining the gathering data state. See [#10105](https://github.com/google/site-kit-wp/issues/10105).
-* Add Reader Revenue Manager introductory overlay notifications. See [#10070](https://github.com/google/site-kit-wp/issues/10070).
-* Add Reader Revenue Manager product ID notifications. See [#10069](https://github.com/google/site-kit-wp/issues/10069).
-* Add a new "CTA placement" section to the Reader Revenue Manager settings, allowing users to select where CTAs should appear using a dropdown and chip multi-select. See [#10066](https://github.com/google/site-kit-wp/issues/10066).
-* Add the learn more link to the lost events banner. See [#10045](https://github.com/google/site-kit-wp/issues/10045).
-* Update Ads PAX Application to be aware of supported conversion events. See [#10032](https://github.com/google/site-kit-wp/issues/10032).
-
-**Changed**
-
-* Move js dependencies required for backstop tests to their own workspace. See [#10093](https://github.com/google/site-kit-wp/issues/10093).
-* Refactor filtering of `(not set)` values in reports to use the new `EmptyFilter` filter type. See [#10059](https://github.com/google/site-kit-wp/issues/10059).
-* Implement the Sign in with Google block. See [#10046](https://github.com/google/site-kit-wp/issues/10046).
-* Move e2e related dependencies into their own workspace. See [#10013](https://github.com/google/site-kit-wp/issues/10013).
-* Refactor report filters so as to be usable for both dimensions and metrics. See [#7634](https://github.com/google/site-kit-wp/issues/7634).
+= 1.149.1 =
 
 **Fixed**
 
-* Fix error that could occur on the dashboard when connecting a new Analytics account after connecting a previously-connected account. See [#10187](https://github.com/google/site-kit-wp/issues/10187).
-* Fix Key Metrics positioning on large screens. See [#10050](https://github.com/google/site-kit-wp/issues/10050).
-* Update description of the new detected events notice. See [#10049](https://github.com/google/site-kit-wp/issues/10049).
-* Update language used in tailored metrics questionnaire. See [#10040](https://github.com/google/site-kit-wp/issues/10040).
-* Fix incorrect dismiss notification event tracking. See [#10038](https://github.com/google/site-kit-wp/issues/10038).
-* Fix duplicate survey triggers issue. See [#10036](https://github.com/google/site-kit-wp/issues/10036).
+* Fix js error that appears on the dashboard when metric values are missing in report results. See [#10520](https://github.com/google/site-kit-wp/issues/10520).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

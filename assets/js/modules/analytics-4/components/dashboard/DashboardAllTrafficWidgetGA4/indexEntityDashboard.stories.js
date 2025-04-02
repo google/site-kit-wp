@@ -36,23 +36,12 @@ import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
-
-function limitResponseToSingleDate( analyticsResponse ) {
-	const findFirstDateRangeRow = ( dateRange ) =>
-		analyticsResponse.rows.find(
-			( { dimensionValues } ) => dimensionValues[ 1 ].value === dateRange
-		);
-
-	return {
-		...analyticsResponse,
-		rows: [
-			findFirstDateRangeRow( 'date_range_0' ),
-			findFirstDateRangeRow( 'date_range_1' ),
-		],
-	};
-}
+import {
+	limitResponseToSingleDate,
+	provideReportWithIncreasedOtherDimension,
+} from './story-utils';
 
 const widgetComponentProps = getWidgetComponentProps(
 	'analyticsAllTraffic-widget'
@@ -87,7 +76,6 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
-		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
@@ -102,7 +90,6 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
-		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
@@ -117,7 +104,6 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
-		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
@@ -162,8 +148,12 @@ export const EntityDashboardLoaded = Template.bind( {} );
 EntityDashboardLoaded.storyName = 'Loaded';
 EntityDashboardLoaded.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options ) => {
-			provideAnalytics4MockReport( registry, options );
+		allTrafficReportOptions.forEach( ( options, index ) => {
+			if ( index === 0 ) {
+				provideReportWithIncreasedOtherDimension( registry, options );
+			} else {
+				provideAnalytics4MockReport( registry, options );
+			}
 		} );
 	},
 };

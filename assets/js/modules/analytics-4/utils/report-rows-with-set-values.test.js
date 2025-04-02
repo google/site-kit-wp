@@ -25,6 +25,7 @@ describe( 'reportRowsWithSetValues', () => {
 		mockRows = [
 			{ dimensionValues: [ { value: 'value1' } ] },
 			{ dimensionValues: [ { value: '(not set)' } ] },
+			{ dimensionValues: [ { value: '' } ] },
 			{ dimensionValues: [ { value: 'value2' } ] },
 			{ dimensionValues: [ { value: 'value3' } ] },
 			{ dimensionValues: [ { value: 'value4' } ] },
@@ -69,6 +70,15 @@ describe( 'reportRowsWithSetValues', () => {
 			{ dimensionValues: [ { value: '(not set)' } ] },
 		];
 		const result = reportRowsWithSetValues( allNotSetRows );
+		expect( result ).toEqual( [] );
+	} );
+
+	it( 'should handle rows where all values are blank', () => {
+		const allBlankRows = [
+			{ dimensionValues: [ { value: '' } ] },
+			{ dimensionValues: [ { value: '' } ] },
+		];
+		const result = reportRowsWithSetValues( allBlankRows );
 		expect( result ).toEqual( [] );
 	} );
 

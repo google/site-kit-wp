@@ -23,7 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	provideNotifications,
+	deprecatedProvideNotifications,
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -53,7 +53,8 @@ import {
 	INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
 } from './settings';
 import * as fixtures from './__fixtures__';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '..';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
@@ -378,6 +379,16 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				it( 'should dismiss the activation banner when the required form setting is set', async () => {
+					const notification =
+						ANALYTICS_4_NOTIFICATIONS[
+							'enhanced-measurement-notification'
+						];
+					registry
+						.dispatch( CORE_NOTIFICATIONS )
+						.registerNotification(
+							'enhanced-measurement-notification',
+							notification
+						);
 					registry
 						.dispatch( CORE_FORMS )
 						.setValues( ENHANCED_MEASUREMENT_FORM, {
@@ -386,7 +397,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 					fetchMock.postOnce( dismissItemEndpoint, {
 						body: JSON.stringify( [
-							ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+							'enhanced-measurement-notification',
 						] ),
 						status: 200,
 					} );
@@ -398,7 +409,7 @@ describe( 'modules/analytics-4 settings', () => {
 					expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 						body: {
 							data: {
-								slug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+								slug: 'enhanced-measurement-notification',
 								expiration: 0,
 							},
 						},
@@ -527,7 +538,7 @@ describe( 'modules/analytics-4 settings', () => {
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -660,7 +671,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -739,7 +750,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -809,7 +820,7 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-				provideNotifications(
+				deprecatedProvideNotifications(
 					registry,
 					{
 						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
@@ -895,20 +906,20 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
+					.receiveGetUserAudienceSettings( audienceSettings );
 
 				registry
 					.dispatch( CORE_USER )
-					.finishResolution( 'getAudienceSettings', [] );
+					.finishResolution( 'getUserAudienceSettings', [] );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettings );
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				// We can ignore the subsequent GET for the `audience-settings` endpoint,
-				// this is covered in the test for `resetAudienceSettings()`.
+				// this is covered in the test for `resetUserAudienceSettings()`.
 				muteFetch(
 					new RegExp(
 						'^/google-site-kit/v1/core/user/data/audience-settings'
@@ -917,13 +928,13 @@ describe( 'modules/analytics-4 settings', () => {
 
 				// Verify that the audience settings have been reset.
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getAudienceSettings();
+				).getUserAudienceSettings();
 			} );
 
 			it( 'should not reset audience settings in the store when Analytics settings have not successfully saved', async () => {
@@ -950,21 +961,21 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetAudienceSettings( audienceSettings );
+					.receiveGetUserAudienceSettings( audienceSettings );
 
 				registry
 					.dispatch( CORE_USER )
-					.finishResolution( 'getAudienceSettings', [] );
+					.finishResolution( 'getUserAudienceSettings', [] );
 
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettings );
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				// Verify that the audience settings have not been reset.
 				expect(
-					registry.select( CORE_USER ).getAudienceSettings()
+					registry.select( CORE_USER ).getUserAudienceSettings()
 				).toEqual( audienceSettings );
 
 				expect( console ).toHaveErroredWith(

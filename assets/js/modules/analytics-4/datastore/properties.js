@@ -182,7 +182,10 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	reducerCallback( state, hasMismatchedTag ) {
 		return {
 			...state,
-			hasMismatchedTag: !! hasMismatchedTag,
+			moduleData: {
+				...state.moduleData,
+				hasMismatchedTag: !! hasMismatchedTag,
+			},
 		};
 	},
 	argsToParams( hasMismatchedTag ) {
@@ -204,7 +207,6 @@ const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
-	hasMismatchedTag: undefined,
 	isMatchingAccountProperty: false,
 	isWebDataStreamAvailable: true,
 };
@@ -541,17 +543,18 @@ const baseActions = {
 			return;
 		}
 
-		const { response, error } =
-			yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		const googleTagSettings = yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagSettings(
 				measurementID
-			);
+			)
+		);
 
-		if ( error ) {
+		if ( ! googleTagSettings ) {
 			return;
 		}
 
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
-			response;
+			googleTagSettings;
 
 		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
 		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
@@ -657,14 +660,18 @@ const baseActions = {
 
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
+		// The "last synced" value should reflect the real time this action
+		// was performed, so we don't use the reference date here.
+		const timestamp = Date.now(); // eslint-disable-line sitekit/no-direct-date
+
 		if (
 			!! googleTagLastSyncedAtMs &&
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
+			timestamp - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
 		) {
 			return;
 		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs( timestamp );
 
 		const googleTagID = getGoogleTagID();
 
@@ -702,12 +709,9 @@ const baseActions = {
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			googleTagContainerDestinationIDs,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
-		} );
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagContainerDestinationIDs(
+			googleTagContainerDestinationIDs
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
@@ -722,7 +726,10 @@ function baseReducer( state, { type, payload } ) {
 		case SET_HAS_MISMATCHED_TAG:
 			return {
 				...state,
-				hasMismatchedTag: payload.hasMismatchedTag,
+				moduleData: {
+					...state.moduleData,
+					hasMismatchedTag: payload.hasMismatchedTag,
+				},
 			};
 		case SET_IS_WEBDATASTREAM_AVAILABLE:
 			return {
@@ -824,27 +831,23 @@ const baseResolvers = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
 	},
-	*hasMismatchedGoogleTagID() {
-		const registry = yield commonActions.getRegistry();
-
-		const hasMismatchedTag = registry
-			.select( MODULES_ANALYTICS_4 )
-			.hasMismatchedGoogleTagID();
-
-		if ( hasMismatchedTag === undefined ) {
-			if ( ! global._googlesitekitModulesData ) {
-				global.console.error(
-					'Could not load modules/analytics-4 data.'
-				);
-				return;
-			}
-
-			const tagIDMismatch =
-				global._googlesitekitModulesData?.[ 'analytics-4' ]
-					?.tagIDMismatch;
-
-			yield actions.receiveHasMismatchGoogleTagID( tagIDMismatch );
+	*getGoogleTagSettings( measurementID ) {
+		if ( ! measurementID ) {
+			return;
 		}
+
+		const registry = yield commonActions.getRegistry();
+		const googleTagSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagSettings();
+
+		if ( googleTagSettings !== undefined ) {
+			return googleTagSettings;
+		}
+
+		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+			measurementID
+		);
 	},
 };
 
@@ -902,6 +905,18 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets Google tag settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
+	 */
+	getGoogleTagSettings( state ) {
+		return state.googleTagSettings;
+	},
+
+	/**
 	 * Determines whether we are matching account property or not.
 	 *
 	 * @since 1.98.0
@@ -911,18 +926,6 @@ const baseSelectors = {
 	 */
 	isMatchingAccountProperty( state ) {
 		return state.isMatchingAccountProperty;
-	},
-
-	/**
-	 * Checks if GA4 has mismatched Google Tag ID.
-	 *
-	 * @since 1.96.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} If GA4 has mismatched Google Tag ID.
-	 */
-	hasMismatchedGoogleTagID( state ) {
-		return state.hasMismatchedTag;
 	},
 
 	/**

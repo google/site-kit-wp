@@ -35,7 +35,6 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
-	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
 import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
@@ -98,7 +97,7 @@ describe( 'useEnableAudienceGroup', () => {
 			propertyID: '123456789',
 		} );
 
-		registry.dispatch( CORE_USER ).receiveGetAudienceSettings( {
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
@@ -144,10 +143,101 @@ describe( 'useEnableAudienceGroup', () => {
 		expect( result.current.isSaving ).toBe( true );
 	} );
 
-	it( 'should set permission scope error when `onEnableGroups` is called but the user does not have the required scope', () => {
+	it.each( [
+		[
+			'audiences and custom dimension',
+			{ availableAudiences: null, availableCustomDimensions: null },
+		],
+		[
+			'audiences',
+			{
+				availableAudiences: null,
+				availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			},
+		],
+		[
+			'custom dimension',
+			{
+				availableAudiences: audiencesFixture,
+				availableCustomDimensions: null,
+			},
+		],
+	] )(
+		'should set permission scope error when `onEnableGroups` is called but the user does not have the required scope and %s',
+		async ( _, settings ) => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [],
+			} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( settings );
+
+			fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+				status: 200,
+				body: [],
+			} );
+
+			fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+				body: [],
+				status: 200,
+			} );
+
+			const { result } = renderHook( () => useEnableAudienceGroup(), {
+				registry,
+			} );
+
+			const { onEnableGroups } = result.current;
+
+			await actHook( async () => {
+				await onEnableGroups();
+			} );
+
+			const { message } = registry
+				.select( CORE_USER )
+				.getPermissionScopeError();
+
+			expect( message ).toBe(
+				'Additional permissions are required to create new audiences in Analytics.'
+			);
+
+			expect( enableAudienceGroupSpy ).not.toHaveBeenCalled();
+		}
+	);
+
+	it( 'should not set permission scope error when `onEnableGroups` is called and the user does not have the required scope, but has required audiences and custom dimension', async () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [],
 		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableAudiences: audiencesFixture,
+			availableCustomDimensions: [ 'googlesitekit_post_type' ],
+		} );
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			status: 200,
+			body: audiencesFixture,
+		} );
+
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_type' ],
+			status: 200,
+		} );
+
+		fetchMock.postOnce( audienceSettingsEndpoint, {
+			status: 200,
+			body: {
+				configuredAudiences: [
+					audiencesFixture[ 3 ].name,
+					audiencesFixture[ 4 ].name,
+				],
+				isAudienceSegmentationWidgetHidden: false,
+			},
+		} );
+
+		muteFetch( reportEndpoint );
+		muteFetch( expirableItemEndpoint );
+
+		mockSurveyEndpoints();
 
 		const { result } = renderHook( () => useEnableAudienceGroup(), {
 			registry,
@@ -155,19 +245,15 @@ describe( 'useEnableAudienceGroup', () => {
 
 		const { onEnableGroups } = result.current;
 
-		actHook( () => {
-			onEnableGroups();
+		await actHook( async () => {
+			await onEnableGroups();
 		} );
 
-		const { message } = registry
-			.select( CORE_USER )
-			.getPermissionScopeError();
+		expect(
+			registry.select( CORE_USER ).getPermissionScopeError()
+		).toBeNull();
 
-		expect( message ).toBe(
-			'Additional permissions are required to create new audiences in Analytics.'
-		);
-
-		expect( enableAudienceGroupSpy ).not.toHaveBeenCalled();
+		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should automatically call `onEnableGroups` function when user returns from the OAuth screen', async () => {
@@ -203,17 +289,16 @@ describe( 'useEnableAudienceGroup', () => {
 			.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
-
-		// eslint-disable-next-line require-await
-		await actHook( async () => {
-			renderHook( () => useEnableAudienceGroup(), {
+		const { waitForRegistry } = renderHook(
+			() => useEnableAudienceGroup(),
+			{
 				registry,
-			} );
-		} );
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
-
-		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
@@ -243,9 +328,14 @@ describe( 'useEnableAudienceGroup', () => {
 
 		mockSurveyEndpoints();
 
-		const { result } = renderHook( () => useEnableAudienceGroup(), {
-			registry,
-		} );
+		const { result, waitForRegistry } = renderHook(
+			() => useEnableAudienceGroup(),
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		const { onEnableGroups } = result.current;
 
@@ -254,7 +344,5 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
-
-		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 } );

@@ -191,19 +191,6 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not render the banner if dismissed', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] );
-
-		const { container } = render( <FPMBannerComponent />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should call onCTAClick when the CTA button is clicked', async () => {
 		fetchMock.postOnce( fpmSettingsEndpoint, {
 			body: JSON.stringify( {
@@ -369,100 +356,12 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			'mainDashboard_fpm-setup-cta',
-			'tooltip_view'
-		);
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_fpm-setup-cta',
 			'dismiss_notification',
 			undefined,
 			undefined
-		);
-	} );
-
-	it( 'should track an event when the tooltip is closed by clicking the `X` button', async () => {
-		const { getByRole, waitForRegistry } = render(
-			<div>
-				<div id="adminmenu">
-					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-						Settings
-					</a>
-				</div>
-				<FPMBannerComponent />
-			</div>,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
-			status: 200,
-		} );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
-
-		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			3,
-			'mainDashboard_fpm-setup-cta',
-			'tooltip_dismiss'
-		);
-	} );
-
-	it( 'should track an event when the tooltip is closed by clicking the `Got it` button', async () => {
-		const { getByRole, waitForRegistry } = render(
-			<div>
-				<div id="adminmenu">
-					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-						Settings
-					</a>
-				</div>
-				<FPMBannerComponent />
-			</div>,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
-			status: 200,
-		} );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
-
-		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			3,
-			'mainDashboard_fpm-setup-cta',
-			'tooltip_dismiss'
 		);
 	} );
 } );

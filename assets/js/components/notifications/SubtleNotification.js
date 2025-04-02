@@ -34,10 +34,11 @@ import { Button } from 'googlesitekit-components';
 import CheckFillSVG from '../../../svg/icons/check-fill.svg';
 import ExternalSVG from '../../../svg/icons/external.svg';
 import WarningSVG from '../../../svg/icons/warning.svg';
-
+import InfoSVG from '../../../svg/icons/info-circle.svg';
 export const VARIANTS = {
 	SUCCESS: 'success',
 	WARNING: 'warning',
+	INFO: 'info',
 };
 
 const SubtleNotification = forwardRef(
@@ -68,6 +69,8 @@ const SubtleNotification = forwardRef(
 							variant === VARIANTS.SUCCESS,
 						'googlesitekit-subtle-notification--warning':
 							variant === VARIANTS.WARNING,
+						'googlesitekit-subtle-notification--info':
+							variant === VARIANTS.INFO,
 					},
 					className
 				) }
@@ -80,6 +83,9 @@ const SubtleNotification = forwardRef(
 						) }
 						{ ! Icon && variant === VARIANTS.WARNING && (
 							<WarningSVG width={ 24 } height={ 24 } />
+						) }
+						{ ! Icon && variant === VARIANTS.INFO && (
+							<InfoSVG width={ 24 } height={ 24 } />
 						) }
 					</div>
 				) }

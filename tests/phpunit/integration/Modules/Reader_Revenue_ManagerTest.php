@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\URL;
@@ -30,6 +30,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -66,6 +67,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	private $options;
 
 	/**
+	 * User_Options object.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Reader_Revenue_Manager object.
 	 *
 	 * @var Reader_Revenue_Manager
@@ -78,9 +86,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options                = new Options( $this->context );
 		$user                         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options                 = new User_Options( $this->context, $user->ID );
-		$this->authentication         = new Authentication( $this->context, $this->options, $user_options );
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $user_options, $this->authentication );
+		$this->user_options           = new User_Options( $this->context, $user->ID );
+		$this->authentication         = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
 	public function test_register() {
@@ -142,10 +150,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
 						);
 				}
 			}
@@ -195,10 +205,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
 						);
 				}
 			}
@@ -245,10 +257,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
 						);
 				}
 			}
@@ -284,10 +298,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response( 'ABCDEFGH', 'ONBOARDING_COMPLETE' ) )
+							)
 						);
 				}
 			}
@@ -331,10 +347,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 				switch ( $url['path'] ) {
 					case '/v1/publications':
-						return new Response(
-							200,
-							array(),
-							json_encode( array() )
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( array() )
+							)
 						);
 				}
 			}
@@ -422,39 +440,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
-	public function test_template_redirect() {
-		$publication_id = 'ABCDEFGH';
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
-		// Prevent test from failing in CI with deprecation notice.
-		remove_action( 'wp_print_styles', 'print_emoji_styles' );
-
-		remove_all_actions( 'template_redirect' );
-
-		$this->reader_revenue_manager->register();
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID' => $publication_id,
-			)
-		);
-
-		// Navigate to a singular post.
-		$post_ID = $this->factory()->post->create();
-		$this->go_to( get_permalink( $post_ID ) );
-
-		do_action( 'template_redirect' );
-		do_action( 'wp_enqueue_scripts' );
-
-		$footer_html = $this->capture_action( 'wp_footer' );
-
-		$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-		$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-		$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':openaccess","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
-	}
-
 	public function data_product_ids__singular() {
 		return array(
 			'with no product ID configured'            => array(
@@ -489,9 +474,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	/**
 	 * @dataProvider data_product_ids__singular
 	 */
-	public function test_template_redirect__singular__rrmModuleV2( $settings, $post_product_id, $expected_product_id ) {
-		$this->enable_feature( 'rrmModuleV2' );
-
+	public function test_template_redirect__singular( $settings, $post_product_id, $expected_product_id ) {
 		$publication_id = 'ABCDEFGH';
 
 		wp_scripts()->registered = array();
@@ -532,7 +515,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		if ( $expected_product_id ) {
 			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 		} else {
 			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
@@ -570,9 +553,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	/**
 	 * @dataProvider data_product_ids__non_singular
 	 */
-	public function test_template_redirect__non_singular__rrmModuleV2( $settings, $expected_product_id ) {
-		$this->enable_feature( 'rrmModuleV2' );
-
+	public function test_template_redirect__non_singular( $settings, $expected_product_id ) {
 		$publication_id = 'ABCDEFGH';
 
 		wp_scripts()->registered = array();
@@ -600,7 +581,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		if ( $expected_product_id ) {
 			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( '<script type="text/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js" id="google_swgjs-js" async="async" data-wp-strategy="async"></script>', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html );
 			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
 		} else {
 			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
@@ -610,18 +591,20 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_debug_fields() {
 		$this->reader_revenue_manager->get_settings()->register();
 
-		$this->assertEqualSets(
+		// Set up product IDs in different formats for testing extraction and redaction.
+		$this->reader_revenue_manager->get_settings()->set(
 			array(
-				'reader_revenue_manager_publication_id',
-				'reader_revenue_manager_publication_onboarding_state',
-			),
-			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+				'publicationID' => 'test-publication-id',
+				'productIDs'    => array(
+					'test-publication-id:product1',  // Combined format.
+					'standalone-product',            // Standalone format.
+					'test-publication-id:product2',  // Another combined format.
+				),
+				'productID'     => 'test-publication-id:main-product',  // Main product in combined format.
+			)
 		);
 
-		$this->enable_feature( 'rrmModuleV2' );
-		$this->reader_revenue_manager->get_settings()->register();
-
-		// Verify `postTypes` field appears when the `snippetMode` is `post_types`.
+		// Verify `postTypes` field appears when the `snippetMode` is `post_types` (default).
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
@@ -633,6 +616,48 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_payment_option',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+
+		// Test product IDs extraction - should only show the product ID part.
+		$this->assertEquals(
+			'product1, standalone-product, product2',
+			$debug_fields['reader_revenue_manager_available_product_ids']['value'],
+			'Available product IDs should be extracted correctly'
+		);
+
+		// Test product IDs redaction - should redact publication ID but keep product ID.
+		$this->assertStringContainsString(
+			'test•••••••••••••••:product1',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Publication ID should be partially redacted in debug output'
+		);
+
+		$this->assertStringContainsString(
+			'standalone-product',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Standalone product ID should not be changed in debug output'
+		);
+
+		$this->assertStringContainsString(
+			'test•••••••••••••••:product2',
+			$debug_fields['reader_revenue_manager_available_product_ids']['debug'],
+			'Second publication ID should be partially redacted in debug output'
+		);
+
+		// Test main product ID extraction.
+		$this->assertEquals(
+			'main-product',
+			$debug_fields['reader_revenue_manager_product_id']['value'],
+			'Main product ID should be extracted correctly'
+		);
+
+		// Test main product ID redaction - should redact publication ID but keep product ID.
+		$this->assertEquals(
+			'test•••••••••••••••:main-product',
+			$debug_fields['reader_revenue_manager_product_id']['debug'],
+			'Publication ID should be partially redacted in main product ID debug output'
 		);
 
 		// Set `snippetMode` to `per_post`.
@@ -677,7 +702,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 	public function test_product_id_setting_registered() {
 		$publication_id = 'ABCDEFGH';
-		$this->enable_feature( 'rrmModuleV2' );
 
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
@@ -694,7 +718,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 	public function test_publication_id_empty_product_id_setting_not_registered() {
 		$publication_id = 'ABCDEFGH';
-		$this->enable_feature( 'rrmModuleV2' );
 
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
@@ -709,50 +732,155 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $registered );
 	}
 
-	public function test_feature_disabled_product_id_setting_not_registered() {
-		$publication_id = 'ABCDEFGH';
+	public function test_block_editor_assets_set_up() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
 
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$rrm_block_asset_handles = array(
+			'blocks-reader-revenue-manager-block-editor-plugin',
+			'blocks-reader-revenue-manager-block-editor-plugin-styles',
+			'blocks-contribute-with-google',
+			'blocks-subscribe-with-google',
+			'blocks-reader-revenue-manager-common-editor-styles',
+		);
+
+		$missing_handles = array_diff( $rrm_block_asset_handles, $registerable_asset_handles );
+
+		$this->assertEmpty(
+			$missing_handles,
+			'The following expected asset handles are missing: ' . implode( ', ', $missing_handles )
+		);
+	}
+
+	public function test_block_editor_assets_not_set_up() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) === false ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 <.' );
+		}
+
+		$registerable_asset_handles = array_map(
+			function ( $asset ) {
+				return $asset->get_handle();
+			},
+			$this->reader_revenue_manager->get_assets()
+		);
+
+		$rrm_block_asset_handles = array(
+			'blocks-reader-revenue-manager-block-editor-plugin',
+			'blocks-reader-revenue-manager-block-editor-plugin-styles',
+			'blocks-contribute-with-google',
+			'blocks-subscribe-with-google',
+		);
+
+		$present_handles = array_intersect( $rrm_block_asset_handles, $registerable_asset_handles );
+
+		$this->assertEmpty(
+			$present_handles,
+			'The following block editor handles should not be present: ' . implode( ', ', $present_handles )
+		);
+	}
+
+	public function test_non_sk_user_scripts_not_enqueued_for_sk_users() {
+		// Create a user.
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user->ID );
+
+		// Simulate view-only access to Site Kit for the user.
+		$module_sharing_settings = new \Google\Site_Kit\Core\Modules\Module_Sharing_Settings( $this->options );
+		$module_sharing_settings->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		$this->enable_feature( 'rrmModule' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_editor_assets' );
+
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
-				'publicationID' => $publication_id,
+				'publicationID' => 'ABCDEFGH',
 			)
 		);
 
 		$this->reader_revenue_manager->register();
 
-		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
+		do_action( 'enqueue_block_editor_assets' );
 
-		$this->assertFalse( $registered );
+		$this->assertFalse( wp_script_is( 'blocks-contribute-with-google-non-sitekit-user', 'enqueued' ), 'blocks-contribute-with-google-non-sitekit-user should not be enqueued' );
+		$this->assertFalse( wp_script_is( 'blocks-subscribe-with-google-non-sitekit-user', 'enqueued' ), 'blocks-subscribe-with-google-non-sitekit-user should not be enqueued' );
 	}
 
-	public function test_block_editor_script_enqueued() {
-		$this->enable_feature( 'rrmModuleV2' );
+	public function test_non_sk_user_scripts_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
 
-		$registerable_asset_handles = array_map(
-			function ( $asset ) {
-				return $asset->get_handle();
-			},
-			$this->reader_revenue_manager->get_assets()
+		$this->enable_feature( 'rrmModule' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_editor_assets' );
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
 		);
 
-		$this->assertContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
-			$registerable_asset_handles
-		);
+		$this->reader_revenue_manager->register();
+
+		do_action( 'enqueue_block_editor_assets' );
+
+		$this->assertTrue( wp_script_is( 'blocks-contribute-with-google-non-sitekit-user', 'enqueued' ), 'blocks-contribute-with-google-non-sitekit-user should be enqueued' );
+		$this->assertTrue( wp_script_is( 'blocks-subscribe-with-google-non-sitekit-user', 'enqueued' ), 'blocks-subscribe-with-google-non-sitekit-user should be enqueued' );
 	}
 
-	public function test_block_editor_script_not_enqueued() {
-		$registerable_asset_handles = array_map(
-			function ( $asset ) {
-				return $asset->get_handle();
-			},
-			$this->reader_revenue_manager->get_assets()
+	public function test_non_sk_user_has_styles_enqueued() {
+		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
+			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
+		}
+
+		$this->enable_feature( 'rrmModule' );
+
+		remove_all_actions( 'googlesitekit_assets' );
+		remove_all_actions( 'enqueue_block_assets' );
+
+		// Set admin context.
+		set_current_screen( 'dashboard' );
+
+		$modules = new Modules( $this->context, $this->options, $this->user_options );
+		$modules->register();
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
 		);
 
-		$this->assertNotContains(
-			'googlesitekit-reader-revenue-manager-block-editor',
-			$registerable_asset_handles
-		);
+		$this->reader_revenue_manager->register();
+
+		do_action( 'enqueue_block_assets' );
+
+		$this->assertTrue( wp_style_is( 'blocks-reader-revenue-manager-common-editor-styles', 'enqueued' ), 'blocks-reader-revenue-manager-common-editor-styles should be enqueued' );
 	}
 
 	/**
@@ -796,14 +924,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$module->get_client(),
 			function () use ( $status_code ) {
 				if ( 200 === $status_code ) {
-					return new Response(
-						200,
-						array(),
-						json_encode( $this->get_publications_list_response() )
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode( $this->get_publications_list_response() )
+						)
 					);
 				}
 
-				return new Response( $status_code );
+				return new FulfilledPromise( new Response( $status_code ) );
 			}
 		);
 	}

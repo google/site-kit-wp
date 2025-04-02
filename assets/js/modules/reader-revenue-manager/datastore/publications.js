@@ -30,6 +30,7 @@ import {
 	commonActions,
 	combineStores,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -39,7 +40,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { isFeatureEnabled } from '../../../features';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -250,36 +250,31 @@ const baseActions = {
 				publicationID,
 				publicationOnboardingState: onboardingState,
 				publicationOnboardingStateChanged: false,
+				productIDs: [],
+				paymentOption: '',
 			};
 
-			if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
-				settings.productIDs = [];
-				settings.paymentOption = '';
-				settings.productID = 'openaccess';
+			if ( paymentOptions ) {
+				const paymentOption = Object.keys( paymentOptions ).find(
+					( key ) => !! paymentOptions[ key ]
+				);
 
-				if ( paymentOptions ) {
-					const paymentOption = Object.keys( paymentOptions ).find(
-						( key ) => !! paymentOptions[ key ]
-					);
-
-					if ( paymentOption ) {
-						settings.paymentOption = paymentOption;
-					}
-				}
-
-				if ( products ) {
-					settings.productIDs = products.reduce(
-						( ids, { name } ) => {
-							if ( ! name ) {
-								return ids;
-							}
-
-							return [ ...ids, name ];
-						},
-						[]
-					);
+				if ( paymentOption ) {
+					settings.paymentOption = paymentOption;
 				}
 			}
+
+			if ( products ) {
+				settings.productIDs = products.reduce( ( ids, { name } ) => {
+					if ( ! name ) {
+						return ids;
+					}
+
+					return [ ...ids, name ];
+				}, [] );
+			}
+
+			settings.productID = 'openaccess';
 
 			return registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -327,6 +322,43 @@ const baseSelectors = {
 	getPublications( state ) {
 		return state.publications;
 	},
+
+	/**
+	 * Gets the current publication IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<string> | undefined)} An array of product IDs; `undefined` if publications are not loaded.
+	 */
+	getCurrentProductIDs: createRegistrySelector( ( select ) => ( state ) => {
+		const publications = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublications();
+
+		if ( publications === undefined ) {
+			return undefined;
+		}
+
+		const publicationID = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublicationID();
+
+		if ( ! publicationID ) {
+			return [];
+		}
+
+		const selectedPublication = state.publications.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		if ( ! selectedPublication || ! selectedPublication.products ) {
+			return [];
+		}
+
+		return selectedPublication.products.map( ( product ) => product.name );
+	} ),
 };
 
 const store = combineStores(

@@ -18,6 +18,7 @@
 
 export { default as ConnectGA4CTATileWidget } from './ConnectGA4CTATileWidget';
 export { default as ConnectGA4CTAWidget } from './ConnectGA4CTAWidget';
+export { default as ConversionReportingNotificationCTAWidget } from './ConversionReportingNotificationCTAWidget';
 export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';
 export { default as LeastEngagingPagesWidget } from './LeastEngagingPagesWidget';
 export { default as MostEngagingPagesWidget } from './MostEngagingPagesWidget';

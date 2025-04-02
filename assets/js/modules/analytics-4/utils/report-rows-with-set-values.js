@@ -18,7 +18,9 @@
 
 export function reportRowsWithSetValues( rows, maxRows = 3 ) {
 	const rowsWithSetValues = rows.filter(
-		( { dimensionValues } ) => dimensionValues[ 0 ].value !== '(not set)'
+		( { dimensionValues } ) =>
+			dimensionValues[ 0 ].value !== '(not set)' &&
+			dimensionValues[ 0 ].value !== ''
 	);
 
 	return rowsWithSetValues.slice( 0, maxRows );
