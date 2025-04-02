@@ -36,10 +36,13 @@ import {
 	useRequestInterception,
 	setSearchConsoleProperty,
 	pageWait,
+	createWaitForFetchRequestsWithDebounce,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'setting up the Analytics module using GCP auth with no existing account and no existing tag', () => {
+	let waitForFetchRequests;
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		// FIXME: Refactor this code rather than disabling the rule.
@@ -151,9 +154,11 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			'e2e-tests-module-setup-analytics-api-mock-no-account'
 		);
 		await setSearchConsoleProperty();
+		waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
 	} );
 
 	afterEach( async () => {
+		await waitForFetchRequests();
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
