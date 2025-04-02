@@ -58,7 +58,7 @@
 			"pre-commit": "lint-staged",
 			"prepare-commit-msg": "php -f bin/prepare-commit-msg.php $HUSKY_GIT_PARAMS",
 			"commit-msg": "php -f bin/check-commit-msg.php $HUSKY_GIT_PARAMS",
-			"pre-push": "./bin/check-protected-branch"
+			"pre-push": "./bin/check-protected-branch.sh"
 		}
 	},
 	"lint-staged": {
