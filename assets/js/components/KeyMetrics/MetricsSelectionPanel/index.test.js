@@ -686,27 +686,7 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 			] );
-		} );
 
-		it( 'should prevent saving when less than two metrics are checked', () => {
-			provideKeyMetrics( registry, {
-				widgetSlugs: [ KM_ANALYTICS_RETURNING_VISITORS ],
-			} );
-
-			// There doesn't seem to be a need for waitForRegistry here.
-			// Not having data to resolve, so no need to wait for it, if included it will timeout.
-			render( <MetricsSelectionPanel />, {
-				registry,
-			} );
-
-			expect(
-				document.querySelector(
-					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-button-icon--spinner'
-				)
-			).toBeDisabled();
-		} );
-
-		it( 'should display error message when less than two metrics are checked', async () => {
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ 'analytics-4' ],
@@ -715,7 +695,23 @@ describe( 'MetricsSelectionPanel', () => {
 					modules: [ 'analytics-4' ],
 				},
 			} );
+		} );
 
+		it( 'should prevent saving when less than two metrics are checked', async () => {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-button-icon--spinner'
+				)
+			).toBeDisabled();
+
+			await waitForRegistry();
+		} );
+
+		it( 'should display error message when less than two metrics are checked', async () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
 					KM_ANALYTICS_RETURNING_VISITORS,
@@ -902,7 +898,7 @@ describe( 'MetricsSelectionPanel', () => {
 		it( 'should show the number of selected metrics', async () => {
 			provideKeyMetrics( registry, {
 				widgetSlugs: [
-					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 					KM_ANALYTICS_RETURNING_VISITORS,
 				],
 			} );
@@ -917,7 +913,7 @@ describe( 'MetricsSelectionPanel', () => {
 				document.querySelector(
 					'.googlesitekit-km-selection-panel .googlesitekit-selection-panel-footer__item-count'
 				)
-			).toHaveTextContent( '2 selected (up to 4)' );
+			).toHaveTextContent( '2 selected (up to 8)' );
 		} );
 	} );
 } );
