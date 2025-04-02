@@ -17,10 +17,19 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
+
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 
 export default function Title( { className, children } ) {
-	return <p className={ className }>{ children }</p>;
+	return (
+		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
+			{ children }
+		</p>
+	);
 }
 
 Title.propTypes = {
