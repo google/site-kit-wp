@@ -322,9 +322,6 @@ class AdsTest extends TestCase {
 		}
 	}
 
-	/**
-	 * Test if Ads module correctly registers Ads Measurement connection check filter.
-	 */
 	public function test_ads_module_measurement_check_callback_respects_conversion_id() {
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 		$this->ads->register();

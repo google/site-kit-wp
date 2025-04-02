@@ -86,7 +86,7 @@ WithAdsConnected.args = {
 			.dispatch( CORE_SITE )
 			.receiveGetAdsMeasurementStatus(
 				{ connected: true },
-				{ useCache: true }
+				{ useCache: false }
 			);
 	},
 };

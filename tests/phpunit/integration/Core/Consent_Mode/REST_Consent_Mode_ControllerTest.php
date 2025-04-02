@@ -405,7 +405,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-
 	public function data_non_callable_checks_provider() {
 		return array(
 			'undefined function name'    => array( 'maybe_mistyped_function_name' ),
@@ -416,7 +415,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 			'null value'                 => array( null ),
 		);
 	}
-
 
 	/**
 	* @dataProvider data_non_callable_checks_provider
@@ -440,7 +438,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$this->assertFalse( $response_data['connected'] );
 	}
-
 
 	public function data_non_array_filter_result_provider() {
 		return array(
