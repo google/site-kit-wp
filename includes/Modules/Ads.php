@@ -117,9 +117,16 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	}
 
 	/**
-	 * Checks if the Ads module is connected and contributing to Ads measurement.
+	 * Registers functionality independent of module activation.
 	 *
-	 * Determines the connection status by returning is_connected value.
+	 * @since 1.148.0
+	 */
+	public function register_persistent() {
+		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
+	}
+
+	/**
+	 * Checks if the Ads module is connected and contributing to Ads measurement.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -127,15 +134,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function check_ads_measurement_connection() {
 		return $this->is_connected();
-	}
-
-	/**
-	 * Registers functionality independent of module activation.
-	 *
-	 * @since 1.148.0
-	 */
-	public function register_persistent() {
-		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
 	}
 
 	/**
