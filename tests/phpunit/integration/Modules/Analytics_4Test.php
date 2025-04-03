@@ -4546,6 +4546,57 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_ads_measurement_connection
+	 */
+	public function test_check_ads_measurement_connection( $settings, $expected ) {
+		$this->analytics->get_settings()->merge( $settings );
+
+		$this->assertEquals(
+			$expected,
+			$this->analytics->check_ads_measurement_connection()
+		);
+	}
+
+	public function data_ads_measurement_connection() {
+		yield 'not connected' => array(
+			array(),
+			false,
+		);
+		yield 'connected, no google tag IDs set' => array(
+			array(
+				'accountID'       => '123',
+				'propertyID'      => '55555',
+				'webDataStreamID' => '9999',
+				'measurementID'   => 'G-12345',
+			),
+			false,
+		);
+		yield 'connected, empty google tag IDs' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(),
+			),
+			false,
+		);
+		yield 'connected, google tag IDs with Ads' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(
+					'GT-12345',
+					'AW-99999',
+				),
+			),
+			true,
+		);
+	}
+
+	/**
 	 * @dataProvider block_on_consent_provider_non_amp
 	 * @param array $test_parameters {
 	 *     Parameters for the test.

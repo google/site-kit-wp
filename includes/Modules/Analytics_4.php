@@ -465,7 +465,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			return true;
 		}
 
-		foreach ( $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
+		foreach ( (array) $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
 			if ( 0 === stripos( $destination_id, 'AW-' ) ) {
 				return true;
 			}
