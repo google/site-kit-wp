@@ -17,16 +17,10 @@ use Google\Site_Kit\Core\Consent_Mode\REST_Consent_Mode_Controller;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ContainerVersion;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_REST_Request;
 
 class REST_Consent_Mode_ControllerTest extends TestCase {
