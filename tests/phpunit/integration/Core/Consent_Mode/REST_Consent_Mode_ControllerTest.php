@@ -399,7 +399,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-
 	public function data_non_callable_checks_provider() {
 		return array(
 			'numeric literal'        => array( 42 ),
@@ -409,8 +408,8 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	/**
-	* @dataProvider data_non_callable_checks_provider
-	*/
+	 * @dataProvider data_non_callable_checks_provider
+	 */
 	public function test_get_ads_measurement_status__handles_non_callable_checks( $non_callable_check ) {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
@@ -440,8 +439,8 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	/**
-	* @dataProvider data_non_array_filter_result_provider
-	*/
+	 * @dataProvider data_non_array_filter_result_provider
+	 */
 	public function test_get_ads_measurement_status__handles_non_array_filter_result( $non_array_value ) {
 		$this->setup_rest();
 		$this->grant_manage_options_permission();
