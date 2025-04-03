@@ -479,7 +479,7 @@ class Tag_ManagerTest extends TestCase {
 
 				if (
 					'tagmanager.googleapis.com' !== $uri->getHost()
-					|| ! str_contains( $uri->getPath(), "/accounts/{$account_id}/containers/{$internal_container_id}/versions:live" )
+					|| false === strpos( $uri->getPath(), "/accounts/{$account_id}/containers/{$internal_container_id}/versions:live" )
 				) {
 					return new FulfilledPromise( new Response( 200 ) );
 				}
