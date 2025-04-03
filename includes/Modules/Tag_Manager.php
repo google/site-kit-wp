@@ -113,13 +113,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Checks if the Tag Manager module is connected and contains an Ads Conversion Tracking (AWCT) tag.
 	 *
-	 * Verifies the module connection status and retrieves the live container version
-	 * to detect if an AWCT type tag is present.
-	 *
 	 * @since n.e.x.t
 	 *
-	 * @return WP_REST_Response|bool WP_REST_Response object indicating connection status if explicitly determined,
-	 *                               or boolean false if container data is unavailable.
+	 * @return bool Whether or not Ads measurement is connected via this module.
 	 */
 	public function check_ads_measurement_connection() {
 		if ( ! $this->is_connected() ) {
