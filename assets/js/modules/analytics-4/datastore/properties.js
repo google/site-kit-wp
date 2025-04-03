@@ -153,10 +153,13 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings ) {
+	reducerCallback( state, googleTagSettings, { measurementID } ) {
 		return {
 			...state,
-			googleTagSettings,
+			googleTagSettings: {
+				...state.googleTagSettings,
+				[ measurementID ]: googleTagSettings,
+			},
 		};
 	},
 	argsToParams( measurementID ) {
@@ -839,7 +842,7 @@ const baseResolvers = {
 		const registry = yield commonActions.getRegistry();
 		const googleTagSettings = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getGoogleTagSettings();
+			.getGoogleTagSettings( measurementID );
 
 		if ( googleTagSettings !== undefined ) {
 			return googleTagSettings;
@@ -909,11 +912,12 @@ const baseSelectors = {
 	 *
 	 * @since 1.150.0
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state         Data store's state.
+	 * @param {string} measurementID Measurement ID.
 	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
 	 */
-	getGoogleTagSettings( state ) {
-		return state.googleTagSettings;
+	getGoogleTagSettings( state, measurementID ) {
+		return state.googleTagSettings?.[ measurementID ];
 	},
 
 	/**
