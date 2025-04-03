@@ -12,13 +12,9 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\GTag;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Ads;
-use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
@@ -69,7 +65,6 @@ class AdsTest extends TestCase {
 
 		$this->assertTrue( has_action( 'template_redirect' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
-
 		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ) );
 	}
 
