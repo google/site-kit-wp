@@ -118,8 +118,8 @@ class AdsTest extends TestCase {
 		$this->assertFalse( $this->ads->is_connected() );
 	}
 
-
 	public function test_inline_modules_data__module_not_connected__with_pax() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		self::enable_feature( 'adsPax' );
 
 		$this->ads->register();
@@ -135,6 +135,7 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_inline_modules_data__module_not_connected__without_pax() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		$this->ads->register();
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
@@ -143,6 +144,7 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_inline_modules_data__module_connected() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		self::enable_feature( 'adsPax' );
 
 		$this->ads->register();
