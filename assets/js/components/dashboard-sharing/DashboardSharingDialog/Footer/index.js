@@ -45,7 +45,11 @@ import Link from '../../../Link';
 import Notice from './Notice';
 import ErrorText from '../../../ErrorText';
 
-export default function Footer( { closeDialog, openResetDialog } ) {
+export default function Footer( {
+	closeDialog,
+	openResetDialog,
+	resetButtonRef,
+} ) {
 	const viewContext = useViewContext();
 
 	const [ errorNotice, setErrorNotice ] = useState( null );
@@ -133,7 +137,11 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					settingsDialogOpen &&
 					! showNotice && (
 						<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
-							<Link onClick={ openResetDialog } danger>
+							<Link
+								onClick={ openResetDialog }
+								danger
+								ref={ resetButtonRef }
+							>
 								{ __(
 									'Reset sharing permissions',
 									'google-site-kit'
@@ -175,4 +183,6 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 
 Footer.propTypes = {
 	closeDialog: PropTypes.func.isRequired,
+	openResetDialog: PropTypes.func.isRequired,
+	resetButtonRef: PropTypes.object,
 };

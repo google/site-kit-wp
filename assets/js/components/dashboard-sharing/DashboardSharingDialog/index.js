@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll } from 'react-use';
+import { useWindowScroll, useKey } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -49,6 +49,7 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
+import { ESCAPE } from '@wordpress/keycodes';
 import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
 import Portal from '../../Portal';
 import {
@@ -62,6 +63,7 @@ import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
 
 export default function DashboardSharingDialog() {
+	const resetButtonRef = useRef();
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -134,11 +136,29 @@ export default function DashboardSharingDialog() {
 		if ( resetDialogOpen ) {
 			closeResetDialog();
 
+			// Focus the reset button after dialog closes
+			if ( resetButtonRef.current ) {
+				resetButtonRef.current.focus();
+			}
+
 			return null;
 		}
 
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
+
+	// Handle escape key for reset dialog
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		() => {
+			closeResetDialog();
+
+			// Focus the reset button after dialog closes
+			if ( resetButtonRef.current ) {
+				resetButtonRef.current.focus();
+			}
+		}
+	);
 
 	return (
 		<Portal>
@@ -149,7 +169,9 @@ export default function DashboardSharingDialog() {
 				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }
 				escapeKeyAction={
-					editingUserRoleSelect === undefined ? 'close' : ''
+					editingUserRoleSelect === undefined && ! resetDialogOpen
+						? 'close'
+						: ''
 				}
 			>
 				<div
@@ -240,6 +262,7 @@ export default function DashboardSharingDialog() {
 					<Footer
 						closeDialog={ closeDialog }
 						openResetDialog={ openResetDialog }
+						resetButtonRef={ resetButtonRef }
 					/>
 				</DialogFooter>
 			</Dialog>
