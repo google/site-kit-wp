@@ -130,6 +130,11 @@ export default function DashboardSharingDialog() {
 	const closeResetDialog = useCallback( () => {
 		setValue( RESET_SETTINGS_DIALOG, false );
 		openSettingsDialog();
+
+		// Focus the reset button after dialog closes
+		if ( resetButtonRef.current ) {
+			resetButtonRef.current.focus();
+		}
 	}, [ openSettingsDialog, setValue ] );
 
 	const closeDialog = useCallback( () => {
@@ -152,13 +157,26 @@ export default function DashboardSharingDialog() {
 		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
 		() => {
 			closeResetDialog();
-
-			// Focus the reset button after dialog closes
-			if ( resetButtonRef.current ) {
-				resetButtonRef.current.focus();
-			}
 		}
 	);
+
+	// Handle clicking on the scrim (outside the dialog)
+	useEffect( () => {
+		const handleScrimClick = ( event ) => {
+			if (
+				resetDialogOpen &&
+				event.target.classList.contains( 'mdc-dialog__scrim' )
+			) {
+				closeResetDialog();
+			}
+		};
+
+		document.addEventListener( 'click', handleScrimClick );
+
+		return () => {
+			document.removeEventListener( 'click', handleScrimClick );
+		};
+	}, [ resetDialogOpen, closeResetDialog ] );
 
 	return (
 		<Portal>
@@ -168,7 +186,13 @@ export default function DashboardSharingDialog() {
 				onClose={ closeDialog }
 				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }
+				// Prevent default modal behavior as we are simulating multiple modals within a single modal here for the settings and reset dialogs.
 				escapeKeyAction={
+					editingUserRoleSelect === undefined && ! resetDialogOpen
+						? 'close'
+						: ''
+				}
+				scrimClickAction={
 					editingUserRoleSelect === undefined && ! resetDialogOpen
 						? 'close'
 						: ''
