@@ -518,7 +518,8 @@ class Tag_ManagerTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$this->tagmanager->get_client(),
 			function ( Request $request ) use ( $account_id, $container_id, $tags ) {
-				if ( str_contains( $request->getUri(), "/accounts/{$account_id}/containers/{$container_id}/versions:live" ) ) {
+				if ( false !== strpos( $request->getUri(), "/accounts/{$account_id}/containers/{$container_id}/versions:live" ) ) {
+
 					$data = new ContainerVersion();
 					$data->setTag( $tags );
 					return new FulfilledPromise(
