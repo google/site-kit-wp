@@ -23,7 +23,7 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 /**
  * Higher-Order Component to render wrapped components when changed conversion events are detected.
  *
- * @since n.e.x.t
+ * @since 1.150.0
  *
  * @return {Function} Enhancing function.
  */

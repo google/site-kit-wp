@@ -326,7 +326,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current publication IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<string> | undefined)} An array of product IDs; `undefined` if publications are not loaded.

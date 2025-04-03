@@ -29,6 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
@@ -43,20 +45,25 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const onDismiss = () => {
+		setNotification( undefined );
+		setSlug( undefined );
+	};
+
 	const anchorLink = `#${ ANCHOR_ID_SPEED }`;
 	const onJumpLinkClick = ( event ) => {
 		event.preventDefault();
+
+		dismissNotification( id );
+		onDismiss();
 
 		global.history.replaceState( {}, '', anchorLink );
 		global.scrollTo( {
 			top: getNavigationalScrollTop( anchorLink, breakpoint ),
 			behavior: 'smooth',
 		} );
-	};
-
-	const onDismiss = () => {
-		setNotification( undefined );
-		setSlug( undefined );
 	};
 
 	return (
