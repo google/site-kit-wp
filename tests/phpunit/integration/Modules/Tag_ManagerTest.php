@@ -519,7 +519,6 @@ class Tag_ManagerTest extends TestCase {
 			$this->tagmanager->get_client(),
 			function ( Request $request ) use ( $account_id, $container_id, $tags ) {
 				if ( false !== strpos( $request->getUri(), "/accounts/{$account_id}/containers/{$container_id}/versions:live" ) ) {
-
 					$data = new ContainerVersion();
 					$data->setTag( $tags );
 					return new FulfilledPromise(
@@ -665,8 +664,8 @@ class Tag_ManagerTest extends TestCase {
 
 	/**
 	 * @param Context $context Plugin context
-	 * @param string $container_id Container ID
-	 * @param string $amp_container_id AMP Container ID
+	 * @param string  $container_id Container ID
+	 * @param string  $amp_container_id AMP Container ID
 	 * @param boolean $expected Expected access
 	 * @group Module_With_Service_Entity
 	 * @dataProvider check_service_entity_access_provider
@@ -740,8 +739,8 @@ class Tag_ManagerTest extends TestCase {
 	/**
 	 * Sets up user authentication if an access token is provided.
 	 *
-	 * @param string $access_token The access token to use.
-	 * @param int    [$user_id] The user ID to set up authentication for. Will default to the current user.
+	 * @param string   $access_token The access token to use.
+	 * @param int    [ $user_id] The user ID to set up authentication for. Will default to the current user.
 	 */
 	protected function setup_user_authentication( $access_token, $user_id = null ) {
 		if ( empty( $access_token ) ) {
