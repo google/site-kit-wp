@@ -140,9 +140,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return false;
 		}
 
-		$has_ads_tag = array_search( 'awct', array_column( $live_containers_versions->tag, 'type' ), true );
-
-		return false !== $has_ads_tag;
+		return in_array(
+			'awct',
+			array_column( $live_containers_versions->tag, 'type' ),
+			true
+		);
 	}
 
 	/**
