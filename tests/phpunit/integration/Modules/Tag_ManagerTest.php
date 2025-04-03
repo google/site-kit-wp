@@ -41,59 +41,6 @@ class Tag_ManagerTest extends TestCase {
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
 
-	/**
-	 * Context object.
-	 *
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Options object.
-	 *
-	 * @var Options
-	 */
-	private $options;
-
-	/**
-	 * User object.
-	 *
-	 * @var WP_User
-	 */
-	private $user;
-
-	/**
-	 * User Options object.
-	 *
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
-	 * Authentication object.
-	 *
-	 * @var Authentication
-	 */
-	private $authentication;
-
-	/**
-	 * Tag Manager object.
-	 *
-	 * @var Tag_Manager
-	 */
-	private $tagmanager;
-
-	public function set_up() {
-		parent::set_up();
-
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options   = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->tagmanager     = new Tag_Manager( $this->context, $this->options, $this->user_options, $this->authentication );
-	}
-
 	public function tear_down() {
 		parent::tear_down();
 
@@ -495,13 +442,23 @@ class Tag_ManagerTest extends TestCase {
 
 	/**
 	 * @dataProvider data_ads_measurement_data
+	 * @param $tag Tag[] Array of container tag instances.
+	 * @param $expected_result bool
 	 */
-	public function test_check_ads_measurement_connection( $tags, $expected_result ) {
+	public function test_check_ads_measurement_connection( $tag, $expected_result ) {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$tagmanager     = new Tag_Manager( $context, $options, $user_options, $authentication );
+
 		$account_id            = '123456789';
 		$container_id          = 'GTM-987654321';
-		$internal_container_id = 'GTM-987654321';
+		$internal_container_id = '234567891';
 
-		$this->tagmanager->get_settings()->merge(
+		$tagmanager->get_settings()->merge(
 			array(
 				'containerID'         => $container_id,
 				'accountID'           => $account_id,
@@ -509,42 +466,47 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->setup_user_authentication( 'valid-auth-token' );
+		$this->set_user_access_token( $user->ID, 'valid-auth-token' );
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->tagmanager->get_scopes()
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$tagmanager->get_scopes()
 		);
 
 		FakeHttp::fake_google_http_handler(
-			$this->tagmanager->get_client(),
-			function ( Request $request ) use ( $account_id, $container_id, $tags ) {
-				if ( false !== strpos( $request->getUri(), "/accounts/{$account_id}/containers/{$container_id}/versions:live" ) ) {
+			$tagmanager->get_client(),
+			function ( Request $request ) use ( $account_id, $internal_container_id, $tag ) {
+				$uri = $request->getUri();
 
-					$data = new ContainerVersion();
-					$data->setTag( $tags );
-					return new FulfilledPromise(
-						new Response( 200, array(), json_encode( $data->toSimpleObject() ) )
-					);
+				if (
+					'tagmanager.googleapis.com' !== $uri->getHost()
+					|| ! str_contains( $uri->getPath(), "/accounts/{$account_id}/containers/{$internal_container_id}/versions:live" )
+				) {
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new FulfilledPromise( new Response( 200 ) );
+				$data = new ContainerVersion();
+				$data->setTag( $tag );
+
+				return new FulfilledPromise(
+					new Response( 200, array(), json_encode( $data->toSimpleObject() ) )
+				);
 			}
 		);
 
-		$this->assertSame( $expected_result, $this->tagmanager->check_ads_measurement_connection() );
+		$this->assertSame( $expected_result, $tagmanager->check_ads_measurement_connection() );
 	}
 
-	public function data_ads_measurement_data(): array {
+	public function data_ads_measurement_data() {
 		$awct_tag = new Tag();
 		$awct_tag->setType( 'awct' );
 
 		return array(
-			'returns_true_when_awct_tag_present' => array(
-				'tags'            => array( $awct_tag ),
+			'awct tag present' => array(
+				'container tag'   => array( $awct_tag ),
 				'expected_result' => true,
 			),
-			'returns_false_when_no_tags_present' => array(
-				'tags'            => array(),
+			'no tags present'  => array(
+				'container tag'   => array(),
 				'expected_result' => false,
 			),
 		);
@@ -735,23 +697,5 @@ class Tag_ManagerTest extends TestCase {
 				false,
 			),
 		);
-	}
-
-	/**
-	 * Sets up user authentication if an access token is provided.
-	 *
-	 * @param string $access_token The access token to use.
-	 * @param int    [$user_id] The user ID to set up authentication for. Will default to the current user.
-	 */
-	protected function setup_user_authentication( $access_token, $user_id = null ) {
-		if ( empty( $access_token ) ) {
-			return;
-		}
-
-		if ( empty( $user_id ) ) {
-			$user_id = $this->user->ID;
-		}
-
-		$this->set_user_access_token( $user_id, $access_token );
 	}
 }
