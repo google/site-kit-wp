@@ -663,9 +663,9 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect( store.getState().googleTagSettings ).toMatchObject(
-					fixtures.googleTagSettings
-				);
+				expect(
+					store.getState().googleTagSettings[ measurementID ]
+				).toMatchObject( fixtures.googleTagSettings );
 			} );
 
 			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
