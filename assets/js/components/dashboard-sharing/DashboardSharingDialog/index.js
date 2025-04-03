@@ -31,6 +31,7 @@ import {
 	useEffect,
 	useCallback,
 	useRef,
+	useState,
 } from '@wordpress/element';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
@@ -63,7 +64,8 @@ import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
 
 export default function DashboardSharingDialog() {
-	const resetButtonRef = useRef();
+	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
+		useState( false );
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -88,6 +90,18 @@ export default function DashboardSharingDialog() {
 			'dashboard-sharing'
 		);
 	} );
+
+	useEffect( () => {
+		if ( shouldFocusResetButton ) {
+			const resetButton = document.querySelector(
+				'.googlesitekit-reset-sharing-permissions-button'
+			);
+			if ( resetButton ) {
+				resetButton.focus();
+			}
+			setShouldFocusResetButton( false );
+		}
+	}, [ shouldFocusResetButton ] );
 
 	const triggeredTourRef = useRef();
 	const handleTriggerOnDemandTour = useCallback( () => {
@@ -130,22 +144,12 @@ export default function DashboardSharingDialog() {
 	const closeResetDialog = useCallback( () => {
 		setValue( RESET_SETTINGS_DIALOG, false );
 		openSettingsDialog();
-
-		// Focus the reset button after dialog closes
-		if ( resetButtonRef.current ) {
-			resetButtonRef.current.focus();
-		}
+		setShouldFocusResetButton( true );
 	}, [ openSettingsDialog, setValue ] );
 
 	const closeDialog = useCallback( () => {
 		if ( resetDialogOpen ) {
 			closeResetDialog();
-
-			// Focus the reset button after dialog closes
-			if ( resetButtonRef.current ) {
-				resetButtonRef.current.focus();
-			}
-
 			return null;
 		}
 
@@ -286,7 +290,6 @@ export default function DashboardSharingDialog() {
 					<Footer
 						closeDialog={ closeDialog }
 						openResetDialog={ openResetDialog }
-						resetButtonRef={ resetButtonRef }
 					/>
 				</DialogFooter>
 			</Dialog>
