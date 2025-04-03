@@ -53,6 +53,22 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_register_googlesitekit_ads_measurement_connection_checks() {
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$tagmanager->register();
+		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
+
+		$this->assertEqualSets(
+			array(
+				array( $tagmanager, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
 	public function test_register_template_redirect_amp() {
 		$context    = $this->get_amp_primary_context();
 		$tagmanager = new Tag_Manager( $context );
@@ -419,10 +435,7 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	/**
-	 * Test if Tag Manager module correctly registers Ads Measurement connection check filter.
-	 */
-	public function test_tag_manager_module_adds_measurement_connection_check_filter() {
+	public function test_check_ads_measurement_connection() {
 		$tag_manager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$tag_manager->register();
 
@@ -431,8 +444,6 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertNotEmpty( $checks );
 		$this->assertIsCallable( $checks[0] );
 	}
-
-
 	public function container_name_provider() {
 		return array(
 			array(
