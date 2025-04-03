@@ -446,11 +446,11 @@ class Tag_ManagerTest extends TestCase {
 	 * @param $expected_result bool
 	 */
 	public function test_check_ads_measurement_connection( $tag, $expected_result ) {
-		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
-		$user_options   = new User_Options( $context, $user->ID );
+		$user_options   = new User_Options( $context, $user_id );
 		$authentication = new Authentication( $context, $options, $user_options );
 		$tagmanager     = new Tag_Manager( $context, $options, $user_options, $authentication );
 
@@ -466,7 +466,7 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->set_user_access_token( $user->ID, 'valid-auth-token' );
+		$this->set_user_access_token( $user_id, 'valid-auth-token' );
 
 		$authentication->get_oauth_client()->set_granted_scopes(
 			$tagmanager->get_scopes()
