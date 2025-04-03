@@ -66,7 +66,7 @@ class Tag_ManagerTest extends TestCase {
 
 		$tagmanager->register();
 
-		$this->assertEqualSets(
+		$this->assertEquals(
 			array(
 				array( $tagmanager, 'check_ads_measurement_connection' ),
 			),

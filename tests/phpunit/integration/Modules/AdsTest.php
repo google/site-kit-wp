@@ -68,6 +68,19 @@ class AdsTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ) );
 	}
 
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$this->ads->register();
+
+		$this->assertEquals(
+			array(
+				array( $this->ads, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
 	public function test_is_connected__when_ads_conversion_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected() );
 

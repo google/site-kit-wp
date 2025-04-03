@@ -4532,6 +4532,19 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 	}
 
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$this->analytics->register();
+
+		$this->assertEquals(
+			array(
+				array( $this->analytics, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
 	/**
 	 * @dataProvider block_on_consent_provider_non_amp
 	 * @param array $test_parameters {
@@ -4721,15 +4734,6 @@ class Analytics_4Test extends TestCase {
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
 			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
 		}
-	}
-
-	public function test_analytics_module_adds_measurement_connection_check_filter() {
-		$this->analytics->register();
-
-		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
-
-		$this->assertNotEmpty( $checks );
-		$this->assertIsCallable( $checks[0] );
 	}
 
 	public function block_on_consent_provider_amp() {
