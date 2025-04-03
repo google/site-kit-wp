@@ -62,6 +62,7 @@ class AdsTest extends TestCase {
 	public function test_register() {
 		remove_all_actions( 'template_redirect' );
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		$this->ads->register();
 

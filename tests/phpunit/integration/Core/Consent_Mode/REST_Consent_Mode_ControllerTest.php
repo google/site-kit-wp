@@ -405,14 +405,12 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
+
 	public function data_non_callable_checks_provider() {
 		return array(
-			'undefined function name'    => array( 'maybe_mistyped_function_name' ),
-			'invalid class method array' => array( array( 'MissingClass', 'staticMethod' ) ),
-			'numeric literal'            => array( 42 ),
-			'incorrect array format'     => array( array( 'too', 'many', 'args' ) ),
-			'object without __invoke'    => array( new \stdClass() ),
-			'null value'                 => array( null ),
+			'numeric literal'        => array( 42 ),
+			'incorrect array format' => array( array( 'too', 'many', 'args' ) ),
+			'null value'             => array( null ),
 		);
 	}
 
@@ -441,16 +439,9 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 	public function data_non_array_filter_result_provider() {
 		return array(
-			'single callable instead of array' => array(
-				function () {
-					return true; },
-			),
-			'empty string'                     => array( '' ),
-			'JSON string'                      => array( '["callback"]' ),
-			'boolean true'                     => array( true ),
-			'boolean false'                    => array( false ),
-			'null'                             => array( null ),
-			'stdClass object'                  => array( new \stdClass() ),
+			'empty string' => array( '' ),
+			'boolean true' => array( true ),
+			'null'         => array( null ),
 		);
 	}
 

@@ -461,12 +461,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 		$settings = $this->get_settings()->get();
 
-		if ( $settings['adSenseLinked'] ) {
+		if ( $settings['adsLinked'] ) {
 			return true;
 		}
 
-		foreach ( $settings['googleTagContainerDestinationIDs'] ?? array() as $destination_id ) {
-			if ( 0 === strpos( $destination_id, 'AW-' ) ) {
+		foreach ( $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
+			if ( 0 === stripos( $destination_id, 'AW-' ) ) {
 				return true;
 			}
 		}

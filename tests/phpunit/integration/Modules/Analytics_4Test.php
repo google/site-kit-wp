@@ -3383,12 +3383,11 @@ class Analytics_4Test extends TestCase {
 			: 0;
 		wp_set_current_user( $user );
 
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->get_settings()->set( $settings );
+		$this->analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'googlesitekit_setup_gtag' );
-		$analytics->register();
+		$this->analytics->register();
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
@@ -4724,12 +4723,8 @@ class Analytics_4Test extends TestCase {
 		}
 	}
 
-	/**
-	 * Test if Analytics module correctly registers Ads Measurement connection check filter.
-	 */
 	public function test_analytics_module_adds_measurement_connection_check_filter() {
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->register();
+		$this->analytics->register();
 
 		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
 
