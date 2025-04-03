@@ -23,7 +23,6 @@ use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
@@ -37,7 +36,6 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  * @group Modules
  */
 class Tag_ManagerTest extends TestCase {
-	use Fake_Site_Connection_Trait;
 	use UserAuthenticationTrait;
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Owner_ContractTests;
@@ -496,13 +494,9 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	/**
-	 * Test if Tag Manager module correctly registers Ads Measurement connection check filter.
+	 * @dataProvider data_ads_measurement_data
 	 */
-	public function test_check_ads_measurement_connection() {
-		$this->assertFalse( $this->tagmanager->is_connected() );
-
-		$this->assertFalse( $this->tagmanager->check_ads_measurement_connection(), 'Should return false if not connected' );
-
+	public function test_check_ads_measurement_connection( $tags, $expected_result ) {
 		$account_id            = '123456789';
 		$container_id          = 'GTM-987654321';
 		$internal_container_id = 'GTM-987654321';
@@ -515,52 +509,44 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $this->tagmanager->is_connected() );
-
 		$this->setup_user_authentication( 'valid-auth-token' );
 
-		// Grant scopes so request doesn't fail.
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->tagmanager->get_scopes()
 		);
 
 		FakeHttp::fake_google_http_handler(
 			$this->tagmanager->get_client(),
-			function ( Request $request ) use ( $account_id, $container_id ) {
-				$url = parse_url( $request->getUri() );
-
-				if ( ! in_array( $url['host'], array( 'tagmanager.googleapis.com' ), true ) ) {
-					return new FulfilledPromise( new Response( 200 ) );
+			function ( Request $request ) use ( $account_id, $container_id, $tags ) {
+				if ( str_contains( $request->getUri(), "/accounts/{$account_id}/containers/{$container_id}/versions:live" ) ) {
+					$data = new ContainerVersion();
+					$data->setTag( $tags );
+					return new FulfilledPromise(
+						new Response( 200, array(), json_encode( $data->toSimpleObject() ) )
+					);
 				}
 
-				switch ( $url['path'] ) {
-					case "/tagmanager/v2/accounts/{$account_id}/containers/{$container_id}/versions:live":
-						$data = new ContainerVersion();
-						$data->setAccountId( $account_id );
-						$data->setContainerId( $container_id );
-
-						$tag = new Tag();
-						$tag->setType( 'awct' );
-
-						$data->setTag( array( $tag ) );
-
-						return new FulfilledPromise(
-							new Response(
-								200,
-								array(),
-								json_encode(
-									$data->toSimpleObject()
-								)
-							)
-						);
-
-					default:
-						return new FulfilledPromise( new Response( 200 ) );
-				}
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
-		$this->assertTrue( $this->tagmanager->check_ads_measurement_connection(), 'Should return true if connected and has AWCT tag' );
+		$this->assertSame( $expected_result, $this->tagmanager->check_ads_measurement_connection() );
+	}
+
+	public function data_ads_measurement_data(): array {
+		$awct_tag = new Tag();
+		$awct_tag->setType( 'awct' );
+
+		return array(
+			'returns_true_when_awct_tag_present' => array(
+				'tags'            => array( $awct_tag ),
+				'expected_result' => true,
+			),
+			'returns_false_when_no_tags_present' => array(
+				'tags'            => array(),
+				'expected_result' => false,
+			),
+		);
 	}
 
 	public function container_name_provider() {
