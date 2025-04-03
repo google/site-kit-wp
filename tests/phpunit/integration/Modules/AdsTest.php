@@ -324,61 +324,49 @@ class AdsTest extends TestCase {
 	/**
 	 * @dataProvider data_ads_measurement_connection_settings
 	 */
-	public function test_check_ads_measurement_connection( $settings_input, $feature_flags, $expected_result ) {
-		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
-
-		if ( $feature_flags['adsPax'] ) {
-			self::enable_feature( 'adsPax' );
+	public function test_check_ads_measurement_connection( $settings_input, $pax_enabled, $expected ) {
+		if ( $pax_enabled ) {
+			$this->enable_feature( 'adsPax' );
 		}
 
-		$this->ads->register();
 		$this->ads->get_settings()->merge( $settings_input );
 
-		$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
-
-		$this->assertNotEmpty( $checks );
-		$this->assertIsCallable( $checks[0] );
-		$this->assertSame( $expected_result, call_user_func( $checks[0] ) );
+		$this->assertSame( $expected, $this->ads->check_ads_measurement_connection() );
 	}
+
 	public function data_ads_measurement_connection_settings() {
 		return array(
-			'conversion_id_present_adsPax_disabled'    => array(
+			'connected manually'                 => array(
 				array( 'conversionID' => 'AW-123456789' ),
-				array( 'adsPax' => false ),
+				false,
 				true,
 			),
-			'conversion_id_missing_adsPax_disabled'    => array(
+			'not connected'                      => array(
 				array( 'conversionID' => '' ),
-				array( 'adsPax' => false ),
+				false,
 				false,
 			),
-			'conversion_id_present_adsPax_enabled'     => array(
+			'connected manually, adsPax enabled' => array(
 				array( 'conversionID' => 'AW-123456789' ),
-				array( 'adsPax' => true ),
+				true,
 				true,
 			),
-			'pax_conversion_id_present_adsPax_enabled' => array(
-				array( 'paxConversionID' => 'PAX-987654321' ),
-				array( 'adsPax' => true ),
+			'connected via PAX, adsPax enabled'  => array(
+				array( 'paxConversionID' => 'AW-987654321' ),
+				true,
 				true,
 			),
-			'ext_customer_id_present_adsPax_enabled'   => array(
-				array( 'extCustomerID' => 'EXT-555555' ),
-				array( 'adsPax' => true ),
-				true,
-			),
-			'all_ids_missing_adsPax_enabled'           => array(
+			'not connected, adsPax enabled'      => array(
 				array(
 					'conversionID'    => '',
 					'paxConversionID' => '',
 					'extCustomerID'   => '',
 				),
-				array( 'adsPax' => true ),
+				true,
 				false,
 			),
 		);
 	}
-
 
 	public function template_redirect_data_provider() {
 		return array(
