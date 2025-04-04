@@ -311,16 +311,11 @@ export default function CurrentSurvey() {
 				return false;
 			}
 
-			for ( const condition of conditions ) {
-				if (
+			return conditions.some(
+				( condition ) =>
 					condition.question_ordinal ===
 					currentQuestion.question_ordinal
-				) {
-					return true;
-				}
-			}
-
-			return false;
+			);
 		} ) === false;
 
 	const commonProps = {
