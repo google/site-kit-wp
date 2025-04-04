@@ -110,6 +110,20 @@ jobs:
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
 
+      # Update files in Storybook without content hashes to not be cached.
+      - name: Upload no-cache files
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: dist
+          glob: '!(*.js*)'
+          destination: ${{ env.GCS_BUCKET }}/${{ env.TARGET_DIR }}
+          parent: false
+          process_gcloudignore: false
+          headers: |-
+            Cache-Control: no-store
+        env:
+          TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
+
   test-storybook:
     name: Test Storybook
     runs-on: ubuntu-latest
