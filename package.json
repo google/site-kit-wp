@@ -40,7 +40,6 @@
 		"env:start": "npm run env:start -w ./tests/e2e",
 		"env:stop": "npm run env:stop -w ./tests/e2e",
 		"env:reset-site": "npm run env:reset-site -w ./tests/e2e",
-		"install-global-npm": "npm install -g npm@7.24.2",
 		"postinstall": "patch-package"
 	},
 	"browserslist": [
