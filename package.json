@@ -1,4 +1,5 @@
 {
+	"name": "googlesitekit",
 	"scripts": {
 		"build": "npm run -w ./assets build",
 		"build:dev": "npm run -w ./assets build:dev",
