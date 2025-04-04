@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,13 +43,9 @@ import {
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
-import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../../../../../components/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { trackEvent, WEEK_IN_SECONDS } from '../../../../../util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
 import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
 import AudienceErrorModal from './AudienceErrorModal';
 import NotificationWithSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
@@ -75,22 +71,27 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
+	const { invalidateResolution, dismissNotification } =
+		useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const showTooltip = useShowTooltip( id );
-	const { isTooltipVisible } = useTooltipState( id );
+	const tooltipSettings = {
+		tooltipSlug: id,
+		title: __(
+			'You can always enable groups from Settings later',
+			'google-site-kit'
+		),
+		content: __(
+			'The visitors group section will be added to your dashboard once you set it up.',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
-	);
-
-	const isCTADismissed = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
-	);
-	const dismissedPromptsLoaded = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
 	);
 
 	const autoSubmit = useSelect( ( select ) =>
@@ -102,19 +103,23 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const { dismissItem, dismissPrompt } = useDispatch( CORE_USER );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSuccess = useCallback( () => {
 		invalidateResolution( 'getQueuedNotifications', [
 			viewContext,
 			NOTIFICATION_GROUPS.DEFAULT,
 		] );
-		dismissPrompt( id, {
-			expiresInSeconds: 0,
-		} );
+		dismissNotification( id );
 		// Dismiss success notification in settings.
 		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [ dismissItem, dismissPrompt, id, invalidateResolution, viewContext ] );
+	}, [
+		dismissItem,
+		id,
+		invalidateResolution,
+		dismissNotification,
+		viewContext,
+	] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );
@@ -143,48 +148,6 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
-
-	useEffect( () => {
-		if ( isTooltipVisible ) {
-			trackEvent( trackEventCategory, 'tooltip_view' );
-		}
-	}, [ isTooltipVisible, trackEventCategory ] );
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title={ __(
-						'You can always enable groups from Settings later',
-						'google-site-kit'
-					) }
-					content={ __(
-						'The visitors group section will be added to your dashboard once you set it up.',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ () => {
-						trackEvent( trackEventCategory, 'tooltip_dismiss' );
-					} }
-					tooltipStateKey={ id }
-				/>
-			</Fragment>
-		);
-	}
-
-	const hideCTABanner =
-		( isCTADismissed || ! dismissedPromptsLoaded ) && ! isSaving;
-
-	// TODO: Don't use `skipHidingFromQueue` and remove the need to check
-	// if this component should output anything.
-	//
-	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
-	// This is because we don't want the component removed from the DOM as we have to still render
-	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
-	// checking for the dismissal state here.
-	if ( hideCTABanner && ! hasOAuthError && ! showErrorModal ) {
-		return null;
-	}
 
 	const gaTrackingProps = {
 		gaTrackingEventArgs: {
@@ -230,10 +193,12 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 									: __( 'Maybe later', 'google-site-kit' )
 							}
 							onDismiss={ showTooltip }
-							dismissOptions={ {
+							ctaDismissOptions={ {
 								skipHidingFromQueue: true,
 							} }
-							dismissExpires={ 2 * WEEK_IN_SECONDS }
+							dismissExpires={
+								isDismissalFinal ? 0 : 2 * WEEK_IN_SECONDS
+							}
 							{ ...gaTrackingProps }
 						/>
 					}

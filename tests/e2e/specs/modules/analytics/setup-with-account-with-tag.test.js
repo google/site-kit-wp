@@ -217,11 +217,9 @@ describe( 'setting up the Analytics module with an existing account and existing
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
+		await page.waitForSelector( '.googlesitekit-subtle-notification' );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
@@ -241,11 +239,9 @@ describe( 'setting up the Analytics module with an existing account and existing
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
+		await page.waitForSelector( '.googlesitekit-subtle-notification' );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}

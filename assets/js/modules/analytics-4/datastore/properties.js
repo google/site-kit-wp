@@ -153,10 +153,13 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings ) {
+	reducerCallback( state, googleTagSettings, { measurementID } ) {
 		return {
 			...state,
-			googleTagSettings,
+			googleTagSettings: {
+				...state.googleTagSettings,
+				[ measurementID ]: googleTagSettings,
+			},
 		};
 	},
 	argsToParams( measurementID ) {
@@ -543,17 +546,18 @@ const baseActions = {
 			return;
 		}
 
-		const { response, error } =
-			yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		const googleTagSettings = yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagSettings(
 				measurementID
-			);
+			)
+		);
 
-		if ( error ) {
+		if ( ! googleTagSettings ) {
 			return;
 		}
 
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
-			response;
+			googleTagSettings;
 
 		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
 		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
@@ -659,14 +663,18 @@ const baseActions = {
 
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
+		// The "last synced" value should reflect the real time this action
+		// was performed, so we don't use the reference date here.
+		const timestamp = Date.now(); // eslint-disable-line sitekit/no-direct-date
+
 		if (
 			!! googleTagLastSyncedAtMs &&
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
+			timestamp - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
 		) {
 			return;
 		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs( timestamp );
 
 		const googleTagID = getGoogleTagID();
 
@@ -704,12 +712,9 @@ const baseActions = {
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			googleTagContainerDestinationIDs,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
-		} );
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagContainerDestinationIDs(
+			googleTagContainerDestinationIDs
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
@@ -829,6 +834,24 @@ const baseResolvers = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
 	},
+	*getGoogleTagSettings( measurementID ) {
+		if ( ! measurementID ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+		const googleTagSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagSettings( measurementID );
+
+		if ( googleTagSettings !== undefined ) {
+			return googleTagSettings;
+		}
+
+		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+			measurementID
+		);
+	},
 };
 
 const baseSelectors = {
@@ -883,6 +906,19 @@ const baseSelectors = {
 			return account ? account.propertySummaries : [];
 		}
 	),
+
+	/**
+	 * Gets Google tag settings.
+	 *
+	 * @since 1.150.0
+	 *
+	 * @param {Object} state         Data store's state.
+	 * @param {string} measurementID Measurement ID.
+	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
+	 */
+	getGoogleTagSettings( state, measurementID ) {
+		return state.googleTagSettings?.[ measurementID ];
+	},
 
 	/**
 	 * Determines whether we are matching account property or not.

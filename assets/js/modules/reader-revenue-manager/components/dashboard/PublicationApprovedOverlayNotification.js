@@ -29,7 +29,6 @@ import OverlayNotification from '../../../../components/OverlayNotification/Over
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
 import useDashboardType from '../../../../hooks/useDashboardType';
-import { useFeature } from '../../../../hooks/useFeature';
 import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
@@ -55,17 +54,19 @@ export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
-	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
 
 	const dashboardType = useDashboardType();
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
-	const { publicationOnboardingState, publicationOnboardingStateChanged } =
-		useSelect(
-			( select ) =>
-				select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
-		);
+	const {
+		publicationID,
+		publicationOnboardingState,
+		publicationOnboardingStateChanged,
+	} = useSelect(
+		( select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
+	);
 
 	const hasResolvedSettings = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
@@ -81,9 +82,13 @@ function PublicationApprovedOverlayNotification() {
 		)
 	);
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 	const serviceURL = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
+		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+			path: 'reader-revenue-manager',
+			query: {
+				publication: publicationID,
+			},
+		} )
 	);
 
 	const showApprovedNotificationUI = useSelect( ( select ) =>
@@ -115,6 +120,7 @@ function PublicationApprovedOverlayNotification() {
 		)
 	);
 
+	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 	const dismissNotice = () => {
 		dismissOverlayNotification(
 			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
@@ -153,16 +159,6 @@ function PublicationApprovedOverlayNotification() {
 		hasResolvedSettings,
 	] );
 
-	const description = isRRMV2Enabled
-		? __(
-				'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups.',
-				'google-site-kit'
-		  )
-		: __(
-				'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups',
-				'google-site-kit'
-		  );
-
 	return (
 		<OverlayNotification
 			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-publication-approved-notification"
@@ -184,7 +180,12 @@ function PublicationApprovedOverlayNotification() {
 						'google-site-kit'
 					) }
 				</h3>
-				<p>{ description }</p>
+				<p>
+					{ __(
+						'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups.',
+						'google-site-kit'
+					) }
+				</p>
 			</div>
 			<div className="googlesitekit-overlay-notification__actions">
 				<Button

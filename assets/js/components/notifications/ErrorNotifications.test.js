@@ -64,6 +64,7 @@ describe( 'ErrorNotifications', () => {
 		muteFetch( reportEndpoint );
 		muteFetch( searchAnalyticsEndpoint );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', async () => {

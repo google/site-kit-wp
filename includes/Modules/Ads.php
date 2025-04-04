@@ -105,8 +105,15 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$this->register_scopes_hook();
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			10
+		);
 	}
 
 	/**
@@ -116,6 +123,17 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function register_persistent() {
 		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
+	}
+
+	/**
+	 * Checks if the Ads module is connected and contributing to Ads measurement.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the Ads module is connected, false otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		return $this->is_connected();
 	}
 
 	/**
