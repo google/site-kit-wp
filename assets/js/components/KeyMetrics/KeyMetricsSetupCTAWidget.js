@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -42,11 +41,7 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import whenActive from '../../util/when-active';
-import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../AdminMenuTooltip';
+import { useShowTooltip } from '../AdminMenuTooltip';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
@@ -66,10 +61,19 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
 
-	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
-	const { isTooltipVisible } = useTooltipState(
-		KEY_METRICS_SETUP_CTA_WIDGET_SLUG
-	);
+	const tooltipSettings = {
+		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
+		title: __(
+			'You can always set up goals from Settings later',
+			'google-site-kit'
+		),
+		content: __(
+			'The Key Metrics section will be added back to your dashboard once you set your goals in Settings',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -82,10 +86,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 	};
-
-	const onTooltipDismiss = useCallback( () => {
-		trackEvent( `${ viewContext }_kmw`, 'tooltip_dismiss' );
-	}, [ viewContext ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const openMetricsSelectionPanel = useCallback( () => {
@@ -113,36 +113,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			'confirm_get_tailored_metrics'
 		);
 	}, [ viewContext ] );
-
-	useMount( () => {
-		// Since components are conditionally rendered, when tooltip
-		// appears, old component will unmount and new componnet will mount,
-		// with tooltip visible equal to true, so here we ensure event is sent only once when that occurs,
-		if ( isTooltipVisible ) {
-			trackEvent( `${ viewContext }_kmw`, 'tooltip_view' );
-		}
-	} );
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<WidgetNull />
-				<AdminMenuTooltip
-					title={ __(
-						'You can always set up goals from Settings later',
-						'google-site-kit'
-					) }
-					content={ __(
-						'The Key Metrics section will be added back to your dashboard once you set your goals in Settings',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
-					onDismiss={ onTooltipDismiss }
-				/>
-			</Fragment>
-		);
-	}
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;
