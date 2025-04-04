@@ -23,7 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	deprecatedProvideNotifications,
+	provideNotifications,
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -35,7 +35,6 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -538,16 +537,7 @@ describe( 'modules/analytics-4 settings', () => {
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -671,16 +661,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
@@ -750,16 +731,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
@@ -820,16 +792,7 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
