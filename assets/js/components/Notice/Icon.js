@@ -33,7 +33,7 @@ export default function Icon( { className, type } ) {
 			className={ classnames( 'googlesitekit-notice__icon', className ) }
 		>
 			{ type === 'success' && <CheckFill width={ 24 } height={ 24 } /> }
-			{ [ 'warning', 'error' ].indexOf( type ) !== -1 && (
+			{ [ 'info', 'warning', 'error' ].indexOf( type ) !== -1 && (
 				<WarningSVG width={ 24 } height={ 24 } />
 			) }
 			{ type === 'new' && <StarFill width={ 24 } height={ 24 } /> }
