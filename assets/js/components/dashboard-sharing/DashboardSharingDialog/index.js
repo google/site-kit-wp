@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll } from 'react-use';
+import { useWindowScroll, useKey } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -31,6 +31,7 @@ import {
 	useEffect,
 	useCallback,
 	useRef,
+	useState,
 } from '@wordpress/element';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
@@ -49,6 +50,7 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
+import { ESCAPE } from '@wordpress/keycodes';
 import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
 import Portal from '../../Portal';
 import {
@@ -62,6 +64,8 @@ import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
 
 export default function DashboardSharingDialog() {
+	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
+		useState( false );
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -86,6 +90,18 @@ export default function DashboardSharingDialog() {
 			'dashboard-sharing'
 		);
 	} );
+
+	useEffect( () => {
+		if ( shouldFocusResetButton ) {
+			const resetButton = document.querySelector(
+				'.googlesitekit-reset-sharing-permissions-button'
+			);
+			if ( resetButton ) {
+				resetButton.focus();
+			}
+			setShouldFocusResetButton( false );
+		}
+	}, [ shouldFocusResetButton ] );
 
 	const triggeredTourRef = useRef();
 	const handleTriggerOnDemandTour = useCallback( () => {
@@ -128,17 +144,43 @@ export default function DashboardSharingDialog() {
 	const closeResetDialog = useCallback( () => {
 		setValue( RESET_SETTINGS_DIALOG, false );
 		openSettingsDialog();
+		setShouldFocusResetButton( true );
 	}, [ openSettingsDialog, setValue ] );
 
 	const closeDialog = useCallback( () => {
 		if ( resetDialogOpen ) {
 			closeResetDialog();
-
 			return null;
 		}
 
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
+
+	// Handle escape key for reset dialog
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		() => {
+			closeResetDialog();
+		}
+	);
+
+	// Handle clicking on the scrim (outside the dialog)
+	useEffect( () => {
+		const handleScrimClick = ( event ) => {
+			if (
+				resetDialogOpen &&
+				event.target.classList.contains( 'mdc-dialog__scrim' )
+			) {
+				closeResetDialog();
+			}
+		};
+
+		document.addEventListener( 'click', handleScrimClick );
+
+		return () => {
+			document.removeEventListener( 'click', handleScrimClick );
+		};
+	}, [ resetDialogOpen, closeResetDialog ] );
 
 	return (
 		<Portal>
@@ -148,8 +190,16 @@ export default function DashboardSharingDialog() {
 				onClose={ closeDialog }
 				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }
+				// Prevent default modal behavior as we are simulating multiple modals within a single modal here for the settings and reset dialogs.
 				escapeKeyAction={
-					editingUserRoleSelect === undefined ? 'close' : ''
+					editingUserRoleSelect === undefined && ! resetDialogOpen
+						? 'close'
+						: ''
+				}
+				scrimClickAction={
+					editingUserRoleSelect === undefined && ! resetDialogOpen
+						? 'close'
+						: ''
 				}
 			>
 				<div
