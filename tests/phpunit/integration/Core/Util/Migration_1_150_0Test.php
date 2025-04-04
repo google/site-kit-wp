@@ -47,6 +47,7 @@ class Migration_1_150_0Test extends TestCase {
 		$this->analytics_settings = new Analytics_Settings( $this->options );
 		$this->audience_settings  = new Audience_Settings( $this->options );
 
+		$this->audience_settings->register();
 		$this->delete_db_version();
 	}
 

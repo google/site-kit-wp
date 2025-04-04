@@ -4750,6 +4750,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_module_level_audience_settings_reset__on_deactivation() {
+		$this->analytics->register();
+
 		$default_audience_segmentation_settings = array(
 			'availableAudiences'                   => null,
 			'availableAudiencesLastSyncedAt'       => 0,
