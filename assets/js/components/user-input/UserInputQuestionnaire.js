@@ -47,7 +47,6 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { useFeature } from '../../hooks/useFeature';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -55,7 +54,6 @@ export default function UserInputQuestionnaire() {
 		'question',
 		USER_INPUT_QUESTIONS_LIST[ 0 ]
 	);
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const activeSlugIndex = USER_INPUT_QUESTIONS_LIST.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -161,7 +159,7 @@ export default function UserInputQuestionnaire() {
 		const isGA4Connected =
 			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
-		if ( ! isGA4Connected || ! isConversionReportingEnabled ) {
+		if ( ! isGA4Connected ) {
 			return [];
 		}
 
@@ -175,15 +173,13 @@ export default function UserInputQuestionnaire() {
 	const submitChanges = useCallback( async () => {
 		trackEvent( gaEventCategory, 'summary_submit' );
 
-		if ( isConversionReportingEnabled ) {
-			// Update 'includeConversionEvents' setting with included conversion events,
-			// to mark that their respective metrics should be included in the
-			// list of tailored metrics and persist on the dashboard in case events are lost.
-			setUserInputSetting(
-				'includeConversionEvents',
-				userInputPurposeConversionEvents
-			);
-		}
+		// Update 'includeConversionEvents' setting with included conversion events,
+		// to mark that their respective metrics should be included in the
+		// list of tailored metrics and persist on the dashboard in case events are lost.
+		setUserInputSetting(
+			'includeConversionEvents',
+			userInputPurposeConversionEvents
+		);
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
@@ -197,7 +193,6 @@ export default function UserInputQuestionnaire() {
 		dashboardURL,
 		setUserInputSetting,
 		navigateTo,
-		isConversionReportingEnabled,
 	] );
 
 	const settings = useSelect( ( select ) =>

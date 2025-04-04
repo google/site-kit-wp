@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\Plugin_Status;
 use WP_Dependencies;
 use WP_Post_Type;
 
@@ -697,6 +696,13 @@ final class Assets {
 					'execution'    => 'defer',
 				)
 			),
+			new Script(
+				'googlesitekit-metric-selection',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			),
 			new Stylesheet(
 				'googlesitekit-adminbar-css',
 				array(
@@ -714,16 +720,6 @@ final class Assets {
 				)
 			),
 		);
-
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			$assets[] = new Script(
-				'googlesitekit-metric-selection',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
-					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
-				)
-			);
-		}
 
 		/**
 		 * Filters the list of assets that Site Kit should register.

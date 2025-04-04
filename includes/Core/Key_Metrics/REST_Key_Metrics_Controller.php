@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\Key_Metrics;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -134,7 +133,7 @@ class REST_Key_Metrics_Controller {
 							// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
 							// which we can solely rely on `maxItems` in the schema validation (see below).
 							// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
-							$max_num_widgets = Feature_Flags::enabled( 'conversionReporting' ) ? 8 : 4;
+							$max_num_widgets = 8;
 							if ( $num_widgets > $max_num_widgets ) {
 								return new WP_Error(
 									'rest_invalid_param',
@@ -172,7 +171,7 @@ class REST_Key_Metrics_Controller {
 										'widgetSlugs'    => array(
 											'type'     => 'array',
 											'required' => false,
-											'maxItems' => Feature_Flags::enabled( 'conversionReporting' ) ? 8 : 4,
+											'maxItems' => 8,
 											'items'    => array(
 												'type' => 'string',
 											),

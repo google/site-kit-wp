@@ -55,7 +55,6 @@ import LoadingWrapper from '../LoadingWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
-import { useFeature } from '../../hooks/useFeature';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function UserInputPreviewGroup( {
@@ -68,7 +67,6 @@ export default function UserInputPreviewGroup( {
 	settingsView = false,
 	onChange,
 } ) {
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const viewContext = useViewContext();
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
@@ -104,7 +102,6 @@ export default function UserInputPreviewGroup( {
 		// while previously it had value, that will mark that modal is closed and we should
 		// return focus to the edit button.
 		if (
-			isConversionReportingEnabled &&
 			slug === USER_INPUT_QUESTIONS_PURPOSE &&
 			previousPurposeAnswer !== savedPurposeAnswer &&
 			savedPurposeAnswer === undefined
@@ -113,12 +110,7 @@ export default function UserInputPreviewGroup( {
 				editButtonRef.current?.focus?.();
 			}, 100 );
 		}
-	}, [
-		isConversionReportingEnabled,
-		savedPurposeAnswer,
-		previousPurposeAnswer,
-		slug,
-	] );
+	}, [ savedPurposeAnswer, previousPurposeAnswer, slug ] );
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { saveUserInputSettings, resetUserInputSettings } =
@@ -158,11 +150,7 @@ export default function UserInputPreviewGroup( {
 			return;
 		}
 
-		if (
-			USER_INPUT_QUESTIONS_PURPOSE === slug &&
-			isConversionReportingEnabled &&
-			onChange
-		) {
+		if ( USER_INPUT_QUESTIONS_PURPOSE === slug && onChange ) {
 			onChange();
 		} else {
 			const response = await saveUserInputSettings();
@@ -179,7 +167,6 @@ export default function UserInputPreviewGroup( {
 		slug,
 		toggleEditMode,
 		onChange,
-		isConversionReportingEnabled,
 	] );
 
 	const handleOnEditClick = useCallback( async () => {

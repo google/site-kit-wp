@@ -34,12 +34,6 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 
-export const WithAdsConnected = Template.bind( {} );
-WithAdsConnected.storyName = 'WithConversionReportingEnabled';
-WithAdsConnected.args = {
-	features: [ 'conversionReporting' ],
-};
-
 export const WithUserInputCompleted = Template.bind( {} );
 WithUserInputCompleted.storyName = 'WithUserInputCompleted';
 WithUserInputCompleted.args = {

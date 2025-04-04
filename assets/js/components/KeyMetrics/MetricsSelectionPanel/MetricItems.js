@@ -22,27 +22,16 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../googlesitekit/widgets/default-areas';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import MetricItem from './MetricItem';
 import useViewOnly from '../../../hooks/useViewOnly';
-import { useFeature } from '../../../hooks/useFeature';
 import KeyMetricsSelectionPanelItems from './SelectionPanelItems';
-import { SelectionPanelItems } from '../../SelectionPanel';
 
 export default function MetricItems( { savedMetrics } ) {
 	const isViewOnlyDashboard = useViewOnly();
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const { isKeyMetricAvailable } = useSelect( ( select ) =>
 		select( CORE_USER )
@@ -90,53 +79,15 @@ export default function MetricItems( { savedMetrics } ) {
 		};
 	};
 
-	const widgets = useSelect(
-		( select ) =>
-			select( CORE_WIDGETS ).getWidgets(
-				AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY
-			) || []
-	);
-
-	const savedMetricSlugs = widgets
-		.filter( ( { slug } ) => savedMetrics?.includes( slug ) )
-		.map( ( { slug } ) => slug );
-
-	const availableSavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
-		.filter( ( metricSlug ) => {
-			return savedMetricSlugs.includes( metricSlug );
-		} )
-		.reduce( metricsListReducer, {} );
-
-	const availableUnsavedMetrics = Object.keys( KEY_METRICS_WIDGETS )
-		.filter( ( metricSlug ) => {
-			return ! savedMetricSlugs.includes( metricSlug );
-		} )
-		.reduce( metricsListReducer, {} );
-
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,
 		{}
 	);
 
-	if ( isConversionReportingEnabled ) {
-		return (
-			<KeyMetricsSelectionPanelItems
-				savedItemSlugs={ savedMetrics }
-				allMetricItems={ allMetricItems }
-			/>
-		);
-	}
-
 	return (
-		<SelectionPanelItems
-			availableItemsTitle={ __(
-				'Additional metrics',
-				'google-site-kit'
-			) }
+		<KeyMetricsSelectionPanelItems
 			savedItemSlugs={ savedMetrics }
-			availableSavedItems={ availableSavedMetrics }
-			availableUnsavedItems={ availableUnsavedMetrics }
-			ItemComponent={ MetricItem }
+			allMetricItems={ allMetricItems }
 		/>
 	);
 }

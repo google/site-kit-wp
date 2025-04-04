@@ -27,7 +27,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../features';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withConnected } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import {
@@ -72,8 +71,6 @@ describe( 'ChipTabGroup', () => {
 	let registry;
 
 	beforeEach( () => {
-		enabledFeatures.add( 'conversionReporting' );
-
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -135,7 +132,6 @@ describe( 'ChipTabGroup', () => {
 				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 
@@ -150,7 +146,6 @@ describe( 'ChipTabGroup', () => {
 				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 
@@ -190,7 +185,6 @@ describe( 'ChipTabGroup', () => {
 				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 

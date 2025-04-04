@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class managing admin screens.
@@ -480,16 +479,14 @@ final class Screens {
 			)
 		);
 
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			$screens[] = new Screen(
-				self::PREFIX . 'metric-selection',
-				array(
-					'title'       => __( 'Select Key Metrics', 'google-site-kit' ),
-					'capability'  => Permissions::MANAGE_OPTIONS,
-					'parent_slug' => self::PARENT_SLUG_NULL,
-				)
-			);
-		}
+		$screens[] = new Screen(
+			self::PREFIX . 'metric-selection',
+			array(
+				'title'       => __( 'Select Key Metrics', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
+			)
+		);
 
 		return $screens;
 	}
