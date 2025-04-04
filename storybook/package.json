@@ -1,5 +1,16 @@
 {
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"devDependencies": {
+		"@storybook/addon-postcss": "^2.0.0",
+		"@storybook/addon-queryparams": "^6.2.9",
+		"@storybook/addon-storyshots": "^6.5.16",
+		"@storybook/addon-storyshots-puppeteer": "^6.5.16",
+		"@storybook/addon-viewport": "^6.5.16",
+		"@storybook/react": "^6.5.16",
+		"faker": "^5.5.3",
+		"fetch-mock": "^9.11.0",
+		"rxjs": "^6.6.7"
 	}
 }
