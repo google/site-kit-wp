@@ -31,7 +31,6 @@ export default function CTAButton( { label, disabled, isSaving, onClick } ) {
 			disabled={ disabled }
 			isSaving={ isSaving }
 			onClick={ onClick }
-			primary
 		>
 			{ label }
 		</SpinnerButton>
