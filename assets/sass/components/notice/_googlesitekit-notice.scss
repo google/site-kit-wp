@@ -182,6 +182,30 @@
 		}
 	}
 
+	&.googlesitekit-notice--error {
+		background-color: $c-utility-error-container;
+
+		.googlesitekit-notice__icon,
+		.googlesitekit-notice__content {
+			color: $c-utility-on-error-container;
+		}
+
+		.mdc-button {
+
+			&.googlesitekit-notice__cta {
+				@include mdc-button-filled-accessible($c-utility-on-error-container);
+			}
+		}
+
+		.mdc-button--tertiary {
+			@include mdc-button-tertiary-styles(
+				$c-utility-on-error-container,
+				$c-interactive-callout-error-hover,
+				$c-interactive-callout-error-focus
+			);
+		}
+	}
+
 	&.googlesitekit-notice--new {
 		background-color: $c-violet-v-50;
 
