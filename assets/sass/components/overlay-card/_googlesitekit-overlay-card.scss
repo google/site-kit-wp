@@ -48,6 +48,7 @@
 		text-align: center;
 
 		svg {
+			display: block;
 			height: auto;
 			max-width: 100%;
 		}
@@ -65,7 +66,8 @@
 			margin: 0 0 10px;
 		}
 
-		.googlesitekit-overlay-card__description {
+		.googlesitekit-overlay-card__description,
+		p {
 			font-size: $fs-body-sm;
 			font-weight: $fw-normal;
 			letter-spacing: $ls-xs;
@@ -84,7 +86,8 @@
 				margin: 0 0 5px;
 			}
 
-			.googlesitekit-overlay-card__description {
+			.googlesitekit-overlay-card__description,
+			p {
 				font-size: $fs-body-md;
 				font-weight: $fw-normal;
 				letter-spacing: $ls-s;

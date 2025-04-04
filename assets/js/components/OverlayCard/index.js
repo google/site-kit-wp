@@ -24,28 +24,18 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
-import Title from './Title';
-import Description from './Description';
-import DismissButton from './DismissButton';
-import PrimaryButton from './PrimaryButton';
-
-export { Title, Description, DismissButton, PrimaryButton };
+import MainBody from './MainBody';
 
 export default function OverlayCard( {
 	className,
 	children,
 	title,
 	description,
-	primaryCTA,
-	tertiaryCTA,
+	ctaButton,
+	dismissButton,
 	GraphicDesktop,
 	GraphicMobile,
 	visible,
@@ -58,72 +48,58 @@ export default function OverlayCard( {
 
 	const classes = classnames( 'googlesitekit-overlay-card', className );
 
-	const renderContent = () => (
-		<Fragment>
-			{ breakpoint !== BREAKPOINT_SMALL && GraphicDesktop && (
-				<div className="googlesitekit-overlay-card__graphic">
-					<GraphicDesktop />
-				</div>
-			) }
-
-			<div className="googlesitekit-overlay-card__body">
-				{ title && <Title>{ title }</Title> }
-				{ description && <Description>{ description }</Description> }
-				{ children }
-			</div>
-
-			{ ( primaryCTA || tertiaryCTA ) && (
-				<div className="googlesitekit-overlay-card__actions">
-					{ tertiaryCTA && (
-						<DismissButton
-							label={ tertiaryCTA.label }
-							onClick={ tertiaryCTA.clickCallback }
-							disabled={ tertiaryCTA.disabled }
-						/>
-					) }
-					{ primaryCTA && (
-						<PrimaryButton
-							label={ primaryCTA.label }
-							onClick={ primaryCTA.clickCallback }
-							disabled={ primaryCTA.disabled }
-							external={ primaryCTA.external }
-						/>
-					) }
-				</div>
-			) }
-
-			{ breakpoint === BREAKPOINT_SMALL && GraphicMobile && (
-				<GraphicMobile />
-			) }
-		</Fragment>
-	);
-
 	if ( breakpoint === BREAKPOINT_SMALL ) {
-		return <div className={ classes }>{ renderContent() }</div>;
+		return (
+			<div className={ classes }>
+				<MainBody
+					title={ title }
+					description={ description }
+					ctaButton={ ctaButton }
+					dismissButton={ dismissButton }
+					GraphicDesktop={ GraphicDesktop }
+					GraphicMobile={ GraphicMobile }
+				>
+					{ children }
+				</MainBody>
+			</div>
+		);
 	}
 
 	return (
 		<Slide direction="up" in={ visible }>
-			<div className={ classes }>{ renderContent() }</div>
+			<div className={ classes }>
+				<MainBody
+					title={ title }
+					description={ description }
+					ctaButton={ ctaButton }
+					dismissButton={ dismissButton }
+					GraphicDesktop={ GraphicDesktop }
+					GraphicMobile={ GraphicMobile }
+				>
+					{ children }
+				</MainBody>
+			</div>
 		</Slide>
 	);
 }
+
+export const buttonProps = {
+	label: PropTypes.string.isRequired,
+	clickCallback: PropTypes.func.isRequired,
+	disabled: PropTypes.bool,
+};
 
 OverlayCard.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	title: PropTypes.string,
 	description: PropTypes.string,
-	primaryCTA: PropTypes.shape( {
-		label: PropTypes.string.isRequired,
-		clickCallback: PropTypes.func.isRequired,
-		disabled: PropTypes.bool,
+	ctaButton: PropTypes.shape( {
+		...buttonProps,
 		external: PropTypes.bool,
 	} ),
-	tertiaryCTA: PropTypes.shape( {
-		label: PropTypes.string,
-		clickCallback: PropTypes.func.isRequired,
-		disabled: PropTypes.bool,
+	dismissButton: PropTypes.shape( {
+		...buttonProps,
 	} ),
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,

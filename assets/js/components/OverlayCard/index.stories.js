@@ -44,11 +44,11 @@ DefaultOverlayCard.args = {
 	),
 	GraphicDesktop: ReaderRevenueManagerIntroductoryGraphicDesktop,
 	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
-	primaryCTA: {
+	ctaButton: {
 		label: __( 'Show me', 'google-site-kit' ),
 		clickCallback: () => {},
 	},
-	tertiaryCTA: {
+	dismissButton: {
 		label: __( 'Maybe later', 'google-site-kit' ),
 		clickCallback: () => {},
 	},
@@ -65,13 +65,13 @@ OverlayCardWithExternalLink.args = {
 	),
 	GraphicDesktop: ReaderRevenueManagerIntroductoryGraphicDesktop,
 	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
-	primaryCTA: {
+	ctaButton: {
 		href: 'https://example.com',
 		label: __( 'Explore features', 'google-site-kit' ),
 		clickCallback: () => {},
 		external: true,
 	},
-	tertiaryCTA: {
+	dismissButton: {
 		label: __( 'Maybe later', 'google-site-kit' ),
 		clickCallback: () => {},
 	},
@@ -86,11 +86,11 @@ OverlayCardWithoutGraphic.args = {
 		'This is an important notification that requires your attention.',
 		'google-site-kit'
 	),
-	primaryCTA: {
+	ctaButton: {
 		label: __( 'Take action', 'google-site-kit' ),
 		clickCallback: () => {},
 	},
-	tertiaryCTA: {
+	dismissButton: {
 		label: __( 'Dismiss', 'google-site-kit' ),
 		clickCallback: () => {},
 	},
@@ -102,11 +102,11 @@ OverlayCardWithCustomContent.scenario = {};
 OverlayCardWithCustomContent.args = {
 	GraphicDesktop: ReaderRevenueManagerIntroductoryGraphicDesktop,
 	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
-	primaryCTA: {
+	ctaButton: {
 		label: __( 'Continue', 'google-site-kit' ),
 		clickCallback: () => {},
 	},
-	tertiaryCTA: {
+	dismissButton: {
 		label: __( 'Cancel', 'google-site-kit' ),
 		clickCallback: () => {},
 	},

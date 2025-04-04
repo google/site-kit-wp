@@ -1,5 +1,5 @@
 /**
- * OverlayCard PrimaryButton component.
+ * OverlayCard CTAButton component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -32,18 +32,12 @@ import { Fragment } from '@wordpress/element';
 import { Button } from 'googlesitekit-components';
 import ExternalIcon from '../../../svg/icons/external.svg';
 
-export default function PrimaryButton( {
-	label,
-	onClick,
-	disabled,
-	external,
-} ) {
+export default function CTAButton( { label, onClick, disabled, external } ) {
 	return (
 		<Button onClick={ onClick } disabled={ disabled }>
 			{ label }
 			{ external && (
 				<Fragment>
-					{ ' ' }
 					<ExternalIcon width="13" height="13" />
 				</Fragment>
 			) }
@@ -51,7 +45,8 @@ export default function PrimaryButton( {
 	);
 }
 
-PrimaryButton.propTypes = {
+// eslint-disable-next-line sitekit/acronym-case
+CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
 	onClick: PropTypes.func.isRequired,
 	disabled: PropTypes.bool,

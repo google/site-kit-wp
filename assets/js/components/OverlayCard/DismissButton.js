@@ -31,10 +31,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 
-export default function DismissButton( { label, onClick, disabled } ) {
+export default function DismissButton( {
+	label = __( 'Maybe later', 'google-site-kit' ),
+	onClick,
+	disabled,
+} ) {
 	return (
 		<Button tertiary onClick={ onClick } disabled={ disabled }>
-			{ label || __( 'Maybe later', 'google-site-kit' ) }
+			{ label }
 		</Button>
 	);
 }
