@@ -22,18 +22,26 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 
-export default function CTAButton( { label, onClick } ) {
+export default function CTAButton( { label, disabled, isSaving, onClick } ) {
 	return (
-		<Button onClick={ onClick } primary>
+		<SpinnerButton
+			className="googlesitekit-notice__cta"
+			disabled={ disabled }
+			isSaving={ isSaving }
+			onClick={ onClick }
+			primary
+		>
 			{ label }
-		</Button>
+		</SpinnerButton>
 	);
 }
 
 // eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
-	onCallback: PropTypes.func.isRequired,
+	disabled: PropTypes.bool,
+	isSaving: PropTypes.bool,
+	onClick: PropTypes.func.isRequired,
 };
