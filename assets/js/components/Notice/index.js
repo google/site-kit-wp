@@ -44,7 +44,7 @@ const Notice = forwardRef(
 			description,
 			dismissButton,
 			ctaButton,
-			type = 'success',
+			type = 'info',
 			children,
 		},
 		ref
@@ -71,13 +71,14 @@ const Notice = forwardRef(
 						<div className="googlesitekit-notice__action">
 							{ children }
 
-							{ dismissButton.label && dismissButton.onClick && (
-								<DismissButton
-									label={ dismissButton.label }
-									onDismiss={ dismissButton.onClick }
-								/>
-							) }
-							{ ctaButton.label && ctaButton.onClick && (
+							{ dismissButton?.label &&
+								dismissButton?.onClick && (
+									<DismissButton
+										label={ dismissButton.label }
+										onDismiss={ dismissButton.onClick }
+									/>
+								) }
+							{ ctaButton?.label && ctaButton?.onClick && (
 								<CTAButton
 									label={ ctaButton.label }
 									onClick={ ctaButton.onClick }
