@@ -120,7 +120,7 @@ jobs:
           parent: false
           process_gcloudignore: false
           headers: |-
-            Cache-Control: no-store
+            cache-control: no-store
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
 
