@@ -92,8 +92,7 @@ const Notice = forwardRef(
 	}
 );
 
-// eslint-disable-next-line sitekit/acronym-case
-const CTAButtonAPI = PropTypes.shape( {
+const ctaButtonAPI = PropTypes.shape( {
 	label: PropTypes.string,
 	onClick: PropTypes.func,
 } );
@@ -103,10 +102,8 @@ Notice.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.string,
 	type: PropTypes.oneOf( [ 'success', 'warning', 'new', 'error', 'info' ] ),
-	// eslint-disable-next-line sitekit/acronym-case
-	dismissButton: CTAButtonAPI,
-	// eslint-disable-next-line sitekit/acronym-case
-	ctaButton: CTAButtonAPI,
+	dismissButton: ctaButtonAPI,
+	ctaButton: ctaButtonAPI,
 	children: PropTypes.node,
 };
 
