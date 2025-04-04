@@ -57,9 +57,11 @@ describe( 'PlaceholderTile', () => {
 
 	describe( 'when there are configurable non default audiences available', () => {
 		beforeEach( () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				availableAudiences,
-			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					availableAudiences,
+				} );
 		} );
 
 		it( 'should render correctly', () => {
@@ -101,7 +103,7 @@ describe( 'PlaceholderTile', () => {
 	} );
 
 	it( 'should render correctly when there are no configurable non default audiences available', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: availableAudiences.filter(
 				( { audienceType } ) => audienceType === 'DEFAULT_AUDIENCE'
 			),

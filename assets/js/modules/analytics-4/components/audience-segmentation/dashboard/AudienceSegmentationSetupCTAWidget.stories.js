@@ -103,7 +103,9 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAudienceSegmentationSetupCompletedBy( null );
+					.receiveGetAudienceSettings( {
+						audienceSegmentationSetupCompletedBy: null,
+					} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

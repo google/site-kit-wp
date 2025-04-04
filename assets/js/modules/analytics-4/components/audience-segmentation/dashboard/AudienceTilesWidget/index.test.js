@@ -350,7 +350,7 @@ describe( 'AudienceTilesWidget', () => {
 	it( 'should render when configured audience is matching available audiences', async () => {
 		const configuredAudiences = [ 'properties/12345/audiences/1' ];
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -386,7 +386,7 @@ describe( 'AudienceTilesWidget', () => {
 			'properties/12345/audiences/2',
 		];
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -421,7 +421,7 @@ describe( 'AudienceTilesWidget', () => {
 			'properties/12345/audiences/1', // Available.
 			'properties/12345/audiences/9', // Not available (archived).
 		];
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -458,7 +458,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should render correctly when there is partial data for Site Kit audiences', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -565,7 +565,7 @@ describe( 'AudienceTilesWidget', () => {
 	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
 		const configuredAudiences = [ 'properties/12345/audiences/1' ];
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 

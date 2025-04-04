@@ -220,6 +220,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 				( new Core\Util\Migration_1_123_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_129_0( $this->context, $options ) )->register();
+				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
