@@ -71,7 +71,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 * @var Transients
 	 */
 	private $transients;

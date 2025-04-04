@@ -31,6 +31,7 @@ export default function LearnMoreLink( {
 	url,
 	ariaLabel,
 	gaTrackingEventArgs,
+	external = true,
 	...otherProps
 } ) {
 	const trackEvents = useNotificationEvents( id );
@@ -48,7 +49,7 @@ export default function LearnMoreLink( {
 			onClick={ handleLearnMore }
 			href={ url }
 			aria-label={ ariaLabel }
-			external
+			external={ external }
 			{ ...otherProps }
 		>
 			{ label }
@@ -65,4 +66,5 @@ LearnMoreLink.propTypes = {
 		label: PropTypes.string,
 		value: PropTypes.string,
 	} ),
+	external: PropTypes.bool,
 };

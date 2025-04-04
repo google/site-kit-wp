@@ -3384,12 +3384,11 @@ class Analytics_4Test extends TestCase {
 			: 0;
 		wp_set_current_user( $user );
 
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->get_settings()->set( $settings );
+		$this->analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'googlesitekit_setup_gtag' );
-		$analytics->register();
+		$this->analytics->register();
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
@@ -4532,6 +4531,70 @@ class Analytics_4Test extends TestCase {
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+	}
+
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$this->analytics->register();
+
+		$this->assertEquals(
+			array(
+				array( $this->analytics, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
+	/**
+	 * @dataProvider data_ads_measurement_connection
+	 */
+	public function test_check_ads_measurement_connection( $settings, $expected ) {
+		$this->analytics->get_settings()->merge( $settings );
+
+		$this->assertEquals(
+			$expected,
+			$this->analytics->check_ads_measurement_connection()
+		);
+	}
+
+	public function data_ads_measurement_connection() {
+		yield 'not connected' => array(
+			array(),
+			false,
+		);
+		yield 'connected, no google tag IDs set' => array(
+			array(
+				'accountID'       => '123',
+				'propertyID'      => '55555',
+				'webDataStreamID' => '9999',
+				'measurementID'   => 'G-12345',
+			),
+			false,
+		);
+		yield 'connected, empty google tag IDs' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(),
+			),
+			false,
+		);
+		yield 'connected, google tag IDs with Ads' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(
+					'GT-12345',
+					'AW-99999',
+				),
+			),
+			true,
+		);
 	}
 
 	/**
