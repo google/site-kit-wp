@@ -141,18 +141,20 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					/>
 				) }
 
-				{ hasModuleAccess && publicationAvailable && missingProductID && (
-					<ErrorText
-						message={ sprintf(
-							/* translators: 1: Product ID. */
-							__(
-								'The previously selected product ID %s was not found. Please select a new product ID.',
-								'google-site-kit'
-							),
-							getProductIDLabel( missingProductID )
-						) }
-					/>
-				) }
+				{ hasModuleAccess &&
+					publicationAvailable &&
+					missingProductID && (
+						<ErrorText
+							message={ sprintf(
+								/* translators: 1: Product ID. */
+								__(
+									'The previously selected product ID %s was not found. Please select a new product ID.',
+									'google-site-kit'
+								),
+								getProductIDLabel( missingProductID )
+							) }
+						/>
+					) }
 
 				<div className="googlesitekit-setup-module__inputs">
 					<PublicationSelect hasModuleAccess={ hasModuleAccess } />

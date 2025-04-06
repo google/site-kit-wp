@@ -154,17 +154,18 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								</SpinnerButton>
 							) }
 
-							{ adSenseModuleActive && ! adSenseModuleConnected && (
-								<SpinnerButton
-									onClick={ handleCompleteSetup }
-									isSaving={ isConnectingAdSense }
-								>
-									{ __(
-										'Complete setup',
-										'google-site-kit'
-									) }
-								</SpinnerButton>
-							) }
+							{ adSenseModuleActive &&
+								! adSenseModuleConnected && (
+									<SpinnerButton
+										onClick={ handleCompleteSetup }
+										isSaving={ isConnectingAdSense }
+									>
+										{ __(
+											'Complete setup',
+											'google-site-kit'
+										) }
+									</SpinnerButton>
+								) }
 
 							<Button tertiary onClick={ handleDismissModule }>
 								{ __( 'Maybe later', 'google-site-kit' ) }
