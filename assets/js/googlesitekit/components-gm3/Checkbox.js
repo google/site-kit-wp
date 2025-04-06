@@ -19,127 +19,130 @@
 /**
  * External dependencies
  */
-import { MdCheckbox } from '@material/web/checkbox/checkbox';
-import { createComponent } from '@lit-labs/react';
+// import { MdCheckbox } from '@material/web/checkbox/checkbox';
+// import { createComponent } from '@lit-labs/react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
+// import classnames from 'classnames';
 
-/**
- * WordPress dependencies
- */
-import * as WordPressElement from '@wordpress/element';
-const { useCallback, useEffect, useRef } = WordPressElement;
+// /**
+//  * WordPress dependencies
+//  */
+// import * as WordPressElement from '@wordpress/element';
+// const { useCallback, useEffect, useRef } = WordPressElement;
 
-/**
- * Internal dependencies
- */
-import { getLabelFromChildren } from '../../util/react-children-to-text';
-import Spinner from '../../components/Spinner';
+// /**
+//  * Internal dependencies
+//  */
+// import { getLabelFromChildren } from '../../util/react-children-to-text';
+// import Spinner from '../../components/Spinner';
 
-const MdCheckboxComponent = createComponent( {
-	tagName: 'md-checkbox',
-	elementClass: MdCheckbox,
-	react: WordPressElement,
-	events: {
-		onKeyDown: 'keydown',
-		onChange: 'change',
-	},
-} );
+// const MdCheckboxComponent = createComponent( {
+// 	tagName: 'md-checkbox',
+// 	elementClass: MdCheckbox,
+// 	react: WordPressElement,
+// 	events: {
+// 		onKeyDown: 'keydown',
+// 		onChange: 'change',
+// 	},
+// } );
 
-export default function Checkbox( {
-	onChange,
-	id,
-	name,
-	value,
-	checked,
-	disabled,
-	children,
-	tabIndex,
-	onKeyDown,
-	loading,
-	alignLeft,
-	description,
-} ) {
-	const ref = useRef( null );
+export default function Checkbox() {
+	return null;
+	// const {
+	// 	onChange,
+	// 	id,
+	// 	name,
+	// 	value,
+	// 	checked,
+	// 	disabled,
+	// 	children,
+	// 	tabIndex,
+	// 	onKeyDown,
+	// 	loading,
+	// 	alignLeft,
+	// 	description,
+	// } = props;
 
-	const updateCheckedState = useCallback( () => {
-		const { current } = ref;
+	// const ref = useRef( null );
 
-		if ( ! current ) {
-			return;
-		}
+	// const updateCheckedState = useCallback( () => {
+	// 	const { current } = ref;
 
-		current.checked = checked;
+	// 	if ( ! current ) {
+	// 		return;
+	// 	}
 
-		// The checked property doesn't get reflected to the inner input element checked state,
-		// so we need to set it manually.
-		const innerInput = current.shadowRoot.querySelector( 'input' );
-		if ( innerInput ) {
-			innerInput.checked = checked;
-		}
-	}, [ checked ] );
+	// 	current.checked = checked;
 
-	function handleChange( event ) {
-		onChange?.( event );
+	// 	// The checked property doesn't get reflected to the inner input element checked state,
+	// 	// so we need to set it manually.
+	// 	const innerInput = current.shadowRoot.querySelector( 'input' );
+	// 	if ( innerInput ) {
+	// 		innerInput.checked = checked;
+	// 	}
+	// }, [ checked ] );
 
-		// Restore current checked state for controlled component behaviour.
-		updateCheckedState();
-	}
+	// function handleChange( event ) {
+	// 	onChange?.( event );
 
-	useEffect( () => {
-		updateCheckedState();
-	}, [ updateCheckedState ] );
+	// 	// Restore current checked state for controlled component behaviour.
+	// 	updateCheckedState();
+	// }
 
-	const labelID = `${ id }-label`;
+	// useEffect( () => {
+	// 	updateCheckedState();
+	// }, [ updateCheckedState ] );
 
-	return (
-		<div
-			className={ classnames( 'googlesitekit-component-gm3_checkbox', {
-				'googlesitekit-component-gm3_checkbox--align-left': alignLeft,
-			} ) }
-		>
-			{ loading && (
-				<div className="googlesitekit-component-gm3_checkbox--loading">
-					<Spinner isSaving />
-				</div>
-			) }
-			{ ! loading && (
-				<MdCheckboxComponent
-					id={ id }
-					ref={ ref }
-					aria-label={ getLabelFromChildren( children ) }
-					aria-labelledby={ labelID }
-					// `Lit` boolean attributes treat anything non-null/undefined as true.
-					// Coerce to null if false.
-					// See https://lit.dev/docs/v1/components/properties/#attributes
-					checked={ checked || null }
-					disabled={ disabled || null }
-					name={ name }
-					value={ value }
-					tabIndex={ tabIndex }
-					onChange={ handleChange }
-					onKeyDown={ onKeyDown }
-				/>
-			) }
+	// const labelID = `${ id }-label`;
 
-			{ ! description && (
-				<label id={ labelID } htmlFor={ id }>
-					{ children }
-				</label>
-			) }
+	// return (
+	// 	<div
+	// 		className={ classnames( 'googlesitekit-component-gm3_checkbox', {
+	// 			'googlesitekit-component-gm3_checkbox--align-left': alignLeft,
+	// 		} ) }
+	// 	>
+	// 		{ loading && (
+	// 			<div className="googlesitekit-component-gm3_checkbox--loading">
+	// 				<Spinner isSaving />
+	// 			</div>
+	// 		) }
+	// 		{ ! loading && (
+	// 			<MdCheckboxComponent
+	// 				id={ id }
+	// 				ref={ ref }
+	// 				aria-label={ getLabelFromChildren( children ) }
+	// 				aria-labelledby={ labelID }
+	// 				// `Lit` boolean attributes treat anything non-null/undefined as true.
+	// 				// Coerce to null if false.
+	// 				// See https://lit.dev/docs/v1/components/properties/#attributes
+	// 				checked={ checked || null }
+	// 				disabled={ disabled || null }
+	// 				name={ name }
+	// 				value={ value }
+	// 				tabIndex={ tabIndex }
+	// 				onChange={ handleChange }
+	// 				onKeyDown={ onKeyDown }
+	// 			/>
+	// 		) }
 
-			{ description && (
-				<div className="googlesitekit-component-gm3_checkbox__content">
-					<label id={ labelID } htmlFor={ id }>
-						{ children }
-					</label>
-					<div className="googlesitekit-component-gm3_checkbox__description">
-						{ description }
-					</div>
-				</div>
-			) }
-		</div>
-	);
+	// 		{ ! description && (
+	// 			<label id={ labelID } htmlFor={ id }>
+	// 				{ children }
+	// 			</label>
+	// 		) }
+
+	// 		{ description && (
+	// 			<div className="googlesitekit-component-gm3_checkbox__content">
+	// 				<label id={ labelID } htmlFor={ id }>
+	// 					{ children }
+	// 				</label>
+	// 				<div className="googlesitekit-component-gm3_checkbox__description">
+	// 					{ description }
+	// 				</div>
+	// 			</div>
+	// 		) }
+	// 	</div>
+	// );
 }
 
 Checkbox.propTypes = {
