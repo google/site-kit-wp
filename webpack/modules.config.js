@@ -44,7 +44,7 @@ const {
 	createMinimizerRules,
 	GOOGLESITEKIT_VERSION,
 	resolve,
-} = require( '../../webpack/common' );
+} = require( './common' );
 
 module.exports = ( mode, rules, ANALYZE ) => {
 	const isProduction = mode === 'production';

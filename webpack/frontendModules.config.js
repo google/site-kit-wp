@@ -31,7 +31,7 @@ const {
 	externals,
 	resolve,
 	noAMDParserRule,
-} = require( '../../webpack/common' );
+} = require( './common' );
 
 module.exports = ( mode ) => ( {
 	entry: {
@@ -75,16 +75,7 @@ module.exports = ( mode ) => ( {
 							babelrc: false,
 							configFile: false,
 							cacheDirectory: true,
-							presets: [
-								[
-									'@babel/preset-env',
-									{
-										targets: {
-											browsers: [ '> 0.25%', 'not dead' ],
-										},
-									},
-								],
-							],
+							presets: [ '@wordpress/default' ],
 						},
 					},
 				],
@@ -104,8 +95,8 @@ module.exports = ( mode ) => ( {
 			},
 		} ),
 	],
-	optimization: {
-		concatenateModules: true,
-	},
+	// optimization: {
+	// 	concatenateModules: true,
+	// },
 	resolve,
 } );

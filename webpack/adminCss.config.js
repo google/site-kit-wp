@@ -26,7 +26,7 @@ const WebpackBar = require( 'webpackbar' );
 /**
  * Internal dependencies
  */
-const { rootDir, manifestArgs } = require( '../../webpack/common' );
+const { rootDir, manifestArgs } = require( './common' );
 
 module.exports = ( mode ) => ( {
 	entry: {
@@ -52,7 +52,10 @@ module.exports = ( mode ) => ( {
 						options: {
 							implementation: require( 'sass' ),
 							sassOptions: {
-								includePaths: [ rootDir + '/node_modules' ],
+								includePaths: [
+									rootDir + '/node_modules',
+									rootDir + '/assets/node_modules',
+								],
 							},
 						},
 					},
