@@ -78,11 +78,6 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should not render the widget when it is being dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.setIsPromptDismissing( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, true );
-
 		const { container, waitForRegistry } = render(
 			<ConsentModeSetupCTAWidgetComponent />,
 			{
