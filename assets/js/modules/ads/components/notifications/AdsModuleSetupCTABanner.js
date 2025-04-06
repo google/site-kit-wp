@@ -20,11 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,9 +34,9 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
+import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
 import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
 } from '../../datastore/constants';
 import AdsSetupSVG from '../../../../../svg/graphics/ads-setup.svg';
@@ -53,11 +54,7 @@ import {
 } from '../../../../hooks/useBreakpoint';
 import { WooCommerceRedirectModal } from '../common';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import {
-	useShowTooltip,
-	useTooltipState,
-	AdminMenuTooltip,
-} from '../../../../components/AdminMenuTooltip';
+import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const breakpointSVGMap = {
@@ -69,7 +66,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ skipHidingBanner, setSkipHidingBanner ] = useState( false );
 
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'set-up-ads' )
@@ -82,13 +78,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
-	const isCTADismissed = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
-	);
-	const dismissedPromptsLoaded = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getDismissedPrompts', [] )
-	);
-	const hideCTABanner = isCTADismissed || ! dismissedPromptsLoaded;
 
 	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
 		const {
@@ -106,9 +95,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	} );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
-		)
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
@@ -119,6 +106,13 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			expiresInSeconds: 2 * WEEK_IN_SECONDS,
 		} );
 	}, [ id, dismissNotification ] );
+
+	const { setCacheItem } = useDispatch( CORE_SITE );
+	const dismissWooCommerceRedirectModal = useCallback( () => {
+		setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
+			ttl: 5 * MINUTE_IN_SECONDS,
+		} );
+	}, [ setCacheItem ] );
 
 	const activateModule = useActivateModuleCallback( 'ads' );
 
@@ -141,52 +135,29 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		isWooCommerceRedirectModalDismissed,
 	] );
 
-	const onModalDismiss = useCallback( () => {
-		markNotificationDismissed();
-
-		setSkipHidingBanner( true );
-	}, [ markNotificationDismissed, setSkipHidingBanner ] );
-
 	const onModalClose = useCallback( () => {
 		setOpenDialog( false );
 	}, [ setOpenDialog ] );
 
-	const showTooltip = useShowTooltip( id );
-	const { isTooltipVisible } = useTooltipState( id );
+	const tooltipSettings = {
+		tooltipSlug: 'ads-setup-notification',
+		content: __(
+			'You can always enable Ads from Settings later',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const [ dismissLabel, setDismissLabel ] = useState(
 		__( 'Maybe later', 'google-site-kit' )
 	);
 
-	useEffect( () => {
+	useMount( () => {
 		if ( true === isDismissalFinal ) {
 			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
 		}
-	}, [ isDismissalFinal ] );
-
-	if ( isTooltipVisible ) {
-		return (
-			<AdminMenuTooltip
-				title={ __(
-					'You can always enable Ads from Settings later',
-					'google-site-kit'
-				) }
-				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-				tooltipStateKey={ id }
-			/>
-		);
-	}
-
-	// TODO: Don't use `skipHidingFromQueue` and remove the need to check
-	// if this component should output anything.
-	//
-	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
-	// This is because we don't want the component removed from the DOM as we have to still render
-	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
-	// checking for the dismissal state here.
-	if ( hideCTABanner && ! skipHidingBanner && ! isSaving ) {
-		return null;
-	}
+	} );
 
 	return (
 		<Notification>
@@ -224,7 +195,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 						dismissOnCTAClick={ false }
 						isSaving={ isSaving }
 						dismissLabel={ dismissLabel }
-						dismissOptions={ {
+						ctaDismissOptions={ {
 							skipHidingFromQueue: true,
 						} }
 						onDismiss={ showTooltip }
@@ -236,8 +207,9 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			/>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ onModalDismiss }
+					onDismiss={ markNotificationDismissed }
 					onClose={ onModalClose }
+					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
 					dialogActive
 				/>
 			) }

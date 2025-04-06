@@ -41,6 +41,9 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 	const productID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
 	);
+	const currentProductIDs = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
+	);
 	const paymentOption = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
 	);
@@ -61,11 +64,17 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 	const hasPaymentSubscription = paymentOption === 'subscriptions';
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { setProductIDs } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	return (
 		<div className="googlesitekit-rrm-settings-edit__product-id-container">
 			<div className="googlesitekit-rrm-settings-edit__product-id">
-				<ProductIDSelect hasModuleAccess={ hasModuleAccess } />
+				<ProductIDSelect
+					onChange={ () => {
+						setProductIDs( currentProductIDs );
+					} }
+					hasModuleAccess={ hasModuleAccess }
+				/>
 			</div>
 			{ hasPaymentSubscription &&
 				productID === 'openaccess' &&

@@ -47,7 +47,6 @@ import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarn
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
@@ -179,9 +178,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [ registry, finishSetup ] );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
-		)
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 	const isWooCommerceActivated = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceActivated()
@@ -308,7 +305,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 											isSaving={ isNavigatingToOAuthURL }
 										>
 											{ __(
-												'Start setup wizard',
+												'Start setup',
 												'google-site-kit'
 											) }
 										</SpinnerButton>

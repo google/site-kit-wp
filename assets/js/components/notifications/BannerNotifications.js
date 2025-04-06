@@ -27,23 +27,11 @@ import { Fragment } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import useQueryArg from '../../hooks/useQueryArg';
-import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
-import EnhancedMeasurementActivationBanner from '../../modules/analytics-4/components/dashboard/EnhancedMeasurementActivationBanner';
 import useViewOnly from '../../hooks/useViewOnly';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED } from '../KeyMetrics/KeyMetricsSetupCTARenderedEffect';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import Notifications from './Notifications';
-import { READER_REVENUE_MANAGER_MODULE_SLUG } from '../../modules/reader-revenue-manager/datastore/constants';
-
-const MODULES_USING_SUBTLE_NOTIFICATIONS = [
-	'ads',
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-	'sign-in-with-google',
-];
 
 export default function BannerNotifications() {
 	const viewOnly = useViewOnly();
@@ -54,13 +42,6 @@ export default function BannerNotifications() {
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
-
-	const keyMetricsSetupCTARendered = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( UI_KEY_KEY_METRICS_SETUP_CTA_RENDERED )
-	);
-
-	const [ notification ] = useQueryArg( 'notification' );
-	const [ slug ] = useQueryArg( 'slug' );
 
 	if ( viewOnly ) {
 		return (
@@ -75,15 +56,7 @@ export default function BannerNotifications() {
 	return (
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
-			{ /* This ensures that the `SetupSuccessBannerNotification` is not rendered for the modules that are using the `SubtleNotification` to display their success notification. */ }
-			{ 'authentication_success' === notification &&
-				! MODULES_USING_SUBTLE_NOTIFICATIONS.includes( slug ) && (
-					<SetupSuccessBannerNotification />
-				) }
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			{ ! keyMetricsSetupCTARendered && (
-				<EnhancedMeasurementActivationBanner />
-			) }
 			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);

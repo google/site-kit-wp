@@ -41,6 +41,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -75,6 +76,7 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			// Ensure the site info is resolved to get the home URL.
 			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
@@ -99,7 +101,7 @@ export function registerModule( modules ) {
 export const registerNotifications = ( notifications ) => {
 	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 		Component: SignInWithGoogleSetupCTABanner,
-		priority: 40,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -130,7 +132,6 @@ export const registerNotifications = ( notifications ) => {
 	} );
 	notifications.registerNotification( 'setup-success-notification-siwg', {
 		Component: SetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
