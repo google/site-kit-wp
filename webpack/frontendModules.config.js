@@ -95,8 +95,8 @@ module.exports = ( mode ) => ( {
 			},
 		} ),
 	],
-	// optimization: {
-	// 	concatenateModules: true,
-	// },
+	optimization: {
+		concatenateModules: true,
+	},
 	resolve,
 } );
