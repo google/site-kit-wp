@@ -71,7 +71,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: npm install
-        run: npm i --workspace=assets --include-workspace-root
+        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: JS Lint
         run: npm run lint:js
   js-test:
@@ -85,7 +85,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: npm install
-        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js
+        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
         run: npm run test:js
