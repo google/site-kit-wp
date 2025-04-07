@@ -246,17 +246,20 @@ export default function WooCommerceRedirectModal( {
 						) : undefined
 					}
 					onClick={ () => {
-						if ( isGoogleForWooCommerceAdsConnected ) {
+						if (
+							( isWooCommerceActive ||
+								isGoogleForWooCommerceAdsConnected ) &&
+							! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
+						) {
+							dismissNotification(
+								'account-linked-via-google-for-woocommerce'
+							);
+						}
+						if (
+							isGoogleForWooCommerceAdsConnected ||
+							isWooCommerceActive
+						) {
 							getGoogleForWooCommerceRedirectURI();
-							if (
-								( isWooCommerceActivated ||
-									isGoogleForWooCommerceAdsConnected ) &&
-								! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
-							) {
-								dismissNotification(
-									'account-linked-via-google-for-woocommerce'
-								);
-							}
 						} else {
 							onClose();
 						}
