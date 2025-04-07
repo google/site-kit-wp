@@ -32,6 +32,7 @@ module.exports = {
 			'--disable-gpu',
 			'--disable-setuid-sandbox',
 			'--no-zygote',
+			'--accept-lang=es-ES',
 		],
 		executablePath: '/usr/bin/chromium',
 	},

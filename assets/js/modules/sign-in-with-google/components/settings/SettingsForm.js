@@ -32,6 +32,7 @@ import {
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { getLocale } from '../../../../util';
 
 export default function SettingsForm() {
 	return (
@@ -40,6 +41,7 @@ export default function SettingsForm() {
 				moduleSlug="sign-in-with-google"
 				storeName={ MODULES_SIGN_IN_WITH_GOOGLE }
 			/>
+			<h1>Locale Debug: { getLocale() }</h1>
 			<Grid>
 				<Row>
 					<Cell size={ 8 }>

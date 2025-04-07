@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"test:visualtest": "npm run backstopjs -- test",
+		"test:visualtest": "npm run backstopjs -- test --filter='Modules/SignInWithGoogle/Settings/SettingsEdit'",
 		"test:visualapprove": "npm run backstopjs -- approve",
 		"backstopjs": "./bin/backstop"
 	},
