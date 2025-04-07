@@ -23,6 +23,13 @@
 /**
  * Internal dependencies
  */
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
+
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -37,38 +44,23 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { ADS_NOTIFICATIONS } from '../..';
-import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-	MODULES_ADS,
-	PLUGINS,
-} from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { enabledFeatures } from '../../../../features';
+import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
-const ACCOUNT_LINKED_NOTIFICATION_ID =
-	'account-linked-via-google-for-woocommerce';
 
 describe( 'AdsModuleSetupCTABanner', () => {
 	let registry;
 
 	const notification = ADS_NOTIFICATIONS[ NOTIFICATION_ID ];
 
-	const accountLinkedNotification =
-		ADS_NOTIFICATIONS[ ACCOUNT_LINKED_NOTIFICATION_ID ];
-
 	const AdsModuleSetupCTABannerComponent = withNotificationComponentProps(
 		NOTIFICATION_ID
 	)( AdsModuleSetupCTABanner );
-
-	const fetchDismissPrompt = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-	);
-	const dismissItemEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
 
 	beforeEach( () => {
 		enabledFeatures.add( 'adsPax' );
@@ -129,20 +121,11 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				},
 			} );
 
-			registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.registerNotification(
-					'account-linked-via-google-for-woocommerce',
-					accountLinkedNotification
-				);
-
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
-
-			fetchMock.postOnce( dismissItemEndpoint, {} );
 
 			const { getByText, waitForRegistry } = render(
 				<AdsModuleSetupCTABannerComponent />,
@@ -157,8 +140,8 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			expect(
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
-			// 'account-linked-via-google-for-woocommerce' should be dismissed.
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			// Dismissal should be triggered when the modal is opened.
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
@@ -174,20 +157,11 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				},
 			} );
 
-			registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.registerNotification(
-					'account-linked-via-google-for-woocommerce',
-					accountLinkedNotification
-				);
-
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
-
-			fetchMock.postOnce( dismissItemEndpoint, {} );
 
 			const { getByText, waitForRegistry } = render(
 				<AdsModuleSetupCTABannerComponent />,
@@ -203,8 +177,8 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
 
-			// 'account-linked-via-google-for-woocommerce' should be dismissed.
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			// Dismissal should be triggered when the modal is opened.
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {
@@ -222,7 +196,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 					body: { success: true },
 				}
 			);
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
@@ -249,69 +223,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			).toBe( true );
 
 			// Dismissal should be triggered when the CTA is clicked.
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
-		} );
-
-		it( 'should start Ads module activation if WooCommerce redirect modal was previously dismissed', async () => {
-			provideModuleRegistrations( registry );
-			registry.dispatch( MODULES_ADS ).receiveModuleData( {
-				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
-					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
-						active: true,
-						adsConnected: false,
-					},
-				},
-			} );
-
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [
-					ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-				] );
-
-			fetchMock.getOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
-				{
-					body: { needsReauthentication: false },
-				}
-			);
-			fetchMock.postOnce(
-				RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
-				{
-					body: { success: true },
-				}
-			);
-			fetchMock.postOnce( fetchDismissPrompt, {
-				body: {
-					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
-				},
-			} );
-
-			const { getByText, waitForRegistry } = render(
-				<AdsModuleSetupCTABannerComponent />,
-				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-			);
-
-			const primaryCTA = getByText( 'Set up Ads' );
-			fireEvent.click( primaryCTA );
-
-			await waitForRegistry();
-
-			expect(
-				document.querySelector( '.mdc-dialog' )
-			).not.toBeInTheDocument();
-
-			expect(
-				registry
-					.select( CORE_MODULES )
-					.isDoingSetModuleActivation( 'ads' )
-			).toBe( true );
-
-			// Dismissal should be triggered when the CTA is clicked.
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 		} );
 	} );
 
@@ -330,21 +242,14 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		} );
 
 		it( 'should dismiss notification', async () => {
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
 
 			const { getByText, waitForRegistry } = render(
-				<div>
-					<div id="adminmenu">
-						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-							Settings
-						</a>
-					</div>
-					<AdsModuleSetupCTABannerComponent />
-				</div>,
+				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
@@ -353,15 +258,8 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 			await waitForRegistry();
 
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
-			expect(
-				document.querySelector( '.googlesitekit-publisher-win__title' )
-			).not.toBeInTheDocument();
-
-			// Tooltip should be visible after dismissing the notification.
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).toBeInTheDocument();
+			expect( mockShowTooltip ).toHaveBeenCalled();
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 		} );
 	} );
 

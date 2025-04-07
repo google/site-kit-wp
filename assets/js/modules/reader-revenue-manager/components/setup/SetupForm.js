@@ -46,11 +46,8 @@ import {
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
 } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
 
 export default function SetupForm( { onCompleteSetup } ) {
-	const isRRMv2Enabled = useFeature( 'rrmModuleV2' );
-
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).canSubmitChanges()
 	);
@@ -64,7 +61,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 	const productIDs = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
 	);
 	const managePublicationsURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL()
@@ -90,15 +87,11 @@ export default function SetupForm( { onCompleteSetup } ) {
 
 	const autoSelectProductID = useCallback(
 		( { products } ) => {
-			if ( ! isRRMv2Enabled ) {
-				return;
-			}
-
 			if ( products?.length > 0 && !! products[ 0 ].name ) {
 				setProductID( products[ 0 ].name );
 			}
 		},
-		[ isRRMv2Enabled, setProductID ]
+		[ setProductID ]
 	);
 
 	// Automatically pre-select a publication.
@@ -149,7 +142,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 						autoSelectProductID( publication )
 					}
 				/>
-				{ isRRMv2Enabled && productIDs?.length > 0 && (
+				{ productIDs?.length > 0 && (
 					<ProductIDSelect showHelperText={ false } />
 				) }
 			</div>

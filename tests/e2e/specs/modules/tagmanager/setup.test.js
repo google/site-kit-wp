@@ -198,11 +198,9 @@ describe( 'Tag Manager module setup', () => {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
-			await page.waitForSelector(
-				'.googlesitekit-publisher-win--win-success'
-			);
+			await page.waitForSelector( '.googlesitekit-subtle-notification' );
 			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__title',
+				'.googlesitekit-subtle-notification__content p',
 				{
 					text: /Congrats on completing the setup for Tag Manager!/i,
 				}
@@ -294,11 +292,9 @@ describe( 'Tag Manager module setup', () => {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
-			await page.waitForSelector(
-				'.googlesitekit-publisher-win--win-success'
-			);
+			await page.waitForSelector( '.googlesitekit-subtle-notification' );
 			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__title',
+				'.googlesitekit-subtle-notification__content p',
 				{
 					text: /Congrats on completing the setup for Tag Manager!/i,
 				}
@@ -420,10 +416,10 @@ describe( 'Tag Manager module setup', () => {
 						text: new RegExp( 'complete setup', 'i' ),
 					} );
 					await page.waitForSelector(
-						'.googlesitekit-publisher-win--win-success'
+						'.googlesitekit-subtle-notification'
 					);
 					await expect( page ).toMatchElement(
-						'.googlesitekit-publisher-win__title',
+						'.googlesitekit-subtle-notification__content p',
 						{
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}
