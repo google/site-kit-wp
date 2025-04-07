@@ -34,7 +34,6 @@ import PencilIcon from '../../../svg/icons/pencil-alt.svg';
 import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
 
 export default function ChangeMetricsLink() {
 	const keyMetrics = useSelect( ( select ) =>
@@ -51,8 +50,6 @@ export default function ChangeMetricsLink() {
 
 	const renderChangeMetricLink =
 		Array.isArray( keyMetrics ) && keyMetrics?.length > 0;
-
-	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
 
 	if ( ! renderChangeMetricLink ) {
 		return null;
