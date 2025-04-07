@@ -15,7 +15,7 @@ on:
       - 'assets/**/*.js'
       - '!assets/**/*.test.js'
       - '!assets/**/test/**'
-      - 'assets/sass/**/*.scss'
+      - 'assets/**/*.scss'
       - 'assets/svg/**/*.svg'
       - './*.config.js'
       - './package-lock.json'

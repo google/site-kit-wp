@@ -55,6 +55,7 @@ export default function WooCommerceRedirectModal( {
 	onClose,
 	onDismiss = null,
 	onContinue = null,
+	onBeforeSetupCallback = null,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
 
@@ -128,7 +129,6 @@ export default function WooCommerceRedirectModal( {
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
-
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onContinueWithSiteKit = useCallback( () => {
@@ -153,16 +153,18 @@ export default function WooCommerceRedirectModal( {
 			return;
 		}
 
+		onBeforeSetupCallback?.();
 		onSetupCallback();
 	}, [
 		setIsSaving,
 		onDismiss,
 		onClose,
+		onBeforeSetupCallback,
 		onSetupCallback,
 		onContinue,
-		isWooCommerceActivated,
-		isGoogleForWooCommerceAdsConnected,
 		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
+		isGoogleForWooCommerceAdsConnected,
+		isWooCommerceActivated,
 		dismissNotification,
 	] );
 
@@ -286,4 +288,5 @@ WooCommerceRedirectModal.propTypes = {
 	onDismiss: PropTypes.func,
 	onClose: PropTypes.func.isRequired,
 	onContinue: PropTypes.func,
+	onBeforeSetupCallback: PropTypes.func,
 };
