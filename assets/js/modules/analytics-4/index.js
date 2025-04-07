@@ -723,11 +723,20 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			const currentUserID = select( CORE_USER ).getID();
+			const audienceSegmentationSetupCompletedByUserID =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+
 			const analyticsConnected = await resolveSelect(
 				CORE_MODULES
 			).isModuleConnected( 'analytics-4' );
 
-			if ( ! analyticsConnected ) {
+			if (
+				! analyticsConnected ||
+				currentUserID !== audienceSegmentationSetupCompletedByUserID
+			) {
 				return false;
 			}
 
