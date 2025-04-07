@@ -26,12 +26,10 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
-	act,
 	render,
 	createTestRegistry,
 	provideModules,
@@ -39,7 +37,6 @@ import {
 	muteFetch,
 	provideGatheringDataState,
 	provideUserAuthentication,
-	fireEvent,
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import {
@@ -271,122 +268,5 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				} )
 			)
 		);
-	} );
-
-	it( 'does not render when dismissed', async () => {
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
-
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] );
-
-		const { container, waitForRegistry } = render(
-			<KeyMetricsSetupCTAWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'does not render when dismissed and the tooltip is visible', async () => {
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-			{
-				body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
-				status: 200,
-			}
-		);
-
-		mockSurveyEndpoints();
-
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
-
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-
-		const { container, getByRole, waitForRegistry } = render(
-			<div>
-				<div id="adminmenu">
-					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-						Settings
-					</a>
-				</div>
-				<KeyMetricsSetupCTAWidget
-					Widget={ Widget }
-					WidgetNull={ WidgetNull }
-				/>
-			</div>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
-		).toHaveTextContent(
-			'Get personalized suggestions for user interaction metrics based on your goals'
-		);
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
-		} );
-
-		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
-		).not.toBeInTheDocument();
-
-		expect(
-			document.querySelector( '.googlesitekit-tour-tooltip' )
-		).toBeInTheDocument();
 	} );
 } );

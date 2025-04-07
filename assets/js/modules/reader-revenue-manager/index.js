@@ -74,6 +74,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			// Ensure the site info is resolved to get the home URL.
 			await registry.resolveSelect( CORE_SITE ).getSiteInfo();

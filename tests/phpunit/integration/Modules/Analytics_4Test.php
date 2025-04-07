@@ -3384,12 +3384,11 @@ class Analytics_4Test extends TestCase {
 			: 0;
 		wp_set_current_user( $user );
 
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->get_settings()->set( $settings );
+		$this->analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'googlesitekit_setup_gtag' );
-		$analytics->register();
+		$this->analytics->register();
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
@@ -4534,6 +4533,70 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 	}
 
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$this->analytics->register();
+
+		$this->assertEquals(
+			array(
+				array( $this->analytics, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
+	/**
+	 * @dataProvider data_ads_measurement_connection
+	 */
+	public function test_check_ads_measurement_connection( $settings, $expected ) {
+		$this->analytics->get_settings()->merge( $settings );
+
+		$this->assertEquals(
+			$expected,
+			$this->analytics->check_ads_measurement_connection()
+		);
+	}
+
+	public function data_ads_measurement_connection() {
+		yield 'not connected' => array(
+			array(),
+			false,
+		);
+		yield 'connected, no google tag IDs set' => array(
+			array(
+				'accountID'       => '123',
+				'propertyID'      => '55555',
+				'webDataStreamID' => '9999',
+				'measurementID'   => 'G-12345',
+			),
+			false,
+		);
+		yield 'connected, empty google tag IDs' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(),
+			),
+			false,
+		);
+		yield 'connected, google tag IDs with Ads' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(
+					'GT-12345',
+					'AW-99999',
+				),
+			),
+			true,
+		);
+	}
+
 	/**
 	 * @dataProvider block_on_consent_provider_non_amp
 	 * @param array $test_parameters {
@@ -4670,7 +4733,61 @@ class Analytics_4Test extends TestCase {
 
 		$audience_settings = $this->audience_settings->get();
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} is not equal before property change" );
+		}
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-222222',
+			)
+		);
+
+		$audience_settings = $this->audience_settings->get();
+
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} is not equal after property change" );
+		}
+	}
+
+	public function test_module_level_audience_settings_reset__on_deactivation() {
+		$this->analytics->register();
+
+		$default_audience_segmentation_settings = array(
+			'availableAudiences'                   => null,
+			'availableAudiencesLastSyncedAt'       => 0,
+			'audienceSegmentationSetupCompletedBy' => null,
+		);
+
+		$activated_audience_segmentation_settings = array(
+			'availableAudiences'                   => array(
+				array(
+					'name' => 'properties/12345678/audiences/12345',
+				),
+				array(
+					'name' => 'properties/12345678/audiences/67890',
+				),
+			),
+			'availableAudiencesLastSyncedAt'       => time(),
+			'audienceSegmentationSetupCompletedBy' => 1,
+		);
+
+		// Set module level audience settings.
+		$this->audience_settings->merge(
+			$activated_audience_segmentation_settings
+		);
+		$analytics_settings = $this->audience_settings->get();
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
+		}
+
+		// Simulate deactivation effect.
+		$this->analytics->on_deactivation();
+
+		// Confirm the module level audience settings have been reset.
+		$audience_settings = $this->audience_settings->get();
+
+		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
 		}
 	}
 

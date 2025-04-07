@@ -79,6 +79,7 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '../googlesitekit/notifications/datastore/constants';
+import { AdminMenuTooltip } from './AdminMenuTooltip';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -248,6 +249,8 @@ export default function DashboardMainApp() {
 		<Fragment>
 			<ScrollEffect />
 			<ModuleDashboardEffects />
+
+			<AdminMenuTooltip />
 
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />

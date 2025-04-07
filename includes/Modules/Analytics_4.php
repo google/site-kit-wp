@@ -325,13 +325,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						)
 					);
 
-					$this->audience_settings->set(
-						array(
-							'availableAudiences' => null,
-							'availableAudiencesLastSyncedAt' => 0,
-							'audienceSegmentationSetupCompletedBy' => null,
-						)
-					);
+					$this->audience_settings->delete();
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
@@ -444,6 +438,44 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				);
 			}
 		);
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			20
+		);
+	}
+
+	/**
+	 * Checks if the Analytics 4 module is connected and contributing to Ads measurement.
+	 *
+	 * Verifies connection status and settings to determine if Ads-related configurations
+	 * (AdSense linked or Google Tag Container with AW- destination IDs) exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if Analytics 4 is connected and configured for Ads measurement; false otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		if ( ! $this->is_connected() ) {
+			return false;
+		}
+		$settings = $this->get_settings()->get();
+
+		if ( $settings['adsLinked'] ) {
+			return true;
+		}
+
+		foreach ( (array) $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
+			if ( 0 === stripos( $destination_id, 'AW-' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

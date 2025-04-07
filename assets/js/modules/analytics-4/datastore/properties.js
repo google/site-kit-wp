@@ -153,10 +153,13 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings ) {
+	reducerCallback( state, googleTagSettings, { measurementID } ) {
 		return {
 			...state,
-			googleTagSettings,
+			googleTagSettings: {
+				...state.googleTagSettings,
+				[ measurementID ]: googleTagSettings,
+			},
 		};
 	},
 	argsToParams( measurementID ) {
@@ -660,14 +663,18 @@ const baseActions = {
 
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
+		// The "last synced" value should reflect the real time this action
+		// was performed, so we don't use the reference date here.
+		const timestamp = Date.now(); // eslint-disable-line sitekit/no-direct-date
+
 		if (
 			!! googleTagLastSyncedAtMs &&
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
+			timestamp - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
 		) {
 			return;
 		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs( timestamp );
 
 		const googleTagID = getGoogleTagID();
 
@@ -705,12 +712,9 @@ const baseActions = {
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			googleTagContainerDestinationIDs,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
-		} );
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagContainerDestinationIDs(
+			googleTagContainerDestinationIDs
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
@@ -838,7 +842,7 @@ const baseResolvers = {
 		const registry = yield commonActions.getRegistry();
 		const googleTagSettings = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getGoogleTagSettings();
+			.getGoogleTagSettings( measurementID );
 
 		if ( googleTagSettings !== undefined ) {
 			return googleTagSettings;
@@ -906,13 +910,14 @@ const baseSelectors = {
 	/**
 	 * Gets Google tag settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state         Data store's state.
+	 * @param {string} measurementID Measurement ID.
 	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
 	 */
-	getGoogleTagSettings( state ) {
-		return state.googleTagSettings;
+	getGoogleTagSettings( state, measurementID ) {
+		return state.googleTagSettings?.[ measurementID ];
 	},
 
 	/**
