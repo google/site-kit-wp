@@ -305,7 +305,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 											isSaving={ isNavigatingToOAuthURL }
 										>
 											{ __(
-												'Start setup wizard',
+												'Start setup',
 												'google-site-kit'
 											) }
 										</SpinnerButton>
