@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TopCountriesWidget renders correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsAdSenseTopEarningContent googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top earning pages
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Pages that generated the most AdSense revenue"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__table"
+          >
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Test Post 1 (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Test Post 1"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Test Post 1
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  $84.00
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Test Post 2 (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Test Post 2"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Test Post 2
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  $11.00
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Test Post 3 (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Test Post 3"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Test Post 3
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  $3.00
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
