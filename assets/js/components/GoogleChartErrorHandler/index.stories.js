@@ -32,9 +32,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/GoogleChartErrorHandler',
-};
 
 export default {
 	title: 'Components/GoogleChartErrorHandler',
