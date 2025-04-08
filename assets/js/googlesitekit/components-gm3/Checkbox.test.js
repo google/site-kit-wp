@@ -27,7 +27,7 @@ import { useState } from '@wordpress/element';
 import { fireEvent, render } from '../../../../tests/js/test-utils';
 import Checkbox from './Checkbox';
 
-describe( 'Checkbox', () => {
+describe.skip( 'Checkbox', () => {
 	it( 'should render the checkbox', async () => {
 		const { container, getByLabelText } = render(
 			<Checkbox

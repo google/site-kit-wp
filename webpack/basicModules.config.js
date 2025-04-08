@@ -1,5 +1,5 @@
 /**
- * Test Bundle config webpack partial.
+ * Basic modules config webpack partial.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -20,38 +20,49 @@
  * External dependencies
  */
 const WebpackBar = require( 'webpackbar' );
+const ManifestPlugin = require( 'webpack-manifest-plugin' );
 
 /**
  * Internal dependencies
  */
 const {
 	rootDir,
+	manifestArgs,
 	externals,
 	resolve,
-	createRules,
-} = require( '../../webpack/common' );
+	rules,
+} = require( './common' );
 
 module.exports = ( mode ) => ( {
-	context: rootDir,
 	entry: {
-		'e2e-api-fetch': rootDir + '/tests/e2e/assets/e2e-api-fetch.js',
-		'e2e-redux-logger': rootDir + '/tests/e2e/assets/e2e-redux-logger.js',
+		'googlesitekit-i18n': './js/googlesitekit-i18n.js',
+		// Analytics advanced tracking script to be injected in the frontend.
+		'analytics-advanced-tracking': './js/analytics-advanced-tracking.js',
 	},
+	externals,
 	output: {
-		filename: '[name].js',
+		filename:
+			mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
 		path: rootDir + '/dist/assets/js',
-		chunkFilename: '[name].js',
 		publicPath: '',
 	},
 	module: {
-		rules: createRules( mode ),
+		rules,
 	},
 	plugins: [
 		new WebpackBar( {
-			name: 'Test files',
-			color: '#34a853',
+			name: 'Basic Modules',
+			color: '#fb1105',
+		} ),
+		new ManifestPlugin( {
+			...manifestArgs( mode ),
+			filter( file ) {
+				return ( file.name || '' ).match( /\.js$/ );
+			},
 		} ),
 	],
-	externals,
+	optimization: {
+		concatenateModules: true,
+	},
 	resolve,
 } );
