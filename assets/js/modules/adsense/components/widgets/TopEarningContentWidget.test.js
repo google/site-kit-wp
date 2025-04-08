@@ -47,19 +47,6 @@ describe( 'TopCountriesWidget', () => {
 
 	const adSenseAccountID = 'pub-1234567890';
 
-	const basePageTitlesReportOptions = {
-		dimensionFilters: {
-			pagePath: new Array( 3 )
-				.fill( '' )
-				.map( ( _, i ) => `/test-post-${ i + 1 }/` )
-				.sort(),
-		},
-		dimensions: [ 'pagePath', 'pageTitle' ],
-		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 15,
-	};
-
 	it( 'should render correctly with the expected metrics', async () => {
 		const registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
@@ -72,7 +59,18 @@ describe( 'TopCountriesWidget', () => {
 			...registry
 				.select( CORE_USER )
 				.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
-			...basePageTitlesReportOptions,
+			dimensionFilters: {
+				pagePath: new Array( 3 )
+					.fill( '' )
+					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.sort(),
+			},
+			dimensions: [ 'pagePath', 'pageTitle' ],
+			metrics: [ { name: 'screenPageViews' } ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 15,
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(
