@@ -47,9 +47,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectGA4CTAWidget';
-Default.scenario = {
-	label: 'KeyMetrics/ConnectGA4CTAWidget',
-};
 
 export default {
 	title: 'Key Metrics/ConnectGA4CTAWidget',
