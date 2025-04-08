@@ -86,7 +86,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/TopDeviceDrivingPurchasesWidget/Ready',
 	delay: 250,
 };
 
