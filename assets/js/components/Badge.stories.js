@@ -28,7 +28,7 @@ function Template( args ) {
 export const DefaultBadge = Template.bind( {} );
 DefaultBadge.storyName = 'Default Badge';
 DefaultBadge.args = {
-	label: 'Experimental ',
+	label: 'Experimental',
 };
 
 export default {
