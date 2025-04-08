@@ -28,10 +28,7 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'ChangeGroupsLink';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ChangeGroupsLink',
-};
+Default.storyName = 'Default';
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ChangeGroupsLink',
