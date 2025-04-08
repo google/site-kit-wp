@@ -28,13 +28,14 @@ import {
 } from '../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
-import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 
 describe( 'EngagedTrafficSourceWidget', () => {
 	let registry;
@@ -96,6 +97,39 @@ describe( 'EngagedTrafficSourceWidget', () => {
 		].forEach( ( selector ) => {
 			expect( container.querySelector( selector ) ).toBeInTheDocument();
 		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );
