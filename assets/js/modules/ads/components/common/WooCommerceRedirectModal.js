@@ -117,7 +117,7 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
+	const handleGoogleForWooCommerceRedirect = useCallback( () => {
 		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
@@ -256,7 +256,7 @@ export default function WooCommerceRedirectModal( {
 							isGoogleForWooCommerceAdsConnected ||
 							isWooCommerceActive
 						) {
-							getGoogleForWooCommerceRedirectURI();
+							handleGoogleForWooCommerceRedirect();
 						} else {
 							onClose();
 						}
