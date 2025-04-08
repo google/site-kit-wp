@@ -86,10 +86,6 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopCitiesDrivingLeadsWidget/Ready',
-};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
