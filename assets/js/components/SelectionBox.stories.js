@@ -58,9 +58,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SelectionBox';
-Default.scenario = {
-	label: 'Global/SelectionBox',
-};
 
 export default {
 	title: 'Components/SelectionBox',
