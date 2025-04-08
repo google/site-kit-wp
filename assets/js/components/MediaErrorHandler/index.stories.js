@@ -40,9 +40,6 @@ function NoErrorsTemplate() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/MediaErrorHandler',
-};
 
 export const WithCustomErrorMessage = Template.bind( {} );
 WithCustomErrorMessage.storyName = 'With Custom Error Message';
