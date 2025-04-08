@@ -70,7 +70,6 @@ function Template( args ) {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsEdit/Default',
 	delay: 250,
 };
 
@@ -132,7 +131,6 @@ WithFirstPartyModeAvailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeAvailable.scenario = {};
 
 export const WithFirstPartyModeUnavailable = Template.bind( null );
 WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
@@ -168,7 +166,6 @@ WithFirstPartyModeUnavailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeUnavailable.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
@@ -259,7 +256,6 @@ WithExistingTagNoMatch.decorators = [
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
 IceEnabled.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsEdit/ICE',
 	delay: 250,
 };
 IceEnabled.decorators = [
