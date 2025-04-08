@@ -161,9 +161,6 @@ MainDashboardLoaded.args = {
 		} );
 	},
 };
-MainDashboardLoaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loaded',
-};
 
 export const MainDashboardLoading = Template.bind( {} );
 MainDashboardLoading.storyName = 'Loading';
@@ -187,9 +184,6 @@ MainDashboardLoading.decorators = [
 		);
 	},
 ];
-MainDashboardLoading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loading',
-};
 
 export const MainDashboardDataUnavailable = Template.bind( {} );
 MainDashboardDataUnavailable.storyName = 'Data Unavailable';
@@ -223,9 +217,6 @@ MainDashboardDataUnavailable.args = {
 				.setPropertyID( propertyID );
 		} );
 	},
-};
-MainDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/DataUnavailable',
 };
 
 export const MainDashboardZeroData = Template.bind( {} );
@@ -267,9 +258,6 @@ MainDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-MainDashboardZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/ZeroData',
-};
 
 export const MainDashboardError = Template.bind( {} );
 MainDashboardError.storyName = 'Error';
@@ -291,9 +279,6 @@ MainDashboardError.args = {
 		} );
 	},
 };
-MainDashboardError.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Error',
-};
 
 export const MainDashboardOneRowOfData = Template.bind( {} );
 MainDashboardOneRowOfData.storyName = 'One row of data';
@@ -314,9 +299,6 @@ MainDashboardOneRowOfData.args = {
 			provideAnalytics4MockReport( registry, options );
 		} );
 	},
-};
-MainDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/OneRowOfData',
 };
 
 export default {
