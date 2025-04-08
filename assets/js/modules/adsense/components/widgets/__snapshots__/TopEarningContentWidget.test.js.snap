@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopCountriesWidget renders correctly with the expected metrics 1`] = `
+exports[`TopEarningContentWidget should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsAdSenseTopEarningContent googlesitekit-widget--no-padding"
@@ -118,6 +118,191 @@ exports[`TopCountriesWidget renders correctly with the expected metrics 1`] = `
                   $3.00
                 </strong>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TopEarningContentWidget should render the generic error variant when the report fetch fails 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Top earning pages
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Pages that generated the most AdSense revenue"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Data loading failed
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <div
+            class="googlesitekit-error-retry-text"
+          >
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?error_id=internal_server_error"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TopEarningContentWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Top earning pages
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Pages that generated the most AdSense revenue"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Insufficient permissions
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <div
+            class="googlesitekit-error-retry-text"
+          >
+            Trouble getting access? 
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?error_id=analytics-4_insufficient_permissions"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TopEarningContentWidget should render the loading state while resolving the report 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsAdSenseTopEarningContent googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top earning pages
+          </h3>
+          <span
+            class="screen-reader-text"
+          >
+            <span
+              class="googlesitekit-info-tooltip"
+              title="Pages that generated the most AdSense revenue"
+            >
+              <svg />
+            </span>
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__loading"
+          >
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
+              style="width: 100%; height: 14px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
+              style="width: 100%; height: 53px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
             </div>
           </div>
         </div>
