@@ -221,8 +221,6 @@
 			}
 		}
 
-		/* These styles are inherently at the same specificity as the warning styles above. */
-		/* stylelint-disable-next-line no-descending-specificity */
 		.mdc-button--tertiary {
 
 			@include mdc-button-ink-color( $c-violet-v-600 );
