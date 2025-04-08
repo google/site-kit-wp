@@ -44,9 +44,6 @@ function Template( { setupRegistry = () => {} } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Default',
-};
 
 export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
@@ -61,9 +58,6 @@ AdBlocker.args = {
 		] );
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 	},
-};
-AdBlocker.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/AdBlocker',
 };
 
 export const Empty = Template.bind( {} );
@@ -83,9 +77,6 @@ Empty.args = {
 
 		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
-};
-Empty.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Empty',
 };
 
 export const Invalid = Template.bind( {} );
@@ -110,9 +101,6 @@ Invalid.args = {
 			.dispatch( MODULES_ADS )
 			.setSettings( { conversionID: 'AW-ABCDEFGHIJ' } );
 	},
-};
-Invalid.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Invalid',
 };
 
 export const Initial = Template.bind( {} );
