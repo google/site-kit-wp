@@ -134,8 +134,6 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopReturningVisitorPages/ReadyViewOnly',
 	delay: 250,
 };
 
