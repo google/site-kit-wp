@@ -32,6 +32,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import useDialogEscapeAndScrim from '../hooks/useDialogEscapeAndScrim';
 import {
 	Button,
 	Dialog,
@@ -59,10 +60,31 @@ function ModalDialog( {
 	small = false,
 	medium = false,
 	buttonLink = null,
+	refocusQuerySelector = null,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
+
+	const handleEscapeOrScrim = () => {
+		if ( refocusQuerySelector ) {
+			// Handle onClose as setting key action props on Dialog prevents these from being called.
+			onClose?.();
+			// Refocus the passed querySelector.
+			setTimeout( () => {
+				const element = document.querySelector( refocusQuerySelector );
+				if ( element ) {
+					element.focus();
+				}
+			} );
+		}
+	};
+
+	// Override the escape and scrim click actions if refocusQuerySelector is set.
+	useDialogEscapeAndScrim(
+		handleEscapeOrScrim,
+		dialogActive && refocusQuerySelector
+	);
 
 	return (
 		<Dialog
@@ -75,6 +97,9 @@ function ModalDialog( {
 				'googlesitekit-dialog-sm': small,
 				'googlesitekit-dialog-md': medium,
 			} ) }
+			// Prevent default modal behavior if we are capturing the escape key and scrim click.
+			escapeKeyAction={ refocusQuerySelector ? '' : 'close' }
+			scrimClickAction={ refocusQuerySelector ? '' : 'close' }
 		>
 			<DialogTitle>
 				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
@@ -168,6 +193,7 @@ ModalDialog.propTypes = {
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
 	buttonLink: PropTypes.string,
+	refocusQuerySelector: PropTypes.string,
 };
 
 export default ModalDialog;
