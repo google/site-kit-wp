@@ -54,9 +54,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Components/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification',
-};
 
 export default {
 	title: 'Components/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification',
