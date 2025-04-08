@@ -27,32 +27,23 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/EnhancedMeasurementSwitch/Default',
-};
 
 export const Disabled = Template.bind( {} );
+Disabled.storyName = 'Disabled';
 Disabled.args = {
 	disabled: true,
 };
-Disabled.scenario = {
-	label: 'Modules/Analytics4/Components/EnhancedMeasurementSwitch/Disabled',
-};
 
 export const StreamAlreadyEnabled = Template.bind( {} );
+StreamAlreadyEnabled.storyName = 'StreamAlreadyEnabled';
 StreamAlreadyEnabled.args = {
 	isEnhancedMeasurementAlreadyEnabled: true,
 };
-StreamAlreadyEnabled.scenario = {
-	label: 'Modules/Analytics4/Components/EnhancedMeasurementSwitch/StreamAlreadyEnabled',
-};
 
 export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
 Loading.args = {
 	loading: true,
-};
-Loading.scenario = {
-	label: 'Modules/Analytics4/Components/EnhancedMeasurementSwitch/Loading',
 };
 
 export default {
