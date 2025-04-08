@@ -79,10 +79,6 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
-};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -119,13 +115,6 @@ GatheringData.args = {
 		);
 	},
 };
-// Since the "Gathering Data" state is the same for all KMW tiles that require
-// custom dimensions, this is the sole scenario and should not be added to any
-// other generic `MetricTile___` or KMW component.
-GatheringData.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
-};
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
@@ -141,8 +130,6 @@ ErrorMissingCustomDimensions.args = {
 // that require custom dimensions, this is the sole scenario and should not be
 // added to any other generic `MetricTile___` or KMW component.
 ErrorMissingCustomDimensions.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
 	delay: 250,
 };
 
@@ -171,8 +158,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 // all KMW tiles that require custom dimensions,, this is the sole scenario and should
 // not be added to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
 
@@ -201,8 +186,6 @@ ErrorCustomDimensionsGeneric.args = {
 // that require custom dimensions, this is the sole scenario and should not be added
 // to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsGeneric.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
 
