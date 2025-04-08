@@ -27,9 +27,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/ReportErrorButton',
-};
 
 export default {
 	title: 'Components/ReportErrorButton',
