@@ -50,7 +50,6 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'SetupCTAWidget';
 Default.scenario = {
-	label: 'KeyMetrics/SetupCTAWidget',
 	delay: 250,
 };
 
