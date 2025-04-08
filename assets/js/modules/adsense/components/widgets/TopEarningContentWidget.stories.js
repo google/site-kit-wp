@@ -112,7 +112,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/Ready',
 	delay: 250,
 };
 
@@ -136,7 +135,6 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/ReadyViewOnly',
 	delay: 250,
 };
 
@@ -222,7 +220,6 @@ AdSenseNotLinked.args = {
 	},
 };
 AdSenseNotLinked.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/AdSenseNotLinked',
 	delay: 250,
 };
 
