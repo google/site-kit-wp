@@ -86,7 +86,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceWidget/Ready',
 	delay: 250,
 };
 
