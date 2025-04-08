@@ -49,7 +49,6 @@ function Template() {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Modules/Analytics4/Setup/SetupForm/Default',
 	delay: 250,
 };
 
