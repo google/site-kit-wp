@@ -34,9 +34,6 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'WarningNotice';
-Default.scenario = {
-	label: 'Components/WarningNotice',
-};
 Default.args = {
 	children: createInterpolateElement(
 		'Ad blocker detected; please disable it to get the latest AdSense data. <Link>Get help</Link>',
