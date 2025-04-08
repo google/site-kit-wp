@@ -111,8 +111,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopReturningVisitorPages/Ready',
 	delay: 250,
 };
 
