@@ -112,7 +112,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Ready',
 	delay: 500,
 };
 
@@ -135,9 +134,6 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Loading',
-};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -179,9 +175,6 @@ DataUnavailable.args = {
 		}
 	},
 };
-DataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailable',
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -207,7 +200,6 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroData',
 	delay: 500,
 };
 
@@ -231,9 +223,6 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Error',
-};
 
 export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready w/ entity URL set';
@@ -249,9 +238,6 @@ LoadedEntityURL.args = {
 			provideAnalytics4MockReport( registry, options );
 		}
 	},
-};
-LoadedEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
 };
 
 export const LoadingEntityURL = Template.bind( {} );
@@ -279,9 +265,6 @@ LoadingEntityURL.decorators = [
 		);
 	},
 ];
-LoadingEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadingEntityURL',
-};
 
 export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable w/ entity URL';
@@ -332,9 +315,6 @@ DataUnavailableEntityURL.args = {
 			);
 	},
 };
-DataUnavailableEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailableEntityURL',
-};
 
 export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
@@ -368,7 +348,6 @@ ZeroDataEntityURL.args = {
 	},
 };
 ZeroDataEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroDataEntityURL',
 	delay: 500,
 };
 
@@ -396,9 +375,6 @@ ErrorEntityURL.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	},
-};
-ErrorEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ErrorEntityURL',
 };
 
 export default {
