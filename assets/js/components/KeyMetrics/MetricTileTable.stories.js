@@ -64,7 +64,6 @@ Ready.args = {
 	columns,
 };
 Ready.scenario = {
-	label: 'KeyMetrics/MetricTileTable/Ready',
 	delay: 250,
 };
 
@@ -90,7 +89,6 @@ ReadyWithInfoTooltip.args = {
 	infoTooltip: 'This is a tooltip',
 };
 ReadyWithInfoTooltip.scenario = {
-	label: 'KeyMetrics/MetricTileTable/ReadyWithInfoTooltip',
 	delay: 250,
 };
 
@@ -107,7 +105,6 @@ ZeroData.args = {
 // Since the "Zero" state is similar for all "tabular" KMW tiles, this should be
 // the sole scenario and should not be added to any other "table" type KMW components.
 ZeroData.scenario = {
-	label: 'KeyMetrics/MetricTileTable/ZeroData',
 	delay: 250,
 };
 
