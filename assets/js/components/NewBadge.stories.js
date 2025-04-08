@@ -48,9 +48,6 @@ NewBadgeForceOpen.args = {
 	learnMoreLink: 'https://www.google.com',
 	forceOpen: true,
 };
-NewBadgeForceOpen.scenario = {
-	label: 'Global/NewBadge',
-};
 
 export default {
 	title: 'Components/NewBadge',
