@@ -205,7 +205,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
-		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
+		$this->audience_settings                = new Audience_Settings( $this->options );
+		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
 
 	/**
@@ -246,7 +247,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$conversion_reporting_provider->register();
 		}
 
-		$this->audience_settings = new Audience_Settings( $this->options );
 		$this->audience_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -264,25 +264,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		$this->get_settings()->on_change(
+		$this->audience_settings->on_change(
 			function ( $old_value, $new_value ) {
-				// Ensure that the data available state is reset when the property ID or measurement ID changes.
-				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
-					$this->reset_data_available();
-					$this->custom_dimensions_data_available->reset_data_available();
-
-					$available_audiences = $old_value['availableAudiences'] ?? array();
-
-					$available_audience_names = array_map(
-						function ( $audience ) {
-							return $audience['name'];
-						},
-						$available_audiences
-					);
-
-					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
-				}
-
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
 				$old_available_audiences = $old_value['availableAudiences'];
 				if ( $old_available_audiences ) {
@@ -307,6 +290,28 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$this->resource_data_availability_date->reset_resource_date( $unavailable_audience_name, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
 					}
 				}
+			}
+		);
+
+		$this->get_settings()->on_change(
+			function ( $old_value, $new_value ) {
+				// Ensure that the data available state is reset when the property ID or measurement ID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
+					$this->reset_data_available();
+					$this->custom_dimensions_data_available->reset_data_available();
+
+					$audience_settings   = $this->audience_settings->get();
+					$available_audiences = $audience_settings['availableAudiences'] ?? array();
+
+					$available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$available_audiences
+					);
+
+					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
+				}
 
 				// Reset property specific settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
@@ -317,9 +322,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
 							'detectedEvents'            => array(),
-							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
+
+					$this->audience_settings->delete();
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
@@ -350,9 +356,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			'pre_update_option_googlesitekit_analytics-4_settings',
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-					$new_value['availableCustomDimensions']            = null;
-					$new_value['availableAudiences']                   = null;
-					$new_value['audienceSegmentationSetupCompletedBy'] = null;
+					$new_value['availableCustomDimensions'] = null;
 				}
 
 				return $new_value;
@@ -535,6 +539,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
+		$this->audience_settings->delete();
 	}
 
 	/**
@@ -635,7 +640,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		// Return the SITE_KIT_AUDIENCE audiences.
-		$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
+		$available_audiences = $this->audience_settings->get()['availableAudiences'] ?? array();
+		$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
 
 		$debug_fields['analytics_4_site_kit_audiences'] = array(
 			'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
@@ -2553,7 +2559,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			}
 		);
 
-		$this->get_settings()->merge(
+		$this->audience_settings->merge(
 			array(
 				'availableAudiences'             => $available_audiences,
 				'availableAudiencesLastSyncedAt' => time(),
