@@ -34,7 +34,10 @@ import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../../../../util/errors';
 import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 
 describe( 'EngagedTrafficSourceWidget', () => {
@@ -97,6 +100,39 @@ describe( 'EngagedTrafficSourceWidget', () => {
 		].forEach( ( selector ) => {
 			expect( container.querySelector( selector ) ).toBeInTheDocument();
 		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the generic error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: ERROR_INTERNAL_SERVER_ERROR,
+			message: 'Internal server error',
+			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );
