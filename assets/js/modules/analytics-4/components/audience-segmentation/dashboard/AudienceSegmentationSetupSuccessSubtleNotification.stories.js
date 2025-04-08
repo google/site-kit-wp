@@ -32,10 +32,7 @@ function Template() {
 	return <NotificationWithComponentProps />;
 }
 export const Default = Template.bind( {} );
-Default.storyName = 'AudienceSegmentationSetupSuccessSubtleNotification';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupSuccessSubtleNotification',
-};
+Default.storyName = 'Default';
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupSuccessSubtleNotification',
