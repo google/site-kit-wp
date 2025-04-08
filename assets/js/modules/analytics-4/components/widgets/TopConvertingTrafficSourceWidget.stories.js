@@ -70,9 +70,6 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSourceWidget/Ready',
-};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
