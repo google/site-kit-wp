@@ -300,15 +300,32 @@ export default function CurrentSurvey() {
 		return null;
 	}
 
+	// To properly determine the submit button label, we need to check if the current
+	// question is the last question in the survey. This is done by checking if
+	// there are any trigger conditions that reference the current question. If
+	// there are no trigger conditions, it means that the current question is the
+	// last question in the survey.
+	const isTheLastQuestion =
+		questions.some( ( { trigger_condition: conditions } ) => {
+			if ( ! Array.isArray( conditions ) || conditions.length === 0 ) {
+				return false;
+			}
+
+			return conditions.some(
+				( condition ) =>
+					condition.question_ordinal ===
+					currentQuestion.question_ordinal
+			);
+		} ) === false;
+
 	const commonProps = {
 		key: currentQuestion.question_text,
 		answerQuestion,
 		dismissSurvey,
 		question: currentQuestion.question_text,
-		submitButtonText:
-			questions?.length === currentQuestionOrdinal
-				? __( 'Submit', 'google-site-kit' )
-				: __( 'Next', 'google-site-kit' ),
+		submitButtonText: isTheLastQuestion
+			? __( 'Submit', 'google-site-kit' )
+			: __( 'Next', 'google-site-kit' ),
 	};
 
 	return (

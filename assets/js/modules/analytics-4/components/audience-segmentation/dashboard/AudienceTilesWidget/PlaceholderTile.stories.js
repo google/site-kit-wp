@@ -61,7 +61,7 @@ WithConfigurableNonDefaultAudiences.storyName =
 	'WithConfigurableNonDefaultAudiences';
 WithConfigurableNonDefaultAudiences.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 	},
@@ -73,7 +73,7 @@ WithoutConfigurableNonDefaultAudiences.storyName =
 	'WithoutConfigurableNonDefaultAudiences';
 WithoutConfigurableNonDefaultAudiences.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: availableAudiences.filter(
 				( { audienceType } ) => audienceType === 'DEFAULT_AUDIENCE'
 			),

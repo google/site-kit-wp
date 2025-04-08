@@ -71,7 +71,8 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
+	const { invalidateResolution, dismissNotification } =
+		useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -102,19 +103,23 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const { dismissItem, dismissPrompt } = useDispatch( CORE_USER );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSuccess = useCallback( () => {
 		invalidateResolution( 'getQueuedNotifications', [
 			viewContext,
 			NOTIFICATION_GROUPS.DEFAULT,
 		] );
-		dismissPrompt( id, {
-			expiresInSeconds: 0,
-		} );
+		dismissNotification( id );
 		// Dismiss success notification in settings.
 		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [ dismissItem, dismissPrompt, id, invalidateResolution, viewContext ] );
+	}, [
+		dismissItem,
+		id,
+		invalidateResolution,
+		dismissNotification,
+		viewContext,
+	] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );

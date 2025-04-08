@@ -82,9 +82,12 @@ describe( 'modules/analytics-4 partial data', () => {
 		] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			availableAudiences: [ testAudience1, testAudience2 ],
 			availableCustomDimensions: [ testCustomDimension ],
 			propertyID: testPropertyID,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: [ testAudience1, testAudience2 ],
 		} );
 	} );
 

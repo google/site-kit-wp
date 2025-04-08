@@ -84,7 +84,10 @@ WithAdsConnected.args = {
 
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetAdsMeasurementStatus( { connected: true } );
+			.receiveGetAdsMeasurementStatus(
+				{ connected: true },
+				{ useCache: false }
+			);
 	},
 };
 WithAdsConnected.scenario = {
