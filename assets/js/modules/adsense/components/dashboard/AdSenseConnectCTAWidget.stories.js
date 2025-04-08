@@ -44,7 +44,6 @@ function Template() {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.scenario = {
-	label: 'Global/AdSenseConnectCTAWidget/Ready',
 	delay: 250,
 };
 
