@@ -1,5 +1,5 @@
 /**
- * OverlayCard DismissButton component.
+ * OverlayCard MainBody component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
