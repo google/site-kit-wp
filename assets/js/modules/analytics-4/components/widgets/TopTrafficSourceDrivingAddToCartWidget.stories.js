@@ -88,9 +88,6 @@ Ready.args = {
 		);
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingAddToCartWidget/Ready',
-};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
