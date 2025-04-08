@@ -157,9 +157,6 @@ EntityDashboardLoaded.args = {
 		} );
 	},
 };
-EntityDashboardLoaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loaded',
-};
 
 export const EntityDashboardLoading = Template.bind( {} );
 EntityDashboardLoading.storyName = 'Loading';
@@ -183,9 +180,6 @@ EntityDashboardLoading.decorators = [
 		);
 	},
 ];
-EntityDashboardLoading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loading',
-};
 
 export const EntityDashboardDataUnavailable = Template.bind( {} );
 EntityDashboardDataUnavailable.storyName = 'Data Unavailable';
@@ -215,9 +209,6 @@ EntityDashboardDataUnavailable.args = {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
-};
-EntityDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
 };
 
 export const EntityDashboardZeroData = Template.bind( {} );
@@ -259,9 +250,6 @@ EntityDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
-};
 
 export const EntityDashboardError = Template.bind( {} );
 EntityDashboardError.storyName = 'Error';
@@ -283,9 +271,6 @@ EntityDashboardError.args = {
 		} );
 	},
 };
-EntityDashboardError.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Error',
-};
 
 export const EntityDashboardOneRowOfData = Template.bind( {} );
 EntityDashboardOneRowOfData.storyName = 'One row of data';
@@ -306,9 +291,6 @@ EntityDashboardOneRowOfData.args = {
 			provideAnalytics4MockReport( registry, options );
 		} );
 	},
-};
-EntityDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/OneRowOfData',
 };
 
 export default {
