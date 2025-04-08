@@ -115,13 +115,20 @@ export default function WooCommerceRedirectModal( {
 	}, [ adminURL, isWooCommerceActive, isGoogleForWooCommerceActive ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const getGoogleForWooCommerceRedirectURI = useCallback( () => {
+		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
+			dismissNotification( 'account-linked-via-google-for-woocommerce' );
+		}
+
 		setIsSaving( 'primary' );
 		onDismiss?.();
 
 		navigateTo( googleForWooCommerceRedirectURI );
 	}, [
+		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
+		dismissNotification,
 		setIsSaving,
 		onDismiss,
 		navigateTo,
@@ -129,7 +136,6 @@ export default function WooCommerceRedirectModal( {
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onContinueWithSiteKit = useCallback( () => {
 		if ( ! onContinue ) {
@@ -246,15 +252,6 @@ export default function WooCommerceRedirectModal( {
 						) : undefined
 					}
 					onClick={ () => {
-						if (
-							( isWooCommerceActive ||
-								isGoogleForWooCommerceAdsConnected ) &&
-							! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
-						) {
-							dismissNotification(
-								'account-linked-via-google-for-woocommerce'
-							);
-						}
 						if (
 							isGoogleForWooCommerceAdsConnected ||
 							isWooCommerceActive
