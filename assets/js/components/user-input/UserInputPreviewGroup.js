@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 20 ] */
-
 /**
  * External dependencies
  */
@@ -216,6 +214,79 @@ export default function UserInputPreviewGroup( {
 		toggleEditMode();
 	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
 
+	function PreviewAnswers() {
+		return (
+			<div className="googlesitekit-user-input__preview-answers">
+				<LoadingWrapper loading={ loading } width="340px" height="36px">
+					{ errorMessage && (
+						<p className="googlesitekit-error-text">
+							{ errorMessage }
+						</p>
+					) }
+
+					{ ! errorMessage &&
+						values.map( ( value ) => (
+							<div
+								key={ value }
+								className="googlesitekit-user-input__preview-answer"
+							>
+								{ options[ value ] }
+							</div>
+						) ) }
+				</LoadingWrapper>
+			</div>
+		);
+	}
+
+	function EditModeContent() {
+		return (
+			<Fragment>
+				<UserInputSelectOptions
+					slug={ slug }
+					max={ USER_INPUT_MAX_ANSWERS[ slug ] }
+					options={ options }
+					alignLeftOptions
+					descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
+				/>
+				{ errorMessage && (
+					<p className="googlesitekit-error-text">{ errorMessage }</p>
+				) }
+				{ settingsView && (
+					<Fragment>
+						<UserInputQuestionAuthor slug={ slug } />
+
+						{ saveSettingsError && (
+							<ErrorNotice error={ saveSettingsError } />
+						) }
+
+						<div className="googlesitekit-user-input__preview-actions">
+							<SpinnerButton
+								disabled={ answerHasError }
+								onClick={
+									hasSettingChanged
+										? submitChanges
+										: toggleEditMode
+								}
+								isSaving={ isScreenLoading }
+							>
+								{ hasSettingChanged || isSavingSettings
+									? __( 'Apply changes', 'google-site-kit' )
+									: __( 'Save', 'google-site-kit' ) }
+							</SpinnerButton>
+							<Button
+								tertiary
+								disabled={ isScreenLoading }
+								onClick={ handleOnCancelClick }
+							>
+								{ __( 'Cancel', 'google-site-kit' ) }
+							</Button>
+						</div>
+					</Fragment>
+				) }
+			</Fragment>
+		);
+	}
+
 	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
 
 	const {
@@ -278,83 +349,8 @@ export default function UserInputPreviewGroup( {
 				</div>
 			</LoadingWrapper>
 
-			{ ! isEditing && (
-				<div className="googlesitekit-user-input__preview-answers">
-					<LoadingWrapper
-						loading={ loading }
-						width="340px"
-						height="36px"
-					>
-						{ errorMessage && (
-							<p className="googlesitekit-error-text">
-								{ errorMessage }
-							</p>
-						) }
-
-						{ ! errorMessage &&
-							values.map( ( value ) => (
-								<div
-									key={ value }
-									className="googlesitekit-user-input__preview-answer"
-								>
-									{ options[ value ] }
-								</div>
-							) ) }
-					</LoadingWrapper>
-				</div>
-			) }
-
-			{ isEditing && (
-				<Fragment>
-					<UserInputSelectOptions
-						slug={ slug }
-						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
-						options={ options }
-						alignLeftOptions
-						descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
-					/>
-					{ errorMessage && (
-						<p className="googlesitekit-error-text">
-							{ errorMessage }
-						</p>
-					) }
-					{ settingsView && (
-						<Fragment>
-							<UserInputQuestionAuthor slug={ slug } />
-
-							{ saveSettingsError && (
-								<ErrorNotice error={ saveSettingsError } />
-							) }
-
-							<div className="googlesitekit-user-input__preview-actions">
-								<SpinnerButton
-									disabled={ answerHasError }
-									onClick={
-										hasSettingChanged
-											? submitChanges
-											: toggleEditMode
-									}
-									isSaving={ isScreenLoading }
-								>
-									{ hasSettingChanged || isSavingSettings
-										? __(
-												'Apply changes',
-												'google-site-kit'
-										  )
-										: __( 'Save', 'google-site-kit' ) }
-								</SpinnerButton>
-								<Button
-									tertiary
-									disabled={ isScreenLoading }
-									onClick={ handleOnCancelClick }
-								>
-									{ __( 'Cancel', 'google-site-kit' ) }
-								</Button>
-							</div>
-						</Fragment>
-					) }
-				</Fragment>
-			) }
+			{ ! isEditing && <PreviewAnswers /> }
+			{ isEditing && <EditModeContent /> }
 		</div>
 	);
 }
