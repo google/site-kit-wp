@@ -98,9 +98,6 @@ Default.args = {
 		);
 	},
 };
-Default.scenario = {
-	label: 'Global/SubtleNotifications/GA4AdSenseLinkedNotification',
-};
 
 export default {
 	title: 'Components/Notifications/Subtle/GA4AdSenseLinkedNotification',
