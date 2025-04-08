@@ -130,7 +130,6 @@ Loaded.args = {
 	},
 };
 Loaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loaded',
 	delay: 250,
 };
 
@@ -153,9 +152,6 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loading',
-};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -199,9 +195,6 @@ DataUnavailable.args = {
 		}
 	},
 };
-DataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/DataUnavailable',
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -227,7 +220,6 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/ZeroData',
 	delay: 250,
 };
 
@@ -254,9 +246,6 @@ Error.args = {
 			provideAnalytics4MockReport( registry, options );
 		}
 	},
-};
-Error.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Error',
 };
 
 export default {
