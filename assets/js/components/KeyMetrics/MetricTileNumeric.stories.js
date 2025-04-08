@@ -39,7 +39,6 @@ Positive.args = {
 	previousValue: 91,
 };
 Positive.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/Positive',
 	delay: 250,
 };
 
@@ -53,7 +52,6 @@ Negative.args = {
 	previousValue: 103,
 };
 Negative.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/Negative',
 	delay: 250,
 };
 
@@ -67,7 +65,6 @@ ZeroChange.args = {
 	previousValue: 100,
 };
 ZeroChange.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/ZeroChange',
 	delay: 250,
 };
 
@@ -83,7 +80,6 @@ ZeroData.args = {
 // Since the "Zero" state is similar for all "numeric" KMW tiles, this should be
 // the sole scenario and should not be added to any other "numeric" type KMW components.
 ZeroData.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/ZeroData',
 	delay: 250,
 };
 
@@ -96,11 +92,6 @@ Loading.args = {
 	currentValue: 0,
 	previousValue: 0,
 	loading: true,
-};
-// Since the "Loading" state is the same for all KMW tiles, this is the sole scenario
-// and should not be added to any other generic `MetricTile___` or KMW component.
-Loading.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/Loading',
 };
 Loading.decorators = [
 	( Story ) => {
