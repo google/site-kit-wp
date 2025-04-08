@@ -46,8 +46,6 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'ConsentMode/ConsentModeSetupCTAWidget/Default',
 	delay: 250,
 };
 
