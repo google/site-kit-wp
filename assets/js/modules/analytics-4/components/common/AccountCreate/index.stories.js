@@ -59,9 +59,6 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'AccountCreate';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AccountCreate',
-};
 
 export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
