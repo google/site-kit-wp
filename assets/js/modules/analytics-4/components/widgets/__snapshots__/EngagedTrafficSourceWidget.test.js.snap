@@ -58,3 +58,63 @@ exports[`EngagedTrafficSourceWidget should render correctly with the expected me
   </div>
 </div>
 `;
+
+exports[`EngagedTrafficSourceWidget should render the loading state when the data is not yet available 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsEngagedTrafficSource googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Most engaged traffic source
+          </h3>
+          <span
+            class="screen-reader-text"
+          >
+            <span
+              class="googlesitekit-info-tooltip"
+              title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
+            >
+              <svg />
+            </span>
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__loading"
+          >
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
+              style="width: 100%; height: 14px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
+              style="width: 100%; height: 53px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

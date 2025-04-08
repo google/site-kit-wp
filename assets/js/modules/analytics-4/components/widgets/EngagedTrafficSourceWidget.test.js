@@ -22,6 +22,7 @@
 import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
@@ -36,15 +37,22 @@ import { withConnected } from '../../../../googlesitekit/modules/datastore/__fix
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 
 describe( 'EngagedTrafficSourceWidget', () => {
+	let registry;
 	const { Widget, WidgetNull } = getWidgetComponentProps(
 		KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE
 	);
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
 
-	it( 'should render correctly with the expected metrics', async () => {
-		const registry = createTestRegistry();
+	beforeEach( () => {
+		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
+	} );
+
+	it( 'should render correctly with the expected metrics', async () => {
 		provideAnalytics4MockReport( registry, {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
@@ -64,6 +72,30 @@ describe( 'EngagedTrafficSourceWidget', () => {
 			{ registry }
 		);
 		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the loading state while resolving the report', async () => {
+		// Freeze the report fetch to keep the widget in loading state.
+		freezeFetch( reportEndpoint );
+
+		const { container, waitForRegistry } = render(
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		[
+			'.googlesitekit-km-widget-tile__loading',
+			'.googlesitekit-km-widget-tile__loading-header',
+			'.googlesitekit-km-widget-tile__loading-body',
+		].forEach( ( selector ) => {
+			expect( container.querySelector( selector ) ).toBeInTheDocument();
+		} );
 
 		expect( container ).toMatchSnapshot();
 	} );
