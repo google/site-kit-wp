@@ -84,9 +84,6 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopCountriesWidget/Ready',
-};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
