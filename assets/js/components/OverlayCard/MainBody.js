@@ -43,7 +43,6 @@ export default function MainBody( {
 	dismissButton,
 	GraphicDesktop,
 	GraphicMobile,
-	children,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -58,7 +57,6 @@ export default function MainBody( {
 			<div className="googlesitekit-overlay-card__body">
 				{ title && <Title>{ title }</Title> }
 				{ description && <Description>{ description }</Description> }
-				{ children }
 			</div>
 
 			{ ( ctaButton || dismissButton ) && (
@@ -89,7 +87,6 @@ export default function MainBody( {
 }
 
 MainBody.propTypes = {
-	children: PropTypes.node,
 	title: PropTypes.node,
 	description: PropTypes.node,
 	ctaButton: PropTypes.shape( {

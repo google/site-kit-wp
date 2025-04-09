@@ -31,7 +31,6 @@ import MainBody from './MainBody';
 
 export default function OverlayCard( {
 	className,
-	children,
 	title,
 	description,
 	ctaButton,
@@ -58,9 +57,7 @@ export default function OverlayCard( {
 					dismissButton={ dismissButton }
 					GraphicDesktop={ GraphicDesktop }
 					GraphicMobile={ GraphicMobile }
-				>
-					{ children }
-				</MainBody>
+				/>
 			</div>
 		);
 	}
@@ -75,9 +72,7 @@ export default function OverlayCard( {
 					dismissButton={ dismissButton }
 					GraphicDesktop={ GraphicDesktop }
 					GraphicMobile={ GraphicMobile }
-				>
-					{ children }
-				</MainBody>
+				/>
 			</div>
 		</Slide>
 	);
@@ -91,16 +86,14 @@ export const buttonProps = {
 
 OverlayCard.propTypes = {
 	className: PropTypes.string,
-	children: PropTypes.node,
+
 	title: PropTypes.string,
 	description: PropTypes.string,
 	ctaButton: PropTypes.shape( {
 		...buttonProps,
 		external: PropTypes.bool,
 	} ),
-	dismissButton: PropTypes.shape( {
-		...buttonProps,
-	} ),
+	dismissButton: buttonProps,
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,
 	visible: PropTypes.bool,

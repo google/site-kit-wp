@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,11 +29,11 @@ import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../svg/graphic
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
 
 function Template( args ) {
-	const { children, ...rest } = args;
-	return <OverlayCard { ...rest }>{ children }</OverlayCard>;
+	return <OverlayCard { ...args } />;
 }
 
 export const DefaultOverlayCard = Template.bind( {} );
+DefaultOverlayCard.storyName = 'Default';
 DefaultOverlayCard.scenario = {};
 DefaultOverlayCard.args = {
 	title: __( 'See your top earning content', 'google-site-kit' ),
@@ -56,6 +55,7 @@ DefaultOverlayCard.args = {
 };
 
 export const OverlayCardWithExternalLink = Template.bind( {} );
+OverlayCardWithExternalLink.storyName = 'With External Link';
 OverlayCardWithExternalLink.scenario = {};
 OverlayCardWithExternalLink.args = {
 	title: __( 'Explore more features', 'google-site-kit' ),
@@ -79,6 +79,7 @@ OverlayCardWithExternalLink.args = {
 };
 
 export const OverlayCardWithoutGraphic = Template.bind( {} );
+OverlayCardWithoutGraphic.storyName = 'Without Graphic';
 OverlayCardWithoutGraphic.scenario = {};
 OverlayCardWithoutGraphic.args = {
 	title: __( 'Important notification', 'google-site-kit' ),
@@ -95,41 +96,6 @@ OverlayCardWithoutGraphic.args = {
 		clickCallback: () => {},
 	},
 	visible: true,
-};
-
-export const OverlayCardWithCustomContent = Template.bind( {} );
-OverlayCardWithCustomContent.scenario = {};
-OverlayCardWithCustomContent.args = {
-	GraphicDesktop: ReaderRevenueManagerIntroductoryGraphicDesktop,
-	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
-	ctaButton: {
-		label: __( 'Continue', 'google-site-kit' ),
-		clickCallback: () => {},
-	},
-	dismissButton: {
-		label: __( 'Cancel', 'google-site-kit' ),
-		clickCallback: () => {},
-	},
-	visible: true,
-	children: (
-		<Fragment>
-			<h3 className="googlesitekit-overlay-card__title">
-				{ __( 'Custom Content Title', 'google-site-kit' ) }
-			</h3>
-			<p className="googlesitekit-overlay-card__description">
-				{ __(
-					'This overlay card uses custom content instead of title and description props.',
-					'google-site-kit'
-				) }
-			</p>
-			<p>
-				{ __(
-					'You can add any custom content here, including additional paragraphs, lists, or other elements.',
-					'google-site-kit'
-				) }
-			</p>
-		</Fragment>
-	),
 };
 
 export default {
