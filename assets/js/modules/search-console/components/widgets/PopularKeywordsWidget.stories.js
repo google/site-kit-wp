@@ -66,7 +66,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/Ready',
 	delay: 250,
 };
 
@@ -79,7 +78,6 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ReadyViewOnly',
 	delay: 250,
 };
 
@@ -103,7 +101,6 @@ ZeroData.args = {
 	},
 };
 ZeroData.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ZeroData',
 	delay: 250,
 };
 
