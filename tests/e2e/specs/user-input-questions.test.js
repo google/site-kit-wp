@@ -91,7 +91,7 @@ describe( 'User Input Settings', () => {
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
+				'.googlesitekit-widget--kmAnalyticsTopReturningVisitorPages'
 			)
 		);
 	}
