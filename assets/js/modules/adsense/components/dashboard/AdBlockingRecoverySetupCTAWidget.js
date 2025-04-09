@@ -71,7 +71,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const tooltipSettings = {
 		tooltipSlug: AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 		title: __(
-			'You can always set up ad blocking recovery from Settings later',
+			'You can always set up ad blocking recovery in Settings later',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
