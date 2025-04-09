@@ -76,9 +76,6 @@ Default.args = {
 		);
 	},
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError/Default',
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'InsufficientPermissions';
@@ -122,9 +119,6 @@ InsufficientPermissions.args = {
 			'getAccountID'
 		);
 	},
-};
-InsufficientPermissions.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError/InsufficientPermissions',
 };
 
 export default {
