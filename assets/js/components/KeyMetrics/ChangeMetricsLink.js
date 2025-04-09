@@ -63,10 +63,8 @@ export default function ChangeMetricsLink() {
 			<Link
 				secondary
 				linkButton
-				className={ [
-					'googlesitekit-widget-area__cta-link',
-					'googlesitekit-km-change-metrics-cta', // This class is required for the shared key metrics feature tour.
-				] }
+				// The googlesitekit-km-change-metrics-cta class is required for the shared key metrics feature tour to display.
+				className="googlesitekit-widget-area__cta-link googlesitekit-km-change-metrics-cta"
 				onClick={ openMetricsSelectionPanel }
 				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
 			>
