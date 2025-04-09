@@ -93,7 +93,7 @@ OverlayCard.propTypes = {
 		...buttonProps,
 		external: PropTypes.bool,
 	} ),
-	dismissButton: buttonProps,
+	dismissButton: PropTypes.shape( buttonProps ),
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,
 	visible: PropTypes.bool,
