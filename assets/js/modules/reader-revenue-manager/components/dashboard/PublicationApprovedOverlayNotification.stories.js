@@ -41,9 +41,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/ReaderRevenueManager/Components/PublicationApprovedOverlayNotification',
-};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/PublicationApprovedOverlayNotification',
