@@ -58,7 +58,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
 		title: __(
-			'You can always set up goals from Settings later',
+			'You can always set up goals in Settings later',
 			'google-site-kit'
 		),
 		content: __(

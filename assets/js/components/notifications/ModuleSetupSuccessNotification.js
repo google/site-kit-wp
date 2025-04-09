@@ -36,6 +36,7 @@ import SubtleNotification from '../../googlesitekit/notifications/components/lay
 import CTALinkSubtle from '../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 import useQueryArg from '../../hooks/useQueryArg';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -54,8 +55,16 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 		setSlug( undefined );
 	};
 
+	// Since the notification ID here is generic (`setup-success-notification-module`),
+	// it will be helpful to track individual module notifications uniquely as we do for
+	// other Setup Success Notifications.
+	const viewContext = useViewContext();
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_setup-success-notification-${ module?.slug }`,
+	};
+
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<SubtleNotification
 				title={ sprintf(
 					/* translators: %s: module name */
@@ -75,6 +84,7 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 						primary={ false }
 						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
+						gaTrackingEventArgs={ gaTrackingEventArgs }
 					/>
 				}
 				additionalCTA={
@@ -82,6 +92,7 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 						id={ id }
 						ctaLabel={ __( 'Go to Settings', 'google-site-kit' ) }
 						ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
+						gaTrackingEventArgs={ gaTrackingEventArgs }
 					/>
 				}
 			/>

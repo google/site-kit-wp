@@ -129,14 +129,25 @@ const fetchActivateConsentAPI = createFetchStore( {
 
 const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 	baseName: 'getAdsMeasurementStatus',
-	controlCallback: () => {
+	controlCallback: ( { useCache } ) => {
 		return API.get( 'core', 'site', 'ads-measurement-status', null, {
-			useCache: false,
+			useCache,
 		} );
 	},
-	reducerCallback: createReducer( ( state, response ) => {
+	reducerCallback: createReducer( ( state, response, { useCache } ) => {
 		state.consentMode.adsConnected = response.connected;
+
+		if ( ! useCache ) {
+			state.consentMode.adsConnectedUncached = response.connected;
+		}
 	} ),
+	argsToParams: ( { useCache } = {} ) => ( { useCache } ),
+	validateParams: ( { useCache } ) => {
+		invariant(
+			typeof useCache === 'boolean',
+			'useCache must be a boolean.'
+		);
+	},
 } );
 
 const baseInitialState = {
@@ -146,6 +157,7 @@ const baseInitialState = {
 		apiInstallResponse: undefined,
 		isApiFetching: undefined,
 		adsConnected: undefined,
+		adsConnectedUncached: undefined,
 	},
 };
 
@@ -356,6 +368,18 @@ const baseSelectors = {
 	isAdsConnected: ( state ) => {
 		return state.consentMode.adsConnected;
 	},
+
+	/**
+	 * Returns true if Google Ads is in use, but ensures fresh data is fetched.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
+	 */
+	isAdsConnectedUncached: ( state ) => {
+		return state.consentMode.adsConnectedUncached;
+	},
 };
 
 const baseResolvers = {
@@ -386,7 +410,21 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus();
+		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus(
+			{ useCache: true }
+		);
+	},
+
+	*isAdsConnectedUncached() {
+		const { select } = yield getRegistry();
+
+		if ( select( CORE_SITE ).isAdsConnectedUncached() !== undefined ) {
+			return;
+		}
+
+		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus(
+			{ useCache: false }
+		);
 	},
 };
 

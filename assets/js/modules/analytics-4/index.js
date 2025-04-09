@@ -762,7 +762,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
 			] );
 
 			const isDismissed = select( CORE_USER ).isPromptDismissed(
@@ -798,7 +798,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
@@ -843,7 +843,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	'google-tag-id-mismatch': {
 		Component: GoogleTagIDMismatchNotification,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
 		checkRequirements: async ( { select, resolveSelect } ) => {

@@ -22,12 +22,11 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	deprecatedProvideNotifications,
+	provideNotifications,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
-import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -117,16 +116,7 @@ describe( 'modules/ads settings', () => {
 					FPM_SETUP_CTA_BANNER_NOTIFICATION,
 				] );
 
-			deprecatedProvideNotifications(
-				registry,
-				{
-					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-						DEFAULT_NOTIFICATIONS[
-							FPM_SETUP_CTA_BANNER_NOTIFICATION
-						],
-				},
-				{ overwrite: true }
-			);
+			provideNotifications( registry );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 				body: JSON.parse( opts.body )?.data,
@@ -216,16 +206,7 @@ describe( 'modules/ads settings', () => {
 				body: {},
 			} );
 
-			deprecatedProvideNotifications(
-				registry,
-				{
-					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-						DEFAULT_NOTIFICATIONS[
-							FPM_SETUP_CTA_BANNER_NOTIFICATION
-						],
-				},
-				{ overwrite: true }
-			);
+			provideNotifications( registry );
 
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
 				isEnabled: false,
@@ -285,16 +266,7 @@ describe( 'modules/ads settings', () => {
 				body: {},
 			} );
 
-			deprecatedProvideNotifications(
-				registry,
-				{
-					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-						DEFAULT_NOTIFICATIONS[
-							FPM_SETUP_CTA_BANNER_NOTIFICATION
-						],
-				},
-				{ overwrite: true }
-			);
+			provideNotifications( registry );
 
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
 				isEnabled: false,
@@ -341,16 +313,7 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-			deprecatedProvideNotifications(
-				registry,
-				{
-					[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-						DEFAULT_NOTIFICATIONS[
-							FPM_SETUP_CTA_BANNER_NOTIFICATION
-						],
-				},
-				{ overwrite: true }
-			);
+			provideNotifications( registry );
 
 			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
 				isEnabled: true,
