@@ -36,7 +36,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
-	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
+	MAX_SELECTED_METRICS_COUNT,
 	MIN_SELECTED_METRICS_COUNT,
 } from '../constants';
 import SelectionPanelError from '../../SelectionPanel/SelectionPanelError';
@@ -73,8 +73,7 @@ function KeyMetricsError( { savedMetrics } ) {
 	);
 
 	const selectedMetricsCount = selectedMetrics?.length || 0;
-	const maxSelectedMetricsLimit =
-		MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS;
+	const maxSelectedMetricsLimit = MAX_SELECTED_METRICS_COUNT;
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
