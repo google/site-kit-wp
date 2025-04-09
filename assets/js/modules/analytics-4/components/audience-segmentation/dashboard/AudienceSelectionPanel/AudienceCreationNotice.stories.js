@@ -42,9 +42,6 @@ function Template( {} ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice/Default',
-};
 
 export const WithOneAudience = Template.bind( {} );
 WithOneAudience.storyName = 'WithOneAudience';
@@ -67,7 +64,6 @@ WithOneAudience.args = {
 
 export const WithMissingScopeNotice = Template.bind( {} );
 WithMissingScopeNotice.storyName = 'WithMissingScopeNotice';
-WithMissingScopeNotice.scenario = {};
 WithMissingScopeNotice.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry, {
