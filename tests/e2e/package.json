@@ -1,7 +1,7 @@
 {
   "scripts": {
     "pretest:e2e": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
-    "test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 ./script.js",
+    "test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 DEBUG_REST=1 DEBUG_NAV=1 RETRY_FULL_TEST_NAME='Analytics write scope requests prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope' ./script.js",
     "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
     "test:e2e:watch": "npm run test:e2e -- --watch",
     "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
