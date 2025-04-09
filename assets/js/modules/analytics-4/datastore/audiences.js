@@ -113,21 +113,6 @@ const fetchCreateAudienceStore = createFetchStore( {
 	},
 } );
 
-const fetchSyncAvailableAudiencesStore = createFetchStore( {
-	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
-	reducerCallback: ( state, audiences ) => {
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				availableAudiences: [ ...audiences ],
-			},
-		};
-	},
-} );
-
 /**
  * Retrieves the initial set of selected audiences from the existing audiences.
  *
@@ -315,7 +300,9 @@ const baseActions = {
 		}
 
 		const { response: availableAudiences, error } =
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableAudiences()
+			);
 
 		if ( error ) {
 			return { response: availableAudiences, error };
@@ -366,7 +353,7 @@ const baseActions = {
 		}
 
 		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
 		);
 
 		const availableAudiencesLastSyncedAt =
@@ -669,9 +656,7 @@ const baseActions = {
 		const { dispatch, resolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
+			yield baseActions.syncAvailableAudiences();
 
 		if ( syncError ) {
 			return { error: syncError };
@@ -757,19 +742,7 @@ const baseReducer = ( state, { type } ) => {
 	}
 };
 
-const baseResolvers = {
-	*getAvailableAudiences() {
-		const registry = yield commonActions.getRegistry();
-		const { select } = registry;
-
-		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-		// If available audiences not present, sync the audience in state.
-		if ( audiences === null ) {
-			yield baseActions.syncAvailableAudiences();
-		}
-	},
-};
+const baseResolvers = {};
 
 const baseSelectors = {
 	/**
@@ -1206,18 +1179,14 @@ const baseSelectors = {
 	),
 };
 
-const store = combineStores(
-	fetchCreateAudienceStore,
-	fetchSyncAvailableAudiencesStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: {},
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchCreateAudienceStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: {},
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

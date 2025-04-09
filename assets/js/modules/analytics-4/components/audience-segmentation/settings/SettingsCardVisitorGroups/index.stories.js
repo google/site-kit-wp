@@ -83,7 +83,9 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAudienceSegmentationSetupCompletedBy( null );
+					.receiveGetAudienceSettings( {
+						audienceSegmentationSetupCompletedBy: null,
+					} );
 
 				// Mock the audience-settings endpoint to allow toggling the switch.
 				fetchMock.post(

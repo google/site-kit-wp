@@ -128,9 +128,9 @@ describe( 'AudienceSelectionPanel', () => {
 		};
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences,
@@ -1414,6 +1414,10 @@ describe( 'AudienceSelectionPanel', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( nonSiteKitAvailableAudiences );
 
 				registry
@@ -1832,6 +1836,10 @@ describe( 'AudienceSelectionPanel', () => {
 		] )(
 			'should display an %s while retrieving user count',
 			async ( _, error, expectedTexts ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
 				commonSetup( error, () => {
 					fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 						body: availableAudiences,
