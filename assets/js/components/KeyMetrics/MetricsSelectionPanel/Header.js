@@ -34,7 +34,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS } from '../constants';
+import { MAX_SELECTED_METRICS_COUNT } from '../constants';
 import Link from '../../Link';
 import { SelectionPanelHeader } from '../../SelectionPanel';
 import useViewOnly from '../../../hooks/useViewOnly';
@@ -63,10 +63,10 @@ export default function Header( { closePanel } ) {
 				_n(
 					'Select up to %d metric',
 					'Select up to %d metrics',
-					MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
+					MAX_SELECTED_METRICS_COUNT,
 					'google-site-kit'
 				),
-				MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
+				MAX_SELECTED_METRICS_COUNT
 			) }
 			onCloseClick={ closePanel }
 		>
