@@ -64,8 +64,6 @@ LoadingRecoverableModules.args = {
 	},
 };
 LoadingRecoverableModules.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
 	delay: 250,
 };
 
@@ -83,8 +81,6 @@ SingleRecoverableModule.args = {
 	},
 };
 SingleRecoverableModule.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (with access)',
 	delay: 250,
 };
 
@@ -112,8 +108,6 @@ MultipleRecoverableModule.args = {
 	},
 };
 MultipleRecoverableModule.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
 	delay: 250,
 };
 
@@ -132,8 +126,6 @@ SingleRecoverableModuleNoAccess.args = {
 	},
 };
 SingleRecoverableModuleNoAccess.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (no access)',
 	delay: 250,
 };
 
@@ -161,8 +153,6 @@ MultipleRecoverableModuleNoAccess.args = {
 	},
 };
 MultipleRecoverableModuleNoAccess.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
 	delay: 250,
 };
 
