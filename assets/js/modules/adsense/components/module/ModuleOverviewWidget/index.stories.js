@@ -97,9 +97,6 @@ Default.args = {
 		provideAdSenseMockReports( registry, storyReportOptions );
 	},
 };
-Default.scenario = {
-	label: 'AdSense Module/Overview Widget',
-};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
