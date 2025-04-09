@@ -32,9 +32,6 @@ Default.args = {
 	content:
 		'Still collecting full data for this timeframe, partial data is displayed for this group',
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PartialDataNotice/Default',
-};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PartialDataNotice',
