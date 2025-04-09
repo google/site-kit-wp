@@ -40,7 +40,7 @@ import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
-	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
+	MAX_SELECTED_METRICS_COUNT,
 } from '../constants';
 import {
 	EDIT_SCOPE,
@@ -209,8 +209,7 @@ export default function Footer( {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ trackingCategory ] );
 
-	const maxSelectedMetricsLimit =
-		MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS;
+	const maxSelectedMetricsLimit = MAX_SELECTED_METRICS_COUNT;
 
 	return (
 		<SelectionPanelFooter
