@@ -27,18 +27,17 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../../util';
 import { calculateChange, trackEvent } from '../../../../../../util';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
@@ -52,7 +51,6 @@ import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import NewBadge from '../../../../../../components/NewBadge';
-import ga4ReportingTour from '../../../../../../feature-tours/ga4-reporting';
 import DataBlockGroup from '../../../../../../components/DataBlockGroup';
 
 function getDatapointAndChange( report, selectedStat, divider = 1 ) {
@@ -100,10 +98,6 @@ export default function Overview( props ) {
 		}
 
 		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
-	} );
-
-	const canShowGA4ReportingFeatureTour = useSelect( ( select ) => {
-		return select( CORE_UI ).getValue( 'showGA4ReportingTour' );
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
@@ -178,24 +172,6 @@ export default function Overview( props ) {
 		ga4ModuleConnected &&
 		! error &&
 		! showRecoverableAnalytics;
-
-	const { triggerOnDemandTour } = useDispatch( CORE_USER );
-	useEffect( () => {
-		if (
-			! showGA4 ||
-			! canShowGA4ReportingFeatureTour ||
-			dashboardType !== DASHBOARD_TYPE_MAIN
-		) {
-			return;
-		}
-
-		triggerOnDemandTour( ga4ReportingTour );
-	}, [
-		showGA4,
-		dashboardType,
-		triggerOnDemandTour,
-		canShowGA4ReportingFeatureTour,
-	] );
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
 		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
