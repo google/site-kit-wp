@@ -60,12 +60,7 @@ export default function Header( { closePanel } ) {
 		<SelectionPanelHeader
 			title={ sprintf(
 				/* translators: %d: number of max allowed metrics */
-				__(
-					'Select up to %d metrics',
-					'google-site-kit',
-					MAX_SELECTED_METRICS_COUNT,
-					'google-site-kit'
-				),
+				__( 'Select up to %d metrics', 'google-site-kit' ),
 				MAX_SELECTED_METRICS_COUNT
 			) }
 			onCloseClick={ closePanel }
