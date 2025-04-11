@@ -39,7 +39,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-
+Default.scenario = {};
 export default {
 	title: 'Key Metrics/FullScreenMetricsSelectionApp',
 	component: FullScreenMetricsSelectionApp,
