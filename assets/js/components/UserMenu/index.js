@@ -300,6 +300,7 @@ export default function UserMenu() {
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }
+					onClose={ handleDialog }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __(
 						'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.',
