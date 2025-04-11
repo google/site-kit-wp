@@ -39,13 +39,10 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {
-	features: [ 'conversionReporting' ],
-};
 Default.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/FullScreenMetricsSelectionApp',
 };
-
 export default {
 	title: 'Key Metrics/FullScreenMetricsSelectionApp',
 	component: FullScreenMetricsSelectionApp,
