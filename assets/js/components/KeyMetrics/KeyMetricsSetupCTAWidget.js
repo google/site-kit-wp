@@ -81,13 +81,13 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const openMetricsSelectionPanel = useCallback( () => {
-		navigateTo( fullScreenSelectionLink );
-
-		trackEvent(
+	const openMetricsSelectionPanel = useCallback( async () => {
+		await trackEvent(
 			`${ viewContext }_kmw-cta-notification`,
 			'confirm_pick_own_metrics'
 		);
+
+		navigateTo( fullScreenSelectionLink );
 	}, [ navigateTo, fullScreenSelectionLink, viewContext ] );
 
 	const onGetTailoredMetricsClick = useCallback( () => {
