@@ -23,7 +23,7 @@ import { isEmpty, isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -79,7 +79,7 @@ const baseInitialState = {
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'getKeyMetricsSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'key-metrics', undefined, {
+		get( 'core', 'user', 'key-metrics', undefined, {
 			// Never cache key metrics requests, we want them to be
 			// up-to-date with what's in settings, and they don't
 			// make requests to Google APIs so it's not a slow request.
@@ -94,7 +94,7 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'key-metrics', { settings } ),
+		set( 'core', 'user', 'key-metrics', { settings } ),
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
