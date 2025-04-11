@@ -209,15 +209,13 @@ export default function Footer( {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ trackingCategory ] );
 
-	const maxSelectedMetricsLimit = MAX_SELECTED_METRICS_COUNT;
-
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedMetrics }
 			selectedItemSlugs={ selectedMetrics }
 			saveSettings={ saveSettings }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
-			maxSelectedItemCount={ maxSelectedMetricsLimit }
+			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
 			onSaveSuccess={ () => {
 				onSaveSuccess( selectedMetrics );
