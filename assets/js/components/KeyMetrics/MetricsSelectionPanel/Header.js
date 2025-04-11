@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -60,9 +60,9 @@ export default function Header( { closePanel } ) {
 		<SelectionPanelHeader
 			title={ sprintf(
 				/* translators: %d: number of max allowed metrics */
-				_n(
-					'Select up to %d metric',
+				__(
 					'Select up to %d metrics',
+					'google-site-kit',
 					MAX_SELECTED_METRICS_COUNT,
 					'google-site-kit'
 				),
