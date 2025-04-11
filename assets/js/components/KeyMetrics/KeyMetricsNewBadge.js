@@ -52,11 +52,7 @@ export default function KeyMetricsNewBadge() {
 
 	// In new ACR design "New" badge is shown only initially before
 	// KMW is setup, afterwards, "New" badge is not visible anymore.
-	if ( isKeyMetricsSetupCompleted ) {
-		return null;
-	}
-
-	if ( ! isNew ) {
+	if ( isKeyMetricsSetupCompleted || ! isNew ) {
 		return null;
 	}
 
