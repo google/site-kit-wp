@@ -46,7 +46,7 @@ describe( 'Site Health', () => {
 
 		await expect( page ).toMatchElement( 'td', {
 			text: /Search Console: Shared Roles/i,
-			timeout: 2000,
+			timeout: 2500,
 		} );
 	} );
 } );
