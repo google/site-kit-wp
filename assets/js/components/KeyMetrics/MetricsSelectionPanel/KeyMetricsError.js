@@ -73,7 +73,6 @@ function KeyMetricsError( { savedMetrics } ) {
 	);
 
 	const selectedMetricsCount = selectedMetrics?.length || 0;
-	const maxSelectedMetricsLimit = MAX_SELECTED_METRICS_COUNT;
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
@@ -85,7 +84,7 @@ function KeyMetricsError( { savedMetrics } ) {
 			MIN_SELECTED_METRICS_COUNT,
 			selectedMetricsCount
 		);
-	} else if ( selectedMetricsCount > maxSelectedMetricsLimit ) {
+	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
 			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
 			__(
@@ -93,7 +92,7 @@ function KeyMetricsError( { savedMetrics } ) {
 				'google-site-kit'
 			),
 
-			maxSelectedMetricsLimit,
+			MAX_SELECTED_METRICS_COUNT,
 			selectedMetricsCount
 		);
 	}
