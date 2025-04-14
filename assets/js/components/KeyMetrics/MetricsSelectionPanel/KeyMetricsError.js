@@ -37,17 +37,13 @@ import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	MAX_SELECTED_METRICS_COUNT,
-	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
 	MIN_SELECTED_METRICS_COUNT,
 } from '../constants';
 import SelectionPanelError from '../../SelectionPanel/SelectionPanelError';
 import { safelySort } from '../../../util';
 import whenActive from '../../../util/when-active';
-import { useFeature } from '../../../hooks/useFeature';
 
 function KeyMetricsError( { savedMetrics } ) {
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
-
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			KEY_METRICS_SELECTION_FORM,
@@ -77,9 +73,6 @@ function KeyMetricsError( { savedMetrics } ) {
 	);
 
 	const selectedMetricsCount = selectedMetrics?.length || 0;
-	const maxSelectedMetricsLimit = isConversionReportingEnabled
-		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
-		: MAX_SELECTED_METRICS_COUNT;
 	let metricsLimitError;
 	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
@@ -91,7 +84,7 @@ function KeyMetricsError( { savedMetrics } ) {
 			MIN_SELECTED_METRICS_COUNT,
 			selectedMetricsCount
 		);
-	} else if ( selectedMetricsCount > maxSelectedMetricsLimit ) {
+	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
 		metricsLimitError = sprintf(
 			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
 			__(
@@ -99,7 +92,7 @@ function KeyMetricsError( { savedMetrics } ) {
 				'google-site-kit'
 			),
 
-			maxSelectedMetricsLimit,
+			MAX_SELECTED_METRICS_COUNT,
 			selectedMetricsCount
 		);
 	}
