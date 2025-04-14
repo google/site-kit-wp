@@ -216,25 +216,17 @@
 
 		.mdc-button {
 
-			&.mdc-button--raised {
+			&.googlesitekit-notice__cta {
 				@include mdc-button-filled-accessible($c-violet-v-600);
 			}
 		}
 
 		.mdc-button--tertiary {
-
-			@include mdc-button-ink-color( $c-violet-v-600 );
-
-			&:hover {
-				@include mdc-button-filled-accessible( rgba( $c-violet-v-200, 0.6 ) );
-				@include mdc-button-ink-color( $c-violet-v-600 );
-			}
-
-			&:active,
-			&:focus {
-				@include mdc-button-filled-accessible( $c-violet-v-200 );
-				@include mdc-button-ink-color( $c-violet-v-600 );
-			}
+			@include mdc-button-tertiary-styles(
+				$c-violet-v-600,
+				$c-interactive-callout-new-hover,
+				$c-interactive-callout-new-focus
+			);
 		}
 	}
 }
