@@ -20,8 +20,6 @@ on:
       - '.nvmrc'
       - '**/package.json'
       - 'package-lock.json'
-      - 'src/tests/backstop/config.js'
-      - 'src/tests/backstop/Dockerfile'
     types:
       - opened
       - reopened

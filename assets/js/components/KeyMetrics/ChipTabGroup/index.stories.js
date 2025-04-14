@@ -116,7 +116,6 @@ Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 	},
-	features: [ 'conversionReporting' ],
 };
 Default.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
@@ -147,7 +146,6 @@ WithError.args = {
 			newBadgeEvents: [],
 		} );
 	},
-	features: [ 'conversionReporting' ],
 };
 WithError.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
@@ -165,7 +163,6 @@ WithSuggestedGroup.args = {
 			},
 		} );
 	},
-	features: [ 'conversionReporting' ],
 };
 WithSuggestedGroup.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
