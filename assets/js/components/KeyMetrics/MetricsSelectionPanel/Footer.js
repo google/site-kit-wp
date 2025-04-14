@@ -41,7 +41,6 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
-	MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS,
 } from '../constants';
 import {
 	EDIT_SCOPE,
@@ -53,7 +52,6 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
 import SelectionPanelFooter from './SelectionPanelFooter';
-import { useFeature } from '../../../hooks/useFeature';
 
 export default function Footer( {
 	isOpen,
@@ -63,7 +61,6 @@ export default function Footer( {
 	isFullScreen = false,
 } ) {
 	const viewContext = useViewContext();
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 
 	const selectedMetrics = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
@@ -212,17 +209,13 @@ export default function Footer( {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ trackingCategory ] );
 
-	const maxSelectedMetricsLimit = isConversionReportingEnabled
-		? MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS
-		: MAX_SELECTED_METRICS_COUNT;
-
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedMetrics }
 			selectedItemSlugs={ selectedMetrics }
 			saveSettings={ saveSettings }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
-			maxSelectedItemCount={ maxSelectedMetricsLimit }
+			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
 			onSaveSuccess={ () => {
 				onSaveSuccess( selectedMetrics );

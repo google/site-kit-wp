@@ -23,6 +23,13 @@
 /**
  * Internal dependencies
  */
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
+
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -42,6 +49,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { enabledFeatures } from '../../../../features';
+import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
 
@@ -53,10 +61,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 	const AdsModuleSetupCTABannerComponent = withNotificationComponentProps(
 		NOTIFICATION_ID
 	)( AdsModuleSetupCTABanner );
-
-	const fetchDismissPrompt = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-	);
 
 	beforeEach( () => {
 		enabledFeatures.add( 'adsPax' );
@@ -117,7 +121,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				},
 			} );
 
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
@@ -153,7 +157,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				},
 			} );
 
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
@@ -192,7 +196,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 					body: { success: true },
 				}
 			);
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
@@ -219,7 +223,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			).toBe( true );
 
 			// Dismissal should be triggered when the CTA is clicked.
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 		} );
 	} );
 
@@ -238,21 +242,14 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		} );
 
 		it( 'should dismiss notification', async () => {
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: {
 					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
 				},
 			} );
 
 			const { getByText, waitForRegistry } = render(
-				<div>
-					<div id="adminmenu">
-						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-							Settings
-						</a>
-					</div>
-					<AdsModuleSetupCTABannerComponent />
-				</div>,
+				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 			);
 
@@ -261,15 +258,8 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 			await waitForRegistry();
 
-			expect( fetchMock ).toHaveFetched( fetchDismissPrompt );
-			expect(
-				document.querySelector( '.googlesitekit-publisher-win__title' )
-			).not.toBeInTheDocument();
-
-			// Tooltip should be visible after dismissing the notification.
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).toBeInTheDocument();
+			expect( mockShowTooltip ).toHaveBeenCalled();
+			expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 		} );
 	} );
 

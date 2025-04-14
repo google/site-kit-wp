@@ -345,6 +345,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
@@ -366,10 +367,11 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
 				SettingsSetupIncompleteComponent,
-				checkRequirements,
+				SetupComponent,
+				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
+				checkRequirements,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
 			} = {}
@@ -384,9 +386,10 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
-				onCompleteSetup,
 				SettingsSetupIncompleteComponent,
+				SetupComponent,
+				overrideSetupSuccessNotification,
+				onCompleteSetup,
 				checkRequirements,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,

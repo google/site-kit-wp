@@ -228,7 +228,10 @@ const baseResolvers = {
 		) {
 			// Ensure the settings are loaded.
 			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+				Promise.all( [
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				] )
 			);
 
 			// Validate if the resourceSlug is a valid resource.

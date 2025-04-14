@@ -668,7 +668,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Checks if the current user is a non-Site Kit user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @return bool True if the current user is a non-Site Kit user, false otherwise.
 	 */
@@ -681,7 +681,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 *
 	 * This is used for enqueueing styles to ensure they are loaded in all block editor contexts including iframes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @return void
 	 */
@@ -696,7 +696,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Enqueues block editor assets for non-Site Kit users.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @return void
 	 */
