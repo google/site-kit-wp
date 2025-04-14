@@ -25,14 +25,13 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useCallback, useRef } from '@wordpress/element';
+import { useEffect, useCallback, useRef } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -45,15 +44,13 @@ import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
-	getUserInputAnswersDescription,
 } from './util/constants';
-import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
-import UserInputSelectOptions from './UserInputSelectOptions';
-import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import UserInputPreviewAnswers from './UserInputPreviewAnswers';
+import UserInputEditModeContent from './UserInputEditModeContent';
 
 export default function UserInputPreviewGroup( {
 	slug,
@@ -201,84 +198,7 @@ export default function UserInputPreviewGroup( {
 		toggleEditMode();
 	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
 
-	function PreviewAnswers() {
-		return (
-			<div className="googlesitekit-user-input__preview-answers">
-				<LoadingWrapper loading={ loading } width="340px" height="36px">
-					{ errorMessage && (
-						<p className="googlesitekit-error-text">
-							{ errorMessage }
-						</p>
-					) }
-
-					{ ! errorMessage &&
-						values.map( ( value ) => (
-							<div
-								key={ value }
-								className="googlesitekit-user-input__preview-answer"
-							>
-								{ options[ value ] }
-							</div>
-						) ) }
-				</LoadingWrapper>
-			</div>
-		);
-	}
-
-	function EditModeContent() {
-		return (
-			<Fragment>
-				<UserInputSelectOptions
-					slug={ slug }
-					max={ USER_INPUT_MAX_ANSWERS[ slug ] }
-					options={ options }
-					alignLeftOptions
-					descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
-				/>
-				{ errorMessage && (
-					<p className="googlesitekit-error-text">{ errorMessage }</p>
-				) }
-				{ settingsView && (
-					<Fragment>
-						<UserInputQuestionAuthor slug={ slug } />
-
-						{ saveSettingsError && (
-							<ErrorNotice error={ saveSettingsError } />
-						) }
-
-						<div className="googlesitekit-user-input__preview-actions">
-							<SpinnerButton
-								disabled={ answerHasError }
-								onClick={
-									hasSettingChanged
-										? submitChanges
-										: toggleEditMode
-								}
-								isSaving={ isScreenLoading }
-							>
-								{ hasSettingChanged || isSavingSettings
-									? __( 'Apply changes', 'google-site-kit' )
-									: __( 'Save', 'google-site-kit' ) }
-							</SpinnerButton>
-							<Button
-								tertiary
-								disabled={ isScreenLoading }
-								onClick={ handleOnCancelClick }
-							>
-								{ __( 'Cancel', 'google-site-kit' ) }
-							</Button>
-						</div>
-					</Fragment>
-				) }
-			</Fragment>
-		);
-	}
-
 	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
-
-	const {
-		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
-	} = getUserInputAnswersDescription();
 
 	return (
 		<div
@@ -336,8 +256,30 @@ export default function UserInputPreviewGroup( {
 				</div>
 			</LoadingWrapper>
 
-			{ ! isEditing && <PreviewAnswers /> }
-			{ isEditing && <EditModeContent /> }
+			{ ! isEditing && (
+				<UserInputPreviewAnswers
+					values={ values }
+					options={ options }
+					loading={ loading }
+					errorMessage={ errorMessage }
+				/>
+			) }
+			{ isEditing && (
+				<UserInputEditModeContent
+					slug={ slug }
+					options={ options }
+					errorMessage={ errorMessage }
+					isSavingSettings={ isSavingSettings }
+					isScreenLoading={ isScreenLoading }
+					saveSettingsError={ saveSettingsError }
+					answerHasError={ answerHasError }
+					settingsView={ settingsView }
+					hasSettingChanged={ hasSettingChanged }
+					submitChanges={ submitChanges }
+					toggleEditMode={ toggleEditMode }
+					handleOnCancelClick={ handleOnCancelClick }
+				/>
+			) }
 		</div>
 	);
 }
