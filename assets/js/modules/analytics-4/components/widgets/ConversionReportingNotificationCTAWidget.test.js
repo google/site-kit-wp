@@ -59,7 +59,6 @@ import {
 	provideKeyMetrics,
 } from '../../../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
-import { enabledFeatures } from '../../../../features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -80,8 +79,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	);
 
 	beforeEach( () => {
-		enabledFeatures.add( 'conversionReporting' );
-
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -125,10 +122,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 	} );
 
-	afterAll( () => {
-		enabledFeatures.delete( 'conversionReporting' );
-	} );
-
 	describe( 'Existing users with tailored metrics', () => {
 		beforeEach( () => {
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
@@ -158,7 +151,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -180,7 +172,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -209,7 +200,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -240,7 +230,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -262,7 +251,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -291,7 +279,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -362,7 +349,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -425,7 +411,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -463,7 +448,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -489,7 +473,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -530,7 +513,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -571,7 +553,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -622,7 +603,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -702,7 +682,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -813,7 +792,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -862,7 +840,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -947,7 +924,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1012,7 +988,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1062,7 +1037,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1111,7 +1085,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1167,7 +1140,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
