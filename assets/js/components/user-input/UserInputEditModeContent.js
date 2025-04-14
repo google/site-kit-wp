@@ -1,5 +1,5 @@
 /**
- * User Input Preview Answers.
+ * User Input Edit Mode Content.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -19,38 +19,111 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 import { Button, SpinnerButton } from 'googlesitekit-components';
+import { Fragment, useCallback, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import UserInputSelectOptions from './UserInputSelectOptions';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '../ErrorNotice';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
+import UserInputSelectOptions from './UserInputSelectOptions';
+import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
 import {
 	getUserInputAnswersDescription,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
 
 export default function UserInputEditModeContent( {
-	slug,
+	onChange,
 	options,
-	errorMessage,
-	isSavingSettings,
-	isScreenLoading,
-	saveSettingsError,
-	answerHasError,
 	settingsView,
-	hasSettingChanged,
-	submitChanges,
-	toggleEditMode,
-	handleOnCancelClick,
+	slug,
+	values,
 } ) {
+	const answerHasError = hasErrorForAnswer( values );
+	const currentlyEditingSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+	const editButtonRef = useRef();
+	const errorMessage = getErrorMessageForAnswer(
+		values,
+		USER_INPUT_MAX_ANSWERS[ slug ]
+	);
+	const gaEventCategory = `${ useViewContext() }_kmw`;
+	const hasSettingChanged = useSelect( ( select ) =>
+		select( CORE_USER ).hasUserInputSettingChanged( slug )
+	);
+	const isEditing = currentlyEditingSlug === slug;
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isSavingSettings = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+		return select( CORE_USER ).isSavingUserInputSettings(
+			userInputSettings
+		);
+	} );
+	const isScreenLoading = isSavingSettings || isNavigating;
+	const saveSettingsError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
+	);
+	const { resetUserInputSettings, saveUserInputSettings } =
+		useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_UI );
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
+
+	const toggleEditMode = useCallback( () => {
+		if ( isEditing ) {
+			setValues( { [ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined } );
+			editButtonRef.current?.focus?.();
+		} else {
+			trackEvent( gaEventCategory, 'question_edit', slug );
+			setValues( { [ USER_INPUT_CURRENTLY_EDITING_KEY ]: slug } );
+		}
+	}, [ gaEventCategory, isEditing, setValues, slug ] );
+
+	const handleOnCancelClick = useCallback( async () => {
+		if ( isScreenLoading ) {
+			return;
+		}
+		await resetUserInputSettings();
+		toggleEditMode();
+	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
+
+	const submitChanges = useCallback( async () => {
+		if ( answerHasError ) {
+			return;
+		}
+
+		if ( USER_INPUT_QUESTIONS_PURPOSE === slug && onChange ) {
+			onChange();
+		} else {
+			const response = await saveUserInputSettings();
+			if ( ! response.error ) {
+				trackEvent( gaEventCategory, 'question_update', slug );
+				toggleEditMode();
+			}
+		}
+	}, [
+		answerHasError,
+		gaEventCategory,
+		onChange,
+		saveUserInputSettings,
+		slug,
+		toggleEditMode,
+	] );
 
 	return (
 		<Fragment>
@@ -67,11 +140,9 @@ export default function UserInputEditModeContent( {
 			{ settingsView && (
 				<Fragment>
 					<UserInputQuestionAuthor slug={ slug } />
-
 					{ saveSettingsError && (
 						<ErrorNotice error={ saveSettingsError } />
 					) }
-
 					<div className="googlesitekit-user-input__preview-actions">
 						<SpinnerButton
 							disabled={ answerHasError }

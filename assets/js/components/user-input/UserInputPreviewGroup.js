@@ -37,7 +37,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
-import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
+import { getErrorMessageForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
@@ -69,9 +69,6 @@ export default function UserInputPreviewGroup( {
 	const currentlyEditingSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
-	const hasSettingChanged = useSelect( ( select ) =>
-		select( CORE_USER ).hasUserInputSettingChanged( slug )
-	);
 	const isSavingSettings = useSelect( ( select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 
@@ -79,9 +76,6 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	} );
-	const saveSettingsError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
-	);
 	const savedPurposeAnswer = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_USER_INPUT_QUESTION_SNAPSHOT,
@@ -108,8 +102,7 @@ export default function UserInputPreviewGroup( {
 	}, [ savedPurposeAnswer, previousPurposeAnswer, slug ] );
 
 	const { setValues } = useDispatch( CORE_UI );
-	const { saveUserInputSettings, resetUserInputSettings } =
-		useDispatch( CORE_USER );
+	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
 
@@ -136,33 +129,7 @@ export default function UserInputPreviewGroup( {
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
 
-	const answerHasError = hasErrorForAnswer( values );
-
 	const editButtonRef = useRef();
-
-	const submitChanges = useCallback( async () => {
-		if ( answerHasError ) {
-			return;
-		}
-
-		if ( USER_INPUT_QUESTIONS_PURPOSE === slug && onChange ) {
-			onChange();
-		} else {
-			const response = await saveUserInputSettings();
-
-			if ( ! response.error ) {
-				trackEvent( gaEventCategory, 'question_update', slug );
-				toggleEditMode();
-			}
-		}
-	}, [
-		answerHasError,
-		gaEventCategory,
-		saveUserInputSettings,
-		slug,
-		toggleEditMode,
-		onChange,
-	] );
 
 	const handleOnEditClick = useCallback( async () => {
 		if ( settingsView ) {
@@ -188,15 +155,6 @@ export default function UserInputPreviewGroup( {
 		resetUserInputSettings,
 		toggleEditMode,
 	] );
-
-	const handleOnCancelClick = useCallback( async () => {
-		if ( isScreenLoading ) {
-			return;
-		}
-
-		await resetUserInputSettings();
-		toggleEditMode();
-	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
 
 	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
 
@@ -268,16 +226,9 @@ export default function UserInputPreviewGroup( {
 				<UserInputEditModeContent
 					slug={ slug }
 					options={ options }
-					errorMessage={ errorMessage }
-					isSavingSettings={ isSavingSettings }
-					isScreenLoading={ isScreenLoading }
-					saveSettingsError={ saveSettingsError }
-					answerHasError={ answerHasError }
+					onChange={ onChange }
 					settingsView={ settingsView }
-					hasSettingChanged={ hasSettingChanged }
-					submitChanges={ submitChanges }
-					toggleEditMode={ toggleEditMode }
-					handleOnCancelClick={ handleOnCancelClick }
+					values={ values }
 				/>
 			) }
 		</div>
