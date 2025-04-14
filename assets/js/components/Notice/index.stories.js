@@ -27,6 +27,8 @@ import { createInterpolateElement } from '@wordpress/element';
 import { Cell, Grid, Row } from '../../material-components';
 import Notice from '.';
 import Link from '../Link';
+import { TYPE_ERROR, TYPE_NEW, TYPE_SUCCESS } from './Icon';
+import { TYPE_WARNING } from '../SettingsNotice';
 
 function Template() {
 	return (
@@ -74,7 +76,7 @@ function Template() {
 							label: 'Edit settings',
 							onClick: () => {},
 						} }
-						type="success"
+						type={ TYPE_SUCCESS }
 					/>
 					<br />
 					<Notice
@@ -87,7 +89,7 @@ function Template() {
 							label: 'Edit settings',
 							onClick: () => {},
 						} }
-						type="success"
+						type={ TYPE_SUCCESS }
 					/>
 				</Cell>
 				<Cell size={ 12 }>
@@ -102,7 +104,7 @@ function Template() {
 							label: 'Edit settings',
 							onClick: () => {},
 						} }
-						type="warning"
+						type={ TYPE_WARNING }
 					/>
 					<br />
 					<Notice
@@ -116,7 +118,7 @@ function Template() {
 							label: 'Edit settings',
 							onClick: () => {},
 						} }
-						type="warning"
+						type={ TYPE_WARNING }
 					/>
 				</Cell>
 				<Cell size={ 12 }>
@@ -133,7 +135,7 @@ function Template() {
 							label: 'Got it',
 							onClick: () => {},
 						} }
-						type="error"
+						type={ TYPE_ERROR }
 					/>
 					<br />
 					<Notice
@@ -151,7 +153,7 @@ function Template() {
 							label: 'Edit settings',
 							onClick: () => {},
 						} }
-						type="error"
+						type={ TYPE_ERROR }
 					/>
 				</Cell>
 				<Cell size={ 12 }>
@@ -172,7 +174,7 @@ function Template() {
 							label: 'Add metrics',
 							onClick: () => {},
 						} }
-						type="new"
+						type={ TYPE_NEW }
 					/>
 					<br />
 					<Notice
@@ -190,7 +192,7 @@ function Template() {
 							label: 'Add metrics',
 							onClick: () => {},
 						} }
-						type="new"
+						type={ TYPE_NEW }
 					/>
 				</Cell>
 			</Row>
