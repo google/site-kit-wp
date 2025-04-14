@@ -47,6 +47,7 @@ function Template() {
 							onClick: () => {},
 						} }
 					/>
+					<br />
 					<Notice
 						description={ createInterpolateElement(
 							'Use the new settings in the block editor select different product IDs for individual pages or control where CTAs appear on an individual post. You can also configure a different product ID for a group of posts in the <a>Categories</a> or <a>Tags section</a>. <a>Learn more</a>',
@@ -75,6 +76,7 @@ function Template() {
 						} }
 						type="success"
 					/>
+					<br />
 					<Notice
 						description="Success! Your Reader Revenue Manager is set up!"
 						dismissButton={ {
@@ -102,6 +104,7 @@ function Template() {
 						} }
 						type="warning"
 					/>
+					<br />
 					<Notice
 						title="Potential Analytics tracking conflict"
 						description="To complete your paywall setup add your products ID in settings"
@@ -132,6 +135,7 @@ function Template() {
 						} }
 						type="error"
 					/>
+					<br />
 					<Notice
 						description={ createInterpolateElement(
 							'You need to complete the 2 steps below or you will lose all Analytics tracking. <a>Learn more</a>',
@@ -170,6 +174,7 @@ function Template() {
 						} }
 						type="new"
 					/>
+					<br />
 					<Notice
 						description={ createInterpolateElement(
 							'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics!',
@@ -193,15 +198,16 @@ function Template() {
 	);
 }
 
-export const NoticeList = Template.bind( {} );
-NoticeList.scenario = {};
+export const AllNotices = Template.bind( {} );
+AllNotices.storyName = 'All Notices';
+AllNotices.scenario = {};
 
 export default {
-	title: 'Notice',
+	title: 'Components/Notice',
 	decorators: [
 		( Story ) => {
 			return (
-				<div className="googlesitekit-story--notice">
+				<div>
 					<Story />
 				</div>
 			);
