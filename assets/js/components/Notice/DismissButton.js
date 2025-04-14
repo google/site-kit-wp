@@ -31,16 +31,18 @@ import { Button } from 'googlesitekit-components';
 
 export default function DismissButton( {
 	label = __( 'Got it!', 'google-site-kit' ),
-	onDismiss,
+	onClick,
 } ) {
 	return (
-		<Button onClick={ onDismiss } tertiary>
+		<Button onClick={ onClick } tertiary>
 			{ label }
 		</Button>
 	);
 }
 
-DismissButton.propTypes = {
+export const DismissButtonPropTypes = {
 	label: PropTypes.string,
-	onDismiss: PropTypes.func.isRequired,
+	onClick: PropTypes.func.isRequired,
 };
+
+DismissButton.propTypes = DismissButtonPropTypes;
