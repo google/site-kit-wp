@@ -28,8 +28,6 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-
-import { Grid, Cell, Row } from '../../material-components';
 import Icon from './Icon';
 import Title from './Title';
 import Description from './Description';
@@ -50,44 +48,38 @@ const Notice = forwardRef(
 		ref
 	) => {
 		return (
-			<Grid ref={ ref }>
-				<Row>
-					<Cell
-						alignMiddle
-						size={ 12 }
-						className={ classnames(
-							'googlesitekit-notice',
-							`googlesitekit-notice--${ type }`,
-							className
-						) }
-					>
-						<Icon type={ type } />
+			<div
+				ref={ ref }
+				className={ classnames(
+					'googlesitekit-notice',
+					`googlesitekit-notice--${ type }`,
+					className
+				) }
+			>
+				<Icon type={ type } />
 
-						<div className="googlesitekit-notice__content">
-							<Title>{ title }</Title>
-							<Description>{ description }</Description>
-						</div>
+				<div className="googlesitekit-notice__content">
+					<Title>{ title }</Title>
+					<Description>{ description }</Description>
+				</div>
 
-						<div className="googlesitekit-notice__action">
-							{ children }
+				<div className="googlesitekit-notice__action">
+					{ children }
 
-							{ dismissButton?.label &&
-								dismissButton?.onClick && (
-									<DismissButton
-										label={ dismissButton.label }
-										onDismiss={ dismissButton.onClick }
-									/>
-								) }
-							{ ctaButton?.label && ctaButton?.onClick && (
-								<CTAButton
-									label={ ctaButton.label }
-									onClick={ ctaButton.onClick }
-								/>
-							) }
-						</div>
-					</Cell>
-				</Row>
-			</Grid>
+					{ dismissButton?.label && dismissButton?.onClick && (
+						<DismissButton
+							label={ dismissButton.label }
+							onDismiss={ dismissButton.onClick }
+						/>
+					) }
+					{ ctaButton?.label && ctaButton?.onClick && (
+						<CTAButton
+							label={ ctaButton.label }
+							onClick={ ctaButton.onClick }
+						/>
+					) }
+				</div>
+			</div>
 		);
 	}
 );
