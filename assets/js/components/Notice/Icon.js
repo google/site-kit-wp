@@ -23,25 +23,50 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import Null from '../Null';
 import CheckFill from '../../../svg/icons/check-fill.svg';
 import WarningSVG from '../../../svg/icons/warning.svg';
 import StarFill from '../../../svg/icons/star-fill.svg';
 
+export const TYPE_NEW = 'new';
+export const TYPE_SUCCESS = 'success';
+export const TYPE_WARNING = 'warning';
+export const TYPE_INFO = 'info';
+export const TYPE_ERROR = 'error';
+
+const typeIconMap = {
+	[ TYPE_NEW ]: StarFill,
+	[ TYPE_SUCCESS ]: CheckFill,
+	[ TYPE_INFO ]: WarningSVG,
+	[ TYPE_WARNING ]: WarningSVG,
+	[ TYPE_ERROR ]: WarningSVG,
+};
+
 export default function Icon( { className, type } ) {
+	const IconComponent = typeIconMap[ type ] || null;
+
+	if ( ! IconComponent ) {
+		return Null;
+	}
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-notice__icon', className ) }
 		>
-			{ type === 'success' && <CheckFill width={ 24 } height={ 24 } /> }
-			{ [ 'info', 'warning', 'error' ].indexOf( type ) !== -1 && (
-				<WarningSVG width={ 24 } height={ 24 } />
-			) }
-			{ type === 'new' && <StarFill width={ 24 } height={ 24 } /> }
+			<IconComponent width={ 24 } height={ 24 } />
 		</div>
 	);
 }
 
+export const allowedIconTypes = [
+	TYPE_NEW,
+	TYPE_INFO,
+	TYPE_SUCCESS,
+	TYPE_WARNING,
+	TYPE_ERROR,
+];
+
 Icon.propTypes = {
 	className: PropTypes.string,
-	type: PropTypes.oneOf( [ 'success', 'warning', 'new', 'error', 'info' ] ),
+	type: PropTypes.oneOf( allowedIconTypes ),
 };
