@@ -44,6 +44,68 @@ API.setUsingCache( false );
 
 bootstrapFetchMocks();
 
+// storybook/preview.js
+if ( 'serviceWorker' in global.navigator ) {
+	// eslint-disable-next-line no-console
+	console.log( '[preview] Setting up serviceWorker' );
+
+	global.serviceWorkerReader = new Promise( ( resolve, reject ) => {
+		global.addEventListener( 'load', () => {
+			global.navigator.serviceWorker
+				.register( '/service-worker.js' )
+				// eslint-disable-next-line no-unused-vars
+				.then( ( registration ) => {
+					// eslint-disable-next-line no-console
+					console.log(
+						'Service Worker registration state:' +
+							JSON.stringify( {
+								installing: !! registration.installing,
+								waiting: !! registration.waiting,
+								active: !! registration.active,
+							} )
+					);
+
+					if ( registration.installing ) {
+						// eslint-disable-next-line no-console
+						console.log( 'Service Worker is installing' );
+						registration.installing.addEventListener(
+							'statechange',
+							( e ) => {
+								// eslint-disable-next-line no-console
+								console.log(
+									'Service Worker state changed to: ' +
+										e.target.state
+								);
+
+								if ( e.target.state === 'activated' ) {
+									// eslint-disable-next-line no-console
+									console.log( 'Service Worker activated' );
+									resolve( registration );
+								}
+							}
+						);
+					}
+
+					if ( registration.active ) {
+						// eslint-disable-next-line no-console
+						console.log( 'Service Worker is active' );
+						resolve( registration );
+					}
+				} )
+				.catch( ( err ) => {
+					// eslint-disable-next-line no-console
+					console.log(
+						'ServiceWorker registration failed: ' + err.message
+					);
+					reject( err );
+				} );
+		} );
+	} );
+} else {
+	// eslint-disable-next-line no-console
+	console.log( '[preview] ServiceWorker not supported' );
+}
+
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
 	( Story, { parameters } ) => {

@@ -54,7 +54,7 @@ export default function Preview() {
 			} );
 		};
 
-		script.src = 'https://accounts.google.com/gsi/client';
+		script.src = 'https://accounts.google.com/gsi/client?hl=pt';
 		script.addEventListener( 'load', onLoad );
 
 		document.body.appendChild( script );

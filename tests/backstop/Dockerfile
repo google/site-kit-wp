@@ -23,10 +23,19 @@ RUN apt-get install -yq \
     chromium=120.0.6099.224-1~deb11u1 \
     ca-certificates
 
+# Install http-server globally
+RUN npm install -g http-server@14.1.1
+
 RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i -g backstopjs@${BACKSTOPJS_VERSION} && \
     npm cache clean -f && \
     rm -rf /root/.cache
 
 WORKDIR /src
 
-ENTRYPOINT ["backstop"]
+# Create a script to start both http-server and backstop
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+# ENTRYPOINT ["backstop"]

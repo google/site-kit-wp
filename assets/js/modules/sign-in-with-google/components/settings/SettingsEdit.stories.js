@@ -24,6 +24,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
+import { useEffect, useState } from '@wordpress/element';
 
 function Template() {
 	return (
@@ -115,6 +116,20 @@ InvalidClientID.decorators = [
 export const Empty = Template.bind( null );
 Empty.storyName = 'Empty';
 
+function WithServiceWorker( { children } ) {
+	const [ isReady, setIsReady ] = useState( false );
+
+	useEffect( () => {
+		global.serviceWorkerReader.then( ( registration ) => {
+			// eslint-disable-next-line no-console
+			console.log( '[STORY] service worker is ready', registration );
+			setIsReady( true );
+		} );
+	}, [] );
+
+	return isReady ? children : null;
+}
+
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
@@ -131,9 +146,11 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<WithServiceWorker>
+					<WithRegistrySetup func={ setupRegistry }>
+						<Story />
+					</WithRegistrySetup>
+				</WithServiceWorker>
 			);
 		},
 	],
