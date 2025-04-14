@@ -21,17 +21,8 @@
  */
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
 export default function Title( { children } ) {
-	return (
-		<Fragment>
-			<h3 className="googlesitekit-overlay-card__title">{ children }</h3>
-		</Fragment>
-	);
+	return <h3 className="googlesitekit-overlay-card__title">{ children }</h3>;
 }
 
 Title.propTypes = {

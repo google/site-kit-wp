@@ -20,25 +20,19 @@
  * External dependencies
  */
 import { Slide } from '@material-ui/core';
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
-import MainBody from './MainBody';
+import Body from './Body';
+import { buttonProps } from './DismissButton';
 
-export default function OverlayCard( {
-	className,
-	title,
-	description,
-	ctaButton,
-	dismissButton,
-	GraphicDesktop,
-	GraphicMobile,
-	visible,
-} ) {
+export default function OverlayCard( props ) {
+	const { visible, className, ...cardProps } = props;
+
 	const breakpoint = useBreakpoint();
 
 	if ( ! visible ) {
@@ -50,14 +44,7 @@ export default function OverlayCard( {
 	if ( breakpoint === BREAKPOINT_SMALL ) {
 		return (
 			<div className={ classes }>
-				<MainBody
-					title={ title }
-					description={ description }
-					ctaButton={ ctaButton }
-					dismissButton={ dismissButton }
-					GraphicDesktop={ GraphicDesktop }
-					GraphicMobile={ GraphicMobile }
-				/>
+				<Body { ...cardProps } />
 			</div>
 		);
 	}
@@ -65,24 +52,11 @@ export default function OverlayCard( {
 	return (
 		<Slide direction="up" in={ visible }>
 			<div className={ classes }>
-				<MainBody
-					title={ title }
-					description={ description }
-					ctaButton={ ctaButton }
-					dismissButton={ dismissButton }
-					GraphicDesktop={ GraphicDesktop }
-					GraphicMobile={ GraphicMobile }
-				/>
+				<Body { ...cardProps } />
 			</div>
 		</Slide>
 	);
 }
-
-export const buttonProps = {
-	label: PropTypes.string.isRequired,
-	clickCallback: PropTypes.func.isRequired,
-	disabled: PropTypes.bool,
-};
 
 OverlayCard.propTypes = {
 	className: PropTypes.string,

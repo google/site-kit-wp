@@ -45,11 +45,11 @@ DefaultOverlayCard.args = {
 	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
 	ctaButton: {
 		label: __( 'Show me', 'google-site-kit' ),
-		clickCallback: () => {},
+		onClick: () => {},
 	},
 	dismissButton: {
 		label: __( 'Maybe later', 'google-site-kit' ),
-		clickCallback: () => {},
+		onClick: () => {},
 	},
 	visible: true,
 };
@@ -68,12 +68,12 @@ OverlayCardWithExternalLink.args = {
 	ctaButton: {
 		href: 'https://example.com',
 		label: __( 'Explore features', 'google-site-kit' ),
-		clickCallback: () => {},
+		onClick: () => {},
 		external: true,
 	},
 	dismissButton: {
 		label: __( 'Maybe later', 'google-site-kit' ),
-		clickCallback: () => {},
+		onClick: () => {},
 	},
 	visible: true,
 };
@@ -89,11 +89,11 @@ OverlayCardWithoutGraphic.args = {
 	),
 	ctaButton: {
 		label: __( 'Take action', 'google-site-kit' ),
-		clickCallback: () => {},
+		onClick: () => {},
 	},
 	dismissButton: {
 		label: __( 'Dismiss', 'google-site-kit' ),
-		clickCallback: () => {},
+		onClick: () => {},
 	},
 	visible: true,
 };

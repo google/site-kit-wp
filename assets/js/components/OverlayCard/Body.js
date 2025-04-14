@@ -1,5 +1,5 @@
 /**
- * OverlayCard MainBody component.
+ * OverlayCard Body component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -32,11 +32,10 @@ import { Fragment } from '@wordpress/element';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import Title from './Title';
 import Description from './Description';
-import DismissButton from './DismissButton';
+import DismissButton, { buttonProps } from './DismissButton';
 import CTAButton from './CTAButton';
-import { buttonProps } from '.';
 
-export default function MainBody( {
+export default function Body( {
 	title,
 	description,
 	ctaButton,
@@ -64,14 +63,14 @@ export default function MainBody( {
 					{ dismissButton && (
 						<DismissButton
 							label={ dismissButton.label }
-							onClick={ dismissButton.clickCallback }
+							onClick={ dismissButton.onClick }
 							disabled={ dismissButton.disabled }
 						/>
 					) }
 					{ ctaButton && (
 						<CTAButton
 							label={ ctaButton.label }
-							onClick={ ctaButton.clickCallback }
+							onClick={ ctaButton.onClick }
 							disabled={ ctaButton.disabled }
 							external={ ctaButton.external }
 						/>
@@ -86,7 +85,7 @@ export default function MainBody( {
 	);
 }
 
-MainBody.propTypes = {
+Body.propTypes = {
 	title: PropTypes.node,
 	description: PropTypes.node,
 	ctaButton: PropTypes.shape( {

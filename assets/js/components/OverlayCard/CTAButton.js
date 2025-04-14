@@ -22,11 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
@@ -36,11 +31,7 @@ export default function CTAButton( { label, onClick, disabled, external } ) {
 	return (
 		<Button onClick={ onClick } disabled={ disabled }>
 			{ label }
-			{ external && (
-				<Fragment>
-					<ExternalIcon width="13" height="13" />
-				</Fragment>
-			) }
+			{ external && <ExternalIcon width="13" height="13" /> }
 		</Button>
 	);
 }
