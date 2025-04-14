@@ -95,7 +95,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopCategoriesWidget/Ready',
 };
 
 export const Loading = Template.bind( {} );

@@ -112,7 +112,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopReturningVisitorPages/Ready',
 	delay: 250,
 };
 
@@ -137,7 +136,6 @@ ReadyViewOnly.args = {
 };
 ReadyViewOnly.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopReturningVisitorPages/ReadyViewOnly',
 	delay: 250,
 };
 

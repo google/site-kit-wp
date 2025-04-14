@@ -59,7 +59,6 @@ SurveySingleQuestionStory.parameters = {
 	survey: singleQuestionSurvey,
 };
 SurveySingleQuestionStory.scenario = {
-	label: 'Global/Current Survey/Single question',
 	delay: 250,
 };
 

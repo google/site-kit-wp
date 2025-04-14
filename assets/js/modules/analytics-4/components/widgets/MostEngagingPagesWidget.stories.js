@@ -142,7 +142,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/MostEngagingPagesWidget/Ready',
 	delay: 250,
 };
 
@@ -210,7 +209,6 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/MostEngagingPagesWidget/ReadyViewOnly',
 	delay: 250,
 };
 

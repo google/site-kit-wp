@@ -39,7 +39,6 @@ Positive.args = {
 	previousValue: 91,
 };
 Positive.scenario = {
-	label: 'KeyMetrics/MetricTileText/Positive',
 	delay: 250,
 };
 
@@ -53,7 +52,6 @@ Negative.args = {
 	previousValue: 103,
 };
 Negative.scenario = {
-	label: 'KeyMetrics/MetricTileText/Negative',
 	delay: 250,
 };
 
@@ -67,7 +65,6 @@ ZeroChange.args = {
 	previousValue: 100,
 };
 ZeroChange.scenario = {
-	label: 'KeyMetrics/MetricTileText/ZeroChange',
 	delay: 250,
 };
 
@@ -83,7 +80,6 @@ ZeroData.args = {
 // Since the "Zero" state is similar for all "textual" KMW tiles, this should be
 // the sole scenario and should not be added to any other "text" type KMW components.
 ZeroData.scenario = {
-	label: 'KeyMetrics/MetricTileText/ZeroData',
 	delay: 250,
 };
 

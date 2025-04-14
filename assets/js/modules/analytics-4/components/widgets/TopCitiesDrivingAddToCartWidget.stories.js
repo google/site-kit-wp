@@ -84,7 +84,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopCitiesDrivingAddToCartWidget/Ready',
 };
 
 export const Loading = Template.bind( {} );

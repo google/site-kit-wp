@@ -108,7 +108,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularContentWidget/Ready',
 	delay: 250,
 };
 
@@ -133,7 +132,6 @@ ReadyViewOnly.args = {
 };
 ReadyViewOnly.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularContentWidget/ReadyViewOnly',
 	delay: 250,
 };
 

@@ -34,7 +34,6 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Settings/Settings Tabs',
 	delay: 3000, // Wait for tabs to animate.
 };
 

@@ -120,7 +120,6 @@ Default.args = {
 };
 Default.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Components/KeyMetrics/ChipTabGroup/default',
 };
 
 export const WithError = Template.bind( {} );
@@ -152,7 +151,6 @@ WithError.args = {
 };
 WithError.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Components/KeyMetrics/ChipTabGroup/WithError',
 };
 
 export const WithSuggestedGroup = Template.bind( {} );
@@ -171,7 +169,6 @@ WithSuggestedGroup.args = {
 };
 WithSuggestedGroup.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Components/KeyMetrics/ChipTabGroup/WithSuggestedGroup',
 };
 
 export default {

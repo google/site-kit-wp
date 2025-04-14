@@ -105,7 +105,6 @@ function Template( {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Components/SelectionPanel/Default',
 	// Delay to ensure the component focus is set consistently.
 	delay: 1500,
 };
@@ -132,9 +131,7 @@ WithSavedItems.args = {
 	},
 	savedItemSlugs: [ 'item-1', 'item-2', 'item-3' ],
 };
-WithSavedItems.scenario = {
-	label: 'Components/SelectionPanel/WithSavedItems',
-};
+WithSavedItems.scenario = {};
 
 export const withZeroUnsavedItems = Template.bind( {} );
 withZeroUnsavedItems.storyName = 'With zero unsaved items';
@@ -168,9 +165,7 @@ WithNewBadges.args = {
 		badge: <NewBadge />,
 	},
 };
-WithNewBadges.scenario = {
-	label: 'Components/SelectionPanel/WithNewBadges',
-};
+WithNewBadges.scenario = {};
 
 export default {
 	title: 'Components/Selection Panel',

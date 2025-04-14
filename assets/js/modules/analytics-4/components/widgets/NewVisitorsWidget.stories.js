@@ -69,7 +69,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/NewVisitors/Ready',
 	delay: 250,
 };
 

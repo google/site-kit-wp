@@ -51,7 +51,6 @@ Default.args = {
 };
 Default.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/Default',
 	delay: 250,
 };
 
@@ -81,7 +80,6 @@ DismissedOnce.args = {
 };
 DismissedOnce.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/DismissedOnce',
 	delay: 250,
 };
 

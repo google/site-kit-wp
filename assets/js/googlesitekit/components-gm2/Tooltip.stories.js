@@ -34,7 +34,6 @@ DefaultTooltip.args = {
 	open: true,
 };
 DefaultTooltip.scenario = {
-	label: 'Global/Tooltip/DefaultTooltip',
 	delay: 250,
 };
 

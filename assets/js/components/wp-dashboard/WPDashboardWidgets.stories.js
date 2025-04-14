@@ -106,7 +106,6 @@ ReadyWithActivateAnalyticsCTA.args = {
 };
 
 ReadyWithActivateAnalyticsCTA.scenario = {
-	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
 	delay: 6000, // This extra delay is required to fix unstable VRTs.
 };
 

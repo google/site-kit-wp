@@ -66,7 +66,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Global/AdBlockingRecoverySetupCTAWidget/Ready',
 	delay: 250,
 };
 

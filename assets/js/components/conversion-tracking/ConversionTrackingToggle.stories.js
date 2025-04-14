@@ -36,7 +36,6 @@ export const Enabled = Template.bind( {} );
 Enabled.storyName = 'Enabled';
 Enabled.title = 'Components/Conversion Tracking/ConversionTrackingToggle';
 Enabled.scenario = {
-	label: 'Components/Conversion Tracking/ConversionTrackingToggle/Enabled',
 	delay: 250,
 };
 Enabled.decorators = [
@@ -67,7 +66,6 @@ Enabled.decorators = [
 export const Default = Template.bind( {} );
 Default.storyName = 'Default Disabled';
 Default.scenario = {
-	label: 'Components/Conversion Tracking/ConversionTrackingToggle/Default',
 	delay: 250,
 };
 Default.decorators = [

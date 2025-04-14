@@ -50,7 +50,6 @@ StepOne.args = {
 	},
 };
 StepOne.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Place Tags',
 	delay: 250,
 };
 
@@ -65,7 +64,6 @@ StepTwo.args = {
 	},
 };
 StepTwo.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message',
 	delay: 250,
 };
 
@@ -83,9 +81,7 @@ StepTwoAfterCTAClick.args = {
 		} );
 	},
 };
-StepTwoAfterCTAClick.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
-};
+StepTwoAfterCTAClick.scenario = {};
 
 export const StepTwoSetupConfirmed = Template.bind( {} );
 StepTwoSetupConfirmed.storyName = 'Step 2 - Setup Confirmed';
@@ -101,9 +97,7 @@ StepTwoSetupConfirmed.args = {
 		} );
 	},
 };
-StepTwoSetupConfirmed.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Confirmed',
-};
+StepTwoSetupConfirmed.scenario = {};
 
 export default {
 	title: ' Modules/AdSense/Components/Setup/AdBlockingRecoveryApp',

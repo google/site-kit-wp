@@ -83,7 +83,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'KeyMetrics/VisitLength/Ready',
 	delay: 250,
 };
 

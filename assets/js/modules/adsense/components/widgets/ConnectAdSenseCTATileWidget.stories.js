@@ -51,7 +51,6 @@ Default.args = {
 };
 Default.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/ConnectAdSenseCTATileWidget',
 	delay: 250,
 };
 
