@@ -28,11 +28,11 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Icon from './Icon';
+import Icon, { allowedIconTypes, TYPE_INFO } from './Icon';
 import Title from './Title';
 import Description from './Description';
-import CTAButton from './CTAButton';
-import DismissButton from './DismissButton';
+import CTAButton, { CTAButtonPropTypes } from './CTAButton';
+import DismissButton, { DismissButtonPropTypes } from './DismissButton';
 
 const Notice = forwardRef(
 	(
@@ -42,7 +42,7 @@ const Notice = forwardRef(
 			description,
 			dismissButton,
 			ctaButton,
-			type = 'info',
+			type = TYPE_INFO,
 			children,
 		},
 		ref
@@ -69,13 +69,15 @@ const Notice = forwardRef(
 					{ dismissButton?.label && dismissButton?.onClick && (
 						<DismissButton
 							label={ dismissButton.label }
-							onDismiss={ dismissButton.onClick }
+							onClick={ dismissButton.onClick }
 						/>
 					) }
 					{ ctaButton?.label && ctaButton?.onClick && (
 						<CTAButton
 							label={ ctaButton.label }
 							onClick={ ctaButton.onClick }
+							inProgress={ ctaButton.inProgress }
+							disabled={ ctaButton.disabled }
 						/>
 					) }
 				</div>
@@ -84,18 +86,13 @@ const Notice = forwardRef(
 	}
 );
 
-const ctaButtonAPI = PropTypes.shape( {
-	label: PropTypes.string,
-	onClick: PropTypes.func,
-} );
-
 Notice.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string,
-	description: PropTypes.string,
-	type: PropTypes.oneOf( [ 'success', 'warning', 'new', 'error', 'info' ] ),
-	dismissButton: ctaButtonAPI,
-	ctaButton: ctaButtonAPI,
+	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
+	type: PropTypes.oneOf( allowedIconTypes ),
+	dismissButton: PropTypes.shape( DismissButtonPropTypes ),
+	ctaButton: PropTypes.shape( CTAButtonPropTypes ),
 	children: PropTypes.node,
 };
 
