@@ -30,9 +30,6 @@ docker build \
 # Run the backstopjs command.
 docker run --rm --tty \
 	--shm-size=512m \
-	-p 9001:9001 \
-	--network="host" \
-  --add-host="host.docker.internal:host-gateway" \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	$IMAGE \
 	"$@" \

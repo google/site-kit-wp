@@ -48,7 +48,10 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {};
+Default.scenario = {
+	// TODO: Wait for a selector rather than a hardcoded delay.
+	delay: 2000,
+};
 
 export const NewUserAccountsEnabled = Template.bind( null );
 NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
@@ -120,9 +123,7 @@ function WithServiceWorker( { children } ) {
 	const [ isReady, setIsReady ] = useState( false );
 
 	useEffect( () => {
-		global.serviceWorkerReader.then( ( registration ) => {
-			// eslint-disable-next-line no-console
-			console.log( '[STORY] service worker is ready', registration );
+		global.serviceWorkerReader.then( () => {
 			setIsReady( true );
 		} );
 	}, [] );

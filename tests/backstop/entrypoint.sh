@@ -7,5 +7,4 @@ http-server /src/dist -p 8001 &
 sleep 2
 
 # Run backstop with the provided arguments
-# backstop "$@" --config=/src/tests/backstop/config.js
 backstop "$@"
