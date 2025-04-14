@@ -24,12 +24,12 @@ import PropTypes from 'prop-types';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 
-export default function CTAButton( { label, disabled, isSaving, onClick } ) {
+export default function CTAButton( { label, disabled, inProgress, onClick } ) {
 	return (
 		<SpinnerButton
 			className="googlesitekit-notice__cta"
 			disabled={ disabled }
-			isSaving={ isSaving }
+			isSaving={ inProgress }
 			onClick={ onClick }
 		>
 			{ label }
@@ -38,9 +38,12 @@ export default function CTAButton( { label, disabled, isSaving, onClick } ) {
 }
 
 // eslint-disable-next-line sitekit/acronym-case
-CTAButton.propTypes = {
+export const CTAButtonPropTypes = {
 	label: PropTypes.string.isRequired,
 	disabled: PropTypes.bool,
-	isSaving: PropTypes.bool,
+	inProgress: PropTypes.bool,
 	onClick: PropTypes.func.isRequired,
 };
+
+// eslint-disable-next-line sitekit/acronym-case
+CTAButton.propTypes = CTAButtonPropTypes;
