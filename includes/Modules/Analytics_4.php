@@ -237,15 +237,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		);
 		$synchronize_ads_linked->register();
 
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			$conversion_reporting_provider = new Conversion_Reporting_Provider(
-				$this->context,
-				$this->settings,
-				$this->user_options,
-				$this
-			);
-			$conversion_reporting_provider->register();
-		}
+		$conversion_reporting_provider = new Conversion_Reporting_Provider(
+			$this->context,
+			$this->settings,
+			$this->user_options,
+			$this
+		);
+		$conversion_reporting_provider->register();
 
 		$this->audience_settings->register();
 
@@ -330,16 +328,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 
-						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-							// Reset event detection and new badge events.
-							$this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
-							$this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
-							$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+						// Reset event detection and new badge events.
+						$this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+						$this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+						$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-							$this->transients->set( Conversion_Reporting_New_Badge_Events_Sync::SKIP_NEW_BADGE_TRANSIENT, 1 );
+						$this->transients->set( Conversion_Reporting_New_Badge_Events_Sync::SKIP_NEW_BADGE_TRANSIENT, 1 );
 
-							do_action( Conversion_Reporting_Cron::CRON_ACTION );
-						}
+						do_action( Conversion_Reporting_Cron::CRON_ACTION );
 					}
 
 					// Reset audience specific settings.
@@ -371,9 +367,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
 
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
-		}
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
 
 		add_filter(
 			'googlesitekit_auth_scopes',
