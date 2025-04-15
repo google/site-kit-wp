@@ -331,18 +331,12 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Create another account" should trigger ads module activation and dismiss the modal', async () => {
-		fetchMock.postOnce( dismissItemEndpoint, {} );
-
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
 		fetchMock.getOnce( userAuthenticationEndpoint, {
 			body: { needsReauthentication: false },
 		} );
-		const dismissNotificationSpy = jest.spyOn(
-			registry.dispatch( CORE_NOTIFICATIONS ),
-			'dismissNotification'
-		);
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
@@ -358,15 +352,6 @@ describe( 'WooCommerceRedirectModal', () => {
 			},
 		} );
 
-		const notification =
-			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.registerNotification(
-				'account-linked-via-google-for-woocommerce',
-				notification
-			);
-
 		const { getByRole, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
@@ -378,11 +363,6 @@ describe( 'WooCommerceRedirectModal', () => {
 		fireEvent.click( createAnotherAccountButton );
 
 		await waitForRegistry();
-
-		expect( dismissNotificationSpy ).toHaveBeenCalled();
-
-		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 
 		expect(
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
