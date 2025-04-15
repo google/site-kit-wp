@@ -21,18 +21,9 @@
  */
 import PropTypes from 'prop-types';
 
-/**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
 export default function Description( { children } ) {
 	return (
-		<Fragment>
-			<p className="googlesitekit-overlay-card__description">
-				{ children }
-			</p>
-		</Fragment>
+		<p className="googlesitekit-overlay-card__description">{ children }</p>
 	);
 }
 

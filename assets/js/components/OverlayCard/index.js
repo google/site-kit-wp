@@ -39,21 +39,21 @@ export default function OverlayCard( props ) {
 		return null;
 	}
 
-	const classes = classnames( 'googlesitekit-overlay-card', className );
+	const body = (
+		<div
+			className={ classnames( 'googlesitekit-overlay-card', className ) }
+		>
+			<Body { ...cardProps } />
+		</div>
+	);
 
 	if ( breakpoint === BREAKPOINT_SMALL ) {
-		return (
-			<div className={ classes }>
-				<Body { ...cardProps } />
-			</div>
-		);
+		return body;
 	}
 
 	return (
 		<Slide direction="up" in={ visible }>
-			<div className={ classes }>
-				<Body { ...cardProps } />
-			</div>
+			{ body }
 		</Slide>
 	);
 }

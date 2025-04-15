@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import OverlayCard from '.';
-import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
-import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
+import GraphicDesktop from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
+import GraphicMobile from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
 
 function Template( args ) {
 	return <OverlayCard { ...args } />;
@@ -41,8 +41,8 @@ DefaultOverlayCard.args = {
 		'Data is now available for the pages that earn the most revenue.',
 		'google-site-kit'
 	),
-	GraphicDesktop: ReaderRevenueManagerIntroductoryGraphicDesktop,
-	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
+	GraphicDesktop,
+	GraphicMobile,
 	ctaButton: {
 		label: __( 'Show me', 'google-site-kit' ),
 		onClick: () => {},
@@ -63,8 +63,8 @@ OverlayCardWithExternalLink.args = {
 		'Learn about all the features available in Google Site Kit.',
 		'google-site-kit'
 	),
-	GraphicDesktop: ReaderRevenueManagerIntroductoryGraphicDesktop,
-	GraphicMobile: ReaderRevenueManagerIntroductoryGraphicMobile,
+	GraphicDesktop,
+	GraphicMobile,
 	ctaButton: {
 		href: 'https://example.com',
 		label: __( 'Explore features', 'google-site-kit' ),
