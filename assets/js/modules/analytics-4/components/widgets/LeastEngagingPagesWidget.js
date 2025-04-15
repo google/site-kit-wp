@@ -43,6 +43,7 @@ import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import { decodeAmpersand } from '../../utils';
 
 function LeastEngagingPagesWidget( props ) {
 	const { Widget } = props;
@@ -175,7 +176,7 @@ function LeastEngagingPagesWidget( props ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ].replace( /&amp;/gi, '&' );
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
