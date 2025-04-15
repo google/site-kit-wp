@@ -60,21 +60,8 @@ export default function Body( {
 
 			{ ( ctaButton || dismissButton ) && (
 				<div className="googlesitekit-overlay-card__actions">
-					{ dismissButton && (
-						<DismissButton
-							label={ dismissButton.label }
-							onClick={ dismissButton.onClick }
-							disabled={ dismissButton.disabled }
-						/>
-					) }
-					{ ctaButton && (
-						<CTAButton
-							label={ ctaButton.label }
-							onClick={ ctaButton.onClick }
-							disabled={ ctaButton.disabled }
-							external={ ctaButton.external }
-						/>
-					) }
+					{ dismissButton && <DismissButton { ...dismissButton } /> }
+					{ ctaButton && <CTAButton { ...ctaButton } /> }
 				</div>
 			) }
 
@@ -90,7 +77,9 @@ Body.propTypes = {
 	description: PropTypes.node,
 	ctaButton: PropTypes.shape( {
 		...buttonProps,
-		external: PropTypes.bool,
+		href: PropTypes.string,
+		target: PropTypes.string,
+		trailingIcon: PropTypes.element,
 	} ),
 	dismissButton: PropTypes.shape( {
 		...buttonProps,

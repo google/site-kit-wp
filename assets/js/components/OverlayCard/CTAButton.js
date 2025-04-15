@@ -25,21 +25,18 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import ExternalIcon from '../../../svg/icons/external.svg';
+import { buttonProps } from './DismissButton';
 
-export default function CTAButton( { label, onClick, disabled, external } ) {
-	return (
-		<Button onClick={ onClick } disabled={ disabled }>
-			{ label }
-			{ external && <ExternalIcon width="13" height="13" /> }
-		</Button>
-	);
+export default function CTAButton( props ) {
+	const { label, ...otherProps } = props;
+
+	return <Button { ...otherProps }>{ label }</Button>;
 }
 
 // eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
-	label: PropTypes.string.isRequired,
-	onClick: PropTypes.func.isRequired,
-	disabled: PropTypes.bool,
-	external: PropTypes.bool,
+	...buttonProps,
+	href: PropTypes.string,
+	target: PropTypes.string,
+	trailingIcon: PropTypes.elementType,
 };

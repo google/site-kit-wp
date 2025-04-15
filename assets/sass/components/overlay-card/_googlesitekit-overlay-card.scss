@@ -108,5 +108,9 @@
 			padding: $grid-gap-desktop;
 			padding-top: 0;
 		}
+
+		.mdc-button--raised {
+			gap: 0 6px;
+		}
 	}
 }
