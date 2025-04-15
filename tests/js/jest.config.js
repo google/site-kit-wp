@@ -17,10 +17,6 @@ module.exports = {
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
 		'jest-localstorage-mock',
-		// Note that `element-internals-polyfill` was introduced to polyfill `HTMLElement.attachInternals()`,
-		// due to JSDom not supporting it. It can probably be removed when JSDom does implement support.
-		// See https://github.com/jsdom/jsdom/issues/3444.
-		'element-internals-polyfill',
 	],
 	setupFilesAfterEnv: [
 		'<rootDir>/tests/js/jest-matchers',
@@ -42,10 +38,7 @@ module.exports = {
 		'<rootDir>/build',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
-	transformIgnorePatterns: [
-		'<rootDir>/node_modules/(?!@material/web)/.*',
-		'<rootDir>/assets/node_modules/',
-	],
+	transformIgnorePatterns: [ '<rootDir>/assets/node_modules/' ],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
 		// New (JSR) modules.
