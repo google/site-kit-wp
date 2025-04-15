@@ -60,7 +60,6 @@ export default function OverlayCard( props ) {
 
 OverlayCard.propTypes = {
 	className: PropTypes.string,
-
 	title: PropTypes.string,
 	description: PropTypes.string,
 	ctaButton: PropTypes.shape( {
