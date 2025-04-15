@@ -47,6 +47,7 @@ import {
 import whenActive from '../../../../util/when-active';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { splitCategories } from '../../utils';
 
 /**
  * Gets the report options for the Top Categories widget.
@@ -120,9 +121,7 @@ function TopCategoriesWidget( { Widget } ) {
 
 				const categoriesList =
 					typeof categories?.value === 'string'
-						? categories.value
-								.replace( /&amp;/gi, '&' )
-								.split( '; ' )
+						? splitCategories( categories.value )
 						: [];
 
 				const categoriesString = listFormat(
