@@ -12,7 +12,7 @@ This limits the number of repeated requests to the WordPress REST API we make—
 
 We don't make direct REST API requests from React components.
 
-Requests are always triggered via Redux (`@wordpress/data`), either by an action with an associated control, or a selector with an associated resolver. Selectors are virtually always `GET` requests, used to get data without modifying it. Actions are usually used when creating/updating/deleting data, eg. an HTTP `POST`/`PUT`/`DELETE` request.
+Requests are always triggered via Redux (`@wordpress/data`) by an action with an associated control either directly or by a selector with an associated resolver. Selectors are virtually always fulfilled by `GET` requests, used to get data without modifying it. Actions are used when creating/updating/deleting data, eg. an HTTP `POST`/`PUT`/`DELETE` request.
 
 The lifecycle of a request is:
 
@@ -22,11 +22,13 @@ API requests should never be made directly by a component using `fetch`, `@wordp
 
 Actions will have associated controls that use our `API.get`/`API.set` libraries to trigger requests and then update the datastore appropriately with loading states, error messages, and results.
 
-Selectors can have associated resolvers that trigger requests, using asynchronous actions like the ones mentioned above. These are created using [`createFetchStore`](https://github.com/google/site-kit-wp/blob/develop/assets/js/googlesitekit/data/create-fetch-store.js). Some selectors do not have their own resolver, but depend on another selector with a resolver. Be aware of this when waiting for a selector to resolve; some selectors will trigger resolvers up the selector hierarchy.
+Selectors can have associated resolvers that trigger requests, using asynchronous actions like the ones mentioned above. Some selectors do not have their own resolver, but depend on another selector with a resolver. Be aware of this when waiting for a selector to resolve; some selectors will trigger resolvers up the selector hierarchy.
+
+In either case, under the hood the common infrastructure for making requests via a data store is created using [`createFetchStore`](https://github.com/google/site-kit-wp/blob/develop/assets/js/googlesitekit/data/create-fetch-store.js).
 
 ### Step 2: Client `fetch` request
 
-Client makes a `fetch` request (using our `API.get`/`API.set` functions, which uses `siteKitRequest` internally) to the WordPress REST API, usually a custom endpoint defined by Site Kit.
+Client makes a `fetch` request to the WordPress REST API, usually to a custom endpoint defined by Site Kit via our `API.get`/`API.set` functions.
 
 [If cached data exists, the request is skipped](#step-6-caching), regardless of how many requests are made. We also have a custom `@wordpress/api-fetch` middleware ([see: `preloadMiddleware`](https://github.com/google/site-kit-wp/blob/develop/assets/js/googlesitekit/api/middleware/preloading.js)) that allows us to preload request data onto the page from the server, but this data is used only for the initial request. Subsequent requests will go through the normal request lifecycle outlined in this doc.
 
