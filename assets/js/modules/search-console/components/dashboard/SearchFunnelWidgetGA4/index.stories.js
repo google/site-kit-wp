@@ -287,9 +287,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 	},
 };
 
-ReadyWithActivateAnalyticsCTA.scenario = {
-	delay: 3000,
-};
+ReadyWithActivateAnalyticsCTA.scenario = {};
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
 ReadyWithCompleteAnalyticsActivationCTA.storyName =
@@ -331,9 +329,7 @@ ReadyWithCreateConversionCTA.args = {
 	},
 };
 
-ReadyWithCreateConversionCTA.scenario = {
-	delay: 3000,
-};
+ReadyWithCreateConversionCTA.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

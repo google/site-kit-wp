@@ -49,9 +49,7 @@ StepOne.args = {
 		} );
 	},
 };
-StepOne.scenario = {
-	delay: 250,
-};
+StepOne.scenario = {};
 
 export const StepTwo = Template.bind( {} );
 StepTwo.storyName = 'Step 2';
@@ -63,9 +61,7 @@ StepTwo.args = {
 		} );
 	},
 };
-StepTwo.scenario = {
-	delay: 250,
-};
+StepTwo.scenario = {};
 
 export const StepTwoAfterCTAClick = Template.bind( {} );
 StepTwoAfterCTAClick.storyName = 'Step 2 - After CTA Click';

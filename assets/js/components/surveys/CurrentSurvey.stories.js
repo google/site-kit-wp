@@ -58,9 +58,7 @@ SurveySingleQuestionStory.storyName = 'Single question';
 SurveySingleQuestionStory.parameters = {
 	survey: singleQuestionSurvey,
 };
-SurveySingleQuestionStory.scenario = {
-	delay: 250,
-};
+SurveySingleQuestionStory.scenario = {};
 
 export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';

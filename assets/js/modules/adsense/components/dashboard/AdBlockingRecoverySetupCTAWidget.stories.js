@@ -65,9 +65,7 @@ Ready.args = {
 			.receiveGetExistingAdBlockingRecoveryTag( null );
 	},
 };
-Ready.scenario = {
-	delay: 250,
-};
+Ready.scenario = {};
 
 export default {
 	title: 'Modules/AdSense/Widgets/AdBlockingRecoverySetupCTAWidget',

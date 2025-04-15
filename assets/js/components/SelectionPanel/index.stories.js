@@ -104,10 +104,7 @@ function Template( {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	// Delay to ensure the component focus is set consistently.
-	delay: 1500,
-};
+Default.scenario = {};
 
 export const WithSavedItems = Template.bind( {} );
 WithSavedItems.storyName = 'With saved items';

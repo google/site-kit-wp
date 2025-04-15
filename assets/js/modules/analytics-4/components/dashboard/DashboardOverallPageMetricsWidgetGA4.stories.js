@@ -111,9 +111,7 @@ Ready.args = {
 		}
 	},
 };
-Ready.scenario = {
-	delay: 500,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -201,9 +199,7 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {
-	delay: 500,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -353,9 +349,7 @@ ZeroDataEntityURL.args = {
 		}
 	},
 };
-ZeroDataEntityURL.scenario = {
-	delay: 500,
-};
+ZeroDataEntityURL.scenario = {};
 
 export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error w/ entity URL';

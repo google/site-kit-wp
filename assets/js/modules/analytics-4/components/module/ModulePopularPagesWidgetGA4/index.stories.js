@@ -129,9 +129,7 @@ Loaded.args = {
 		}
 	},
 };
-Loaded.scenario = {
-	delay: 250,
-};
+Loaded.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -221,9 +219,7 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';

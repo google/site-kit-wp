@@ -43,9 +43,7 @@ function Template() {
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
-Ready.scenario = {
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyNotConnected = Template.bind( {} );
 ReadyNotConnected.decorators = [

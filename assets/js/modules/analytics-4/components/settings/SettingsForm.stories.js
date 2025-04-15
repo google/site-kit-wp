@@ -69,9 +69,7 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	delay: 250,
-};
+Default.scenario = {};
 
 export const EnhancedMeasurementSwitch = Template.bind( null );
 EnhancedMeasurementSwitch.storyName = 'With enhanced measurement switch';
@@ -257,9 +255,7 @@ WithExistingTagNoMatch.decorators = [
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
-IceEnabled.scenario = {
-	delay: 250,
-};
+IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

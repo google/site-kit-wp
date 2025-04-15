@@ -85,9 +85,7 @@ Ready.args = {
 		);
 	},
 };
-Ready.scenario = {
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

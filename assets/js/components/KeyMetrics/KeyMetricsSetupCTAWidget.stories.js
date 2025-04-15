@@ -49,9 +49,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SetupCTAWidget';
-Default.scenario = {
-	delay: 250,
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics',

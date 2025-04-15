@@ -35,9 +35,7 @@ function Template() {
 export const Enabled = Template.bind( {} );
 Enabled.storyName = 'Enabled';
 Enabled.title = 'Components/Conversion Tracking/ConversionTrackingToggle';
-Enabled.scenario = {
-	delay: 250,
-};
+Enabled.scenario = {};
 Enabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -65,9 +63,7 @@ Enabled.decorators = [
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default Disabled';
-Default.scenario = {
-	delay: 250,
-};
+Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

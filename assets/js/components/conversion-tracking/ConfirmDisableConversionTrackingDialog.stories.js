@@ -32,9 +32,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConfirmDisableConversionTrackingDialog';
-Default.scenario = {
-	delay: 250,
-};
+Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
 		return <Story />;
