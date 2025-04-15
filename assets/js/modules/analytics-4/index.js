@@ -731,7 +731,22 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				return false;
 			}
 
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getUserAudienceSettings();
+
+			const currentUserID = select( CORE_USER ).getID();
+			const audienceSegmentationSetupCompletedByUserID =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+
+			if (
+				currentUserID !== audienceSegmentationSetupCompletedByUserID
+			) {
+				return false;
+			}
+
 			const configuredAudiences =
 				select( CORE_USER ).getConfiguredAudiences();
 
@@ -762,7 +777,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
 			] );
 
 			const isDismissed = select( CORE_USER ).isPromptDismissed(

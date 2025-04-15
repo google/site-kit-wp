@@ -120,7 +120,6 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences,
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -153,7 +152,12 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences: [],
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			),
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -197,6 +201,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: availableAudiences.filter(
 				( { displayName } ) => displayName !== 'Returning visitors'
 			),
@@ -265,8 +272,13 @@ describe( 'AudienceCreationNotice', () => {
 				propertyID: '34567',
 				measurementID: '56789',
 				webDataStreamID: '78901',
-				availableAudiences: filteredAudiences,
 			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					availableAudiences: filteredAudiences,
+				} );
 
 			const { getByRole, waitForRegistry } = render(
 				<AudienceCreationNotice />,
@@ -315,6 +327,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -365,6 +380,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -415,6 +433,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 

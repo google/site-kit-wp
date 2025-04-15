@@ -36,7 +36,6 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
-import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -168,8 +167,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe( 'haveConversionEventsForTailoredMetrics', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				provideKeyMetricsUserInputSettings( registry );
 
 				registry
@@ -180,10 +177,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					widgetSlugs: [],
 					isWidgetHidden: false,
 				} );
-			} );
-
-			afterEach( () => {
-				enabledFeatures.delete( 'conversionReporting' );
 			} );
 
 			it( 'should return true when detectedEvents have an event associated with ACR KWM for the current purpose', () => {
@@ -293,8 +286,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe( 'shouldIncludeConversionTailoredMetrics', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				provideKeyMetricsUserInputSettings( registry );
 
 				provideModules( registry, [
@@ -313,10 +304,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					widgetSlugs: [],
 					isWidgetHidden: false,
 				} );
-			} );
-
-			afterEach( () => {
-				enabledFeatures.delete( 'conversionReporting' );
 			} );
 
 			it( 'should return empty array if Analytics module is not connected', () => {
@@ -383,16 +370,10 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe( 'haveLostEventsForCurrentMetrics', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
 					isWidgetHidden: false,
 				} );
-			} );
-
-			afterEach( () => {
-				enabledFeatures.delete( 'conversionReporting' );
 			} );
 
 			it( 'should return false if no events associated with the current site purpose have been lost', () => {
