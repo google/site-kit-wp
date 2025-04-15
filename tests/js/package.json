@@ -19,12 +19,10 @@
 		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/jest-preset-default": "7.1.1",
 		"cross-env": "^7.0.3",
-		"faker": "^5.5.3",
 		"fetch-mock": "^9.10.3",
 		"fetch-mock-jest": "^1.3.0",
 		"jest": "^26.6.3",
 		"jest-localstorage-mock": "^2.4.2",
-		"jsdom": "^16.5.0",
-		"rxjs": "^6.6.7"
+		"jsdom": "^16.5.0"
 	}
 }
