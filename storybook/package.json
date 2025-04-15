@@ -1,9 +1,20 @@
 {
+	"config": {
+		"storybook_wordpress_version": "5.5.1",
+		"puppeteer": {
+			"skip": {
+				"download": true
+			}
+		}
+	},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build:storybook": "build-storybook -c . -o ../dist --quiet --loglevel warn",
+		"storybook": "start-storybook -p 9001 -c . --no-version-updates"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
+		"@storybook/addon-viewport": "^6.5.16",
+		"@storybook/react": "^6.5.16",
 		"postcss-loader": "^4.3.0"
 	}
 }

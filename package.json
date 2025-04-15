@@ -1,12 +1,14 @@
 {
 	"scripts": {
-		"build": "npm run -w ./assets build",
-		"build:dev": "npm run -w ./assets build:dev",
-		"build:production": "npm run -w ./assets build:production",
-		"build:test": "npm run -w ./assets build:test",
-		"watch": "npm run -w ./assets watch",
+		"build": "npm run -w assets build",
+		"prebuild:dev": "npm run remove-dist",
+		"build:dev": "npm run -w assets build:dev",
+		"prebuild:production": "npm run remove-dist",
+		"build:production": "npm run -w assets build:production",
+		"build:test": "npm run -w assets build:test",
+		"watch": "npm run -w assets watch",
 		"prebuild:storybook": "npm run remove-dist",
-		"build:storybook": "build-storybook -c storybook -o dist --quiet --loglevel warn",
+		"build:storybook": "npm run build:storybook -w storybook",
 		"remove-dist": "rimraf ./dist",
 		"prezip": "composer run autoload-includes",
 		"zip": "./bin/release",
@@ -17,18 +19,18 @@
 		"release-zip": "npm run zip",
 		"pretest": "npm run build:production -- --display=none",
 		"pretest:visualtest": "VRT=1 npm run build:storybook",
-		"test": "npm run test:js:watch -w ./tests/js",
-		"test:visualtest": "npm run test:visualtest -w ./tests/backstop",
-		"test:visualapprove": "npm run test:visualapprove -w ./tests/backstop",
+		"test": "npm run test:js:watch -w tests/js",
+		"test:visualtest": "npm run test:visualtest -w tests/backstop",
+		"test:visualapprove": "npm run test:visualapprove -w tests/backstop",
 		"test:analyze": "npm run build:production -- --env.ANALYZE",
-		"test:js": "npm run test:js -w ./tests/js",
-		"test:js:watch": "npm run test:js:watch -w ./tests/js",
+		"test:js": "npm run test:js -w tests/js",
+		"test:js:watch": "npm run test:js:watch -w tests/js",
 		"test:storybook": "jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
-		"test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w ./tests/e2e",
-		"test:e2e:interactive": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:interactive -w ./tests/e2e",
-		"test:e2e:watch": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:watch -w ./tests/e2e",
-		"test:e2e:watch:interactive": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:watch:interactive -w ./tests/e2e",
-		"storybook": "start-storybook -p 9001 -c storybook --no-version-updates",
+		"test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w tests/e2e",
+		"test:e2e:interactive": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:interactive -w tests/e2e",
+		"test:e2e:watch": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:watch -w tests/e2e",
+		"test:e2e:watch:interactive": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:watch:interactive -w tests/e2e",
+		"storybook": "npm run storybook -w storybook",
 		"storybook:vrt": "npm run storybook -- --ci --quiet",
 		"backstopjs": "./bin/backstop",
 		"lint": "npm run lint:js && npm run lint:css",
@@ -36,9 +38,9 @@
 		"lint:js-fix": "prettier --write --config .prettierrc.js --ignore-path .prettierignore \"**/*.{js,jsx,ts,tsx,.yml,.yaml}\"",
 		"lint:css": "stylelint ./assets/sass ./storybook/assets/sass",
 		"lint:css-fix": "stylelint ./assets/sass ./storybook/assets/sass --fix",
-		"env:start": "npm run env:start -w ./tests/e2e",
-		"env:stop": "npm run env:stop -w ./tests/e2e",
-		"env:reset-site": "npm run env:reset-site -w ./tests/e2e",
+		"env:start": "npm run env:start -w tests/e2e",
+		"env:stop": "npm run env:stop -w tests/e2e",
+		"env:reset-site": "npm run env:reset-site -w tests/e2e",
 		"install-global-npm": "npm install -g npm@7.24.2",
 		"postinstall": "patch-package"
 	},
@@ -67,21 +69,9 @@
 			"./vendor/bin/phpcs"
 		]
 	},
-	"config": {
-		"storybook_wordpress_version": "5.5.1",
-		"puppeteer": {
-			"skip": {
-				"download": true
-			}
-		}
-	},
 	"devDependencies": {
-		"@storybook/addon-postcss": "^2.0.0",
-		"@storybook/addon-queryparams": "^6.2.9",
 		"@storybook/addon-storyshots": "^6.5.16",
 		"@storybook/addon-storyshots-puppeteer": "^6.3.6",
-		"@storybook/addon-viewport": "^6.3.0",
-		"@storybook/react": "^6.5.14",
 		"@svgr/webpack": "^5.4.0",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^10.4.9",
@@ -135,10 +125,7 @@
 		"stylelint-declaration-strict-value": "^1.9.0",
 		"stylelint-order": "^5.0.0",
 		"stylelint-scss": "^4.3.0",
-		"terser-webpack-plugin": "^3.0.6",
-		"webpack": "^4.43.0",
-		"webpack-cli": "^3.3.12",
-		"webpack-stream": "^5.2.1"
+		"terser-webpack-plugin": "^3.0.6"
 	},
 	"workspaces": [
 		"assets",

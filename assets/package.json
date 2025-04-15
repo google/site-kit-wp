@@ -1,13 +1,10 @@
 {
 	"scripts": {
 		"build": "npm run build:production",
-		"prebuild:dev": "npm run remove-dist",
 		"build:dev": "webpack --mode=development --devtool cheap-module-eval-source-map --output-pathinfo",
-		"prebuild:production": "npm run remove-dist",
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
-		"watch": "npm run build:dev -- --watch",
-		"remove-dist": "rimraf ../dist"
+		"watch": "npm run build:dev -- --watch"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
@@ -71,6 +68,7 @@
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
+		"@storybook/addon-queryparams": "^6.2.9",
 		"@svgr/webpack": "^5.4.0",
 		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/browserslist-config": "^5.40.0",
@@ -103,7 +101,6 @@
 		"postcss-loader": "^4.3.0",
 		"postcss-preset-env": "^9.5.11",
 		"prettier": "npm:wp-prettier@2.6.2",
-		"rimraf": "^3.0.2",
 		"sass": "^1.30.0",
 		"sass-loader": "^9.0.2",
 		"semver-compare": "^1.0.0",
@@ -114,7 +111,7 @@
 		"stylelint-order": "^5.0.0",
 		"stylelint-scss": "^4.3.0",
 		"terser-webpack-plugin": "^3.0.6",
-		"webpack": "^4.43.0",
+		"webpack": "^4.47.0",
 		"webpack-bundle-analyzer": "^4.6.1",
 		"webpack-cli": "^3.3.12",
 		"webpack-manifest-plugin": "^2.2.0",
