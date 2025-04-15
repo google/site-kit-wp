@@ -27,7 +27,7 @@ const { ProvidePlugin } = require( 'webpack' );
 /**
  * Internal dependencies
  */
-const { siteKitExternals, svgRule } = require( '../webpack/common' );
+const { rootDir, siteKitExternals, svgRule } = require( '../webpack/common' );
 
 // eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
@@ -81,7 +81,7 @@ module.exports = async ( { config } ) => {
 					loader: 'postcss-loader',
 					options: {
 						postcssOptions: {
-							path: './',
+							config: rootDir + '/assets/postcss.config.js',
 						},
 					},
 				},

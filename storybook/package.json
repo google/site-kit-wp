@@ -1,5 +1,9 @@
 {
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"devDependencies": {
+		"@babel/preset-react": "^7.26.3",
+		"postcss-loader": "^4.3.0"
 	}
 }
