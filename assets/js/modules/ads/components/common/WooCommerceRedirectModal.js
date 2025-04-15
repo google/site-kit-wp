@@ -141,15 +141,6 @@ export default function WooCommerceRedirectModal( {
 		if ( ! onContinue ) {
 			setIsSaving( 'tertiary' );
 			onDismiss?.();
-			if (
-				( isWooCommerceActivated ||
-					isGoogleForWooCommerceAdsConnected ) &&
-				! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
-			) {
-				dismissNotification(
-					'account-linked-via-google-for-woocommerce'
-				);
-			}
 		}
 
 		if ( onContinue ) {
