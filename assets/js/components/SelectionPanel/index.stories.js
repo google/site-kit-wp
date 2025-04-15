@@ -104,7 +104,9 @@ function Template( {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {};
+Default.scenario = {
+	delay: 1500,
+};
 
 export const WithSavedItems = Template.bind( {} );
 WithSavedItems.storyName = 'With saved items';
