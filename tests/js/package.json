@@ -5,7 +5,10 @@
 		"test:js:watch": "npm run test:js -- --watch"
 	},
 	"dependencies": {
-		"@googlesitekit/assets": "file:../../assets"
+		"@googlesitekit/assets": "file:../../assets",
+		"@wordpress/element": "^2.20.3",
+		"intl": "^1.2.5",
+		"intl-locales-supported": "^1.8.12"
 	},
 	"devDependencies": {
 		"@jackfranklin/test-data-bot": "^2.0.0",
