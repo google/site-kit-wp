@@ -235,6 +235,7 @@
 	},
 	"workspaces": [
 		"assets",
+		"storybook",
 		"tests/backstop",
 		"tests/e2e",
 		"tests/js"
