@@ -77,7 +77,6 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.8",
-		"@babel/plugin-transform-runtime": "^7.10.4",
 		"@babel/preset-react": "^7.10.4",
 		"@storybook/addon-postcss": "^2.0.0",
 		"@storybook/addon-queryparams": "^6.2.9",

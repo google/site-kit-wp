@@ -71,7 +71,6 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.8",
-		"@babel/plugin-transform-runtime": "^7.10.4",
 		"@babel/preset-react": "^7.10.4",
 		"@svgr/webpack": "^5.4.0",
 		"@wordpress/babel-preset-default": "^4.17.0",
