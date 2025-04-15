@@ -101,24 +101,6 @@ module.exports = async ( { config } ) => {
 			include: path.resolve( __dirname, '../' ),
 		},
 		{
-			test: RegExp( 'node_modules/@material/web/.*.js' ),
-			use: [
-				{
-					loader: 'babel-loader',
-					options: {
-						sourceMap: true,
-						babelrc: false,
-						configFile: false,
-						cacheDirectory: true,
-						presets: [
-							'@wordpress/default',
-							'@babel/preset-react',
-						],
-					},
-				},
-			],
-		},
-		{
 			test: /\.mjs$/,
 			include: /node_modules/,
 			type: 'javascript/auto',

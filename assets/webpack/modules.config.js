@@ -181,14 +181,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 							: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: ( module ) => {
-							return (
-								/[\\/]node_modules[\\/]/.test(
-									module.resource
-								) &&
-								// This test to exclude @material/web from the vendor bundle can be removed once googlesitekit-components is moved out of the Module Entry Points configuration. See https://github.com/google/site-kit-wp/issues/6112.
-								! /[\\/]@material[\\/]web[\\/]/.test(
-									module.resource
-								)
+							return /[\\/]node_modules[\\/]/.test(
+								module.resource
 							);
 						},
 					},
