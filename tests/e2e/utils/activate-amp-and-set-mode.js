@@ -84,6 +84,18 @@ export const activateAMPWithMode = async (
 	await setAMPMode( mode );
 };
 
+function debugLog( message ) {
+	// if ( ! shouldLog() ) {
+	// 	return;
+	// }
+
+	// `currentTestName` is the full test name (including describe names)
+	const currentTest = expect.getState().currentTestName;
+
+	// eslint-disable-next-line no-console
+	console.debug( `DEBUG: ${ message } [${ currentTest }]` );
+}
+
 /**
  * Sets AMP Mode.
  *
@@ -92,20 +104,40 @@ export const activateAMPWithMode = async (
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
 export const setAMPMode = async ( mode ) => {
+	debugLog( `setAMPMode, mode = ${ mode }` );
+	debugLog( 'setAMPMode, expect allowedAMPModes to have mode' );
+
 	// Test to be sure that the passed mode is known.
 	expect( allowedAMPModes ).toHaveProperty( mode );
+
+	debugLog( 'setAMPMode, expect allowedAMPModes to have mode done' );
+
 	const ampMode = allowedAMPModes[ mode ];
+
+	debugLog( 'setAMPMode, createWaitForFetchRequests' );
+
 	// Need to start capturing before navigating to the AMP page.
 	const waitForFetchRequests = createWaitForFetchRequests();
+
+	debugLog( 'setAMPMode, visitAdminPage' );
+
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
+
+	debugLog( 'setAMPMode, get optionsRESTPath' );
 
 	// AMP v2
 	const optionsRESTPath = await page.evaluate(
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
+
+	debugLog( `setAMPMode, got optionsRESTPath: ${ optionsRESTPath }` );
+
 	if ( optionsRESTPath ) {
+		debugLog( 'setAMPMode, waitForSelector' );
 		await page.waitForSelector( `#template-mode-${ ampMode }` );
+
+		debugLog( 'setAMPMode, get isAlreadySet' );
 
 		const isAlreadySet = await page.evaluate( ( theAMPMode ) => {
 			const templateMode = document.querySelector(
@@ -114,12 +146,18 @@ export const setAMPMode = async ( mode ) => {
 			return templateMode.checked;
 		}, ampMode );
 
+		debugLog( `setAMPMode, got isAlreadySet: ${ isAlreadySet }` );
+
 		if ( isAlreadySet ) {
+			debugLog( 'setAMPMode, isAlreadySet, pageWait' );
 			await pageWait();
+			debugLog( 'setAMPMode, isAlreadySet, waitForFetchRequests' );
 			await waitForFetchRequests();
+			debugLog( 'setAMPMode, isAlreadySet, done' );
 			return;
 		}
 
+		debugLog( 'setAMPMode, click radio button' );
 		await page.evaluate( ( theAMPMode ) => {
 			const radio = document.querySelector(
 				`#template-mode-${ theAMPMode }`
@@ -127,9 +165,16 @@ export const setAMPMode = async ( mode ) => {
 			radio.click();
 		}, ampMode );
 
+		debugLog( 'setAMPMode, click submit button' );
 		await page.click( 'button[type="submit"]' );
+
+		debugLog( 'setAMPMode, pageWait' );
 		await pageWait();
+
+		debugLog( 'setAMPMode, waitForFetchRequests' );
 		await waitForFetchRequests();
+
+		debugLog( 'setAMPMode, done' );
 		return;
 	}
 

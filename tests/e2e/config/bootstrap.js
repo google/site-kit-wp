@@ -136,13 +136,19 @@ function removePageEvents() {
  *
  * @return {boolean} Whether logging should occur.
  */
-function shouldLog() {
+export function shouldLog() {
 	const targetTest = process.env.RETRY_FULL_TEST_NAME;
+	const debugLogTestPrefix = process.env.DEBUG_LOG_TEST_PREFIX;
 	// `currentTestName` is the full test name (including describe names)
 	const currentTest = expect.getState().currentTestName;
 
 	// Log if we're not targeting a specific test, or if we're in the target test
-	return ! targetTest || targetTest === currentTest;
+	// return ! targetTest || targetTest === currentTest;
+	// Modded to allow specifying a test prefix to match:
+	return (
+		! targetTest ||
+		currentTest?.startsWith( debugLogTestPrefix || targetTest )
+	);
 }
 
 /**
