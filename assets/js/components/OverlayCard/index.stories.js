@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import OverlayCard from '.';
@@ -36,19 +31,17 @@ export const DefaultOverlayCard = Template.bind( {} );
 DefaultOverlayCard.storyName = 'Default';
 DefaultOverlayCard.scenario = {};
 DefaultOverlayCard.args = {
-	title: __( 'See your top earning content', 'google-site-kit' ),
-	description: __(
+	title: 'See your top earning content',
+	description:
 		'Data is now available for the pages that earn the most revenue.',
-		'google-site-kit'
-	),
 	GraphicDesktop,
 	GraphicMobile,
 	ctaButton: {
-		label: __( 'Show me', 'google-site-kit' ),
+		label: 'Show me',
 		onClick: () => {},
 	},
 	dismissButton: {
-		label: __( 'Maybe later', 'google-site-kit' ),
+		label: 'Maybe later',
 		onClick: () => {},
 	},
 	visible: true,
@@ -58,21 +51,18 @@ export const OverlayCardWithExternalLink = Template.bind( {} );
 OverlayCardWithExternalLink.storyName = 'With External Link';
 OverlayCardWithExternalLink.scenario = {};
 OverlayCardWithExternalLink.args = {
-	title: __( 'Explore more features', 'google-site-kit' ),
-	description: __(
-		'Learn about all the features available in Google Site Kit.',
-		'google-site-kit'
-	),
+	title: 'Explore more features',
+	description: 'Learn about all the features available in Google Site Kit.',
 	GraphicDesktop,
 	GraphicMobile,
 	ctaButton: {
 		href: 'https://example.com',
-		label: __( 'Explore features', 'google-site-kit' ),
+		label: 'Explore features',
 		onClick: () => {},
 		external: true,
 	},
 	dismissButton: {
-		label: __( 'Maybe later', 'google-site-kit' ),
+		label: 'Maybe later',
 		onClick: () => {},
 	},
 	visible: true,
@@ -82,17 +72,15 @@ export const OverlayCardWithoutGraphic = Template.bind( {} );
 OverlayCardWithoutGraphic.storyName = 'Without Graphic';
 OverlayCardWithoutGraphic.scenario = {};
 OverlayCardWithoutGraphic.args = {
-	title: __( 'Important notification', 'google-site-kit' ),
-	description: __(
+	title: 'Important notification',
+	description:
 		'This is an important notification that requires your attention.',
-		'google-site-kit'
-	),
 	ctaButton: {
-		label: __( 'Take action', 'google-site-kit' ),
+		label: 'Take action',
 		onClick: () => {},
 	},
 	dismissButton: {
-		label: __( 'Dismiss', 'google-site-kit' ),
+		label: 'Dismiss',
 		onClick: () => {},
 	},
 	visible: true,
