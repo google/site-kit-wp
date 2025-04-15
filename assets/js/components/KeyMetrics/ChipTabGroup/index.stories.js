@@ -117,9 +117,7 @@ Default.args = {
 		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 	},
 };
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-};
+Default.scenario = {};
 
 export const WithError = Template.bind( {} );
 WithError.storyName = 'With Error';
@@ -147,9 +145,7 @@ WithError.args = {
 		} );
 	},
 };
-WithError.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-};
+WithError.scenario = {};
 
 export const WithSuggestedGroup = Template.bind( {} );
 WithSuggestedGroup.storyName = 'With Suggested Group';
@@ -164,9 +160,7 @@ WithSuggestedGroup.args = {
 		} );
 	},
 };
-WithSuggestedGroup.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-};
+WithSuggestedGroup.scenario = {};
 
 export default {
 	title: 'Key Metrics/ChipTabGroup',
