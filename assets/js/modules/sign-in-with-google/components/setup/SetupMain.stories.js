@@ -41,9 +41,7 @@ function Template( { setupRegistry = () => {} } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/SignInWithGoogle/Setup/SetupMain',
-};
+Default.scenario = {};
 
 export const WithHTTPSWarning = Template.bind( {} );
 WithHTTPSWarning.storyName = 'With HTTPS Warning';

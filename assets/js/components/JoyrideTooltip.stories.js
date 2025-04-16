@@ -35,10 +35,7 @@ DefaultTooltip.args = {
 	dismissLabel: 'Got it',
 	target: '.target',
 };
-DefaultTooltip.scenario = {
-	label: 'Global/JoyrideTooltip/DefaultTooltip',
-	delay: 1000,
-};
+DefaultTooltip.scenario = {};
 
 export default {
 	title: 'Components/JoyrideTooltip',

@@ -258,7 +258,6 @@ export function VRTStory() {
 }
 VRTStory.storyName = 'All Links VRT';
 VRTStory.scenario = {
-	label: 'Global/Links',
 	hoverSelector: '.googlesitekit-cta-link--hover',
 	postInteractionWait: 1000,
 	onReadyScript: 'mouse.js',

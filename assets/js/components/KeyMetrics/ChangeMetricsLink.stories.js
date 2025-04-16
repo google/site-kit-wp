@@ -36,9 +36,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ChangeMetricsLink';
-Default.scenario = {
-	label: 'KeyMetrics/ChangeMetricsLink',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/ChangeMetricsLink',

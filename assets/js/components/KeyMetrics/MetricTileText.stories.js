@@ -38,10 +38,7 @@ Positive.args = {
 	currentValue: 100,
 	previousValue: 91,
 };
-Positive.scenario = {
-	label: 'KeyMetrics/MetricTileText/Positive',
-	delay: 250,
-};
+Positive.scenario = {};
 
 export const Negative = Template.bind( {} );
 Negative.storyName = 'Negative';
@@ -52,10 +49,7 @@ Negative.args = {
 	currentValue: 91,
 	previousValue: 103,
 };
-Negative.scenario = {
-	label: 'KeyMetrics/MetricTileText/Negative',
-	delay: 250,
-};
+Negative.scenario = {};
 
 export const ZeroChange = Template.bind( {} );
 ZeroChange.storyName = 'Zero Change';
@@ -66,10 +60,7 @@ ZeroChange.args = {
 	currentValue: 100,
 	previousValue: 100,
 };
-ZeroChange.scenario = {
-	label: 'KeyMetrics/MetricTileText/ZeroChange',
-	delay: 250,
-};
+ZeroChange.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -82,10 +73,7 @@ ZeroData.args = {
 };
 // Since the "Zero" state is similar for all "textual" KMW tiles, this should be
 // the sole scenario and should not be added to any other "text" type KMW components.
-ZeroData.scenario = {
-	label: 'KeyMetrics/MetricTileText/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

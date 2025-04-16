@@ -32,9 +32,7 @@ function Template() {
 
 export const Default = Template.bind();
 Default.storyName = 'SignInWithGoogleSetupCTABanner';
-Default.scenario = {
-	label: 'Modules/SignInWithGoogle/Dashboard/SignInWithGoogleSetupCTABanner',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/SignInWithGoogle/Dashboard/SignInWithGoogleSetupCTABanner',

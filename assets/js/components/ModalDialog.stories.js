@@ -35,9 +35,7 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/ModalDialog',
-};
+Default.scenario = {};
 
 export const Danger = Template.bind( {} );
 Danger.storyName = 'Danger';
@@ -46,9 +44,7 @@ Danger.args = {
 	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
 	danger: true,
 };
-Danger.scenario = {
-	label: 'Global/ModalDialog/Danger',
-};
+Danger.scenario = {};
 
 export const DependentModules = Template.bind( {} );
 DependentModules.storyName = 'Danger With Dependent Modules';
@@ -58,27 +54,21 @@ DependentModules.args = {
 	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
 	danger: true,
 };
-DependentModules.scenario = {
-	label: 'Global/ModalDialog/DangerWithDependentModules',
-};
+DependentModules.scenario = {};
 
 export const SmallModal = Template.bind( {} );
 SmallModal.storyName = 'Small';
 SmallModal.args = {
 	small: true,
 };
-SmallModal.scenario = {
-	label: 'Global/ModalDialog/Small',
-};
+SmallModal.scenario = {};
 
 export const MediumModal = Template.bind( {} );
 MediumModal.storyName = 'Medium';
 MediumModal.args = {
 	medium: true,
 };
-MediumModal.scenario = {
-	label: 'Global/ModalDialog/Medium',
-};
+MediumModal.scenario = {};
 
 export default {
 	title: 'Global/Modal Dialog',

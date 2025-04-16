@@ -111,10 +111,7 @@ Ready.args = {
 		}
 	},
 };
-Ready.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Ready',
-	delay: 500,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -135,9 +132,7 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Loading',
-};
+Loading.scenario = {};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -179,9 +174,7 @@ DataUnavailable.args = {
 		}
 	},
 };
-DataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailable',
-};
+DataUnavailable.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -206,10 +199,7 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroData',
-	delay: 500,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -231,9 +221,7 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Error',
-};
+Error.scenario = {};
 
 export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready w/ entity URL set';
@@ -250,9 +238,7 @@ LoadedEntityURL.args = {
 		}
 	},
 };
-LoadedEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
-};
+LoadedEntityURL.scenario = {};
 
 export const LoadingEntityURL = Template.bind( {} );
 LoadingEntityURL.storyName = 'Loading w/ entity URL';
@@ -279,9 +265,7 @@ LoadingEntityURL.decorators = [
 		);
 	},
 ];
-LoadingEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadingEntityURL',
-};
+LoadingEntityURL.scenario = {};
 
 export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable w/ entity URL';
@@ -332,9 +316,7 @@ DataUnavailableEntityURL.args = {
 			);
 	},
 };
-DataUnavailableEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailableEntityURL',
-};
+DataUnavailableEntityURL.scenario = {};
 
 export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
@@ -367,10 +349,7 @@ ZeroDataEntityURL.args = {
 		}
 	},
 };
-ZeroDataEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroDataEntityURL',
-	delay: 500,
-};
+ZeroDataEntityURL.scenario = {};
 
 export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error w/ entity URL';
@@ -397,9 +376,7 @@ ErrorEntityURL.args = {
 			.finishResolution( 'getReport', [ options ] );
 	},
 };
-ErrorEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ErrorEntityURL',
-};
+ErrorEntityURL.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',

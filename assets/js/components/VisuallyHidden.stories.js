@@ -65,9 +65,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/Visually Hidden',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Components/VisuallyHidden',

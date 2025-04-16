@@ -81,7 +81,6 @@ Ready.args = {
 };
 Ready.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
 };
 
 export const Loading = Template.bind( {} );
@@ -124,7 +123,6 @@ GatheringData.args = {
 // other generic `MetricTile___` or KMW component.
 GatheringData.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
@@ -142,7 +140,6 @@ ErrorMissingCustomDimensions.args = {
 // added to any other generic `MetricTile___` or KMW component.
 ErrorMissingCustomDimensions.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
 	delay: 250,
 };
 
@@ -172,7 +169,6 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 // not be added to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsInsufficientPermissions.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
 
@@ -202,7 +198,6 @@ ErrorCustomDimensionsGeneric.args = {
 // to any other generic `MetricTile___` or KMW component.
 ErrorCustomDimensionsGeneric.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
 	delay: 250,
 };
 

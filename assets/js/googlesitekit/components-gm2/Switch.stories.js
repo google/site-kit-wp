@@ -63,9 +63,7 @@ export function VRTStory() {
 	);
 }
 VRTStory.storyName = 'All Switches VRT';
-VRTStory.scenario = {
-	label: 'Global/Switches',
-};
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/Switch',

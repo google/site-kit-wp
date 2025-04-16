@@ -58,9 +58,7 @@ export function VRTStory() {
 }
 
 VRTStory.storyName = 'All Progress Bars VRT';
-VRTStory.scenario = {
-	label: 'Global/Progress Bars',
-};
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/ProgressBar',

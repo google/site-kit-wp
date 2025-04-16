@@ -44,9 +44,7 @@ Ads.parameters = {
 		slug: 'ads',
 	},
 };
-Ads.scenario = {
-	label: 'SetupSuccessSubtleNotification',
-};
+Ads.scenario = {};
 
 export default {
 	title: 'Modules/Ads/Notifications/SetupSuccessSubtleNotification',

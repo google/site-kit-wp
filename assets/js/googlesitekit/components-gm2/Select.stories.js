@@ -139,7 +139,6 @@ export function VRTStory() {
 VRTStory.storyName = 'All Selects VRT';
 VRTStory.scenario = {
 	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/Selects',
 	delay: 3000, // Sometimes the click doesn't work, waiting for everything to load.
 	clickSelector: '.googlesitekit-story-select-click',
 	postInteractionWait: 3000, // Wait for overlay and selects to animate.

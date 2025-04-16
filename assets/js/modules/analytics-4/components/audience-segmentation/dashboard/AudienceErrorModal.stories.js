@@ -38,9 +38,7 @@ Default.storyName = 'Default';
 Default.args = {
 	onRetry: () => {},
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal/Default',
-};
+Default.scenario = {};
 
 export const WithInsufficientPermissionsError = Template.bind( {} );
 WithInsufficientPermissionsError.storyName = 'Insufficient permissions error';
@@ -51,9 +49,7 @@ WithInsufficientPermissionsError.args = {
 		data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 	},
 };
-WithInsufficientPermissionsError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal/WithInsufficientPermissionsError',
-};
+WithInsufficientPermissionsError.scenario = {};
 
 export const WithOAuthError = Template.bind( {} );
 WithOAuthError.storyName = 'OAuth error';
@@ -61,9 +57,7 @@ WithOAuthError.args = {
 	hasOAuthError: true,
 	onRetry: () => {},
 };
-WithOAuthError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal/WithOAuthError',
-};
+WithOAuthError.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceErrorModal',

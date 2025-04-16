@@ -90,9 +90,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Text Fields';
-Default.scenario = {
-	label: 'Components/TextField',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Components/Text Fields',

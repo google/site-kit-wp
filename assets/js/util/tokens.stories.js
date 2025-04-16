@@ -363,9 +363,7 @@ function Template() {
 }
 
 export const DefaultToken = Template.bind( {} );
-DefaultToken.scenario = {
-	label: 'Global Tokens/undefined',
-};
+DefaultToken.scenario = {};
 
 export default {
 	title: 'Color Palette (tokens)',

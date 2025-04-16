@@ -53,9 +53,7 @@ PluginSetupError.args = {
 		} );
 	},
 };
-PluginSetupError.scenario = {
-	label: 'Global/ErrorNotifications/PluginSetupError',
-};
+PluginSetupError.scenario = {};
 
 export const PermissionError = Template.bind( {} );
 PermissionError.storyName =
@@ -72,9 +70,7 @@ PermissionError.args = {
 		} );
 	},
 };
-PermissionError.scenario = {
-	label: 'Global/ErrorNotifications/PluginSetupError',
-};
+PermissionError.scenario = {};
 
 export const AdditionalScopeError = Template.bind( {} );
 AdditionalScopeError.storyName = 'Additional Scope Error - Grant Permission';
@@ -104,9 +100,7 @@ AdditionalScopeError.args = {
 		} );
 	},
 };
-AdditionalScopeError.scenario = {
-	label: 'Global/ErrorNotifications/AdditionalScopeError',
-};
+AdditionalScopeError.scenario = {};
 
 export default {
 	title: 'Components/ErrorNotifications',
