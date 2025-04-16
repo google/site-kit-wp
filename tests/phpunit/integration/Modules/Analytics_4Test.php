@@ -1270,8 +1270,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_datapoints__conversionReporting() {
-		$this->enable_feature( 'conversionReporting' );
-
 		$this->assertEqualSets(
 			array(
 				'account-summaries',
