@@ -449,7 +449,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Verifies connection status and settings to determine if Ads-related configurations
 	 * (AdSense linked or Google Tag Container with AW- destination IDs) exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @return bool True if Analytics 4 is connected and configured for Ads measurement; false otherwise.
 	 */
