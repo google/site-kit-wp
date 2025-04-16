@@ -28,11 +28,11 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Icon, { allowedIconTypes, TYPE_INFO } from './Icon';
+import Icon, { TYPES as ICON_TYPES } from './Icon';
 import Title from './Title';
 import Description from './Description';
-import CTAButton, { CTAButtonPropTypes } from './CTAButton';
-import DismissButton, { DismissButtonPropTypes } from './DismissButton';
+import CTAButton from './CTAButton';
+import DismissButton from './DismissButton';
 
 const Notice = forwardRef(
 	(
@@ -42,7 +42,7 @@ const Notice = forwardRef(
 			description,
 			dismissButton,
 			ctaButton,
-			type = TYPE_INFO,
+			type = ICON_TYPES.INFO,
 			children,
 		},
 		ref
@@ -86,13 +86,15 @@ const Notice = forwardRef(
 	}
 );
 
+Notice.TYPES = ICON_TYPES;
+
 Notice.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
-	type: PropTypes.oneOf( allowedIconTypes ),
-	dismissButton: PropTypes.shape( DismissButtonPropTypes ),
-	ctaButton: PropTypes.shape( CTAButtonPropTypes ),
+	type: Icon.propTypes.type,
+	dismissButton: PropTypes.shape( DismissButton.propTypes ),
+	ctaButton: PropTypes.shape( CTAButton.propTypes ),
 	children: PropTypes.node,
 };
 
