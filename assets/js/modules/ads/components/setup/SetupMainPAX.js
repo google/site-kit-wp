@@ -40,15 +40,13 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '../../../../../svg/graphics/ads.svg';
 import SetupFormPAX from './SetupFormPAX';
-import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
@@ -63,6 +61,7 @@ import {
 } from '../../pax/constants';
 import { Cell, Row } from '../../../../material-components';
 import { WooCommerceRedirectModal } from '../common';
+import Link from '../../../../components/Link';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -71,9 +70,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
-
-	const [ shouldShowProgressBar, setShouldShowProgressBar ] =
-		useState( false );
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -182,34 +178,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [ registry, finishSetup ] );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY
-		)
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 	const isWooCommerceActivated = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceActivated()
 	);
 
-	const onModalDismiss = useCallback(
-		( skipClosing ) => {
-			if ( ! skipClosing ) {
-				setOpenDialog( false );
-			}
-		},
-		[ setOpenDialog ]
-	);
-
 	const createAccount = useCallback( () => {
-		setShouldShowProgressBar( true );
-
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
 			return;
 		}
 
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
-
-		setShouldShowProgressBar( false );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	const onLaunch = useCallback( ( app ) => {
@@ -229,6 +210,17 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setOpenDialog,
 		createAccount,
 	] );
+
+	const setupNewAdsAccountSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'ads-set-up-a-new-ads-account'
+		)
+	);
+	const setupExistingAdsAccountSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'ads-connect-an-existing-ads-account'
+		)
+	);
 
 	return (
 		<div
@@ -254,8 +246,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
-
-				{ shouldShowProgressBar && <ProgressBar /> }
 
 				{ ! isAdBlockerActive &&
 					PAX_SETUP_STEP.LAUNCH === showPaxAppStep &&
@@ -298,8 +288,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 											),
 											{
 												a: (
-													<SupportLink
-														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+													<Link
+														href={
+															setupNewAdsAccountSupportURL
+														}
 														external
 													/>
 												),
@@ -313,7 +305,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 											isSaving={ isNavigatingToOAuthURL }
 										>
 											{ __(
-												'Start setup wizard',
+												'Start setup',
 												'google-site-kit'
 											) }
 										</SpinnerButton>
@@ -345,8 +337,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 											),
 											{
 												a: (
-													<SupportLink
-														path="/google-ads/thread/108976144/where-i-can-find-google-conversion-id-begins-with-aw"
+													<Link
+														href={
+															setupExistingAdsAccountSupportURL
+														}
 														external
 													/>
 												),
@@ -367,7 +361,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ onModalDismiss }
+					onClose={ () => setOpenDialog( false ) }
 					onContinue={ createAccount }
 					dialogActive
 				/>

@@ -1,11 +1,12 @@
 module.exports = {
 	preset: '@wordpress/jest-preset-default',
 	collectCoverage: false, // Enable with `--coverage=true` flag.
-	collectCoverageFrom: [ 'assets/**/**.js', 'blocks/**/**.js' ],
+	collectCoverageFrom: [ 'assets/**/**.js' ],
 	coverageDirectory: 'coverage',
 	coveragePathIgnorePatterns: [
 		'<rootDir>/build/',
 		'<rootDir>/node_modules/',
+		'<rootDir>/assets/node_modules/',
 		'<rootDir>/assets/js/googlesitekit-(.*).js',
 	],
 	coverageReporters: [ 'html', 'text-summary' ],
@@ -37,10 +38,14 @@ module.exports = {
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',
 		'<rootDir>/node_modules',
+		'<rootDir>/assets/node_modules',
 		'<rootDir>/build',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
-	transformIgnorePatterns: [ '<rootDir>/node_modules/(?!@material/web)/.*' ],
+	transformIgnorePatterns: [
+		'<rootDir>/node_modules/(?!@material/web)/.*',
+		'<rootDir>/assets/node_modules/',
+	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
 		// New (JSR) modules.

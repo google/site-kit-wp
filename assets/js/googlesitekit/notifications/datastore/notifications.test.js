@@ -21,7 +21,7 @@
  */
 import {
 	createTestRegistry,
-	deprecatedProvideNotifications,
+	provideNotifications,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
@@ -35,6 +35,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '../../constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 describe( 'core/notifications Notifications', () => {
 	const fetchGetDismissedItems = new RegExp(
@@ -42,9 +43,6 @@ describe( 'core/notifications Notifications', () => {
 	);
 	const fetchDismissItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
-	const fetchGetDismissedPrompts = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-prompts'
 	);
 
 	let registry;
@@ -55,6 +53,7 @@ describe( 'core/notifications Notifications', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
 		( { registerNotification } = registry.dispatch( CORE_NOTIFICATIONS ) );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'actions', () => {
@@ -584,7 +583,7 @@ describe( 'core/notifications Notifications', () => {
 				let isNotificationDismissed;
 				beforeEach( () => {
 					// Register the Gathering Data Notification as a test
-					deprecatedProvideNotifications( registry );
+					provideNotifications( registry );
 
 					( { isNotificationDismissed } =
 						registry.select( CORE_NOTIFICATIONS ) );
@@ -625,8 +624,9 @@ describe( 'core/notifications Notifications', () => {
 			describe( 'when using dismissed prompts', () => {
 				let isNotificationDismissed;
 				beforeEach( () => {
-					deprecatedProvideNotifications( registry, {
-						'test-notification-using-prompts': {
+					provideNotifications( registry, [
+						{
+							id: 'test-notification-using-prompts',
 							Component: () => {},
 							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -635,21 +635,44 @@ describe( 'core/notifications Notifications', () => {
 							isDismissible: false,
 							dismissRetries: 1,
 						},
-					} );
+					] );
 
 					( { isNotificationDismissed } =
 						registry.select( CORE_NOTIFICATIONS ) );
 				} );
 
 				it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
-					fetchMock.getOnce( fetchGetDismissedPrompts, { body: [] } );
+					// Create a fresh registry for this test to ensure getDismissedPrompts is not resolved
+					const testRegistry = createTestRegistry();
+
+					// Register the notification on the new registry
+					provideNotifications( testRegistry, [
+						{
+							id: 'test-notification-using-prompts',
+							Component: () => {},
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							priority: 11,
+							checkRequirements: () => true,
+							isDismissible: false,
+							dismissRetries: 1,
+						},
+					] );
+
+					// Get the selector from the new registry
+					const testIsNotificationDismissed =
+						testRegistry.select(
+							CORE_NOTIFICATIONS
+						).isNotificationDismissed;
+
+					fetchMock.getOnce( dismissedPromptsEndpoint, { body: [] } );
 					expect(
-						isNotificationDismissed(
+						testIsNotificationDismissed(
 							'test-notification-using-prompts'
 						)
 					).toBeUndefined();
 					await untilResolved(
-						registry,
+						testRegistry,
 						CORE_USER
 					).getDismissedPrompts();
 				} );
@@ -696,14 +719,15 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'requires notification to be dismissible', () => {
-				deprecatedProvideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						dismissRetries: 1,
 					},
-				} );
+				] );
 
 				expect( () =>
 					isNotificationDismissalFinal( 'test-notification' )
@@ -713,14 +737,15 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns true if notification does not have retries', () => {
-				deprecatedProvideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 					},
-				} );
+				] );
 
 				expect(
 					isNotificationDismissalFinal( 'test-notification' )
@@ -728,15 +753,16 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns true if notification is on the final retry', () => {
-				deprecatedProvideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 2,
 					},
-				} );
+				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 					'test-notification': {
@@ -752,15 +778,16 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns false if notification has never been dismissed', () => {
-				deprecatedProvideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 1,
 					},
-				} );
+				] );
 
 				expect(
 					isNotificationDismissalFinal( 'test-notification' )
@@ -768,15 +795,16 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns false if notification is not on the final retry', () => {
-				deprecatedProvideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 2,
 					},
-				} );
+				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 					'test-notification': {

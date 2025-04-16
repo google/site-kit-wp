@@ -64,7 +64,6 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import InViewProvider from '../../assets/js/components/InViewProvider';
-import { DEFAULT_NOTIFICATIONS } from '../../assets/js/googlesitekit/notifications/register-defaults';
 
 const allCoreStores = [
 	coreForms,
@@ -495,40 +494,6 @@ export const provideNotifications = ( registry, extraData ) => {
 		.forEach( ( [ id, settings ] ) =>
 			realRegisterNotification( id, settings )
 		);
-};
-
-/**
- * Provides notifications data to the given registry.
- *
- * @since 1.140.0
- * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
- * @deprecated Use `provideNotifications` instead.
- *
- * @param {Object}  registry            The registry to set up.
- * @param {Object}  [extraData]         Extra data to merge with the default settings.
- * @param {Object}  [options]           Options object.
- * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
- */
-export const deprecatedProvideNotifications = (
-	registry,
-	extraData,
-	{ overwrite = false } = {}
-) => {
-	const notificationsAPI = coreNotifications.createNotifications( registry );
-
-	let notifications = {};
-	if ( overwrite === false ) {
-		notifications[ 'gathering-data-notification' ] =
-			DEFAULT_NOTIFICATIONS[ 'gathering-data-notification' ];
-	}
-	notifications = { ...notifications, ...extraData };
-
-	for ( const notificationID in notifications ) {
-		notificationsAPI.registerNotification(
-			notificationID,
-			notifications[ notificationID ]
-		);
-	}
 };
 
 /**

@@ -30,11 +30,12 @@ import {
 	provideUserCapabilities,
 	provideModuleRegistrations,
 } from '../../../../../../tests/js/test-utils';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import {
-	ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
 	PLUGINS,
 } from '../../datastore/constants';
@@ -44,14 +45,27 @@ describe( 'WooCommerceRedirectModal', () => {
 	mockLocation();
 	let registry;
 
-	const dismissItemEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
+	const onClose = jest.fn();
+	const onDismiss = jest.fn();
+
+	function ModalComponent() {
+		return (
+			<WooCommerceRedirectModal
+				dialogActive
+				onDismiss={ onDismiss }
+				onClose={ onClose }
+			/>
+		);
+	}
+
 	const moduleActivationEndpoint = RegExp(
 		'google-site-kit/v1/core/modules/data/activation'
 	);
 	const userAuthenticationEndpoint = RegExp(
 		'^/google-site-kit/v1/core/user/data/authentication'
+	);
+	const dismissItemEndpoint = RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {
@@ -77,16 +91,13 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'does not render when dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] );
+		await registry
+			.dispatch( CORE_SITE )
+			.setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true );
 
-		const { queryByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
-			{ registry }
-		);
+		const { queryByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
@@ -95,22 +106,53 @@ describe( 'WooCommerceRedirectModal', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'clicking "Continue with Site Kit" should trigger ads module activation and dismiss the modal', async () => {
+	it( 'clicking "Continue with Site Kit" should trigger ads module activation and invoke onDismiss callback', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
 		fetchMock.getOnce( userAuthenticationEndpoint, {
 			body: { needsReauthentication: false },
 		} );
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
+
+		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+		} );
+		await waitForRegistry();
+
+		const continueWithSiteKitButton = getByText(
+			/continue with site kit/i
+		);
+		fireEvent.click( continueWithSiteKitButton );
+
+		await waitForRegistry();
+
+		expect( onDismiss ).toHaveBeenCalled();
+
+		expect(
+			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+		).toBe( true );
+	} );
+
+	it( 'clicking "Continue with Site Kit" should invoke onBeforeSetupCallback if passed', async () => {
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
 		} );
 
+		const onBeforeSetupCallback = jest.fn();
+
 		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
-			{ registry }
+			<WooCommerceRedirectModal
+				dialogActive
+				onDismiss={ onDismiss }
+				onClose={ onClose }
+				onBeforeSetupCallback={ onBeforeSetupCallback }
+			/>,
+			{
+				registry,
+			}
 		);
 		await waitForRegistry();
 
@@ -121,20 +163,22 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		await waitForRegistry();
 
-		expect(
-			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
-		).toBe( true );
-
-		// Modal should be dismissed.
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		expect( onDismiss ).toHaveBeenCalled();
+		expect( onBeforeSetupCallback ).toHaveBeenCalled();
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
-		} );
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
@@ -148,41 +192,42 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
-		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
-			{ registry }
-		);
-		await waitForRegistry();
 
-		const useGoogleForWooCommerceButton = getByText(
-			/use google for woocommerce/i
-		);
-		fireEvent.click( useGoogleForWooCommerceButton );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { container, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /plugin-install\.php/ )
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching(
-				new RegExp( `s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }` )
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
 			)
+		).toHaveAttribute(
+			'href',
+			`http://example.com/wp-admin/plugin-install.php?s=${ PLUGINS.GOOGLE_FOR_WOOCOMMERCE }&tab=search&type=term`
 		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /tab=search/ )
-		);
-
-		// Modal should be dismissed.
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
 	it( 'clicking "Use Google for WooCommerce" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active', async () => {
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
-		} );
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+		const dismissNotificationSpy = jest.spyOn(
+			registry.dispatch( CORE_NOTIFICATIONS ),
+			'dismissNotification'
+		);
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
@@ -196,35 +241,40 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
-		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
-			{ registry }
+		const { container, waitForRegistry, getByText } = render(
+			<ModalComponent />,
+			{
+				registry,
+			}
 		);
+
 		await waitForRegistry();
 
-		const useGoogleForWooCommerceButton = getByText(
-			/use google for woocommerce/i
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
+			)
+		).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard'
 		);
+
+		const useGoogleForWooCommerceButton = getByText(
+			/Use Google for WooCommerce/i
+		);
+
 		fireEvent.click( useGoogleForWooCommerceButton );
 
 		await waitForRegistry();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /page=wc-admin/ )
-		);
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
-		);
+		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
+		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
-		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
-		} );
+		fetchMock.postOnce( dismissItemEndpoint, {} );
 		const dismissNotificationSpy = jest.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
 			'dismissNotification'
@@ -255,12 +305,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
-			{ registry }
-		);
-
-		expect( dismissNotificationSpy ).toHaveBeenCalled();
+		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+		} );
 
 		const viewCurrentAdsAccountButton = getByText(
 			/view current ads account/i
@@ -269,14 +316,18 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		await waitForRegistry();
 
+		expect( dismissNotificationSpy ).toHaveBeenCalled();
+
+		// AccountLinkedViaGoogleForWooCommerceSubtleNotification should be dismissed.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /page=wc-admin/ )
 		);
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			expect.stringMatching( /path=%2Fgoogle%2Fdashboard/ )
 		);
-
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
 	it( 'clicking "Create another account" should trigger ads module activation and dismiss the modal', async () => {
@@ -286,15 +337,6 @@ describe( 'WooCommerceRedirectModal', () => {
 		fetchMock.getOnce( userAuthenticationEndpoint, {
 			body: { needsReauthentication: false },
 		} );
-		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [
-				ADS_WOOCOMMERCE_REDIRECT_MODAL_DISMISS_KEY,
-			] ),
-		} );
-		const dismissNotificationSpy = jest.spyOn(
-			registry.dispatch( CORE_NOTIFICATIONS ),
-			'dismissNotification'
-		);
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
@@ -310,25 +352,14 @@ describe( 'WooCommerceRedirectModal', () => {
 			},
 		} );
 
-		const notification =
-			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.registerNotification(
-				'account-linked-via-google-for-woocommerce',
-				notification
-			);
-
-		const { getByRole, waitForRegistry } = render(
-			<WooCommerceRedirectModal dialogActive onDismiss={ () => null } />,
-			{ registry }
-		);
-
-		expect( dismissNotificationSpy ).toHaveBeenCalled();
+		const { getByRole, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+		} );
 
 		const createAnotherAccountButton = getByRole( 'button', {
 			name: /create another account/i,
 		} );
+
 		fireEvent.click( createAnotherAccountButton );
 
 		await waitForRegistry();
@@ -336,8 +367,6 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect(
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
 		).toBe( true );
-
-		// Modal should be dismissed.
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		expect( onDismiss ).toHaveBeenCalled();
 	} );
 } );

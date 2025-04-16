@@ -41,6 +41,7 @@ import {
 import {
 	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
 import { CORE_SITE } from '../datastore/site/constants';
@@ -77,11 +78,14 @@ import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from '../../components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '../../util';
+import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
+import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
+import ModuleSetupSuccessNotification from '../../components/notifications/ModuleSetupSuccessNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
-		priority: 150,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -134,7 +138,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
-		priority: 150,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -181,7 +185,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_error: {
 		Component: SetupErrorNotification,
-		priority: 140,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -212,7 +216,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
-		priority: 140,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -247,7 +251,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'auth-error': {
 		Component: AuthError,
-		priority: 130,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.ERRORS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -263,7 +267,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'top-earning-pages-success-notification': {
 		Component: GA4AdSenseLinkedNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -335,10 +338,52 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
+	'setup-success-notification-site-kit': {
+		Component: SiteKitSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if ( 'authentication_success' === notification && ! slug ) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+	'setup-success-notification-module': {
+		Component: ModuleSetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The getModule() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			if (
+				'authentication_success' === notification &&
+				false === module.overrideSetupSuccessNotification &&
+				module.active
+			) {
+				return true;
+			}
+
+			return false;
+		},
+	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
-		priority: 280,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -368,7 +413,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			if ( notification === 'authentication_success' && ! slug ) {
 				await dismissNotification( 'auto-update-cta', {
 					expiresInSeconds: MINUTE_IN_SECONDS * 10,
-					skipHidingFromQueue: true,
 				} );
 				return false;
 			}
@@ -398,8 +442,8 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
-		priority: 300,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -476,8 +520,8 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'zero-data-notification': {
 		Component: ZeroDataNotification,
-		priority: 310,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -569,14 +613,45 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 	},
+	'module-recovery-alert': {
+		Component: ModuleRecoveryAlert,
+		priority: PRIORITY.ERROR_LOW,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const recoverableModules = await resolveSelect(
+				CORE_MODULES
+			).getRecoverableModules();
+			const recoverableModulesList = Object.keys(
+				recoverableModules || {}
+			);
+			if ( ! recoverableModulesList.length ) {
+				return false;
+			}
+			return true;
+		},
+	},
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
 		Component: ConsentModeSetupCTAWidget,
-		priority: 20,
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// TODO: refactor this component to use dismissed items rather than prompts once the concepts are combined.
+			await resolveSelect( CORE_USER ).getDismissedPrompts();
+			const isPromptDismissed = select( CORE_USER ).isPromptDismissed(
+				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+			);
+			const isDismissingPrompt = select( CORE_USER ).isDismissingPrompt(
+				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+			);
+			if ( isPromptDismissed || isDismissingPrompt ) {
+				return false;
+			}
+
 			// The isConsentModeEnabled selector relies on the resolution
 			// of the getConsentModeSettings() resolver.
 			await resolveSelect( CORE_SITE ).getConsentModeSettings();
@@ -594,7 +669,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
-		priority: 30,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -633,7 +708,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -662,7 +736,6 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-fpm': {
 		Component: FirstPartyModeSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,

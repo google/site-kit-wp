@@ -30,7 +30,6 @@ import {
 	createInterpolateElement,
 	useEffect,
 	useCallback,
-	useRef,
 } from '@wordpress/element';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
@@ -40,7 +39,6 @@ import { arrowLeft, Icon } from '@wordpress/icons';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
@@ -49,7 +47,6 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
 import Portal from '../../Portal';
 import {
 	Dialog,
@@ -66,7 +63,6 @@ export default function DashboardSharingDialog() {
 	const { y } = useWindowScroll();
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
 
 	const settingsDialogOpen = useSelect(
@@ -86,14 +82,6 @@ export default function DashboardSharingDialog() {
 			'dashboard-sharing'
 		);
 	} );
-
-	const triggeredTourRef = useRef();
-	const handleTriggerOnDemandTour = useCallback( () => {
-		if ( ! triggeredTourRef.current ) {
-			triggeredTourRef.current = true;
-			triggerOnDemandTour( sharingSettingsTour );
-		}
-	}, [ triggerOnDemandTour ] );
 
 	const dialogStyles = {};
 	// On mobile, the dialog box's flexbox is set to stretch items within to cover
@@ -144,7 +132,6 @@ export default function DashboardSharingDialog() {
 		<Portal>
 			<Dialog
 				open={ settingsDialogOpen || resetDialogOpen }
-				onOpen={ handleTriggerOnDemandTour }
 				onClose={ closeDialog }
 				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }

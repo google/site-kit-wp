@@ -171,15 +171,15 @@ export default function UserDimensionsPieChart( props ) {
 		maxSlices: 5,
 		withOthers: true,
 		tooltipCallback: ( row, previousDateRangeRow, rowData ) => {
+			const absValue = row?.metricValues?.[ 0 ]?.value || 0;
 			const difference =
-				previousDateRangeRow.metricValues?.[ 0 ].value > 0
-					? ( row.metricValues?.[ 0 ].value * 100 ) /
-							previousDateRangeRow.metricValues?.[ 0 ].value -
+				previousDateRangeRow?.metricValues?.[ 0 ]?.value > 0
+					? ( absValue * 100 ) /
+							previousDateRangeRow.metricValues[ 0 ].value -
 					  100
 					: 100;
 
 			const svgArrow = getChartDifferenceArrow( difference );
-			const absValue = row.metricValues[ 0 ].value;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
 				_x(

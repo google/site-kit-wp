@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdBlockingRecoverySetupSuccessNotification should render notification and trigger tracking events and ACR survey 1`] = `
+<div>
+  <section
+    id="adsense-abr-success-notification"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-subtle-notification googlesitekit-subtle-notification--success mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-subtle-notification__icon"
+          >
+            <svg />
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__content"
+          >
+            <p>
+              You successfully enabled the ad blocking recovery message
+            </p>
+            <p
+              class="googlesitekit-subtle-notification__secondary_description"
+            >
+              Make sure to also create the message in 
+              <a
+                aria-label="AdSense (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href=""
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  AdSense
+                </span>
+              </a>
+              , otherwise this feature won’t work
+            </p>
+          </div>
+          <div
+            class="googlesitekit-subtle-notification__action"
+          >
+            <button
+              class="mdc-button mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                OK, Got it!
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

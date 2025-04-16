@@ -32,6 +32,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
@@ -41,7 +42,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Block_Support;
-use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
@@ -69,6 +70,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Module slug name.
@@ -154,7 +156,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		);
 		$synchronize_publication->register();
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && $this->is_connected() ) {
+		if ( $this->is_connected() ) {
 			$this->post_product_id->register();
 
 			$admin_post_list = new Admin_Post_List(
@@ -166,6 +168,22 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			if ( Block_Support::has_block_support() ) {
 				$this->contribute_with_google_block->register();
 				$this->subscribe_with_google_block->register();
+
+				add_action(
+					'enqueue_block_assets',
+					$this->get_method_proxy(
+						'enqueue_block_assets_for_non_sitekit_user'
+					),
+					40
+				);
+
+				add_action(
+					'enqueue_block_editor_assets',
+					$this->get_method_proxy(
+						'enqueue_block_editor_assets_for_non_sitekit_user'
+					),
+					40
+				);
 			}
 		}
 
@@ -496,7 +514,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) && Block_Support::has_block_support() ) {
+		if ( Block_Support::has_block_support() ) {
 			$assets[] = new Script(
 				'blocks-reader-revenue-manager-block-editor-plugin',
 				array(
@@ -551,12 +569,36 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				)
 			);
 
+			if ( $this->is_non_sitekit_user() ) {
+				$assets[] = new Script(
+					'blocks-contribute-with-google-non-sitekit-user',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/non-site-kit-user.js',
+						'dependencies'  => array(
+							'googlesitekit-i18n',
+						),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+						'execution'     => 'defer',
+					)
+				);
+
+				$assets[] = new Script(
+					'blocks-subscribe-with-google-non-sitekit-user',
+					array(
+						'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/non-site-kit-user.js',
+						'dependencies'  => array( 'googlesitekit-i18n' ),
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+						'execution'     => 'defer',
+					)
+				);
+			}
+
 			$assets[] = new Stylesheet(
 				'blocks-reader-revenue-manager-common-editor-styles',
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
 					'dependencies'  => array(),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_BLOCK_EDITOR ),
 				)
 			);
 		}
@@ -598,33 +640,72 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			return;
 		}
 
-		$product_id = 'openaccess';
+		$product_id      = $settings['productID'];
+		$post_product_id = '';
 
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			$product_id      = $settings['productID'];
-			$post_product_id = '';
+		if ( is_singular() ) {
+			$post_product_id = $this->post_product_id->get( get_the_ID() );
 
-			if ( is_singular() ) {
-				$post_product_id = $this->post_product_id->get( get_the_ID() );
-
-				if ( ! empty( $post_product_id ) ) {
-					$product_id = $post_product_id;
-				}
+			if ( ! empty( $post_product_id ) ) {
+				$product_id = $post_product_id;
 			}
+		}
 
-			// Extract the product ID from the setting, which is in the format
-			// of `publicationID:productID`.
-			if ( 'openaccess' !== $product_id ) {
-				$separator_index = strpos( $product_id, ':' );
+		// Extract the product ID from the setting, which is in the format
+		// of `publicationID:productID`.
+		if ( 'openaccess' !== $product_id ) {
+			$separator_index = strpos( $product_id, ':' );
 
-				if ( false !== $separator_index ) {
-					$product_id = substr( $product_id, $separator_index + 1 );
-				}
+			if ( false !== $separator_index ) {
+				$product_id = substr( $product_id, $separator_index + 1 );
 			}
 		}
 
 		$tag->set_product_id( $product_id );
 		$tag->register();
+	}
+
+	/**
+	 * Checks if the current user is a non-Site Kit user.
+	 *
+	 * @since 1.150.0
+	 *
+	 * @return bool True if the current user is a non-Site Kit user, false otherwise.
+	 */
+	private function is_non_sitekit_user() {
+		return ! ( current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD ) );
+	}
+
+	/**
+	 * Enqueues block assets for non-Site Kit users.
+	 *
+	 * This is used for enqueueing styles to ensure they are loaded in all block editor contexts including iframes.
+	 *
+	 * @since 1.150.0
+	 *
+	 * @return void
+	 */
+	private function enqueue_block_assets_for_non_sitekit_user() {
+		// Include a check for is_admin() to ensure the styles are only enqueued on admin screens.
+		if ( is_admin() && $this->is_non_sitekit_user() ) {
+			// Enqueue styles.
+			$this->assets->enqueue_asset( 'blocks-reader-revenue-manager-common-editor-styles' );
+		}
+	}
+
+	/**
+	 * Enqueues block editor assets for non-Site Kit users.
+	 *
+	 * @since 1.150.0
+	 *
+	 * @return void
+	 */
+	private function enqueue_block_editor_assets_for_non_sitekit_user() {
+		if ( $this->is_non_sitekit_user() ) {
+			// Enqueue scripts.
+			$this->assets->enqueue_asset( 'blocks-contribute-with-google-non-sitekit-user' );
+			$this->assets->enqueue_asset( 'blocks-subscribe-with-google-non-sitekit-user' );
+		}
 	}
 
 	/**
@@ -636,6 +717,25 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
+
+		$snippet_mode_values = array(
+			'post_types' => __( 'Post types', 'google-site-kit' ),
+			'per_post'   => __( 'Per post', 'google-site-kit' ),
+			'sitewide'   => __( 'Sitewide', 'google-site-kit' ),
+		);
+
+		$extract_product_id = function ( $product_id ) {
+			$parts = explode( ':', $product_id );
+			return isset( $parts[1] ) ? $parts[1] : $product_id;
+		};
+
+		$redact_pub_in_product_id = function ( $product_id ) {
+			$parts = explode( ':', $product_id );
+			if ( isset( $parts[1] ) ) {
+				return Debug_Data::redact_debug_value( $parts[0] ) . ':' . $parts[1];
+			}
+			return $product_id;
+		};
 
 		$debug_fields = array(
 			'reader_revenue_manager_publication_id'        => array(
@@ -650,41 +750,31 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 			'reader_revenue_manager_available_product_ids' => array(
 				'label' => __( 'Reader Revenue Manager: Available product IDs', 'google-site-kit' ),
-				'value' => implode( ', ', $settings['productIDs'] ),
-				'debug' => implode( ', ', $settings['productIDs'] ),
+				'value' => implode( ', ', array_map( $extract_product_id, $settings['productIDs'] ) ),
+				'debug' => implode( ', ', array_map( $redact_pub_in_product_id, $settings['productIDs'] ) ),
 			),
 			'reader_revenue_manager_payment_option'        => array(
 				'label' => __( 'Reader Revenue Manager: Payment option', 'google-site-kit' ),
 				'value' => $settings['paymentOption'],
 				'debug' => $settings['paymentOption'],
 			),
-		);
-
-		if ( Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			$snippet_mode_values = array(
-				'post_types' => __( 'Post types', 'google-site-kit' ),
-				'per_post'   => __( 'Per post', 'google-site-kit' ),
-				'sitewide'   => __( 'Sitewide', 'google-site-kit' ),
-			);
-
-			$debug_fields['reader_revenue_manager_snippet_mode'] = array(
+			'reader_revenue_manager_snippet_mode'          => array(
 				'label' => __( 'Reader Revenue Manager: Snippet placement', 'google-site-kit' ),
 				'value' => $snippet_mode_values[ $settings['snippetMode'] ],
 				'debug' => $settings['snippetMode'],
-			);
-
-			if ( 'post_types' === $settings['snippetMode'] ) {
-				$debug_fields['reader_revenue_manager_post_types'] = array(
-					'label' => __( 'Reader Revenue Manager: Post types', 'google-site-kit' ),
-					'value' => implode( ', ', $settings['postTypes'] ),
-					'debug' => implode( ', ', $settings['postTypes'] ),
-				);
-			}
-
-			$debug_fields['reader_revenue_manager_product_id'] = array(
+			),
+			'reader_revenue_manager_product_id'            => array(
 				'label' => __( 'Reader Revenue Manager: Product ID', 'google-site-kit' ),
-				'value' => $settings['productID'],
-				'debug' => $settings['productID'],
+				'value' => $extract_product_id( $settings['productID'] ),
+				'debug' => $redact_pub_in_product_id( $settings['productID'] ),
+			),
+		);
+
+		if ( 'post_types' === $settings['snippetMode'] ) {
+			$debug_fields['reader_revenue_manager_post_types'] = array(
+				'label' => __( 'Reader Revenue Manager: Post types', 'google-site-kit' ),
+				'value' => implode( ', ', $settings['postTypes'] ),
+				'debug' => implode( ', ', $settings['postTypes'] ),
 			);
 		}
 

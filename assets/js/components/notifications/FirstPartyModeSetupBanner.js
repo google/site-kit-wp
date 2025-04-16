@@ -19,18 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import {
-	useShowTooltip,
-	useTooltipState,
-	AdminMenuTooltip,
-} from '../AdminMenuTooltip';
+import { useShowTooltip } from '../AdminMenuTooltip';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
@@ -51,7 +47,7 @@ import {
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
+import { DAY_IN_SECONDS } from '../../util';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';
@@ -63,23 +59,21 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
 
-	const showTooltip = useShowTooltip( id );
-
-	const { isTooltipVisible } = useTooltipState( id );
+	const tooltipSettings = {
+		tooltipSlug: id,
+		content: __(
+			'You can always enable First-party mode in Settings later',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const isItemDismissed = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed( id )
-	);
-
 	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
-
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem( id )
-	);
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -88,12 +82,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			'first-party-mode-introduction'
 		);
 	} );
-
-	useEffect( () => {
-		if ( isTooltipVisible ) {
-			trackEvent( `${ viewContext }_fpm-setup-cta`, 'tooltip_view' );
-		}
-	}, [ isTooltipVisible, viewContext ] );
 
 	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
@@ -116,37 +104,6 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			triggerSurvey( 'view_fpm_setup_cta', { ttl: DAY_IN_SECONDS } );
 		}
 	}, [ triggerSurvey, usingProxy ] );
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title=""
-					content={ __(
-						'You can always enable First-party mode from Settings later',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					onDismiss={ () => {
-						trackEvent(
-							`${ viewContext }_fpm-setup-cta`,
-							'tooltip_dismiss'
-						);
-					} }
-					tooltipStateKey={ id }
-				/>
-			</Fragment>
-		);
-	}
-
-	// TODO Remove this hack
-	// We "incorrectly" pass true to the `skipHidingFromQueue` option when dismissing this banner.
-	// This is because we don't want the component removed from the DOM as we have to still render
-	// the `AdminMenuTooltip` in this component. This means that we have to rely on manually
-	// checking for the dismissal state here.
-	if ( isItemDismissed || isDismissing ) {
-		return null;
-	}
 
 	const breakpointSVGMap = {
 		[ BREAKPOINT_SMALL ]: FPMSetupCTASVGMobile,
@@ -185,14 +142,8 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 							'google-site-kit'
 						) }
 						onCTAClick={ onCTAClick }
-						ctaDismissOptions={ {
-							skipHidingFromQueue: false,
-						} }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						onDismiss={ showTooltip }
-						dismissOptions={ {
-							skipHidingFromQueue: true,
-						} }
 					/>
 				}
 				SVG={ breakpointSVGMap[ breakpoint ] || FPMSetupCTASVGDesktop }

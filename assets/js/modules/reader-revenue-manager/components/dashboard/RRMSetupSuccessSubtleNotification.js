@@ -43,11 +43,10 @@ import {
 	SYNC_PUBLICATION,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
-import Link from '../../../../components/Link';
+import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import { useFeature } from '../../../../hooks/useFeature';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -61,8 +60,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 } ) {
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
 	const [ slug, setSlug ] = useQueryArg( 'slug' );
-
-	const isRRMV2Enabled = useFeature( 'rrmModuleV2' );
 
 	const actionableOnboardingStates = [
 		PENDING_VERIFICATION,
@@ -178,7 +175,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 	// show the publication approved overlay notification.
 	useEffect( () => {
 		if (
-			isRRMV2Enabled &&
 			showingSuccessNotification &&
 			publicationOnboardingState === ONBOARDING_COMPLETE &&
 			paymentOption === ''
@@ -192,15 +188,20 @@ export default function RRMSetupSuccessSubtleNotification( {
 		}
 	}, [
 		dismissNotice,
-		isRRMV2Enabled,
 		paymentOption,
 		publicationOnboardingState,
 		setValue,
 		showingSuccessNotification,
 	] );
 
+	const hasCustomProductID = !! productID && productID !== 'openaccess';
+
 	const gaTrackingProps = {
-		gaTrackingEventArgs: { label: publicationOnboardingState },
+		gaTrackingEventArgs: {
+			label: `${ publicationOnboardingState }:${ paymentOption }:${
+				hasCustomProductID ? 'yes' : 'no'
+			}`,
+		},
 	};
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
@@ -279,82 +280,87 @@ export default function RRMSetupSuccessSubtleNotification( {
 	}
 
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
-		if ( isRRMV2Enabled ) {
-			const notificationContent = {
-				title: __(
-					'Success! Your Reader Revenue Manager account is set up',
-					'google-site-kit'
-				),
-				description: '',
-				primaryButton: {
-					text: __( 'Manage CTAs', 'google-site-kit' ),
-					ctaLink: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
-					isCTALinkExternal: false,
-				},
-				secondaryButton: {
-					text: __( 'Got it', 'google-site-kit' ),
-					onClick: dismissNotice,
-				},
-			};
+		// Do not show the notification if the payment option is not set.
+		if ( '' === paymentOption ) {
+			return null;
+		}
 
-			switch ( paymentOption ) {
-				case 'subscriptions':
-					if ( productID === 'openaccess' ) {
-						notificationContent.description = __(
-							'You can edit your settings to manage product IDs and select which of your site’s pages will include a subscription CTA.',
-							'google-site-kit'
-						);
-					} else {
-						notificationContent.description = __(
-							'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
-							'google-site-kit'
-						);
-					}
-					break;
-				case 'contributions':
-					if ( productIDs.length > 0 && productID === 'openaccess' ) {
-						notificationContent.description = __(
-							'You can edit your settings to manage product IDs and select which of your site’s pages will include a contribution CTA.',
-							'google-site-kit'
-						);
-					} else {
-						notificationContent.description = __(
-							'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
-							'google-site-kit'
-						);
-					}
-					break;
-				case 'noPayment':
-					notificationContent.description = createInterpolateElement(
-						__(
-							'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions. <a>Learn more</a>',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<Link
-									aria-label={ __(
-										'Learn more about Reader Revenue Manager features',
-										'google-site-kit'
-									) }
-									href="https://support.google.com/news/publisher-center/answer/12813936"
-									external
-									hideExternalIndicator
-								/>
-							),
-						}
+		const notificationContent = {
+			title: __(
+				'Success! Your Reader Revenue Manager account is set up',
+				'google-site-kit'
+			),
+			description: '',
+			primaryButton: {
+				text: __( 'Manage CTAs', 'google-site-kit' ),
+				ctaLink: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+				isCTALinkExternal: false,
+			},
+			secondaryButton: {
+				text: __( 'Got it', 'google-site-kit' ),
+				onClick: dismissNotice,
+			},
+		};
+
+		switch ( paymentOption ) {
+			case 'subscriptions':
+				if ( productID === 'openaccess' ) {
+					notificationContent.description = __(
+						'You can edit your settings to manage product IDs and select which of your site’s pages will include a subscription CTA.',
+						'google-site-kit'
 					);
-					notificationContent.primaryButton = {
-						text: __( 'Get started', 'google-site-kit' ),
-						ctaLink: serviceURL,
-						isCTALinkExternal: true,
-					};
-					break;
-				case '':
-					return null;
-			}
+				} else {
+					notificationContent.description = __(
+						'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
+						'google-site-kit'
+					);
+				}
+				break;
+			case 'contributions':
+				if ( productIDs.length > 0 && productID === 'openaccess' ) {
+					notificationContent.description = __(
+						'You can edit your settings to manage product IDs and select which of your site’s pages will include a contribution CTA.',
+						'google-site-kit'
+					);
+				} else {
+					notificationContent.description = __(
+						'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
+						'google-site-kit'
+					);
+				}
+				break;
+			case 'noPayment':
+				notificationContent.description = createInterpolateElement(
+					__(
+						'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<LearnMoreLink
+								id={ id }
+								ariaLabel={ __(
+									'Learn more about Reader Revenue Manager features',
+									'google-site-kit'
+								) }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url="https://support.google.com/news/publisher-center/answer/12813936"
+								hideExternalIndicator
+								{ ...gaTrackingProps }
+							/>
+						),
+					}
+				);
+				notificationContent.primaryButton = {
+					text: __( 'Get started', 'google-site-kit' ),
+					ctaLink: serviceURL,
+					isCTALinkExternal: true,
+				};
+				break;
+		}
 
-			return (
+		return (
+			<Notification { ...gaTrackingProps }>
 				<SubtleNotification
 					title={ notificationContent.title }
 					description={ notificationContent.description }
@@ -368,6 +374,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 							onDismiss={
 								notificationContent.secondaryButton.onClick
 							}
+							{ ...gaTrackingProps }
 						/>
 					}
 					additionalCTA={
@@ -381,42 +388,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 								notificationContent.primaryButton
 									.isCTALinkExternal
 							}
-						/>
-					}
-				/>
-			);
-		}
-
-		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up!',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Unlock your full reader opportunity by enabling features like subscriptions, contributions and newsletter sign ups in the Reader Revenue Manager settings.',
-						'google-site-kit'
-					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Customize settings',
-								'google-site-kit'
-							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
 							{ ...gaTrackingProps }
 						/>
 					}
