@@ -1,7 +1,7 @@
 /**
- * Analytics 4 utility functions.
+ * OverlayCard Title component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-export * from './chart';
-export * from './is-zero-report';
-export * from './report-normalization';
-export * from './report-validation';
-export * from './report-pivots-validation';
-export * from './extract-dashboard-data';
-export * from './formatting';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+export default function Title( { children } ) {
+	return <h3 className="googlesitekit-overlay-card__title">{ children }</h3>;
+}
+
+Title.propTypes = {
+	children: PropTypes.node.isRequired,
+};
