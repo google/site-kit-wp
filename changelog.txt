@@ -1,5 +1,27 @@
 == Changelog ==
 
+= 1.151.0 =
+
+**Enhanced**
+
+* Remove old feature tours. See [#10574](https://github.com/google/site-kit-wp/issues/10574).
+* Remove the `conversionReporting` feature flag. See [#10552](https://github.com/google/site-kit-wp/issues/10552).
+* Update the WooCommerce modal to deactivate the Google For WooCommerce linked account notification when the user selects to install that plugin. See [#10542](https://github.com/google/site-kit-wp/issues/10542).
+* Add OverlayCard components to use for overlay notifications. See [#10532](https://github.com/google/site-kit-wp/issues/10532).
+* Remove the ESLint complexity override from the Reader Revenue Manager `SettingsEdit` component. See [#10363](https://github.com/google/site-kit-wp/issues/10363).
+* Enhance Ads measurement checks to avoid extra requests on dashboard. See [#10190](https://github.com/google/site-kit-wp/issues/10190).
+* Limit display of Visitor groups setup success notice to user who set up the feature. See [#10089](https://github.com/google/site-kit-wp/issues/10089).
+* Improve language intended to direct users to Site Kit settings. Props mxbclang. See [#7756](https://github.com/google/site-kit-wp/issues/7756).
+
+**Changed**
+
+* Update PAX SDK version to 1.1.4. See [#10614](https://github.com/google/site-kit-wp/issues/10614).
+* Replace all usage of `deprecatedProvideNotifications` with the updated `provideNotifications` utility and remove the deprecated utility. See [#10465](https://github.com/google/site-kit-wp/issues/10465).
+
+**Fixed**
+
+* Fix issue where syncing audiences and custom dimensions in parallel could result in the cached audiences not being persisted. See [#8888](https://github.com/google/site-kit-wp/issues/8888).
+
 = 1.150.0 =
 
 **Enhanced**
