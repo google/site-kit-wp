@@ -40,9 +40,7 @@ export default function DismissButton( {
 	);
 }
 
-export const DismissButtonPropTypes = {
+DismissButton.propTypes = {
 	label: PropTypes.string,
 	onClick: PropTypes.func.isRequired,
 };
-
-DismissButton.propTypes = DismissButtonPropTypes;
