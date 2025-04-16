@@ -35,6 +35,4 @@ export const decodeAmpersand = input => input.replace(/&amp;/gi, '&');
  * @param {string} input Input string containing categories separated by ;.
  * @return {Object} Array of categories.
  */
-export const splitCategories = ( input ) => {
-	return decodeAmpersand( input ).split( '; ' );
-};
+export const splitCategories = input => decodeAmpersand( input ).split( '; ' );
