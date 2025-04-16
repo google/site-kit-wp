@@ -51,7 +51,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 			.dispatch( CORE_SITE )
 			.receiveGetAdsMeasurementStatus(
 				{ connected: true },
-				{ useCache: true }
+				{ useCache: false }
 			);
 
 		registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
@@ -118,7 +118,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 				.dispatch( CORE_SITE )
 				.receiveGetAdsMeasurementStatus(
 					{ connected: false },
-					{ useCache: true }
+					{ useCache: false }
 				);
 
 			const isActive = await notification.checkRequirements(
