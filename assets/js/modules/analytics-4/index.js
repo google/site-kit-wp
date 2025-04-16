@@ -731,11 +731,11 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				return false;
 			}
 
-			await resolveSelect(
-				MODULES_ANALYTICS_4
-			).getUserAudienceSettings();
+			await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
+			await resolveSelect( CORE_USER ).getUserAudienceSettings();
 
 			const currentUserID = select( CORE_USER ).getID();
+
 			const audienceSegmentationSetupCompletedByUserID =
 				select(
 					MODULES_ANALYTICS_4
