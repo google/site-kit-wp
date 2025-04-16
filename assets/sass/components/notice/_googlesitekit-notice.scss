@@ -142,11 +142,8 @@
 			color: $c-surfaces-on-surface;
 		}
 
-		.mdc-button {
-
-			&.googlesitekit-notice__cta {
-				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
-			}
+		.googlesitekit-notice__cta {
+			@include mdc-button-filled-accessible( $c-surfaces-on-surface );
 		}
 
 		.mdc-button--tertiary {
@@ -166,11 +163,8 @@
 			color: $c-utility-on-warning-container;
 		}
 
-		.mdc-button {
-
-			&.googlesitekit-notice__cta {
-				@include mdc-button-filled-accessible($c-utility-on-warning-container);
-			}
+		.googlesitekit-notice__cta {
+			@include mdc-button-filled-accessible($c-utility-on-warning-container);
 		}
 
 		.mdc-button--tertiary {
@@ -190,11 +184,8 @@
 			color: $c-utility-on-error-container;
 		}
 
-		.mdc-button {
-
-			&.googlesitekit-notice__cta {
-				@include mdc-button-filled-accessible($c-utility-on-error-container);
-			}
+		.googlesitekit-notice__cta {
+			@include mdc-button-filled-accessible($c-utility-on-error-container);
 		}
 
 		.mdc-button--tertiary {
@@ -214,11 +205,8 @@
 			color: $c-violet-v-600;
 		}
 
-		.mdc-button {
-
-			&.googlesitekit-notice__cta {
-				@include mdc-button-filled-accessible($c-violet-v-600);
-			}
+		.googlesitekit-notice__cta {
+			@include mdc-button-filled-accessible($c-violet-v-600);
 		}
 
 		.mdc-button--tertiary {
