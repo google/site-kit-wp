@@ -28,18 +28,20 @@ import CheckFill from '../../../svg/icons/check-fill.svg';
 import WarningSVG from '../../../svg/icons/warning.svg';
 import StarFill from '../../../svg/icons/star-fill.svg';
 
-export const TYPE_NEW = 'new';
-export const TYPE_SUCCESS = 'success';
-export const TYPE_WARNING = 'warning';
-export const TYPE_INFO = 'info';
-export const TYPE_ERROR = 'error';
+export const TYPES = {
+	NEW: 'new',
+	SUCCESS: 'success',
+	WARNING: 'warning',
+	INFO: 'info',
+	ERROR: 'error',
+};
 
 const typeIconMap = {
-	[ TYPE_NEW ]: StarFill,
-	[ TYPE_SUCCESS ]: CheckFill,
-	[ TYPE_INFO ]: WarningSVG,
-	[ TYPE_WARNING ]: WarningSVG,
-	[ TYPE_ERROR ]: WarningSVG,
+	[ TYPES.NEW ]: StarFill,
+	[ TYPES.SUCCESS ]: CheckFill,
+	[ TYPES.INFO ]: WarningSVG,
+	[ TYPES.WARNING ]: WarningSVG,
+	[ TYPES.ERROR ]: WarningSVG,
 };
 
 export default function Icon( { className, type } ) {
@@ -58,15 +60,7 @@ export default function Icon( { className, type } ) {
 	);
 }
 
-export const allowedIconTypes = [
-	TYPE_NEW,
-	TYPE_INFO,
-	TYPE_SUCCESS,
-	TYPE_WARNING,
-	TYPE_ERROR,
-];
-
 Icon.propTypes = {
 	className: PropTypes.string,
-	type: PropTypes.oneOf( allowedIconTypes ),
+	type: PropTypes.oneOf( Object.values( TYPES ) ),
 };
