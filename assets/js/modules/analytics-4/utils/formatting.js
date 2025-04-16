@@ -24,9 +24,7 @@
  * @param {string} input Input string.
  * @return {string} String with ampersand converted to char, if present.
  */
-export const decodeAmpersand = ( input ) => {
-	return input.replace( /&amp;/gi, '&' );
-};
+export const decodeAmpersand = input => input.replace(/&amp;/gi, '&');
 
 /**
  * Splits a string of categories separated by ; and returns an array of categories.
