@@ -38,12 +38,9 @@ export default function CTAButton( { label, disabled, inProgress, onClick } ) {
 }
 
 // eslint-disable-next-line sitekit/acronym-case
-export const CTAButtonPropTypes = {
+CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
 	disabled: PropTypes.bool,
 	inProgress: PropTypes.bool,
 	onClick: PropTypes.func.isRequired,
 };
-
-// eslint-disable-next-line sitekit/acronym-case
-CTAButton.propTypes = CTAButtonPropTypes;
