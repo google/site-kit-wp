@@ -1544,13 +1544,20 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				if ( isset( $data['audienceSegmentationSetupCompletedBy'] ) && ! is_int( $data['audienceSegmentationSetupCompletedBy'] ) ) {
+				$settings = $data['settings'];
+
+				if (
+					isset( $settings['audienceSegmentationSetupCompletedBy'] ) &&
+					! is_int( $settings['audienceSegmentationSetupCompletedBy'] )
+				) {
 					throw new Invalid_Param_Exception( 'audienceSegmentationSetupCompletedBy' );
 				}
 
-				return function () use ( $data ) {
-					if ( isset( $data['audienceSegmentationSetupCompletedBy'] ) ) {
-						$new_settings['audienceSegmentationSetupCompletedBy'] = $data['audienceSegmentationSetupCompletedBy'];
+				return function () use ( $settings ) {
+					$new_settings = array();
+
+					if ( isset( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
+						$new_settings['audienceSegmentationSetupCompletedBy'] = $settings['audienceSegmentationSetupCompletedBy'];
 					}
 
 					$settings = $this->audience_settings->merge( $new_settings );
