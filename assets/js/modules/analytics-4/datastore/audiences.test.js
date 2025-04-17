@@ -62,10 +62,12 @@ describe( 'modules/analytics-4 audiences', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
-	const audienceSettingsEndpoint = new RegExp(
+	const audienceUserSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
-
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
+	);
 	const analyticsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
@@ -240,7 +242,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should make a network request to sync available audiences', async () => {
-				muteFetch( audienceSettingsEndpoint );
+				muteFetch( audienceUserSettingsEndpoint );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
@@ -270,7 +272,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 500,
 				} );
 
-				fetchMock.getOnce( audienceSettingsEndpoint, {
+				fetchMock.getOnce( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -302,7 +304,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.get( audienceSettingsEndpoint, {
+				fetchMock.get( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -399,7 +401,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.getOnce( audienceSettingsEndpoint, {
+				fetchMock.getOnce( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -449,7 +451,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.getOnce( audienceSettingsEndpoint, {
+				fetchMock.getOnce( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -602,14 +604,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			const isAudienceSegmentationWidgetHidden = false;
 
 			beforeEach( () => {
-				fetchMock.postOnce(
-					analyticsSettingsEndpoint,
-					( url, opts ) => {
-						const { data } = JSON.parse( opts.body );
-						// Return the same settings passed to the API.
-						return { body: data, status: 200 };
-					}
-				);
+				fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data, status: 200 };
+				} );
 
 				provideModules( registry, [
 					{
@@ -647,7 +646,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -753,7 +752,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setAvailableAudiences( availableUserAudiences );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -789,7 +788,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -857,7 +856,7 @@ describe( 'modules/analytics-4 audiences', () => {
 							...availableUserAudiences.slice( 1 ),
 						] );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -893,7 +892,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -953,7 +952,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					createdReturningVisitorsAudienceName,
 				];
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: expectedConfiguredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1052,7 +1051,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes(
 					1,
-					audienceSettingsEndpoint,
+					audienceUserSettingsEndpoint,
 					{
 						body: {
 							data: {
@@ -1116,7 +1115,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					( { name } ) => name
 				);
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: expectedConfiguredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1162,7 +1161,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						...availableUserAudiences.slice( 1 ),
 					] );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1235,7 +1234,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						availableReturningVisitorsAudienceFixture,
 					] );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1287,7 +1286,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				} );
 
 				it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", async () => {
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: [],
 							isAudienceSegmentationWidgetHidden,
@@ -1512,7 +1511,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -1585,7 +1584,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -1660,7 +1659,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						createdReturningVisitorsAudienceName,
 					];
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -1887,7 +1886,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -1942,7 +1941,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					authenticated: false,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -1982,7 +1981,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -2076,7 +2075,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -2112,7 +2111,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -2175,7 +2174,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -2211,7 +2210,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -2251,7 +2250,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences,
 						isAudienceSegmentationWidgetHidden,
