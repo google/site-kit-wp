@@ -81,6 +81,10 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+		const { container, waitForRegistry } = render(
+			<ConsentModeSetupCTAWidgetComponent />,
+			{
+
 	describe( 'checkRequirements', () => {
 		it( 'is not active when notification is dismissed using prompts', async () => {
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
@@ -91,6 +95,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 			} );
 
 			const isActive = await notification.checkRequirements(
+
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
