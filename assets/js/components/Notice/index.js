@@ -28,11 +28,12 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Icon, { TYPES as ICON_TYPES } from './Icon';
+import Icon from './Icon';
 import Title from './Title';
 import Description from './Description';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
+import { TYPES } from './constants';
 
 const Notice = forwardRef(
 	(
@@ -42,7 +43,7 @@ const Notice = forwardRef(
 			description,
 			dismissButton,
 			ctaButton,
-			type = ICON_TYPES.INFO,
+			type = TYPES.INFO,
 			children,
 		},
 		ref
@@ -86,7 +87,7 @@ const Notice = forwardRef(
 	}
 );
 
-Notice.TYPES = ICON_TYPES;
+Notice.TYPES = TYPES;
 
 Notice.propTypes = {
 	className: PropTypes.string,

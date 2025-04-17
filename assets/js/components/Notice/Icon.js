@@ -27,14 +27,7 @@ import Null from '../Null';
 import CheckFill from '../../../svg/icons/check-fill.svg';
 import WarningSVG from '../../../svg/icons/warning.svg';
 import StarFill from '../../../svg/icons/star-fill.svg';
-
-export const TYPES = {
-	NEW: 'new',
-	SUCCESS: 'success',
-	WARNING: 'warning',
-	INFO: 'info',
-	ERROR: 'error',
-};
+import { TYPES } from './constants';
 
 const typeIconMap = {
 	[ TYPES.NEW ]: StarFill,
