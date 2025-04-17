@@ -2,8 +2,7 @@
 	"scripts": {
 		"test": "npm run test:js:watch",
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=./jest.config.js --passWithNoTests",
-		"test:js:watch": "npm run test:js -- --watch",
-		"test:storybook": "jest --config=./jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'"
+		"test:js:watch": "npm run test:js -- --watch"
 	},
 	"dependencies": {
 		"@googlesitekit/assets": "file:../../assets",
@@ -17,6 +16,7 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "3.3.0",
+		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/jest-preset-default": "7.1.1",
 		"cross-env": "^7.0.3",
 		"fetch-mock": "^9.10.3",

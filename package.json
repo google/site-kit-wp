@@ -25,7 +25,7 @@
 		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "npm run test:js -w tests/js",
 		"test:js:watch": "npm run test:js:watch -w tests/js",
-		"test:storybook": "npm run test:storybook -w tests/js",
+		"test:storybook": "jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
 		"test:e2e": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e -w tests/e2e",
 		"test:e2e:interactive": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:interactive -w tests/e2e",
 		"test:e2e:watch": "cross-env NODE_OPTIONS=--experimental-abortcontroller npm run test:e2e:watch -w tests/e2e",
@@ -70,9 +70,12 @@
 		]
 	},
 	"devDependencies": {
+		"@storybook/addon-storyshots": "^6.5.16",
+		"@storybook/addon-storyshots-puppeteer": "^6.3.6",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.3.0",
+		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
 		"@wordpress/jest-preset-default": "7.1.1",
