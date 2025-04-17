@@ -24,6 +24,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
+import { useEffect, useState } from '@wordpress/element';
 
 function Template() {
 	return (
@@ -47,7 +48,10 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {};
+Default.scenario = {
+	// TODO: Wait for a selector rather than a hardcoded delay.
+	delay: 2000,
+};
 
 export const NewUserAccountsEnabled = Template.bind( null );
 NewUserAccountsEnabled.storyName = 'New Accounts Enabled';
@@ -115,6 +119,18 @@ InvalidClientID.decorators = [
 export const Empty = Template.bind( null );
 Empty.storyName = 'Empty';
 
+function WithServiceWorker( { children } ) {
+	const [ isReady, setIsReady ] = useState( false );
+
+	useEffect( () => {
+		global.serviceWorkerReader.then( () => {
+			setIsReady( true );
+		} );
+	}, [] );
+
+	return isReady ? children : null;
+}
+
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
@@ -131,9 +147,11 @@ export default {
 			};
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<WithServiceWorker>
+					<WithRegistrySetup func={ setupRegistry }>
+						<Story />
+					</WithRegistrySetup>
+				</WithServiceWorker>
 			);
 		},
 	],

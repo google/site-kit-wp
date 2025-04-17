@@ -35,7 +35,7 @@ const path = require( 'path' );
  * Internal dependencies
  */
 const storybookConfig = require( '../../storybook/main' );
-const rootURL = 'file:///src/dist/iframe.html?id=';
+const rootURL = 'http://localhost:8001/iframe.html?id=';
 
 const storybookDir = path.resolve( __dirname, '../../storybook' );
 const storyFiles = flatten(
