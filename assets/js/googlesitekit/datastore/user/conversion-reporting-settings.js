@@ -23,7 +23,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -40,7 +40,7 @@ const baseInitialState = {
 const fetchGetConversionReportingSettingsStore = createFetchStore( {
 	baseName: 'getConversionReportingSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'conversion-reporting-settings', undefined, {
+		get( 'core', 'user', 'conversion-reporting-settings', undefined, {
 			// Never cache conversion reporting settings requests, we want them to be
 			// up-to-date with what's in settings, and they don't
 			// make requests to Google APIs so it's not a slow request.
@@ -55,7 +55,7 @@ const fetchGetConversionReportingSettingsStore = createFetchStore( {
 const fetchSaveConversionReportingSettingsStore = createFetchStore( {
 	baseName: 'saveConversionReportingSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'conversion-reporting-settings', {
+		set( 'core', 'user', 'conversion-reporting-settings', {
 			settings,
 		} ),
 	reducerCallback: ( state, conversionReportingSettings ) => ( {

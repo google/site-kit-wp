@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -46,14 +46,14 @@ function reducerCallback( state, dismissedItems ) {
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
+		get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchRemoveDismissedItemsStore = createFetchStore( {
 	baseName: 'removeDismissedItems',
 	controlCallback: ( { slugs } ) => {
-		return API.set(
+		return set(
 			'core',
 			'user',
 			'dismissed-items',
@@ -79,7 +79,7 @@ const fetchRemoveDismissedItemsStore = createFetchStore( {
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
 	controlCallback: ( { slug, expiresInSeconds } ) =>
-		API.set( 'core', 'user', 'dismiss-item', {
+		set( 'core', 'user', 'dismiss-item', {
 			slug,
 			expiration: expiresInSeconds,
 		} ),

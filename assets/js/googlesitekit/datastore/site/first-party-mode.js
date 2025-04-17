@@ -25,7 +25,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -51,7 +51,7 @@ const settingsReducerCallback = createReducer(
 const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'getFirstPartyModeSettings',
 	controlCallback: () =>
-		API.get( 'core', 'site', 'fpm-settings', undefined, {
+		get( 'core', 'site', 'fpm-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: settingsReducerCallback,
@@ -60,7 +60,7 @@ const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'saveFirstPartyModeSettings',
 	controlCallback: ( { settings } ) => {
-		return API.set( 'core', 'site', 'fpm-settings', { settings } );
+		return set( 'core', 'site', 'fpm-settings', { settings } );
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
@@ -88,7 +88,7 @@ const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
 	baseName: 'getFPMServerRequirementStatus',
 	controlCallback: () =>
-		API.get( 'core', 'site', 'fpm-server-requirement-status', undefined, {
+		get( 'core', 'site', 'fpm-server-requirement-status', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: settingsReducerCallback,

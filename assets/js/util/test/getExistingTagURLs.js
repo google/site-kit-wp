@@ -24,17 +24,17 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { setUsingCache } from 'googlesitekit-api';
 import { getExistingTagURLs } from '../tag';
-import API from 'googlesitekit-api';
 import { AMP_MODE_SECONDARY } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'getExistingTagURLs', () => {

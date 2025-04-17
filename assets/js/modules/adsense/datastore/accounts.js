@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -31,7 +31,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
 	controlCallback: () => {
-		return API.get( 'modules', 'adsense', 'accounts', undefined, {
+		return get( 'modules', 'adsense', 'accounts', undefined, {
 			useCache: false,
 		} );
 	},

@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -32,7 +32,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const fetchGetAdUnitsStore = createFetchStore( {
 	baseName: 'getAdUnits',
 	controlCallback: ( { accountID, clientID } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'adsense',
 			'adunits',

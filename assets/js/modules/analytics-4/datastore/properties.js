@@ -30,7 +30,7 @@ import { createRegistrySelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -55,7 +55,7 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'property',
@@ -85,7 +85,7 @@ const fetchGetPropertyStore = createFetchStore( {
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'properties',
@@ -122,7 +122,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback( { accountID } ) {
-		return API.set( 'modules', 'analytics-4', 'create-property', {
+		return set( 'modules', 'analytics-4', 'create-property', {
 			accountID,
 		} );
 	},
@@ -149,7 +149,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 const fetchGetGoogleTagSettingsStore = createFetchStore( {
 	baseName: 'getGoogleTagSettings',
 	controlCallback( { measurementID } ) {
-		return API.get( 'modules', 'analytics-4', 'google-tag-settings', {
+		return get( 'modules', 'analytics-4', 'google-tag-settings', {
 			measurementID,
 		} );
 	},
@@ -173,14 +173,9 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	baseName: 'setGoogleTagIDMismatch',
 	controlCallback( { hasMismatchedTag } ) {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'set-google-tag-id-mismatch',
-			{
-				hasMismatchedTag,
-			}
-		);
+		return set( 'modules', 'analytics-4', 'set-google-tag-id-mismatch', {
+			hasMismatchedTag,
+		} );
 	},
 	reducerCallback( state, hasMismatchedTag ) {
 		return {

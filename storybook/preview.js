@@ -32,7 +32,7 @@ import './assets/sass/stories/tokens.scss';
 import './assets/sass/stories/type-scale.scss';
 // Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { WithTestRegistry } from '../tests/js/utils';
@@ -40,7 +40,7 @@ import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
 import { setEnabledFeatures } from '../tests/js/test-utils';
 
-API.setUsingCache( false );
+setUsingCache( false );
 
 bootstrapFetchMocks();
 

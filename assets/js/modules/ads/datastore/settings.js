@@ -25,7 +25,7 @@ import { isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
@@ -94,7 +94,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'ads' );
+	await invalidateCache( 'modules', 'ads' );
 
 	return {};
 }

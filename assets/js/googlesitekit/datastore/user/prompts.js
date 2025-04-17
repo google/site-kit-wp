@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -47,14 +47,14 @@ function reducerCallback( state, dismissedPrompts ) {
 const fetchGetDismissedPromptsStore = createFetchStore( {
 	baseName: 'getDismissedPrompts',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-prompts', {}, { useCache: false } ),
+		get( 'core', 'user', 'dismissed-prompts', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchDismissPromptStore = createFetchStore( {
 	baseName: 'dismissPrompt',
 	controlCallback: ( { slug, expiresInSeconds } ) =>
-		API.set( 'core', 'user', 'dismiss-prompt', {
+		set( 'core', 'user', 'dismiss-prompt', {
 			slug,
 			expiration: expiresInSeconds,
 		} ),

@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -36,7 +36,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 const fetchGetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'getAdminBarSettings',
 	controlCallback: () =>
-		API.get( 'core', 'site', 'admin-bar-settings', undefined, {
+		get( 'core', 'site', 'admin-bar-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: ( state, adminBarSettings ) => {
@@ -53,7 +53,7 @@ const fetchGetAdminBarSettingsStore = createFetchStore( {
 const fetchSetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'setAdminBarSettings',
 	controlCallback: ( { enabled } ) =>
-		API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
+		set( 'core', 'site', 'admin-bar-settings', { enabled } ),
 	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,

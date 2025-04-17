@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -42,7 +42,7 @@ const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	baseName: 'saveCustomDimensionDataAvailableState',
 	controlCallback: ( { customDimension } ) =>
-		API.set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
+		set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
 			customDimension,
 		} ),
 	argsToParams: ( customDimension ) => ( { customDimension } ),

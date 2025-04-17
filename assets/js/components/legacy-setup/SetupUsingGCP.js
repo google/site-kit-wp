@@ -32,7 +32,7 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import { withSelect } from 'googlesitekit-data';
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -83,7 +83,7 @@ class SetupUsingGCP extends Component {
 	}
 
 	async resetAndRestart() {
-		await API.set( 'core', 'site', 'reset' );
+		await set( 'core', 'site', 'reset' );
 		await clearCache();
 
 		this.setState( {

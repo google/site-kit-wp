@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	MODULES_TAGMANAGER,
 	ACCOUNT_CREATE,
@@ -95,7 +95,7 @@ describe( 'modules/tagmanager settings', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -111,7 +111,7 @@ describe( 'modules/tagmanager settings', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	function setPrimaryAMP() {

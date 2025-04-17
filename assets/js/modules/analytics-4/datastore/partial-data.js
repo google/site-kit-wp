@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -55,16 +55,11 @@ const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
 	controlCallback: ( { resourceSlug, resourceType, date } ) =>
-		API.set(
-			'modules',
-			'analytics-4',
-			'save-resource-data-availability-date',
-			{
-				resourceSlug,
-				resourceType,
-				date,
-			}
-		),
+		set( 'modules', 'analytics-4', 'save-resource-data-availability-date', {
+			resourceSlug,
+			resourceType,
+			date,
+		} ),
 	argsToParams: ( resourceSlug, resourceType, date ) => ( {
 		resourceSlug,
 		resourceType,

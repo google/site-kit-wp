@@ -30,7 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
 import { validateJSON, trackEvent } from '../../util';
 
@@ -67,7 +67,7 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const { verified, identifier } = await API.get(
+				const { verified, identifier } = await get(
 					'modules',
 					'site-verification',
 					'verification',
@@ -122,7 +122,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		return await API.set( 'modules', 'site-verification', 'verification', {
+		return await set( 'modules', 'site-verification', 'verification', {
 			siteURL,
 		} );
 	}

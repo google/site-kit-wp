@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
@@ -102,7 +102,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
-		API.set( 'modules', 'analytics-4', 'create-audience', {
+		set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
 	argsToParams: ( audience ) => ( {

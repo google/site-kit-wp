@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -79,8 +79,7 @@ export const createGatheringDataStore = (
 
 	const fetchSaveDataAvailableStateStore = createFetchStore( {
 		baseName: 'saveDataAvailableState',
-		controlCallback: () =>
-			API.set( 'modules', moduleSlug, 'data-available' ),
+		controlCallback: () => set( 'modules', moduleSlug, 'data-available' ),
 	} );
 
 	const initialState = {

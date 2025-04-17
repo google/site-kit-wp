@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -41,7 +41,7 @@ const RESET_CLIENTS = 'RESET_CLIENTS';
 const fetchGetClientsStore = createFetchStore( {
 	baseName: 'getClients',
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'adsense',
 			'clients',

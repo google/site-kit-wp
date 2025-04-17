@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { stringifyObject } from '../../../util';
@@ -40,7 +40,7 @@ import { validateDimensions, validateMetrics } from '../util/report-validation';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'adsense', 'report', options );
+		return get( 'modules', 'adsense', 'report', options );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {

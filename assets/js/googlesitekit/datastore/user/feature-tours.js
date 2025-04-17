@@ -26,7 +26,7 @@ import { isPlainObject, isNull } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -59,7 +59,7 @@ const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
 const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
+		get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
 	reducerCallback: ( state, dismissedTourSlugs ) => ( {
 		...state,
 		dismissedTourSlugs,
@@ -69,7 +69,7 @@ const fetchGetDismissedToursStore = createFetchStore( {
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) =>
-		API.set( 'core', 'user', 'dismiss-tour', { slug } ),
+		set( 'core', 'user', 'dismiss-tour', { slug } ),
 	reducerCallback: ( state, dismissedTourSlugs ) => ( {
 		...state,
 		dismissedTourSlugs,

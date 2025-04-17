@@ -24,7 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { combineStores, commonStore } from 'googlesitekit-data';
 import {
 	muteFetch,
@@ -43,7 +43,7 @@ describe( 'createNotificationsStore store', () => {
 	let store;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -61,7 +61,7 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'name', () => {

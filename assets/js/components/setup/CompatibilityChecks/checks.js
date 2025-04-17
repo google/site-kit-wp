@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { isIPAddressInRange } from '../../../util/ip-cidr';
 import {
@@ -69,15 +69,9 @@ export const registryCheckSetupTag = ( registry ) => async () => {
 };
 // Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
 export const checkHealthChecks = async () => {
-	const response = await API.get(
-		'core',
-		'site',
-		'health-checks',
-		undefined,
-		{
-			useCache: false,
-		}
-	).catch( ( error ) => {
+	const response = await get( 'core', 'site', 'health-checks', undefined, {
+		useCache: false,
+	} ).catch( ( error ) => {
 		if ( error.code === 'fetch_error' ) {
 			throw ERROR_FETCH_FAIL;
 		}
