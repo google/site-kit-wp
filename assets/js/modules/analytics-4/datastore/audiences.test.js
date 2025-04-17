@@ -607,7 +607,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
 					const { data } = JSON.parse( opts.body );
 					// Return the same settings passed to the API.
-					return { body: data, status: 200 };
+					return { body: data.settings, status: 200 };
 				} );
 
 				provideModules( registry, [
