@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Null from '../Null';
 import CheckFill from '../../../svg/icons/check-fill.svg';
 import WarningSVG from '../../../svg/icons/warning.svg';
 import StarFill from '../../../svg/icons/star-fill.svg';
@@ -38,11 +37,7 @@ const typeIconMap = {
 };
 
 export default function Icon( { className, type } ) {
-	const IconComponent = typeIconMap[ type ] || null;
-
-	if ( ! IconComponent ) {
-		return Null;
-	}
+	const IconComponent = typeIconMap[ type ] || WarningSVG;
 
 	return (
 		<div
