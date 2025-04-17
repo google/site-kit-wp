@@ -45,16 +45,13 @@ module.exports = async ( { config } ) => {
 				// Set "googlesitekit-components" to the entry point which can load GM2 or GM3 components.
 				if ( api === 'components' ) {
 					return path.resolve(
-						__dirname,
-						'../assets/js/googlesitekit-components-gm2'
+						rootDir,
+						'assets/js/googlesitekit-components-gm2'
 					);
 				}
 			}
 
-			return path.resolve(
-				__dirname,
-				`../assets/js/${ global }-${ api }.js`
-			);
+			return path.resolve( rootDir, `assets/js/${ global }-${ api }.js` );
 		}
 	);
 
@@ -64,7 +61,7 @@ module.exports = async ( { config } ) => {
 			...config.resolve.alias,
 			...siteKitPackageAliases,
 		},
-		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
+		modules: [ rootDir, 'node_modules' ],
 	};
 
 	config.plugins = [
@@ -96,13 +93,13 @@ module.exports = async ( { config } ) => {
 						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
 						sassOptions: {
 							includePaths: [
-								path.resolve( __dirname, '../node_modules/' ),
+								path.resolve( rootDir, 'node_modules/' ),
 							],
 						},
 					},
 				},
 			],
-			include: path.resolve( __dirname, '../' ),
+			include: rootDir,
 		},
 		{
 			test: /\.mjs$/,
