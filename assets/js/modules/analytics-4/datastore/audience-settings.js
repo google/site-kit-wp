@@ -183,7 +183,7 @@ const baseActions = {
 				);
 
 			if ( error ) {
-				yield receiveError( error, 'saveUserAudienceSettings', [] );
+				yield receiveError( error, 'saveAudienceSettings', [] );
 			}
 
 			return { response, error };
