@@ -80,19 +80,22 @@ class ReportParsers {
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
 	 */
 	public function parse_dateranges( Data_Request $data ) {
-		$date_ranges = array();
-		$start_date  = $data['startDate'] ?? '';
-		$end_date    = $data['endDate'] ?? '';
+		$date_ranges     = array();
+		$start_date      = $data['startDate'] ?? '';
+		$end_date        = $data['endDate'] ?? '';
+		$date_range_name = $data['dateRangeName'] ?? '';
 		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
-			$compare_start_date = $data['compareStartDate'] ?? '';
-			$compare_end_date   = $data['compareEndDate'] ?? '';
-			$date_ranges[]      = array( $start_date, $end_date );
+			$compare_start_date      = $data['compareStartDate'] ?? '';
+			$compare_end_date        = $data['compareEndDate'] ?? '';
+			$compare_date_range_name = $data['compareDateRangeName'] ?? '';
+
+			$date_ranges[] = array( $start_date, $end_date, $date_range_name );
 
 			// When using multiple date ranges, it changes the structure of the response:
 			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
 			// The rows property will have additional row entries for each date range.
 			if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
-				$date_ranges[] = array( $compare_start_date, $compare_end_date );
+				$date_ranges[] = array( $compare_start_date, $compare_end_date, $compare_date_range_name );
 			}
 		} else {
 			// Default the date range to the last 28 days.
@@ -101,10 +104,13 @@ class ReportParsers {
 
 		$date_ranges = array_map(
 			function ( $date_range ) {
-				list ( $start_date, $end_date ) = $date_range;
+				list ( $start_date, $end_date, $date_range_name ) = $date_range;
 				$date_range                     = new Google_Service_AnalyticsData_DateRange();
 				$date_range->setStartDate( $start_date );
 				$date_range->setEndDate( $end_date );
+				if ( $date_range_name !== '' ) {
+					$date_range->setName( $date_range_name );
+				}
 
 				return $date_range;
 			},
