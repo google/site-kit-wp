@@ -88,7 +88,6 @@ class ReportParsers {
 			$compare_start_date      = $data['compareStartDate'] ?? '';
 			$compare_end_date        = $data['compareEndDate'] ?? '';
 			$compare_date_range_name = $data['compareDateRangeName'] ?? '';
-
 			$date_ranges[] = array( $start_date, $end_date, $date_range_name );
 
 			// When using multiple date ranges, it changes the structure of the response:
@@ -99,7 +98,9 @@ class ReportParsers {
 			}
 		} else {
 			// Default the date range to the last 28 days.
-			$date_ranges[] = Date::parse_date_range( 'last-28-days', 1 );
+			$last_28_days   = Date::parse_date_range( 'last-28-days', 1 );
+			$last_28_days[] = $date_range_name;
+			$date_ranges[]  = $last_28_days;
 		}
 
 		$date_ranges = array_map(
