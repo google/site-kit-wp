@@ -129,6 +129,7 @@ function AuthenticatedPermissionsModal() {
 				dialogActive
 				handleConfirm={ onConfirm }
 				handleDialog={ onCancel }
+				onClose={ onCancel }
 				medium
 			/>
 		</Portal>

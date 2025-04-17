@@ -181,7 +181,10 @@ export default function AudienceErrorModal( {
 
 					trackEvent( trackEventCategory, action );
 				} }
-				onClose={ onCancel }
+				onClose={ () => {
+					onCancel();
+					handleDialog();
+				} }
 				danger
 				inProgress={ inProgress }
 			/>
