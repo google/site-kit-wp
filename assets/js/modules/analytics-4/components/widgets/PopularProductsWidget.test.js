@@ -1,7 +1,7 @@
 /**
- * TopCategoriesWidget component tests.
+ * PopularProductsWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import faker from 'faker';
+import { capitalize } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { render } from '../../../../../../tests/js/test-utils';
@@ -26,13 +32,14 @@ import {
 	provideModules,
 	freezeFetch,
 	provideUserAuthentication,
+	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCategoriesWidget from './TopCategoriesWidget';
+import PopularProductsWidget from './PopularProductsWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
@@ -42,34 +49,38 @@ import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import {
+	getAnalytics4MockResponse,
+	STRATEGY_ZIP,
+} from '../../../analytics-4/utils/data-mock';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
-describe( 'TopCategoriesWidget', () => {
+describe( 'PopularProductsWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CATEGORIES );
+	const widgetProps = getWidgetComponentProps(
+		KM_ANALYTICS_POPULAR_PRODUCTS
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
-	const [ accountID, propertyID, webDataStreamID ] = [
-		'12345',
-		'34567',
-		'56789',
-	];
+	const accountID = '12345';
+	const propertyID = '34567';
+	const webDataStreamID = '67890';
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			accountID,
 			propertyID,
 			webDataStreamID,
 			availableCustomDimensions:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
 					.requiredCustomDimensions,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
@@ -84,7 +95,7 @@ describe( 'TopCategoriesWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsCustomDimensionGatheringData(
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
 					.requiredCustomDimensions[ 0 ],
 				false
 			);
@@ -95,19 +106,18 @@ describe( 'TopCategoriesWidget', () => {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} ),
-			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+			dimensions: [ 'pagePath' ],
 			dimensionFilters: {
-				'customEvent:googlesitekit_post_categories': {
-					filterType: 'emptyFilter',
-					notExpression: true,
+				'customEvent:googlesitekit_post_type': {
+					filterType: 'stringFilter',
+					matchType: 'EXACT',
+					value: 'product',
 				},
 			},
 			metrics: [ { name: 'screenPageViews' } ],
 			orderby: [
 				{
-					metric: {
-						metricName: 'screenPageViews',
-					},
+					metric: { metricName: 'screenPageViews' },
 					desc: true,
 				},
 			],
@@ -115,10 +125,55 @@ describe( 'TopCategoriesWidget', () => {
 			keepEmptyRows: false,
 		};
 
-		provideAnalytics4MockReport( registry, reportOptions );
+		const pageTitlesReportOptions = {
+			...registry.select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} ),
+			dimensionFilters: {
+				pagePath: new Array( 3 )
+					.fill( '' )
+					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.sort(),
+			},
+			dimensions: [ 'pagePath', 'pageTitle' ],
+			metrics: [ { name: 'screenPageViews' } ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 15,
+		};
+
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		pageTitlesReport.rows = pageTitlesReport.rows.map( ( row ) => ( {
+			...row,
+			dimensionValues: row.dimensionValues.map( ( dimensionValue, i ) =>
+				i === 1
+					? { value: capitalize( faker.lorem.words( 10 ) ) }
+					: dimensionValue
+			),
+		} ) );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		const report = getAnalytics4MockResponse( reportOptions );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
 
 		const { container, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<PopularProductsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -131,7 +186,7 @@ describe( 'TopCategoriesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<PopularProductsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -160,7 +215,7 @@ describe( 'TopCategoriesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<PopularProductsWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -190,7 +245,7 @@ describe( 'TopCategoriesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<PopularProductsWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -209,12 +264,14 @@ describe( 'TopCategoriesWidget', () => {
 
 	it( 'should render the missing custom dimension error when the required custom dimension is not available', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			accountID,
 			propertyID,
+			webDataStreamID,
 			availableCustomDimensions: [],
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<PopularProductsWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -241,13 +298,13 @@ describe( 'TopCategoriesWidget', () => {
 
 		provideCustomDimensionError( registry, {
 			customDimension:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
 					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<PopularProductsWidget { ...widgetProps } />,
 			{ registry }
 		);
 

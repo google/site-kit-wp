@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * PopularKeywordsWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,36 +22,44 @@
 import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
-	freezeFetch,
 } from '../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
+import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import { provideSearchConsoleMockReport } from '../../util/data-mock';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'PopularKeywordsWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const widgetProps = getWidgetComponentProps(
+		KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
+	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
 	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( 'search-console' ) );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com' );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
@@ -59,23 +67,14 @@ describe( 'TopCitiesWidget', () => {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} ),
-			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
-			],
-			limit: 4,
+			dimensions: 'query',
+			limit: 100,
 		};
 
-		provideAnalytics4MockReport( registry, reportOptions );
+		provideSearchConsoleMockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PopularKeywordsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -88,7 +87,7 @@ describe( 'TopCitiesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PopularKeywordsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -117,7 +116,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PopularKeywordsWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -147,7 +146,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PopularKeywordsWidget { ...widgetProps } />,
 			{ registry }
 		);
 

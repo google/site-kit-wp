@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopCategoriesWidget should render correctly with the expected metrics 1`] = `
+exports[`TopReturningVisitorPages should render correctly with the expected metrics 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopReturningVisitorPages googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -17,11 +17,11 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top categories by pageviews
+            Top pages by returning visitors
           </h3>
           <span
             class="googlesitekit-info-tooltip"
-            title="Categories that your site visitors viewed the most"
+            title="Pages that attracted the most returning visitors"
           >
             <svg />
           </span>
@@ -38,17 +38,26 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
               <div
                 class="googlesitekit-table__body-item"
               >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                <a
+                  aria-label="Test Post 2 (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Test Post 2"
                 >
-                  Entertainment, Sports, Media
-                </p>
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Test Post 2
+                  </span>
+                </a>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  62
+                  81
                 </strong>
               </div>
             </div>
@@ -58,17 +67,26 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
               <div
                 class="googlesitekit-table__body-item"
               >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                <a
+                  aria-label="Test Post 3 (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Test Post 3"
                 >
-                  Wealth
-                </p>
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Test Post 3
+                  </span>
+                </a>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  35
+                  74
                 </strong>
               </div>
             </div>
@@ -78,17 +96,26 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
               <div
                 class="googlesitekit-table__body-item"
               >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                <a
+                  aria-label="Test Post 1 (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Test Post 1"
                 >
-                  Health & Wellness
-                </p>
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Test Post 1
+                  </span>
+                </a>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  21
+                  67
                 </strong>
               </div>
             </div>
@@ -100,7 +127,7 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the custom dimension error when there is an error creating the custom dimension 1`] = `
+exports[`TopReturningVisitorPages should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -114,88 +141,11 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top categories by pageviews
+          Top pages by returning visitors
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
-        >
-          <svg />
-        </span>
-      </div>
-      <div
-        class="googlesitekit-cta__body"
-      >
-        <h3
-          class="googlesitekit-cta__title"
-        >
-          Insufficient permissions
-        </h3>
-        
-        
-        
-        
-        <div
-          class="googlesitekit-report-error-actions"
-        >
-          <span
-            class="googlesitekit-error-retry-text"
-          >
-            Permissions updated? 
-            <button
-              class="googlesitekit-cta-link"
-            >
-              <span
-                class="googlesitekit-cta-link__contents"
-              >
-                Retry
-              </span>
-            </button>
-          </span>
-          <span
-            class="googlesitekit-error-retry-text"
-          >
-            You’ll need to contact your administrator. 
-            <a
-              aria-label="Learn more (opens in a new tab)"
-              class="googlesitekit-cta-link"
-              href="undefined?error_id=analytics-4_insufficient_permissions"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <span
-                class="googlesitekit-cta-link__contents"
-              >
-                Learn more
-              </span>
-            </a>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`TopCategoriesWidget should render the generic error variant when the report fetch fails 1`] = `
-<div>
-  <div
-    class="googlesitekit-km-widget-tile--error"
-  >
-    <div
-      class="googlesitekit-cta googlesitekit-cta--error"
-    >
-      <div
-        class="googlesitekit-cta__header"
-      >
-        <h2
-          class="googlesitekit-cta__header_text"
-        >
-          Top categories by pageviews
-        </h2>
-        <span
-          class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
+          title="Pages that attracted the most returning visitors"
         >
           <svg />
         </span>
@@ -239,7 +189,7 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopReturningVisitorPages should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -253,11 +203,11 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top categories by pageviews
+          Top pages by returning visitors
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
+          title="Pages that attracted the most returning visitors"
         >
           <svg />
         </span>
@@ -302,10 +252,10 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the loading state while resolving the report 1`] = `
+exports[`TopReturningVisitorPages should render the loading state while resolving the report 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopReturningVisitorPages googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -319,14 +269,14 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top categories by pageviews
+            Top pages by returning visitors
           </h3>
           <span
             class="screen-reader-text"
           >
             <span
               class="googlesitekit-info-tooltip"
-              title="Categories that your site visitors viewed the most"
+              title="Pages that attracted the most returning visitors"
             >
               <svg />
             </span>
@@ -355,66 +305,6 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
               />
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`TopCategoriesWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
-<div>
-  <div
-    class="googlesitekit-km-widget-tile--error"
-  >
-    <div
-      class="googlesitekit-cta googlesitekit-cta--error"
-    >
-      <div
-        class="googlesitekit-cta__header"
-      >
-        <h2
-          class="googlesitekit-cta__header_text"
-        >
-          Top categories by pageviews
-        </h2>
-        <span
-          class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
-        >
-          <svg />
-        </span>
-      </div>
-      <div
-        class="googlesitekit-cta__body"
-      >
-        <h3
-          class="googlesitekit-cta__title"
-        >
-          No data to show
-        </h3>
-        
-        
-        
-        
-        <div
-          class="googlesitekit-report-error-actions"
-        >
-          <button
-            class="mdc-button mdc-button--raised"
-            target="_self"
-          >
-            <span
-              class="mdc-button__label"
-            >
-              Update
-            </span>
-          </button>
-          <span
-            class="googlesitekit-error-retry-text"
-          >
-            Update Analytics to track metric
-          </span>
         </div>
       </div>
     </div>

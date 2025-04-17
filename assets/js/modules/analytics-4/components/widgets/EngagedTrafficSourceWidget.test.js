@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * EngagedTrafficSourceWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,29 @@
 import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
-	freezeFetch,
 } from '../../../../../../tests/js/utils';
+import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'EngagedTrafficSourceWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const { Widget, WidgetNull } = getWidgetComponentProps(
+		KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -55,27 +57,22 @@ describe( 'TopCitiesWidget', () => {
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
-		const reportOptions = {
+		provideAnalytics4MockReport( registry, {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
 			} ),
-			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
-			],
-			limit: 4,
-		};
-
-		provideAnalytics4MockReport( registry, reportOptions );
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'engagedSessions' } ],
+			orderBy: 'engagedSessions',
+			limit: 1,
+		} );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -88,7 +85,10 @@ describe( 'TopCitiesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -117,7 +117,10 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 
@@ -147,7 +150,10 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<EngagedTrafficSourceWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 

@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopCategoriesWidget should render correctly with the expected metrics 1`] = `
+exports[`PopularProductsWidget should render correctly with the expected metrics 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPopularProducts googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -17,11 +17,10 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top categories by pageviews
+            Most popular products by pageviews
           </h3>
           <span
             class="googlesitekit-info-tooltip"
-            title="Categories that your site visitors viewed the most"
           >
             <svg />
           </span>
@@ -38,17 +37,26 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
               <div
                 class="googlesitekit-table__body-item"
               >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                <a
+                  aria-label="Repudiandae beatae praesentium minus ad veritatis sint ut praesentium at (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Repudiandae beatae praesentium minus ad veritatis sint ut praesentium at"
                 >
-                  Entertainment, Sports, Media
-                </p>
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Repudiandae beatae praesentium minus ad veritatis sint ut praesentium at
+                  </span>
+                </a>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  62
+                  100
                 </strong>
               </div>
             </div>
@@ -58,11 +66,20 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
               <div
                 class="googlesitekit-table__body-item"
               >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                <a
+                  aria-label="Illo recusandae et odio quidem rem recusandae in voluptates debitis (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Illo recusandae et odio quidem rem recusandae in voluptates debitis"
                 >
-                  Wealth
-                </p>
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Illo recusandae et odio quidem rem recusandae in voluptates debitis
+                  </span>
+                </a>
               </div>
               <div
                 class="googlesitekit-table__body-item"
@@ -78,17 +95,26 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
               <div
                 class="googlesitekit-table__body-item"
               >
-                <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                <a
+                  aria-label="Minima maxime magnam possimus iusto nisi est et aut enim (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Minima maxime magnam possimus iusto nisi est et aut enim"
                 >
-                  Health & Wellness
-                </p>
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Minima maxime magnam possimus iusto nisi est et aut enim
+                  </span>
+                </a>
               </div>
               <div
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  21
+                  25
                 </strong>
               </div>
             </div>
@@ -100,7 +126,7 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the custom dimension error when there is an error creating the custom dimension 1`] = `
+exports[`PopularProductsWidget should render the custom dimension error when there is an error creating the custom dimension 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -114,11 +140,11 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top categories by pageviews
+          Most popular products by pageviews
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
+          title="Products that brought in the most visitors"
         >
           <svg />
         </span>
@@ -159,7 +185,7 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
             <a
               aria-label="Learn more (opens in a new tab)"
               class="googlesitekit-cta-link"
-              href="undefined?error_id=analytics-4_insufficient_permissions"
+              href="https://sitekit.withgoogle.com/support/?error_id=analytics-4_insufficient_permissions"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -177,7 +203,7 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`PopularProductsWidget should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -191,11 +217,10 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top categories by pageviews
+          Most popular products by pageviews
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
         >
           <svg />
         </span>
@@ -221,7 +246,7 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
             <a
               aria-label="Get help (opens in a new tab)"
               class="googlesitekit-cta-link"
-              href="undefined?error_id=internal_server_error"
+              href="https://sitekit.withgoogle.com/support/?error_id=internal_server_error"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -239,7 +264,7 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`PopularProductsWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -253,11 +278,10 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top categories by pageviews
+          Most popular products by pageviews
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
         >
           <svg />
         </span>
@@ -284,7 +308,7 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
             <a
               aria-label="Get help (opens in a new tab)"
               class="googlesitekit-cta-link"
-              href="undefined?error_id=analytics-4_insufficient_permissions"
+              href="https://sitekit.withgoogle.com/support/?error_id=analytics-4_insufficient_permissions"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -302,10 +326,10 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the loading state while resolving the report 1`] = `
+exports[`PopularProductsWidget should render the loading state while resolving the report 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPopularProducts googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -319,14 +343,13 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top categories by pageviews
+            Most popular products by pageviews
           </h3>
           <span
             class="screen-reader-text"
           >
             <span
               class="googlesitekit-info-tooltip"
-              title="Categories that your site visitors viewed the most"
             >
               <svg />
             </span>
@@ -362,7 +385,7 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
+exports[`PopularProductsWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -376,11 +399,11 @@ exports[`TopCategoriesWidget should render the missing custom dimension error wh
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top categories by pageviews
+          Most popular products by pageviews
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Categories that your site visitors viewed the most"
+          title="Products that brought in the most visitors"
         >
           <svg />
         </span>

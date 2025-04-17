@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * TopCitiesDrivingPurchasesWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,20 +29,26 @@ import {
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
+import TopCitiesDrivingPurchasesWidget from './TopCitiesDrivingPurchasesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
 import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'TopCitiesDrivingPurchasesWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const widgetProps = getWidgetComponentProps(
+		KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -52,6 +58,9 @@ describe( 'TopCitiesWidget', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
@@ -60,22 +69,35 @@ describe( 'TopCitiesWidget', () => {
 				offsetDays: DATE_RANGE_OFFSET,
 			} ),
 			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
+			dimensionFilters: {
+				city: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'ecommercePurchases' } ],
+			metricFilters: {
+				ecommercePurchases: {
+					operation: 'GREATER_THAN',
+					value: { int64Value: 0 },
+				},
+			},
 			orderby: [
 				{
 					metric: {
-						metricName: 'totalUsers',
+						metricName: 'ecommercePurchases',
 					},
 					desc: true,
 				},
 			],
-			limit: 4,
+			limit: 3,
+			keepEmptyRows: false,
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopCitiesDrivingPurchasesWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -88,7 +110,7 @@ describe( 'TopCitiesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopCitiesDrivingPurchasesWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -117,7 +139,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopCitiesDrivingPurchasesWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -147,7 +169,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopCitiesDrivingPurchasesWidget { ...widgetProps } />,
 			{ registry }
 		);
 

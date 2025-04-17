@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopTrafficSourceWidget should render correctly with the expected metrics 1`] = `
+exports[`EngagedTrafficSourceWidget should render correctly with the expected metrics 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsEngagedTrafficSource googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -17,11 +17,11 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top traffic source
+            Most engaged traffic source
           </h3>
           <span
             class="googlesitekit-info-tooltip"
-            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+            title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
           >
             <svg />
           </span>
@@ -40,7 +40,7 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
             <p
               class="googlesitekit-km-widget-tile__subtext"
             >
-              100% of total traffic
+              100% of 55 engaged sessions
             </p>
           </div>
           <div
@@ -59,7 +59,7 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`EngagedTrafficSourceWidget should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -73,11 +73,11 @@ exports[`TopTrafficSourceWidget should render the generic error variant when the
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top traffic source
+          Most engaged traffic source
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+          title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
         >
           <svg />
         </span>
@@ -121,7 +121,7 @@ exports[`TopTrafficSourceWidget should render the generic error variant when the
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`EngagedTrafficSourceWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -135,11 +135,11 @@ exports[`TopTrafficSourceWidget should render the insufficient permissions error
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top traffic source
+          Most engaged traffic source
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+          title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
         >
           <svg />
         </span>
@@ -184,83 +184,10 @@ exports[`TopTrafficSourceWidget should render the insufficient permissions error
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should retry both reports when an error is encountered 1`] = `
+exports[`EngagedTrafficSourceWidget should render the loading state while resolving the report 1`] = `
 <div>
   <div
-    class="googlesitekit-km-widget-tile--error"
-  >
-    <div
-      class="googlesitekit-cta googlesitekit-cta--error"
-    >
-      <div
-        class="googlesitekit-cta__header"
-      >
-        <h2
-          class="googlesitekit-cta__header_text"
-        >
-          Top traffic source
-        </h2>
-        <span
-          class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
-        >
-          <svg />
-        </span>
-      </div>
-      <div
-        class="googlesitekit-cta__body"
-      >
-        <h3
-          class="googlesitekit-cta__title"
-        >
-          Data loading failed
-        </h3>
-        
-        
-        
-        
-        <div
-          class="googlesitekit-report-error-actions"
-        >
-          <button
-            class="mdc-button mdc-button--raised"
-            target="_self"
-          >
-            <span
-              class="mdc-button__label"
-            >
-              Retry
-            </span>
-          </button>
-          <span
-            class="googlesitekit-error-retry-text"
-          >
-            Retry didn’t work? 
-            <a
-              aria-label="Get help (opens in a new tab)"
-              class="googlesitekit-cta-link"
-              href="undefined?error_id=invalid_json"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <span
-                class="googlesitekit-cta-link__contents"
-              >
-                Get help
-              </span>
-            </a>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`TopTrafficSourceWidget should retry both reports when an error is encountered 2`] = `
-<div>
-  <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsEngagedTrafficSource googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -274,39 +201,40 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top traffic source
+            Most engaged traffic source
           </h3>
           <span
-            class="googlesitekit-info-tooltip"
-            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+            class="screen-reader-text"
           >
-            <svg />
+            <span
+              class="googlesitekit-info-tooltip"
+              title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
+            >
+              <svg />
+            </span>
           </span>
         </div>
         <div
           class="googlesitekit-km-widget-tile__body"
         >
           <div
-            class="googlesitekit-km-widget-tile__metric-container"
+            class="googlesitekit-km-widget-tile__loading"
           >
             <div
-              class="googlesitekit-km-widget-tile__metric"
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
+              style="width: 100%; height: 14px;"
             >
-              Organic Search
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
             </div>
-            <p
-              class="googlesitekit-km-widget-tile__subtext"
-            >
-              100% of total traffic
-            </p>
-          </div>
-          <div
-            class="googlesitekit-km-widget-tile__metric-change-container"
-          >
             <div
-              class="googlesitekit-change-badge googlesitekit-change-badge--zero"
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
+              style="width: 100%; height: 53px;"
             >
-              0%
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
             </div>
           </div>
         </div>

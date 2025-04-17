@@ -41,16 +41,22 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
-import WidgetNull from '../../../../googlesitekit/widgets/components/WidgetNull';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../../../../util/errors';
 
 describe( 'TopTrafficSourceWidget', () => {
-	const { Widget } = getWidgetComponentProps(
+	const widgetProps = getWidgetComponentProps(
 		KM_ANALYTICS_TOP_TRAFFIC_SOURCE
+	);
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	let registry;
@@ -66,7 +72,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		provideModules( registry, withConnected( 'analytics-4' ) );
 	} );
 
-	it( 'renders correctly with the expected metrics', async () => {
+	it( 'should render correctly with the expected metrics', async () => {
 		provideAnalytics4MockReport( registry, {
 			...dateRangeDates,
 			dimensions: [ 'sessionDefaultChannelGroup' ],
@@ -87,10 +93,7 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 		} );
 		const { container, waitForRegistry } = render(
-			<TopTrafficSourceWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<TopTrafficSourceWidget { ...widgetProps } />,
 			{
 				registry,
 			}
@@ -100,7 +103,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'retries both reports when an error is encountered', async () => {
+	it( 'should retry both reports when an error is encountered', async () => {
 		fetchMock.getOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
@@ -132,10 +135,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopTrafficSourceWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
+			<TopTrafficSourceWidget { ...widgetProps } />,
 			{
 				registry,
 			}
@@ -197,6 +197,66 @@ describe( 'TopTrafficSourceWidget', () => {
 				)
 			).toBeInTheDocument();
 		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the generic error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: ERROR_INTERNAL_SERVER_ERROR,
+			message: 'Internal server error',
+			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );
