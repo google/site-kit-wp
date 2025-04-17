@@ -38,6 +38,19 @@ import {
 	useRequestInterception,
 } from '../../../utils';
 import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
+// import { shouldLog } from '../../../config/bootstrap';
+
+function debugLog( message ) {
+	// if ( ! shouldLog() ) {
+	// 	return;
+	// }
+
+	// `currentTestName` is the full test name (including describe names)
+	const currentTest = expect.getState().currentTestName;
+
+	// eslint-disable-next-line no-console
+	console.debug( `DEBUG: ${ message } [${ currentTest }]` );
+}
 
 async function proceedToTagManagerSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -61,7 +74,9 @@ async function proceedToTagManagerSetup() {
 
 describe( 'Tag Manager module setup', () => {
 	beforeAll( async () => {
+		debugLog( 'beforeAll, setRequestInterception' );
 		await page.setRequestInterception( true );
+		debugLog( 'beforeAll, useRequestInterception' );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 			if (
@@ -99,15 +114,21 @@ describe( 'Tag Manager module setup', () => {
 				request.continue();
 			}
 		} );
+		debugLog( 'beforeAll, useRequestInterception done' );
 	} );
 
 	beforeEach( async () => {
+		debugLog( 'beforeEach, setupSiteKit' );
 		await setupSiteKit();
+		debugLog( 'beforeEach, setupSiteKit done' );
 	} );
 
 	afterEach( async () => {
+		debugLog( 'afterEach, deactivateUtilityPlugins' );
 		await deactivateUtilityPlugins();
+		debugLog( 'afterEach, resetSiteKit' );
 		await resetSiteKit();
+		debugLog( 'afterEach, resetSiteKit done' );
 	} );
 
 	describe( 'Setup without AMP active', () => {
@@ -362,23 +383,34 @@ describe( 'Tag Manager module setup', () => {
 
 	describe( 'Setup with AMP active', () => {
 		beforeAll( async () => {
+			debugLog( 'beforeAll, activatePlugin( amp )' );
 			await activatePlugin( 'amp' );
+			debugLog( 'beforeAll, activatePlugin( amp ) done' );
 		} );
 
 		beforeEach( async () => {
+			debugLog(
+				'beforeEach, activatePlugin( e2e-tests-module-setup-tagmanager-api-mock )'
+			);
 			await activatePlugin(
 				'e2e-tests-module-setup-tagmanager-api-mock'
 			);
+			debugLog( 'beforeEach, proceedToTagManagerSetup' );
 			await proceedToTagManagerSetup();
+			debugLog( 'beforeEach, proceedToTagManagerSetup done' );
 		} );
 
 		afterAll( async () => {
+			debugLog( 'afterAll, deactivatePlugin( amp )' );
 			await deactivatePlugin( 'amp' );
+			debugLog( 'afterAll, deactivatePlugin( amp ) done' );
 		} );
 
 		describe( 'with Secondary AMP', () => {
 			beforeAll( async () => {
+				debugLog( 'beforeAll, setAMPMode( secondary )' );
 				await setAMPMode( 'secondary' );
+				debugLog( 'beforeAll, setAMPMode( secondary ) done' );
 			} );
 
 			it( 'renders both the AMP and web container select menus', async () => {
@@ -400,30 +432,41 @@ describe( 'Tag Manager module setup', () => {
 
 			describe( 'when validating', () => {
 				beforeEach( async () => {
+					debugLog( 'beforeEach, wait for account select' );
 					await page.waitForSelector(
 						'.googlesitekit-tagmanager__select-account'
 					);
+					debugLog( 'beforeEach, click account select' );
 					await expect( page ).toClick(
 						'.googlesitekit-tagmanager__select-account'
 					);
+					debugLog( 'beforeEach, wait for menu surface' );
+					await page.waitForSelector(
+						'.mdc-menu-surface--open .mdc-list-item'
+					);
+					debugLog( 'beforeEach, click test account a' );
 					await expect( page ).toClick(
 						'.mdc-menu-surface--open .mdc-list-item',
 						{
 							text: /test account a/i,
 						}
 					);
+					debugLog( 'beforeEach, click complete setup' );
 					await expect( page ).toClick( 'button:not(:disabled)', {
 						text: new RegExp( 'complete setup', 'i' ),
 					} );
+					debugLog( 'beforeEach, wait for notification' );
 					await page.waitForSelector(
 						'.googlesitekit-subtle-notification'
 					);
+					debugLog( 'beforeEach, wait for congrats message' );
 					await expect( page ).toMatchElement(
 						'.googlesitekit-subtle-notification__content p',
 						{
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}
 					);
+					debugLog( 'beforeEach, go to homepage' );
 					await Promise.all( [
 						page.goto( createURL( '/', 'amp' ) ),
 						page.waitForNavigation( {
@@ -431,6 +474,7 @@ describe( 'Tag Manager module setup', () => {
 							timeout: 0,
 						} ),
 					] );
+					debugLog( 'beforeEach, go to homepage done' );
 				} );
 
 				it( 'validates homepage AMP for logged-in users', async () => {
@@ -438,7 +482,13 @@ describe( 'Tag Manager module setup', () => {
 				} );
 
 				it( 'validates homepage AMP for non-logged-in users', async () => {
+					debugLog(
+						'it, validates homepage AMP for non-logged-in users'
+					);
 					await expect( page ).toHaveValidAMPForVisitor();
+					debugLog(
+						'it, validates homepage AMP for non-logged-in users done'
+					);
 				} );
 			} );
 		} );
