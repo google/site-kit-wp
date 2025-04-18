@@ -75,7 +75,14 @@ module.exports = ( mode ) => ( {
 				use: [
 					MiniCssExtractPlugin.loader,
 					'css-loader',
-					'postcss-loader',
+					{
+						loader: 'postcss-loader',
+						options: {
+							postcssOptions: {
+								config: rootDir + '/assets/postcss.config.js',
+							},
+						},
+					},
 					{
 						loader: 'sass-loader',
 						options: {

@@ -80,9 +80,6 @@ if ( global.document ) {
 	} );
 }
 
-// Added to provide support for testing `@material/web` components.
-global.PointerEvent = function () {};
-
 // Provide a stub for scrollTo, as it's not implemented by JSDOM. See https://github.com/jsdom/jsdom/pull/2626.
 global.scrollTo = () => {};
 
