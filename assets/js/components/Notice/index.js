@@ -93,7 +93,7 @@ Notice.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
-	type: Icon.propTypes.type,
+	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
 	children: PropTypes.node,
