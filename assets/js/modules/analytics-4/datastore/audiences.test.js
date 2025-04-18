@@ -324,7 +324,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiences );
 			} );
 
@@ -1016,7 +1016,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( finalAvailableAudiences );
 
 				expect( fetchMock ).toHaveFetchedTimes(
@@ -2018,7 +2018,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
 			} );
 
@@ -2521,7 +2521,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 			} );
 
 			it( 'returns true when all provided audiences are available', () => {
@@ -2605,7 +2605,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 			} );
 
 			it( 'should not include "Purchasers" if it has no data', () => {
