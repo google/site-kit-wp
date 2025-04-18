@@ -82,9 +82,6 @@ export default function WooCommerceRedirectModal( {
 
 		return false;
 	} );
-	const isWooCommerceActivated = useSelect( ( select ) =>
-		select( MODULES_ADS ).isWooCommerceActivated()
-	);
 
 	const isModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
@@ -141,15 +138,6 @@ export default function WooCommerceRedirectModal( {
 		if ( ! onContinue ) {
 			setIsSaving( 'tertiary' );
 			onDismiss?.();
-			if (
-				( isWooCommerceActivated ||
-					isGoogleForWooCommerceAdsConnected ) &&
-				! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
-			) {
-				dismissNotification(
-					'account-linked-via-google-for-woocommerce'
-				);
-			}
 		}
 
 		if ( onContinue ) {
@@ -168,10 +156,6 @@ export default function WooCommerceRedirectModal( {
 		onBeforeSetupCallback,
 		onSetupCallback,
 		onContinue,
-		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
-		isGoogleForWooCommerceAdsConnected,
-		isWooCommerceActivated,
-		dismissNotification,
 	] );
 
 	if ( isModalDismissed && ! isSaving ) {

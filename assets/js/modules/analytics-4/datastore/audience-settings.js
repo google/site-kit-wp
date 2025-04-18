@@ -183,7 +183,7 @@ const baseActions = {
 				);
 
 			if ( error ) {
-				yield receiveError( error, 'saveUserAudienceSettings', [] );
+				yield receiveError( error, 'saveAudienceSettings', [] );
 			}
 
 			return { response, error };
@@ -260,7 +260,7 @@ const baseSelectors = {
 	/**
 	 * Gets the audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Audience settings, or `undefined` if not loaded.
@@ -272,7 +272,7 @@ const baseSelectors = {
 	/**
 	 * Gets the last time the available audiences were synced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(number|undefined)} Last time the available audiences were synced, or `undefined` if not loaded.
@@ -288,7 +288,7 @@ const baseSelectors = {
 	/**
 	 * Gets the user who set up Audience Segmentation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(number|null|undefined)} ID for the user who set up Audience Segmentation, `null` if not set, or `undefined` if not loaded.
