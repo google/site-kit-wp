@@ -57,7 +57,9 @@ const Notice = forwardRef(
 					className
 				) }
 			>
-				<Icon type={ type } />
+				<div className="googlesitekit-notice__icon">
+					<Icon type={ type } />
+				</div>
 
 				<div className="googlesitekit-notice__content">
 					<Title>{ title }</Title>

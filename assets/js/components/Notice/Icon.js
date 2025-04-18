@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -36,19 +35,12 @@ const typeIconMap = {
 	[ TYPES.ERROR ]: WarningSVG,
 };
 
-export default function Icon( { className, type } ) {
+export default function Icon( { type } ) {
 	const IconComponent = typeIconMap[ type ] || WarningSVG;
 
-	return (
-		<div
-			className={ classnames( 'googlesitekit-notice__icon', className ) }
-		>
-			<IconComponent width={ 24 } height={ 24 } />
-		</div>
-	);
+	return <IconComponent width={ 24 } height={ 24 } />;
 }
 
 Icon.propTypes = {
-	className: PropTypes.string,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 };
