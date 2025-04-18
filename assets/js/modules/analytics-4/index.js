@@ -202,7 +202,7 @@ export const registerWidgets = ( widgets ) => {
 				}
 
 				const { availableAudiences } =
-					select( MODULES_ANALYTICS_4 ).getSettings() || {};
+					select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
