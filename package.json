@@ -96,6 +96,8 @@
 		"lint-staged": "^10.2.11",
 		"patch-package": "^8.0.0",
 		"prettier": "npm:wp-prettier@2.6.2",
+		"puppeteer": "^10.4.0",
+		"puppeteer-core": "^3.3.0",
 		"rimraf": "^3.0.2",
 		"sanitize-filename": "^1.6.3",
 		"sass": "^1.30.0",
