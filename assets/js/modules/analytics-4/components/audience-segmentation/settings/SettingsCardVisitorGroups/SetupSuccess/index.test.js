@@ -97,7 +97,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		} );
 
 		expect(
-			getByText( 'We’ve added the audiences section to your dashboard!' )
+			getByText(
+				'We’ve added the visitor groups section to your dashboard!'
+			)
 		).toBeInTheDocument();
 
 		expect(
@@ -145,7 +147,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		expect(
 			queryByText(
-				'We’ve added the audiences section to your dashboard!'
+				'We’ve added the visitor groups section to your dashboard!'
 			)
 		).not.toBeInTheDocument();
 
@@ -165,7 +167,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		expect(
 			queryByText(
-				'We’ve added the audiences section to your dashboard!'
+				'We’ve added the visitor groups section to your dashboard!'
 			)
 		).toBeInTheDocument();
 
@@ -207,7 +209,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		expect(
 			queryByText(
-				'We’ve added the audiences section to your dashboard!'
+				'We’ve added the visitor groups section to your dashboard!'
 			)
 		).toBeInTheDocument();
 

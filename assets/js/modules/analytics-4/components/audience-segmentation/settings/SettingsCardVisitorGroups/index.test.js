@@ -94,7 +94,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( 'We’ve added the audiences section to your dashboard!' )
+			getByText(
+				'We’ve added the visitor groups section to your dashboard!'
+			)
 		).toBeInTheDocument();
 	} );
 
