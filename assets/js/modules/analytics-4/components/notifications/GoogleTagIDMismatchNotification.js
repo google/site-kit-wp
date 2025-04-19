@@ -31,6 +31,7 @@ import { isValidMeasurementID } from '../../utils/validation';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { getBestTagID } from '../../utils/google-tag';
 import SimpleNotification from '../../../../googlesitekit/notifications/components/layout/SimpleNotification';
+import NotificationProgressBar from '../../../../googlesitekit/notifications/components/layout/NotificationProgressBar';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import CTALink from '../../../../googlesitekit/notifications/components/common/CTALink';
@@ -159,7 +160,7 @@ export default function GoogleTagIDMismatchNotification( {
 			newAnalyticsProperty?._id &&
 			currentAnalyticsProperty._id === newAnalyticsProperty._id )
 	) {
-		return null;
+		return <NotificationProgressBar />;
 	}
 
 	if ( newAnalyticsProperty ) {
