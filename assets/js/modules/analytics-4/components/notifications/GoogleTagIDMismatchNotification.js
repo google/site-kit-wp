@@ -151,7 +151,13 @@ export default function GoogleTagIDMismatchNotification( {
 		googleTagContainerDestinations === undefined ||
 		newAnalyticsProperty === undefined ||
 		newGoogleTagID === undefined ||
-		currentAnalyticsProperty === undefined
+		currentAnalyticsProperty === undefined ||
+		// If the current and new properties are the same, don't show the notification.
+		// This can happen momentarily when the banner is actioned and the new property
+		// has been saved, but the notification hasn't been dismissed / removed from the queue yet.
+		( currentAnalyticsProperty?._id &&
+			newAnalyticsProperty?._id &&
+			currentAnalyticsProperty._id === newAnalyticsProperty._id )
 	) {
 		return null;
 	}
