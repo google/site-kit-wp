@@ -20,15 +20,21 @@ ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 VERSION=6.1.1
 IMAGE=googlesitekit/vrt:$VERSION
 
-# (re)Build the backstopjs image as needed.
-docker build \
-	--pull \
-	--tag $IMAGE \
-	--build-arg BACKSTOPJS_VERSION=$VERSION \
-	"$ROOT_DIR/tests/backstop"
+# Determine which containerisation tool to use. If Docker is available,
+# use it; otherwise, use Podman.
+command -v docker > /dev/null && DC="docker" || DC="podman"
+
+# Build the backstopjs image if it doesn't exist.
+if [[ "$(${DC} images -q $IMAGE 2> /dev/null)" == "" ]]; then
+	${DC} build \
+		--pull \
+		--tag $IMAGE \
+		--build-arg BACKSTOPJS_VERSION=$VERSION \
+		"$ROOT_DIR/tests/backstop"
+fi
 
 # Run the backstopjs command.
-docker run --rm --tty \
+${DC} run --rm --tty \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	$IMAGE \
