@@ -261,7 +261,7 @@ export default function DashboardPageSpeed() {
 					updateActiveTab={ updateActiveTab }
 				/>
 
-				{ isFetching && ! isLoading && (
+				{ isFetching && (
 					<div className="googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper">
 						<ProgressBar compress />
 					</div>
