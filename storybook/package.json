@@ -8,8 +8,8 @@
 		}
 	},
 	"scripts": {
-		"build:storybook": "build-storybook -c . -o ../dist --quiet --loglevel warn",
-		"storybook": "start-storybook -p 9001 -c . --no-version-updates"
+		"build": "build-storybook -c . -o ../dist --quiet --loglevel warn",
+		"start": "start-storybook -p 9001 -c . --no-version-updates"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
