@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 20 ] */
-
 /**
  * External dependencies
  */
@@ -33,18 +31,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import { Button, ProgressBar, Tab, TabBar } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
-import Link from '../../../../components/Link';
-import LabReportMetrics from '../common/LabReportMetrics';
-import FieldReportMetrics from '../common/FieldReportMetrics';
-import Recommendations from '../common/Recommendations';
-import ReportDetailsLink from '../common/ReportDetailsLink';
-import { trackEvent } from '../../../../util/tracking';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { trackEvent } from '../../../../../util/tracking';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
@@ -54,10 +45,12 @@ import {
 	DATA_SRC_RECOMMENDATIONS,
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
-} from '../../datastore/constants';
-import Spinner from '../../../../components/Spinner';
-import useViewContext from '../../../../hooks/useViewContext';
-import DashboardPageSpeedLoading from './DashboardPageSpeedLoading';
+} from '../../../datastore/constants';
+import useViewContext from '../../../../../hooks/useViewContext';
+import Loading from './Loading';
+import Header from './Header';
+import Footer from './Footer';
+import Content from './Content';
 
 const TAB_INDEX_LAB = 0;
 const TAB_INDEX_FIELD = 1;
@@ -123,7 +116,6 @@ export default function DashboardPageSpeed() {
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
-	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -176,42 +168,6 @@ export default function DashboardPageSpeed() {
 			);
 		},
 		[ setValues, viewContext ]
-	);
-
-	// Update the active tab for "mobile" or "desktop".
-	const updateActiveDeviceSize = useCallback(
-		( { slug } ) => {
-			if ( slug === STRATEGY_DESKTOP ) {
-				setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } );
-			} else {
-				setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } );
-			}
-		},
-		[ setValues ]
-	);
-
-	const updateReport = useCallback(
-		async ( event ) => {
-			event.preventDefault();
-
-			// Invalidate the PageSpeed API request caches.
-			await API.invalidateCache(
-				'modules',
-				'pagespeed-insights',
-				'pagespeed'
-			);
-
-			// Invalidate the cached resolver.
-			invalidateResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_DESKTOP,
-			] );
-			invalidateResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_MOBILE,
-			] );
-		},
-		[ invalidateResolution, referenceURL ]
 	);
 
 	const reportData =
@@ -288,7 +244,7 @@ export default function DashboardPageSpeed() {
 				id="googlesitekit-pagespeed-header"
 				className="googlesitekit-pagespeed-widget__content-wrapper googlesitekit-pagespeed-widget__content-wrapper--loading"
 			>
-				<DashboardPageSpeedLoading />
+				<Loading />
 			</div>
 		);
 	}
@@ -299,104 +255,24 @@ export default function DashboardPageSpeed() {
 			className="googlesitekit-pagespeed-widget__content-wrapper"
 		>
 			<div className="googlesitekit-pagespeed-widget__content">
-				<header
-					className="googlesitekit-pagespeed-widget__header"
+				<Header
 					ref={ trackingRef }
-				>
-					<div className="googlesitekit-pagespeed-widget__data-src-tabs">
-						<TabBar
-							activeIndex={ [
-								DATA_SRC_LAB,
-								DATA_SRC_FIELD,
-								DATA_SRC_RECOMMENDATIONS,
-							].indexOf( dataSrc ) }
-							handleActiveIndexUpdate={ updateActiveTab }
-						>
-							<Tab
-								focusOnActivate={ false }
-								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
-								disabled={ isFetching }
-							>
-								<span
-									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
-									className="mdc-tab__text-label"
-								>
-									{ __( 'In the Lab', 'google-site-kit' ) }
-								</span>
-							</Tab>
-							<Tab
-								focusOnActivate={ false }
-								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
-								disabled={ isFetching }
-							>
-								<span
-									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
-									className="mdc-tab__text-label"
-								>
-									{ __( 'In the Field', 'google-site-kit' ) }
-								</span>
-							</Tab>
-							<Tab
-								focusOnActivate={ false }
-								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
-								disabled={ isFetching }
-							>
-								<span
-									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
-									className="mdc-tab__text-label"
-								>
-									{ __(
-										'How to improve',
-										'google-site-kit'
-									) }
-								</span>
-							</Tab>
-						</TabBar>
-					</div>
-					<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
-						<DeviceSizeTabBar
-							activeTab={ strategy }
-							disabled={ isFetching }
-							handleDeviceSizeUpdate={ updateActiveDeviceSize }
-						/>
-					</div>
-				</header>
+					isFetching={ isFetching }
+					updateActiveTab={ updateActiveTab }
+				/>
+
 				{ isFetching && ! isLoading && (
 					<div className="googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper">
 						<ProgressBar compress />
 					</div>
 				) }
 
-				<section
-					className={ classnames( {
-						'googlesitekit-pagespeed-widget__refreshing':
-							isFetching,
-					} ) }
-				>
-					{ dataSrc === DATA_SRC_LAB && (
-						<LabReportMetrics
-							data={ reportData }
-							error={ reportError }
-						/>
-					) }
-					{ dataSrc === DATA_SRC_FIELD && (
-						<FieldReportMetrics
-							data={ reportData }
-							error={ reportError }
-						/>
-					) }
-					{ dataSrc === DATA_SRC_RECOMMENDATIONS && (
-						<Recommendations
-							className={ classnames( {
-								'googlesitekit-pagespeed-widget__refreshing':
-									isFetching,
-							} ) }
-							recommendations={ recommendations }
-							referenceURL={ referenceURL }
-							strategy={ strategy }
-						/>
-					) }
-				</section>
+				<Content
+					isFetching={ isFetching }
+					recommendations={ recommendations }
+					reportData={ reportData }
+					reportError={ reportError }
+				/>
 
 				{ ( dataSrc === DATA_SRC_LAB || isFieldTabWithData ) && (
 					<div className="googlesitekit-pagespeed-report__row">
@@ -415,28 +291,7 @@ export default function DashboardPageSpeed() {
 					</div>
 				) }
 
-				<div
-					className={ classnames(
-						'googlesitekit-pagespeed-report__footer',
-						{
-							'googlesitekit-pagespeed-report__footer--with-action':
-								dataSrc === DATA_SRC_LAB,
-						}
-					) }
-				>
-					{ dataSrc === DATA_SRC_LAB && ! isLoading && (
-						<div>
-							<Link
-								onClick={ updateReport }
-								disabled={ isFetching }
-							>
-								{ __( 'Run test again', 'google-site-kit' ) }
-							</Link>
-							<Spinner isSaving={ isFetching } />
-						</div>
-					) }
-					<ReportDetailsLink />
-				</div>
+				<Footer isFetching={ isFetching } />
 			</div>
 		</div>
 	);
