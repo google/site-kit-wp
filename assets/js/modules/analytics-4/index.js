@@ -126,7 +126,6 @@ import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
-import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -203,7 +202,7 @@ export const registerWidgets = ( widgets ) => {
 				}
 
 				const { availableAudiences } =
-					select( MODULES_ANALYTICS_4 ).getSettings() || {};
+					select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
@@ -711,7 +710,6 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 0,
 			modules: [ 'analytics-4' ],
-			isActive: () => isFeatureEnabled( 'conversionReporting' ),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
@@ -731,7 +729,22 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				return false;
 			}
 
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
+			await resolveSelect( CORE_USER ).getUserAudienceSettings();
+
+			const currentUserID = select( CORE_USER ).getID();
+
+			const audienceSegmentationSetupCompletedByUserID =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+
+			if (
+				currentUserID !== audienceSegmentationSetupCompletedByUserID
+			) {
+				return false;
+			}
+
 			const configuredAudiences =
 				select( CORE_USER ).getConfiguredAudiences();
 
