@@ -12,7 +12,7 @@ on:
       - '**.json'
       - '**.scss'
       - '.eslint*'
-      - .nvmrc
+      - '.nvmrc'
       - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
@@ -30,7 +30,7 @@ on:
       - '**.json'
       - '**.scss'
       - '.eslint*'
-      - .nvmrc
+      - '.nvmrc'
       - '.stylelint*'
       - '**/package.json'
       - 'package-lock.json'
@@ -46,61 +46,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  css-lint:
-    name: CSS Lint
+  js-css-lint-test:
+    name: JS + CSS
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
       # nvm@7 is the minimum version required for npm workspace support.
       # This is needed to prevent js lint failures due to module resolution to the workspace packages.
       # This can be removed once our node base version comes with nvm@7 or greater.
       - name: Install npm Globally
         run: npm run install-global-npm
+
       - name: npm install
-        run: npm i --workspace=assets --include-workspace-root
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: CSS Lint
         run: npm run lint:css
-  js-lint:
-    name: JS Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      # nvm@7 is the minimum version required for npm workspace support.
-      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
-      # This can be removed once our node base version comes with nvm@7 or greater.
-      - name: Install npm Globally
-        run: npm run install-global-npm
-      - name: npm install
-        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: JS Lint
         run: npm run lint:js
-  js-test:
-    name: JS Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      # nvm@7 is the minimum version required for npm workspace support.
-      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
-      # This can be removed once our node base version comes with nvm@7 or greater.
-      - name: Install npm Globally
-        run: npm run install-global-npm
-      - name: npm install
-        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
         run: npm run test:js
