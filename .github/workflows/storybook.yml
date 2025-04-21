@@ -61,6 +61,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+      # npm@7 is the minimum version required for this repository.
+      # TODO: Remove this step once our node base version comes with npm@7 or greater.
+      - name: Install npm globally
+        run: npm run install-global-npm
       - name: npm install
         run: |
           npm ci
