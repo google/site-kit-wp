@@ -22,6 +22,7 @@
 import OverlayCard from '.';
 import GraphicDesktop from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import GraphicMobile from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
+import ExternalIcon from '../../../svg/icons/external.svg';
 
 function Template( args ) {
 	return <OverlayCard { ...args } />;
@@ -59,7 +60,8 @@ OverlayCardWithExternalLink.args = {
 		href: 'https://example.com',
 		label: 'Explore features',
 		onClick: () => {},
-		external: true,
+		trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
+		target: '_blank',
 	},
 	dismissButton: {
 		label: 'Maybe later',

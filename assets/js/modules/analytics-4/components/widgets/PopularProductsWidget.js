@@ -57,6 +57,7 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
+import { decodeAmpersand } from '../../utils';
 
 /**
  * Gets the report options for the Popular Products widget.
@@ -178,7 +179,7 @@ function PopularProductsWidget( props ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ];
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
