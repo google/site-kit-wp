@@ -67,7 +67,7 @@ jobs:
       - name: Install npm Globally
         run: npm run install-global-npm
       - name: npm install
-        run: npm i
+        run: npm i --workspace=assets --workspace=storybook --include-workspace-root
       - name: Build Storybook
         run: npm run build:storybook
       - name: Upload artifacts
@@ -151,6 +151,6 @@ jobs:
       - name: Install npm Globally
         run: npm run install-global-npm
       - name: npm install
-        run: npm i
+        run: npm npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: Test Storybook
         run: npm run test:storybook
