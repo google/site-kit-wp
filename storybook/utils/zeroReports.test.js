@@ -1,0 +1,271 @@
+/**
+ * Zero Reports utility tests.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from './zeroReports';
+import mockedReportResponse from '../../assets/js/modules/analytics-4/utils/__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
+
+describe( 'zeroReports', () => {
+	describe( 'replaceValuesOrRemoveRowForDateRangeInAnalyticsReport', () => {
+		it( 'should zero values for date_range_0 when emptyRowBehavior is "zero"', () => {
+			// Create a deep copy of the mocked report
+			const report = JSON.parse( JSON.stringify( mockedReportResponse ) );
+			const result =
+				replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+					report,
+					'date_range_0',
+					'zero'
+				);
+
+			// Expect all rows to be present (10 total)
+			expect( result.rows ).toHaveLength( 10 );
+
+			// Check that date_range_0 rows have zeroed metric values
+			const dateRange0Rows = result.rows.filter( ( row ) =>
+				row.dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			);
+
+			dateRange0Rows.forEach( ( row ) => {
+				row.metricValues.forEach( ( metricValue ) => {
+					expect( metricValue.value ).toBe( '0' );
+				} );
+			} );
+
+			// Check that date_range_1 rows are unchanged
+			const dateRange1Rows = result.rows.filter( ( row ) =>
+				row.dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			);
+
+			dateRange1Rows.forEach( ( row, index ) => {
+				const originalRow = report.rows.filter( ( r ) =>
+					r.dimensionValues.some(
+						( value ) => value.value === 'date_range_1'
+					)
+				)[ index ];
+
+				expect( row.metricValues ).toEqual( originalRow.metricValues );
+			} );
+
+			// Check that totals for date_range_0 are zeroed
+			const totalForDateRange0 = result.totals.find( ( total ) =>
+				total.dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			);
+
+			totalForDateRange0.metricValues.forEach( ( metricValue ) => {
+				expect( metricValue.value ).toBe( '0' );
+			} );
+
+			// Check that totals for date_range_1 are unchanged
+			const totalForDateRange1 = result.totals.find( ( total ) =>
+				total.dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			);
+
+			const originalTotalForDateRange1 = report.totals.find( ( total ) =>
+				total.dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			);
+
+			expect( totalForDateRange1.metricValues ).toEqual(
+				originalTotalForDateRange1.metricValues
+			);
+		} );
+
+		it( 'should remove rows for date_range_0 when emptyRowBehavior is "remove"', () => {
+			// Create a deep copy of the mocked report
+			const report = JSON.parse( JSON.stringify( mockedReportResponse ) );
+			const result =
+				replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+					report,
+					'date_range_0',
+					'remove'
+				);
+
+			// Expect only date_range_1 rows to be present (5 rows)
+			expect( result.rows ).toHaveLength( 5 );
+
+			// Check that all remaining rows are date_range_1
+			result.rows.forEach( ( row ) => {
+				expect(
+					row.dimensionValues.some(
+						( value ) => value.value === 'date_range_1'
+					)
+				).toBe( true );
+			} );
+
+			// Check that rowCount is updated
+			expect( result.rowCount ).toBe( 5 );
+
+			// Check that only totals for date_range_1 are present
+			expect( result.totals ).toHaveLength( 1 );
+			expect(
+				result.totals[ 0 ].dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			).toBe( true );
+
+			// Check that only minimums for date_range_1 are present
+			expect( result.minimums ).toHaveLength( 1 );
+			expect(
+				result.minimums[ 0 ].dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			).toBe( true );
+
+			// Check that only maximums for date_range_1 are present
+			expect( result.maximums ).toHaveLength( 1 );
+			expect(
+				result.maximums[ 0 ].dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			).toBe( true );
+		} );
+
+		it( 'should zero values for date_range_1 when emptyRowBehavior is "zero"', () => {
+			// Create a deep copy of the mocked report
+			const report = JSON.parse( JSON.stringify( mockedReportResponse ) );
+			const result =
+				replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+					report,
+					'date_range_1',
+					'zero'
+				);
+
+			// Expect all rows to be present (10 total)
+			expect( result.rows ).toHaveLength( 10 );
+
+			// Check that date_range_1 rows have zeroed metric values
+			const dateRange1Rows = result.rows.filter( ( row ) =>
+				row.dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			);
+
+			dateRange1Rows.forEach( ( row ) => {
+				row.metricValues.forEach( ( metricValue ) => {
+					expect( metricValue.value ).toBe( '0' );
+				} );
+			} );
+
+			// Check that date_range_0 rows are unchanged
+			const dateRange0Rows = result.rows.filter( ( row ) =>
+				row.dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			);
+
+			dateRange0Rows.forEach( ( row, index ) => {
+				const originalRow = report.rows.filter( ( r ) =>
+					r.dimensionValues.some(
+						( value ) => value.value === 'date_range_0'
+					)
+				)[ index ];
+
+				expect( row.metricValues ).toEqual( originalRow.metricValues );
+			} );
+
+			// Check that totals for date_range_1 are zeroed
+			const totalForDateRange1 = result.totals.find( ( total ) =>
+				total.dimensionValues.some(
+					( value ) => value.value === 'date_range_1'
+				)
+			);
+
+			totalForDateRange1.metricValues.forEach( ( metricValue ) => {
+				expect( metricValue.value ).toBe( '0' );
+			} );
+
+			// Check that totals for date_range_0 are unchanged
+			const totalForDateRange0 = result.totals.find( ( total ) =>
+				total.dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			);
+
+			const originalTotalForDateRange0 = report.totals.find( ( total ) =>
+				total.dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			);
+
+			expect( totalForDateRange0.metricValues ).toEqual(
+				originalTotalForDateRange0.metricValues
+			);
+		} );
+
+		it( 'should remove rows for date_range_1 when emptyRowBehavior is "remove"', () => {
+			// Create a deep copy of the mocked report
+			const report = JSON.parse( JSON.stringify( mockedReportResponse ) );
+			const result =
+				replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+					report,
+					'date_range_1',
+					'remove'
+				);
+
+			// Expect only date_range_0 rows to be present (5 rows)
+			expect( result.rows ).toHaveLength( 5 );
+
+			// Check that all remaining rows are date_range_0
+			result.rows.forEach( ( row ) => {
+				expect(
+					row.dimensionValues.some(
+						( value ) => value.value === 'date_range_0'
+					)
+				).toBe( true );
+			} );
+
+			// Check that rowCount is updated
+			expect( result.rowCount ).toBe( 5 );
+
+			// Check that only totals for date_range_0 are present
+			expect( result.totals ).toHaveLength( 1 );
+			expect(
+				result.totals[ 0 ].dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			).toBe( true );
+
+			// Check that only minimums for date_range_0 are present
+			expect( result.minimums ).toHaveLength( 1 );
+			expect(
+				result.minimums[ 0 ].dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			).toBe( true );
+
+			// Check that only maximums for date_range_0 are present
+			expect( result.maximums ).toHaveLength( 1 );
+			expect(
+				result.maximums[ 0 ].dimensionValues.some(
+					( value ) => value.value === 'date_range_0'
+				)
+			).toBe( true );
+		} );
+	} );
+} );

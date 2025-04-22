@@ -98,7 +98,7 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 	// If emptyRowBehavior is 'remove', remove the rows and aggregate data that has a dimensionValues[].value equal to dateRangeKey.
 	const removeDateRangeEntirely = ( cells ) =>
 		cells.filter( ( cell ) => {
-			return cell.dimensionValues?.some(
+			return ! cell.dimensionValues?.some(
 				( value ) => value.value === dateRangeKey
 			);
 		} );
