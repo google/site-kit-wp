@@ -187,6 +187,28 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 		} );
 
+		describe( 'getAvailableAudiences', () => {
+			it( 'should return availableAudiences', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiencesFixture );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
+			} );
+
+			it( 'should return undefined if availableAudiences is not loaded', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toBeUndefined();
+			} );
+		} );
+
 		describe( 'getAudienceSegmentationSetupCompletedBy', () => {
 			it( 'should return getAudienceSegmentationSetupCompletedBy', () => {
 				registry
