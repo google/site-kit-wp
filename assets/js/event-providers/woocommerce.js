@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
+/* eslint-disable */
 ( ( jQuery ) => {
 	if ( ! jQuery ) {
 		return;
 	}
+	console.log(
+		global.wc.add_to_cart,
+		'single product add to cart, invoke event when property not null'
+	);
 
 	const body = jQuery( 'body' );
 
-	body.on( 'added_to_cart', () => {
+	body.on( 'added_to_cart', ( event, fragments, cart_hash, $button ) => {
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart' );
+		const productId = $button.data( 'product_id' );
+
+		console.log( global.wc, productId );
+		console.log(
+			global.wc.products.find( ( product ) => product.id === productId )
+		);
 	} );
 
 	body.on( 'checkout_place_order_success', () => {

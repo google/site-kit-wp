@@ -48,6 +48,23 @@ class Conversion_Tracking {
 	protected $conversion_tracking_settings;
 
 	/**
+	 * Avaialble products on the page.
+	 *
+	 * @var Array
+	 *
+	 * @since n.e.x.t
+	 */
+	protected $products;
+
+	/**
+	 * Current product added to the cart.
+	 *
+	 * @since n.e.x.t
+	 * @var Array
+	 */
+	protected $add_to_cart;
+
+	/**
 	 * REST_Conversion_Tracking_Controller instance.
 	 *
 	 * @since 1.127.0
@@ -107,6 +124,51 @@ class Conversion_Tracking {
 				$active_provider->register_hooks();
 			}
 		);
+
+		add_filter(
+			'woocommerce_loop_add_to_cart_link',
+			function ( $button, $product ) {
+				$this->products[] = $this->get_formatted_product( $product );
+				return $button;
+			},
+			10,
+			2
+		);
+
+		add_action(
+			'woocommerce_add_to_cart',
+			function ( $cart_item_key, $product_id, $quantity, $variation_id, $variation ) {
+				$product = wc_get_product( $variation_id ?: $product_id );
+
+				$variation; // Should be checked as well.
+
+				// What you want to pass to JS.
+				$data = array(
+					'id'       => $product->get_id(),
+					'name'     => $product->get_name(),
+					'price'    => (float) $product->get_price(),
+					'quantity' => $quantity,
+					'sku'      => $product->get_sku(),
+				);
+
+				$this->add_to_cart = $data;
+			},
+			10,
+			5
+		);
+
+		add_action(
+			'wp_footer',
+			function () {
+				?>
+<script type="text/javascript">
+window.wc = {};
+window.wc.products = <?php echo wp_json_encode( $this->products ); ?>;
+window.wc.add_to_cart = <?php echo wp_json_encode( $this->add_to_cart ); ?>;
+</script>
+				<?php
+			}
+		);
 	}
 
 	/**
@@ -146,7 +208,7 @@ class Conversion_Tracking {
 				}, 5 );
 
 				gtag( "event", name, { ...data, event_source: "site-kit" } );
-			}
+			};
 		';
 
 		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
@@ -203,5 +265,81 @@ class Conversion_Tracking {
 		}
 
 		return $active_providers;
+	}
+
+	/**
+	 * Returns an array of product data in the required format
+	 *
+	 * @param WC_Product $product   The product to format.
+	 * @param int        $variation_id Variation product ID.
+	 * @param array|bool $variation An array containing product variation attributes to include in the product data.
+	 *                              For the "variation" type products, we'll use product->get_attributes.
+	 * @param bool|int   $quantity  Quantity to include in the formatted product object.
+	 *
+	 * @return array
+	 */
+	public function get_formatted_product( $product, $variation_id = 0, $variation = false, $quantity = false ): array {
+		$product_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+		$price      = $product->get_price();
+
+		// Get product price from chosen variation if set.
+		if ( $variation_id ) {
+			$variation_product = wc_get_product( $variation_id );
+			if ( $variation_product ) {
+				$price = $variation_product->get_price();
+			}
+		}
+
+		// Integration with Product Bundles.
+		// Get the minimum price, as `get_price` may return 0 if the product is a bundle and the price is potentially a range.
+		// Even a range containing a single value.
+		if ( $product->is_type( 'bundle' ) && is_callable( array( $product, 'get_bundle_price' ) ) ) {
+			$price = $product->get_bundle_price( 'min' );
+		}
+
+		$formatted = array(
+			'id'         => $product_id,
+			'name'       => $product->get_title(),
+			'categories' => array_map(
+				fn( $category ) => array( 'name' => $category->name ),
+				wc_get_product_terms( $product_id, 'product_cat', array( 'number' => 5 ) )
+			),
+			'prices'     => array(
+				'price'               => intval(
+					round(
+						( (float) wc_format_decimal( $price ) ) * ( 10 ** absint( wc_get_price_decimals() ) ),
+						0
+					)
+				),
+				'currency_minor_unit' => wc_get_price_decimals(),
+			),
+		);
+
+		if ( $quantity ) {
+			$formatted['quantity'] = (int) $quantity;
+		}
+
+		if ( $product->is_type( 'variation' ) ) {
+			$variation = $product->get_attributes();
+		}
+
+		if ( is_array( $variation ) ) {
+			$formatted['variation'] = implode(
+				', ',
+				array_map(
+					function ( $attribute, $value ) {
+						return sprintf(
+							'%s: %s',
+							str_replace( 'attribute_', '', $attribute ),
+							$value
+						);
+					},
+					array_keys( $variation ),
+					array_values( $variation )
+				)
+			);
+		}
+
+		return $formatted;
 	}
 }
