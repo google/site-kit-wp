@@ -32,10 +32,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import {
-	replaceValuesOrRemoveRowForDateRangeInAnalyticsReport,
-	replaceValuesInAnalytics4ReportWithZeroData,
-} from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
@@ -72,7 +69,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/NewVisitors/Ready',
 	delay: 250,
 };
@@ -98,23 +94,6 @@ ZeroData.args = {
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
 		} );
-	},
-};
-
-export const NoDataInComparisonDateRange = Template.bind( {} );
-NoDataInComparisonDateRange.storyName = 'No Data in Comparison Date Range';
-NoDataInComparisonDateRange.args = {
-	setupRegistry: ( { dispatch } ) => {
-		const report = getAnalytics4MockResponse( reportOptions );
-		const noDataComparisonDateRangeReport =
-			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport( report );
-
-		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			noDataComparisonDateRangeReport,
-			{
-				options: reportOptions,
-			}
-		);
 	},
 };
 
