@@ -17,7 +17,7 @@
 
 ## Architecture
 
-1. [Data flow in Site Kit](./Data-flow-in-Site-Kit.md) (TODO)
+1. [Data flow in Site Kit](./Data-flow-in-Site-Kit.md)
 2. [Database usage in Site Kit](./Database-usage-in-Site-Kit.md) (TODO)
 3. [Site Kit core vs Site Kit modules](./Site-Kit-core-vs-Site-Kit-modules.md) (TODO)
 4. [Usage of feature flags](./Usage-of-feature-flags.md) (TODO)

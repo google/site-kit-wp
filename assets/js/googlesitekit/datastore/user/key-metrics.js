@@ -66,8 +66,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
-import { isFeatureEnabled } from '../../../features';
-
 const { receiveError, clearError } = errorStoreActions;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
@@ -495,20 +493,15 @@ const baseSelectors = {
 					return undefined;
 				}
 
-				const isConversionReportingEnabled = isFeatureEnabled(
-					'conversionReporting'
-				);
 				const purpose =
 					purposeOverride ??
 					userInputSettings?.purpose?.values?.[ 0 ];
 
-				const widgetIDs = isConversionReportingEnabled
-					? select(
-							CORE_USER
-					  ).getConversionTailoredKeyMetricsWidgetIDs(
-							includeConversionTailoredMetrics
-					  )
-					: select( CORE_USER ).getRegularKeyMetricsWidgetIDs();
+				const widgetIDs = select(
+					CORE_USER
+				).getConversionTailoredKeyMetricsWidgetIDs(
+					includeConversionTailoredMetrics
+				);
 
 				return widgetIDs[ purpose ] || [];
 			}

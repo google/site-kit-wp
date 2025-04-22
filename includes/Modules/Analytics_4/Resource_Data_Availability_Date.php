@@ -58,7 +58,7 @@ class Resource_Data_Availability_Date {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 * @var Audience_Settings
 	 */
 	protected $audience_settings;

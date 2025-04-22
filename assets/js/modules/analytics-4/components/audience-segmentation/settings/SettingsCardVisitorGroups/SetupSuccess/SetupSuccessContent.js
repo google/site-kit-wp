@@ -89,7 +89,7 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 			<div className="googlesitekit-subtle-notification__content">
 				<p>
 					{ __(
-						'We’ve added the audiences section to your dashboard!',
+						'We’ve added the visitor groups section to your dashboard!',
 						'google-site-kit'
 					) }
 				</p>

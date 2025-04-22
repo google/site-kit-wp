@@ -81,7 +81,7 @@ exports[`TopCategoriesWidget renders correctly with the expected metrics 1`] = `
                 <p
                   class="googlesitekit-km-widget-tile__table-plain-text"
                 >
-                  Health
+                  Health & Wellness
                 </p>
               </div>
               <div
