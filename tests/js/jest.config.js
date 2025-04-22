@@ -60,10 +60,8 @@ module.exports = {
 		'googlesitekit-data': '<rootDir>assets/js/googlesitekit-data',
 		'googlesitekit-modules': '<rootDir>assets/js/googlesitekit-modules',
 		'googlesitekit-widgets': '<rootDir>assets/js/googlesitekit-widgets',
-		// This component has a (temporary) filename override because
-		// it currently references the "GM2+" versions of these components.
 		'googlesitekit-components':
-			'<rootDir>assets/js/googlesitekit-components-gm2',
+			'<rootDir>assets/js/googlesitekit-components',
 		// Necessary mock to prevent test failures caused by SVGR
 		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
 		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
