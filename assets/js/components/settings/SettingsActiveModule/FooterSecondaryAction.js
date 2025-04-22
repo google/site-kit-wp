@@ -26,15 +26,22 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Link from '../../Link';
 import TrashIcon from '../../../../svg/icons/trash.svg';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 export default function FooterSecondaryAction( {
+	slug,
 	isEditing,
-	forceActive,
-	moduleHomepage,
-	name,
 	handleDialog,
 } ) {
-	if ( isEditing && ! forceActive ) {
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
+	const moduleHomepage = useSelect( ( select ) =>
+		select( CORE_MODULES ).getDetailsLinkURL( slug )
+	);
+
+	if ( isEditing && ! module?.forceActive ) {
 		return (
 			<Link
 				className="googlesitekit-settings-module__remove-button"
@@ -49,9 +56,9 @@ export default function FooterSecondaryAction( {
 				}
 			>
 				{ sprintf(
-					/* translators: %s: module name */
+					/* translators: %s is replaced with the module name */
 					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
-					name
+					module?.name
 				) }
 			</Link>
 		);
@@ -65,9 +72,9 @@ export default function FooterSecondaryAction( {
 				external
 			>
 				{ sprintf(
-					/* translators: %s: module name */
+					/* translators: %s is replaced with the module name */
 					__( 'See full details in %s', 'google-site-kit' ),
-					name
+					module?.name
 				) }
 			</Link>
 		);

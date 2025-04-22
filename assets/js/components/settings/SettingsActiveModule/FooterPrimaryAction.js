@@ -28,22 +28,35 @@ import { Fragment } from '@wordpress/element';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import Link from '../../Link';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 export default function FooterPrimaryAction( {
+	slug,
 	isEditing,
 	isSaving,
-	hasSettings,
-	moduleConnected,
-	areSettingsEditDependenciesLoaded,
-	canSubmitChanges,
-	haveSettingsChanged,
 	handleConfirm,
 	handleClose,
 	handleEdit,
-	slug,
-	name,
-	forceActive,
 } ) {
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
+	const moduleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( slug )
+	);
+	const areSettingsEditDependenciesLoaded = useSelect( ( select ) =>
+		select( CORE_MODULES ).areSettingsEditDependenciesLoaded( slug )
+	);
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).canSubmitChanges( slug )
+	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSettingsChanged( slug )
+	);
+
+	const hasSettings = !! module?.SettingsEditComponent;
+
 	if ( isEditing || isSaving ) {
 		return (
 			<Fragment>
@@ -89,16 +102,16 @@ export default function FooterPrimaryAction( {
 		);
 	}
 
-	if ( hasSettings || ! forceActive ) {
+	if ( hasSettings || ! module?.forceActive ) {
 		return (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
 				to={ `/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
 				aria-label={ sprintf(
-					/* translators: %s: module name */
+					/* translators: %s is replaced with the module name */
 					__( 'Edit %s settings', 'google-site-kit' ),
-					name
+					module?.name
 				) }
 				trailingIcon={
 					<PencilIcon

@@ -50,36 +50,19 @@ export default function Footer( { slug } ) {
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 	const isSavingKey = `module-${ slug }-isSaving`;
 
-	const areSettingsEditDependenciesLoaded = useSelect( ( select ) =>
-		select( CORE_MODULES ).areSettingsEditDependenciesLoaded( slug )
-	);
-	const canSubmitChanges = useSelect( ( select ) =>
-		select( CORE_MODULES ).canSubmitChanges( slug )
-	);
-	const haveSettingsChanged = useSelect( ( select ) =>
-		select( CORE_MODULES ).haveSettingsChanged( slug )
-	);
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( slug )
-	);
-	const moduleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( slug )
-	);
 	const dialogActive = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( dialogActiveKey )
 	);
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
-	const moduleHomepage = useSelect( ( select ) =>
-		select( CORE_MODULES ).getDetailsLinkURL( slug )
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
 	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { clearErrors } = useDispatch( module?.storeName ) || {};
 	const { setValue } = useDispatch( CORE_UI );
-
-	const hasSettings = !! module?.SettingsEditComponent;
 
 	const handleClose = useCallback( async () => {
 		await trackEvent(
@@ -110,7 +93,6 @@ export default function Footer( { slug } ) {
 				setValue( errorKey, undefined );
 				await clearErrors?.();
 				history.push( `/connected-services/${ slug }` );
-
 				await clearCache();
 			}
 		},
@@ -148,21 +130,12 @@ export default function Footer( { slug } ) {
 				<Row>
 					<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 						<FooterPrimaryAction
+							slug={ slug }
 							isEditing={ isEditing }
 							isSaving={ isSaving }
-							hasSettings={ hasSettings }
-							moduleConnected={ moduleConnected }
-							areSettingsEditDependenciesLoaded={
-								areSettingsEditDependenciesLoaded
-							}
-							canSubmitChanges={ canSubmitChanges }
-							haveSettingsChanged={ haveSettingsChanged }
 							handleConfirm={ handleConfirm }
 							handleClose={ handleClose }
 							handleEdit={ handleEdit }
-							slug={ slug }
-							name={ module.name }
-							forceActive={ module.forceActive }
 						/>
 					</Cell>
 					<Cell
@@ -173,10 +146,8 @@ export default function Footer( { slug } ) {
 						lgAlignRight
 					>
 						<FooterSecondaryAction
+							slug={ slug }
 							isEditing={ isEditing }
-							forceActive={ module.forceActive }
-							moduleHomepage={ moduleHomepage }
-							name={ module.name }
 							handleDialog={ handleDialog }
 						/>
 					</Cell>
