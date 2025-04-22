@@ -128,7 +128,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Checks if the Ads module is connected and contributing to Ads measurement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @return bool True if the Ads module is connected, false otherwise.
 	 */

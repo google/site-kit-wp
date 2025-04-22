@@ -39,12 +39,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {
-	features: [ 'conversionReporting' ],
-};
-Default.scenario = {
-	label: 'KeyMetrics/FullScreenMetricsSelectionApp',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/FullScreenMetricsSelectionApp',
