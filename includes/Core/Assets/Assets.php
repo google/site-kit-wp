@@ -482,7 +482,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-components',
 				array(
-					'src' => $base_url . 'js/googlesitekit-components-gm2.js',
+					'src' => $base_url . 'js/googlesitekit-components.js',
 				)
 			),
 			new Script(
