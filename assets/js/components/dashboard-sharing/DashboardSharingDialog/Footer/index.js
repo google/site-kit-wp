@@ -135,8 +135,8 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 						<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
 							<Link
 								onClick={ openResetDialog }
-								danger
 								className="googlesitekit-reset-sharing-permissions-button"
+								danger
 							>
 								{ __(
 									'Reset sharing permissions',

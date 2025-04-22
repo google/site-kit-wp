@@ -147,9 +147,7 @@ export default function DashboardSharingDialog() {
 	// Handle escape key for reset dialog
 	useKey(
 		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
-		() => {
-			closeResetDialog();
-		}
+		closeResetDialog
 	);
 
 	// Handle clicking on the scrim (outside the dialog)
@@ -177,7 +175,7 @@ export default function DashboardSharingDialog() {
 				onClose={ closeDialog }
 				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }
-				// Prevent default modal behavior as we are simulating multiple modals within a single modal here for the settings and reset dialogs.
+				/* Prevent default modal behavior as we are simulating multiple modals within a single modal here for the settings and reset dialogs. */
 				escapeKeyAction={
 					editingUserRoleSelect === undefined && ! resetDialogOpen
 						? 'close'
