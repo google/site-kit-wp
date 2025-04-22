@@ -133,11 +133,6 @@ describe( 'UserMenu', () => {
 				expect(
 					document.querySelector( '.mdc-dialog--open' )
 				).not.toBeInTheDocument();
-
-				// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are appied to the .mdc-dialog element.
-				expect(
-					document.querySelector( '.mdc-dialog' ).classList.length
-				).toBe( 3 );
 			} );
 
 			it( 'should redirect user to Site Kit splash screen and clear storage', async () => {

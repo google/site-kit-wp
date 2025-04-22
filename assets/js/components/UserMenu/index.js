@@ -93,19 +93,23 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
+	const handleClose = () => {
+		toggleDialog( false );
+		setMenuOpen( false );
+	};
+
 	useEffect( () => {
-		const handleDialogClose = ( e ) => {
+		const handleEscapeKeyPress = ( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
-				toggleDialog( false );
-				setMenuOpen( false );
+				handleClose();
 			}
 		};
 
-		global.addEventListener( 'keyup', handleDialogClose );
+		global.addEventListener( 'keyup', handleEscapeKeyPress );
 
 		return () => {
-			global.removeEventListener( 'keyup', handleDialogClose );
+			global.removeEventListener( 'keyup', handleEscapeKeyPress );
 		};
 	}, [] );
 
@@ -300,7 +304,7 @@ export default function UserMenu() {
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }
-					onClose={ handleDialog }
+					onClose={ handleClose }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __(
 						'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.',
