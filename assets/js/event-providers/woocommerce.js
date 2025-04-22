@@ -39,4 +39,41 @@
 	body.on( 'checkout_place_order_success', () => {
 		global._googlesitekit?.gtagEvent?.( 'purchase' );
 	} );
+
+	document
+		.querySelectorAll(
+			'.products-block-post-template .product, .wc-block-product-template .product'
+		)
+		?.forEach( ( productCard ) => {
+			// Get the Product ID from a child node containing the relevant attribute
+			const productId = productCard
+				.querySelector( '[data-product_id]' )
+				?.getAttribute( 'data-product_id' );
+
+			if ( ! productId ) {
+				return;
+			}
+
+			productCard.addEventListener( 'click', ( event ) => {
+				const target = event.target;
+				// `product-view-link` has no serilized HTML identifier/selector, so we look for the parent block element.
+				const viewLink = target.closest(
+					'.wc-block-components-product-image a'
+				);
+
+				// Catch the enclosing product button.
+				const button = target.closest(
+					'.wc-block-components-product-button [data-product_id]'
+				);
+
+				const isAddToCartButton =
+					button &&
+					button.classList.contains( 'add_to_cart_button' ) &&
+					! button.classList.contains( 'product_type_variable' );
+
+				if ( isAddToCartButton ) {
+					console.log( 'add_to_cart from block' );
+				}
+			} );
+		} );
 } )( global.jQuery );
