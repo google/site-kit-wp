@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Returns a copy of the provided Analytics 4 report with all values removed,
  * matching the format of an empty report.
  *
@@ -41,24 +46,29 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
 
 /**
  * Returns a copy of the provided Analytics 4 report with values simulating
- * a specified date range with no data either keeping or stripping empty rows.
+ * a specified date range with no data either zeroing or removing empty rows.
  *
  * @since n.e.x.t
  *
- * @param {Object}  report        Analytics 4 report object.
- * @param {string}  dateRangeKey  Date range key to match.
- * @param {boolean} keepEmptyRows Whether to keep empty rows or not.
- * @return {Object}  Analytics 4 report object with values replaced or rows removed.
+ * @param {Object} report           Analytics 4 report object.
+ * @param {string} dateRangeKey     Date range key to match.
+ * @param {string} emptyRowBehavior How to handle empty rows: 'zero' to keep rows with zero values, 'remove' to remove rows.
+ * @return {Object} Analytics 4 report object with values replaced or rows removed.
  */
 export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 	report,
 	dateRangeKey = 'date_range_1',
-	keepEmptyRows = true
+	emptyRowBehavior = 'zero'
 ) {
+	invariant(
+		[ 'zero', 'remove' ].includes( emptyRowBehavior ),
+		'emptyRowBehavior must be either "zero" or "remove"'
+	);
+
 	const { rows, totals, minimums, maximums } = report;
 
-	// If keepEmptyRows is true, keep the rows but zero the value for each row and aggregate key in the specified date range.
-	if ( keepEmptyRows ) {
+	// If emptyRowBehavior is 'zero', keep the rows but zero the value for each row and aggregate key in the specified date range.
+	if ( emptyRowBehavior === 'zero' ) {
 		const mapDateRangeToZero = ( cells ) =>
 			cells.map( ( cell ) => {
 				if (
@@ -85,7 +95,7 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 		};
 	}
 
-	// If keepEmptyRows is false, remove the rows and aggregate data that has a dimensionValues[].value equal to dateRangeKey.
+	// If emptyRowBehavior is 'remove', remove the rows and aggregate data that has a dimensionValues[].value equal to dateRangeKey.
 	const removeDateRangeEntirely = ( cells ) =>
 		cells.filter( ( cell ) => {
 			return cell.dimensionValues?.some(
