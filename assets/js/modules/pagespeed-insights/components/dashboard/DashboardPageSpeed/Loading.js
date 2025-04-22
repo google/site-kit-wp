@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import PreviewBlocks from '../../../../components/PreviewBlocks';
-import PreviewBlock from '../../../../components/PreviewBlock';
+import PreviewBlocks from '../../../../../components/PreviewBlocks';
+import PreviewBlock from '../../../../../components/PreviewBlock';
 
-export default function DashboardPageSpeedLoading() {
+export default function Loading() {
 	return (
 		<div className="googlesitekit-pagespeed-widget__content">
 			<header className="googlesitekit-pagespeed-widget__header">

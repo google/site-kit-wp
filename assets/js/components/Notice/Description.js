@@ -1,7 +1,5 @@
 /**
- * PageSpeed Insights dashboard components.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +14,26 @@
  * limitations under the License.
  */
 
-export { default as DashboardPageSpeed } from './DashboardPageSpeed';
-export { default as DashboardPageSpeedWidget } from './DashboardPageSpeedWidget';
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
+
+export default function Description( { className, children } ) {
+	return (
+		<p
+			className={ classnames(
+				'googlesitekit-notice__description',
+				className
+			) }
+		>
+			{ children }
+		</p>
+	);
+}
+
+Description.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.node,
+};
