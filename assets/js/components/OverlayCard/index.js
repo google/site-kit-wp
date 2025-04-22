@@ -64,7 +64,9 @@ OverlayCard.propTypes = {
 	description: PropTypes.string,
 	ctaButton: PropTypes.shape( {
 		...buttonProps,
-		external: PropTypes.bool,
+		href: PropTypes.string,
+		target: PropTypes.string,
+		trailingIcon: PropTypes.elementType,
 	} ),
 	dismissButton: PropTypes.shape( buttonProps ),
 	GraphicDesktop: PropTypes.elementType,

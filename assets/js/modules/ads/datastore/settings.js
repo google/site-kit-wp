@@ -95,6 +95,7 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	await invalidateCache( 'modules', 'ads' );
+	await invalidateCache( 'core', 'site', 'ads-measurement-status' );
 
 	return {};
 }

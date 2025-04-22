@@ -372,7 +372,7 @@ const baseSelectors = {
 	/**
 	 * Returns true if Google Ads is in use, but ensures fresh data is fetched.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.

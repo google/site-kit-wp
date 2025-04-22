@@ -608,8 +608,13 @@ const baseActions = {
 			userID
 		);
 
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
 		const { saveSettingsError } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).saveSettings()
+			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings(
+				audienceSettings
+			)
 		);
 
 		if ( saveSettingsError ) {
