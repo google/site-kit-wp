@@ -70,8 +70,6 @@
 		]
 	},
 	"devDependencies": {
-		"@storybook/addon-storyshots": "^6.5.16",
-		"@storybook/addon-storyshots-puppeteer": "^6.3.6",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
 		"@wordpress/prettier-config": "^2.0",
