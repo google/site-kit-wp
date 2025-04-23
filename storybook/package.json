@@ -18,6 +18,7 @@
 		"@storybook/react": "^6.5.16",
 		"mini-css-extract-plugin": "^1.6.2",
 		"postcss-loader": "^4.3.0",
+		"puppeteer": "^10.4.0",
 		"sass-loader": "^9.0.3"
 	}
 }
