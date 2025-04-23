@@ -203,22 +203,6 @@ exports.createRules = ( mode ) => [
 		...noAMDParserRule,
 	},
 	{
-		test: RegExp( 'node_modules/@material/web/.*.js' ),
-		use: [
-			{
-				loader: 'babel-loader',
-				options: {
-					sourceMap: mode !== 'production',
-					babelrc: false,
-					configFile: false,
-					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
-				},
-			},
-		],
-		...noAMDParserRule,
-	},
-	{
 		test: /\.mjs$/,
 		include: /node_modules/,
 		type: 'javascript/auto',
