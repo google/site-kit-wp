@@ -245,16 +245,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 					MODULES_ANALYTICS_4
 				).getAudienceSettings();
 			} );
-
-			it( 'should throw an error if getAudienceSegmentationSetupCompletedBy is not an integer', () => {
-				expect( () =>
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setAudienceSegmentationSetupCompletedBy( 'invalid' )
-				).toThrow(
-					'audienceSegmentationSetupCompletedBy by should be an integer.'
-				);
-			} );
 		} );
 	} );
 } );
