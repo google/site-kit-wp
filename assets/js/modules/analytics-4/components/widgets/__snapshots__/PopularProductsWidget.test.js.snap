@@ -1,0 +1,446 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PopularProductsWidget should render correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPopularProducts googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Most popular products by pageviews
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__table"
+          >
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Repudiandae beatae praesentium minus ad veritatis sint ut praesentium at (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Repudiandae beatae praesentium minus ad veritatis sint ut praesentium at"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Repudiandae beatae praesentium minus ad veritatis sint ut praesentium at
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  100
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Illo recusandae et odio quidem rem recusandae in voluptates debitis (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Illo recusandae et odio quidem rem recusandae in voluptates debitis"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Illo recusandae et odio quidem rem recusandae in voluptates debitis
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  35
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Minima maxime magnam possimus iusto nisi est et aut enim (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Minima maxime magnam possimus iusto nisi est et aut enim"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Minima maxime magnam possimus iusto nisi est et aut enim
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  25
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularProductsWidget should render the custom dimension error when there is an error creating the custom dimension 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Most popular products by pageviews
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Products that brought in the most visitors"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Insufficient permissions
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <span
+            class="googlesitekit-error-retry-text"
+          >
+            Permissions updated? 
+            <button
+              class="googlesitekit-cta-link"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Retry
+              </span>
+            </button>
+          </span>
+          <span
+            class="googlesitekit-error-retry-text"
+          >
+            You’ll need to contact your administrator. 
+            <a
+              aria-label="Learn more (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="https://sitekit.withgoogle.com/support/?error_id=analytics-4_insufficient_permissions"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Learn more
+              </span>
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularProductsWidget should render the generic error variant when the report fetch fails 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Most popular products by pageviews
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Data loading failed
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <div
+            class="googlesitekit-error-retry-text"
+          >
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="https://sitekit.withgoogle.com/support/?error_id=internal_server_error"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularProductsWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Most popular products by pageviews
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Insufficient permissions
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <div
+            class="googlesitekit-error-retry-text"
+          >
+            Trouble getting access? 
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="https://sitekit.withgoogle.com/support/?error_id=analytics-4_insufficient_permissions"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularProductsWidget should render the loading state while resolving the report 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPopularProducts googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Most popular products by pageviews
+          </h3>
+          <span
+            class="screen-reader-text"
+          >
+            <span
+              class="googlesitekit-info-tooltip"
+            >
+              <svg />
+            </span>
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__loading"
+          >
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
+              style="width: 100%; height: 14px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
+              style="width: 100%; height: 53px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PopularProductsWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Most popular products by pageviews
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Products that brought in the most visitors"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          No data to show
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Update
+            </span>
+          </button>
+          <span
+            class="googlesitekit-error-retry-text"
+          >
+            Update Analytics to track metric
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

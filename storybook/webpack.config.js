@@ -41,14 +41,6 @@ module.exports = async ( { config } ) => {
 				if ( api === 'i18n' ) {
 					return require.resolve( '@wordpress/i18n' );
 				}
-
-				// Set "googlesitekit-components" to the entry point which can load GM2 or GM3 components.
-				if ( api === 'components' ) {
-					return path.resolve(
-						rootDir,
-						'assets/js/googlesitekit-components-gm2'
-					);
-				}
 			}
 
 			return path.resolve( rootDir, `assets/js/${ global }-${ api }.js` );

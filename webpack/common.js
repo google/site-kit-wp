@@ -109,24 +109,6 @@ exports.manifestArgs = ( mode ) => ( {
 					file.path,
 					file.chunk.contentHash.javascript
 				);
-			} else if (
-				file.chunk.name?.startsWith( 'googlesitekit-components-' )
-			) {
-				// Exception for 'googlesitekit-components' because it's a dynamic asset
-				// with multiple possible file names.
-				seedObj[ 'googlesitekit-components' ] =
-					seedObj[ 'googlesitekit-components' ] || [];
-
-				// Filter out any existing duplicate entries, when rebuilding during hot reload.
-				seedObj[ 'googlesitekit-components' ] = seedObj[
-					'googlesitekit-components'
-				].filter(
-					( existingEntry ) => existingEntry[ 0 ] !== file.path
-				);
-
-				seedObj[ 'googlesitekit-components' ].push(
-					entry( file.path, file.chunk.contentHash.javascript )
-				);
 			} else if ( file.isInitial ) {
 				// Normal entries.
 				seedObj[ file.chunk.name ] = entry(
