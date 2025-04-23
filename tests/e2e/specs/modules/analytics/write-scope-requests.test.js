@@ -346,10 +346,10 @@ describe( 'Analytics write scope requests', () => {
 			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 				text: /proceed/i,
 			} ),
-			await page.waitForRequest( ( req ) =>
+			page.waitForRequest( ( req ) =>
 				req.url().match( 'analytics-4/data/create-property' )
 			),
-			await page.waitForRequest( ( req ) =>
+			page.waitForRequest( ( req ) =>
 				req.url().match( 'analytics-4/data/create-webdatastream' )
 			),
 		] );
@@ -420,7 +420,7 @@ describe( 'Analytics write scope requests', () => {
 				text: /complete setup/i,
 			} ),
 
-			await page.waitForRequest( ( req ) =>
+			page.waitForRequest( ( req ) =>
 				req.url().match( 'analytics-4/data/create-webdatastream' )
 			),
 		] );
