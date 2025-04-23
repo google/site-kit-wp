@@ -933,6 +933,9 @@ final class Modules {
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
 	protected function populate_default_shared_ownership_module_settings( $sharing_settings ) {
+		if ( ! is_array( $sharing_settings ) ) {
+			$sharing_settings = array();
+		}
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
