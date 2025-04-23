@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * TopDeviceDrivingPurchasesWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,25 +24,30 @@ import {
 	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
-	freezeFetch,
 } from '../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
+import TopDeviceDrivingPurchasesWidget from './TopDeviceDrivingPurchasesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
 import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'TopDeviceDrivingPurchasesWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const widgetProps = getWidgetComponentProps(
+		KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -52,54 +57,48 @@ describe( 'TopCitiesWidget', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
-		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
-			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
-			],
-			limit: 4,
-		};
-
-		provideAnalytics4MockReport( registry, reportOptions );
-
-		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render the loading state while resolving the report', async () => {
-		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( reportEndpoint );
-
-		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		[
-			'.googlesitekit-km-widget-tile__loading',
-			'.googlesitekit-km-widget-tile__loading-header',
-			'.googlesitekit-km-widget-tile__loading-body',
-		].forEach( ( selector ) => {
-			expect( container.querySelector( selector ) ).toBeInTheDocument();
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
 		} );
+
+		const reportOptions = [
+			{
+				...dates,
+				metrics: [
+					{
+						name: 'ecommercePurchases',
+					},
+				],
+			},
+			{
+				...dates,
+				dimensions: [ 'deviceCategory' ],
+				metrics: [
+					{
+						name: 'ecommercePurchases',
+					},
+				],
+				limit: 1,
+				orderBy: 'ecommercePurchases',
+			},
+		];
+
+		reportOptions.forEach( ( options ) =>
+			provideAnalytics4MockReport( registry, options )
+		);
+
+		const { container, waitForRegistry } = render(
+			<TopDeviceDrivingPurchasesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -117,7 +116,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopDeviceDrivingPurchasesWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -147,7 +146,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopDeviceDrivingPurchasesWidget { ...widgetProps } />,
 			{ registry }
 		);
 

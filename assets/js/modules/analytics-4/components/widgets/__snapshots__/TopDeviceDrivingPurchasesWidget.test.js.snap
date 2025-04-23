@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopConvertingTrafficSourceWidget should render correctly with the expected metrics 1`] = `
+exports[`TopDeviceDrivingPurchasesWidget should render correctly with the expected metrics 1`] = `
 <div>
   <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopConvertingTrafficSource googlesitekit-widget--no-padding"
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopDeviceDrivingPurchases googlesitekit-widget--no-padding"
   >
     <div
       class="googlesitekit-widget__body"
@@ -17,11 +17,11 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
           <h3
             class="googlesitekit-km-widget-tile__title"
           >
-            Top converting traffic source
+            Top device driving purchases
           </h3>
           <span
             class="googlesitekit-info-tooltip"
-            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+            title="Top device driving the most purchases"
           >
             <svg />
           </span>
@@ -35,21 +35,21 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
             <div
               class="googlesitekit-km-widget-tile__metric"
             >
-              Organic Search
+              Desktop
             </div>
             <p
               class="googlesitekit-km-widget-tile__subtext"
             >
-              54.9% of visits led to conversions
+              100% of total purchases
             </p>
           </div>
           <div
             class="googlesitekit-km-widget-tile__metric-change-container"
           >
             <div
-              class="googlesitekit-change-badge"
+              class="googlesitekit-change-badge googlesitekit-change-badge--zero"
             >
-              +40.7%
+              0%
             </div>
           </div>
         </div>
@@ -59,7 +59,7 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
 </div>
 `;
 
-exports[`TopConvertingTrafficSourceWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`TopDeviceDrivingPurchasesWidget should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -73,11 +73,11 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top converting traffic source
+          Top device driving purchases
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+          title="Top device driving the most purchases"
         >
           <svg />
         </span>
@@ -121,7 +121,7 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
 </div>
 `;
 
-exports[`TopConvertingTrafficSourceWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopDeviceDrivingPurchasesWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -135,11 +135,11 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         <h2
           class="googlesitekit-cta__header_text"
         >
-          Top converting traffic source
+          Top device driving purchases
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+          title="Top device driving the most purchases"
         >
           <svg />
         </span>
@@ -176,66 +176,6 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
                 Get help
               </span>
             </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`TopConvertingTrafficSourceWidget should render the loading state while resolving the report 1`] = `
-<div>
-  <div
-    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopConvertingTrafficSource googlesitekit-widget--no-padding"
-  >
-    <div
-      class="googlesitekit-widget__body"
-    >
-      <div
-        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
-      >
-        <div
-          class="googlesitekit-km-widget-tile__title-container"
-        >
-          <h3
-            class="googlesitekit-km-widget-tile__title"
-          >
-            Top converting traffic source
-          </h3>
-          <span
-            class="screen-reader-text"
-          >
-            <span
-              class="googlesitekit-info-tooltip"
-              title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
-            >
-              <svg />
-            </span>
-          </span>
-        </div>
-        <div
-          class="googlesitekit-km-widget-tile__body"
-        >
-          <div
-            class="googlesitekit-km-widget-tile__loading"
-          >
-            <div
-              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
-              style="width: 100%; height: 14px;"
-            >
-              <div
-                class="googlesitekit-preview-block__wrapper"
-              />
-            </div>
-            <div
-              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
-              style="width: 100%; height: 53px;"
-            >
-              <div
-                class="googlesitekit-preview-block__wrapper"
-              />
-            </div>
           </div>
         </div>
       </div>

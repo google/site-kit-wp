@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * TopEarningContentWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,23 +26,32 @@ import {
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+	STRATEGY_ZIP,
+} from '../../../analytics-4/utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
+import TopEarningContentWidget from './TopEarningContentWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'TopEarningContentWidget', () => {
+	const adSenseAccountID = 'pub-1234567890';
+
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const { Widget, WidgetNull } = getWidgetComponentProps(
+		KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -51,31 +60,67 @@ describe( 'TopCitiesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( 'analytics-4', 'adsense' ) );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
+		registry.dispatch( MODULES_ADSENSE ).setAccountID( adSenseAccountID );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
-		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
-			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
+		const pageTitlesReportOptions = {
+			...registry
+				.select( CORE_USER )
+				.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
+			dimensionFilters: {
+				pagePath: new Array( 3 )
+					.fill( '' )
+					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.sort(),
+			},
+			dimensions: [ 'pagePath', 'pageTitle' ],
+			metrics: [ { name: 'screenPageViews' } ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 15,
+		};
+
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		provideAnalytics4MockReport( registry, {
+			...registry
+				.select( CORE_USER )
+				.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
+			dimensions: [ 'pagePath', 'adSourceName' ],
+			metrics: [ { name: 'totalAdRevenue' } ],
+			dimensionFilters: {
+				adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+			},
 			orderby: [
 				{
-					metric: {
-						metricName: 'totalUsers',
-					},
+					metric: { metricName: 'totalAdRevenue' },
 					desc: true,
 				},
 			],
-			limit: 4,
-		};
-
-		provideAnalytics4MockReport( registry, reportOptions );
+			limit: 3,
+		} );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopEarningContentWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -88,7 +133,10 @@ describe( 'TopCitiesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopEarningContentWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -117,7 +165,10 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopEarningContentWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 
@@ -147,7 +198,10 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<TopEarningContentWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
 			{ registry }
 		);
 

@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * PagesPerVisitWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,23 +26,28 @@ import {
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
+import { getAnalytics4MockResponse } from '../../../analytics-4/utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_PAGES_PER_VISIT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
+import PagesPerVisitWidget from './PagesPerVisitWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'PagesPerVisitWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const { Widget, WidgetNull } = getWidgetComponentProps(
+		KM_ANALYTICS_PAGES_PER_VISIT
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -52,30 +57,37 @@ describe( 'TopCitiesWidget', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
 			} ),
-			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
+			metrics: [
+				{ name: 'screenPageViewsPerSession' },
+				{ name: 'screenPageViews' },
 			],
-			limit: 4,
 		};
 
-		provideAnalytics4MockReport( registry, reportOptions );
+		const report = getAnalytics4MockResponse( reportOptions );
+		// Add 1 to the "screenPageViewsPerSession" value which is a TYPE_FLOAT
+		// which is set to always be between 0 and 1. Realistically, this value should be
+		// greater than 1, since a user views at least one page per session.
+		report.rows.forEach( ( row, index, rows ) => {
+			rows[ index ].metricValues[ 0 ].value = (
+				Number( row.metricValues[ 0 ].value ) + 1
+			).toString();
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PagesPerVisitWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -88,7 +100,7 @@ describe( 'TopCitiesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PagesPerVisitWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -117,7 +129,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PagesPerVisitWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{ registry }
 		);
 
@@ -147,7 +159,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<PagesPerVisitWidget Widget={ Widget } WidgetNull={ WidgetNull } />,
 			{ registry }
 		);
 

@@ -1,7 +1,7 @@
 /**
- * TopCitiesWidget component tests.
+ * ReturningVisitorsWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import {
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_RETURNING_VISITORS,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCitiesWidget from './TopCitiesWidget';
+import ReturningVisitorsWidget from './ReturningVisitorsWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
 import {
@@ -40,9 +40,11 @@ import {
 } from '../../../../util/errors';
 import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
 
-describe( 'TopCitiesWidget', () => {
+describe( 'ReturningVisitorsWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+	const widgetProps = getWidgetComponentProps(
+		KM_ANALYTICS_RETURNING_VISITORS
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -58,24 +60,20 @@ describe( 'TopCitiesWidget', () => {
 		const reportOptions = {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
 			} ),
-			dimensions: [ 'city' ],
-			metrics: [ { name: 'totalUsers' } ],
-			orderby: [
+			dimensions: [ 'newVsReturning' ],
+			metrics: [
 				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
+					name: 'activeUsers',
 				},
 			],
-			limit: 4,
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<ReturningVisitorsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -88,7 +86,7 @@ describe( 'TopCitiesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<ReturningVisitorsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -117,7 +115,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<ReturningVisitorsWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -147,7 +145,7 @@ describe( 'TopCitiesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCitiesWidget { ...widgetProps } />,
+			<ReturningVisitorsWidget { ...widgetProps } />,
 			{ registry }
 		);
 

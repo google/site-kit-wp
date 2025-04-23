@@ -1,7 +1,7 @@
 /**
- * TopCategoriesWidget component tests.
+ * TopRecentTrendingPagesWidget component tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,54 +22,55 @@
 import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideKeyMetrics,
 	provideModules,
-	freezeFetch,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from '../../../../googlesitekit/datastore/user/constants';
-import TopCategoriesWidget from './TopCategoriesWidget';
+import TopRecentTrendingPagesWidget, {
+	getDateRange,
+	getReportOptions,
+} from './TopRecentTrendingPagesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+	STRATEGY_ZIP,
+} from '../../../analytics-4/utils/data-mock';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
-describe( 'TopCategoriesWidget', () => {
+describe( 'TopRecentTrendingPagesWidget', () => {
 	let registry;
-	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CATEGORIES );
+	const widgetProps = getWidgetComponentProps(
+		KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
-	const [ accountID, propertyID, webDataStreamID ] = [
-		'12345',
-		'34567',
-		'56789',
-	];
+	const propertyID = '12345';
+	const referenceDate = '2024-05-07';
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
 		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			accountID,
 			propertyID,
-			webDataStreamID,
 			availableCustomDimensions:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
 					.requiredCustomDimensions,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
@@ -84,41 +85,48 @@ describe( 'TopCategoriesWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsCustomDimensionGatheringData(
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
 					.requiredCustomDimensions[ 0 ],
 				false
 			);
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
-		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
-			dimensions: [ 'customEvent:googlesitekit_post_categories' ],
+		const reportOptions = getReportOptions( referenceDate );
+		const pageTitlesReportOptions = {
+			...getDateRange( referenceDate ),
 			dimensionFilters: {
-				'customEvent:googlesitekit_post_categories': {
-					filterType: 'emptyFilter',
-					notExpression: true,
-				},
+				pagePath: new Array( 3 )
+					.fill( '' )
+					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.sort(),
 			},
+			dimensions: [ 'pagePath', 'pageTitle' ],
 			metrics: [ { name: 'screenPageViews' } ],
 			orderby: [
-				{
-					metric: {
-						metricName: 'screenPageViews',
-					},
-					desc: true,
-				},
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
-			limit: 3,
-			keepEmptyRows: false,
+			limit: 15,
 		};
+
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
 
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<TopRecentTrendingPagesWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -131,7 +139,7 @@ describe( 'TopCategoriesWidget', () => {
 		freezeFetch( reportEndpoint );
 
 		const { container, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<TopRecentTrendingPagesWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -160,7 +168,7 @@ describe( 'TopCategoriesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<TopRecentTrendingPagesWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -190,7 +198,7 @@ describe( 'TopCategoriesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<TopRecentTrendingPagesWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -214,7 +222,7 @@ describe( 'TopCategoriesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<TopRecentTrendingPagesWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -241,13 +249,13 @@ describe( 'TopCategoriesWidget', () => {
 
 		provideCustomDimensionError( registry, {
 			customDimension:
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
 					.requiredCustomDimensions[ 0 ],
 			error,
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopCategoriesWidget { ...widgetProps } />,
+			<TopRecentTrendingPagesWidget { ...widgetProps } />,
 			{ registry }
 		);
 
