@@ -264,7 +264,7 @@ jobs:
     environment: wordpress-plugin-svn
     if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
     needs: build-zips
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - name: Install SVN ( Subversion )
         run: |
