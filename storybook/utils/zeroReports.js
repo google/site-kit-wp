@@ -67,15 +67,14 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 
 	const { rows, totals, minimums, maximums } = report;
 
+	const matchesDateRange = ( cell ) =>
+		cell.dimensionValues?.some( ( value ) => value.value === dateRangeKey );
+
 	// If emptyRowBehavior is 'zero', keep the rows but zero the value for each row and aggregate key in the specified date range.
 	if ( emptyRowBehavior === 'zero' ) {
 		const mapDateRangeToZero = ( cells ) =>
 			cells.map( ( cell ) => {
-				if (
-					cell.dimensionValues?.some(
-						( value ) => value.value === dateRangeKey
-					)
-				) {
+				if ( matchesDateRange( cell ) ) {
 					return {
 						...cell,
 						metricValues: cell.metricValues.map( () => {
@@ -98,15 +97,15 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 	// If emptyRowBehavior is 'remove', remove the rows and aggregate data that has a dimensionValues[].value equal to dateRangeKey.
 	const removeDateRangeEntirely = ( cells ) =>
 		cells.filter( ( cell ) => {
-			return ! cell.dimensionValues?.some(
-				( value ) => value.value === dateRangeKey
-			);
+			return ! matchesDateRange( cell );
 		} );
+
+	const filteredRows = removeDateRangeEntirely( rows );
 
 	return {
 		...report,
-		rows: removeDateRangeEntirely( rows ),
-		rowCount: removeDateRangeEntirely( rows ).length,
+		rows: filteredRows,
+		rowCount: filteredRows.length,
 		totals: removeDateRangeEntirely( totals ),
 		minimums: removeDateRangeEntirely( minimums ),
 		maximums: removeDateRangeEntirely( maximums ),
