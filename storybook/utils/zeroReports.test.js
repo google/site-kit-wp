@@ -24,6 +24,9 @@ import mockedReportResponse from '../../assets/js/modules/analytics-4/utils/__fi
 
 describe( 'zeroReports', () => {
 	describe( 'replaceValuesOrRemoveRowForDateRangeInAnalyticsReport', () => {
+		const matchesDateRange = ( data, dateRange = 'date_range_0' ) =>
+			data.some( ( value ) => value.value === dateRange );
+
 		it( 'should zero values for date_range_0 when emptyRowBehavior is "zero"', () => {
 			// Create a deep copy of the mocked report
 			const report = JSON.parse( JSON.stringify( mockedReportResponse ) );
@@ -39,9 +42,7 @@ describe( 'zeroReports', () => {
 
 			// Check that date_range_0 rows have zeroed metric values
 			const dateRange0Rows = result.rows.filter( ( row ) =>
-				row.dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
-				)
+				matchesDateRange( row.dimensionValues, 'date_range_0' )
 			);
 
 			dateRange0Rows.forEach( ( row ) => {
@@ -52,16 +53,12 @@ describe( 'zeroReports', () => {
 
 			// Check that date_range_1 rows are unchanged
 			const dateRange1Rows = result.rows.filter( ( row ) =>
-				row.dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
-				)
+				matchesDateRange( row.dimensionValues, 'date_range_1' )
 			);
 
 			dateRange1Rows.forEach( ( row, index ) => {
 				const originalRow = report.rows.filter( ( r ) =>
-					r.dimensionValues.some(
-						( value ) => value.value === 'date_range_1'
-					)
+					matchesDateRange( r.dimensionValues, 'date_range_1' )
 				)[ index ];
 
 				expect( row.metricValues ).toEqual( originalRow.metricValues );
@@ -80,15 +77,11 @@ describe( 'zeroReports', () => {
 
 			// Check that totals for date_range_1 are unchanged
 			const totalForDateRange1 = result.totals.find( ( total ) =>
-				total.dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
-				)
+				matchesDateRange( total.dimensionValues, 'date_range_1' )
 			);
 
 			const originalTotalForDateRange1 = report.totals.find( ( total ) =>
-				total.dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
-				)
+				matchesDateRange( total.dimensionValues, 'date_range_1' )
 			);
 
 			expect( totalForDateRange1.metricValues ).toEqual(
@@ -112,9 +105,7 @@ describe( 'zeroReports', () => {
 			// Check that all remaining rows are date_range_1
 			result.rows.forEach( ( row ) => {
 				expect(
-					row.dimensionValues.some(
-						( value ) => value.value === 'date_range_1'
-					)
+					matchesDateRange( row.dimensionValues, 'date_range_1' )
 				).toBe( true );
 			} );
 
@@ -124,24 +115,27 @@ describe( 'zeroReports', () => {
 			// Check that only totals for date_range_1 are present
 			expect( result.totals ).toHaveLength( 1 );
 			expect(
-				result.totals[ 0 ].dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
+				matchesDateRange(
+					result.totals[ 0 ].dimensionValues,
+					'date_range_1'
 				)
 			).toBe( true );
 
 			// Check that only minimums for date_range_1 are present
 			expect( result.minimums ).toHaveLength( 1 );
 			expect(
-				result.minimums[ 0 ].dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
+				matchesDateRange(
+					result.minimums[ 0 ].dimensionValues,
+					'date_range_1'
 				)
 			).toBe( true );
 
 			// Check that only maximums for date_range_1 are present
 			expect( result.maximums ).toHaveLength( 1 );
 			expect(
-				result.maximums[ 0 ].dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
+				matchesDateRange(
+					result.maximums[ 0 ].dimensionValues,
+					'date_range_1'
 				)
 			).toBe( true );
 		} );
@@ -161,9 +155,7 @@ describe( 'zeroReports', () => {
 
 			// Check that date_range_1 rows have zeroed metric values
 			const dateRange1Rows = result.rows.filter( ( row ) =>
-				row.dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
-				)
+				matchesDateRange( row.dimensionValues, 'date_range_1' )
 			);
 
 			dateRange1Rows.forEach( ( row ) => {
@@ -174,9 +166,7 @@ describe( 'zeroReports', () => {
 
 			// Check that date_range_0 rows are unchanged
 			const dateRange0Rows = result.rows.filter( ( row ) =>
-				row.dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
-				)
+				matchesDateRange( row.dimensionValues, 'date_range_0' )
 			);
 
 			dateRange0Rows.forEach( ( row, index ) => {
@@ -191,9 +181,7 @@ describe( 'zeroReports', () => {
 
 			// Check that totals for date_range_1 are zeroed
 			const totalForDateRange1 = result.totals.find( ( total ) =>
-				total.dimensionValues.some(
-					( value ) => value.value === 'date_range_1'
-				)
+				matchesDateRange( total.dimensionValues, 'date_range_1' )
 			);
 
 			totalForDateRange1.metricValues.forEach( ( metricValue ) => {
@@ -202,15 +190,11 @@ describe( 'zeroReports', () => {
 
 			// Check that totals for date_range_0 are unchanged
 			const totalForDateRange0 = result.totals.find( ( total ) =>
-				total.dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
-				)
+				matchesDateRange( total.dimensionValues, 'date_range_0' )
 			);
 
 			const originalTotalForDateRange0 = report.totals.find( ( total ) =>
-				total.dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
-				)
+				matchesDateRange( total.dimensionValues, 'date_range_0' )
 			);
 
 			expect( totalForDateRange0.metricValues ).toEqual(
@@ -234,9 +218,7 @@ describe( 'zeroReports', () => {
 			// Check that all remaining rows are date_range_0
 			result.rows.forEach( ( row ) => {
 				expect(
-					row.dimensionValues.some(
-						( value ) => value.value === 'date_range_0'
-					)
+					matchesDateRange( row.dimensionValues, 'date_range_0' )
 				).toBe( true );
 			} );
 
@@ -246,24 +228,27 @@ describe( 'zeroReports', () => {
 			// Check that only totals for date_range_0 are present
 			expect( result.totals ).toHaveLength( 1 );
 			expect(
-				result.totals[ 0 ].dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
+				matchesDateRange(
+					result.totals[ 0 ].dimensionValues,
+					'date_range_0'
 				)
 			).toBe( true );
 
 			// Check that only minimums for date_range_0 are present
 			expect( result.minimums ).toHaveLength( 1 );
 			expect(
-				result.minimums[ 0 ].dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
+				matchesDateRange(
+					result.minimums[ 0 ].dimensionValues,
+					'date_range_0'
 				)
 			).toBe( true );
 
 			// Check that only maximums for date_range_0 are present
 			expect( result.maximums ).toHaveLength( 1 );
 			expect(
-				result.maximums[ 0 ].dimensionValues.some(
-					( value ) => value.value === 'date_range_0'
+				matchesDateRange(
+					result.maximums[ 0 ].dimensionValues,
+					'date_range_0'
 				)
 			).toBe( true );
 		} );
