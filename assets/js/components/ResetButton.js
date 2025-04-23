@@ -125,7 +125,7 @@ function ResetButton( { children } ) {
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ toggleDialogActive }
-					onClose={ toggleDialogActive }
+					onClose={ () => setDialogActive( false ) }
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
 					subtitle={ createInterpolateElement(
 						__(
