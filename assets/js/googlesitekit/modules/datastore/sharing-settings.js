@@ -25,7 +25,7 @@ import { isEqual, isEmpty, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -65,7 +65,7 @@ const baseInitialState = {
 const fetchSaveSharingSettingsStore = createFetchStore( {
 	baseName: 'saveSharingSettings',
 	controlCallback: ( { savedSharingSettings } ) => {
-		return API.set(
+		return set(
 			'core',
 			'modules',
 			'sharing-settings',
@@ -88,7 +88,7 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 const fetchResetSharingSettingsStore = createFetchStore( {
 	baseName: 'resetSharingSettings',
 	controlCallback: ( {} ) => {
-		return API.set(
+		return set(
 			'core',
 			'modules',
 			'sharing-settings',

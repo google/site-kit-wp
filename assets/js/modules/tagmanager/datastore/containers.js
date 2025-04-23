@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -53,7 +53,7 @@ const fetchGetContainersStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'tagmanager',
 			'containers',
@@ -92,7 +92,7 @@ const fetchCreateContainerStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', {
+		return set( 'modules', 'tagmanager', 'create-container', {
 			accountID,
 			usageContext,
 			name,

@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import Link from '../../../../../components/Link';
 import ReportDetailsLink from '../../common/ReportDetailsLink';
@@ -62,7 +62,7 @@ export default function Footer( { isFetching } ) {
 			event.preventDefault();
 
 			// Invalidate the PageSpeed API request caches.
-			await API.invalidateCache(
+			await invalidateCache(
 				'modules',
 				'pagespeed-insights',
 				'pagespeed'

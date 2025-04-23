@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -43,7 +43,7 @@ const RESET_SITES = 'RESET_SITES';
 const fetchGetSitesStore = createFetchStore( {
 	baseName: 'getSites',
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'adsense',
 			'sites',

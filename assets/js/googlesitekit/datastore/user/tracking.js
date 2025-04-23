@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -34,7 +34,7 @@ const fetchStoreReducerCallback = ( state, tracking ) => ( {
 const fetchGetTrackingStore = createFetchStore( {
 	baseName: 'getTracking',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'tracking' );
+		return get( 'core', 'user', 'tracking' );
 	},
 	reducerCallback: fetchStoreReducerCallback,
 } );
@@ -42,7 +42,7 @@ const fetchGetTrackingStore = createFetchStore( {
 const fetchSaveTrackingStore = createFetchStore( {
 	baseName: 'setTracking',
 	controlCallback: ( enabled ) =>
-		API.set( 'core', 'user', 'tracking', { enabled: !! enabled } ),
+		set( 'core', 'user', 'tracking', { enabled: !! enabled } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( enabled ) => enabled,
 } );

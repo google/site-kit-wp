@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -27,7 +27,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 const fetchGetDeveloperPluginState = createFetchStore( {
 	baseName: 'getDeveloperPluginState',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'developer-plugin', undefined, {
+		return get( 'core', 'site', 'developer-plugin', undefined, {
 			useCache: false,
 		} );
 	},

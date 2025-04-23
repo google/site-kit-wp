@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -46,14 +46,14 @@ function reducerCallback( state, expirableItems ) {
 const fetchGetExpirableItemsStore = createFetchStore( {
 	baseName: 'getExpirableItems',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'expirable-items', {}, { useCache: false } ),
+		get( 'core', 'user', 'expirable-items', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchSetExpirableItemTimersStore = createFetchStore( {
 	baseName: 'setExpirableItemTimers',
 	controlCallback: ( items ) =>
-		API.set( 'core', 'user', 'set-expirable-item-timers', items ),
+		set( 'core', 'user', 'set-expirable-item-timers', items ),
 	reducerCallback,
 	argsToParams: ( items = [] ) => {
 		return items.map( ( item ) => {
