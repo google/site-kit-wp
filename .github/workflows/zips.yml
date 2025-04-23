@@ -278,9 +278,18 @@ jobs:
         run: |
           unzip /tmp/google-site-kit.zip
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+        id: deploy
+        with:
+          generate-zip: true
         env:
           BUILD_DIR: ./google-site-kit
           SLUG: google-site-kit
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           VERSION: ${{ inputs.release_version }}
+      - name: Generate build provenance attestation
+        uses: johnbillion/action-wordpress-plugin-attestation@0.7.0
+        with:
+          zip-path: ${{ steps.deploy.outputs.zip-path }}
+          plugin: google-site-kit
+          version: ${{ inputs.release_version }}
