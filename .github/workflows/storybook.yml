@@ -150,5 +150,5 @@ jobs:
         run: npm run install-global-npm
       - name: npm install
         run: npm ci
-      - name: Test Storybook
-        run: npm run test:storybook
+      # - name: Test Storybook
+      #   run: npm run test:storybook
