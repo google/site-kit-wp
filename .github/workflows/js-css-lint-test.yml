@@ -46,26 +46,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  js-css-lint-test:
-    name: JS + CSS
+  css-lint:
+    name: CSS Lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
-
       - name: npm install
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+        run: npm i --workspace=assets --include-workspace-root
       - name: CSS Lint
         run: npm run lint:css
+  js-lint:
+    name: JS Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: JS Lint
         run: npm run lint:js
+  js-test:
+    name: JS Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm i --workspace=assets --workspace=storybook --workspace=tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
         run: npm run test:js
