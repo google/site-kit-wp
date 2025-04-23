@@ -92,27 +92,6 @@ export const decorators = [
 
 		return <Story />;
 	},
-	// This decorator can be removed when the GM2 components are removed.
-	( Story, { parameters } ) => {
-		const searchParams = new URL( global.location ).searchParams;
-
-		if ( parameters.isMaterial3 ) {
-			// This is a GM3 story. Ensure the isMaterial3 query parameter is set in order to load the GM3 components.
-			if ( ! searchParams.has( 'isMaterial3' ) ) {
-				searchParams.set( 'isMaterial3', true );
-				global.location.search = searchParams.toString();
-			}
-		} else {
-			// This is a GM2 story. Ensure the isMaterial3 query parameter is not set in order to load the GM2 components.
-			// eslint-disable-next-line no-lonely-if
-			if ( searchParams.has( 'isMaterial3' ) ) {
-				searchParams.delete( 'isMaterial3' );
-				global.location.search = searchParams.toString();
-			}
-		}
-
-		return <Story />;
-	},
 ];
 
 export const parameters = {

@@ -92,7 +92,6 @@
 	"author": "Google",
 	"license": "Apache-2.0",
 	"dependencies": {
-		"@lit-labs/react": "^1.2.0",
 		"@material-ui/core": "^4.11.4",
 		"@material/button": "^2.3.0",
 		"@material/checkbox": "^2.3.0",
@@ -114,7 +113,6 @@
 		"@material/switch": "^2.3.0",
 		"@material/textfield": "^2.3.1",
 		"@material/theme": "^1.1.0",
-		"@material/web": "^1.0.0-pre.9",
 		"@popperjs/core": "^2.9.2",
 		"@reach/combobox": "^0.10.5",
 		"@react-hook/event": "^1.2.1",
