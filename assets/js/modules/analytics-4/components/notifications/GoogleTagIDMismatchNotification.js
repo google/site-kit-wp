@@ -152,15 +152,25 @@ export default function GoogleTagIDMismatchNotification( {
 		googleTagContainerDestinations === undefined ||
 		newAnalyticsProperty === undefined ||
 		newGoogleTagID === undefined ||
-		currentAnalyticsProperty === undefined ||
-		// If the current and new properties are the same, don't show the notification.
-		// This can happen momentarily when the banner is actioned and the new property
-		// has been saved, but the notification hasn't been dismissed / removed from the queue yet.
-		( currentAnalyticsProperty?._id &&
-			newAnalyticsProperty?._id &&
-			currentAnalyticsProperty._id === newAnalyticsProperty._id )
+		currentAnalyticsProperty === undefined
 	) {
 		return <NotificationProgressBar />;
+	}
+
+	// If the current and new properties are the same, don't show the notification.
+	// This can happen momentarily when the banner is actioned and the new property
+	// has been saved, but the notification hasn't been dismissed / removed from the
+	// queue yet. There is also a rare issue reported where hasMismatchedGoogleTagID
+	// is set to true, but the new property is the same as the current one. This will
+	// result in a perpetual loading banner on the screen if we returned the loading
+	// bar. So it is safer to return null, as eventually, the syncGoogleTag action
+	// will be called within an hour and reset this correctly.
+	if (
+		currentAnalyticsProperty?._id &&
+		newAnalyticsProperty?._id &&
+		currentAnalyticsProperty._id === newAnalyticsProperty._id
+	) {
+		return null;
 	}
 
 	if ( newAnalyticsProperty ) {
