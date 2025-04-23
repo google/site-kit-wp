@@ -235,7 +235,7 @@ const baseResolvers = {
 					yield commonActions.await(
 						resolveSelect(
 							MODULES_ANALYTICS_4
-						).getAvailableAudiences()
+						).getOrSyncAvailableAudiences()
 					);
 
 					if (

@@ -82,7 +82,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		[]
 	);
 	const audiences = useInViewSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		return select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 	}, [] );
 	const [ siteKitAudiences, otherAudiences ] = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredSiteKitAndOtherAudiences()

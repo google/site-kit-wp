@@ -203,7 +203,7 @@ const baseResolvers = {
 		}
 	},
 
-	*getAvailableAudiences() {
+	*getOrSyncAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
 
 		const audiences = registry
@@ -249,6 +249,10 @@ const baseSelectors = {
 	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
 	getAvailableAudiences( state ) {
+		return state.audienceSettings?.availableAudiences;
+	},
+
+	getOrSyncAvailableAudiences( state ) {
 		return state.audienceSettings?.availableAudiences;
 	},
 
