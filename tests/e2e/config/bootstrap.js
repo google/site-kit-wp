@@ -130,15 +130,42 @@ function removePageEvents() {
 }
 
 /**
+ * Determines if logging should occur based on the current test context.
+ *
+ * @since 1.0.0
+ *
+ * @return {boolean} Whether logging should occur.
+ */
+export function shouldLog() {
+	const targetTest = process.env.RETRY_FULL_TEST_NAME;
+	const debugLogTestPrefix = process.env.DEBUG_LOG_TEST_PREFIX;
+	// `currentTestName` is the full test name (including describe names)
+	const currentTest = expect.getState().currentTestName;
+
+	// Log if we're not targeting a specific test, or if we're in the target test
+	// return ! targetTest || targetTest === currentTest;
+	// Modded to allow specifying a test prefix to match:
+	return (
+		! targetTest ||
+		currentTest?.startsWith( debugLogTestPrefix || targetTest )
+	);
+}
+
+/**
  * Adds a page event handler to emit uncaught exception to process if one of
  * the observed console logging types is encountered.
  *
  * @since 1.0.0
  */
 function observeConsoleLogging() {
+	// eslint-disable-next-line complexity
 	page.on( 'console', ( message ) => {
 		const type = message.type();
 		if ( ! OBSERVED_CONSOLE_MESSAGE_TYPES.hasOwnProperty( type ) ) {
+			return;
+		}
+
+		if ( ! shouldLog() ) {
 			return;
 		}
 
@@ -306,6 +333,10 @@ function isPluginConsoleMessage( pluginSlug, message ) {
  * @param {Object} req HTTP request object.
  */
 function observeNavigationRequest( req ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( req.isNavigationRequest() ) {
 		const data = [ req.method(), req.url() ];
 		if ( 'POST' === req.method() ) {
@@ -324,6 +355,10 @@ function observeNavigationRequest( req ) {
  * @param {Object} res HTTP response object.
  */
 function observeNavigationResponse( res ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( res.request().isNavigationRequest() ) {
 		const data = [ res.status(), res.request().method(), res.url() ];
 		const redirect = res.headers().location;
@@ -343,6 +378,10 @@ function observeNavigationResponse( res ) {
  * @param {Object} req HTTP request object from the REST API request.
  */
 function observeRestRequest( req ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( req.url().match( 'wp-json' ) ) {
 		const data = [ req.method(), req.url() ];
 		if ( 'POST' === req.method() ) {
@@ -361,6 +400,10 @@ function observeRestRequest( req ) {
  * @param {Object} res HTTP response object from the REST API request.
  */
 async function observeRestResponse( res ) {
+	if ( ! shouldLog() ) {
+		return;
+	}
+
 	if ( res.url().match( 'wp-json' ) ) {
 		const data = [ res.status(), res.request().method(), res.url() ];
 
