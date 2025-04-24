@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
@@ -147,7 +147,7 @@ export async function submitChanges( { dispatch, select } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'reader-revenue-manager' );
+	await invalidateCache( 'modules', 'reader-revenue-manager' );
 
 	return {};
 }

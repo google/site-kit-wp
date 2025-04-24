@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import Modules from 'googlesitekit-modules';
 import { combineStores } from 'googlesitekit-data';
 import {
@@ -134,7 +134,7 @@ describe( 'core/modules modules', () => {
 	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
 		// make sure we're opting-out of the cache for the correct requests.
-		await API.invalidateCache();
+		await invalidateCache();
 
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
