@@ -12,7 +12,7 @@ const getMajorVersion = ( version ) => {
 		throw new Error( `Unable to parse version: ${version}` );
 	}
 
-	return parseInt( majorVersion );
+	return parseInt( majorVersion, 10 );
 }
 
 const currentNodeVersion = process.versions.node;
