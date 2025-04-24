@@ -61,10 +61,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      # nvm@7 is the minimum version required for npm workspace support.
-      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
-      # This can be removed once our node base version comes with nvm@7 or greater.
-      - name: Install npm Globally
+      # npm@7 is the minimum version required for this repository.
+      # TODO: Remove this step once our node base version comes with npm@7 or greater.
+      - name: Install npm globally
         run: npm run install-global-npm
       - name: npm install
         run: npm ci
@@ -145,10 +144,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      # nvm@7 is the minimum version required for npm workspace support.
-      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
-      # This can be removed once our node base version comes with nvm@7 or greater.
-      - name: Install npm Globally
+      # npm@7 is the minimum version required for this repository.
+      # TODO: Remove this step once our node base version comes with npm@7 or greater.
+      - name: Install npm globally
         run: npm run install-global-npm
       - name: npm install
         run: npm ci

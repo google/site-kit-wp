@@ -42,7 +42,8 @@
 		"env:stop": "npm run -w tests/e2e stop",
 		"env:reset-site": "npm run -w tests/e2e reset-site",
 		"install-global-npm": "npm install -g npm@7.24.2",
-		"postinstall": "patch-package"
+		"postinstall": "patch-package",
+		"preinstall": "./bin/check-node-version.js"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
