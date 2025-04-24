@@ -1,7 +1,3 @@
-# Whenever make changes in this file, make sure to update the version in the
-# bin/backstop file as well to ensure that everyone gets the correct version of
-# this image.
-
 FROM node:16.14.2-bullseye
 
 # Prevent intractive prompts from apt-get.
