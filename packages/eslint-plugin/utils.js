@@ -119,9 +119,9 @@ function isImported( node ) {
 	return false;
 }
 
-const isTypeFunction = ( type ) => {
+function isTypeFunction( type ) {
 	return FUNCTION_TYPES.includes( type );
-};
+}
 
 function isFunctionDeclaration( node ) {
 	return node?.type && FUNCTION_TYPES.includes( node.type );
@@ -157,8 +157,8 @@ function isFunctionExportOrVariable( node ) {
 		return false;
 	}
 
-	if ( node.declarations ) {
-		return hasFunctionInDeclarations( node.declarations );
+	if ( hasFunctionInDeclarations( node.declarations ) ) {
+		return true;
 	}
 	if ( node.declaration ) {
 		return isFunction( node.declaration );
