@@ -71,6 +71,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	return (
 		<Notification>
 			<NoticeNotification
+				notificationID={ id }
 				type="new"
 				description={ __(
 					'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
