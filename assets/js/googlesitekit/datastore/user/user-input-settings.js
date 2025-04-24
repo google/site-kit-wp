@@ -25,7 +25,7 @@ import { isPlainObject, isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -43,7 +43,7 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'user-input-settings', undefined, {
+		get( 'core', 'user', 'user-input-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -52,7 +52,7 @@ const fetchGetUserInputSettingsStore = createFetchStore( {
 const fetchSaveUserInputSettingsStore = createFetchStore( {
 	baseName: 'saveUserInputSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'user-input-settings', { settings } ),
+		set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {

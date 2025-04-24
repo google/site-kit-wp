@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\Plugin_Status;
 use WP_Dependencies;
 use WP_Post_Type;
 
@@ -134,6 +133,24 @@ final class Assets {
 			}
 		);
 
+		if ( is_admin() ) {
+			add_action(
+				'enqueue_block_assets',
+				function () {
+					$assets = $this->get_assets();
+
+					array_walk(
+						$assets,
+						function ( $asset ) {
+							if ( $asset->has_context( Asset::CONTEXT_ADMIN_BLOCK_EDITOR ) ) {
+								$this->enqueue_asset( $asset->get_handle() );
+							}
+						}
+					);
+				}
+			);
+		}
+
 		add_action(
 			'enqueue_block_editor_assets',
 			function () {
@@ -217,10 +234,6 @@ final class Assets {
 			'Google+Sans+Text:400,500',
 			'Google+Sans+Display:400,500,700',
 		);
-
-		if ( Feature_Flags::enabled( 'gm3Components' ) ) {
-			$font_families[] = 'Roboto:300,400,500';
-		}
 
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
@@ -469,11 +482,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-components',
 				array(
-					'src' => $base_url . (
-						Feature_Flags::enabled( 'gm3Components' )
-							? 'js/googlesitekit-components-gm3.js'
-							: 'js/googlesitekit-components-gm2.js'
-						),
+					'src' => $base_url . 'js/googlesitekit-components.js',
 				)
 			),
 			new Script(
@@ -679,6 +688,13 @@ final class Assets {
 					'execution'    => 'defer',
 				)
 			),
+			new Script(
+				'googlesitekit-metric-selection',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			),
 			new Stylesheet(
 				'googlesitekit-adminbar-css',
 				array(
@@ -696,16 +712,6 @@ final class Assets {
 				)
 			),
 		);
-
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			$assets[] = new Script(
-				'googlesitekit-metric-selection',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-metric-selection.js',
-					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
-				)
-			);
-		}
 
 		/**
 		 * Filters the list of assets that Site Kit should register.

@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 17 ] */
+const FUNCTION_TYPES = [
+	'ArrowFunctionExpression',
+	'FunctionDeclaration',
+	'FunctionExpression',
+];
 
 function checkForEmptyLinesInGroup(
 	groupOfTags,
@@ -115,71 +119,65 @@ function isImported( node ) {
 	return false;
 }
 
-const isTypeFunction = ( type ) => {
-	const functionTypes = [
-		'ArrowFunctionExpression',
-		'FunctionDeclaration',
-		'FunctionExpression',
-	];
-	return functionTypes.includes( type );
-};
+function isTypeFunction( type ) {
+	return FUNCTION_TYPES.includes( type );
+}
+
+function isFunctionDeclaration( node ) {
+	return node?.type && FUNCTION_TYPES.includes( node.type );
+}
+
+function isFunctionProperty( node ) {
+	return node.type === 'Property' && node.value && isFunction( node.value );
+}
+
+function hasFunctionInDeclarations( declarations ) {
+	return declarations?.some( ( declaration ) =>
+		isFunction( declaration.init )
+	);
+}
+
+function isFunctionIdentifier( node ) {
+	if ( node?.type !== 'Identifier' ) {
+		return false;
+	}
+
+	return (
+		isTypeFunction( node?.parent?.type ) ||
+		isTypeFunction( node?.parent?.init?.type )
+	);
+}
+
+function isFunctionExportOrVariable( node ) {
+	if (
+		! [ 'ExportNamedDeclaration', 'VariableDeclaration' ].includes(
+			node.type
+		)
+	) {
+		return false;
+	}
+
+	if ( hasFunctionInDeclarations( node.declarations ) ) {
+		return true;
+	}
+	if ( node.declaration ) {
+		return isFunction( node.declaration );
+	}
+
+	return false;
+}
 
 function isFunction( node ) {
 	if ( ! node ) {
 		return false;
 	}
 
-	if ( node?.type === 'Identifier' ) {
-		if (
-			isTypeFunction( node?.parent?.type ) ||
-			isTypeFunction( node?.parent?.init?.type )
-		) {
-			return true;
-		}
-	}
-
-	const isFunctionDeclaration =
-		node.type &&
-		[
-			'ArrowFunctionExpression',
-			'FunctionDeclaration',
-			'FunctionExpression',
-		].includes( node.type );
-
-	if ( isFunctionDeclaration ) {
-		return true;
-	}
-
-	if ( node.type === 'Property' && node.value ) {
-		return isFunction( node.value );
-	}
-
-	if (
-		( node.type === 'ExportNamedDeclaration' ||
-			node.type === 'VariableDeclaration' ) &&
-		node.declarations &&
-		node.declarations.length
-	) {
-		const hasFunctionDeclaration = node.declarations.some(
-			( declaration ) => {
-				return isFunction( declaration.init );
-			}
-		);
-
-		if ( hasFunctionDeclaration ) {
-			return true;
-		}
-	}
-
-	if (
-		( node.type === 'ExportNamedDeclaration' ||
-			node.type === 'VariableDeclaration' ) &&
-		node.declaration
-	) {
-		return isFunction( node.declaration );
-	}
-
-	return false;
+	return (
+		isFunctionIdentifier( node ) ||
+		isFunctionDeclaration( node ) ||
+		isFunctionProperty( node ) ||
+		isFunctionExportOrVariable( node )
+	);
 }
 
 module.exports = {

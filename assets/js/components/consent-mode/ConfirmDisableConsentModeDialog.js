@@ -42,7 +42,7 @@ export default function ConfirmDisableConsentModeDialog( {
 	const viewContext = useViewContext();
 
 	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
+		select( CORE_SITE ).isAdsConnectedUncached()
 	);
 
 	const dependentModuleNames = useSelect( ( select ) =>
@@ -103,6 +103,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
 			handleDialog={ onCancel }
+			onClose={ onCancel }
 			provides={ provides }
 			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }

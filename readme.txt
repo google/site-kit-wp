@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.7
+Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.149.0
+Stable tag:        1.151.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -36,6 +36,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Tag Manager:** Use Site Kit to easily set up Tag Manager- no code editing required. Then, manage your tags in Tag Manager.
 
 == Installation ==
+
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
@@ -45,7 +46,6 @@ However, if you have a staging environment in addition to your production site, 
 2. Search for **Site Kit by Google**.
 3. Install and activate the Site Kit by Google plugin.
 4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
-
 
 = Manual installation =
 
@@ -109,33 +109,26 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.149.0 =
+= 1.151.0 =
 
 **Enhanced**
 
-* Update Ads setup via PAX to enable the enhanced conversion tracking by default. See [#10413](https://github.com/google/site-kit-wp/issues/10413).
-* Update the WooCommerce Redirect modal logic to trigger at the Ads setup wizard. See [#10404](https://github.com/google/site-kit-wp/issues/10404).
-* Fix the learn more link in the ACR lost events banner. See [#10397](https://github.com/google/site-kit-wp/issues/10397).
-* Add GA events tracking for user interaction with the Reader Revenue Manager introductory overlay notification. See [#10330](https://github.com/google/site-kit-wp/issues/10330).
-* Unguard the `productIDs` and `paymentOption` module settings to enable publication data synchronization without the `rrmModuleV2` feature flag. See [#10314](https://github.com/google/site-kit-wp/issues/10314).
-* Update text in "Top earning pages" widget. See [#10158](https://github.com/google/site-kit-wp/issues/10158).
-* Remove the `audienceSegmentation` feature flag. See [#10148](https://github.com/google/site-kit-wp/issues/10148).
-* Add support for outputting the Sign in with Google button where `wp_login_form` is used. See [#10047](https://github.com/google/site-kit-wp/issues/10047).
-* Update Google Tag ID mismatch notifications to use new notifications infrastructure to improve reliability/user experience. See [#9292](https://github.com/google/site-kit-wp/issues/9292).
+* Remove old feature tours. See [#10574](https://github.com/google/site-kit-wp/issues/10574).
+* Remove the `conversionReporting` feature flag. See [#10552](https://github.com/google/site-kit-wp/issues/10552).
+* Update the WooCommerce modal to deactivate the Google For WooCommerce linked account notification when the user selects to install that plugin. See [#10542](https://github.com/google/site-kit-wp/issues/10542).
+* Add OverlayCard components to use for overlay notifications. See [#10532](https://github.com/google/site-kit-wp/issues/10532).
+* Remove the ESLint complexity override from the Reader Revenue Manager `SettingsEdit` component. See [#10363](https://github.com/google/site-kit-wp/issues/10363).
+* Enhance Ads measurement checks to avoid extra requests on dashboard. See [#10190](https://github.com/google/site-kit-wp/issues/10190).
+* Limit display of Visitor groups setup success notice to user who set up the feature. See [#10089](https://github.com/google/site-kit-wp/issues/10089).
+* Improve language intended to direct users to Site Kit settings. Props mxbclang. See [#7756](https://github.com/google/site-kit-wp/issues/7756).
 
 **Changed**
 
-* Update Guzzle to v7. See [#10302](https://github.com/google/site-kit-wp/issues/10302).
-* Update the PAX setup success notifications to lead the "Show me" link to the official Google Ads campaigns overview page. See [#10272](https://github.com/google/site-kit-wp/issues/10272).
+* Update PAX SDK version to 1.1.4. See [#10614](https://github.com/google/site-kit-wp/issues/10614).
+* Replace all usage of `deprecatedProvideNotifications` with the updated `provideNotifications` utility and remove the deprecated utility. See [#10465](https://github.com/google/site-kit-wp/issues/10465).
 
 **Fixed**
 
-* Fix PAX layout issues. See [#10412](https://github.com/google/site-kit-wp/issues/10412).
-* Ensure that warning notices for Reader Revenue Manager blocks appear as expected for view-only Site Kit users. See [#10394](https://github.com/google/site-kit-wp/issues/10394).
-* Fix console warning that could appear when Sign in with Google module is not connected. See [#10325](https://github.com/google/site-kit-wp/issues/10325).
-* Fix the All Traffic pie chart tooltip issue that didn't appear after deselecting a segment. See [#10318](https://github.com/google/site-kit-wp/issues/10318).
-* Fix incorrect user count in the "Others" segment of the Locations pie chart and ensure matching percentages in All Traffic widget pie charts. See [#10243](https://github.com/google/site-kit-wp/issues/10243).
-* Update key metric widgets to skip showing empty rows. See [#10156](https://github.com/google/site-kit-wp/issues/10156).
-* Upgrade Google API client library to avoid deprecation notices on latest versions of PHP. See [#9977](https://github.com/google/site-kit-wp/issues/9977).
+* Fix issue where syncing audiences and custom dimensions in parallel could result in the cached audiences not being persisted. See [#8888](https://github.com/google/site-kit-wp/issues/8888).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

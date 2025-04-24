@@ -24,14 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isFeatureEnabled } from '../../../features';
 import {
 	isValidPublicationID,
 	isValidOnboardingState,
@@ -81,6 +80,11 @@ export function validateCanSubmitChanges( select ) {
 
 	const publicationID = getPublicationID();
 	const onboardingState = getPublicationOnboardingState();
+	const snippetMode = getSnippetMode();
+	const postTypes = getPostTypes();
+	const productID = getProductID();
+	const productIDs = getProductIDs();
+	const paymentOption = getPaymentOption();
 
 	invariant(
 		isValidPublicationID( publicationID ),
@@ -92,42 +96,31 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE
 	);
 
-	if ( isFeatureEnabled( 'rrmModuleV2' ) ) {
-		const snippetMode = getSnippetMode();
-		const postTypes = getPostTypes();
-		const productID = getProductID();
-		const productIDs = getProductIDs();
-		const paymentOption = getPaymentOption();
+	invariant(
+		isValidSnippetMode( snippetMode ),
+		INVARIANT_INVALID_SNIPPET_MODE
+	);
 
-		invariant(
-			isValidSnippetMode( snippetMode ),
-			INVARIANT_INVALID_SNIPPET_MODE
-		);
+	invariant(
+		snippetMode !== 'post_types' ||
+			( Array.isArray( postTypes ) &&
+				postTypes.every( ( item ) => typeof item === 'string' ) &&
+				postTypes.length > 0 ),
+		INVARIANT_INVALID_POST_TYPES
+	);
 
-		invariant(
-			snippetMode !== 'post_types' ||
-				( Array.isArray( postTypes ) &&
-					postTypes.every( ( item ) => typeof item === 'string' ) &&
-					postTypes.length > 0 ),
-			INVARIANT_INVALID_POST_TYPES
-		);
+	invariant( typeof productID === 'string', INVARIANT_INVALID_PRODUCT_ID );
 
-		invariant(
-			typeof productID === 'string',
-			INVARIANT_INVALID_PRODUCT_ID
-		);
+	invariant(
+		Array.isArray( productIDs ) &&
+			productIDs.every( ( item ) => typeof item === 'string' ),
+		INVARIANT_INVALID_PRODUCT_IDS
+	);
 
-		invariant(
-			Array.isArray( productIDs ) &&
-				productIDs.every( ( item ) => typeof item === 'string' ),
-			INVARIANT_INVALID_PRODUCT_IDS
-		);
-
-		invariant(
-			typeof paymentOption === 'string',
-			INVARIANT_INVALID_PAYMENT_OPTION
-		);
-	}
+	invariant(
+		typeof paymentOption === 'string',
+		INVARIANT_INVALID_PAYMENT_OPTION
+	);
 }
 
 export async function submitChanges( { dispatch, select } ) {
@@ -137,7 +130,6 @@ export async function submitChanges( { dispatch, select } ) {
 
 	if ( haveSettingsChanged() ) {
 		if (
-			isFeatureEnabled( 'rrmModuleV2' ) &&
 			hasSettingChanged( 'postTypes' ) &&
 			'post_types' !== getSnippetMode()
 		) {
@@ -155,7 +147,7 @@ export async function submitChanges( { dispatch, select } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'reader-revenue-manager' );
+	await invalidateCache( 'modules', 'reader-revenue-manager' );
 
 	return {};
 }

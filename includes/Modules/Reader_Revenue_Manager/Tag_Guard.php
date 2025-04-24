@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 
 /**
@@ -59,10 +58,6 @@ class Tag_Guard extends Module_Tag_Guard {
 
 		if ( empty( $settings['publicationID'] ) ) {
 			return false;
-		}
-
-		if ( ! Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			return true;
 		}
 
 		if ( is_singular() ) {

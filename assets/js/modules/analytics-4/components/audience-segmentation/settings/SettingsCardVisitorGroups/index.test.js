@@ -60,9 +60,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: null,
+		} );
 
 		const { getByRole } = render( <SettingsCardVisitorGroups />, {
 			registry,
@@ -94,7 +94,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( 'We’ve added the audiences section to your dashboard!' )
+			getByText(
+				'We’ve added the visitor groups section to your dashboard!'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -103,9 +105,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: null,
+		} );
 
 		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
 			registry,
@@ -143,10 +145,6 @@ describe( 'SettingsCardVisitorGroups', () => {
 				},
 			];
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences( availableAudiences );
-
 			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [ 'audienceA', 'audienceB' ],
 				isAudienceSegmentationWidgetHidden: true,
@@ -154,7 +152,10 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setAudienceSegmentationSetupCompletedBy( null );
+				.receiveGetAudienceSettings( {
+					availableAudiences,
+					audienceSegmentationSetupCompletedBy: null,
+				} );
 
 			fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
 				const { data } = JSON.parse( opts.body );

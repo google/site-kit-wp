@@ -23,7 +23,7 @@ import { isEmpty, isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -66,8 +66,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
-import { isFeatureEnabled } from '../../../features';
-
 const { receiveError, clearError } = errorStoreActions;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
@@ -79,7 +77,7 @@ const baseInitialState = {
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'getKeyMetricsSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'key-metrics', undefined, {
+		get( 'core', 'user', 'key-metrics', undefined, {
 			// Never cache key metrics requests, we want them to be
 			// up-to-date with what's in settings, and they don't
 			// make requests to Google APIs so it's not a slow request.
@@ -94,7 +92,7 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'key-metrics', { settings } ),
+		set( 'core', 'user', 'key-metrics', { settings } ),
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
@@ -495,20 +493,15 @@ const baseSelectors = {
 					return undefined;
 				}
 
-				const isConversionReportingEnabled = isFeatureEnabled(
-					'conversionReporting'
-				);
 				const purpose =
 					purposeOverride ??
 					userInputSettings?.purpose?.values?.[ 0 ];
 
-				const widgetIDs = isConversionReportingEnabled
-					? select(
-							CORE_USER
-					  ).getConversionTailoredKeyMetricsWidgetIDs(
-							includeConversionTailoredMetrics
-					  )
-					: select( CORE_USER ).getRegularKeyMetricsWidgetIDs();
+				const widgetIDs = select(
+					CORE_USER
+				).getConversionTailoredKeyMetricsWidgetIDs(
+					includeConversionTailoredMetrics
+				);
 
 				return widgetIDs[ purpose ] || [];
 			}

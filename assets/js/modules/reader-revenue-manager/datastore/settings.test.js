@@ -19,9 +19,8 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../features';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_PAYMENT_OPTION,
@@ -53,7 +52,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -61,7 +60,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'validateCanSubmitChanges', () => {
@@ -111,8 +110,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid snippet mode', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				snippetMode: 'invalid-mode',
@@ -128,8 +125,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid post types', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				postTypes: 'not-an-array',
@@ -145,8 +140,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for post types with non-string elements', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				postTypes: [ 'post', 123, true ],
@@ -162,8 +155,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error if at least 1 post type is not selected', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				postTypes: [],
@@ -179,8 +170,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should not throw invariant error if no post types are selected and the snippet mode is different', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				postTypes: [],
@@ -197,8 +186,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid product ID', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				productID: [ 'not-a-string' ],
@@ -214,8 +201,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid product IDs', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				productIDs: 'not-an-array',
@@ -231,8 +216,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for product IDs with non-string elements', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				productIDs: [ 'valid', 123, true ],
@@ -248,8 +231,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		} );
 
 		it( 'should throw invariant error for invalid payment option', () => {
-			enabledFeatures.add( 'rrmModuleV2' );
-
 			const settings = {
 				...validSettings,
 				paymentOption: [ 'not-a-string' ],
@@ -291,79 +272,65 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			).toBe( false );
 		} );
 
-		describe( 'with "rrmModuleV2" feature flag enabled', () => {
-			beforeEach( () => {
-				enabledFeatures.add( 'rrmModuleV2' );
+		it( 'should save selected post types', async () => {
+			fetchMock.post( settingsEndpoint, {
+				body: {
+					...validSettings,
+					snippetMode: 'post_types',
+					postTypes: [ 'post', 'page' ],
+				},
+				status: 200,
 			} );
 
-			it( 'should save selected post types', async () => {
-				fetchMock.post( settingsEndpoint, {
-					body: {
-						...validSettings,
-						snippetMode: 'post_types',
-						postTypes: [ 'post', 'page' ],
-					},
-					status: 200,
+			registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+				...validSettings,
+				snippetMode: 'post_types',
+				postTypes: [ 'post', 'page' ],
+			} );
+
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
+
+			expect(
+				registry.select( MODULES_READER_REVENUE_MANAGER ).getPostTypes()
+			).toEqual( [ 'post', 'page' ] );
+		} );
+
+		it( 'should not save selected post types for a different snippet mode', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...validSettings,
+					snippetMode: 'post_types',
+					postTypes: [ 'post', 'page' ],
 				} );
 
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( {
-						...validSettings,
-						snippetMode: 'post_types',
-						postTypes: [ 'post', 'page' ],
-					} );
+			fetchMock.post( settingsEndpoint, ( url, { body } ) => {
+				const { data } = JSON.parse( body );
 
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.submitChanges();
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPostTypes()
-				).toEqual( [ 'post', 'page' ] );
+				return { body: data };
 			} );
 
-			it( 'should not save selected post types for a different snippet mode', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						...validSettings,
-						snippetMode: 'post_types',
-						postTypes: [ 'post', 'page' ],
-					} );
-
-				fetchMock.post( settingsEndpoint, ( url, { body } ) => {
-					const { data } = JSON.parse( body );
-
-					return { body: data };
-				} );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( {
-						snippetMode: 'per_post',
-						postTypes: [ 'page' ],
-					} );
-
-				await registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.submitChanges();
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPostTypes()
-				).toEqual( [ 'post', 'page' ] );
-
-				// Verify that the snippet mode is saved as expected.
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getSnippetMode()
-				).toEqual( 'per_post' );
+			registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+				snippetMode: 'per_post',
+				postTypes: [ 'page' ],
 			} );
+
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
+
+			expect(
+				registry.select( MODULES_READER_REVENUE_MANAGER ).getPostTypes()
+			).toEqual( [ 'post', 'page' ] );
+
+			// Verify that the snippet mode is saved as expected.
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSnippetMode()
+			).toEqual( 'per_post' );
 		} );
 	} );
 } );

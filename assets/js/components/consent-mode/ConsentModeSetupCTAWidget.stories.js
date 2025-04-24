@@ -87,7 +87,10 @@ export default {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetAdsMeasurementStatus( { connected: true } );
+					.receiveGetAdsMeasurementStatus(
+						{ connected: true },
+						{ useCache: true }
+					);
 
 				fetchMock.postOnce(
 					new RegExp(

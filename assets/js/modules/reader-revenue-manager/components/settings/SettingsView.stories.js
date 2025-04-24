@@ -151,10 +151,7 @@ export default {
 			};
 
 			return (
-				<WithTestRegistry
-					callback={ setupRegistry }
-					features={ [ 'rrmModuleV2' ] }
-				>
+				<WithTestRegistry callback={ setupRegistry }>
 					<Story />
 				</WithTestRegistry>
 			);
