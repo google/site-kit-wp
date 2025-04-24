@@ -73,6 +73,7 @@ const Notice = forwardRef(
 						<DismissButton
 							label={ dismissButton.label }
 							onClick={ dismissButton.onClick }
+							disabled={ dismissButton.disabled }
 						/>
 					) }
 					{ ctaButton?.label && ctaButton?.onClick && (
