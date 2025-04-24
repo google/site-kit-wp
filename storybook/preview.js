@@ -44,6 +44,34 @@ setUsingCache( false );
 
 bootstrapFetchMocks();
 
+if ( 'serviceWorker' in global.navigator ) {
+	global.serviceWorkerReader = new Promise( ( resolve, reject ) => {
+		global.addEventListener( 'load', () => {
+			global.navigator.serviceWorker
+				.register( '/service-worker.js' )
+				.then( ( registration ) => {
+					if ( registration.installing ) {
+						registration.installing.addEventListener(
+							'statechange',
+							( e ) => {
+								if ( e.target.state === 'activated' ) {
+									resolve( registration );
+								}
+							}
+						);
+					}
+
+					if ( registration.active ) {
+						resolve( registration );
+					}
+				} )
+				.catch( ( err ) => {
+					reject( err );
+				} );
+		} );
+	} );
+}
+
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
 	( Story, { parameters } ) => {

@@ -54,7 +54,8 @@ export default function Preview() {
 			} );
 		};
 
-		script.src = 'https://accounts.google.com/gsi/client';
+		// Explicitly set the language to Portuguese for testing the service worker proxy.
+		script.src = 'https://accounts.google.com/gsi/client?hl=pt';
 		script.addEventListener( 'load', onLoad );
 
 		document.body.appendChild( script );
