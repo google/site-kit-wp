@@ -35,10 +35,8 @@ import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/data
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
 import { MINUTE_IN_SECONDS } from '../../../../util';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
@@ -72,34 +70,22 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 
 	return (
 		<Notification>
-			<SubtleNotification
-				type="new-feature"
+			<NoticeNotification
+				type="new"
 				description={ __(
 					'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						dismissLabel={ __(
-							'Keep existing account',
-							'google-site-kit'
-						) }
-						onDismiss={ dismissWooCommerceRedirectModal }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __(
-							'Create new account',
-							'google-site-kit'
-						) }
-						onCTAClick={ onCTAClick }
-						isSaving={ isSaving }
-						tertiary
-					/>
-				}
+				dismissButton={ {
+					label: __( 'Create new account', 'google-site-kit' ),
+					onClick: onCTAClick,
+					disabled: isSaving,
+				} }
+				ctaButton={ {
+					label: __( 'Keep existing account', 'google-site-kit' ),
+					onClick: dismissWooCommerceRedirectModal,
+					disabled: isSaving,
+				} }
 				reverseCTAs
 			/>
 		</Notification>
