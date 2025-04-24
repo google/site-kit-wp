@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
@@ -102,7 +102,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
-		API.set( 'modules', 'analytics-4', 'create-audience', {
+		set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
 	argsToParams: ( audience ) => ( {
@@ -125,7 +125,7 @@ async function getConfiguredAudiencesFromExistingAudiences( registry ) {
 	const { resolveSelect, select } = registry;
 
 	const availableAudiences =
-		select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 	const { error, configuredAudiences } = await getInitialConfiguredAudiences(
 		registry,
@@ -294,7 +294,7 @@ const baseActions = {
 
 		if ( ! isAuthenticated ) {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			return { response: availableAudiences ?? [] };
 		}
@@ -772,7 +772,7 @@ const baseSelectors = {
 	isDefaultAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -798,7 +798,7 @@ const baseSelectors = {
 	isSiteKitAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -824,7 +824,7 @@ const baseSelectors = {
 	isUserAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -854,7 +854,7 @@ const baseSelectors = {
 				: [ audienceResourceNames ];
 
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -882,10 +882,10 @@ const baseSelectors = {
 	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
 	 */
 	getConfigurableAudiences: createRegistrySelector( ( select ) => () => {
-		const { getAvailableAudiences, getResourceDataAvailabilityDate } =
+		const { getOrSyncAvailableAudiences, getResourceDataAvailabilityDate } =
 			select( MODULES_ANALYTICS_4 );
 
-		const availableAudiences = getAvailableAudiences();
+		const availableAudiences = getOrSyncAvailableAudiences();
 
 		if ( availableAudiences === undefined ) {
 			return undefined;
@@ -1074,7 +1074,7 @@ const baseSelectors = {
 	getPartialDataSiteKitAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -1149,7 +1149,7 @@ const baseSelectors = {
 			const configuredAudiences =
 				select( CORE_USER ).getConfiguredAudiences();
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if (
 				undefined === configuredAudiences ||

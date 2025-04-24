@@ -29,7 +29,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { combineStores, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -37,7 +37,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { strategy, url } ) => {
-		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', {
+		return get( 'modules', 'pagespeed-insights', 'pagespeed', {
 			strategy,
 			url,
 		} );

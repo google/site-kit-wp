@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createReducer,
@@ -72,7 +72,7 @@ const fetchStoreReducerCallback = createReducer( ( state, settings ) => {
 const fetchGetAudienceSettingsStore = createFetchStore( {
 	baseName: 'getAudienceSettings',
 	controlCallback() {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'audience-settings',
@@ -88,7 +88,7 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 const fetchSaveAudienceSettingsStore = createFetchStore( {
 	baseName: 'saveAudienceSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'modules', 'analytics-4', 'save-audience-settings', {
+		set( 'modules', 'analytics-4', 'save-audience-settings', {
 			settings,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -98,8 +98,7 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 
 const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
+	controlCallback: () => set( 'modules', 'analytics-4', 'sync-audiences' ),
 	reducerCallback: createReducer( ( state, audiences ) => {
 		if ( ! state.audienceSettings ) {
 			state.audienceSettings = {};
@@ -204,7 +203,7 @@ const baseResolvers = {
 		}
 	},
 
-	*getAvailableAudiences() {
+	*getOrSyncAvailableAudiences() {
 		const registry = yield commonActions.getRegistry();
 
 		const audiences = registry
@@ -250,6 +249,10 @@ const baseSelectors = {
 	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
 	getAvailableAudiences( state ) {
+		return state.audienceSettings?.availableAudiences;
+	},
+
+	getOrSyncAvailableAudiences( state ) {
 		return state.audienceSettings?.availableAudiences;
 	},
 

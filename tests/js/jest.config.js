@@ -42,28 +42,11 @@ module.exports = {
 		'<rootDir>/build',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
-	transformIgnorePatterns: [
-		'<rootDir>/node_modules/(?!@material/web)/.*',
-		'<rootDir>/assets/node_modules/',
-	],
+	transformIgnorePatterns: [ '<rootDir>/assets/node_modules/' ],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
 		// New (JSR) modules.
-		// In the future when the "components" entry point uses GM3 and
-		// the filename is `'googlesitekit-components'`, we can revert to
-		// using a more concise catch-all name mapper, eg.
-		// `'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',`
-		//
-		// After that, these manually-mapped `googlesitekit-$X` entries can
-		// be removed.
-		'googlesitekit-api': '<rootDir>assets/js/googlesitekit-api',
-		'googlesitekit-data': '<rootDir>assets/js/googlesitekit-data',
-		'googlesitekit-modules': '<rootDir>assets/js/googlesitekit-modules',
-		'googlesitekit-widgets': '<rootDir>assets/js/googlesitekit-widgets',
-		// This component has a (temporary) filename override because
-		// it currently references the "GM2+" versions of these components.
-		'googlesitekit-components':
-			'<rootDir>assets/js/googlesitekit-components-gm2',
+		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 		// Necessary mock to prevent test failures caused by SVGR
 		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
 		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':

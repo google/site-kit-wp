@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopTrafficSourceWidget renders correctly with the expected metrics 1`] = `
+exports[`TopTrafficSourceWidget should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"
@@ -59,7 +59,132 @@ exports[`TopTrafficSourceWidget renders correctly with the expected metrics 1`] 
 </div>
 `;
 
-exports[`TopTrafficSourceWidget retries both reports when an error is encountered 1`] = `
+exports[`TopTrafficSourceWidget should render the generic error variant when the report fetch fails 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Top traffic source
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Data loading failed
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <div
+            class="googlesitekit-error-retry-text"
+          >
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?error_id=internal_server_error"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TopTrafficSourceWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+<div>
+  <div
+    class="googlesitekit-km-widget-tile--error"
+  >
+    <div
+      class="googlesitekit-cta googlesitekit-cta--error"
+    >
+      <div
+        class="googlesitekit-cta__header"
+      >
+        <h2
+          class="googlesitekit-cta__header_text"
+        >
+          Top traffic source
+        </h2>
+        <span
+          class="googlesitekit-info-tooltip"
+          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
+        >
+          <svg />
+        </span>
+      </div>
+      <div
+        class="googlesitekit-cta__body"
+      >
+        <h3
+          class="googlesitekit-cta__title"
+        >
+          Insufficient permissions
+        </h3>
+        
+        
+        
+        
+        <div
+          class="googlesitekit-report-error-actions"
+        >
+          <div
+            class="googlesitekit-error-retry-text"
+          >
+            Trouble getting access? 
+            <a
+              aria-label="Get help (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?error_id=analytics-4_insufficient_permissions"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Get help
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TopTrafficSourceWidget should retry both reports when an error is encountered 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -132,7 +257,7 @@ exports[`TopTrafficSourceWidget retries both reports when an error is encountere
 </div>
 `;
 
-exports[`TopTrafficSourceWidget retries both reports when an error is encountered 2`] = `
+exports[`TopTrafficSourceWidget should retry both reports when an error is encountered 2`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"
