@@ -18,15 +18,16 @@ BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 
 VERSION=6.1.1
-IMAGE=googlesitekit/vrt:$VERSION
 
-# Determine which containerisation tool to use. If Docker is available,
-# use it; otherwise, use Podman.
-command -v docker > /dev/null && DC="docker" || DC="podman"
+# Change the suffix version of the tag every time the backstop image is changed.
+# This is needed to avoid Docker caching the image, so everyone will get the latest version.
+# The suffix version should be a date in YYYYMMDD format.
+# The date should be the date of the last change to the backstop image.
+IMAGE=googlesitekit/vrt:$VERSION-20250424
 
 # Build the backstopjs image if it doesn't exist.
-if [[ "$(${DC} images -q $IMAGE 2> /dev/null)" == "" ]]; then
-	${DC} build \
+if [[ "$(docker images -q $IMAGE 2> /dev/null)" == "" ]]; then
+	docker build \
 		--pull \
 		--tag $IMAGE \
 		--build-arg BACKSTOPJS_VERSION=$VERSION \
@@ -34,7 +35,7 @@ if [[ "$(${DC} images -q $IMAGE 2> /dev/null)" == "" ]]; then
 fi
 
 # Run the backstopjs command.
-${DC} run --rm --tty \
+docker run --rm --tty \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	$IMAGE \
