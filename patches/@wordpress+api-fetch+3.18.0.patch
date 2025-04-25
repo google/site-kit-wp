@@ -9,10 +9,10 @@ index e7affec..56810e8 100644
 -    return response.json ? response.json() : Promise.reject(response);
 +    var rclone = response.clone();
 +    return response.json ? response.json().catch(function (e) {
-+      rclone.text().then((text) => console.log('invalid_json_raw', response.url, text));
++      rclone.text().then((text) => console.error('invalid_json_raw', response.url, text));
 +      throw e;
 +    }) : Promise.reject(response).catch(function (e) {
-+      rclone.text().then((text) => console.log('invalid_response_raw', response.url, text));
++      rclone.text().then((text) => console.error('invalid_response_raw', response.url, text));
 +      throw e;
 +    });
    }
@@ -29,10 +29,10 @@ index cb7154b..8025ba1 100644
 -    return response.json ? response.json() : Promise.reject(response);
 +    var rclone = response.clone();
 +    return response.json ? response.json().catch(function (e) {
-+      rclone.text().then((text) => console.log('invalid_json_raw', response.url, text));
++      rclone.text().then((text) => console.error('invalid_json_raw', response.url, text));
 +      throw e;
 +    }) : Promise.reject(response).catch(function (e) {
-+      rclone.text().then((text) => console.log('invalid_response_raw', response.url, text));
++      rclone.text().then((text) => console.error('invalid_response_raw', response.url, text));
 +      throw e;
 +    });
    }
