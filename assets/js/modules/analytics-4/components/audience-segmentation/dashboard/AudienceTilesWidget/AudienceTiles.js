@@ -62,6 +62,7 @@ import { createLogger } from './logger';
 const logIt = createLogger( 'AudienceTiles', {
 	colour: 36,
 	logOnlyOnce: true,
+	logDiff: true,
 } );
 
 const log = ( ...args ) => {
@@ -604,6 +605,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							return null;
 						}
 
+						const audienceTileData = getAudienceTileData(
+							audienceResourceName,
+							index
+						);
+
 						const {
 							audienceName,
 							audienceSlug,
@@ -620,7 +626,12 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							topContentTitles,
 							isZeroData,
 							isPartialData,
-						} = getAudienceTileData( audienceResourceName, index );
+						} = audienceTileData;
+						// } = getAudienceTileData( audienceResourceName, index );
+
+						if ( index === 0 ) {
+							log2( 'audienceTileData', audienceTileData );
+						}
 
 						// Filter (not set) value from the top countries report if present.
 						const filteredTopCitiesRows = topCities?.rows
@@ -642,7 +653,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							isPartialData === undefined
 						) {
 							log2(
-								'showing loading tile',
+								'showing \x1b[31mloading\x1b[0m tile',
 								audienceResourceName
 							);
 							log( 'Loading... ', audienceResourceName );
@@ -671,7 +682,10 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							);
 						}
 
-						log2( 'showing loaded tile', audienceResourceName );
+						log2(
+							'showing \x1b[32mloaded\x1b[0m tile',
+							audienceResourceName
+						);
 
 						return (
 							<AudienceTile

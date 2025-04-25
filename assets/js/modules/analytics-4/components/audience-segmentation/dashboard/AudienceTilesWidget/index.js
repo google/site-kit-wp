@@ -40,6 +40,7 @@ import { createLogger } from './logger';
 const log = createLogger( 'AudienceTilesWidget', {
 	colour: 33,
 	logOnlyOnce: true,
+	logDiff: true,
 } );
 
 function AudienceTilesWidget( { Widget } ) {
@@ -124,7 +125,7 @@ function AudienceTilesWidget( { Widget } ) {
 	// 	availableAudiencesSynced,
 	// } );
 
-	log( {
+	log( 'audiences', {
 		configuredAudiences,
 		availableAudiences,
 		hasMatchingAudience,
