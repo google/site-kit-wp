@@ -12,6 +12,8 @@ import {
  * Deactivates all Site Kit utility plugins.
  */
 export async function deactivateUtilityPlugins() {
+	// Avoid interrupting active network requests.
+	await page.waitForNetworkIdle();
 	await switchUserToAdmin();
 
 	if ( ! isCurrentURL( 'wp-admin/plugins.php' ) ) {
