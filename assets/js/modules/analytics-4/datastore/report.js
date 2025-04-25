@@ -219,7 +219,10 @@ const baseSelectors = {
 
 		log( 'getReport', options );
 
-		return reports[ stringifyObject( options ) ];
+		// eslint-disable-next-line no-unused-vars
+		const { reportID, ...rest } = options;
+
+		return reports[ stringifyObject( rest ) ];
 	},
 
 	/**

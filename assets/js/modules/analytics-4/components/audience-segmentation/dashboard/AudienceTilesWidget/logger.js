@@ -67,7 +67,6 @@ export function createLogger(
 				JSON.stringify( prevArgs ) !== JSON.stringify( args )
 			) {
 				const diff = deepDiff( prevArgs, args );
-				// global.console.log( 'diff', diff );
 				logArgs = [ diff ];
 			}
 		}

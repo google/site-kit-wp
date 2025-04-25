@@ -22,20 +22,16 @@
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
-import {
-	createLogger,
-	getColour,
-} from '../components/audience-segmentation/dashboard/AudienceTilesWidget/logger';
 
-const log = createLogger( 'useAudienceTilesReports', {
-	logOnlyOnce: true,
-	logDiff: true,
-} );
+// const log = createLogger( 'useAudienceTilesReports', {
+// 	logOnlyOnce: true,
+// 	logDiff: true,
+// } );
 
-const colouredString = ( string ) => {
-	const colour = getColour( string );
-	return `\x1b[${ colour }m${ string }\x1b[0m`;
-};
+// const colouredString = ( string ) => {
+// 	const colour = getColour( string );
+// 	return `\x1b[${ colour }m${ string }\x1b[0m`;
+// };
 
 /**
  * Checks if the audience reports are loaded for the given report options.
@@ -182,6 +178,7 @@ export default function useAudienceTilesReports( {
 		siteKitAudiences.length > 0 ? isSiteKitAudiencePartialData : false;
 
 	const reportOptions = {
+		reportID: 'audienceTilesReport',
 		...dates,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: audiencesDimensionFilter,
@@ -231,6 +228,7 @@ export default function useAudienceTilesReports( {
 		] );
 	} );
 	const newVsReturningReportOptions = {
+		reportID: 'newVsReturningReport',
 		...dates,
 		dimensions: [ { name: 'newVsReturning' } ],
 		dimensionFilters: { newVsReturning: [ 'new', 'returning' ] },
@@ -287,30 +285,30 @@ export default function useAudienceTilesReports( {
 		metrics: [ { name: 'screenPageViews' } ],
 	};
 	const totalPageviewsReport = useInViewSelect( ( select ) => {
-		log(
-			`selecting ${ colouredString( 'totalPageviewsReport' ) }`,
-			totalPageviewsReportOptions
-		);
+		// log(
+		// 	`selecting ${ colouredString( 'totalPageviewsReport' ) }`,
+		// 	totalPageviewsReportOptions
+		// );
 		return select( MODULES_ANALYTICS_4 ).getReport(
 			totalPageviewsReportOptions
 		);
 	} );
 	const totalPageviewsReportLoaded = useSelect( ( select ) => {
-		log(
-			`selecting loaded state for ${ colouredString(
-				'totalPageviewsReport'
-			) }`,
-			totalPageviewsReportOptions
-		);
+		// log(
+		// 	`selecting loaded state for ${ colouredString(
+		// 		'totalPageviewsReport'
+		// 	) }`,
+		// 	totalPageviewsReportOptions
+		// );
 		return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 			'getReport',
 			[ totalPageviewsReportOptions ]
 		);
 	} );
-	log(
-		`got ${ colouredString( 'totalPageviewsReport' ) }`,
-		totalPageviewsReport
-	);
+	// log(
+	// 	`got ${ colouredString( 'totalPageviewsReport' ) }`,
+	// 	totalPageviewsReport
+	// );
 	const totalPageviewsReportError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			totalPageviewsReportOptions,
@@ -323,6 +321,7 @@ export default function useAudienceTilesReports( {
 		) || 0;
 
 	const topCitiesReportOptions = {
+		reportID: 'topCitiesReport',
 		startDate,
 		endDate,
 		dimensions: [ 'city' ],
@@ -356,6 +355,7 @@ export default function useAudienceTilesReports( {
 	);
 
 	const topContentReportOptions = {
+		reportID: 'topContentReport',
 		startDate,
 		endDate,
 		dimensions: [ 'pagePath' ],
@@ -387,6 +387,7 @@ export default function useAudienceTilesReports( {
 	);
 
 	const topContentPageTitlesReportOptions = {
+		reportID: 'topContentPageTitlesReport',
 		startDate,
 		endDate,
 		dimensions: [ 'pagePath', 'pageTitle' ],
