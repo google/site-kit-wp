@@ -26,6 +26,7 @@ import { createRegistrySelector } from '@wordpress/data';
  */
 import invariant from 'invariant';
 import md5 from 'md5';
+import { produce } from 'immer';
 
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
@@ -95,63 +96,48 @@ export function createErrorStore( storeName ) {
 	};
 
 	function reducer( state, { type, payload } ) {
-		switch ( type ) {
-			case RECEIVE_ERROR: {
-				const { baseName, args, error } = payload;
-
-				const key = generateErrorKey( baseName, args );
-				return {
-					...state,
-					errors: {
-						...( state.errors || {} ),
-						[ key ]: error,
-					},
-					errorArgs: {
-						...( state.errorArgs || {} ),
-						[ key ]: args,
-					},
-				};
-			}
-
-			case CLEAR_ERROR: {
-				const { baseName, args } = payload;
-				const newState = { ...state };
-				const key = generateErrorKey( baseName, args );
-				newState.errors = { ...( state.errors || {} ) };
-				newState.errorArgs = { ...( state.errorArgs || {} ) };
-
-				delete newState.errors[ key ];
-				delete newState.errorArgs[ key ];
-
-				return newState;
-			}
-
-			case CLEAR_ERRORS: {
-				const { baseName } = payload;
-				const newState = { ...state };
-				if ( baseName ) {
-					newState.errors = { ...( state.errors || {} ) };
-					newState.errorArgs = { ...( state.errorArgs || {} ) };
-					for ( const key in newState.errors ) {
-						if (
-							key === baseName ||
-							key.startsWith( `${ baseName }::` )
-						) {
-							delete newState.errors[ key ];
-							delete newState.errorArgs[ key ];
-						}
-					}
-				} else {
-					newState.errors = {};
-					newState.errorArgs = {};
+		return produce( state, ( draft ) => {
+			switch ( type ) {
+				case RECEIVE_ERROR: {
+					const { baseName, args, error } = payload;
+					const key = generateErrorKey( baseName, args );
+					draft.errors[ key ] = error;
+					draft.errorArgs[ key ] = args;
+					break;
 				}
-				return newState;
-			}
 
-			default: {
-				return state;
+				case CLEAR_ERROR: {
+					const { baseName, args } = payload;
+					const key = generateErrorKey( baseName, args );
+					delete draft.errors[ key ];
+					delete draft.errorArgs[ key ];
+					break;
+				}
+
+				case CLEAR_ERRORS: {
+					const { baseName } = payload;
+					if ( baseName ) {
+						for ( const key in draft.errors ) {
+							if (
+								key === baseName ||
+								key.startsWith( `${ baseName }::` )
+							) {
+								delete draft.errors[ key ];
+								delete draft.errorArgs[ key ];
+							}
+						}
+					} else {
+						draft.errors = {};
+						draft.errorArgs = {};
+					}
+					break;
+				}
+
+				default: {
+					break;
+				}
 			}
-		}
+		} );
 	}
 
 	const controls = {};

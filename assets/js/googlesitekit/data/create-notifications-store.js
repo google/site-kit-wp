@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -75,20 +76,17 @@ export const createNotificationsStore = (
 		controlCallback: () => {
 			return get( type, identifier, datapoint );
 		},
-		reducerCallback: ( state, notifications ) => {
-			return {
-				...state,
-				serverNotifications: notifications.reduce(
-					( acc, notification ) => {
-						return {
-							...acc,
-							[ notification.id ]: notification,
-						};
-					},
-					{}
-				),
-			};
-		},
+		reducerCallback: produce( ( draft, notifications ) => {
+			draft.serverNotifications = notifications.reduce(
+				( acc, notification ) => {
+					return {
+						...acc,
+						[ notification.id ]: notification,
+					};
+				},
+				{}
+			);
+		} ),
 	} );
 
 	const actions = {

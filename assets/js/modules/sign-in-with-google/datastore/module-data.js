@@ -20,6 +20,7 @@
  * External dependencies.
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -73,18 +74,16 @@ export const controls = {};
 export const reducer = ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { isWooCommerceActive, isWooCommerceRegistrationEnabled } =
-				payload;
-
-			const moduleData = {
-				isWooCommerceActive,
-				isWooCommerceRegistrationEnabled,
-			};
-
-			return {
-				...state,
-				moduleData,
-			};
+			return produce( state, ( draft ) => {
+				const {
+					isWooCommerceActive,
+					isWooCommerceRegistrationEnabled,
+				} = payload;
+				draft.moduleData = {
+					isWooCommerceActive,
+					isWooCommerceRegistrationEnabled,
+				};
+			} );
 		}
 
 		default: {

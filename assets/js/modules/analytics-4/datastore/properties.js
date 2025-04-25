@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { isBoolean } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * WordPress dependencies
@@ -65,15 +66,9 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, property, { propertyID } ) {
-		return {
-			...state,
-			propertiesByID: {
-				...state.propertiesByID,
-				[ propertyID ]: property,
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, property, { propertyID } ) => {
+		draft.propertiesByID[ propertyID ] = property;
+	} ),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -95,22 +90,16 @@ const fetchGetPropertiesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, properties, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: properties,
-			},
-			propertiesByID: properties.reduce(
-				( accum, property ) => ( {
-					...accum,
-					[ property._id ]: property,
-				} ),
-				state.propertiesByID || {}
-			),
-		};
-	},
+	reducerCallback: produce( ( draft, properties, { accountID } ) => {
+		draft.properties[ accountID ] = properties;
+		draft.propertiesByID = properties.reduce(
+			( accum, property ) => ( {
+				...accum,
+				[ property._id ]: property,
+			} ),
+			draft.propertiesByID || {}
+		);
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -126,18 +115,12 @@ const fetchCreatePropertyStore = createFetchStore( {
 			accountID,
 		} );
 	},
-	reducerCallback( state, property, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: [
-					...( state.properties[ accountID ] || [] ),
-					property,
-				],
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, property, { accountID } ) => {
+		if ( ! draft.properties[ accountID ] ) {
+			draft.properties[ accountID ] = [];
+		}
+		draft.properties[ accountID ].push( property );
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -718,25 +701,31 @@ const baseActions = {
 const baseControls = {};
 
 function baseReducer( state, { type, payload } ) {
-	switch ( type ) {
-		case MATCHING_ACCOUNT_PROPERTY:
-			return { ...state, ...payload };
-		case SET_HAS_MISMATCHED_TAG:
-			return {
-				...state,
-				moduleData: {
-					...state.moduleData,
-					hasMismatchedTag: payload.hasMismatchedTag,
-				},
-			};
-		case SET_IS_WEBDATASTREAM_AVAILABLE:
-			return {
-				...state,
-				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
-			};
-		default:
-			return state;
-	}
+	return produce( state, ( draft ) => {
+		switch ( type ) {
+			case MATCHING_ACCOUNT_PROPERTY: {
+				const { isMatchingAccountProperty } = payload;
+				draft.isMatchingAccountProperty = isMatchingAccountProperty;
+				break;
+			}
+			case SET_HAS_MISMATCHED_TAG: {
+				const { hasMismatchedTag } = payload;
+				draft.moduleData = {
+					...draft.moduleData,
+					hasMismatchedTag,
+				};
+				break;
+			}
+			case SET_IS_WEBDATASTREAM_AVAILABLE: {
+				const { isWebDataStreamAvailable } = payload;
+				draft.isWebDataStreamAvailable = isWebDataStreamAvailable;
+				break;
+			}
+			default: {
+				break;
+			}
+		}
+	} );
 }
 
 const baseResolvers = {

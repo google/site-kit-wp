@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { isPlainObject, isEqual, pick } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -191,39 +192,31 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = produce( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case SET_USER_INPUT_SETTING: {
-			return {
-				...state,
-				inputSettings: {
-					...state.inputSettings,
-					[ payload.settingID ]: {
-						...( ( state.inputSettings || {} )[
-							payload.settingID
-						] || {} ),
-						values: payload.values,
-					},
-				},
-			};
+			if ( ! draft.inputSettings ) {
+				draft.inputSettings = {};
+			}
+			if ( ! draft.inputSettings[ payload.settingID ] ) {
+				draft.inputSettings[ payload.settingID ] = {};
+			}
+			draft.inputSettings[ payload.settingID ].values = payload.values;
+			break;
 		}
 		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
-			return {
-				...state,
-				isSavingInputSettings: payload.isSaving,
-			};
+			draft.isSavingInputSettings = payload.isSaving;
+			break;
 		}
 		case RESET_USER_INPUT_SETTINGS: {
-			return {
-				...state,
-				inputSettings: state.savedInputSettings,
-			};
+			draft.inputSettings = draft.savedInputSettings;
+			break;
 		}
 		default: {
-			return state;
+			break;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getUserInputSettings() {

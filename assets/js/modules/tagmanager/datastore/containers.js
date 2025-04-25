@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -98,18 +99,12 @@ const fetchCreateContainerStore = createFetchStore( {
 			name,
 		} );
 	},
-	reducerCallback( state, container, { accountID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: [
-					...( state.containers[ accountID ] || [] ),
-					container,
-				],
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, container, { accountID } ) => {
+		if ( ! draft.containers[ accountID ] ) {
+			draft.containers[ accountID ] = [];
+		}
+		draft.containers[ accountID ].push( container );
+	} ),
 } );
 
 const baseInitialState = {

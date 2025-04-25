@@ -19,6 +19,7 @@
  */
 import invariant from 'invariant';
 import { isEmpty, isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -172,22 +173,20 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = produce( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case SET_KEY_METRICS_SETTING: {
-			return {
-				...state,
-				keyMetricsSettings: {
-					...state.keyMetricsSettings,
-					[ payload.settingID ]: payload.value,
-				},
-			};
+			if ( ! draft.keyMetricsSettings ) {
+				draft.keyMetricsSettings = {};
+			}
+			draft.keyMetricsSettings[ payload.settingID ] = payload.value;
+			break;
 		}
 		default: {
-			return state;
+			break;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getKeyMetricsSettings() {

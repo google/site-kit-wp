@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { pick, difference } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -122,18 +123,12 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 			displayName,
 		} );
 	},
-	reducerCallback( state, webDataStream, { propertyID } ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				[ propertyID ]: [
-					...( state.webdatastreams[ propertyID ] || [] ),
-					webDataStream,
-				],
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, webDataStream, { propertyID } ) => {
+		if ( ! draft.webdatastreams[ propertyID ] ) {
+			draft.webdatastreams[ propertyID ] = [];
+		}
+		draft.webdatastreams[ propertyID ].push( webDataStream );
+	} ),
 	argsToParams( propertyID, displayName ) {
 		return { propertyID, displayName };
 	},
@@ -200,11 +195,13 @@ const baseActions = {
 const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
-		default: {
-			return state;
+	return produce( state, () => {
+		switch ( type ) {
+			default: {
+				break;
+			}
 		}
-	}
+	} );
 };
 
 function* resolveGetWebDataStreams( propertyID ) {

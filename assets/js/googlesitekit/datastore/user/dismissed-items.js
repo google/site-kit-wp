@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -37,10 +38,11 @@ import { createValidatedAction } from '../../data/utils';
 const { getRegistry } = commonActions;
 
 function reducerCallback( state, dismissedItems ) {
-	return {
-		...state,
-		dismissedItems: Array.isArray( dismissedItems ) ? dismissedItems : [],
-	};
+	return produce( state, ( draft ) => {
+		draft.dismissedItems = Array.isArray( dismissedItems )
+			? dismissedItems
+			: [];
+	} );
 }
 
 const fetchGetDismissedItemsStore = createFetchStore( {

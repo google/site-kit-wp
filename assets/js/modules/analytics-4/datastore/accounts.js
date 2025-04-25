@@ -270,41 +270,45 @@ const baseActions = {
 
 const baseControls = {};
 
-/**
- * Creates immer reducer.
- */
-const baseReducer = produce( ( draft, { type } ) => {
-	switch ( type ) {
-		case START_SELECTING_ACCOUNT:
-			draft.finishedSelectingAccount = false;
-			break;
+const baseReducer = ( state, { type } ) => {
+	return produce( state, ( draft ) => {
+		switch ( type ) {
+			case START_SELECTING_ACCOUNT:
+				draft.finishedSelectingAccount = false;
+				break;
 
-		case FINISH_SELECTING_ACCOUNT:
-			draft.finishedSelectingAccount = true;
-			break;
+			case FINISH_SELECTING_ACCOUNT:
+				draft.finishedSelectingAccount = true;
+				break;
 
-		case RESET_ACCOUNT_SUMMARIES:
-			draft.accountSummaries = undefined;
-			break;
+			case RESET_ACCOUNT_SUMMARIES:
+				draft.accountSummaries = [];
+				break;
 
-		case RESET_ACCOUNT_SETTINGS:
-			draft.settings.accountID = undefined;
-			draft.settings.propertyID = undefined;
-			draft.settings.measurementID = undefined;
-			draft.settings.webDataStreamID = undefined;
-			break;
+			case RESET_ACCOUNT_SETTINGS:
+				draft.settings.accountID = undefined;
+				draft.settings.propertyID = undefined;
+				draft.settings.measurementID = undefined;
+				draft.settings.webDataStreamID = undefined;
+				break;
 
-		case SORT_ACCOUNT_SUMMARIES:
-			if ( ! draft.accountSummaries?.length ) {
-				return;
+			case SORT_ACCOUNT_SUMMARIES:
+				if ( ! draft.accountSummaries?.length ) {
+					return;
+				}
+
+				draft.accountSummaries = caseInsensitiveListSort(
+					draft.accountSummaries,
+					'displayName'
+				);
+				break;
+
+			default: {
+				break;
 			}
-
-			draft.accountSummaries = caseInsensitiveListSort(
-				draft.accountSummaries,
-				'displayName'
-			);
-	}
-} );
+		}
+	} );
+};
 
 const baseResolvers = {
 	*getAccountSummaries() {
