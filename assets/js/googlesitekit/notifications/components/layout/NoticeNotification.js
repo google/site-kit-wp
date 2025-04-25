@@ -26,6 +26,7 @@ import Notice from '../../../../components/Notice';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
+import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function NoticeNotification( {
 	notificationID,
@@ -56,20 +57,26 @@ export default function NoticeNotification( {
 	};
 
 	return (
-		<Notice
-			type={ type }
-			dismissButton={ {
-				label: dismissButton.label,
-				onClick: handleDismissWithTrackEvent,
-			} }
-			ctaButton={ {
-				label: ctaButton.label,
-				onClick: handleCTAClickWithTrackEvent,
-			} }
-			{ ...props }
-		>
-			{ children }
-		</Notice>
+		<Grid>
+			<Row>
+				<Cell alignMiddle size={ 12 }>
+					<Notice
+						type={ type }
+						dismissButton={ {
+							label: dismissButton.label,
+							onClick: handleDismissWithTrackEvent,
+						} }
+						ctaButton={ {
+							label: ctaButton.label,
+							onClick: handleCTAClickWithTrackEvent,
+						} }
+						{ ...props }
+					>
+						{ children }
+					</Notice>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
 

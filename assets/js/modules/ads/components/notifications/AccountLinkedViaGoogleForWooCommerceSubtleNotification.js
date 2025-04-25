@@ -37,7 +37,6 @@ import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/consta
 import { MINUTE_IN_SECONDS } from '../../../../util';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
@@ -71,37 +70,25 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 
 	return (
 		<Notification>
-			<Grid>
-				<Row>
-					<Cell alignMiddle size={ 12 }>
-						<NoticeNotification
-							notificationID={ id }
-							type="new"
-							description={ __(
-								'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
-								'google-site-kit'
-							) }
-							dismissButton={ {
-								label: __(
-									'Create new account',
-									'google-site-kit'
-								),
-								onClick: onCTAClick,
-								disabled: isSaving,
-							} }
-							ctaButton={ {
-								label: __(
-									'Keep existing account',
-									'google-site-kit'
-								),
-								onClick: dismissWooCommerceRedirectModal,
-								disabled: isSaving,
-							} }
-							reverseCTAs
-						/>
-					</Cell>
-				</Row>
-			</Grid>
+			<NoticeNotification
+				notificationID={ id }
+				type="new"
+				description={ __(
+					'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
+					'google-site-kit'
+				) }
+				dismissButton={ {
+					label: __( 'Create new account', 'google-site-kit' ),
+					onClick: onCTAClick,
+					disabled: isSaving,
+				} }
+				ctaButton={ {
+					label: __( 'Keep existing account', 'google-site-kit' ),
+					onClick: dismissWooCommerceRedirectModal,
+					disabled: isSaving,
+				} }
+				reverseCTAs
+			/>
 		</Notification>
 	);
 }
