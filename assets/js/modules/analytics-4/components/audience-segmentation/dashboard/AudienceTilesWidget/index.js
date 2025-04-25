@@ -35,6 +35,12 @@ import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget'
 import NoAudienceBannerWidget from '../NoAudienceBannerWidget';
 import WidgetNull from '../../../../../../googlesitekit/widgets/components/WidgetNull';
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
+import { createLogger } from './logger';
+
+// const hasRendered = false;
+let hasShownLoadingState = false;
+
+const log = createLogger( 'AudienceTilesWidget', 33 );
 
 function AudienceTilesWidget( { Widget } ) {
 	const availableAudiences = useSelect( ( select ) => {
@@ -61,27 +67,17 @@ function AudienceTilesWidget( { Widget } ) {
 		)
 	);
 
-	// Avoid console.log in tests.
-	const log = process?.stdout
-		? ( ...args ) =>
-				process.stdout.write(
-					// eslint-disable-next-line sitekit/no-direct-date
-					[ Date.now(), ...args ].map( JSON.stringify ).join( ' ' ) +
-						'\n'
-				) // eslint-disable-next-line sitekit/no-direct-date
-		: ( ...args ) => global.console.log( Date.now(), ...args );
-
 	useEffect( () => {
-		log( 'AudienceTilesWidget', {
+		log( 'useEffect', {
 			availableAudiencesSynced,
+			isSettingUpAudiences,
 		} );
 
 		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
 			const syncAudiences = async () => {
+				log( 'maybe sync available audiences' );
 				await maybeSyncAvailableAudiences();
-				log(
-					'AudienceTilesWidget: setting availableAudiencesSynced to true'
-				);
+				log( 'setting availableAudiencesSynced to true' );
 				setAvailableAudiencesSynced( true );
 			};
 
@@ -127,23 +123,34 @@ function AudienceTilesWidget( { Widget } ) {
 	// } );
 
 	if ( ! hasMatchingAudience ) {
-		log( 'AudienceTilesWidget: No matching audience found' );
+		log( 'No matching audience found' );
 		return availableAudiencesSynced ? (
 			<NoAudienceBannerWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
 			/>
 		) : (
-			<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-				<div className="googlesitekit-widget-audience-tiles__body">
-					<Widget noPadding>
-						<AudienceTileLoading />
+			( () => {
+				if ( ! hasShownLoadingState ) {
+					log( 'first loading state' );
+					hasShownLoadingState = true;
+				}
+				return (
+					<Widget
+						className="googlesitekit-widget-audience-tiles"
+						noPadding
+					>
+						<div className="googlesitekit-widget-audience-tiles__body">
+							<Widget noPadding>
+								<AudienceTileLoading />
+							</Widget>
+							<Widget noPadding>
+								<AudienceTileLoading />
+							</Widget>
+						</div>
 					</Widget>
-					<Widget noPadding>
-						<AudienceTileLoading />
-					</Widget>
-				</div>
-			</Widget>
+				);
+			} )()
 		);
 	}
 
@@ -158,7 +165,7 @@ function AudienceTilesWidget( { Widget } ) {
 		}
 	};
 
-	filterAndLogTruthyObjectValues( 'AudienceTilesWidget', {
+	filterAndLogTruthyObjectValues( 'loading state values', {
 		'! availableAudiencesSynced': ! availableAudiencesSynced,
 		'! availableAudiences': ! availableAudiences,
 		'! configuredAudiences': ! configuredAudiences,

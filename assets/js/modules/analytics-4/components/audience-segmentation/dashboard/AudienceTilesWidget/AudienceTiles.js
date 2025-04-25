@@ -57,6 +57,25 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
 import { reportRowsWithSetValues } from '../../../../utils/report-rows-with-set-values';
+import { createLogger } from './logger';
+
+let hasRendered = false;
+let hasShownLoadingState = false;
+let hasShownLoadedTile = false;
+
+const logIt = createLogger( 'AudienceTiles', 36 );
+const log = ( ...args ) => {
+	if ( 1 ) {
+		return;
+	}
+	logIt( ...args );
+};
+const log2 = ( ...args ) => {
+	// if ( 1 ) {
+	// 	return;
+	// }
+	logIt( ...args );
+};
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -68,6 +87,10 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 
 // eslint-disable-next-line complexity
 export default function AudienceTiles( { Widget, widgetLoading } ) {
+	if ( ! hasRendered ) {
+		log2( 'first render' );
+		hasRendered = true;
+	}
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
@@ -464,16 +487,6 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
-	// Avoid console.log in tests.
-	const log = process?.stdout
-		? ( ...args ) =>
-				process.stdout.write(
-					// eslint-disable-next-line sitekit/no-direct-date
-					[ Date.now(), ...args ].map( JSON.stringify ).join( ' ' ) +
-						'\n'
-				) // eslint-disable-next-line sitekit/no-direct-date
-		: ( ...args ) => global.console.log( Date.now(), ...args );
-
 	log( {
 		loading,
 		widgetLoading,
@@ -630,10 +643,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							isZeroData === undefined ||
 							isPartialData === undefined
 						) {
-							log(
-								'AudienceTile: Loading... ',
-								audienceResourceName
-							);
+							if ( ! hasShownLoadingState ) {
+								log2( 'first loading state' );
+								hasShownLoadingState = true;
+							}
+							log( 'Loading... ', audienceResourceName );
 							return (
 								<Widget key={ audienceResourceName } noPadding>
 									<AudienceTileLoading />
@@ -657,6 +671,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 									}
 								/>
 							);
+						}
+
+						if ( ! hasShownLoadedTile ) {
+							log2( 'first loaded tile' );
+							hasShownLoadedTile = true;
 						}
 
 						return (
