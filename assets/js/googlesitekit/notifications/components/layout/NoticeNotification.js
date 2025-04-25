@@ -64,10 +64,12 @@ export default function NoticeNotification( {
 						type={ type }
 						dismissButton={ {
 							label: dismissButton.label,
+							href: ctaButton.href,
 							onClick: handleDismissWithTrackEvent,
 						} }
 						ctaButton={ {
 							label: ctaButton.label,
+							href: ctaButton.href,
 							onClick: handleCTAClickWithTrackEvent,
 						} }
 						{ ...props }
