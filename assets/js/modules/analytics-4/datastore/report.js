@@ -43,30 +43,61 @@ import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
 import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
 import { normalizeReportOptions, isZeroReport } from '../utils';
 import { validateReport } from '../utils/validation';
+import {
+	createLogger,
+	getColour,
+} from '../components/audience-segmentation/dashboard/AudienceTilesWidget/logger';
 
+const logIt = createLogger( 'GA4 report', {
+	logOnlyOnce: true,
+	logDiff: true,
+} );
+
+const log = ( msg, reportOptions ) => {
+	const { reportID, ...rest } = reportOptions;
+
+	if ( ! reportID ) {
+		return;
+	}
+
+	const colour = getColour( reportID );
+
+	logIt( `${ msg } \x1b[${ colour }m${ reportID }\x1b[0m`, rest );
+};
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
+		log( 'controlCallback', options );
+		// eslint-disable-next-line no-unused-vars
+		const { reportID, ...rest } = options;
 		return get(
 			'modules',
 			'analytics-4',
 			'report',
-			normalizeReportOptions( options )
+			normalizeReportOptions( rest )
 		);
 	},
 	reducerCallback: ( state, report, { options } ) => {
+		// eslint-disable-next-line no-unused-vars
+		const { reportID, ...rest } = options;
 		return {
 			...state,
 			reports: {
 				...state.reports,
-				[ stringifyObject( options ) ]: report,
+				[ stringifyObject( rest ) ]: report,
 			},
 		};
 	},
 	argsToParams: ( options ) => {
-		return { options };
+		// eslint-disable-next-line no-unused-vars
+		const { reportID, ...rest } = options;
+		return { options: rest };
 	},
-	validateParams: ( { options } = {} ) => validateReport( options ),
+	validateParams: ( { options } = {} ) => {
+		// eslint-disable-next-line no-unused-vars
+		const { reportID, ...rest } = options;
+		return validateReport( rest );
+	},
 } );
 
 const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
@@ -139,6 +170,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getReport( options = {} ) {
+		log( '*getReport', options );
 		const registry = yield commonActions.getRegistry();
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -147,10 +179,16 @@ const baseResolvers = {
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
 		if ( existingReport ) {
+			log( '*getReport: already loaded', options );
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( options );
+		log( '*getReport: fetching', options );
+		const result = yield fetchGetReportStore.actions.fetchGetReport(
+			options
+		);
+		log( '*getReport: got result', options );
+		return result;
 	},
 };
 
@@ -178,6 +216,8 @@ const baseSelectors = {
 	 */
 	getReport( state, options ) {
 		const { reports } = state;
+
+		log( 'getReport', options );
 
 		return reports[ stringifyObject( options ) ];
 	},

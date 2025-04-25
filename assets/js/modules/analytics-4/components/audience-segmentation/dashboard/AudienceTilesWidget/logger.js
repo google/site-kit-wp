@@ -1,5 +1,9 @@
 import md5 from 'md5';
 
+export function getColour( name ) {
+	return ( name.length % 7 ) + 30;
+}
+
 const deepDiff = ( prev, curr ) => {
 	if ( prev === curr ) {
 		return null;
@@ -38,7 +42,12 @@ const seenArgs = new Map();
 
 export function createLogger(
 	name,
-	{ colour = 0, logOnlyOnce = false, logDiff = false } = {}
+	{
+		// Derive the colour from the name if not provided.
+		colour = getColour( name ),
+		logOnlyOnce = false,
+		logDiff = false,
+	} = {}
 ) {
 	return ( msg, ...args ) => {
 		const messageHash = md5( JSON.stringify( [ name, msg, ...args ] ) );

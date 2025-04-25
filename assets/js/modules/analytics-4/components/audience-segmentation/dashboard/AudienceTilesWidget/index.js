@@ -38,7 +38,6 @@ import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import { createLogger } from './logger';
 
 const log = createLogger( 'AudienceTilesWidget', {
-	colour: 33,
 	logOnlyOnce: true,
 	logDiff: true,
 } );

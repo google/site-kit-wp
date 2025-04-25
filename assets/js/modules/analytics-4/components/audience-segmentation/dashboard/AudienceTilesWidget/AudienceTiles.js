@@ -60,7 +60,6 @@ import { reportRowsWithSetValues } from '../../../../utils/report-rows-with-set-
 import { createLogger } from './logger';
 
 const logIt = createLogger( 'AudienceTiles', {
-	colour: 36,
 	logOnlyOnce: true,
 	logDiff: true,
 } );
@@ -486,7 +485,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
-	log( {
+	log2( 'loading states', {
 		loading,
 		widgetLoading,
 		reportLoaded,
