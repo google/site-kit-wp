@@ -367,8 +367,12 @@ async function observeRestResponse( res ) {
 		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
-			console.debug( ...data ); // eslint-disable-line no-console
-		} catch ( err ) {} // eslint-disable-line no-empty
+			// eslint-disable-next-line no-console
+			console.debug( ...data );
+		} catch ( err ) {
+			// eslint-disable-next-line no-console
+			console.debug( 'ERR', ...data, err.message );
+		}
 	}
 }
 

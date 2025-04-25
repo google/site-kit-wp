@@ -6,7 +6,7 @@ module.exports = {
 		'<rootDir>/config/screenshots.js',
 		'<rootDir>/config/bootstrap.js',
 		'<rootDir>/config/wordpress-debug-log',
-		'@wordpress/jest-console',
+		// '@wordpress/jest-console',
 		'expect-puppeteer',
 	],
 	testMatch: [
