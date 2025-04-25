@@ -19,6 +19,7 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -30,7 +31,6 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -44,9 +44,11 @@ const INSTALL_ACTIVATE_WP_CONSENT_API_RESPONSE =
 const INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING =
 	'INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING';
 
-const settingsReducerCallback = createReducer( ( state, settings ) => {
-	state.consentMode.settings = settings;
-} );
+const settingsReducerCallback = ( state, settings ) => {
+	return produce( state, ( draft ) => {
+		draft.consentMode.settings = settings;
+	} );
+};
 
 const fetchGetConsentModeSettingsStore = createFetchStore( {
 	baseName: 'getConsentModeSettings',
@@ -82,9 +84,11 @@ const fetchGetConsentAPIInfoStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: createReducer( ( state, apiInfo ) => {
-		state.consentMode.apiInfo = apiInfo;
-	} ),
+	reducerCallback: ( state, apiInfo ) => {
+		return produce( state, ( draft ) => {
+			draft.consentMode.apiInfo = apiInfo;
+		} );
+	},
 } );
 
 const fetchInstallActivateWPConsentAPI = createFetchStore( {
@@ -134,13 +138,15 @@ const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 			useCache,
 		} );
 	},
-	reducerCallback: createReducer( ( state, response, { useCache } ) => {
-		state.consentMode.adsConnected = response.connected;
+	reducerCallback: ( state, response, { useCache } ) => {
+		return produce( state, ( draft ) => {
+			draft.consentMode.adsConnected = response.connected;
 
-		if ( ! useCache ) {
-			state.consentMode.adsConnectedUncached = response.connected;
-		}
-	} ),
+			if ( ! useCache ) {
+				draft.consentMode.adsConnectedUncached = response.connected;
+			}
+		} );
+	},
 	argsToParams: ( { useCache } = {} ) => ( { useCache } ),
 	validateParams: ( { useCache } ) => {
 		invariant(
@@ -272,25 +278,24 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_CONSENT_MODE_ENABLED:
-			state.consentMode.settings = state.consentMode.settings || {};
-			state.consentMode.settings.enabled = !! payload.enabled;
-			break;
+const baseReducer = ( state, { type, payload } ) => {
+	return produce( state, ( draft ) => {
+		switch ( type ) {
+			case SET_CONSENT_MODE_ENABLED:
+				draft.consentMode.settings = draft.consentMode.settings || {};
+				draft.consentMode.settings.enabled = !! payload.enabled;
+				break;
 
-		case INSTALL_ACTIVATE_WP_CONSENT_API_RESPONSE:
-			state.consentMode.apiInstallResponse = payload;
-			break;
+			case INSTALL_ACTIVATE_WP_CONSENT_API_RESPONSE:
+				draft.consentMode.apiInstallResponse = payload;
+				break;
 
-		case INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING:
-			state.consentMode.isApiFetching = payload;
-			break;
-
-		default:
-			break;
-	}
-} );
+			case INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING:
+				draft.consentMode.isApiFetching = payload;
+				break;
+		}
+	} );
+};
 
 const baseSelectors = {
 	/**

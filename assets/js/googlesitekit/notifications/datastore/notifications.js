@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -29,7 +30,6 @@ import {
 	createRegistryControl,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
@@ -324,63 +324,66 @@ export const controls = {
 	),
 };
 
-export const reducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case REGISTER_NOTIFICATION: {
-			const { id, settings } = payload;
+export const reducer = ( state, { type, payload } ) => {
+	return produce( state, ( draft ) => {
+		switch ( type ) {
+			case REGISTER_NOTIFICATION: {
+				const { id, settings } = payload;
 
-			if ( state.notifications[ id ] !== undefined ) {
-				global.console.warn(
-					`Could not register notification with ID "${ id }". Notification "${ id }" is already registered.`
-				);
-			} else {
-				state.notifications[ id ] = { ...settings, id };
+				if ( draft.notifications[ id ] !== undefined ) {
+					global.console.warn(
+						`Could not register notification with ID "${ id }". Notification "${ id }" is already registered.`
+					);
+					return;
+				}
+
+				draft.notifications[ id ] = { ...settings, id };
+				break;
 			}
 
-			break;
-		}
-
-		case RECEIVE_QUEUED_NOTIFICATIONS: {
-			state.queuedNotifications[ payload.groupID ] =
-				payload.queuedNotifications;
-			break;
-		}
-
-		case RESET_QUEUE: {
-			state.queuedNotifications[ payload.groupID ] = [];
-			break;
-		}
-
-		case QUEUE_NOTIFICATION: {
-			const { groupID } = payload.notification;
-			state.queuedNotifications[ groupID ] =
-				state.queuedNotifications[ groupID ] || [];
-			state.queuedNotifications[ groupID ].push( payload.notification );
-			break;
-		}
-
-		case DISMISS_NOTIFICATION: {
-			const { id } = payload;
-
-			const groupID = state.notifications?.[ id ]?.groupID;
-
-			const dismissedNotificationIndex = state.queuedNotifications[
-				groupID
-			]?.findIndex( ( notification ) => notification.id === id );
-
-			if ( dismissedNotificationIndex >= 0 ) {
-				state.queuedNotifications[ groupID ].splice(
-					dismissedNotificationIndex,
-					1
-				);
+			case RECEIVE_QUEUED_NOTIFICATIONS: {
+				const { queuedNotifications, groupID } = payload;
+				draft.queuedNotifications[ groupID ] = queuedNotifications;
+				break;
 			}
-			break;
-		}
 
-		default:
-			break;
-	}
-} );
+			case DISMISS_NOTIFICATION: {
+				const { id } = payload;
+				const groupID = draft.notifications?.[ id ]?.groupID;
+
+				const dismissedNotificationIndex = draft.queuedNotifications[
+					groupID
+				]?.findIndex( ( notification ) => notification.id === id );
+
+				if ( dismissedNotificationIndex >= 0 ) {
+					draft.queuedNotifications[ groupID ].splice(
+						dismissedNotificationIndex,
+						1
+					);
+				}
+				break;
+			}
+
+			case QUEUE_NOTIFICATION: {
+				const { notification } = payload;
+				const { groupID } = notification;
+
+				if ( ! draft.queuedNotifications[ groupID ] ) {
+					draft.queuedNotifications[ groupID ] = [];
+				}
+
+				draft.queuedNotifications[ groupID ].push( notification );
+				break;
+			}
+
+			case RESET_QUEUE: {
+				const { groupID } = payload;
+				draft.queuedNotifications[ groupID ] = [];
+				break;
+			}
+		}
+	} );
+};
 
 export const resolvers = {
 	*getQueuedNotifications(
