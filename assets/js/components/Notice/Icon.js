@@ -38,7 +38,7 @@ const typeIconMap = {
 export default function Icon( { type } ) {
 	const IconComponent = typeIconMap[ type ] || WarningSVG;
 
-	return <IconComponent width={ 24 } height={ 24 } />;
+	return <IconComponent width={ 26 } height={ 26 } />;
 }
 
 Icon.propTypes = {
