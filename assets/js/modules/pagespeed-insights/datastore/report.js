@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * WordPress dependencies
@@ -42,15 +43,9 @@ const fetchGetReportStore = createFetchStore( {
 			url,
 		} );
 	},
-	reducerCallback: ( state, report, { strategy, url } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ `${ strategy }::${ url }` ]: { ...report },
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, report, { strategy, url } ) => {
+		draft.reports[ `${ strategy }::${ url }` ] = { ...report };
+	} ),
 	argsToParams: ( url, strategy ) => {
 		return {
 			strategy,

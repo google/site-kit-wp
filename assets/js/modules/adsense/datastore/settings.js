@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -165,16 +166,14 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = produce( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		// This action is purely for testing, the value is typically handled
 		// as a side-effect from 'RECEIVE_SETTINGS' (see below).
 		case RECEIVE_ORIGINAL_USE_SNIPPET: {
 			const { originalUseSnippet } = payload;
-			return {
-				...state,
-				originalUseSnippet,
-			};
+			draft.originalUseSnippet = originalUseSnippet;
+			break;
 		}
 
 		// This action is mainly handled via createSettingsStore, but here we
@@ -185,19 +184,13 @@ const baseReducer = ( state, { type, payload } ) => {
 
 			// Only set original account status AND original useSnippet when it is really the first
 			// time that we load the settings on this pageload.
-			return {
-				...state,
-				...( undefined === state.originalUseSnippet && {
-					originalUseSnippet: useSnippet,
-				} ),
-			};
-		}
-
-		default: {
-			return state;
+			if ( undefined === draft.originalUseSnippet ) {
+				draft.originalUseSnippet = useSnippet;
+			}
+			break;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getOriginalUseSnippet() {

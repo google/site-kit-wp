@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -42,15 +43,9 @@ const fetchGetAdUnitsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, adunits, { accountID, clientID } ) => {
-		return {
-			...state,
-			adunits: {
-				...state.adunits,
-				[ `${ accountID }::${ clientID }` ]: adunits,
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, adunits, { accountID, clientID } ) => {
+		draft.adunits[ `${ accountID }::${ clientID }` ] = adunits;
+	} ),
 	argsToParams: ( accountID, clientID ) => {
 		return { accountID, clientID };
 	},
@@ -66,13 +61,13 @@ const baseInitialState = {
 
 const baseActions = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = produce( ( draft, { type } ) => {
 	switch ( type ) {
 		default: {
-			return state;
+			return draft;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAdUnits( accountID, clientID ) {

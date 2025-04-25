@@ -21,6 +21,7 @@
  */
 import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
+import { produce } from 'immer';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -35,12 +36,9 @@ const fetchGetAccountsStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, accounts ) => {
-		return {
-			...state,
-			accounts: [ ...accounts ],
-		};
-	},
+	reducerCallback: produce( ( draft, accounts ) => {
+		draft.accounts = [ ...accounts ];
+	} ),
 } );
 
 const baseInitialState = {
@@ -64,7 +62,7 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = produce( ( draft, { type } ) => {
 	switch ( type ) {
 		case RESET_ACCOUNTS: {
 			const {
@@ -74,27 +72,25 @@ const baseReducer = ( state, { type } ) => {
 				siteStatus,
 				accountSetupComplete,
 				siteSetupComplete,
-			} = state.savedSettings || {};
-			return {
-				...state,
-				accounts: baseInitialState.accounts,
-				settings: {
-					...( state.settings || {} ),
-					accountID,
-					clientID,
-					accountStatus,
-					siteStatus,
-					accountSetupComplete,
-					siteSetupComplete,
-				},
+			} = draft.savedSettings || {};
+			draft.accounts = baseInitialState.accounts;
+			draft.settings = {
+				...( draft.settings || {} ),
+				accountID,
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
 			};
+			break;
 		}
 
 		default: {
-			return state;
+			return draft;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAccounts() {

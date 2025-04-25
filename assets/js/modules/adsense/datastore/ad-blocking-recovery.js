@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -37,7 +38,6 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';
 import adBlockingRecoveryTagMatcher from '../util/ad-blocking-recovery-tag-matcher';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 // Actions
 const FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
@@ -119,22 +119,17 @@ const controls = {
 	),
 };
 
-const reducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG: {
-			const { existingAdBlockingRecoveryTag } = payload;
-
-			return {
-				...state,
-				existingAdBlockingRecoveryTag,
-			};
+const reducer = ( state = initialState, { type, payload } ) =>
+	produce( state, ( draft ) => {
+		switch ( type ) {
+			case RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG: {
+				const { existingAdBlockingRecoveryTag } = payload;
+				draft.existingAdBlockingRecoveryTag =
+					existingAdBlockingRecoveryTag;
+				break;
+			}
 		}
-
-		default: {
-			return state;
-		}
-	}
-} );
+	} );
 
 const resolvers = {
 	*getExistingAdBlockingRecoveryTag() {

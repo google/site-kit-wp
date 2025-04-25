@@ -21,16 +21,13 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import {
-	commonActions,
-	createReducer,
-	createRegistrySelector,
-} from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -65,8 +62,8 @@ function validateAudienceSettings( audienceSettings ) {
 	);
 }
 
-const fetchStoreReducerCallback = createReducer( ( state, settings ) => {
-	state.audienceSettings = settings;
+const fetchStoreReducerCallback = produce( ( draft, settings ) => {
+	draft.audienceSettings = settings;
 } );
 
 const fetchGetAudienceSettingsStore = createFetchStore( {
@@ -99,12 +96,12 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	baseName: 'syncAvailableAudiences',
 	controlCallback: () => set( 'modules', 'analytics-4', 'sync-audiences' ),
-	reducerCallback: createReducer( ( state, audiences ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
+	reducerCallback: produce( ( draft, audiences ) => {
+		if ( ! draft.audienceSettings ) {
+			draft.audienceSettings = {};
 		}
 
-		state.audienceSettings.availableAudiences = audiences;
+		draft.audienceSettings.availableAudiences = audiences;
 	} ),
 } );
 
@@ -216,22 +213,23 @@ const baseResolvers = {
 	},
 };
 
-const baseReducer = createReducer( ( state, { type, payload } ) => {
+const baseReducer = produce( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case SET_AVAILABLE_AUDIENCES:
 			const { availableAudiences } = payload;
-			state.audienceSettings = {
-				...state.audienceSettings,
-				availableAudiences,
-			};
+			if ( ! draft.audienceSettings ) {
+				draft.audienceSettings = {};
+			}
+			draft.audienceSettings.availableAudiences = availableAudiences;
 			break;
 
 		case SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY:
 			const { audienceSegmentationSetupCompletedBy } = payload;
-			state.audienceSettings = {
-				...state.audienceSettings,
-				audienceSegmentationSetupCompletedBy,
-			};
+			if ( ! draft.audienceSettings ) {
+				draft.audienceSettings = {};
+			}
+			draft.audienceSettings.audienceSegmentationSetupCompletedBy =
+				audienceSegmentationSetupCompletedBy;
 			break;
 
 		default:

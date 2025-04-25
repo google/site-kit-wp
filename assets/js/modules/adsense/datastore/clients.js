@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -51,19 +52,11 @@ const fetchGetClientsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, clients, { accountID } ) => {
-		if ( ! Array.isArray( clients ) ) {
-			return state;
+	reducerCallback: produce( ( draft, clients, { accountID } ) => {
+		if ( Array.isArray( clients ) ) {
+			draft.clients[ accountID ] = [ ...clients ];
 		}
-
-		return {
-			...state,
-			clients: {
-				...state.clients,
-				[ accountID ]: [ ...clients ],
-			},
-		};
-	},
+	} ),
 	argsToParams: ( accountID ) => {
 		return { accountID };
 	},
@@ -93,7 +86,7 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = produce( ( draft, { type } ) => {
 	switch ( type ) {
 		case RESET_CLIENTS: {
 			const {
@@ -102,26 +95,24 @@ const baseReducer = ( state, { type } ) => {
 				siteStatus,
 				accountSetupComplete,
 				siteSetupComplete,
-			} = state.savedSettings || {};
-			return {
-				...state,
-				clients: initialState.clients,
-				settings: {
-					...( state.settings || {} ),
-					clientID,
-					accountStatus,
-					siteStatus,
-					accountSetupComplete,
-					siteSetupComplete,
-				},
+			} = draft.savedSettings || {};
+			draft.clients = initialState.clients;
+			draft.settings = {
+				...( draft.settings || {} ),
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
 			};
+			break;
 		}
 
 		default: {
-			return state;
+			return draft;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getClients( accountID ) {

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -28,7 +29,6 @@ import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 const fetchGetGoogleTagContainerStore = createFetchStore( {
 	baseName: 'getGoogleTagContainer',
@@ -43,9 +43,11 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: createReducer( ( state, container, { measurementID } ) => {
-		state.containers[ measurementID ] = container;
-	} ),
+	reducerCallback( state, container, { measurementID } ) {
+		return produce( state, ( draft ) => {
+			draft.containers[ measurementID ] = container;
+		} );
+	},
 	argsToParams( measurementID ) {
 		return { measurementID };
 	},
@@ -67,20 +69,28 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: createReducer(
-		( state, containerDestinations, { gtmAccountID, gtmContainerID } ) => {
-			state.containerDestinations[ gtmAccountID ] =
-				state.containerDestinations[ gtmAccountID ] || {};
+	reducerCallback(
+		state,
+		containerDestinations,
+		{ gtmAccountID, gtmContainerID }
+	) {
+		return produce( state, ( draft ) => {
+			if ( ! draft.containerDestinations[ gtmAccountID ] ) {
+				draft.containerDestinations[ gtmAccountID ] = {};
+			}
 
-			state.containerDestinations[ gtmAccountID ][ gtmContainerID ] =
-				state.containerDestinations[ gtmAccountID ][ gtmContainerID ] ||
-				[];
+			if (
+				! draft.containerDestinations[ gtmAccountID ][ gtmContainerID ]
+			) {
+				draft.containerDestinations[ gtmAccountID ][ gtmContainerID ] =
+					[];
+			}
 
-			state.containerDestinations[ gtmAccountID ][ gtmContainerID ].push(
+			draft.containerDestinations[ gtmAccountID ][ gtmContainerID ].push(
 				...containerDestinations
 			);
-		}
-	),
+		} );
+	},
 	argsToParams( gtmAccountID, gtmContainerID ) {
 		return { gtmAccountID, gtmContainerID };
 	},

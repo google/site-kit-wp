@@ -23,16 +23,18 @@ import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
+import { produce } from 'immer';
 
 const fetchGetConversionEventsStore = createFetchStore( {
 	baseName: 'getConversionEvents',
 	controlCallback: () => {
 		return get( 'modules', 'analytics-4', 'conversion-events', {} );
 	},
-	reducerCallback: createReducer( ( state, conversionEvents ) => {
-		state.conversionEvents = conversionEvents;
-	} ),
+	reducerCallback: ( state, conversionEvents ) => {
+		return produce( state, ( draft ) => {
+			draft.conversionEvents = conversionEvents;
+		} );
+	},
 } );
 
 const baseInitialState = {

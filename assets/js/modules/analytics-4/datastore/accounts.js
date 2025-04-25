@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -30,7 +31,6 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
-	createReducer,
 } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -65,15 +65,12 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	argsToParams: ( pageToken ) => {
 		return { pageToken };
 	},
-	reducerCallback( state, response ) {
-		return {
-			...state,
-			accountSummaries: [
-				...( state.accountSummaries || [] ),
-				...populateAccountSummaries( response.accountSummaries || [] ),
-			],
-		};
-	},
+	reducerCallback: produce( ( draft, response ) => {
+		draft.accountSummaries = [
+			...( draft.accountSummaries || [] ),
+			...populateAccountSummaries( response.accountSummaries || [] ),
+		];
+	} ),
 } );
 
 const fetchCreateAccountStore = createFetchStore( {
@@ -81,13 +78,12 @@ const fetchCreateAccountStore = createFetchStore( {
 	controlCallback: ( { data } ) => {
 		return set( 'modules', 'analytics-4', 'create-account-ticket', data );
 	},
-	// eslint-disable-next-line sitekit/acronym-case
-	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {
-		return {
-			...state,
-			accountTicketID,
-		};
-	},
+	reducerCallback: produce(
+		// eslint-disable-next-line sitekit/acronym-case
+		( draft, { accountTicketId: accountTicketID } ) => {
+			draft.accountTicketID = accountTicketID;
+		}
+	),
 	argsToParams: ( data ) => {
 		return { data };
 	},
@@ -277,34 +273,34 @@ const baseControls = {};
 /**
  * Creates immer reducer.
  */
-const baseReducer = createReducer( ( state, { type } ) => {
+const baseReducer = produce( ( draft, { type } ) => {
 	switch ( type ) {
 		case START_SELECTING_ACCOUNT:
-			state.finishedSelectingAccount = false;
+			draft.finishedSelectingAccount = false;
 			break;
 
 		case FINISH_SELECTING_ACCOUNT:
-			state.finishedSelectingAccount = true;
+			draft.finishedSelectingAccount = true;
 			break;
 
 		case RESET_ACCOUNT_SUMMARIES:
-			state.accountSummaries = undefined;
+			draft.accountSummaries = undefined;
 			break;
 
 		case RESET_ACCOUNT_SETTINGS:
-			state.settings.accountID = undefined;
-			state.settings.propertyID = undefined;
-			state.settings.measurementID = undefined;
-			state.settings.webDataStreamID = undefined;
+			draft.settings.accountID = undefined;
+			draft.settings.propertyID = undefined;
+			draft.settings.measurementID = undefined;
+			draft.settings.webDataStreamID = undefined;
 			break;
 
 		case SORT_ACCOUNT_SUMMARIES:
-			if ( ! state.accountSummaries?.length ) {
+			if ( ! draft.accountSummaries?.length ) {
 				return;
 			}
 
-			state.accountSummaries = caseInsensitiveListSort(
-				state.accountSummaries,
+			draft.accountSummaries = caseInsensitiveListSort(
+				draft.accountSummaries,
 				'displayName'
 			);
 	}

@@ -19,6 +19,7 @@
  */
 import { isPlainObject, isEqual } from 'lodash';
 import invariant from 'invariant';
+import produce from 'immer';
 
 /**
  * Internal dependencies
@@ -30,7 +31,6 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
 
 const { getRegistry } = commonActions;
@@ -38,10 +38,11 @@ const { getRegistry } = commonActions;
 const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
 const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
 
-const settingsReducerCallback = createReducer( ( state, settings ) => {
-	state.conversionTracking.settings = settings;
-	state.conversionTracking.savedSettings = settings;
-} );
+const settingsReducerCallback = ( state, settings ) =>
+	produce( state, ( draft ) => {
+		draft.conversionTracking.settings = settings;
+		draft.conversionTracking.savedSettings = settings;
+	} );
 
 const fetchGetConversionTrackingSettingsStore = createFetchStore( {
 	baseName: 'getConversionTrackingSettings',
@@ -127,23 +128,24 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_CONVERSION_TRACKING_ENABLED:
-			state.conversionTracking.settings =
-				state.conversionTracking.settings || {};
-			state.conversionTracking.settings.enabled = !! payload.enabled;
-			break;
+const baseReducer = ( state, { type, payload } ) =>
+	produce( state, ( draft ) => {
+		switch ( type ) {
+			case SET_CONVERSION_TRACKING_ENABLED:
+				draft.conversionTracking.settings =
+					draft.conversionTracking.settings || {};
+				draft.conversionTracking.settings.enabled = !! payload.enabled;
+				break;
 
-		case RESET_CONVERSION_TRACKING_SETTINGS:
-			state.conversionTracking.settings =
-				state.conversionTracking.savedSettings;
-			break;
+			case RESET_CONVERSION_TRACKING_SETTINGS:
+				draft.conversionTracking.settings =
+					draft.conversionTracking.savedSettings;
+				break;
 
-		default:
-			break;
-	}
-} );
+			default:
+				break;
+		}
+	} );
 
 const baseSelectors = {
 	/**

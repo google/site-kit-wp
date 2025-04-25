@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -83,15 +84,9 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
 		set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
-	reducerCallback: ( state, dimensions ) => {
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				availableCustomDimensions: [ ...dimensions ],
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, dimensions ) => {
+		draft.settings.availableCustomDimensions = [ ...dimensions ];
+	} ),
 } );
 
 const baseInitialState = {
@@ -262,25 +257,18 @@ export const baseControls = {
 	),
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = produce( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
-			return {
-				...state,
-				customDimensionsBeingCreated: payload.customDimensions,
-			};
+			draft.customDimensionsBeingCreated = payload.customDimensions;
+			break;
 		}
 		case SET_SYNC_TIMEOUT_ID: {
-			return {
-				...state,
-				syncTimeoutID: payload.syncTimeoutID,
-			};
-		}
-		default: {
-			return state;
+			draft.syncTimeoutID = payload.syncTimeoutID;
+			break;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAvailableCustomDimensions() {

@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -42,15 +43,9 @@ const fetchGetReportStore = createFetchStore( {
 	controlCallback: ( { options } ) => {
 		return get( 'modules', 'adsense', 'report', options );
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: produce( ( draft, report, { options } ) => {
+		draft.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},

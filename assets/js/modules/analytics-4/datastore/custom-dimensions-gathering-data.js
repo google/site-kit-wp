@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -32,7 +33,6 @@ import {
 } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 import { getDateString } from '../../../util';
 
@@ -186,12 +186,12 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, { type, payload } ) => {
+const baseReducer = produce( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA: {
 			const { customDimension, gatheringData } = payload;
 
-			state.customDimensionsGatheringData[ customDimension ] =
+			draft.customDimensionsGatheringData[ customDimension ] =
 				gatheringData;
 
 			break;

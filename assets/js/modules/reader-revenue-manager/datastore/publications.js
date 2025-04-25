@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies.
@@ -29,7 +30,6 @@ import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
-	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -51,7 +51,9 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
+	reducerCallback: produce( ( draft, publications ) => {
+		draft.publications = publications;
+	} ),
 } );
 
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
@@ -81,8 +83,8 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			'publicationOnboardingState is required and must be string.'
 		);
 	},
-	reducerCallback: createReducer(
-		( state, { publicationID, publicationOnboardingState } ) => {
+	reducerCallback: produce(
+		( draft, { publicationID, publicationOnboardingState } ) => {
 			if ( ! publicationID ) {
 				return;
 			}
@@ -90,21 +92,21 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			// eslint-disable-next-line sitekit/no-direct-date
 			const publicationOnboardingStateLastSyncedAtMs = Date.now();
 
-			if ( state.settings.publicationID === publicationID ) {
-				state.settings.publicationOnboardingState =
+			if ( draft.settings.publicationID === publicationID ) {
+				draft.settings.publicationOnboardingState =
 					publicationOnboardingState;
-				state.settings.publicationOnboardingStateLastSyncedAtMs =
+				draft.settings.publicationOnboardingStateLastSyncedAtMs =
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			if ( state.savedSettings.publicationID === publicationID ) {
-				state.savedSettings.publicationOnboardingState =
+			if ( draft.savedSettings.publicationID === publicationID ) {
+				draft.savedSettings.publicationOnboardingState =
 					publicationOnboardingState;
-				state.savedSettings.publicationOnboardingStateLastSyncedAtMs =
+				draft.savedSettings.publicationOnboardingStateLastSyncedAtMs =
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			const publication = state.publications?.find(
+			const publication = draft.publications?.find(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId: id } ) => id === publicationID
 			);
@@ -285,17 +287,13 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = produce( ( draft, { type } ) => {
 	switch ( type ) {
 		case 'RESET_PUBLICATIONS':
-			return {
-				...state,
-				publications: baseInitialState.publications,
-			};
-		default:
-			return state;
+			draft.publications = baseInitialState.publications;
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getPublications() {

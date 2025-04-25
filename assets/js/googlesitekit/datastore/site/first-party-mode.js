@@ -21,6 +21,7 @@
  */
 import { isEqual, isPlainObject } from 'lodash';
 import invariant from 'invariant';
+import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -30,7 +31,6 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
-	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
@@ -41,12 +41,12 @@ import { isFeatureEnabled } from '../../../features';
 const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
 const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
 
-const settingsReducerCallback = createReducer(
-	( state, firstPartyModeSettings ) => {
-		state.firstPartyModeSettings = firstPartyModeSettings;
-		state.firstPartyModeSavedSettings = firstPartyModeSettings;
-	}
-);
+const settingsReducerCallback = ( state, firstPartyModeSettings ) => {
+	return produce( state, ( draft ) => {
+		draft.firstPartyModeSettings = firstPartyModeSettings;
+		draft.firstPartyModeSavedSettings = firstPartyModeSettings;
+	} );
+};
 
 const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'getFirstPartyModeSettings',
@@ -158,23 +158,27 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_FIRST_PARTY_MODE_ENABLED: {
-			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
-			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
-			break;
-		}
+const baseReducer = ( state, { type, payload } ) => {
+	return produce( state, ( draft ) => {
+		switch ( type ) {
+			case SET_FIRST_PARTY_MODE_ENABLED: {
+				draft.firstPartyModeSettings =
+					draft.firstPartyModeSettings || {};
+				draft.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
+				break;
+			}
 
-		case RESET_FIRST_PARTY_MODE_SETTINGS: {
-			state.firstPartyModeSettings = state.firstPartyModeSavedSettings;
-			break;
-		}
+			case RESET_FIRST_PARTY_MODE_SETTINGS: {
+				draft.firstPartyModeSettings =
+					draft.firstPartyModeSavedSettings;
+				break;
+			}
 
-		default:
-			break;
-	}
-} );
+			default:
+				break;
+		}
+	} );
+};
 
 const baseResolvers = {
 	*getFirstPartyModeSettings() {
