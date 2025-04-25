@@ -19,7 +19,6 @@
  */
 import invariant from 'invariant';
 import { isEmpty, isPlainObject } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -29,6 +28,7 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import {
 	CORE_USER,
@@ -173,17 +173,18 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = produce( ( draft, { type, payload } ) => {
+const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
 	switch ( type ) {
 		case SET_KEY_METRICS_SETTING: {
-			if ( ! draft.keyMetricsSettings ) {
-				draft.keyMetricsSettings = {};
+			if ( ! state.keyMetricsSettings ) {
+				state.keyMetricsSettings = {};
 			}
-			draft.keyMetricsSettings[ payload.settingID ] = payload.value;
+			state.keyMetricsSettings[ payload.settingID ] = payload.value;
 			break;
 		}
 		default: {
-			break;
+			return state;
 		}
 	}
 } );

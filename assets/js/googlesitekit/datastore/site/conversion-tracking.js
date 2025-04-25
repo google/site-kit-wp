@@ -19,17 +19,17 @@
  */
 import { isPlainObject, isEqual } from 'lodash';
 import invariant from 'invariant';
-import produce from 'immer';
+import {
+	createReducer,
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import {
-	commonActions,
-	combineStores,
-	createRegistrySelector,
-} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_SITE } from './constants';
 
@@ -38,11 +38,11 @@ const { getRegistry } = commonActions;
 const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
 const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
 
-const settingsReducerCallback = ( state, settings ) =>
-	produce( state, ( draft ) => {
-		draft.conversionTracking.settings = settings;
-		draft.conversionTracking.savedSettings = settings;
-	} );
+const settingsReducerCallback = createReducer( ( state, settings ) => {
+	state.conversionTracking = state.conversionTracking || {};
+	state.conversionTracking.settings = settings;
+	state.conversionTracking.savedSettings = settings;
+} );
 
 const fetchGetConversionTrackingSettingsStore = createFetchStore( {
 	baseName: 'getConversionTrackingSettings',
@@ -128,24 +128,26 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) =>
-	produce( state, ( draft ) => {
-		switch ( type ) {
-			case SET_CONVERSION_TRACKING_ENABLED:
-				draft.conversionTracking.settings =
-					draft.conversionTracking.settings || {};
-				draft.conversionTracking.settings.enabled = !! payload.enabled;
-				break;
-
-			case RESET_CONVERSION_TRACKING_SETTINGS:
-				draft.conversionTracking.settings =
-					draft.conversionTracking.savedSettings;
-				break;
-
-			default:
-				break;
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		case SET_CONVERSION_TRACKING_ENABLED: {
+			state.conversionTracking.settings =
+				state.conversionTracking.settings || {};
+			state.conversionTracking.settings.enabled =
+				!! action.payload.enabled;
+			break;
 		}
-	} );
+
+		case RESET_CONVERSION_TRACKING_SETTINGS: {
+			state.conversionTracking.settings =
+				state.conversionTracking.savedSettings;
+			break;
+		}
+
+		default:
+			return state;
+	}
+} );
 
 const baseSelectors = {
 	/**

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -30,6 +29,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
@@ -99,7 +99,7 @@ const fetchCreateContainerStore = createFetchStore( {
 			name,
 		} );
 	},
-	reducerCallback: produce( ( draft, container, { accountID } ) => {
+	reducerCallback: createReducer( ( draft, container, { accountID } ) => {
 		if ( ! draft.containers[ accountID ] ) {
 			draft.containers[ accountID ] = [];
 		}

@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import { isPlainObject, isEqual, pick } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -31,6 +30,7 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -192,29 +192,33 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = produce( ( draft, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
+
 	switch ( type ) {
 		case SET_USER_INPUT_SETTING: {
-			if ( ! draft.inputSettings ) {
-				draft.inputSettings = {};
+			state.inputSettings = state.inputSettings || {};
+
+			if ( ! state.inputSettings[ payload.settingID ] ) {
+				state.inputSettings[ payload.settingID ] = {};
 			}
-			if ( ! draft.inputSettings[ payload.settingID ] ) {
-				draft.inputSettings[ payload.settingID ] = {};
-			}
-			draft.inputSettings[ payload.settingID ].values = payload.values;
+
+			state.inputSettings[ payload.settingID ].values = payload.values;
 			break;
 		}
+
 		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
-			draft.isSavingInputSettings = payload.isSaving;
+			state.isSavingInputSettings = payload.isSaving;
 			break;
 		}
+
 		case RESET_USER_INPUT_SETTINGS: {
-			draft.inputSettings = draft.savedInputSettings;
+			state.inputSettings = state.savedInputSettings;
 			break;
 		}
-		default: {
-			break;
-		}
+
+		default:
+			return state;
 	}
 } );
 

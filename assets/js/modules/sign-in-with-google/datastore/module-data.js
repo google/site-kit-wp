@@ -20,12 +20,11 @@
  * External dependencies.
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 function getModuleDataProperty( propName ) {
@@ -71,26 +70,23 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { payload, type } ) => {
-	switch ( type ) {
+export const reducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RECEIVE_MODULE_DATA: {
-			return produce( state, ( draft ) => {
-				const {
-					isWooCommerceActive,
-					isWooCommerceRegistrationEnabled,
-				} = payload;
-				draft.moduleData = {
-					isWooCommerceActive,
-					isWooCommerceRegistrationEnabled,
-				};
-			} );
+			const { isWooCommerceActive, isWooCommerceRegistrationEnabled } =
+				action.payload;
+
+			state.moduleData = {
+				isWooCommerceActive,
+				isWooCommerceRegistrationEnabled,
+			};
+			break;
 		}
 
-		default: {
+		default:
 			return state;
-		}
 	}
-};
+} );
 
 export const resolvers = {
 	*getModuleData() {

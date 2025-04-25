@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import { isBoolean } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * WordPress dependencies
@@ -32,7 +31,11 @@ import { createRegistrySelector } from '@wordpress/data';
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -66,8 +69,9 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: produce( ( draft, property, { propertyID } ) => {
-		draft.propertiesByID[ propertyID ] = property;
+	reducerCallback: createReducer( ( state, property, { propertyID } ) => {
+		state.property = state.property || {};
+		state.propertiesByID[ propertyID ] = property;
 	} ),
 	argsToParams( propertyID ) {
 		return { propertyID };
@@ -90,15 +94,15 @@ const fetchGetPropertiesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: produce( ( draft, properties, { accountID } ) => {
-		draft.properties[ accountID ] = properties;
-		draft.propertiesByID = properties.reduce(
-			( accum, property ) => ( {
-				...accum,
-				[ property._id ]: property,
-			} ),
-			draft.propertiesByID || {}
-		);
+	reducerCallback: createReducer( ( state, properties, { accountID } ) => {
+		state.properties = state.properties || {};
+		state.propertiesByID = state.propertiesByID || {};
+
+		state.properties[ accountID ] = properties;
+
+		for ( const property of properties ) {
+			state.propertiesByID[ property._id ] = property;
+		}
 	} ),
 	argsToParams( accountID ) {
 		return { accountID };
@@ -115,11 +119,14 @@ const fetchCreatePropertyStore = createFetchStore( {
 			accountID,
 		} );
 	},
-	reducerCallback: produce( ( draft, property, { accountID } ) => {
-		if ( ! draft.properties[ accountID ] ) {
-			draft.properties[ accountID ] = [];
+	reducerCallback: createReducer( ( state, property, { accountID } ) => {
+		state.properties = state.properties || {};
+
+		if ( ! state.properties[ accountID ] ) {
+			state.properties[ accountID ] = [];
 		}
-		draft.properties[ accountID ].push( property );
+
+		state.properties[ accountID ].push( property );
 	} ),
 	argsToParams( accountID ) {
 		return { accountID };
@@ -700,33 +707,33 @@ const baseActions = {
 
 const baseControls = {};
 
-function baseReducer( state, { type, payload } ) {
-	return produce( state, ( draft ) => {
-		switch ( type ) {
-			case MATCHING_ACCOUNT_PROPERTY: {
-				const { isMatchingAccountProperty } = payload;
-				draft.isMatchingAccountProperty = isMatchingAccountProperty;
-				break;
-			}
-			case SET_HAS_MISMATCHED_TAG: {
-				const { hasMismatchedTag } = payload;
-				draft.moduleData = {
-					...draft.moduleData,
-					hasMismatchedTag,
-				};
-				break;
-			}
-			case SET_IS_WEBDATASTREAM_AVAILABLE: {
-				const { isWebDataStreamAvailable } = payload;
-				draft.isWebDataStreamAvailable = isWebDataStreamAvailable;
-				break;
-			}
-			default: {
-				break;
-			}
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		case MATCHING_ACCOUNT_PROPERTY: {
+			const { isMatchingAccountProperty } = action.payload;
+			state.isMatchingAccountProperty = isMatchingAccountProperty;
+			break;
 		}
-	} );
-}
+
+		case SET_HAS_MISMATCHED_TAG: {
+			const { hasMismatchedTag } = action.payload;
+			state.moduleData = {
+				...state.moduleData,
+				hasMismatchedTag,
+			};
+			break;
+		}
+
+		case SET_IS_WEBDATASTREAM_AVAILABLE: {
+			const { isWebDataStreamAvailable } = action.payload;
+			state.isWebDataStreamAvailable = isWebDataStreamAvailable;
+			break;
+		}
+
+		default:
+			break;
+	}
+} );
 
 const baseResolvers = {
 	*getProperties( accountID ) {

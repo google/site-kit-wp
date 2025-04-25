@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import { pick, difference } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -31,6 +30,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
@@ -123,12 +123,14 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 			displayName,
 		} );
 	},
-	reducerCallback: produce( ( draft, webDataStream, { propertyID } ) => {
-		if ( ! draft.webdatastreams[ propertyID ] ) {
-			draft.webdatastreams[ propertyID ] = [];
+	reducerCallback: createReducer(
+		( state, webDataStream, { propertyID } ) => {
+			if ( ! state.webdatastreams[ propertyID ] ) {
+				state.webdatastreams[ propertyID ] = [];
+			}
+			state.webdatastreams[ propertyID ].push( webDataStream );
 		}
-		draft.webdatastreams[ propertyID ].push( webDataStream );
-	} ),
+	),
 	argsToParams( propertyID, displayName ) {
 		return { propertyID, displayName };
 	},
@@ -194,15 +196,12 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
-	return produce( state, () => {
-		switch ( type ) {
-			default: {
-				break;
-			}
-		}
-	} );
-};
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		default:
+			return state;
+	}
+} );
 
 function* resolveGetWebDataStreams( propertyID ) {
 	const { resolveSelect } = yield commonActions.getRegistry();

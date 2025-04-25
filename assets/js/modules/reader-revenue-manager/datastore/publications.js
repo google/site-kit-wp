@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies.
@@ -31,6 +30,7 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -51,8 +51,8 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: produce( ( draft, publications ) => {
-		draft.publications = publications;
+	reducerCallback: createReducer( ( state, publications ) => {
+		state.publications = publications;
 	} ),
 } );
 
@@ -83,8 +83,9 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			'publicationOnboardingState is required and must be string.'
 		);
 	},
-	reducerCallback: produce(
-		( draft, { publicationID, publicationOnboardingState } ) => {
+
+	reducerCallback: createReducer(
+		( state, { publicationID, publicationOnboardingState } ) => {
 			if ( ! publicationID ) {
 				return;
 			}
@@ -92,21 +93,24 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			// eslint-disable-next-line sitekit/no-direct-date
 			const publicationOnboardingStateLastSyncedAtMs = Date.now();
 
-			if ( draft.settings.publicationID === publicationID ) {
-				draft.settings.publicationOnboardingState =
+			// Update settings if publicationID matches
+			if ( state.settings?.publicationID === publicationID ) {
+				state.settings.publicationOnboardingState =
 					publicationOnboardingState;
-				draft.settings.publicationOnboardingStateLastSyncedAtMs =
+				state.settings.publicationOnboardingStateLastSyncedAtMs =
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			if ( draft.savedSettings.publicationID === publicationID ) {
-				draft.savedSettings.publicationOnboardingState =
+			// Update savedSettings if publicationID matches
+			if ( state.savedSettings?.publicationID === publicationID ) {
+				state.savedSettings.publicationOnboardingState =
 					publicationOnboardingState;
-				draft.savedSettings.publicationOnboardingStateLastSyncedAtMs =
+				state.savedSettings.publicationOnboardingStateLastSyncedAtMs =
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			const publication = draft.publications?.find(
+			// Update the publication in the list (if it exists)
+			const publication = state.publications?.find(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId: id } ) => id === publicationID
 			);
@@ -287,11 +291,14 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = produce( ( draft, { type } ) => {
+const baseReducer = createReducer( ( state, action ) => {
+	const { type } = action;
 	switch ( type ) {
 		case 'RESET_PUBLICATIONS':
-			draft.publications = baseInitialState.publications;
+			state.publications = baseInitialState.publications;
 			break;
+		default:
+			return state;
 	}
 } );
 
