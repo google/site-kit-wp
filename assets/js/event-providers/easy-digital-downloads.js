@@ -22,7 +22,41 @@
 
 	const body = jQuery( 'body' );
 
-	body.on( 'edd_cart_item_added', function () {
-		global._googlesitekit?.gtagEvent?.( 'add_to_cart' );
+	body.on( 'edd_cart_item_added', function ( event, details ) {
+		const { title, value } = parseCartItemHTML( details.cart_item );
+		const currency = global._googlesitekit.eddCurrency;
+
+		global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
+			currency,
+			value,
+			items: [
+				{
+					item_name: title,
+					price: value,
+				},
+			],
+		} );
 	} );
 } )( global.jQuery );
+
+/*
+ * Parses the provided cart item HTML to extract product details.
+ */
+export const parseCartItemHTML = ( cartItemHTML ) => {
+	const parser = new DOMParser();
+	const doc = parser.parseFromString( cartItemHTML, 'text/html' );
+
+	const title =
+		doc.querySelector( '.edd-cart-item-title' )?.textContent.trim() || '';
+	const priceText =
+		doc.querySelector( '.edd-cart-item-price' )?.textContent.trim() || '';
+
+	const priceRegex = /([\d,.]+)/;
+	const match = priceText.match( priceRegex );
+	const value = match ? parseFloat( match[ 1 ].replace( /,/g, '' ) ) : 0;
+
+	return {
+		title,
+		value,
+	};
+};
