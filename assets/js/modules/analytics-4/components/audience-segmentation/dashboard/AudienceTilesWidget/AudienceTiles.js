@@ -480,9 +480,9 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! reportLoaded ||
 		! siteKitAudiencesReportLoaded ||
 		! totalPageviewsReportLoaded ||
-		// ! topCitiesReportLoaded ||
-		// ! topContentReportLoaded ||
-		// ! topContentPageTitlesReportLoaded ||
+		! topCitiesReportLoaded ||
+		! topContentReportLoaded ||
+		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
 	log2( 'loading states', {
