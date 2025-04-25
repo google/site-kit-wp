@@ -31,9 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 export default function ProductIDContributionsNotification( {
 	id,
@@ -45,26 +43,21 @@ export default function ProductIDContributionsNotification( {
 
 	return (
 		<Notification>
-			<SubtleNotification
-				type="new-feature"
+			<NoticeNotification
+				notificationID={ id }
+				type="new"
 				description={ __(
 					'New! You can now select product IDs to use with your Reader Revenue Manager snippet',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Edit settings', 'google-site-kit' ) }
-						ctaLink={ `${ settingsURL }#connected-services/reader-revenue-manager/edit` }
-					/>
-				}
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+				} }
+				ctaButton={ {
+					label: __( 'Edit settings', 'google-site-kit' ),
+					href: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+				} }
+				reverseCTAs
 			/>
 		</Notification>
 	);
