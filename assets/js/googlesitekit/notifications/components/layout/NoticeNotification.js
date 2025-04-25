@@ -30,7 +30,6 @@ import { Grid, Cell, Row } from '../../../../material-components';
 
 export default function NoticeNotification( {
 	notificationID,
-	type,
 	children,
 	dismissButton,
 	ctaButton,
@@ -61,7 +60,6 @@ export default function NoticeNotification( {
 			<Row>
 				<Cell alignMiddle size={ 12 }>
 					<Notice
-						type={ type }
 						dismissButton={ {
 							label: dismissButton.label,
 							href: ctaButton.href,
@@ -84,12 +82,7 @@ export default function NoticeNotification( {
 
 NoticeNotification.propTypes = {
 	notificationID: PropTypes.string.isRequired,
-	type: PropTypes.oneOf( [ 'win-success', 'warning', 'error', 'info' ] ),
-	dismissible: PropTypes.bool,
-	dismissLabel: PropTypes.string,
-	onDismiss: PropTypes.func,
-	ctaLink: PropTypes.string,
-	ctaLabel: PropTypes.string,
-	ctaCallback: PropTypes.func,
+	dismissButton: PropTypes.object,
+	ctaButton: PropTypes.object,
 	children: PropTypes.node,
 };
