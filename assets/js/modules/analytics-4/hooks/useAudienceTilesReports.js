@@ -22,11 +22,11 @@
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
-
-// const log = createLogger( 'useAudienceTilesReports', {
-// 	logOnlyOnce: true,
-// 	logDiff: true,
-// } );
+import { createLogger } from '../components/audience-segmentation/dashboard/AudienceTilesWidget/logger';
+const log = createLogger( 'useAudienceTilesReports', {
+	logOnlyOnce: true,
+	logDiff: true,
+} );
 
 // const colouredString = ( string ) => {
 // 	const colour = getColour( string );
@@ -44,14 +44,15 @@ import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
  */
 function useReportLoaded( reportOptions, configuredAudiences ) {
 	return useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) => {
+		configuredAudiences.reduce( ( acc, audienceResourceName ) => {
 			const partialDataSiteKitAudience =
 				select( MODULES_ANALYTICS_4 ).getPartialDataSiteKitAudience(
 					audienceResourceName
 				);
 
 			if ( partialDataSiteKitAudience === undefined ) {
-				return false;
+				acc[ audienceResourceName ] = false;
+				return acc;
 			}
 
 			const dimensionFilters = {};
@@ -65,19 +66,21 @@ function useReportLoaded( reportOptions, configuredAudiences ) {
 				dimensionFilters.audienceResourceName = audienceResourceName;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[
-					{
-						...reportOptions,
-						dimensionFilters: {
-							...reportOptions.dimensionFilters,
-							...dimensionFilters,
-						},
+			const isLoaded = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getReport', [
+				{
+					...reportOptions,
+					dimensionFilters: {
+						...reportOptions.dimensionFilters,
+						...dimensionFilters,
 					},
-				]
-			);
-		} )
+				},
+			] );
+
+			acc[ audienceResourceName ] = isLoaded;
+			return acc;
+		}, {} )
 	);
 }
 
@@ -348,6 +351,8 @@ export default function useAudienceTilesReports( {
 		topCitiesReportOptions,
 		configuredAudiences
 	);
+
+	log( 'topCitiesReportLoaded', topCitiesReportLoaded );
 
 	const topCitiesReportErrors = useReportErrors(
 		topCitiesReportOptions,

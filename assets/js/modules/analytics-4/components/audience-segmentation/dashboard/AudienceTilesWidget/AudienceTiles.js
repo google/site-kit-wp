@@ -480,9 +480,9 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! reportLoaded ||
 		! siteKitAudiencesReportLoaded ||
 		! totalPageviewsReportLoaded ||
-		! topCitiesReportLoaded ||
-		! topContentReportLoaded ||
-		! topContentPageTitlesReportLoaded ||
+		// ! topCitiesReportLoaded ||
+		// ! topContentReportLoaded ||
+		// ! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
 	log2( 'loading states', {
@@ -648,6 +648,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						// Return loading tile if data is not yet loaded.
 						if (
 							loading ||
+							! topCitiesReportLoaded?.[ audienceResourceName ] ||
+							! topContentReportLoaded?.[
+								audienceResourceName
+							] ||
+							! topContentPageTitlesReportLoaded?.[
+								audienceResourceName
+							] ||
 							isZeroData === undefined ||
 							isPartialData === undefined
 						) {
