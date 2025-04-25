@@ -104,7 +104,7 @@ jobs:
           cache: npm
 
       - name: npm install
-        run: npm ci
+        run: npm i -w assets -w tests/e2e --include-workspace-root
 
       - name: Build
         run: npm run build:test

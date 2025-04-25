@@ -62,7 +62,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm ci
+        run: npm i -w assets -w storybook --include-workspace-root
       - name: Build Storybook
         run: npm run build:storybook
       - name: Upload artifacts
@@ -141,6 +141,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm ci
+        run: npm i -w assets -w storybook -w tests/js --include-workspace-root
       # - name: Test Storybook
       #   run: npm run test:storybook
