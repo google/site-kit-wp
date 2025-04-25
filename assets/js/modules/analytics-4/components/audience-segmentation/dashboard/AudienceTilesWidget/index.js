@@ -37,12 +37,14 @@ import WidgetNull from '../../../../../../googlesitekit/widgets/components/Widge
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import { createLogger } from './logger';
 
-// const hasRendered = false;
-let hasShownLoadingState = false;
-
-const log = createLogger( 'AudienceTilesWidget', 33 );
+const log = createLogger( 'AudienceTilesWidget', {
+	colour: 33,
+	logOnlyOnce: true,
+} );
 
 function AudienceTilesWidget( { Widget } ) {
+	log( 'render' );
+
 	const availableAudiences = useSelect( ( select ) => {
 		const audiences =
 			select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
@@ -122,6 +124,12 @@ function AudienceTilesWidget( { Widget } ) {
 	// 	availableAudiencesSynced,
 	// } );
 
+	log( {
+		configuredAudiences,
+		availableAudiences,
+		hasMatchingAudience,
+	} );
+
 	if ( ! hasMatchingAudience ) {
 		log( 'No matching audience found' );
 		return availableAudiencesSynced ? (
@@ -131,10 +139,7 @@ function AudienceTilesWidget( { Widget } ) {
 			/>
 		) : (
 			( () => {
-				if ( ! hasShownLoadingState ) {
-					log( 'first loading state' );
-					hasShownLoadingState = true;
-				}
+				log( 'showing loading state' );
 				return (
 					<Widget
 						className="googlesitekit-widget-audience-tiles"
@@ -153,6 +158,8 @@ function AudienceTilesWidget( { Widget } ) {
 			} )()
 		);
 	}
+
+	log( 'has matching audience' );
 
 	const filterAndLogTruthyObjectValues = ( msg, obj ) => {
 		const truthyObj = Object.fromEntries(

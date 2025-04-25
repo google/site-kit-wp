@@ -59,11 +59,11 @@ import { trackEvent } from '../../../../../../util';
 import { reportRowsWithSetValues } from '../../../../utils/report-rows-with-set-values';
 import { createLogger } from './logger';
 
-let hasRendered = false;
-let hasShownLoadingState = false;
-let hasShownLoadedTile = false;
+const logIt = createLogger( 'AudienceTiles', {
+	colour: 36,
+	logOnlyOnce: true,
+} );
 
-const logIt = createLogger( 'AudienceTiles', 36 );
 const log = ( ...args ) => {
 	if ( 1 ) {
 		return;
@@ -87,10 +87,8 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 
 // eslint-disable-next-line complexity
 export default function AudienceTiles( { Widget, widgetLoading } ) {
-	if ( ! hasRendered ) {
-		log2( 'first render' );
-		hasRendered = true;
-	}
+	log2( 'render' );
+
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
@@ -643,10 +641,10 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							isZeroData === undefined ||
 							isPartialData === undefined
 						) {
-							if ( ! hasShownLoadingState ) {
-								log2( 'first loading state' );
-								hasShownLoadingState = true;
-							}
+							log2(
+								'showing loading tile',
+								audienceResourceName
+							);
 							log( 'Loading... ', audienceResourceName );
 							return (
 								<Widget key={ audienceResourceName } noPadding>
@@ -673,10 +671,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							);
 						}
 
-						if ( ! hasShownLoadedTile ) {
-							log2( 'first loaded tile' );
-							hasShownLoadedTile = true;
-						}
+						log2( 'showing loaded tile', audienceResourceName );
 
 						return (
 							<AudienceTile

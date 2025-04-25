@@ -1,8 +1,20 @@
+import md5 from 'md5';
+
 let firstDate = null;
 let prevDate = null;
 
-export function createLogger( name, colour = 0 ) {
+const seen = new Set();
+
+export function createLogger( name, { colour = 0, logOnlyOnce = false } = {} ) {
 	return ( ...args ) => {
+		if ( logOnlyOnce ) {
+			const messageHash = md5( JSON.stringify( [ name, ...args ] ) );
+			if ( seen.has( messageHash ) ) {
+				return;
+			}
+			seen.add( messageHash );
+		}
+
 		// eslint-disable-next-line sitekit/no-direct-date
 		const now = Date.now();
 		if ( ! firstDate ) {
