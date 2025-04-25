@@ -131,7 +131,7 @@ function AudienceTilesWidget( { Widget } ) {
 	} );
 
 	if ( ! hasMatchingAudience ) {
-		log( 'No matching audience found' );
+		log( 'no matching audience found' );
 		return availableAudiencesSynced ? (
 			<NoAudienceBannerWidget
 				Widget={ Widget }
@@ -160,23 +160,6 @@ function AudienceTilesWidget( { Widget } ) {
 	}
 
 	log( 'has matching audience' );
-
-	const filterAndLogTruthyObjectValues = ( msg, obj ) => {
-		const truthyObj = Object.fromEntries(
-			Object.entries( obj ).filter( ( [ , value ] ) => value )
-		);
-		if ( Object.keys( truthyObj ).length ) {
-			log( msg, truthyObj );
-		} else {
-			log( msg, 'All good' );
-		}
-	};
-
-	filterAndLogTruthyObjectValues( 'loading state values', {
-		'! availableAudiencesSynced': ! availableAudiencesSynced,
-		'! availableAudiences': ! availableAudiences,
-		'! configuredAudiences': ! configuredAudiences,
-	} );
 
 	return (
 		<AudienceTiles

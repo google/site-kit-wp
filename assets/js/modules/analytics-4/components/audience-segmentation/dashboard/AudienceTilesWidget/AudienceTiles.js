@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 20 ] */
+
 /**
  * External dependencies
  */
@@ -59,23 +61,10 @@ import { trackEvent } from '../../../../../../util';
 import { reportRowsWithSetValues } from '../../../../utils/report-rows-with-set-values';
 import { createLogger } from './logger';
 
-const logIt = createLogger( 'AudienceTiles', {
+const log = createLogger( 'AudienceTiles', {
 	logOnlyOnce: true,
 	logDiff: true,
 } );
-
-const log = ( ...args ) => {
-	if ( 1 ) {
-		return;
-	}
-	logIt( ...args );
-};
-const log2 = ( ...args ) => {
-	// if ( 1 ) {
-	// 	return;
-	// }
-	logIt( ...args );
-};
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -85,9 +74,8 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 	return totalUsers === 0;
 };
 
-// eslint-disable-next-line complexity
 export default function AudienceTiles( { Widget, widgetLoading } ) {
-	log2( 'render' );
+	log( 'render' );
 
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
@@ -485,7 +473,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
-	log2( 'loading states', {
+	log( 'loading states', {
 		loading,
 		widgetLoading,
 		reportLoaded,
@@ -493,28 +481,6 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		topCitiesReportLoaded,
 		topContentReportLoaded,
 		topContentPageTitlesReportLoaded,
-	} );
-
-	const filterAndLogTruthyObjectValues = ( msg, obj ) => {
-		const truthyObj = Object.fromEntries(
-			Object.entries( obj ).filter( ( [ , value ] ) => value )
-		);
-		if ( Object.keys( truthyObj ).length ) {
-			log( msg, truthyObj );
-		} else {
-			log( msg, 'All good' );
-		}
-	};
-
-	filterAndLogTruthyObjectValues( 'AudienceTiles', {
-		'! loading': ! loading,
-		'! widgetLoading': ! widgetLoading,
-		'! reportLoaded': ! reportLoaded,
-		'! totalPageviewsReportLoaded': ! totalPageviewsReportLoaded,
-		'! topCitiesReportLoaded': ! topCitiesReportLoaded,
-		'! topContentReportLoaded': ! topContentReportLoaded,
-		'! topContentPageTitlesReportLoaded':
-			! topContentPageTitlesReportLoaded,
 	} );
 
 	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
@@ -626,24 +592,15 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							isZeroData,
 							isPartialData,
 						} = audienceTileData;
-						// } = getAudienceTileData( audienceResourceName, index );
 
 						if ( index === 0 ) {
-							log2( 'audienceTileData', audienceTileData );
+							log( 'audienceTileData', audienceTileData );
 						}
 
 						// Filter (not set) value from the top countries report if present.
 						const filteredTopCitiesRows = topCities?.rows
 							? reportRowsWithSetValues( topCities.rows )
 							: [];
-
-						filterAndLogTruthyObjectValues( 'AudienceTile', {
-							'isZeroData === undefined':
-								isZeroData === undefined,
-							'isPartialData === undefined':
-								isPartialData === undefined,
-							audienceResourceName,
-						} );
 
 						// Return loading tile if data is not yet loaded.
 						if (
@@ -658,11 +615,10 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							isZeroData === undefined ||
 							isPartialData === undefined
 						) {
-							log2(
+							log(
 								'showing \x1b[31mloading\x1b[0m tile',
 								audienceResourceName
 							);
-							log( 'Loading... ', audienceResourceName );
 							return (
 								<Widget key={ audienceResourceName } noPadding>
 									<AudienceTileLoading />
@@ -688,7 +644,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							);
 						}
 
-						log2(
+						log(
 							'showing \x1b[32mloaded\x1b[0m tile',
 							audienceResourceName
 						);

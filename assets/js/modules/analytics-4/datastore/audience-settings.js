@@ -193,8 +193,8 @@ const baseActions = {
 
 // eslint-disable-next-line no-unused-vars
 const log = createLogger( 'audience-settings', {
-	colour: 31,
 	logOnlyOnce: true,
+	logDiff: true,
 } );
 
 const baseResolvers = {
