@@ -38,6 +38,7 @@ import {
 	createValidatedAction,
 } from '../../../googlesitekit/data/utils';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { createLogger } from '../components/audience-segmentation/dashboard/AudienceTilesWidget/logger';
 
 const { receiveError, clearError } = errorStoreActions;
 
@@ -190,6 +191,12 @@ const baseActions = {
 	),
 };
 
+// eslint-disable-next-line no-unused-vars
+const log = createLogger( 'audience-settings', {
+	colour: 31,
+	logOnlyOnce: true,
+} );
+
 const baseResolvers = {
 	*getAudienceSettings() {
 		const registry = yield commonActions.getRegistry();
@@ -197,6 +204,10 @@ const baseResolvers = {
 
 		const audienceSettings =
 			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
+		// log( '*getAudienceSettings', {
+		// 	audienceSettings,
+		// } );
 
 		if ( audienceSettings === undefined ) {
 			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
@@ -248,13 +259,15 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
-	getAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
-	},
+	getAvailableAudiences: createRegistrySelector( ( select ) => () => {
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+		return audienceSettings.availableAudiences;
+	} ),
 
-	getOrSyncAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
-	},
+	getOrSyncAvailableAudiences: createRegistrySelector( ( select ) => () => {
+		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+	} ),
 
 	/**
 	 * Gets the audience settings.
@@ -265,6 +278,9 @@ const baseSelectors = {
 	 * @return {Object|undefined} Audience settings, or `undefined` if not loaded.
 	 */
 	getAudienceSettings( state ) {
+		// log( 'getAudienceSettings', {
+		// 	audienceSettings: state.audienceSettings,
+		// } );
 		return state.audienceSettings;
 	},
 
