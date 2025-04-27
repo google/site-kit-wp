@@ -159,6 +159,7 @@ export default function Module( {
 						isLocked,
 				}
 			) }
+			ref={ moduleRef }
 		>
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
