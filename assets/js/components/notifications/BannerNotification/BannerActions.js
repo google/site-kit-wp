@@ -39,6 +39,7 @@ export default function BannerActions( props ) {
 		ctaComponent,
 		ctaTarget,
 		ctaCallback,
+		showSpinner,
 		dismissLabel,
 		dismissCallback,
 	} = props;
@@ -74,8 +75,16 @@ export default function BannerActions( props ) {
 					href={ ctaLink }
 					target={ ctaTarget }
 					onClick={ handleCTAClick }
-					disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
-					isSaving={ isAwaitingCTAResponse || isNavigatingToCTALink }
+					disabled={
+						isAwaitingCTAResponse ||
+						isNavigatingToCTALink ||
+						showSpinner
+					}
+					isSaving={
+						isAwaitingCTAResponse ||
+						isNavigatingToCTALink ||
+						showSpinner
+					}
 				>
 					{ ctaLabel }
 				</SpinnerButton>
