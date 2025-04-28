@@ -49,10 +49,7 @@ export default function NoticeNotification( {
 
 	const handleCTAClickWithTrackEvent = async ( event ) => {
 		await ctaButton?.onClick?.( event );
-		await trackEvents.confirm();
-		dismissNotification( notificationID, {
-			...ctaButton.dismissOptions,
-		} );
+		trackEvents.confirm();
 	};
 
 	return (
