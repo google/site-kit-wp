@@ -87,7 +87,6 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 					onClick: dismissWooCommerceRedirectModal,
 					disabled: isSaving,
 				} }
-				reverseCTAs
 			/>
 		</Notification>
 	);
