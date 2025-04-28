@@ -26,7 +26,6 @@ import { createRegistrySelector } from '@wordpress/data';
  */
 import invariant from 'invariant';
 import md5 from 'md5';
-import { produce } from 'immer';
 
 const RECEIVE_ERROR = 'RECEIVE_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
@@ -36,6 +35,7 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
  * Internal dependencies
  */
 import { stringifyObject } from '../../util';
+import { createReducer } from './create-reducer';
 
 export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {
@@ -95,49 +95,54 @@ export function createErrorStore( storeName ) {
 		errorArgs: {},
 	};
 
-	function reducer( state, { type, payload } ) {
-		return produce( state, ( draft ) => {
-			switch ( type ) {
+	function reducer( state, action ) {
+		return createReducer( function ( stateDraft, actionDraft ) {
+			switch ( actionDraft.type ) {
 				case RECEIVE_ERROR: {
-					const { baseName, args, error } = payload;
+					const { baseName, args, error } = actionDraft.payload;
 					const key = generateErrorKey( baseName, args );
-					draft.errors[ key ] = error;
-					draft.errorArgs[ key ] = args;
+					stateDraft.errors = stateDraft.errors || {};
+					stateDraft.errorArgs = stateDraft.errorArgs || {};
+					stateDraft.errors[ key ] = error;
+					stateDraft.errorArgs[ key ] = args;
 					break;
 				}
 
 				case CLEAR_ERROR: {
-					const { baseName, args } = payload;
+					const { baseName, args } = actionDraft.payload;
 					const key = generateErrorKey( baseName, args );
-					delete draft.errors[ key ];
-					delete draft.errorArgs[ key ];
-					break;
-				}
-
-				case CLEAR_ERRORS: {
-					const { baseName } = payload;
-					if ( baseName ) {
-						for ( const key in draft.errors ) {
-							if (
-								key === baseName ||
-								key.startsWith( `${ baseName }::` )
-							) {
-								delete draft.errors[ key ];
-								delete draft.errorArgs[ key ];
-							}
-						}
-					} else {
-						draft.errors = {};
-						draft.errorArgs = {};
+					if ( stateDraft.errors ) {
+						delete stateDraft.errors[ key ];
+					}
+					if ( stateDraft.errorArgs ) {
+						delete stateDraft.errorArgs[ key ];
 					}
 					break;
 				}
 
-				default: {
+				case CLEAR_ERRORS: {
+					const { baseName } = actionDraft.payload;
+					if ( baseName ) {
+						for ( const key in stateDraft.errors ) {
+							if (
+								key === baseName ||
+								key.startsWith( `${ baseName }::` )
+							) {
+								delete stateDraft.errors[ key ];
+								delete stateDraft.errorArgs[ key ];
+							}
+						}
+					} else {
+						stateDraft.errors = {};
+						stateDraft.errorArgs = {};
+					}
 					break;
 				}
+
+				default:
+					break;
 			}
-		} );
+		} )( state, action );
 	}
 
 	const controls = {};

@@ -19,18 +19,18 @@
  */
 import { isPlainObject, isEqual } from 'lodash';
 import invariant from 'invariant';
-import {
-	createReducer,
-	commonActions,
-	combineStores,
-	createRegistrySelector,
-} from 'googlesitekit-data';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
 
 const { getRegistry } = commonActions;
@@ -39,7 +39,6 @@ const SET_CONVERSION_TRACKING_ENABLED = 'SET_CONVERSION_TRACKING_ENABLED';
 const RESET_CONVERSION_TRACKING_SETTINGS = 'RESET_CONVERSION_TRACKING_SETTINGS';
 
 const settingsReducerCallback = createReducer( ( state, settings ) => {
-	state.conversionTracking = state.conversionTracking || {};
 	state.conversionTracking.settings = settings;
 	state.conversionTracking.savedSettings = settings;
 } );
@@ -128,24 +127,21 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, action ) => {
-	switch ( action.type ) {
-		case SET_CONVERSION_TRACKING_ENABLED: {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_CONVERSION_TRACKING_ENABLED:
 			state.conversionTracking.settings =
 				state.conversionTracking.settings || {};
-			state.conversionTracking.settings.enabled =
-				!! action.payload.enabled;
+			state.conversionTracking.settings.enabled = !! payload.enabled;
 			break;
-		}
 
-		case RESET_CONVERSION_TRACKING_SETTINGS: {
+		case RESET_CONVERSION_TRACKING_SETTINGS:
 			state.conversionTracking.settings =
 				state.conversionTracking.savedSettings;
 			break;
-		}
 
 		default:
-			return state;
+			break;
 	}
 } );
 

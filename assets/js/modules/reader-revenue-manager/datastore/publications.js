@@ -29,8 +29,8 @@ import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
-	createRegistrySelector,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -51,9 +51,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: createReducer( ( state, publications ) => {
-		state.publications = publications;
-	} ),
+	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
 } );
 
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
@@ -83,7 +81,6 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			'publicationOnboardingState is required and must be string.'
 		);
 	},
-
 	reducerCallback: createReducer(
 		( state, { publicationID, publicationOnboardingState } ) => {
 			if ( ! publicationID ) {
@@ -93,23 +90,20 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			// eslint-disable-next-line sitekit/no-direct-date
 			const publicationOnboardingStateLastSyncedAtMs = Date.now();
 
-			// Update settings if publicationID matches
-			if ( state.settings?.publicationID === publicationID ) {
+			if ( state.settings.publicationID === publicationID ) {
 				state.settings.publicationOnboardingState =
 					publicationOnboardingState;
 				state.settings.publicationOnboardingStateLastSyncedAtMs =
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			// Update savedSettings if publicationID matches
-			if ( state.savedSettings?.publicationID === publicationID ) {
+			if ( state.savedSettings.publicationID === publicationID ) {
 				state.savedSettings.publicationOnboardingState =
 					publicationOnboardingState;
 				state.savedSettings.publicationOnboardingStateLastSyncedAtMs =
 					publicationOnboardingStateLastSyncedAtMs;
 			}
 
-			// Update the publication in the list (if it exists)
 			const publication = state.publications?.find(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { publicationId: id } ) => id === publicationID
@@ -291,16 +285,17 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, action ) => {
-	const { type } = action;
+const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
 		case 'RESET_PUBLICATIONS':
-			state.publications = baseInitialState.publications;
-			break;
+			return {
+				...state,
+				publications: baseInitialState.publications,
+			};
 		default:
 			return state;
 	}
-} );
+};
 
 const baseResolvers = {
 	*getPublications() {

@@ -21,7 +21,7 @@
  */
 import invariant from 'invariant';
 import { intersection } from 'lodash';
-import { original, produce } from 'immer';
+import { original } from 'immer';
 
 /**
  * Internal dependencies
@@ -29,6 +29,7 @@ import { original, produce } from 'immer';
 import { createRegistrySelector } from 'googlesitekit-data';
 import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
 import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
+import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
@@ -184,61 +185,64 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
-	return produce( state, ( draft ) => {
-		switch ( type ) {
-			case ASSIGN_WIDGET: {
-				const { slug, areaSlugs } = payload;
+export const reducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case ASSIGN_WIDGET: {
+			const { slug, areaSlugs } = payload;
 
-				areaSlugs.forEach( ( areaSlug ) => {
-					if ( draft.areaAssignments[ areaSlug ] === undefined ) {
-						draft.areaAssignments[ areaSlug ] = [];
-					}
-
-					if (
-						! draft.areaAssignments[ areaSlug ].includes( slug )
-					) {
-						draft.areaAssignments[ areaSlug ].push( slug );
-					}
-				} );
-				break;
-			}
-
-			case REGISTER_WIDGET: {
-				const { slug, settings } = payload;
-
-				if ( draft.widgets[ slug ] !== undefined ) {
-					global.console.warn(
-						`Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.`
-					);
-					return;
+			areaSlugs.forEach( ( areaSlug ) => {
+				if ( state.areaAssignments[ areaSlug ] === undefined ) {
+					state.areaAssignments[ areaSlug ] = [];
 				}
 
-				draft.widgets[ slug ] = { ...settings, slug };
-				break;
-			}
-
-			case SET_WIDGET_STATE: {
-				const { slug, Component, metadata } = payload;
-				draft.widgetStates[ slug ] = { Component, metadata };
-				break;
-			}
-
-			case UNSET_WIDGET_STATE: {
-				const { slug, Component, metadata } = payload;
-
-				if (
-					draft.widgetStates?.[ slug ]?.Component === Component &&
-					original( draft.widgetStates?.[ slug ]?.metadata ) ===
-						metadata
-				) {
-					delete draft.widgetStates[ slug ];
+				if ( ! state.areaAssignments[ areaSlug ].includes( slug ) ) {
+					state.areaAssignments[ areaSlug ].push( slug );
 				}
-				break;
-			}
+			} );
+
+			return state;
 		}
-	} );
-};
+
+		case REGISTER_WIDGET: {
+			const { slug, settings } = payload;
+
+			if ( state.widgets[ slug ] !== undefined ) {
+				global.console.warn(
+					`Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.`
+				);
+
+				return state;
+			}
+
+			state.widgets[ slug ] = { ...settings, slug };
+			return state;
+		}
+
+		case SET_WIDGET_STATE: {
+			const { slug, Component, metadata } = payload;
+
+			state.widgetStates[ slug ] = { Component, metadata };
+			return state;
+		}
+
+		case UNSET_WIDGET_STATE: {
+			const { slug, Component, metadata } = payload;
+
+			if (
+				state.widgetStates?.[ slug ]?.Component === Component &&
+				original( state.widgetStates?.[ slug ]?.metadata ) === metadata
+			) {
+				delete state.widgetStates[ slug ];
+			}
+
+			return state;
+		}
+
+		default: {
+			return state;
+		}
+	}
+} );
 
 export const resolvers = {};
 

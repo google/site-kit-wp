@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -30,6 +29,7 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
@@ -54,9 +54,10 @@ const fetchGetSitesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: produce( ( draft, sites, { accountID } ) => {
+	reducerCallback: createReducer( ( state, sites, { accountID } ) => {
 		if ( Array.isArray( sites ) ) {
-			draft.sites[ accountID ] = [ ...sites ];
+			state.sites = state.sites || {};
+			state.sites[ accountID ] = [ ...sites ];
 		}
 	} ),
 	argsToParams: ( accountID ) => {
@@ -97,8 +98,8 @@ const baseActions = {
 	},
 };
 
-const baseReducer = produce( ( draft, { type } ) => {
-	switch ( type ) {
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RESET_SITES: {
 			const {
 				siteID,
@@ -106,10 +107,12 @@ const baseReducer = produce( ( draft, { type } ) => {
 				siteStatus,
 				accountSetupComplete,
 				siteSetupComplete,
-			} = draft.savedSettings || {};
-			draft.sites = initialState.sites;
-			draft.settings = {
-				...( draft.settings || {} ),
+			} = state.savedSettings || {};
+
+			state.sites = initialState.sites;
+
+			state.settings = {
+				...( state.settings || {} ),
 				siteID,
 				accountStatus,
 				siteStatus,
@@ -119,9 +122,8 @@ const baseReducer = produce( ( draft, { type } ) => {
 			break;
 		}
 
-		default: {
-			return draft;
-		}
+		default:
+			break;
 	}
 } );
 

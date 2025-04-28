@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -30,6 +29,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
@@ -52,9 +52,10 @@ const fetchGetClientsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: produce( ( draft, clients, { accountID } ) => {
+	reducerCallback: createReducer( ( state, clients, { accountID } ) => {
 		if ( Array.isArray( clients ) ) {
-			draft.clients[ accountID ] = [ ...clients ];
+			state.clients = state.clients || {};
+			state.clients[ accountID ] = [ ...clients ];
 		}
 	} ),
 	argsToParams: ( accountID ) => {
@@ -86,8 +87,8 @@ const baseActions = {
 	},
 };
 
-const baseReducer = produce( ( draft, { type } ) => {
-	switch ( type ) {
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RESET_CLIENTS: {
 			const {
 				clientID,
@@ -95,10 +96,12 @@ const baseReducer = produce( ( draft, { type } ) => {
 				siteStatus,
 				accountSetupComplete,
 				siteSetupComplete,
-			} = draft.savedSettings || {};
-			draft.clients = initialState.clients;
-			draft.settings = {
-				...( draft.settings || {} ),
+			} = state.savedSettings || {};
+
+			state.clients = initialState.clients;
+
+			state.settings = {
+				...( state.settings || {} ),
 				clientID,
 				accountStatus,
 				siteStatus,
@@ -108,9 +111,8 @@ const baseReducer = produce( ( draft, { type } ) => {
 			break;
 		}
 
-		default: {
-			return draft;
-		}
+		default:
+			break;
 	}
 } );
 

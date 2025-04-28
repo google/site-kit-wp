@@ -20,12 +20,11 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 function getModuleDataProperty( propName ) {
@@ -66,23 +65,25 @@ export const actions = {
 	},
 };
 
-export const reducer = produce( ( draft, { payload, type } ) => {
+export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
 			const { tagIDMismatch, newEvents, lostEvents, newBadgeEvents } =
 				payload;
 
-			draft.moduleData = {
+			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
 			};
+
+			state.moduleData = moduleData;
 			break;
 		}
 
 		default: {
-			break;
+			return state;
 		}
 	}
 } );

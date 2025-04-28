@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -28,6 +27,7 @@ import { produce } from 'immer';
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
+import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
@@ -137,46 +137,46 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
-	return produce( state, ( draft ) => {
-		switch ( type ) {
-			case ASSIGN_WIDGET_AREA: {
-				const { slug, contextSlugs } = payload;
+export const reducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case ASSIGN_WIDGET_AREA: {
+			const { slug, contextSlugs } = payload;
 
-				contextSlugs.forEach( ( contextSlug ) => {
-					if (
-						draft.contextAssignments[ contextSlug ] === undefined
-					) {
-						draft.contextAssignments[ contextSlug ] = [];
-					}
-
-					if (
-						! draft.contextAssignments[ contextSlug ].includes(
-							slug
-						)
-					) {
-						draft.contextAssignments[ contextSlug ].push( slug );
-					}
-				} );
-				break;
-			}
-
-			case REGISTER_WIDGET_AREA: {
-				const { slug, settings } = payload;
-
-				if ( draft.areas[ slug ] !== undefined ) {
-					global.console.warn(
-						`Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.`
-					);
-					return;
+			contextSlugs.forEach( ( contextSlug ) => {
+				if ( state.contextAssignments[ contextSlug ] === undefined ) {
+					state.contextAssignments[ contextSlug ] = [];
 				}
 
-				draft.areas[ slug ] = { ...settings, slug };
-				break;
-			}
+				if (
+					! state.contextAssignments[ contextSlug ].includes( slug )
+				) {
+					state.contextAssignments[ contextSlug ].push( slug );
+				}
+			} );
+
+			return state;
 		}
-	} );
-};
+
+		case REGISTER_WIDGET_AREA: {
+			const { slug, settings } = payload;
+
+			if ( state.areas[ slug ] !== undefined ) {
+				global.console.warn(
+					`Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.`
+				);
+
+				return state;
+			}
+
+			state.areas[ slug ] = { ...settings, slug };
+			return state;
+		}
+
+		default: {
+			return state;
+		}
+	}
+} );
 
 export const resolvers = {};
 

@@ -20,12 +20,11 @@
  * External dependencies.
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { commonActions, createReducer } from 'googlesitekit-data';
 import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from './constants';
 import { getItem } from '../../../googlesitekit/api/cache';
 
@@ -59,10 +58,10 @@ const actions = {
 	},
 };
 
-const reducer = produce( ( draft, { type, payload } ) => {
+const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY:
-			draft.woocommerceModalDismissed = payload.cacheHit;
+			state.woocommerceModalDismissed = payload.cacheHit;
 			break;
 
 		default:

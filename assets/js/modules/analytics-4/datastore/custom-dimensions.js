@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
@@ -32,6 +31,7 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
@@ -84,8 +84,9 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
 		set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
-	reducerCallback: produce( ( draft, dimensions ) => {
-		draft.settings.availableCustomDimensions = [ ...dimensions ];
+	reducerCallback: createReducer( ( state, dimensions ) => {
+		state.settings = state.settings || {};
+		state.settings.availableCustomDimensions = [ ...dimensions ];
 	} ),
 } );
 
@@ -257,16 +258,21 @@ export const baseControls = {
 	),
 };
 
-export const baseReducer = produce( ( draft, { type, payload } ) => {
-	switch ( type ) {
+export const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
-			draft.customDimensionsBeingCreated = payload.customDimensions;
+			state.customDimensionsBeingCreated =
+				action.payload.customDimensions;
 			break;
 		}
+
 		case SET_SYNC_TIMEOUT_ID: {
-			draft.syncTimeoutID = payload.syncTimeoutID;
+			state.syncTimeoutID = action.payload.syncTimeoutID;
 			break;
 		}
+
+		default:
+			break;
 	}
 } );
 

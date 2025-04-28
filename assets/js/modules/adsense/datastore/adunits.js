@@ -20,13 +20,16 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
@@ -43,9 +46,12 @@ const fetchGetAdUnitsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: produce( ( draft, adunits, { accountID, clientID } ) => {
-		draft.adunits[ `${ accountID }::${ clientID }` ] = adunits;
-	} ),
+	reducerCallback: createReducer(
+		( state, adunits, { accountID, clientID } ) => {
+			state.adunits = state.adunits || {};
+			state.adunits[ `${ accountID }::${ clientID }` ] = adunits;
+		}
+	),
 	argsToParams: ( accountID, clientID ) => {
 		return { accountID, clientID };
 	},
@@ -61,14 +67,12 @@ const baseInitialState = {
 
 const baseActions = {};
 
-const baseReducer = produce( ( draft, { type } ) => {
-	switch ( type ) {
-		default: {
-			return draft;
-		}
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		default:
+			return state;
 	}
 } );
-
 const baseResolvers = {
 	*getAdUnits( accountID, clientID ) {
 		if ( undefined === accountID || undefined === clientID ) {

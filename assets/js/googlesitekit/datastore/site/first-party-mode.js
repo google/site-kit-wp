@@ -158,12 +158,11 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, action ) => {
-	switch ( action.type ) {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
 		case SET_FIRST_PARTY_MODE_ENABLED: {
 			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
-			state.firstPartyModeSettings.isEnabled =
-				!! action.payload.isEnabled;
+			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
 			break;
 		}
 
@@ -173,7 +172,7 @@ const baseReducer = createReducer( ( state, action ) => {
 		}
 
 		default:
-			return state;
+			break;
 	}
 } );
 
