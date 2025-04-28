@@ -42,7 +42,6 @@ export default function ConversionReportingDashboardSubtleNotification( {
 	return (
 		<Notice
 			type="new"
-			className="googlesitekit-acr-subtle-notification"
 			title={ __( 'New key metrics were added!', 'google-site-kit' ) }
 			description={ description }
 			dismissButton={ {
