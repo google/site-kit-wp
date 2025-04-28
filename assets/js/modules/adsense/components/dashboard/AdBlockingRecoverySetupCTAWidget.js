@@ -171,7 +171,9 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		);
 		navigateTo( recoveryPageURL );
 
-		return new Promise();
+		return new Promise( () => {
+			// We are intentionally letting this promise unresolved.
+		} );
 	};
 
 	const handleDismissClick = async () => {
