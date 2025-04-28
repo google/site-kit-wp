@@ -57,7 +57,6 @@ export default function ProductIDContributionsNotification( {
 					label: __( 'Edit settings', 'google-site-kit' ),
 					href: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
 				} }
-				reverseCTAs
 			/>
 		</Notification>
 	);
