@@ -176,7 +176,9 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
 		);
-		return navigateTo( recoveryPageURL );
+		navigateTo( recoveryPageURL );
+
+		return new Promise();
 	};
 
 	const handleDismissClick = async () => {
