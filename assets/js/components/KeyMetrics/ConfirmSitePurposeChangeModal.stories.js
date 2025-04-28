@@ -47,9 +47,7 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConfirmSitePurposeChangeModal';
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/Key Metrics Confirm Site Purpose Change Modal',
