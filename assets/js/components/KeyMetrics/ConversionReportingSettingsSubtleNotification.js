@@ -78,7 +78,7 @@ export default function ConversionReportingSettingsSubtleNotification() {
 	}, [ setIsNavigating, viewContext ] );
 
 	return (
-		<Grid>
+		<Grid ref={ notificationRef }>
 			<Row>
 				<Cell alignMiddle size={ 12 }>
 					<Notice
