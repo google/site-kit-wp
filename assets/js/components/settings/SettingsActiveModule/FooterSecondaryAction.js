@@ -64,7 +64,7 @@ export default function FooterSecondaryAction( {
 		);
 	}
 
-	if ( ! isEditing && moduleHomepage ) {
+	if ( ! isEditing && module.connected && moduleHomepage ) {
 		return (
 			<Link
 				href={ moduleHomepage }
