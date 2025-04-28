@@ -256,9 +256,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			await waitForRegistry();
 
 			expect(
-				document.querySelector(
-					'.googlesitekit-acr-subtle-notification'
-				)
+				document.querySelector( '.googlesitekit-notice--new' )
 			).toBeInTheDocument();
 		} );
 
