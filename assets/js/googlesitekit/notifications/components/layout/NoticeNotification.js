@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Notice from '../../../../components/Notice';
@@ -58,13 +53,11 @@ export default function NoticeNotification( {
 				<Cell alignMiddle size={ 12 }>
 					<Notice
 						dismissButton={ {
-							label: dismissButton.label,
-							href: ctaButton.href,
+							...dismissButton,
 							onClick: handleDismissWithTrackEvent,
 						} }
 						ctaButton={ {
-							label: ctaButton.label,
-							href: ctaButton.href,
+							...ctaButton,
 							onClick: handleCTAClickWithTrackEvent,
 						} }
 						{ ...props }
@@ -78,8 +71,5 @@ export default function NoticeNotification( {
 }
 
 NoticeNotification.propTypes = {
-	notificationID: PropTypes.string.isRequired,
-	dismissButton: PropTypes.object,
-	ctaButton: PropTypes.object,
-	children: PropTypes.node,
+	...Notice.propTypes,
 };
