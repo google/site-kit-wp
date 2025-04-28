@@ -83,7 +83,6 @@ export default function ConversionReportingSettingsSubtleNotification() {
 				<Cell alignMiddle size={ 12 }>
 					<Notice
 						type="new"
-						className="googlesitekit-acr-subtle-notification"
 						title={ __(
 							'Personalize your metrics',
 							'google-site-kit'
