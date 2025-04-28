@@ -39,8 +39,13 @@
 	} );
 } )( global.jQuery );
 
-/*
+/**
  * Parses the provided cart item HTML to extract product details.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} cartItemHTML The HTML string for the cart item.
+ * @return {Object} `title` and `value` keys.
  */
 export const parseCartItemHTML = ( cartItemHTML ) => {
 	const parser = new DOMParser();
