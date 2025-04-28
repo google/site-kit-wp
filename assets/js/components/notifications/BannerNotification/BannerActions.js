@@ -42,6 +42,7 @@ export default function BannerActions( props ) {
 		showSpinner,
 		dismissLabel,
 		dismissCallback,
+		dismissIsTertiary,
 	} = props;
 
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
@@ -92,7 +93,7 @@ export default function BannerActions( props ) {
 
 			{ dismissLabel && (
 				<Button
-					tertiary={ ctaLink || ctaComponent }
+					tertiary={ ctaLink || ctaComponent || dismissIsTertiary }
 					onClick={ dismissCallback }
 					disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
 				>
@@ -109,6 +110,8 @@ BannerActions.propTypes = {
 	ctaComponent: PropTypes.element,
 	ctaTarget: PropTypes.string,
 	ctaCallback: PropTypes.func,
+	showSpinner: PropTypes.bool,
 	dismissLabel: PropTypes.string,
 	dismissCallback: PropTypes.func,
+	dismissIsTertiary: PropTypes.bool,
 };
