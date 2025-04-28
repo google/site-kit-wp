@@ -133,6 +133,9 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const referenceDate = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
+	const isNavigatingToRecoveryPageURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
+	);
 
 	const { dismissPrompt } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -247,10 +250,10 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 					</div>
 
 					<BannerActions
-						ctaLink="#"
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 						ctaCallback={ handleCTAClick }
 						dismissCallback={ handleDismissClick }
+						showSpinner={ isNavigatingToRecoveryPageURL }
 						dismissLabel={
 							dismissCount < 2
 								? __( 'Maybe later', 'google-site-kit' )
