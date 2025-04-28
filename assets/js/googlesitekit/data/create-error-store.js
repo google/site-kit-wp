@@ -35,7 +35,6 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
  * Internal dependencies
  */
 import { stringifyObject } from '../../util';
-import { createReducer } from './create-reducer';
 
 export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {
@@ -95,54 +94,64 @@ export function createErrorStore( storeName ) {
 		errorArgs: {},
 	};
 
-	function reducer( state, action ) {
-		return createReducer( function ( stateDraft, actionDraft ) {
-			switch ( actionDraft.type ) {
-				case RECEIVE_ERROR: {
-					const { baseName, args, error } = actionDraft.payload;
-					const key = generateErrorKey( baseName, args );
-					stateDraft.errors = stateDraft.errors || {};
-					stateDraft.errorArgs = stateDraft.errorArgs || {};
-					stateDraft.errors[ key ] = error;
-					stateDraft.errorArgs[ key ] = args;
-					break;
-				}
+	function reducer( state, { type, payload } ) {
+		switch ( type ) {
+			case RECEIVE_ERROR: {
+				const { baseName, args, error } = payload;
 
-				case CLEAR_ERROR: {
-					const { baseName, args } = actionDraft.payload;
-					const key = generateErrorKey( baseName, args );
-					if ( stateDraft.errors ) {
-						delete stateDraft.errors[ key ];
-					}
-					if ( stateDraft.errorArgs ) {
-						delete stateDraft.errorArgs[ key ];
-					}
-					break;
-				}
-
-				case CLEAR_ERRORS: {
-					const { baseName } = actionDraft.payload;
-					if ( baseName ) {
-						for ( const key in stateDraft.errors ) {
-							if (
-								key === baseName ||
-								key.startsWith( `${ baseName }::` )
-							) {
-								delete stateDraft.errors[ key ];
-								delete stateDraft.errorArgs[ key ];
-							}
-						}
-					} else {
-						stateDraft.errors = {};
-						stateDraft.errorArgs = {};
-					}
-					break;
-				}
-
-				default:
-					break;
+				const key = generateErrorKey( baseName, args );
+				return {
+					...state,
+					errors: {
+						...( state.errors || {} ),
+						[ key ]: error,
+					},
+					errorArgs: {
+						...( state.errorArgs || {} ),
+						[ key ]: args,
+					},
+				};
 			}
-		} )( state, action );
+
+			case CLEAR_ERROR: {
+				const { baseName, args } = payload;
+				const newState = { ...state };
+				const key = generateErrorKey( baseName, args );
+				newState.errors = { ...( state.errors || {} ) };
+				newState.errorArgs = { ...( state.errorArgs || {} ) };
+
+				delete newState.errors[ key ];
+				delete newState.errorArgs[ key ];
+
+				return newState;
+			}
+
+			case CLEAR_ERRORS: {
+				const { baseName } = payload;
+				const newState = { ...state };
+				if ( baseName ) {
+					newState.errors = { ...( state.errors || {} ) };
+					newState.errorArgs = { ...( state.errorArgs || {} ) };
+					for ( const key in newState.errors ) {
+						if (
+							key === baseName ||
+							key.startsWith( `${ baseName }::` )
+						) {
+							delete newState.errors[ key ];
+							delete newState.errorArgs[ key ];
+						}
+					}
+				} else {
+					newState.errors = {};
+					newState.errorArgs = {};
+				}
+				return newState;
+			}
+
+			default: {
+				return state;
+			}
+		}
 	}
 
 	const controls = {};
