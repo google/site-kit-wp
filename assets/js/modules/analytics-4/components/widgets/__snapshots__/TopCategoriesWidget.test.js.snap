@@ -362,6 +362,66 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
 </div>
 `;
 
+exports[`TopCategoriesWidget should render the loading state while resolving the report 2`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top categories by pageviews
+          </h3>
+          <span
+            class="screen-reader-text"
+          >
+            <span
+              class="googlesitekit-info-tooltip"
+              title="Categories that your site visitors viewed the most"
+            >
+              <svg />
+            </span>
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__loading"
+          >
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
+              style="width: 100%; height: 14px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
+              style="width: 100%; height: 53px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`TopCategoriesWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
 <div>
   <div

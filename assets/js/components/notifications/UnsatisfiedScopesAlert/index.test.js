@@ -28,12 +28,12 @@ import {
 	provideSiteInfo,
 	provideModuleRegistrations,
 	act,
-} from '../../../../tests/js/test-utils';
-import { deleteItem, setItem } from '../../googlesitekit/api/cache';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
+} from '../../../../../tests/js/test-utils';
+import { deleteItem, setItem } from '../../../googlesitekit/api/cache';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import UnsatisfiedScopesAlert from '.';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'authentication-error'
@@ -78,7 +78,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( /Site Kit can’t access necessary data/i )
+			getByText( "Site Kit can't access necessary data" )
 		).toBeInTheDocument();
 	} );
 

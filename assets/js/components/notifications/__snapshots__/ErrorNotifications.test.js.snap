@@ -18,14 +18,14 @@ exports[`ErrorNotifications does not render the GTE message if there are multipl
           <h3
             class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            Site Kit can’t access necessary data
+            Site Kit can't access necessary data
           </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
             <p>
               <span>
-                Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for: Tag Manager and Analytics – make sure to approve all permissions at the authentication stage.
+                Site Kit can't access all relevant data because you haven't granted all permissions requested during setup. To use Site Kit, you'll need to redo the setup for: Tag Manager and Analytics – make sure to approve all permissions at the authentication stage.
               </span>
                
             </p>
@@ -76,14 +76,14 @@ exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenti
           <h3
             class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
           >
-            Site Kit can’t access necessary data
+            Site Kit can't access necessary data
           </h3>
           <div
             class="googlesitekit-publisher-win__desc"
           >
             <p>
               <span>
-                Site Kit can’t access the relevant data from Analytics because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for Analytics – make sure to approve all permissions at the authentication stage.
+                Site Kit can't access the relevant data from Analytics because you haven't granted all permissions requested during setup. To use Site Kit, you'll need to redo the setup for Analytics – make sure to approve all permissions at the authentication stage.
               </span>
                
             </p>
