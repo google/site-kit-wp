@@ -59,18 +59,16 @@ jobs:
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       # npm@7 is the minimum version required for this repository.
       # TODO: Remove this step once our node base version comes with npm@7 or greater.
       - name: Install npm globally
         run: npm run install-global-npm
       - name: npm install
-        run: |
-          npm ci
+        run: npm ci
       - name: Build Storybook
-        run: |
-          npm run build:storybook
+        run: npm run build:storybook
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -144,15 +142,13 @@ jobs:
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
       # npm@7 is the minimum version required for this repository.
       # TODO: Remove this step once our node base version comes with npm@7 or greater.
       - name: Install npm globally
         run: npm run install-global-npm
       - name: npm install
-        run: |
-          npm ci
+        run: npm ci
       - name: Test Storybook
-        run: |
-          npm run test:storybook
+        run: npm run test:storybook

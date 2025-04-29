@@ -27,7 +27,7 @@ const { ProvidePlugin } = require( 'webpack' );
 /**
  * Internal dependencies
  */
-const { siteKitExternals, svgRule } = require( '../webpack/common' );
+const { rootDir, siteKitExternals, svgRule } = require( '../webpack/common' );
 
 // eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
@@ -43,7 +43,7 @@ module.exports = async ( { config } ) => {
 				}
 			}
 
-			return path.resolve( `assets/js/${ global }-${ api }.js` );
+			return path.resolve( rootDir, `assets/js/${ global }-${ api }.js` );
 		}
 	);
 
@@ -53,7 +53,7 @@ module.exports = async ( { config } ) => {
 			...config.resolve.alias,
 			...siteKitPackageAliases,
 		},
-		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
+		modules: [ rootDir, 'node_modules' ],
 	};
 
 	config.plugins = [
@@ -74,7 +74,7 @@ module.exports = async ( { config } ) => {
 					loader: 'postcss-loader',
 					options: {
 						postcssOptions: {
-							path: './',
+							config: rootDir + '/assets/postcss.config.js',
 						},
 					},
 				},
@@ -85,13 +85,13 @@ module.exports = async ( { config } ) => {
 						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
 						sassOptions: {
 							includePaths: [
-								path.resolve( __dirname, '../node_modules/' ),
+								path.resolve( rootDir, 'node_modules/' ),
 							],
 						},
 					},
 				},
 			],
-			include: path.resolve( __dirname, '../' ),
+			include: rootDir,
 		},
 		{
 			test: /\.mjs$/,

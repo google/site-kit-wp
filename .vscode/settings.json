@@ -6,14 +6,14 @@
 		"**/composer.lock": true,
 		"**/package-lock.json": true,
 		"third-party/": true,
-		"**/vendor/": true
+		"vendor/": true
 	},
 	"files.exclude": {
 		"**/dist": true,
 		"coverage/": true,
 		"**/node_modules/": true,
 		"third-party/": true,
-		"**/vendor/": true
+		"vendor/": true
 	},
 	"jest.autoEnable": false,
 	"jest.pathToConfig": "./tests/js/jest.config.js",
