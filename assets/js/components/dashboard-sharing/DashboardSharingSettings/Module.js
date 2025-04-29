@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 17 ] */
-
 /**
  * External dependencies
  */
@@ -27,23 +25,13 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
-import { Icon, info } from '@wordpress/icons';
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-	useState,
-	useRef,
-} from '@wordpress/element';
+import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Select, Tooltip } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
-import UserRoleSelect from '../UserRoleSelect';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -55,19 +43,8 @@ import {
 	PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
 	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
-import WarningNotice from '../../WarningNotice';
-import Link from '../../Link';
-
-const viewAccessOptions = [
-	{
-		value: 'owner',
-		label: __( 'Only me', 'google-site-kit' ),
-	},
-	{
-		value: 'all_admins',
-		label: __( 'Any admin signed in with Google', 'google-site-kit' ),
-	},
-];
+import ModuleViewAccess from './ModuleViewAccess';
+import ModuleManageAccess from './ModuleManageAccess';
 
 export default function Module( {
 	moduleSlug,
@@ -193,124 +170,28 @@ export default function Module( {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__column--view">
-				{ hasSharingCapability && (
-					<UserRoleSelect
-						moduleSlug={ moduleSlug }
-						isLocked={ isLocked }
-						ref={ moduleRef }
-					/>
-				) }
-
-				{ recoverable && (
-					<WarningNotice>
-						{ createInterpolateElement(
-							__(
-								'Managing user required to manage view access. <Link>Learn more</Link>',
-								'google-site-kit'
-							),
-							{
-								Link: (
-									<Link
-										href={ recoverableModuleSupportLink }
-										external
-										hideExternalIndicator
-									/>
-								),
-							}
-						) }
-					</WarningNotice>
-				) }
-
-				{ ! hasSharingCapability && ! recoverable && (
-					<p className="googlesitekit-dashboard-sharing-settings__note">
-						{ __(
-							'Contact managing user to manage view access',
-							'google-site-kit'
-						) }
-					</p>
-				) }
+				<ModuleViewAccess
+					moduleSlug={ moduleSlug }
+					isLocked={ isLocked }
+					hasSharingCapability={ hasSharingCapability }
+					recoverable={ recoverable }
+					recoverableModuleSupportLink={
+						recoverableModuleSupportLink
+					}
+					ref={ moduleRef }
+				/>
 			</div>
 
 			{ showManageColumn && (
 				<div className="googlesitekit-dashboard-sharing-settings__column--manage">
-					{ sharedOwnershipModule && (
-						<p className="googlesitekit-dashboard-sharing-settings__note">
-							<span>
-								{ __(
-									'Any admin signed in with Google',
-									'google-site-kit'
-								) }
-							</span>
-
-							<Tooltip
-								title={ __(
-									'This service requires general access to Google APIs rather than access to a specific user-owned property/entity, so view access is manageable by any admin signed in with Google.',
-									'google-site-kit'
-								) }
-							>
-								<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
-									<Icon icon={ info } size={ 18 } />
-								</span>
-							</Tooltip>
-						</p>
-					) }
-					{ ! sharedOwnershipModule && hasOwnedModule && (
-						<Select
-							className="googlesitekit-dashboard-sharing-settings__select"
-							value={ manageViewAccess }
-							options={ viewAccessOptions }
-							onChange={ handleOnChange }
-							onClick={ handleOnChange }
-							outlined
-						/>
-					) }
-
-					{ ! sharedOwnershipModule &&
-						! hasOwnedModule &&
-						ownerUsername && (
-							<p className="googlesitekit-dashboard-sharing-settings__note">
-								{ createInterpolateElement(
-									sprintf(
-										/* translators: %s: user who manages the module. */
-										__(
-											'<span>Managed by</span> <strong>%s</strong>',
-											'google-site-kit'
-										),
-										ownerUsername
-									),
-									{
-										span: <span />,
-										strong: <strong />,
-									}
-								) }
-
-								<Tooltip
-									title={
-										hasSharingCapability
-											? sprintf(
-													/* translators: %s: name of the user who manages the module. */
-													__(
-														'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
-														'google-site-kit'
-													),
-													ownerUsername
-											  )
-											: sprintf(
-													/* translators: %s: name of the user who manages the module. */
-													__(
-														'Contact %s to change who can manage view access for this module',
-														'google-site-kit'
-													),
-													ownerUsername
-											  )
-									}
-								>
-									<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
-										<Icon icon={ info } size={ 18 } />
-									</span>
-								</Tooltip>
-							</p>
-						) }
+					<ModuleManageAccess
+						sharedOwnershipModule={ sharedOwnershipModule }
+						hasOwnedModule={ hasOwnedModule }
+						ownerUsername={ ownerUsername }
+						hasSharingCapability={ hasSharingCapability }
+						manageViewAccess={ manageViewAccess }
+						onChange={ handleOnChange }
+					/>
 				</div>
 			) }
 		</div>
@@ -321,4 +202,5 @@ Module.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
 	moduleName: PropTypes.string.isRequired,
 	ownerUsername: PropTypes.string,
+	recoverable: PropTypes.bool,
 };
