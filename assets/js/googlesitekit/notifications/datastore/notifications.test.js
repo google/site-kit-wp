@@ -150,6 +150,61 @@ describe( 'core/notifications Notifications', () => {
 			} );
 		} );
 
+		describe( 'markNotificationSeen', () => {
+			let markNotificationSeen;
+
+			beforeEach( () => {
+				( { markNotificationSeen } =
+					registry.dispatch( CORE_NOTIFICATIONS ) );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
+
+				function TestNotificationComponent() {
+					return <div>Test notification!</div>;
+				}
+				registerNotification( 'test-notification-id', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				registerNotification( 'test-undismissible-notification-id', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: false,
+				} );
+			} );
+
+			it( 'requires notificationID', () => {
+				expect( () => markNotificationSeen() ).toThrow(
+					'a valid notification ID is required to mark a notification as seen.'
+				);
+			} );
+
+			it( 'should return void if notification is not dismissible', async () => {
+				const result = await markNotificationSeen(
+					'test-undismissible-notification-id'
+				);
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'should return action with current date when notification is dismissible', async () => {
+				const result = await markNotificationSeen(
+					'test-notification-id'
+				);
+
+				expect( result ).toEqual( {
+					payload: {
+						notificationID: 'test-notification-id',
+						currentDate: '2025-04-29',
+					},
+					type: 'MARK_NOTIFICATION_SEEN',
+				} );
+			} );
+		} );
+
 		describe( 'dismissNotification', () => {
 			function TestNotificationComponent() {
 				return <div>Test notification!</div>;
@@ -336,6 +391,88 @@ describe( 'core/notifications Notifications', () => {
 		function TestNotificationComponent() {
 			return <div>Test notification!</div>;
 		}
+
+		describe( 'getSeenNotifications', () => {
+			it( 'should return an empty object when no notifications have been seen', () => {
+				const seenNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getSeenNotifications();
+
+				expect( seenNotifications ).toEqual( {} );
+			} );
+
+			it( 'should return seen notifications with their view counts', async () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
+				registerNotification( 'notification-1', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				registerNotification( 'notification-2', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-2' );
+
+				// Change the reference date and mark notification-1 as seen again
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-30' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+
+				const seenNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getSeenNotifications();
+
+				expect( seenNotifications ).toEqual( {
+					'notification-1': 2,
+					'notification-2': 1,
+				} );
+			} );
+		} );
+
+		describe( 'getNotificationSeenDates', () => {
+			it( 'should return an empty array for notifications that have not been seen', () => {
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'unseen-notification' );
+
+				expect( seenDates ).toEqual( [] );
+			} );
+
+			it( 'should return an array of dates for seen notifications', async () => {
+				registerNotification( 'notification-1', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-30' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'notification-1' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29', '2025-04-30' ] );
+			} );
+		} );
 
 		describe( 'getQueuedNotifications', () => {
 			beforeEach( () => {
