@@ -27,7 +27,6 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { COUNT_VIEW_TIMEOUT } from '../../constants';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../../datastore/ui/constants';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
@@ -60,7 +59,7 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 					setValue( useHasBeenViewed.getKey( id ), true );
 					markNotificationSeen( id );
 				}
-			}, COUNT_VIEW_TIMEOUT );
+			}, 3000 );
 		} else if ( ! isInView && timeoutRef.current ) {
 			// If notification is no longer in view, clear the timeout
 			clearTimeout( timeoutRef.current );
