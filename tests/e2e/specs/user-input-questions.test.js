@@ -272,12 +272,10 @@ describe( 'User Input Settings', () => {
 		} );
 
 		await step( 'click on CTA button and wait for navigation', async () => {
-			await page.waitForSelector(
-				'.googlesitekit-acr-subtle-notification'
-			);
+			await page.waitForSelector( '.googlesitekit-notice--new' );
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-acr-subtle-notification .googlesitekit-button-icon--spinner'
+					'.googlesitekit-notice--new .googlesitekit-button-icon--spinner'
 				),
 				page.waitForNavigation(),
 			] );
