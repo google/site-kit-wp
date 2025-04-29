@@ -126,14 +126,13 @@ describe( 'ResetButton', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-
-			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are applied to the .mdc-dialog element.
-			expect(
-				document.querySelector( '.mdc-dialog' ).classList.length
-			).toBe( 2 );
+			[ 'mdc-dialog--opening', 'mdc-dialog--open' ].forEach(
+				( className ) => {
+					expect(
+						document.querySelector( className )
+					).not.toBeInTheDocument();
+				}
+			);
 		} );
 
 		it( 'should close the modal on pressing escape key', async () => {
@@ -145,14 +144,13 @@ describe( 'ResetButton', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-
-			// Verify that none of .mdc-dialog--opening, .mdc-dialog--open or .mdc-dialog--closing are applied to the .mdc-dialog element.
-			expect(
-				document.querySelector( '.mdc-dialog' ).classList.length
-			).toBe( 2 );
+			[ 'mdc-dialog--opening', 'mdc-dialog--open' ].forEach(
+				( className ) => {
+					expect(
+						document.querySelector( className )
+					).not.toBeInTheDocument();
+				}
+			);
 		} );
 
 		it( 'should reset the plugin, delete local and session storage', async () => {

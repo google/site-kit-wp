@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_TAGMANAGER } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
@@ -33,7 +33,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 	const homeURL = 'http://example.com/';
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -42,7 +42,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'selectors', () => {
