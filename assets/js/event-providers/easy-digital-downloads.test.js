@@ -19,7 +19,7 @@
 import { parseCartItemHTML } from './easy-digital-downloads';
 
 describe( 'parseCartItemHTML', () => {
-	it( 'should parse title and value from valid HTML', () => {
+	it( 'should parse name and value from valid HTML', () => {
 		const html = `
 			<li class="edd-cart-item">
 				<span class="edd-cart-item-title">Test Product</span>
@@ -29,16 +29,30 @@ describe( 'parseCartItemHTML', () => {
 
 		const result = parseCartItemHTML( html );
 
-		expect( result.title ).toBe( 'Test Product' );
+		expect( result.name ).toBe( 'Test Product' );
 		expect( result.value ).toBe( 123.45 );
 	} );
 
-	it( 'should return empty title and value 0 if elements are missing', () => {
+	it( 'should return empty name and value 0 if elements are missing', () => {
 		const html = '<li class="edd-cart-item"></li>';
 
 		const result = parseCartItemHTML( html );
 
-		expect( result.title ).toBe( '' );
+		expect( result.name ).toBe( '' );
+		expect( result.value ).toBe( 0 );
+	} );
+
+	it( 'should return value 0 if price text is empty', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Test Product</span>
+				<span class="edd-cart-item-price"></span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Test Product' );
 		expect( result.value ).toBe( 0 );
 	} );
 
@@ -52,7 +66,7 @@ describe( 'parseCartItemHTML', () => {
 
 		const result = parseCartItemHTML( html );
 
-		expect( result.title ).toBe( 'Test' );
+		expect( result.name ).toBe( 'Test' );
 		expect( result.value ).toBe( 0 );
 	} );
 
@@ -66,11 +80,11 @@ describe( 'parseCartItemHTML', () => {
 
 		const result = parseCartItemHTML( html );
 
-		expect( result.title ).toBe( 'Product Title' );
+		expect( result.name ).toBe( 'Product Title' );
 		expect( result.value ).toBe( 1234.56 );
 	} );
 
-	it( 'should parse price correctly when value is an integer without decimals', () => {
+	it( 'should parse price correctly when value is a plain integer without decimal or separator', () => {
 		const html = `
 			<li class="edd-cart-item">
 				<span class="edd-cart-item-title">Basic Product</span>
@@ -80,7 +94,119 @@ describe( 'parseCartItemHTML', () => {
 
 		const result = parseCartItemHTML( html );
 
-		expect( result.title ).toBe( 'Basic Product' );
+		expect( result.name ).toBe( 'Basic Product' );
 		expect( result.value ).toBe( 19 );
+	} );
+
+	it( 'should parse European-style price with dot as thousand separator and comma as decimal', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Product</span>
+				<span class="edd-cart-item-price">€1.234,56</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Product' );
+		expect( result.value ).toBe( 1234.56 );
+	} );
+
+	it( 'should parse large price with thousands and decimals in US format', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Enterprise Plan</span>
+				<span class="edd-cart-item-price">$100,000.99</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Enterprise Plan' );
+		expect( result.value ).toBe( 100000.99 );
+	} );
+
+	it( 'should parse large price in European format with no decimals', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Big Price</span>
+				<span class="edd-cart-item-price">€100.000</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Big Price' );
+		expect( result.value ).toBe( 100000 );
+	} );
+
+	it( 'should handle prices with trailing whitespace and symbol', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Whitespaced</span>
+				<span class="edd-cart-item-price">   $42.00 </span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Whitespaced' );
+		expect( result.value ).toBe( 42.0 );
+	} );
+
+	it( 'should parse Yen symbol and convert correctly', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Yen Product</span>
+				<span class="edd-cart-item-price">¥12,345</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Yen Product' );
+		expect( result.value ).toBe( 12345 );
+	} );
+
+	it( 'should parse European-style price with space as thousands separator and comma as decimal', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Euro Product</span>
+				<span class="edd-cart-item-price">€1 234,56</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Euro Product' );
+		expect( result.value ).toBe( 1234.56 );
+	} );
+
+	it( 'should parse Swiss-style price with apostrophe as thousands separator', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Swiss Product</span>
+				<span class="edd-cart-item-price">CHF 1'234.56</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Swiss Product' );
+		expect( result.value ).toBe( 1234.56 );
+	} );
+
+	it( 'should parse Indian-style price format', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-cart-item-title">Indian Product</span>
+				<span class="edd-cart-item-price">₹1,23,456.78</span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.name ).toBe( 'Indian Product' );
+		expect( result.value ).toBe( 123456.78 );
 	} );
 } );
