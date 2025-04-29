@@ -693,7 +693,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					( content, testElement ) =>
 						testElement.tagName.toLowerCase() === 'p' &&
 						testElement.className ===
-							'googlesitekit-subtle-notification__secondary_description' &&
+							'googlesitekit-notice__description' &&
 						content ===
 							'We’ve extended your metrics selection based on your website events'
 				)
