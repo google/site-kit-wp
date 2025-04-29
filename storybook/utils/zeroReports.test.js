@@ -41,22 +41,22 @@ describe( 'zeroReports', () => {
 			expect( result.rows ).toHaveLength( 10 );
 
 			// Check that date_range_0 rows have zeroed metric values
-			const dateRange0Rows = result.rows.filter( ( row ) =>
+			const dateRangeZero = result.rows.filter( ( row ) =>
 				matchesDateRange( row.dimensionValues, 'date_range_0' )
 			);
 
-			dateRange0Rows.forEach( ( row ) => {
+			dateRangeZero.forEach( ( row ) => {
 				row.metricValues.forEach( ( metricValue ) => {
 					expect( metricValue.value ).toBe( '0' );
 				} );
 			} );
 
 			// Check that date_range_1 rows are unchanged
-			const dateRange1Rows = result.rows.filter( ( row ) =>
+			const dateRangeOne = result.rows.filter( ( row ) =>
 				matchesDateRange( row.dimensionValues, 'date_range_1' )
 			);
 
-			dateRange1Rows.forEach( ( row, index ) => {
+			dateRangeOne.forEach( ( row, index ) => {
 				const originalRow = report.rows.filter( ( r ) =>
 					matchesDateRange( r.dimensionValues, 'date_range_1' )
 				)[ index ];
@@ -65,27 +65,27 @@ describe( 'zeroReports', () => {
 			} );
 
 			// Check that totals for date_range_0 are zeroed
-			const totalForDateRange0 = result.totals.find( ( total ) =>
+			const totalDateRangeZero = result.totals.find( ( total ) =>
 				total.dimensionValues.some(
 					( value ) => value.value === 'date_range_0'
 				)
 			);
 
-			totalForDateRange0.metricValues.forEach( ( metricValue ) => {
+			totalDateRangeZero.metricValues.forEach( ( metricValue ) => {
 				expect( metricValue.value ).toBe( '0' );
 			} );
 
 			// Check that totals for date_range_1 are unchanged
-			const totalForDateRange1 = result.totals.find( ( total ) =>
+			const totalDateRangeOne = result.totals.find( ( total ) =>
 				matchesDateRange( total.dimensionValues, 'date_range_1' )
 			);
 
-			const originalTotalForDateRange1 = report.totals.find( ( total ) =>
+			const originalTotalDateRangeOne = report.totals.find( ( total ) =>
 				matchesDateRange( total.dimensionValues, 'date_range_1' )
 			);
 
-			expect( totalForDateRange1.metricValues ).toEqual(
-				originalTotalForDateRange1.metricValues
+			expect( totalDateRangeOne.metricValues ).toEqual(
+				originalTotalDateRangeOne.metricValues
 			);
 		} );
 
@@ -154,22 +154,22 @@ describe( 'zeroReports', () => {
 			expect( result.rows ).toHaveLength( 10 );
 
 			// Check that date_range_1 rows have zeroed metric values
-			const dateRange1Rows = result.rows.filter( ( row ) =>
+			const dateRangeOne = result.rows.filter( ( row ) =>
 				matchesDateRange( row.dimensionValues, 'date_range_1' )
 			);
 
-			dateRange1Rows.forEach( ( row ) => {
+			dateRangeOne.forEach( ( row ) => {
 				row.metricValues.forEach( ( metricValue ) => {
 					expect( metricValue.value ).toBe( '0' );
 				} );
 			} );
 
 			// Check that date_range_0 rows are unchanged
-			const dateRange0Rows = result.rows.filter( ( row ) =>
+			const dateRangeZero = result.rows.filter( ( row ) =>
 				matchesDateRange( row.dimensionValues, 'date_range_0' )
 			);
 
-			dateRange0Rows.forEach( ( row, index ) => {
+			dateRangeZero.forEach( ( row, index ) => {
 				const originalRow = report.rows.filter( ( r ) =>
 					r.dimensionValues.some(
 						( value ) => value.value === 'date_range_0'
@@ -180,25 +180,25 @@ describe( 'zeroReports', () => {
 			} );
 
 			// Check that totals for date_range_1 are zeroed
-			const totalForDateRange1 = result.totals.find( ( total ) =>
+			const totalDateRangeOne = result.totals.find( ( total ) =>
 				matchesDateRange( total.dimensionValues, 'date_range_1' )
 			);
 
-			totalForDateRange1.metricValues.forEach( ( metricValue ) => {
+			totalDateRangeOne.metricValues.forEach( ( metricValue ) => {
 				expect( metricValue.value ).toBe( '0' );
 			} );
 
 			// Check that totals for date_range_0 are unchanged
-			const totalForDateRange0 = result.totals.find( ( total ) =>
+			const totalDateRangeZero = result.totals.find( ( total ) =>
 				matchesDateRange( total.dimensionValues, 'date_range_0' )
 			);
 
-			const originalTotalForDateRange0 = report.totals.find( ( total ) =>
+			const originalTotalDateRangeZero = report.totals.find( ( total ) =>
 				matchesDateRange( total.dimensionValues, 'date_range_0' )
 			);
 
-			expect( totalForDateRange0.metricValues ).toEqual(
-				originalTotalForDateRange0.metricValues
+			expect( totalDateRangeZero.metricValues ).toEqual(
+				originalTotalDateRangeZero.metricValues
 			);
 		} );
 
