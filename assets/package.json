@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"build": "npm run build:production",
-		"build:dev": "webpack --mode=development --devtool cheap-module-eval-source-map --output-pathinfo",
+		"build:dev": "webpack --mode=development --devtool cheap-module-source-map --output-pathinfo",
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
 		"watch": "npm run build:dev -- --watch"
@@ -67,35 +67,33 @@
 		"use-memo-one": "^1.1.2"
 	},
 	"devDependencies": {
+		"@babel/preset-env": "^7.26.9",
 		"@babel/preset-react": "^7.26.3",
 		"@storybook/addon-queryparams": "^6.2.9",
-		"@svgr/webpack": "^5.4.0",
+		"@svgr/webpack": "^8.1.0",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.3.0",
 		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"autoprefixer": "^10.4.21",
-		"babel-loader": "^8.1.0",
-		"circular-dependency-plugin": "^5.2.0",
-		"copy-webpack-plugin": "^6.4.1",
+		"babel-loader": "^10.0.0",
+		"copy-webpack-plugin": "^13.0.0",
 		"create-file-webpack": "^1.0.2",
-		"css-loader": "^5.2.7",
+		"css-loader": "^7.1.2",
 		"cssnano": "^6.1.2",
-		"eslint-webpack-plugin": "^2.5.1",
+		"eslint-webpack-plugin": "^3.2.0",
 		"faker": "^5.5.3",
 		"google-pax-sdk": "1.1.4",
-		"mini-css-extract-plugin": "^1.6.2",
+		"mini-css-extract-plugin": "^2.9.2",
 		"postcss-import-url": "^7.0.0",
-		"postcss-loader": "^4.3.0",
+		"postcss-loader": "^8.1.1",
 		"postcss-preset-env": "^9.5.11",
 		"rxjs": "^6.6.7",
 		"sass": "^1.30.0",
-		"sass-loader": "^9.0.3",
-		"terser-webpack-plugin": "^3.0.6",
-		"webpack": "^4.47.0",
-		"webpack-bundle-analyzer": "^4.6.1",
-		"webpack-cli": "^3.3.12",
-		"webpack-manifest-plugin": "^2.2.0",
-		"webpackbar": "^4.0.0"
+		"sass-loader": "^16.0.5",
+		"terser-webpack-plugin": "^5.3.14",
+		"webpack": "^5.99.7",
+		"webpack-cli": "^6.0.1",
+		"webpack-manifest-plugin": "^5.0.1"
 	}
 }

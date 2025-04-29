@@ -22,7 +22,6 @@
 		"test": "npm run -w tests/js test:js:watch",
 		"test:visualtest": "npm run -w tests/backstop test:visualtest",
 		"test:visualapprove": "npm run -w tests/backstop test:visualapprove",
-		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "npm run -w tests/js test:js",
 		"test:js:watch": "npm run -w tests/js test:js:watch",
 		"test:storybook": "jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
