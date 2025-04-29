@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	createRegistryControl,
@@ -53,7 +53,7 @@ const customDimensionFields = [
 const fetchCreateCustomDimensionStore = createFetchStore( {
 	baseName: 'createCustomDimension',
 	controlCallback: ( { propertyID, customDimension } ) =>
-		API.set( 'modules', 'analytics-4', 'create-custom-dimension', {
+		set( 'modules', 'analytics-4', 'create-custom-dimension', {
 			propertyID,
 			customDimension,
 		} ),
@@ -82,7 +82,7 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
+		set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
 	reducerCallback: ( state, dimensions ) => {
 		return {
 			...state,
