@@ -23,15 +23,15 @@
 	const body = jQuery( 'body' );
 
 	body.on( 'edd_cart_item_added', function ( event, details ) {
-		const { title, value } = parseCartItemHTML( details.cart_item );
-		const currency = global._googlesitekit.eddCurrency;
+		const { name, value } = parseCartItemHTML( details.cart_item );
+		const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
 
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
 			currency,
 			value,
 			items: [
 				{
-					item_name: title,
+					item_name: name,
 					price: value,
 				},
 			],
@@ -46,17 +46,50 @@ export const parseCartItemHTML = ( cartItemHTML ) => {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString( cartItemHTML, 'text/html' );
 
-	const title =
+	const name =
 		doc.querySelector( '.edd-cart-item-title' )?.textContent.trim() || '';
-	const priceText =
+	const price =
 		doc.querySelector( '.edd-cart-item-price' )?.textContent.trim() || '';
 
-	const priceRegex = /([\d,.]+)/;
-	const match = priceText.match( priceRegex );
-	const value = match ? parseFloat( match[ 1 ].replace( /,/g, '' ) ) : 0;
+	let normalizedNumericPrice = price.replace( /[^\d.,]/g, '' ).trim();
+
+	const lastComma = normalizedNumericPrice.lastIndexOf( ',' );
+	const lastDot = normalizedNumericPrice.lastIndexOf( '.' );
+
+	if ( lastComma > -1 && lastDot > -1 ) {
+		// If both comma and dot are present and the last comma is after the last dot,
+		// we assume the last comma is the decimal separator - and we remove dots and replace comma with dot.
+		// Otherwise, we assume the last dot is the decimal separator and we remove commas.
+		if ( lastComma > lastDot ) {
+			normalizedNumericPrice = normalizedNumericPrice
+				.replace( /\./g, '' )
+				.replace( ',', '.' );
+		} else {
+			normalizedNumericPrice = normalizedNumericPrice.replace( /,/g, '' );
+		}
+	} else if ( lastComma > -1 ) {
+		const commaDistanceFromEnd = normalizedNumericPrice.length - lastComma;
+		// Assume comma is decimal separator if exactly 2 decimal digits follow.
+		// Otherwise, remove comma.
+		if ( commaDistanceFromEnd === 3 ) {
+			normalizedNumericPrice = normalizedNumericPrice.replace( ',', '.' );
+		} else {
+			normalizedNumericPrice = normalizedNumericPrice.replace( /,/g, '' );
+		}
+	} else if ( lastDot > -1 ) {
+		const dotDistanceFromEnd = normalizedNumericPrice.length - lastDot;
+		if ( dotDistanceFromEnd !== 3 ) {
+			normalizedNumericPrice = normalizedNumericPrice.replace(
+				/\./g,
+				''
+			);
+		}
+	}
+
+	const value = parseFloat( normalizedNumericPrice ) || 0;
 
 	return {
-		title,
+		name,
 		value,
 	};
 };
