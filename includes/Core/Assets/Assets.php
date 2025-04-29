@@ -235,10 +235,6 @@ final class Assets {
 			'Google+Sans+Display:400,500,700',
 		);
 
-		if ( Feature_Flags::enabled( 'gm3Components' ) ) {
-			$font_families[] = 'Roboto:300,400,500';
-		}
-
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
 		if ( empty( $filtered_font_families ) ) {
@@ -486,11 +482,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-components',
 				array(
-					'src' => $base_url . (
-						Feature_Flags::enabled( 'gm3Components' )
-							? 'js/googlesitekit-components-gm3.js'
-							: 'js/googlesitekit-components-gm2.js'
-						),
+					'src' => $base_url . 'js/googlesitekit-components.js',
 				)
 			),
 			new Script(
