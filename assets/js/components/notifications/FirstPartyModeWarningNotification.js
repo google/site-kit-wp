@@ -25,13 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Link from '../Link';
-import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { useSelect } from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 export default function FirstPartyModeWarningNotification( {
 	id,
@@ -47,9 +46,10 @@ export default function FirstPartyModeWarningNotification( {
 
 	return (
 		<Notification>
-			<SubtleNotification
-				className="googlesitekit-fpm-subtle-notification"
-				title={ createInterpolateElement(
+			<NoticeNotification
+				notificationID={ id }
+				type="warning"
+				description={ createInterpolateElement(
 					__(
 						'First-party mode has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
 						'google-site-kit'
@@ -73,14 +73,9 @@ export default function FirstPartyModeWarningNotification( {
 						),
 					}
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					/>
-				}
-				type="warning"
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+				} }
 			/>
 		</Notification>
 	);
