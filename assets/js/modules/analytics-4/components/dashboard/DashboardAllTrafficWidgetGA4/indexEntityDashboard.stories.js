@@ -36,7 +36,7 @@ import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,
