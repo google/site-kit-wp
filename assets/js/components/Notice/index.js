@@ -45,6 +45,7 @@ const Notice = forwardRef(
 			ctaButton,
 			type = TYPES.INFO,
 			children,
+			hideIcon,
 		},
 		ref
 	) => {
@@ -57,9 +58,11 @@ const Notice = forwardRef(
 					className
 				) }
 			>
-				<div className="googlesitekit-notice__icon">
-					<Icon type={ type } />
-				</div>
+				{ ! hideIcon && (
+					<div className="googlesitekit-notice__icon">
+						<Icon type={ type } />
+					</div>
+				) }
 
 				<div className="googlesitekit-notice__content">
 					<Title>{ title }</Title>
@@ -103,6 +106,7 @@ Notice.propTypes = {
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
 	children: PropTypes.node,
+	hideIcon: PropTypes.bool,
 };
 
 export default Notice;
