@@ -56,6 +56,13 @@ import {
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
+const reducerCallback = createReducer( ( state, property, { propertyID } ) => {
+	state.propertiesByID = {
+		...state.propertiesByID,
+		[ propertyID ]: property,
+	};
+} );
+
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
@@ -69,10 +76,7 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: createReducer( ( state, property, { propertyID } ) => {
-		state.property = state.property || {};
-		state.propertiesByID[ propertyID ] = property;
-	} ),
+	reducerCallback,
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -715,17 +719,13 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case SET_HAS_MISMATCHED_TAG: {
-			const { hasMismatchedTag } = action.payload;
-			state.moduleData = {
-				...state.moduleData,
-				hasMismatchedTag,
-			};
+			state.moduleData = state.moduleData || {};
+			state.moduleData.hasMismatchedTag = payload.hasMismatchedTag;
 			break;
 		}
 
 		case SET_IS_WEBDATASTREAM_AVAILABLE: {
-			const { isWebDataStreamAvailable } = action.payload;
-			state.isWebDataStreamAvailable = isWebDataStreamAvailable;
+			state.isWebDataStreamAvailable = payload.isWebDataStreamAvailable;
 			break;
 		}
 

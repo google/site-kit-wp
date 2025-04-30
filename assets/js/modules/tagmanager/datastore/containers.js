@@ -99,11 +99,11 @@ const fetchCreateContainerStore = createFetchStore( {
 			name,
 		} );
 	},
-	reducerCallback: createReducer( ( draft, container, { accountID } ) => {
-		if ( ! draft.containers[ accountID ] ) {
-			draft.containers[ accountID ] = [];
+	reducerCallback: createReducer( ( state, container, { accountID } ) => {
+		if ( ! state.containers[ accountID ] ) {
+			state.containers[ accountID ] = [];
 		}
-		draft.containers[ accountID ].push( container );
+		state.containers[ accountID ].push( container );
 	} ),
 } );
 

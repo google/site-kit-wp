@@ -21,13 +21,16 @@
  */
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
-import { produce } from 'immer';
 
 /**
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -43,8 +46,9 @@ const fetchGetReportStore = createFetchStore( {
 	controlCallback: ( { options } ) => {
 		return get( 'modules', 'adsense', 'report', options );
 	},
-	reducerCallback: produce( ( draft, report, { options } ) => {
-		draft.reports[ stringifyObject( options ) ] = report;
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports = state.reports || {};
+		state.reports[ stringifyObject( options ) ] = report;
 	} ),
 	argsToParams: ( options ) => {
 		return { options };
