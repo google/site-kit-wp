@@ -61,8 +61,6 @@ const SubtleNotification = forwardRef(
 							{
 								'googlesitekit-subtle-notification--success':
 									type === 'success',
-								'googlesitekit-subtle-notification--warning':
-									type === 'warning',
 							}
 						) }
 					>

@@ -158,28 +158,4 @@
 			);
 		}
 	}
-
-	&.googlesitekit-subtle-notification--warning {
-		background-color: $c-utility-warning-container;
-
-		.googlesitekit-subtle-notification__icon,
-		.googlesitekit-subtle-notification__content {
-			color: $c-utility-on-warning-container;
-		}
-
-		.mdc-button {
-
-			&.googlesitekit-subtle-notification__cta {
-				@include mdc-button-filled-accessible($c-utility-on-warning-container);
-			}
-		}
-
-		.mdc-button--tertiary {
-			@include mdc-button-tertiary-styles(
-				$c-utility-on-warning-container,
-				$c-interactive-callout-warning-hover,
-				$c-interactive-callout-warning-focus
-			);
-		}
-	}
 }
