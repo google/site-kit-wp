@@ -200,7 +200,7 @@
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-info {
 
-			.googlesitekit-subtle-notification {
+			.googlesitekit-notice--warning {
 				align-items: center;
 				border-radius: 8px;
 				flex-direction: row;
@@ -209,7 +209,7 @@
 				padding: $grid-gap-phone / 2 $grid-gap-phone;
 			}
 
-			.googlesitekit-subtle-notification__content {
+			.googlesitekit-notice__content {
 				flex: 1;
 
 				p {
