@@ -33,10 +33,10 @@ import {
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '../../datastore/constants';
-import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../hooks/useRefocus';
+import Notice from '../../../../components/Notice';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
@@ -139,14 +139,15 @@ export default function PublicationOnboardingStateNotice() {
 			: __( 'Complete publication setup', 'google-site-kit' );
 
 	return (
-		<SubtleNotification
-			className="googlesitekit-publication-onboarding-state-notice"
+		<Notice
+			type="warning"
 			title={ noticeText }
-			ctaLabel={ buttonText }
-			ctaLink={ serviceURL }
-			isCTALinkExternal
-			variant="warning"
-			onCTAClick={ onCTAClick }
+			ctaButton={ {
+				label: buttonText,
+				onClick: onCTAClick,
+				href: serviceURL,
+				external: true,
+			} }
 		/>
 	);
 }
