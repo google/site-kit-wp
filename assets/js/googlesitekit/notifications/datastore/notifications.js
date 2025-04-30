@@ -353,8 +353,7 @@ export const controls = {
 
 						return {
 							...notification,
-							// Rotate viewed notifications within their priority groups by adding the view count to the priority.
-							priority: notification.priority + viewCount,
+							viewCount,
 							checkRequirements,
 							async check() {
 								if ( checkRequirements ) {
@@ -363,7 +362,8 @@ export const controls = {
 								return true;
 							},
 						};
-					} );
+					} )
+					.sort( ( a, b ) => a.viewCount - b.viewCount );
 
 				const { queueNotification } =
 					registry.dispatch( CORE_NOTIFICATIONS );
