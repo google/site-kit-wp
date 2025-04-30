@@ -55,7 +55,7 @@ const fetchGetClientsStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, clients, { accountID } ) => {
 		if ( Array.isArray( clients ) ) {
 			state.clients = state.clients || {};
-			state.clients[ accountID ] = [ ...clients ];
+			state.clients[ accountID ] = clients;
 		}
 	} ),
 	argsToParams: ( accountID ) => {
