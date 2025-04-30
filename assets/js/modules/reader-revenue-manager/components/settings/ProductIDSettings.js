@@ -36,6 +36,7 @@ import {
 import { ProductIDSelect } from '../common';
 import Link from '../../../../components/Link';
 import SubtleNotification from '../../../../components/notifications/SubtleNotification';
+import Notice from '../../../../components/Notice';
 
 export default function ProductIDSettings( { hasModuleAccess } ) {
 	const productID = useSelect( ( select ) =>
@@ -80,19 +81,20 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 				productID === 'openaccess' &&
 				! isOpenAccessNoticeDismissed && (
 					<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
-						<SubtleNotification
+						<Notice
+							type="warning"
 							title={ __(
 								'Selecting “open access” will allow your reader to access your content without a subscription',
 								'google-site-kit'
 							) }
+							dismissButton={ {
+								label: __( 'Got it', 'google-site-kit' ),
+								onClick: () =>
+									dismissItem(
+										RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
+									),
+							} }
 							hideIcon
-							variant="warning"
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ () =>
-								dismissItem(
-									RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
-								)
-							}
 						/>
 					</div>
 				) }
