@@ -199,7 +199,7 @@ const baseControls = {};
 const baseReducer = createReducer( ( state, action ) => {
 	switch ( action.type ) {
 		default:
-			return state;
+			break;
 	}
 } );
 
