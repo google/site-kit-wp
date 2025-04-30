@@ -21,6 +21,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
+use Google\Site_Kit\Core\Modules\Module_With_Existing_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Existing_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -56,13 +58,14 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag, Module_With_Existing_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+	use Module_With_Existing_Tag_Trait;
 
 	/**
 	 * Module slug name.
@@ -649,5 +652,44 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		);
 
 		return empty( array_diff( $configured_containers, $all_containers ) );
+	}
+
+	/**
+	 * Returns GA4 tag matchers.
+	 *
+	 * TODO: This could return e.g. an Existing_Tag_Matchers instance, following the get_tag_matchers() pattern.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of regular expression patterns.
+	 */
+	public function get_existing_tag_matchers() {
+		$tag_matchers = array(
+			// Detect injection script.
+			'/<script[^>]*>[^>]+?www\.googletagmanager\.com\/gtm[^>]+?[\'|"](GTM-[0-9A-Z]+)[\'|"]/',
+			// Detect gtm.js script calls.
+			'/<script[^>]*src=[\'|"]https:\/\/www\.googletagmanager\.com\/gtm\.js\?id=(GTM-[0-9A-Z]+)[\'|"]/',
+			// Detect iframe version for no-js.
+			'/<script[^>]*src=[\'|"]https:\/\/www\.googletagmanager\.com\/ns\.html\?id=(GTM-[0-9A-Z]+)[\'|"]/',
+			// Detect amp tag.
+			'/<amp-analytics [^>]*config=[\'|"]https:\/\/www\.googletagmanager\.com\/amp\.json\?id=(GTM-[0-9A-Z]+)[\'|"]/',
+		);
+
+		return $tag_matchers;
+	}
+
+	/**
+	 * Validates if the given tag (a container ID) is valid.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $tag The tag to validate.
+	 * @return bool Whether the tag is valid.
+	 */
+	public function is_valid_existing_tag( $tag ) {
+		return (
+			is_string( $tag ) &&
+			preg_match( '/^GTM-[A-Z0-9]+$/', $tag )
+		);
 	}
 }

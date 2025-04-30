@@ -536,6 +536,42 @@ class REST_Modules_Controller {
 				)
 			),
 			new REST_Route(
+				'modules/(?P<slug>[a-z0-9\-]+)/data/existing-tag',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function ( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->modules->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->modules->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module is not active.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+
+							if ( ! $module instanceof Module_With_Existing_Tag ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support getting existing tag.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+
+							return new WP_REST_Response( $module->get_existing_tag() );
+						},
+						'permission_callback' => $can_list_data,
+					),
+				),
+				array(
+					'args' => array(
+						'slug' => array(
+							'type'              => 'string',
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
+				)
+			),
+			new REST_Route(
 				'modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)',
 				array(
 					array(
