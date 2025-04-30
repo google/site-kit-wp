@@ -37,10 +37,7 @@ trait Module_With_Existing_Tag_Trait {
 
 		foreach ( $urls as $url ) {
 			$html = $this->get_html_for_url( $url );
-			// if ( $html ) {
-			// return $html;
-			// }
-			$tag = $this->extract_existing_tag( $html, $this->get_existing_tag_matchers() );
+			$tag  = $this->extract_existing_tag( $html, $this->get_existing_tag_matchers() );
 			if ( $tag ) {
 				return $tag;
 			}
