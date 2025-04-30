@@ -218,7 +218,7 @@ export const baseReducer = createReducer( ( state, action ) => {
 		}
 
 		default:
-			return state;
+			break;
 	}
 } );
 
