@@ -84,7 +84,7 @@ export const reducer = createReducer( ( state, action ) => {
 		}
 
 		default:
-			return state;
+			break;
 	}
 } );
 
