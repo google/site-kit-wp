@@ -86,7 +86,7 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 		set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
 	reducerCallback: createReducer( ( state, dimensions ) => {
 		state.settings = state.settings || {};
-		state.settings.availableCustomDimensions = [ ...dimensions ];
+		state.settings.availableCustomDimensions = dimensions;
 	} ),
 } );
 
