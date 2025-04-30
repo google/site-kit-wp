@@ -48,7 +48,7 @@ const fetchGetReportStore = createFetchStore( {
 	},
 	reducerCallback: createReducer( ( state, report, { strategy, url } ) => {
 		state.reports = state.reports || {};
-		state.reports[ `${ strategy }::${ url }` ] = { ...report };
+		state.reports[ `${ strategy }::${ url }` ] = report;
 	} ),
 	argsToParams: ( url, strategy ) => {
 		return {
