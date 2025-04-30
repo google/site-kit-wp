@@ -33,7 +33,6 @@ import { forwardRef } from '@wordpress/element';
 import { Button } from 'googlesitekit-components';
 import CheckFillSVG from '../../../svg/icons/check-fill.svg';
 import ExternalSVG from '../../../svg/icons/external.svg';
-import WarningSVG from '../../../svg/icons/warning.svg';
 import InfoSVG from '../../../svg/icons/info-circle.svg';
 export const VARIANTS = {
 	SUCCESS: 'success',
@@ -67,8 +66,6 @@ const SubtleNotification = forwardRef(
 					{
 						'googlesitekit-subtle-notification--success':
 							variant === VARIANTS.SUCCESS,
-						'googlesitekit-subtle-notification--warning':
-							variant === VARIANTS.WARNING,
 						'googlesitekit-subtle-notification--info':
 							variant === VARIANTS.INFO,
 					},
@@ -80,9 +77,6 @@ const SubtleNotification = forwardRef(
 						{ Icon && <Icon width={ 24 } height={ 24 } /> }
 						{ ! Icon && variant === VARIANTS.SUCCESS && (
 							<CheckFillSVG width={ 24 } height={ 24 } />
-						) }
-						{ ! Icon && variant === VARIANTS.WARNING && (
-							<WarningSVG width={ 24 } height={ 24 } />
 						) }
 						{ ! Icon && variant === VARIANTS.INFO && (
 							<InfoSVG width={ 24 } height={ 24 } />
