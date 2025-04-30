@@ -44,13 +44,16 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 	const viewed = useHasBeenViewed( id );
 	const timeoutRef = useRef();
 
+	const clearExistingTimeout = () => {
+		if ( timeoutRef.current ) {
+			clearTimeout( timeoutRef.current );
+		}
+	};
+
 	useEffect( () => {
 		// If notification is not viewed yet and is in view, start the timer
 		if ( ! viewed && isInView ) {
-			// Clear any existing timeout.
-			if ( timeoutRef.current ) {
-				clearTimeout( timeoutRef.current );
-			}
+			clearExistingTimeout();
 
 			// Set a new timeout for 3 seconds.
 			timeoutRef.current = setTimeout( () => {
@@ -61,15 +64,12 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 				}
 			}, 3000 );
 		} else if ( ! isInView && timeoutRef.current ) {
-			// If notification is no longer in view, clear the timeout
-			clearTimeout( timeoutRef.current );
+			clearExistingTimeout();
 		}
 
 		// Cleanup function to clear timeout on unmount or when dependencies change.
 		return () => {
-			if ( timeoutRef.current ) {
-				clearTimeout( timeoutRef.current );
-			}
+			clearExistingTimeout();
 		};
 	}, [
 		viewed,
