@@ -707,11 +707,10 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, action ) => {
-	switch ( action.type ) {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
 		case MATCHING_ACCOUNT_PROPERTY: {
-			const { isMatchingAccountProperty } = action.payload;
-			state.isMatchingAccountProperty = isMatchingAccountProperty;
+			state.isMatchingAccountProperty = payload.isMatchingAccountProperty;
 			break;
 		}
 
