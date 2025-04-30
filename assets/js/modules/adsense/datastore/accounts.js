@@ -40,7 +40,7 @@ const fetchGetAccountsStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: createReducer( ( state, accounts ) => {
-		state.accounts = [ ...accounts ];
+		state.accounts = accounts;
 	} ),
 } );
 
