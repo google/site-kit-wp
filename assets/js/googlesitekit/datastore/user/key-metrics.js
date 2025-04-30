@@ -184,7 +184,7 @@ const baseReducer = createReducer( ( state, action ) => {
 			break;
 		}
 		default: {
-			return state;
+			break;
 		}
 	}
 } );
