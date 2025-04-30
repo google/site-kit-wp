@@ -84,6 +84,7 @@ const Notice = forwardRef(
 								inProgress={ ctaButton.inProgress }
 								disabled={ ctaButton.disabled }
 								href={ ctaButton.href }
+								external={ ctaButton.external }
 							/>
 						) }
 				</div>
