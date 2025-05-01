@@ -28,6 +28,15 @@ import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { CORE_UI } from '../../../datastore/ui/constants';
 import Notification from '.';
 
+// Create a reusable NotificationWrapper component for tests
+function NotificationWrapper() {
+	return (
+		<Notification id="test-notification">
+			Test Notification Content
+		</Notification>
+	);
+}
+
 // Mock the useLatestIntersection hook to control intersection state.
 jest.mock( '../../../../hooks/useLatestIntersection', () => {
 	return jest.fn().mockImplementation( () => ( {
@@ -46,6 +55,11 @@ jest.mock( '../../hooks/useHasBeenViewed', () => {
 		useHasBeenViewed: mockUseHasBeenViewed,
 	};
 } );
+
+// Export the mock for direct access in tests
+export const mockUseHasBeenViewed = jest.requireMock(
+	'../../hooks/useHasBeenViewed'
+).useHasBeenViewed;
 
 describe( 'Notification', () => {
 	let registry;
@@ -81,12 +95,7 @@ describe( 'Notification', () => {
 	} );
 
 	it( 'renders the notification content', () => {
-		const { getByText } = render(
-			<Notification id="test-notification">
-				Test Notification Content
-			</Notification>,
-			{ registry }
-		);
+		const { getByText } = render( <NotificationWrapper />, { registry } );
 
 		expect( getByText( 'Test Notification Content' ) ).toBeInTheDocument();
 	} );
@@ -96,12 +105,7 @@ describe( 'Notification', () => {
 			.fn()
 			.mockReturnValue( [ '2025-04-27', '2025-04-28', '2025-04-29' ] );
 
-		render(
-			<Notification id="test-notification">
-				Test Notification Content
-			</Notification>,
-			{ registry }
-		);
+		render( <NotificationWrapper />, { registry } );
 
 		expect( mockDismissNotification ).toHaveBeenCalledWith(
 			'test-notification',
@@ -114,23 +118,13 @@ describe( 'Notification', () => {
 			.fn()
 			.mockReturnValue( [ '2025-04-28', '2025-04-29' ] );
 
-		render(
-			<Notification id="test-notification">
-				Test Notification Content
-			</Notification>,
-			{ registry }
-		);
+		render( <NotificationWrapper />, { registry } );
 
 		expect( mockDismissNotification ).not.toHaveBeenCalled();
 	} );
 
 	it( 'marks notification as seen only after being in view for 3 seconds', () => {
-		render(
-			<Notification id="test-notification">
-				Test Notification Content
-			</Notification>,
-			{ registry }
-		);
+		render( <NotificationWrapper />, { registry } );
 
 		// Verify markNotificationSeen is not called immediately.
 		expect( mockMarkNotificationSeen ).not.toHaveBeenCalled();
@@ -158,12 +152,7 @@ describe( 'Notification', () => {
 		// Initially in view.
 		useLatestIntersection.mockReturnValue( { isIntersecting: true } );
 
-		const { rerender } = render(
-			<Notification id="test-notification">
-				Test Notification Content
-			</Notification>,
-			{ registry }
-		);
+		const { rerender } = render( <NotificationWrapper />, { registry } );
 
 		act( () => {
 			jest.advanceTimersByTime( 2000 );
@@ -172,11 +161,7 @@ describe( 'Notification', () => {
 		// Change to not in view.
 		useLatestIntersection.mockReturnValue( { isIntersecting: false } );
 
-		rerender(
-			<Notification id="test-notification">
-				Test Notification Content
-			</Notification>
-		);
+		rerender( <NotificationWrapper /> );
 
 		// Advance time to complete the timeout.
 		act( () => {
@@ -185,5 +170,22 @@ describe( 'Notification', () => {
 
 		// Verify markNotificationSeen was not called.
 		expect( mockMarkNotificationSeen ).not.toHaveBeenCalled();
+	} );
+
+	it( 'does not invoke markNotificationSeen if notification has already been viewed', () => {
+		// Set up the mock to return true (notification already viewed).
+		mockUseHasBeenViewed.mockReturnValue( true );
+
+		const useLatestIntersection = require( '../../../../hooks/useLatestIntersection' );
+		useLatestIntersection.mockReturnValue( { isIntersecting: true } );
+
+		render( <NotificationWrapper />, { registry } );
+
+		act( () => {
+			jest.advanceTimersByTime( 5000 );
+		} );
+
+		expect( mockMarkNotificationSeen ).not.toHaveBeenCalled();
+		mockUseHasBeenViewed.mockReturnValue( false );
 	} );
 } );
