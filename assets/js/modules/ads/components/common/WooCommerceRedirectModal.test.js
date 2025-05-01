@@ -230,6 +230,90 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onBeforeSetupCallback ).toHaveBeenCalled();
 	} );
 
+	it( 'clicking "Continue with Site Kit" should trigger the correct internal tracking event when only WooCommerce is active', async () => {
+		mockTrackEvent.mockClear();
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: false,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+
+		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+		await waitForRegistry();
+
+		const continueWithSiteKitButton = getByText(
+			/continue with site kit/i
+		);
+		fireEvent.click( continueWithSiteKitButton );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_sk',
+			'wc'
+		);
+	} );
+
+	it( 'clicking "Continue with Site Kit" should trigger the correct internal tracking event when Google for WooCommerce is active', async () => {
+		mockTrackEvent.mockClear();
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+
+		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+		await waitForRegistry();
+
+		const continueWithSiteKitButton = getByText(
+			/continue with site kit/i
+		);
+		fireEvent.click( continueWithSiteKitButton );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_sk',
+			'gfw'
+		);
+	} );
+
 	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 
