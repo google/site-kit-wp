@@ -196,9 +196,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
-	const onLaunch = useCallback( ( app ) => {
-		paxAppRef.current = app;
-	}, [] );
+	const onLaunch = useCallback(
+		async ( app ) => {
+			await trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			paxAppRef.current = app;
+		},
+		[ viewContext ]
+	);
 
 	const onSetupCallback = useCallback( async () => {
 		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
@@ -214,7 +218,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
-		trackEvent,
 		viewContext,
 	] );
 
