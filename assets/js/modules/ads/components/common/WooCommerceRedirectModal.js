@@ -26,7 +26,13 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo, Fragment, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useMemo,
+	Fragment,
+	useState,
+	useMount,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -49,6 +55,8 @@ import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -58,6 +66,7 @@ export default function WooCommerceRedirectModal( {
 	onBeforeSetupCallback = null,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
+	const viewContext = useViewContext();
 
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -68,6 +77,16 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+
+	useMount( () => {
+		const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
+		trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'view_modal',
+			trackEventLabel
+		);
+	} );
+
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
 		const hasGoogleForWooCommerceAdsAccount =
 			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
