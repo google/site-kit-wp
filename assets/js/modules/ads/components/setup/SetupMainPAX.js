@@ -200,8 +200,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
 	const onLaunch = useCallback(
-		async ( app ) => {
-			await trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+		( app ) => {
+			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
 			paxAppRef.current = app;
 		},
 		[ viewContext ]
