@@ -568,4 +568,50 @@ describe( 'WooCommerceRedirectModal', () => {
 			'gfw'
 		);
 	} );
+
+	it( 'clicking "Continue with Google for WooCommerce" should trigger the correct internal tracking event when Google for WooCommerce is active with Ads account linked', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+					adsConnected: true,
+				},
+			},
+		} );
+		const { waitForRegistry, getByText } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		mockTrackEvent.mockClear();
+
+		const viewCurrentAdsAccountButton = getByText(
+			/View current Ads account/i
+		);
+
+		fireEvent.click( viewCurrentAdsAccountButton );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
 } );
