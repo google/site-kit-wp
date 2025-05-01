@@ -62,6 +62,8 @@ import {
 import { Cell, Row } from '../../../../material-components';
 import { WooCommerceRedirectModal } from '../common';
 import Link from '../../../../components/Link';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -70,6 +72,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
+	const viewContext = useViewContext();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -197,11 +200,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 		paxAppRef.current = app;
 	}, [] );
 
-	const onSetupCallback = useCallback( () => {
+	const onSetupCallback = useCallback( async () => {
 		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
+
+		await trackEvent( `${ viewContext }`, 'start_setup_pax' );
 
 		createAccount();
 	}, [
@@ -209,6 +214,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
+		trackEvent,
+		viewContext,
 	] );
 
 	const setupNewAdsAccountSupportURL = useSelect( ( select ) =>
