@@ -25,6 +25,7 @@ import { createExistingTagStore } from '../../../googlesitekit/data/create-exist
 import tagMatchers from '../util/tag-matchers';
 
 const store = createExistingTagStore( {
+	moduleSlug: 'tagmanager',
 	storeName: MODULES_TAGMANAGER,
 	tagMatchers,
 	isValidTag: isValidContainerID,

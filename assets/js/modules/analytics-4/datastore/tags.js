@@ -26,6 +26,7 @@ import { getTagMatchers } from '../utils/tag-matchers';
 import { isValidMeasurementID } from '../utils/validation';
 
 const existingTagStore = createExistingTagStore( {
+	moduleSlug: 'analytics-4',
 	storeName: MODULES_ANALYTICS_4,
 	tagMatchers: getTagMatchers(),
 	isValidTag: isValidMeasurementID,
