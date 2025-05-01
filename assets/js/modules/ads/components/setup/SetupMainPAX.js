@@ -149,7 +149,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
-		await trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
 
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
