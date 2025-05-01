@@ -128,10 +128,16 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleGoogleForWooCommerceRedirect = useCallback( () => {
+	const handleGoogleForWooCommerceRedirect = useCallback( async () => {
 		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
+
+		await trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_gfw',
+			trackEventLabel
+		);
 
 		setIsSaving( 'primary' );
 		onDismiss?.();
@@ -144,6 +150,8 @@ export default function WooCommerceRedirectModal( {
 		onDismiss,
 		navigateTo,
 		googleForWooCommerceRedirectURI,
+		viewContext,
+		trackEventLabel,
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
