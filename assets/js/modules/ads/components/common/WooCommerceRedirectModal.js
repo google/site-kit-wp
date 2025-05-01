@@ -184,6 +184,8 @@ export default function WooCommerceRedirectModal( {
 		onBeforeSetupCallback,
 		onSetupCallback,
 		onContinue,
+		viewContext,
+		trackEventLabel,
 	] );
 
 	if ( isModalDismissed && ! isSaving ) {
