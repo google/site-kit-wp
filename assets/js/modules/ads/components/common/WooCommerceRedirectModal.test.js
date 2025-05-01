@@ -29,6 +29,7 @@ import {
 	provideModules,
 	provideUserCapabilities,
 	provideModuleRegistrations,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -401,9 +402,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/Use Google for WooCommerce/i
 		);
 
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
+		await act( async () => {
+			await fireEvent.click( useGoogleForWooCommerceButton );
+		} );
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
@@ -453,9 +454,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/view current ads account/i
 		);
 
-		fireEvent.click( viewCurrentAdsAccountButton );
-
-		await waitForRegistry();
+		await act( async () => {
+			await fireEvent.click( viewCurrentAdsAccountButton );
+		} );
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
@@ -560,9 +561,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/Use Google for WooCommerce/i
 		);
 
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
+		await act( async () => {
+			await fireEvent.click( useGoogleForWooCommerceButton );
+		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
@@ -610,9 +611,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/View current Ads account/i
 		);
 
-		fireEvent.click( viewCurrentAdsAccountButton );
-
-		await waitForRegistry();
+		await act( async () => {
+			await fireEvent.click( viewCurrentAdsAccountButton );
+		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
