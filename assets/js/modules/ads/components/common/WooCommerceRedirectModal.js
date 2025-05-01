@@ -163,8 +163,8 @@ export default function WooCommerceRedirectModal( {
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
-	const onContinueWithSiteKit = useCallback( async () => {
-		await trackEvent(
+	const onContinueWithSiteKit = useCallback( () => {
+		trackEvent(
 			`${ viewContext }_pax_wc-redirect`,
 			'choose_sk',
 			trackEventLabel
