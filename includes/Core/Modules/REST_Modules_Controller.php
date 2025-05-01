@@ -556,7 +556,7 @@ class REST_Modules_Controller {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support getting existing tag.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
-							return new WP_REST_Response( $module->get_existing_tag() );
+							return new WP_REST_Response( $module->get_existing_tag() ?? false );
 						},
 						'permission_callback' => $can_list_data,
 					),
