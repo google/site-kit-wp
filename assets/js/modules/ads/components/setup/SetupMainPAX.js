@@ -213,7 +213,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
-		await trackEvent( `${ viewContext }`, 'start_setup_pax' );
+		// awaiting because `createAccount` may trigger a navigation.
+		await trackEvent( viewContext, 'start_setup_pax' );
 
 		createAccount();
 	}, [
