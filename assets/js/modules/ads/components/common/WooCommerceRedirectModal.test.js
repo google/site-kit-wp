@@ -96,8 +96,6 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'tracks the correct event when viewed with only WooCommerce active', async () => {
-		mockTrackEvent.mockClear();
-
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -125,8 +123,6 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'tracks the correct event when viewed with Google for WooCommerce active', async () => {
-		mockTrackEvent.mockClear();
-
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -231,8 +227,6 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Continue with Site Kit" should trigger the correct internal tracking event when only WooCommerce is active', async () => {
-		mockTrackEvent.mockClear();
-
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -273,8 +267,6 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	it( 'clicking "Continue with Site Kit" should trigger the correct internal tracking event when Google for WooCommerce is active', async () => {
-		mockTrackEvent.mockClear();
-
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -515,5 +507,65 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
 		).toBe( true );
 		expect( onDismiss ).toHaveBeenCalled();
+	} );
+
+	it( 'clicking "Continue with Google for WooCommerce" should trigger the correct internal tracking event when Google for WooCommerce is active with no Ads account linked', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+					adsConnected: false,
+				},
+			},
+		} );
+		const { container, waitForRegistry, getByText } = render(
+			<ModalComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
+			)
+		).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard'
+		);
+
+		const useGoogleForWooCommerceButton = getByText(
+			/Use Google for WooCommerce/i
+		);
+
+		fireEvent.click( useGoogleForWooCommerceButton );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_gfw',
+			'gfw'
+		);
 	} );
 } );
