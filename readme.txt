@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.150.0
+Stable tag:        1.152.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -36,6 +36,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Tag Manager:** Use Site Kit to easily set up Tag Manager- no code editing required. Then, manage your tags in Tag Manager.
 
 == Installation ==
+
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
@@ -45,7 +46,6 @@ However, if you have a staging environment in addition to your production site, 
 2. Search for **Site Kit by Google**.
 3. Install and activate the Site Kit by Google plugin.
 4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
-
 
 = Manual installation =
 
@@ -109,39 +109,29 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.150.0 =
+= 1.152.0 =
 
 **Enhanced**
 
-* Fix bug that could cause an error when Analytics module is not connected. See [#10564](https://github.com/google/site-kit-wp/issues/10564).
-* Improve CTA label in Reader Revenue Manager setup flow. See [#10500](https://github.com/google/site-kit-wp/issues/10500).
-* Update PAX SDK package. See [#10493](https://github.com/google/site-kit-wp/issues/10493).
-* Improve Reader Revenue Manager debug information visibility in Site Health. See [#10478](https://github.com/google/site-kit-wp/issues/10478).
-* Update the "See full details in Ads" link to lead to the campaign deeplink URL. See [#10437](https://github.com/google/site-kit-wp/issues/10437).
-* Remove the progress bar on the setup screen when PAX setup is initiated. See [#10427](https://github.com/google/site-kit-wp/issues/10427).
-* Persist Ads reminder notification when Google for Woo plugin is installed. See [#10419](https://github.com/google/site-kit-wp/issues/10419).
-* Improve Reader Revenue Manager blocks in the WordPress editor for non-Site Kit users. See [#10400](https://github.com/google/site-kit-wp/issues/10400).
-* Add GA event tracking for user interaction with the Reader Revenue Manager settings edit screen. See [#10332](https://github.com/google/site-kit-wp/issues/10332).
-* Add opt-in GA event tracking for user interaction with the Reader Revenue Manager module setup success notification. See [#10329](https://github.com/google/site-kit-wp/issues/10329).
-* Ensure metrics' scroll bar is visible on mobile screens. See [#10163](https://github.com/google/site-kit-wp/issues/10163).
-* Merge the `rrmModuleV2` feature flag with the `rrmModule` flag in preparation for the launch of RRM V2. See [#10071](https://github.com/google/site-kit-wp/issues/10071).
-* Fix a bug that occurs when setting up Site Kit and clicking on the **Next** button in the final service setup stage multiple times. See [#10037](https://github.com/google/site-kit-wp/issues/10037).
-* Prevent multiple admin menu tooltips from appearing at once. See [#10003](https://github.com/google/site-kit-wp/issues/10003).
-* Update the module connection notifications to use our new notification infrastructure. See [#9297](https://github.com/google/site-kit-wp/issues/9297).
-* Update Enhanced Measurement banner to use new notifications infrastructure. See [#9293](https://github.com/google/site-kit-wp/issues/9293).
+* Update the setup success notification copy to consistently refer to "visitor groups" instead of "audiences" in Audience Segmentation settings. See [#10554](https://github.com/google/site-kit-wp/issues/10554).
+* Improve the naming of the available audience selectors. See [#10449](https://github.com/google/site-kit-wp/issues/10449).
+* Add new components for notices. See [#10429](https://github.com/google/site-kit-wp/issues/10429).
+* Refactor `DashboardPageSpeed` component to reduce cyclomatic complexity and remove the ESLint override. See [#10362](https://github.com/google/site-kit-wp/issues/10362).
+* Refactor the `Footer` component in `SettingsActiveModule` to reduce cyclomatic complexity and remove the ESLint override. See [#10353](https://github.com/google/site-kit-wp/issues/10353).
+* Remove the ESLint complexity override from the dashboard sharing settings' `Module` component. See [#10350](https://github.com/google/site-kit-wp/issues/10350).
+* Fix minor visual issues when the Dashbaord Sharing modal is being closed. See [#9138](https://github.com/google/site-kit-wp/issues/9138).
+* Fix bug that could cause an erroneous module link to appear when a module isn't connected. See [#7698](https://github.com/google/site-kit-wp/issues/7698).
+
+**Changed**
+
+* Remove GM3 assets from the codebase. See [#10604](https://github.com/google/site-kit-wp/issues/10604).
 
 **Fixed**
 
-* Fix issue that could cause surveys with multiple-choice answers to skip questions. See [#10581](https://github.com/google/site-kit-wp/issues/10581).
-* Ensure that changes to a selected publication's available product IDs are reflected in the Reader Revenue Manager settings screen without needing to wait for the publication to be synchronized. See [#10482](https://github.com/google/site-kit-wp/issues/10482).
-* Fix link to Publisher Center in the Reader Revenue Manager publication approved overlay notification. See [#10480](https://github.com/google/site-kit-wp/issues/10480).
-* Fix styling of Reader Revenue Manager buttons in the pattern view of the WordPress Block Editor. See [#10479](https://github.com/google/site-kit-wp/issues/10479).
-* Update the divider underneath the Reader Revenue Manager Product ID dropdown in the settings screen to align with the design. See [#10477](https://github.com/google/site-kit-wp/issues/10477).
-* Fix the incorrect behavior of the "Account Linked" notification of the Ads module. See [#10463](https://github.com/google/site-kit-wp/issues/10463).
-* Update the `Using the WooCommerce plugin` modal not to dismiss itself when it is closed by clicking outside of the dialog. See [#10414](https://github.com/google/site-kit-wp/issues/10414).
-* Update the Ads setup banner to disable the CTA button if adblocker is detected. See [#10326](https://github.com/google/site-kit-wp/issues/10326).
-* Prevent duplicate GA4 settings update requests by limiting Google tag syncs to once per hour. See [#10284](https://github.com/google/site-kit-wp/issues/10284).
-* Fix duplicate Google tag settings request issue. See [#10283](https://github.com/google/site-kit-wp/issues/10283).
-* Fix Ninja Forms script loading issue when the enhanced conversion tracking is enabled. See [#9381](https://github.com/google/site-kit-wp/issues/9381).
+* Fix the `&amp;` occurrences issue in KMW widgets. See [#10622](https://github.com/google/site-kit-wp/issues/10622).
+* Fix bug that can occur when AAA Option Optimizer plugin is installed. Props tacoverdo. See [#10573](https://github.com/google/site-kit-wp/issues/10573).
+* Restore loading state for Google tag mismatch notification when actioning. See [#10489](https://github.com/google/site-kit-wp/issues/10489).
+* Fix glitches when closing various modal dialogs. See [#9137](https://github.com/google/site-kit-wp/issues/9137).
+* Update the Ad Blocking Recovery notification to remain visible after clicking on the CTA button. See [#7908](https://github.com/google/site-kit-wp/issues/7908).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

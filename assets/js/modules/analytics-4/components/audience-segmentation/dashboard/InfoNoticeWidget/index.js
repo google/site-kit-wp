@@ -52,7 +52,8 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
 
 	const availableAudiences = useInViewSelect( ( select ) => {
-		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		const audiences =
+			select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 		return audiences?.map( ( audience ) => audience.name );
 	}, [] );
 	const configuredAudiences = useInViewSelect(

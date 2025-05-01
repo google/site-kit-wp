@@ -126,7 +126,6 @@ import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
-import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -202,8 +201,8 @@ export const registerWidgets = ( widgets ) => {
 					return false;
 				}
 
-				const { availableAudiences } =
-					select( MODULES_ANALYTICS_4 ).getSettings() || {};
+				const availableAudiences =
+					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
@@ -711,7 +710,6 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 0,
 			modules: [ 'analytics-4' ],
-			isActive: () => isFeatureEnabled( 'conversionReporting' ),
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);

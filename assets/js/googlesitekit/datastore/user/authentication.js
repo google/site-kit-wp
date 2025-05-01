@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -38,7 +38,7 @@ function createGetAuthenticationSelector( property ) {
 const fetchGetAuthenticationStore = createFetchStore( {
 	baseName: 'getAuthentication',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'authentication', undefined, {
+		return get( 'core', 'user', 'authentication', undefined, {
 			useCache: false,
 		} );
 	},

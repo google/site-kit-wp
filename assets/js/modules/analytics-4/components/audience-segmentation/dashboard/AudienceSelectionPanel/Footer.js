@@ -75,7 +75,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		);
 	} );
 	const availableAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAvailableAudiences()
+		select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences()
 	);
 
 	const { saveUserAudienceSettings, removeDismissedItems } =

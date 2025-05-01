@@ -23,7 +23,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -46,7 +46,7 @@ const settingsReducerCallback = createReducer( ( state, settings ) => {
 const fetchGetConversionTrackingSettingsStore = createFetchStore( {
 	baseName: 'getConversionTrackingSettings',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'conversion-tracking', null, {
+		return get( 'core', 'site', 'conversion-tracking', null, {
 			useCache: false,
 		} );
 	},
@@ -56,7 +56,7 @@ const fetchGetConversionTrackingSettingsStore = createFetchStore( {
 const fetchSaveConversionTrackingSettingsStore = createFetchStore( {
 	baseName: 'saveConversionTrackingSettings',
 	controlCallback: ( { settings } ) => {
-		return API.set( 'core', 'site', 'conversion-tracking', { settings } );
+		return set( 'core', 'site', 'conversion-tracking', { settings } );
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
