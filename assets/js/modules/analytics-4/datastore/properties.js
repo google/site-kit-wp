@@ -56,13 +56,6 @@ import {
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
-const reducerCallback = createReducer( ( state, property, { propertyID } ) => {
-	state.propertiesByID = {
-		...state.propertiesByID,
-		[ propertyID ]: property,
-	};
-} );
-
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
@@ -76,7 +69,10 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback,
+	reducerCallback: createReducer( ( state, property, { propertyID } ) => {
+		state.propertiesByID = state.propertiesByID || {};
+		state.propertiesByID[ propertyID ] = property;
+	} ),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
