@@ -179,8 +179,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
+		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
 		finishSetup( redirectURL );
-	}, [ registry, finishSetup ] );
+	}, [ registry, finishSetup, viewContext ] );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
