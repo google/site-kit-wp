@@ -176,14 +176,14 @@ describe( 'WooCommerceRedirectModal', () => {
 		const { getByText, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
+
 		await waitForRegistry();
 
 		const continueWithSiteKitButton = getByText(
 			/continue with site kit/i
 		);
-		fireEvent.click( continueWithSiteKitButton );
 
-		await waitForRegistry();
+		fireEvent.click( continueWithSiteKitButton );
 
 		expect( onDismiss ).toHaveBeenCalled();
 
@@ -218,9 +218,8 @@ describe( 'WooCommerceRedirectModal', () => {
 		const continueWithSiteKitButton = getByText(
 			/continue with site kit/i
 		);
-		fireEvent.click( continueWithSiteKitButton );
 
-		await waitForRegistry();
+		fireEvent.click( continueWithSiteKitButton );
 
 		expect( onDismiss ).toHaveBeenCalled();
 		expect( onBeforeSetupCallback ).toHaveBeenCalled();
@@ -250,14 +249,14 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
 		await waitForRegistry();
 
 		const continueWithSiteKitButton = getByText(
 			/continue with site kit/i
 		);
-		fireEvent.click( continueWithSiteKitButton );
 
-		await waitForRegistry();
+		fireEvent.click( continueWithSiteKitButton );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
@@ -290,14 +289,14 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
 		await waitForRegistry();
 
 		const continueWithSiteKitButton = getByText(
 			/continue with site kit/i
 		);
-		fireEvent.click( continueWithSiteKitButton );
 
-		await waitForRegistry();
+		fireEvent.click( continueWithSiteKitButton );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
@@ -448,9 +447,12 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry,
 		} );
 
+		await waitForRegistry();
+
 		const viewCurrentAdsAccountButton = getByText(
 			/view current ads account/i
 		);
+
 		fireEvent.click( viewCurrentAdsAccountButton );
 
 		await waitForRegistry();
@@ -495,13 +497,13 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry,
 		} );
 
+		await waitForRegistry();
+
 		const createAnotherAccountButton = getByRole( 'button', {
 			name: /create another account/i,
 		} );
 
 		fireEvent.click( createAnotherAccountButton );
-
-		await waitForRegistry();
 
 		expect(
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
