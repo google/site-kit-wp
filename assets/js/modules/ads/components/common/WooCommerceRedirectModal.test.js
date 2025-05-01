@@ -165,7 +165,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'clicking "Continue with Site Kit" should trigger ads module activation and invoke onDismiss callback', async () => {
+	it( 'should trigger ads module activation and invoke the onDismiss callback when clicking "Continue with Site Kit"', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -192,7 +192,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		).toBe( true );
 	} );
 
-	it( 'clicking "Continue with Site Kit" should invoke onBeforeSetupCallback if passed', async () => {
+	it( 'should invoke onBeforeSetupCallback if passed when clicking "Continue with Site Kit"', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -226,7 +226,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onBeforeSetupCallback ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Continue with Site Kit" should trigger the correct internal tracking event when only WooCommerce is active', async () => {
+	it( 'should trigger the correct internal tracking event when only WooCommerce is active and "Continue with Site Kit" is clicked', async () => {
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -266,7 +266,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 	} );
 
-	it( 'clicking "Continue with Site Kit" should trigger the correct internal tracking event when Google for WooCommerce is active', async () => {
+	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active and "Continue with Site Kit" is clicked', async () => {
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -306,7 +306,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 	} );
 
-	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
+	it( 'should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active and "Use Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 
 		const notification =
@@ -351,7 +351,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Use Google for WooCommerce" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active', async () => {
+	it( 'should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and "Use Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 		const dismissNotificationSpy = jest.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
@@ -412,7 +412,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
-	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
+	it( 'should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected when "View current Ads account" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 		const dismissNotificationSpy = jest.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
@@ -469,7 +469,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Create another account" should trigger ads module activation and dismiss the modal', async () => {
+	it( 'should trigger ads module activation and dismiss the modal when "Create another account" is clicked', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -509,7 +509,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Continue with Google for WooCommerce" should trigger the correct internal tracking event when Google for WooCommerce is active with no Ads account linked', async () => {
+	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active with no Ads account linked when "Continue with Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 
 		const notification =
@@ -569,7 +569,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 	} );
 
-	it( 'clicking "Continue with Google for WooCommerce" should trigger the correct internal tracking event when Google for WooCommerce is active with Ads account linked', async () => {
+	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active with Ads account linked when "Continue with Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 
 		const notification =
