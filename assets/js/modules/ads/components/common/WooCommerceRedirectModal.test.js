@@ -612,6 +612,10 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		await waitForRegistry();
 
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_gfw',
+			'gfw'
+		);
 	} );
 } );
