@@ -40,6 +40,11 @@ import {
 	PLUGINS,
 } from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
+import * as tracking from '../../../../util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'WooCommerceRedirectModal', () => {
 	mockLocation();
@@ -88,6 +93,35 @@ describe( 'WooCommerceRedirectModal', () => {
 				},
 			},
 		} );
+	} );
+
+	it( 'tracks the correct event when viewed with only WooCommerce active', async () => {
+		mockTrackEvent.mockClear();
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: false,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		const { waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'view_modal',
+			'wc'
+		);
 	} );
 
 	it( 'does not render when dismissed', async () => {
