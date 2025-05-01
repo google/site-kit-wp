@@ -124,6 +124,35 @@ describe( 'WooCommerceRedirectModal', () => {
 		);
 	} );
 
+	it( 'tracks the correct event when viewed with Google for WooCommerce active', async () => {
+		mockTrackEvent.mockClear();
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		const { waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'view_modal',
+			'gfw'
+		);
+	} );
+
 	it( 'does not render when dismissed', async () => {
 		await registry
 			.dispatch( CORE_SITE )
