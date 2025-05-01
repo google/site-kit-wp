@@ -8,16 +8,20 @@
 		}
 	},
 	"scripts": {
-		"build": "build-storybook -c . -o ../dist --quiet --loglevel warn",
-		"start": "start-storybook -p 9001 -c . --no-version-updates"
+		"build": "storybook build -c . -o ../dist --quiet --loglevel warn",
+		"start": "storybook dev -p 9001 -c . --no-version-updates"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
-		"@storybook/addon-postcss": "^2.0.0",
-		"@storybook/addon-viewport": "^6.5.16",
-		"@storybook/react": "^6.5.16",
-		"mini-css-extract-plugin": "^1.6.2",
-		"postcss-loader": "^4.3.0",
-		"sass-loader": "^9.0.3"
+		"@storybook/addon-viewport": "^8.6.12",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/react-webpack5": "^8.6.12",
+		"@storybook/test": "^8.6.12",
+		"css-loader": "^7.1.2",
+		"mini-css-extract-plugin": "^2.9.2",
+		"postcss-loader": "^8.1.1",
+		"sass": "^1.30.0",
+		"sass-loader": "^16.0.5",
+		"webpack": "^5.99.7"
 	}
 }
