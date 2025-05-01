@@ -29,7 +29,7 @@ import {
 	provideSearchConsoleMockReports,
 } from '../../util/data-mock';
 import { provideModules } from '../../../../../../tests/js/utils';
-import { replaceValuesInSearchConsoleReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInSearchConsoleReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
