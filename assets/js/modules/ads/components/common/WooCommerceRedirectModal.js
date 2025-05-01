@@ -21,18 +21,13 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useCallback,
-	useMemo,
-	Fragment,
-	useState,
-	useMount,
-} from '@wordpress/element';
+import { useCallback, useMemo, Fragment, useState } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -77,9 +72,9 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+	const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
 
 	useMount( () => {
-		const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
 		trackEvent(
 			`${ viewContext }_pax_wc-redirect`,
 			'view_modal',
@@ -153,7 +148,13 @@ export default function WooCommerceRedirectModal( {
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
-	const onContinueWithSiteKit = useCallback( () => {
+	const onContinueWithSiteKit = useCallback( async () => {
+		await trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_sk',
+			trackEventLabel
+		);
+
 		if ( ! onContinue ) {
 			setIsSaving( 'tertiary' );
 			onDismiss?.();
