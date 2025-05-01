@@ -190,18 +190,38 @@ describe( 'core/notifications Notifications', () => {
 				expect( result ).toBeUndefined();
 			} );
 
-			it( 'should return action with current date when notification is dismissible', async () => {
-				const result = await markNotificationSeen(
-					'test-notification-id'
-				);
+			it( 'should mark a notification as seen', async () => {
+				await markNotificationSeen( 'test-notification-id' );
 
-				expect( result ).toEqual( {
-					payload: {
-						notificationID: 'test-notification-id',
-						currentDate: '2025-04-29',
-					},
-					type: 'MARK_NOTIFICATION_SEEN',
-				} );
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'test-notification-id' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29' ] );
+			} );
+
+			it( 'should mark a notification as seen on multiple days', async () => {
+				await markNotificationSeen( 'test-notification-id' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-30' );
+				await markNotificationSeen( 'test-notification-id' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'test-notification-id' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29', '2025-04-30' ] );
+			} );
+
+			it( 'should not mark duplicate seen dates', async () => {
+				await markNotificationSeen( 'test-notification-id' );
+				await markNotificationSeen( 'test-notification-id' );
+				await markNotificationSeen( 'test-notification-id' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'test-notification-id' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29' ] );
 			} );
 		} );
 
@@ -433,8 +453,8 @@ describe( 'core/notifications Notifications', () => {
 					.getSeenNotifications();
 
 				expect( seenNotifications ).toEqual( {
-					'notification-1': 2,
-					'notification-2': 1,
+					'notification-1': [ '2025-04-29', '2025-04-30' ],
+					'notification-2': [ '2025-04-29' ],
 				} );
 			} );
 		} );

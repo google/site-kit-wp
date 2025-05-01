@@ -50,6 +50,7 @@ const RESET_QUEUE = 'RESET_QUEUE';
 const MARK_NOTIFICATION_SEEN = 'MARK_NOTIFICATION_SEEN';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
+const PERSIST_SEEN_NOTIFICATIONS = 'PERSIST_SEEN_NOTIFICATIONS';
 
 const NOTIFICATION_SEEN_STORAGE_KEY = 'googlesitekit_notification_seen';
 
@@ -222,16 +223,21 @@ export const actions = {
 			const notification = registry
 				.select( CORE_NOTIFICATIONS )
 				.getNotification( notificationID );
-			if ( ! notification?.isDismissible ) {
-				return;
+
+			if ( notification?.isDismissible ) {
+				const currentDate = registry
+					.select( CORE_USER )
+					.getReferenceDate();
+
+				yield {
+					payload: { notificationID, currentDate },
+					type: MARK_NOTIFICATION_SEEN,
+				};
+
+				yield {
+					type: PERSIST_SEEN_NOTIFICATIONS,
+				};
 			}
-
-			const currentDate = registry.select( CORE_USER ).getReferenceDate();
-
-			return {
-				payload: { notificationID, currentDate },
-				type: MARK_NOTIFICATION_SEEN,
-			};
 		}
 	),
 
@@ -349,7 +355,7 @@ export const controls = {
 					)
 					.map( ( { checkRequirements, ...notification } ) => {
 						const viewCount =
-							seenNotifications[ notification.id ] || 0;
+							seenNotifications[ notification.id ]?.length || 0;
 
 						return {
 							...notification,
@@ -381,6 +387,18 @@ export const controls = {
 					}
 				} while ( nextNotification );
 			}
+	),
+	[ PERSIST_SEEN_NOTIFICATIONS ]: createRegistryControl(
+		( registry ) => () => {
+			const seenNotifications = registry
+				.select( CORE_NOTIFICATIONS )
+				.getSeenNotifications();
+
+			storage.setItem(
+				NOTIFICATION_SEEN_STORAGE_KEY,
+				JSON.stringify( seenNotifications )
+			);
+		}
 	),
 };
 
@@ -438,16 +456,9 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 				];
 			}
 
-			// Persist seen dates to storage.
-			storage.setItem(
-				NOTIFICATION_SEEN_STORAGE_KEY,
-				JSON.stringify( seenNotifications )
-			);
+			state.seenNotifications = seenNotifications;
 
-			return {
-				...state,
-				seenNotifications,
-			};
+			break;
 		}
 
 		case DISMISS_NOTIFICATION: {
@@ -485,7 +496,7 @@ export const resolvers = {
 
 export const selectors = {
 	/**
-	 * Gets all seen notifications and how many distinct days they've been viewed on.
+	 * Gets all seen notifications view date arrays.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -493,17 +504,7 @@ export const selectors = {
 	 * @return {Object} Object with notification IDs as keys and view count as values.
 	 */
 	getSeenNotifications( state ) {
-		const { seenNotifications } = state;
-
-		// Transform the data to return notification IDs with their view counts
-		return Object.keys( seenNotifications ).reduce(
-			( result, notificationID ) => {
-				result[ notificationID ] =
-					seenNotifications[ notificationID ].length;
-				return result;
-			},
-			{}
-		);
+		return state.seenNotifications;
 	},
 
 	/**
