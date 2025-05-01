@@ -21,13 +21,18 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo, Fragment, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useMemo,
+	Fragment,
+	useState,
+	useEffect,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -74,13 +79,15 @@ export default function WooCommerceRedirectModal( {
 	);
 	const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
 
-	useMount( () => {
-		trackEvent(
-			`${ viewContext }_pax_wc-redirect`,
-			'view_modal',
-			trackEventLabel
-		);
-	} );
+	useEffect( () => {
+		if ( dialogActive ) {
+			trackEvent(
+				`${ viewContext }_pax_wc-redirect`,
+				'view_modal',
+				trackEventLabel
+			);
+		}
+	}, [ dialogActive, viewContext, trackEventLabel ] );
 
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
 		const hasGoogleForWooCommerceAdsAccount =
