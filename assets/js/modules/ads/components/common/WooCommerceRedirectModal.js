@@ -133,13 +133,11 @@ export default function WooCommerceRedirectModal( {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
 
-		if ( ! isGoogleForWooCommerceAdsConnected ) {
-			await trackEvent(
-				`${ viewContext }_pax_wc-redirect`,
-				'choose_gfw',
-				trackEventLabel
-			);
-		}
+		await trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_gfw',
+			trackEventLabel
+		);
 
 		setIsSaving( 'primary' );
 		onDismiss?.();
@@ -152,7 +150,6 @@ export default function WooCommerceRedirectModal( {
 		onDismiss,
 		navigateTo,
 		googleForWooCommerceRedirectURI,
-		isGoogleForWooCommerceAdsConnected,
 		viewContext,
 		trackEventLabel,
 	] );
