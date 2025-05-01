@@ -149,6 +149,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
+		await trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
 		setExtCustomerID( customerData.externalCustomerId );
@@ -164,7 +166,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
 		}
-	}, [ setExtCustomerID, setPaxConversionID ] );
+	}, [ setExtCustomerID, setPaxConversionID, viewContext ] );
 
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
