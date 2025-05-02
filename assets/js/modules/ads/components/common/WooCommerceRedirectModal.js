@@ -149,11 +149,9 @@ export default function WooCommerceRedirectModal( {
 		if ( isGoogleForWooCommerceAdsConnected ) {
 			setIsSaving( 'primary' );
 			navigateTo( googleForWooCommerceRedirectURI );
-			onDismiss?.();
-		} else {
-			onDismiss?.();
-			onClose?.();
 		}
+		onDismiss?.();
+		onClose?.();
 	}, [
 		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
 		dismissNotification,
