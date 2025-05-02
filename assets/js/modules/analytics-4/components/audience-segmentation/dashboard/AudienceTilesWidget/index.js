@@ -35,8 +35,16 @@ import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget'
 import NoAudienceBannerWidget from '../NoAudienceBannerWidget';
 import WidgetNull from '../../../../../../googlesitekit/widgets/components/WidgetNull';
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
+import { createLogger } from './logger';
+
+const log = createLogger( 'AudienceTilesWidget', {
+	logOnlyOnce: true,
+	logDiff: true,
+} );
 
 function AudienceTilesWidget( { Widget } ) {
+	log( 'render' );
+
 	const availableAudiences = useSelect( ( select ) => {
 		const audiences =
 			select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
@@ -62,9 +70,16 @@ function AudienceTilesWidget( { Widget } ) {
 	);
 
 	useEffect( () => {
+		log( 'useEffect', {
+			availableAudiencesSynced,
+			isSettingUpAudiences,
+		} );
+
 		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
 			const syncAudiences = async () => {
+				log( 'maybe sync available audiences' );
 				await maybeSyncAvailableAudiences();
+				log( 'setting availableAudiencesSynced to true' );
 				setAvailableAudiencesSynced( true );
 			};
 
@@ -102,25 +117,49 @@ function AudienceTilesWidget( { Widget } ) {
 		availableAudiences?.includes( audience )
 	);
 
+	// log( 'AudienceTilesWidget', {
+	// 	availableAudiences,
+	// 	configuredAudiences,
+	// 	hasMatchingAudience,
+	// 	availableAudiencesSynced,
+	// } );
+
+	log( 'audiences', {
+		configuredAudiences,
+		availableAudiences,
+		hasMatchingAudience,
+	} );
+
 	if ( ! hasMatchingAudience ) {
+		log( 'no matching audience found' );
 		return availableAudiencesSynced ? (
 			<NoAudienceBannerWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
 			/>
 		) : (
-			<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-				<div className="googlesitekit-widget-audience-tiles__body">
-					<Widget noPadding>
-						<AudienceTileLoading />
+			( () => {
+				log( 'showing loading state' );
+				return (
+					<Widget
+						className="googlesitekit-widget-audience-tiles"
+						noPadding
+					>
+						<div className="googlesitekit-widget-audience-tiles__body">
+							<Widget noPadding>
+								<AudienceTileLoading />
+							</Widget>
+							<Widget noPadding>
+								<AudienceTileLoading />
+							</Widget>
+						</div>
 					</Widget>
-					<Widget noPadding>
-						<AudienceTileLoading />
-					</Widget>
-				</div>
-			</Widget>
+				);
+			} )()
 		);
 	}
+
+	log( 'has matching audience' );
 
 	return (
 		<AudienceTiles

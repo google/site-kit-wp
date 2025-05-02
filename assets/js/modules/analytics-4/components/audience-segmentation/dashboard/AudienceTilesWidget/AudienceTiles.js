@@ -59,6 +59,12 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
 import { reportRowsWithSetValues } from '../../../../utils/report-rows-with-set-values';
+import { createLogger } from './logger';
+
+const log = createLogger( 'AudienceTiles', {
+	logOnlyOnce: true,
+	logDiff: true,
+} );
 
 const hasZeroDataForAudience = ( report, dimensionName ) => {
 	const audienceData = report?.rows?.find(
@@ -69,6 +75,8 @@ const hasZeroDataForAudience = ( report, dimensionName ) => {
 };
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
+	log( 'render' );
+
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
@@ -465,6 +473,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! topContentPageTitlesReportLoaded ||
 		isSyncingAvailableCustomDimensions;
 
+	log( 'loading states', {
+		loading,
+		widgetLoading,
+		reportLoaded,
+		totalPageviewsReportLoaded,
+		topCitiesReportLoaded,
+		topContentReportLoaded,
+		topContentPageTitlesReportLoaded,
+	} );
+
 	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
 	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
 	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
@@ -552,6 +570,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							return null;
 						}
 
+						const audienceTileData = getAudienceTileData(
+							audienceResourceName,
+							index
+						);
+
 						const {
 							audienceName,
 							audienceSlug,
@@ -568,7 +591,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 							topContentTitles,
 							isZeroData,
 							isPartialData,
-						} = getAudienceTileData( audienceResourceName, index );
+						} = audienceTileData;
+
+						if ( index === 0 ) {
+							log( 'audienceTileData', audienceTileData );
+						}
 
 						// Filter (not set) value from the top countries report if present.
 						const filteredTopCitiesRows = topCities?.rows
@@ -578,9 +605,20 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 						// Return loading tile if data is not yet loaded.
 						if (
 							loading ||
+							! topCitiesReportLoaded?.[ audienceResourceName ] ||
+							! topContentReportLoaded?.[
+								audienceResourceName
+							] ||
+							! topContentPageTitlesReportLoaded?.[
+								audienceResourceName
+							] ||
 							isZeroData === undefined ||
 							isPartialData === undefined
 						) {
+							log(
+								'showing \x1b[31mloading\x1b[0m tile',
+								audienceResourceName
+							);
 							return (
 								<Widget key={ audienceResourceName } noPadding>
 									<AudienceTileLoading />
@@ -605,6 +643,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 								/>
 							);
 						}
+
+						log(
+							'showing \x1b[32mloaded\x1b[0m tile',
+							audienceResourceName
+						);
 
 						return (
 							<AudienceTile

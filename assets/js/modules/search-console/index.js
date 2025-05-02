@@ -21,12 +21,12 @@
  */
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
-import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
+// import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	// AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	// AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
@@ -65,6 +65,7 @@ export const registerWidgets = ( widgets ) => {
 	);
 
 	// Register widget reliant on Analytics 4 (GA4).
+	/*
 	widgets.registerWidget(
 		'searchFunnelGA4',
 		{
@@ -79,6 +80,7 @@ export const registerWidgets = ( widgets ) => {
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
 	);
+	*/
 
 	/*
 	 * Key metrics widgets.
