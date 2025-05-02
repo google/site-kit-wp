@@ -44,7 +44,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm i -w assets -w tests/backstop -w storybook --include-workspace-root
+        run: npm i -w assets -w tests/backstop -w storybook -w tests/js --include-workspace-root
       - name: Run Backstopjs
         run: npm run test:visualtest
       - name: Upload artifacts
