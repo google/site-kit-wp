@@ -148,8 +148,9 @@ export default function WooCommerceRedirectModal( {
 
 		setIsSaving( 'primary' );
 		onDismiss?.();
-
-		navigateTo( googleForWooCommerceRedirectURI );
+		if ( ! isGoogleForWooCommerceAdsConnected ) {
+			navigateTo( googleForWooCommerceRedirectURI );
+		}
 	}, [
 		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
 		dismissNotification,
@@ -159,6 +160,7 @@ export default function WooCommerceRedirectModal( {
 		googleForWooCommerceRedirectURI,
 		viewContext,
 		trackEventLabel,
+		googleForWooCommerceRedirectURI,
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
