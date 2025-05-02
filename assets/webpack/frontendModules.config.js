@@ -76,14 +76,8 @@ module.exports = ( mode ) => ( {
 							configFile: false,
 							cacheDirectory: true,
 							presets: [
-								[
-									'@babel/preset-env',
-									{
-										targets: {
-											browsers: [ '> 0.25%', 'not dead' ],
-										},
-									},
-								],
+								'@wordpress/default',
+								'@babel/preset-react',
 							],
 						},
 					},
