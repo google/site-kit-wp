@@ -61,7 +61,7 @@ const siteKitPackageAliases = mapValues(
 
 module.exports = {
 	framework: '@storybook/react-webpack5',
-	stories: [ '../assets/js/**/*.stories.js' ],
+	stories: [ path.resolve( rootDir, 'assets/js/**/*.stories.js' ) ],
 	addons: [
 		'@storybook/addon-webpack5-compiler-babel',
 		'@storybook/addon-viewport',
@@ -98,45 +98,35 @@ module.exports = {
 			} ),
 		];
 
-		config.module.rules.push(
-			{
-				test: /\.scss$/,
-				use: [
-					MiniCssExtractPlugin.loader,
-					'css-loader',
-					{
-						loader: 'postcss-loader',
-						options: {
-							postcssOptions: {
-								config: rootDir + '/assets/postcss.config.js',
-							},
+		config.module.rules.push( {
+			test: /\.scss$/,
+			use: [
+				MiniCssExtractPlugin.loader,
+				'css-loader',
+				{
+					loader: 'postcss-loader',
+					options: {
+						postcssOptions: {
+							config: rootDir + '/assets/postcss.config.js',
 						},
 					},
-					{
-						loader: 'sass-loader',
-						options: {
-							implementation: require( 'sass' ),
-							additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
-							sassOptions: {
-								includePaths: [
-									path.resolve( rootDir, 'node_modules/' ),
-									path.resolve(
-										rootDir,
-										'assets/node_modules/'
-									),
-								],
-							},
+				},
+				{
+					loader: 'sass-loader',
+					options: {
+						implementation: require( 'sass' ),
+						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
+						sassOptions: {
+							includePaths: [
+								path.resolve( rootDir, 'node_modules/' ),
+								path.resolve( rootDir, 'assets/node_modules/' ),
+							],
 						},
 					},
-				],
-				include: rootDir,
-			},
-			{
-				test: /\.mjs$/,
-				include: /node_modules/,
-				type: 'javascript/auto',
-			}
-		);
+				},
+			],
+			include: rootDir,
+		} );
 
 		// exclude existing svg rule created by storybook before pushing custom rule
 		const fileLoaderRule = config.module.rules.find(

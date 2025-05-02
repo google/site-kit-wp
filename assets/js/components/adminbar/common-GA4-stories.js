@@ -198,6 +198,7 @@ export const setupAnalytics4GatheringData = (
 	const propertyID = properties[ 0 ]._id;
 	// Set the property creation timestamp to one and a half days ago, so that
 	// the property is considered to be in the gathering data state.
+	// eslint-disable-next-line sitekit/no-direct-date
 	const createTime = new Date(
 		Date.now() - DAY_IN_SECONDS * 1.5 * 1000
 	).toISOString();

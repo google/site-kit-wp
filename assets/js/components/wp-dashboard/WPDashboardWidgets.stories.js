@@ -39,7 +39,7 @@ import {
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 
 function Template( { setupRegistry, viewContext } ) {
@@ -106,6 +106,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 };
 
 ReadyWithActivateAnalyticsCTA.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
 	delay: 6000, // This extra delay is required to fix unstable VRTs.
 };

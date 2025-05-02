@@ -25,7 +25,7 @@ import {
 	setupSearchConsoleGatheringData,
 	setupSearchConsoleMockReports,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 

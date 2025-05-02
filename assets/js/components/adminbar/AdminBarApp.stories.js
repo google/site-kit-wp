@@ -27,7 +27,7 @@ import {
 	setupAnalytics4MockReports,
 	setupSearchConsoleZeroData,
 	setupAnalytics4ZeroData,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
@@ -56,7 +56,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Global/Admin Bar',
+	label: 'Global/Admin Bar', // eslint-disable-line sitekit/no-storybook-scenario-label
 	readySelector: '.googlesitekit-data-block',
 	delay: 250,
 };
