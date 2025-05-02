@@ -28,6 +28,7 @@ import {
 	commonActions,
 	createRegistryControl,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
@@ -165,39 +166,28 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		// This action is purely for testing, the value is typically handled
-		// as a side-effect from 'RECEIVE_SETTINGS' (see below).
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RECEIVE_ORIGINAL_USE_SNIPPET: {
-			const { originalUseSnippet } = payload;
-			return {
-				...state,
-				originalUseSnippet,
-			};
+			const { originalUseSnippet } = action.payload;
+			state.originalUseSnippet = originalUseSnippet;
+			break;
 		}
 
-		// This action is mainly handled via createSettingsStore, but here we
-		// need it to have the side effect of storing the original useSnippet.
 		case 'RECEIVE_GET_SETTINGS': {
-			const { response } = payload;
+			const { response } = action.payload;
 			const { useSnippet } = response;
 
-			// Only set original account status AND original useSnippet when it is really the first
-			// time that we load the settings on this pageload.
-			return {
-				...state,
-				...( undefined === state.originalUseSnippet && {
-					originalUseSnippet: useSnippet,
-				} ),
-			};
+			if ( state.originalUseSnippet === undefined ) {
+				state.originalUseSnippet = useSnippet;
+			}
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getOriginalUseSnippet() {
