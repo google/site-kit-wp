@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
 import {
 	act,
 	createTestRegistry,

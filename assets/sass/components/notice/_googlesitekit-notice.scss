@@ -134,6 +134,17 @@
 		}
 	}
 
+	&.googlesitekit-notice--success {
+
+		.googlesitekit-notice__icon {
+
+			svg {
+				height: 24px;
+				width: 24px;
+			}
+		}
+	}
+
 	&.googlesitekit-notice--info {
 		background-color: $c-surfaces-background;
 
