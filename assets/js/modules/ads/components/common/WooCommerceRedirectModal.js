@@ -146,19 +146,23 @@ export default function WooCommerceRedirectModal( {
 			trackEventLabel
 		);
 
-		setIsSaving( 'primary' );
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			setIsSaving( 'primary' );
+			navigateTo( googleForWooCommerceRedirectURI );
+		}
 		onDismiss?.();
-
-		navigateTo( googleForWooCommerceRedirectURI );
+		onClose?.();
 	}, [
 		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
 		dismissNotification,
 		setIsSaving,
 		onDismiss,
+		onClose,
 		navigateTo,
 		googleForWooCommerceRedirectURI,
 		viewContext,
 		trackEventLabel,
+		isGoogleForWooCommerceAdsConnected,
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
