@@ -35,14 +35,14 @@ import { ProgressBar, Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Badge from '../Badge';
-import SubtleNotification from '../notifications/SubtleNotification';
 import Link from '../Link';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import withIntersectionObserver from '../../util/withIntersectionObserver';
+import Notice from '../Notice';
 
 const SubtleNotificationWithIntersectionObserver =
-	withIntersectionObserver( SubtleNotification );
+	withIntersectionObserver( Notice );
 
 export default function FirstPartyModeToggle( { className } ) {
 	const viewContext = useViewContext();
@@ -151,6 +151,7 @@ export default function FirstPartyModeToggle( { className } ) {
 			</p>
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
+					type="warning"
 					title={ createInterpolateElement(
 						__(
 							'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
