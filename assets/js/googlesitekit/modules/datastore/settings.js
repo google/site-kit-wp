@@ -24,8 +24,10 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-const { createRegistrySelector, createRegistryControl } = Data;
+import {
+	createRegistrySelector,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import { CORE_MODULES } from './constants';
 import { createValidatedAction } from '../../data/utils';
 
@@ -121,6 +123,33 @@ export const controls = {
 };
 
 export const selectors = {
+	/**
+	 * Checks whether settings edit dependencies are currently loading for a module.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @param {string} slug Module slug.
+	 * @return {boolean?} Whether or not settings edit dependencies are currently loading for the module,
+	 *                    or `undefined` if the store doesn't exist.
+	 */
+	areSettingsEditDependenciesLoaded: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'slug is required.' );
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			const moduleSelectors = select( storeName );
+			if ( ! moduleSelectors ) {
+				return undefined;
+			}
+
+			return (
+				// If the module doesn't implement the selector, consider dependencies loaded,
+				! moduleSelectors.areSettingsEditDependenciesLoaded ||
+				// otherwise defer to the result of the selector.
+				!! moduleSelectors.areSettingsEditDependenciesLoaded()
+			);
+		}
+	),
+
 	/**
 	 * Checks whether changes are currently being submitted for a module.
 	 *

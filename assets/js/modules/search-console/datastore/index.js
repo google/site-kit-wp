@@ -19,17 +19,19 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import baseModuleStore from './base';
 import report from './report';
 import service from './service';
+import settings from './settings';
 import properties from './properties';
 
-const store = Data.combineStores(
+const store = combineStores(
 	baseModuleStore,
 	report,
 	service,
+	settings,
 	properties
 );
 

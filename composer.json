@@ -5,14 +5,14 @@
   "type": "wordpress-plugin",
   "homepage": "https://sitekit.withgoogle.com",
   "require-dev": {
-    "automattic/vipwpcs": "^2",
+    "automattic/vipwpcs": "^3",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.0",
     "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=5.2",
     "squizlabs/php_codesniffer": "^3.7",
-    "wp-coding-standards/wpcs": "^2",
+    "wp-coding-standards/wpcs": "^3",
     "wp-phpunit/wp-phpunit": ">=5.2",
     "yoast/phpunit-polyfills": "^2.0"
   },
@@ -20,15 +20,15 @@
     "php": ">=7.4",
     "ext-json": "*",
     "ext-openssl": "*",
-    "google/apiclient": "^2.14.0",
-    "google/apiclient-services": "^0.343.0",
+    "cweagans/composer-patches": "^1.7",
+    "google/apiclient": "^2.16",
     "google/apiclient-services-adsenselinks": "^0.1.0",
-    "guzzlehttp/guzzle": "^6.5.8",
+    "google/apiclient-services-subscribewithgoogle": "^0.1.0",
+    "guzzlehttp/guzzle": "^7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
-    "paragonie/random_compat": ">=2",
-    "phpseclib/phpseclib": ">=3.0.36"
+    "paragonie/random_compat": ">=2"
   },
   "autoload": {
     "psr-4": {
@@ -47,16 +47,29 @@
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "roots/wordpress-core-installer": true
+      "roots/wordpress-core-installer": true,
+      "cweagans/composer-patches": true
     }
   },
   "extra": {
-    "wordpress-install-dir": "vendor/roots/wordpress"
+    "wordpress-install-dir": "vendor/roots/wordpress",
+    "patches": {
+      "google/apiclient-services": {
+        "Fixes for empty filter": "patches/google-api-client-services-v0.355.0.patch"
+      }
+    }
   },
   "repositories": [
     {
       "type": "path",
       "url": "packages/apiclient-services-adsenselinks",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-subscribewithgoogle",
       "options": {
         "symlink": false
       }
@@ -71,7 +84,7 @@
     ],
     "prefix-dependencies": [
       "@composer --working-dir=php-scoper install",
-      "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
+      "@php -dxdebug.mode=off php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
       "@autoload-includes",
       "@autoload-third-party",
       "@composer dump-autoload --no-dev",

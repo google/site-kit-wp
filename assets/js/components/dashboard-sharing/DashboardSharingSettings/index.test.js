@@ -27,7 +27,7 @@ import {
 	provideModuleRegistrations,
 	provideSiteConnection,
 	provideUserInfo,
-	act,
+	waitFor,
 } from '../../../../../tests/js/test-utils';
 import DashboardSharingSettings from '.';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
@@ -44,31 +44,28 @@ describe( 'DashboardSharingSettings', () => {
 
 	describe( 'Single Admin Environment', () => {
 		it( 'should render the modules for dashboard sharing', () => {
-			act( () => {
-				provideModules( registry, modules );
-				provideModuleRegistrations( registry );
-				provideSiteConnection( registry, {
-					hasMultipleAdmins: false,
-				} );
-				provideUserInfo( registry );
-
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( sharingSettings );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveShareableRoles( roles );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
-
-				registry.dispatch( CORE_USER ).receiveCapabilities( {
-					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				} );
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( { ownerID: 1 } );
+			provideModules( registry, modules );
+			provideModuleRegistrations( registry );
+			provideSiteConnection( registry, {
+				hasMultipleAdmins: false,
 			} );
+			provideUserInfo( registry );
+
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveGetSharingSettings( sharingSettings );
+			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+			registry.dispatch( CORE_USER ).receiveCapabilities( {
+				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetSettings( { ownerID: 1 } );
+
 			const { container } = render( <DashboardSharingSettings />, {
 				registry,
 			} );
@@ -81,35 +78,37 @@ describe( 'DashboardSharingSettings', () => {
 			expect( container ).toHaveTextContent( 'Search Console' );
 		} );
 
-		it( 'should render the modules with user role select when the admin owns the modules', () => {
-			act( () => {
-				provideModules( registry, modules );
-				provideModuleRegistrations( registry );
-				provideSiteConnection( registry, {
-					hasMultipleAdmins: false,
-				} );
-				provideUserInfo( registry );
-
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( sharingSettings );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveShareableRoles( roles );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
-
-				registry.dispatch( CORE_USER ).receiveCapabilities( {
-					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				} );
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( { ownerID: 1 } );
+		it( 'should render the modules with user role select when the admin owns the modules', async () => {
+			provideModules( registry, modules );
+			provideModuleRegistrations( registry );
+			provideSiteConnection( registry, {
+				hasMultipleAdmins: false,
 			} );
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
+			provideUserInfo( registry );
+
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveGetSharingSettings( sharingSettings );
+			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+			registry.dispatch( CORE_USER ).receiveCapabilities( {
+				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetSettings( { ownerID: 1 } );
+
+			const { container, waitForRegistry } = render(
+				<DashboardSharingSettings />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
 
 			expect(
 				container.querySelector(
@@ -118,42 +117,46 @@ describe( 'DashboardSharingSettings', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not render sharing management for a single admin environment', () => {
-			act( () => {
-				provideModules( registry, modules );
-				provideModuleRegistrations( registry );
-				provideSiteConnection( registry, {
-					hasMultipleAdmins: false,
-				} );
-				provideUserInfo( registry );
-
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( sharingSettings );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveShareableRoles( roles );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
-
-				registry.dispatch( CORE_USER ).receiveCapabilities( {
-					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				} );
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetSettings( { ownerID: 1 } );
+		it( 'should not render sharing management for a single admin environment', async () => {
+			provideModules( registry, modules );
+			provideModuleRegistrations( registry );
+			provideSiteConnection( registry, {
+				hasMultipleAdmins: false,
 			} );
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
-			} );
+			provideUserInfo( registry );
 
-			expect( container ).not.toHaveTextContent(
-				'Who can manage view access'
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveGetSharingSettings( sharingSettings );
+			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+			registry.dispatch( CORE_USER ).receiveCapabilities( {
+				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetSettings( { ownerID: 1 } );
+
+			const { container, waitForRegistry } = render(
+				<DashboardSharingSettings />,
+				{
+					registry,
+				}
 			);
-			expect(
-				container.querySelector( '.mdc-select__native-control' )
-			).not.toBeInTheDocument();
+
+			await waitForRegistry();
+
+			await waitFor( () => {
+				expect( container ).not.toHaveTextContent(
+					'Who can manage view access'
+				);
+				expect(
+					container.querySelector( '.mdc-select__native-control' )
+				).not.toBeInTheDocument();
+			} );
 		} );
 	} );
 

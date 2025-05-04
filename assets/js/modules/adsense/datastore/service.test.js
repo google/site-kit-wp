@@ -20,10 +20,7 @@
  *
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
 import { MODULES_ADSENSE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -53,10 +50,6 @@ describe( 'module/adsense service store', () => {
 
 	beforeAll( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterAll( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'selectors', () => {

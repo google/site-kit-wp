@@ -33,7 +33,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
 const reportOptions = {
@@ -83,19 +83,6 @@ Loading.args = {
 		] );
 	},
 };
-Loading.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSourceWidget/Loading',
-};
-Loading.decorators = [
-	( Story ) => {
-		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
-		return (
-			<div className="googlesitekit-vrt-animation-paused">
-				<Story />
-			</div>
-		);
-	},
-];
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -110,9 +97,6 @@ ZeroData.args = {
 			}
 		);
 	},
-};
-ZeroData.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSourceWidget/ZeroData',
 };
 
 export const Error = Template.bind( {} );
@@ -139,10 +123,6 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSource/Error',
-	delay: 250,
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -167,11 +147,6 @@ InsufficientPermissions.args = {
 			reportOptions,
 		] );
 	},
-};
-
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/TopConvertingTrafficSource/InsufficientPermissions',
-	delay: 250,
 };
 
 export default {

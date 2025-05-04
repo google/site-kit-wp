@@ -84,8 +84,9 @@ class SettingsTest extends SettingsTestCase {
 				'adsConversionIDMigratedAtMs'      => 0,
 				'adsLinked'                        => false,
 				'adsLinkedLastSyncedAt'            => 0,
-				'availableAudiences'               => null,
-				'availableAudiencesLastSyncedAt'   => 0,
+				'detectedEvents'                   => array(),
+				'lostConversionEventsLastUpdateAt' => 0,
+				'newConversionEventsLastUpdateAt'  => 0,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -139,7 +140,7 @@ class SettingsTest extends SettingsTestCase {
 		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
-			function( $caps, $cap ) {
+			function ( $caps, $cap ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap ) {
 					return array( 'manage_options' );
 				}
@@ -170,5 +171,4 @@ class SettingsTest extends SettingsTestCase {
 
 		return $tests;
 	}
-
 }

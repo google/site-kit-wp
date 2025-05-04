@@ -75,20 +75,12 @@ describe( 'User Input Settings', () => {
 
 		await pageWait();
 
-		await step( 'go to preview page', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--next'
-			);
-		} );
-
-		await pageWait();
-
 		await step(
 			'wait for settings submission',
 			Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__preview button',
-					{ text: /save/i }
+					'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--complete',
+					{ text: /complete setup/i }
 				),
 				page.waitForNavigation(),
 			] )
@@ -99,7 +91,7 @@ describe( 'User Input Settings', () => {
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
+				'.googlesitekit-widget--kmAnalyticsTopReturningVisitorPages'
 			)
 		);
 	}
@@ -147,6 +139,19 @@ describe( 'User Input Settings', () => {
 					),
 				} );
 			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/core/user/data/audience-settings'
+					)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [],
+					} ),
+				} );
+			} else if (
 				url.match(
 					'/google-site-kit/v1/modules/search-console/data/searchanalytics?'
 				)
@@ -169,8 +174,6 @@ describe( 'User Input Settings', () => {
 				)
 			) {
 				request.continue();
-			} else if ( url.match( 'user/data/survey-timeout' ) ) {
-				request.respond( { status: 200 } );
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
@@ -270,11 +273,11 @@ describe( 'User Input Settings', () => {
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-user-input__notification'
+				'.googlesitekit-acr-subtle-notification'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+					'.googlesitekit-acr-subtle-notification .googlesitekit-button-icon--spinner'
 				),
 				page.waitForNavigation(),
 			] );

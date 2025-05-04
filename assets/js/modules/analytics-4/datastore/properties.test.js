@@ -24,14 +24,13 @@ import { cloneDeep } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
@@ -68,9 +67,15 @@ describe( 'modules/analytics-4 properties', () => {
 	const containerDestinationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
 	);
+	const setGoogleTagIDMismatchEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
+	);
+
+	const gtmAccountID = '6065484567';
+	const gtmContainerID = '98369876';
 
 	const containerDestinationsMock =
-		fixtures.containerDestinations[ 6065484567 ][ 98369876 ];
+		fixtures.containerDestinations[ gtmAccountID ][ gtmContainerID ];
 
 	const googleTagContainerDestinationIDs = containerDestinationsMock.map(
 		// eslint-disable-next-line sitekit/acronym-case
@@ -78,7 +83,7 @@ describe( 'modules/analytics-4 properties', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -90,11 +95,7 @@ describe( 'modules/analytics-4 properties', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -112,7 +113,10 @@ describe( 'modules/analytics-4 properties', () => {
 						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 					),
 					{
-						body: [],
+						body: {
+							accountSummaries: [],
+							nextPageToken: null,
+						},
 						status: 200,
 					}
 				);
@@ -412,16 +416,19 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAccountProperty', () => {
-			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const accountID =
+				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 			const propertyID =
-				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
+				fixtures.accountSummaries.accountSummaries[ 1 ]
+					.propertySummaries[ 0 ]._id;
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties(
-						fixtures.accountSummaries[ 1 ].propertySummaries,
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries,
 						{ accountID }
 					);
 				registry
@@ -467,9 +474,11 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'matchAndSelectProperty', () => {
-			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const accountID =
+				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 			const propertyID =
-				fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id;
+				fixtures.accountSummaries.accountSummaries[ 1 ]
+					.propertySummaries[ 0 ]._id;
 			const webDataStreamID = '4000';
 			const measurementID = fixtures.webDataStreams.find(
 				( stream ) => stream._propertyID === propertyID
@@ -483,7 +492,8 @@ describe( 'modules/analytics-4 properties', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties(
-						fixtures.accountSummaries[ 1 ].propertySummaries,
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries,
 						{ accountID }
 					);
 				registry
@@ -598,7 +608,7 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should return a property object when a property is found', async () => {
-				const measurementID = '1A2BCD346E';
+				const measurementID = 'G-1A2BCD346E';
 				const matchedProperty = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchPropertyByMeasurementID( propertyIDs, measurementID );
@@ -653,9 +663,9 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect( store.getState().settings ).toMatchObject(
-					fixtures.googleTagSettings
-				);
+				expect(
+					store.getState().googleTagSettings[ measurementID ]
+				).toMatchObject( fixtures.googleTagSettings );
 			} );
 
 			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
@@ -703,11 +713,19 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'setHasMismatchedGoogleTagID', () => {
 			it( 'sets the value of hasMismatchedGoogleTagID', async () => {
+				fetchMock.post( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveHasMismatchGoogleTagID( false );
+
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				// It is false by default.
 				expect( hasMismatchedGoogleTagID ).toBe( false );
 
 				await registry
@@ -881,6 +899,84 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagLastSyncedAtMs );
 			} );
 
+			it( 'should only execute once if multiple calls are made in quick succession', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID: gtmAccountID,
+					googleTagContainerID: gtmContainerID,
+					googleTagID: containerMock.tagIds[ 0 ],
+					googleTagLastSyncedAtMs: 0,
+				};
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					...ga4Settings,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagContainer( containerMock, {
+						measurementID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagContainerDestinations(
+						containerDestinationsMock,
+						{
+							gtmAccountID,
+							gtmContainerID,
+						}
+					);
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated when `syncGoogleTagSettings()` is called.
+					},
+					status: 200,
+				} );
+
+				await Promise.all( [
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.syncGoogleTagSettings(),
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.syncGoogleTagSettings(),
+				] );
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagContainerDestinationIDs,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+			} );
+
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
@@ -975,6 +1071,12 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+				global._googlesitekitModulesData = {
+					'analytics-4': {
+						tagIDMismatch: false,
+					},
+				};
+
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 				} );
@@ -1059,11 +1161,25 @@ describe( 'modules/analytics-4 properties', () => {
 						.isWebDataStreamAvailable()
 				).toBe( false );
 
+				// Initially undefined.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getModuleData();
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.hasMismatchedGoogleTagID()
 				).toBe( false );
+
+				delete global._googlesitekitModulesData;
 			} );
 
 			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
@@ -1119,6 +1235,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.postOnce( setGoogleTagIDMismatchEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncGoogleTagSettings();
@@ -1127,7 +1248,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1210,8 +1331,13 @@ describe( 'modules/analytics-4 properties', () => {
 				fetchMock.postOnce( ga4SettingsEndpoint, {
 					body: {
 						...ga4Settings,
-						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated when `syncGoogleTagSettings()` is called.
 					},
+					status: 200,
+				} );
+
+				fetchMock.postOnce( setGoogleTagIDMismatchEndpoint, {
+					body: true,
 					status: 200,
 				} );
 
@@ -1327,6 +1453,36 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'getPropertySummaries', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				const accountSummariesEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+				);
+
+				fetchMock.get( accountSummariesEndpoint, {
+					body: fixtures.accountSummaries,
+					status: 200,
+				} );
+
+				const accountID = '12345';
+				const initialPropertySummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertySummaries( accountID );
+				expect( initialPropertySummaries ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertySummaries( accountID );
+
+				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint, {
+					body: {
+						data: {
+							nextPageToken: '',
+						},
+					},
+				} );
+			} );
+
 			it( 'should return an empty array if no properties are present for the account', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -1343,12 +1499,14 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( fixtures.accountSummaries );
 
-				const accountID = fixtures.accountSummaries[ 1 ]._id;
+				const accountID =
+					fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 				const propertySummaries = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPropertySummaries( accountID );
 				expect( propertySummaries ).toEqual(
-					fixtures.accountSummaries[ 1 ].propertySummaries
+					fixtures.accountSummaries.accountSummaries[ 1 ]
+						.propertySummaries
 				);
 			} );
 		} );
@@ -1452,6 +1610,90 @@ describe( 'modules/analytics-4 properties', () => {
 				const property = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getProperty( propertyID );
+				expect( property ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getGoogleTagSettings', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( googleTagSettingsEndpoint, {
+					body: fixtures.googleTagSettings,
+					status: 200,
+				} );
+
+				const measurementID = 'abcd';
+				const initialTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				expect( initialTagID ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagSettings( measurementID );
+				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
+					query: { measurementID },
+				} );
+
+				const googleTagSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				expect( googleTagSettings ).toEqual(
+					fixtures.googleTagSettings
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a network request if the google tag settings are already present', async () => {
+				const measurementID = 'abcd';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagSettings( fixtures.googleTagSettings, {
+						measurementID,
+					} );
+
+				const googleTagSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagSettings( measurementID );
+
+				expect( fetchMock ).not.toHaveFetched(
+					googleTagSettingsEndpoint
+				);
+				expect( googleTagSettings ).toEqual(
+					fixtures.googleTagSettings
+				);
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				const measurementID = 'abcd';
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagSettings( measurementID );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const property = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagSettings( measurementID );
 				expect( property ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
@@ -1625,23 +1867,43 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'hasMismatchedGoogleTagID', () => {
-			it( 'returns a specific key in state', () => {
+			it( 'should use a resolver to source value from global', async () => {
+				global._googlesitekitModulesData = {
+					'analytics-4': {
+						tagIDMismatch: false,
+					},
+				};
+
+				const initialHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( initialHasMismatchedGoogleTagID ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getModuleData();
+
 				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				// It is false by default.
-				expect( hasMismatchedGoogleTagID ).toBe( false );
+				expect( hasMismatchedGoogleTagID ).toEqual( false );
 
+				delete global._googlesitekitModulesData;
+			} );
+
+			it( 'should not source data from global if the value is already present', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setHasMismatchedGoogleTagID( true );
+					.receiveHasMismatchGoogleTagID( true );
 
-				const updatedHasMismatchedGoogleTagID = registry
+				const hasMismatchedGoogleTagID = registry
 					.select( MODULES_ANALYTICS_4 )
 					.hasMismatchedGoogleTagID();
 
-				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+				expect( hasMismatchedGoogleTagID ).toBe( true );
 			} );
 		} );
 
@@ -1667,7 +1929,7 @@ describe( 'modules/analytics-4 properties', () => {
 		} );
 
 		describe( 'isLoadingPropertySummaries', () => {
-			const accounts = fixtures.accountSummaries;
+			const accounts = fixtures.accountSummaries.accountSummaries;
 			const properties = accounts[ 1 ].propertySummaries;
 			const accountID = accounts[ 1 ]._id;
 			const propertyID = properties[ 0 ]._id;
@@ -1689,7 +1951,10 @@ describe( 'modules/analytics-4 properties', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accounts );
+					.receiveGetAccountSummaries( {
+						accountSummaries: accounts,
+						nextPageToken: null,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getAccountSummaries', [] );

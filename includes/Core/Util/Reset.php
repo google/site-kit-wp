@@ -88,7 +88,7 @@ class Reset {
 	public function register() {
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -112,11 +112,13 @@ class Reset {
 		$this->delete_options( 'site' );
 		$this->delete_user_options( 'site' );
 		$this->delete_post_meta( 'site' );
+		$this->delete_term_meta( 'site' );
 
 		if ( $this->context->is_network_mode() ) {
 			$this->delete_options( 'network' );
 			$this->delete_user_options( 'network' );
 			$this->delete_post_meta( 'network' );
+			$this->delete_term_meta( 'network' );
 		}
 
 		wp_cache_flush();
@@ -220,6 +222,41 @@ class Reset {
 	}
 
 	/**
+	 * Deletes all Site Kit term meta settings.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_term_meta( $scope ) {
+		global $wpdb;
+
+		$sites = array();
+		if ( 'network' === $scope ) {
+			$sites = get_sites(
+				array(
+					'fields' => 'ids',
+					'number' => 9999999,
+				)
+			);
+		} else {
+			$sites[] = get_current_blog_id();
+		}
+
+		foreach ( $sites as $site_id ) {
+			$prefix = $wpdb->get_blog_prefix( $site_id );
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$prefix}termmeta WHERE `meta_key` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					static::KEY_PATTERN
+				)
+			);
+		}
+	}
+
+	/**
 	 * Gets related REST routes.
 	 *
 	 * @since 1.3.0
@@ -227,7 +264,7 @@ class Reset {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_setup = function() {
+		$can_setup = function () {
 			return current_user_can( Permissions::SETUP );
 		};
 
@@ -237,7 +274,7 @@ class Reset {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$this->all();
 							$this->maybe_hard_reset();
 
@@ -315,5 +352,4 @@ class Reset {
 		$reset_persistent = new Reset_Persistent( $this->context );
 		$reset_persistent->all();
 	}
-
 }

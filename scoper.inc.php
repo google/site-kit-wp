@@ -15,9 +15,7 @@ $google_services = implode(
 	'|',
 	array(
 		'Adsense',
-		'Analytics',
 		'AnalyticsData',
-		'AnalyticsReporting',
 		'GoogleAnalyticsAdmin',
 		'PagespeedInsights',
 		'PeopleService',
@@ -46,10 +44,12 @@ return array(
 					'vendor-bin',
 				)
 			)
+			->path( '#^firebase/php-jwt#' )
 			->path( '#^google/apiclient/#' )
 			->path( '#^google/auth/#' )
 			->path( '#^guzzlehttp/#' )
 			->path( '#^monolog/#' )
+			->path( '#^phpseclib/phpseclib/phpseclib/#' )
 			->path( '#^psr/#' )
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
@@ -88,6 +88,11 @@ return array(
 			->name( '#^autoload.php$#' )
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
+		// Temporary SwG client.
+		Finder::create()
+		->files()
+		->name( '#\.php$#' )
+		->in( 'vendor/google/apiclient-services-subscribewithgoogle' ),
 
 		// Temporary support for `GoogleAnalyticsAdminV1alphaAdSenseLink` as it doesn't exist in the API client yet.
 		Finder::create()
@@ -96,33 +101,31 @@ return array(
 			->in( 'vendor/google/apiclient-services-adsenselinks' ),
 	),
 	'files-whitelist'            => array(
-
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
 	'patchers'                   => array(
-		function( $file_path, $prefix, $contents ) {
+		function ( $file_path, $prefix, $contents ) {
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
 
-			if ( preg_match( '#google/apiclient/src/Google/Http/REST\.php$#', $file_path ) ) {
-				$contents = str_replace( "\\$prefix\\intVal", '\\intval', $contents );
-			}
-			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) || false !== strpos( $file_path, 'vendor/google/auth/' ) ) {
-				// Use modified prefix just for this patch.
-				$s_prefix = str_replace( '\\', '\\\\', $prefix );
-				$contents = str_replace( "'\\\\GuzzleHttp\\\\ClientInterface", "'\\\\" . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-				$contents = str_replace( '"\\\\GuzzleHttp\\\\ClientInterface', '"\\\\' . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-				$contents = str_replace( '"GuzzleHttp\\\\ClientInterface', '"' . $s_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
-			}
+			// Use double backslashes for class names in strings.
+			$doubled_backslash_prefix = str_replace( '\\', '\\\\', $prefix );
+
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
+				$contents = str_replace( "'\\\\GuzzleHttp\\\\ClientInterface", "'\\\\" . $doubled_backslash_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
-				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
+			}
+			if ( false !== strpos( $file_path, 'vendor/google/auth/' ) ) {
+				$contents = str_replace( "'GuzzleHttp\\\\ClientInterface", "'" . $doubled_backslash_prefix . '\\\\GuzzleHttp\\\\ClientInterface', $contents );
 			}
 			if ( false !== strpos( $file_path, 'apiclient-services-adsenselinks' ) ) {
 				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
 				$contents = preg_replace( '/"(Google_[^"]+)"/', '\\1::class', $contents );
+			}
+			if ( false !== strpos( $file_path, 'phpseclib' ) ) {
+				$contents = str_replace( "'phpseclib3\\\\", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3\\\\', $contents );
+				$contents = str_replace( "'\\\\phpseclib3", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3', $contents );
 			}
 
 			if (

@@ -22,10 +22,11 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( {} ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
@@ -45,15 +46,33 @@ function Template( {} ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsView',
-	delay: 250,
+Default.scenario = {};
+Default.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'With ICE enabled';
+IceEnabled.args = {
+	enhancedConversionTracking: true,
+};
+IceEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+
+export const FPMEnabled = Template.bind( null );
+FPMEnabled.storyName = 'With First-party mode Enabled';
+FPMEnabled.args = {
+	firstPartyMode: true,
+};
+FPMEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
 };
 
 export default {
 	title: 'Modules/Ads/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -66,6 +85,20 @@ export default {
 				registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 					conversionID: 'AW-123456789',
 				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setConversionTrackingEnabled(
+						args.enhancedConversionTracking || false
+					);
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: args.firstPartyMode || false,
+						isFPMHealthy: args.firstPartyMode || false,
+						isScriptAccessEnabled: args.firstPartyMode || false,
+					} );
 			};
 
 			return (
@@ -79,17 +112,14 @@ export default {
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
-PaxConnected.scenario = {
-	label: 'Modules/Ads/Settings/SettingsView/PAX',
-	delay: 250,
-};
+PaxConnected.scenario = {};
 PaxConnected.parameters = {
-	features: [ 'adsPax' ],
+	features: [ 'adsPax', 'firstPartyMode' ],
 };
 PaxConnected.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Unset the value set in the prrevious scenario.
+			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
@@ -99,10 +129,7 @@ PaxConnected.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);

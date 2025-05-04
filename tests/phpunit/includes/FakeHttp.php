@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests;
 use Google\Site_Kit_Dependencies\Google\Client as Google_Client;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Client;
 use Google\Site_Kit_Dependencies\GuzzleHttp\HandlerStack;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 class FakeHttp {
@@ -34,7 +35,7 @@ class FakeHttp {
 		// so we wrap it here.
 		$config['handler'] = HandlerStack::create(
 			$handler ?: function () {
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 		// The default stack includes support for redirects which will fail if response is not a Promise.

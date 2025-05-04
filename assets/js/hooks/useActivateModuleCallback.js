@@ -24,7 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -32,9 +32,9 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { setItem } from '../googlesitekit/api/cache';
 import { trackEvent } from '../util/tracking';
 import useViewContext from './useViewContext';
-const { useSelect, useDispatch } = Data;
 
 /**
  * Returns a callback to activate a module. If the call to activate the module is successful, navigate to the reauthentication URL.
@@ -67,6 +67,8 @@ export default function useActivateModuleCallback( moduleSlug ) {
 				'activate_module',
 				moduleSlug
 			);
+
+			await setItem( 'module_setup', moduleSlug, { ttl: 300 } );
 
 			navigateTo( response.moduleReauthURL );
 		} else {

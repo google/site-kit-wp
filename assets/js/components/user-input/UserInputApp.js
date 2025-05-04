@@ -20,12 +20,12 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../../material-components';
@@ -34,9 +34,24 @@ import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
-const { useSelect } = Data;
+import {
+	FORM_USER_INPUT_QUESTION_NUMBER,
+	getUserInputQuestions,
+} from './util/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function UserInputApp() {
+	const questionNumber =
+		useSelect( ( select ) =>
+			select( CORE_FORMS ).getValue(
+				FORM_USER_INPUT_QUESTION_NUMBER,
+				'questionNumber'
+			)
+		) || 1;
+
+	const questions = getUserInputQuestions();
+	const questionTitle = questions[ questionNumber - 1 ]?.title || '';
+
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
 		// as it's called/used by child components of this component,
@@ -72,30 +87,27 @@ export default function UserInputApp() {
 								<Grid className="googlesitekit-user-input__header">
 									<Row>
 										<Cell
-											lgSize={ 6 }
-											mdSize={ 8 }
-											smSize={ 4 }
+											size={ 12 }
+											className="googlesitekit-user-input__question-number"
 										>
+											{ sprintf(
+												/*  translators: %d is replaced with the current page number (1, 2, or 3 etc.). */
+												__(
+													'%d / 3',
+													'google-site-kit'
+												),
+												questionNumber
+											) }
+										</Cell>
+									</Row>
+
+									<Row>
+										<Cell lgSize={ 12 }>
 											<PageHeader
 												className="googlesitekit-heading-3 googlesitekit-user-input__heading"
-												title={ __(
-													'Customize Site Kit to match your goals',
-													'google-site-kit'
-												) }
+												title={ questionTitle }
 												fullWidth
 											/>
-										</Cell>
-										<Cell
-											lgSize={ 6 }
-											mdSize={ 8 }
-											smSize={ 4 }
-										>
-											<span className="googlesitekit-user-input__subtitle">
-												{ __(
-													'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site',
-													'google-site-kit'
-												) }
-											</span>
 										</Cell>
 									</Row>
 								</Grid>

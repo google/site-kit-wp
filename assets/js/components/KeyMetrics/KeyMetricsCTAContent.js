@@ -31,16 +31,22 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import {
+	useBreakpoint,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_SMALL,
+} from '../../hooks/useBreakpoint';
 import { WEEK_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { Cell, Grid, Row } from '../../material-components';
-import GhostCardsSVG from './GhostCards';
-
-const { useDispatch, useSelect } = Data;
+import KeyMetricsSetupDesktopSVG from './KeyMetricsSetupDesktopSVG';
+import KeyMetricsSetupSmallDesktopSVG from './KeyMetricsSetupSmallDesktopSVG';
+import KeyMetricsSetupTabletSVG from './KeyMetricsSetupTabletSVG';
+import KeyMetricsSetupMobileSVG from './KeyMetricsSetupMobileSVG';
+import { useWindowWidth } from '../../hooks/useWindowSize';
 
 export default function KeyMetricsCTAContent( {
 	className,
@@ -51,8 +57,27 @@ export default function KeyMetricsCTAContent( {
 } ) {
 	const trackingRef = useRef();
 	const breakpoint = useBreakpoint();
+	const onlyWidth = useWindowWidth();
 	const viewContext = useViewContext();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	let isTabletBreakpoint =
+		breakpoint === BREAKPOINT_TABLET && onlyWidth < 960;
+	// onlyWidth is used directly here since BREAKPOINT_XLARGE only
+	// accounts for screens that are over 1280px and current layout graphic should
+	// show on the screens starting from size of 1280px and over.
+	const isDesktopBreakpoint = onlyWidth >= 1280;
+	// Also here, BREAKPOINT_DESKTOP accounts for screens over 960, in this particular case
+	// graphic should be shown on screens starting from 960px.
+	let isSmallDesktopBreakpoint = onlyWidth >= 960 && onlyWidth < 1280;
+
+	if ( ! ga4Connected ) {
+		// When 4 metrics were selected and then GA4 was disconnected
+		// the full width disconnected banner can display desktop layout
+		// graphic, since it has very short text.
+		isTabletBreakpoint =
+			breakpoint === BREAKPOINT_TABLET && onlyWidth < 800;
+		isSmallDesktopBreakpoint = onlyWidth >= 800 && onlyWidth < 1280;
+	}
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -101,30 +126,45 @@ export default function KeyMetricsCTAContent( {
 		>
 			<Grid>
 				<Row>
-					<Cell smSize={ 6 } mdSize={ 5 } lgSize={ 6 }>
+					<Cell
+						smSize={ 5 }
+						mdSize={ 6 }
+						lgSize={ 5 }
+						className="googlesitekit-widget-key-metrics-content__wrapper"
+					>
 						<div className="googlesitekit-widget-key-metrics-text__wrapper">
 							<h3 className="googlesitekit-publisher-win__title">
 								{ title }
 							</h3>
 							<p>{ description }</p>
 						</div>
-						{ isMobileBreakpoint && (
-							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
-								<GhostCardsSVG />
-							</Cell>
-						) }
 						<div className="googlesitekit-widget-key-metrics-actions__wrapper">
 							{ actions }
 						</div>
+						{ isTabletBreakpoint && (
+							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+								<KeyMetricsSetupTabletSVG />
+							</Cell>
+						) }
+						{ isMobileBreakpoint && (
+							<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+								<KeyMetricsSetupMobileSVG />
+							</Cell>
+						) }
 					</Cell>
-					{ ! isMobileBreakpoint && (
+					{ isSmallDesktopBreakpoint && (
+						<Cell className="googlesitekit-widget-key-metrics-svg__wrapper">
+							<KeyMetricsSetupSmallDesktopSVG />
+						</Cell>
+					) }
+					{ isDesktopBreakpoint && (
 						<Cell
 							className="googlesitekit-widget-key-metrics-svg__wrapper"
 							smSize={ 6 }
 							mdSize={ 3 }
 							lgSize={ 6 }
 						>
-							<GhostCardsSVG />
+							<KeyMetricsSetupDesktopSVG />
 						</Cell>
 					) }
 				</Row>

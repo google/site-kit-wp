@@ -25,7 +25,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
@@ -40,7 +39,6 @@ describe( 'modules/ads adblocker', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		mockDetectAnyAdblocker.mockReset();
 	} );
 
@@ -78,7 +76,7 @@ describe( 'modules/ads adblocker', () => {
 
 				expect(
 					registry.select( MODULES_ADS ).getAdBlockerWarningMessage()
-				).toContain( 'to set up Ads' );
+				).toContain( 'To set up Ads' );
 			} );
 
 			it( 'returns correct message if ad blocker is active and module is connected', () => {

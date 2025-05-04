@@ -1,1 +1,6 @@
-[ "adsPax", "audienceSegmentation", "consentModeSwitzerland", "conversionInfra", "gm3Components" ]
+[
+  "adsPax",
+  "firstPartyMode",
+  "privacySandboxModule",
+  "rrmModule"
+]

@@ -25,80 +25,45 @@
 import {
 	createTestRegistry,
 	render,
-	provideModules,
 	provideUserAuthentication,
 	provideSiteInfo,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { EDIT_SCOPE, MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
-import { properties } from '../../../datastore/__fixtures__';
+import { EDIT_SCOPE } from '../../../datastore/constants';
 import SetupBanner from './SetupBanner';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-width-utils';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 
 describe( 'SetupBanner', () => {
-	const propertyID = '1000';
-	const webDataStreamID = '2000';
+	const SetupBannerComponent = withNotificationComponentProps(
+		'enhanced-measurement-notification'
+	)( SetupBanner );
 
-	let enabledSettingsMock;
-	let disabledSettingsMock;
 	let registry;
+	let originalViewportWidth;
 
 	beforeEach( () => {
-		enabledSettingsMock = {
-			fileDownloadsEnabled: null,
-			name: 'properties/1000/dataStreams/2000/enhancedMeasurementSettings',
-			outboundClicksEnabled: null,
-			pageChangesEnabled: null,
-			scrollsEnabled: null,
-			searchQueryParameter: 'q,s,search,query,keyword',
-			siteSearchEnabled: null,
-			streamEnabled: true,
-			uriQueryParameter: null,
-			videoEngagementEnabled: null,
-		};
-
-		disabledSettingsMock = {
-			...enabledSettingsMock,
-			streamEnabled: false,
-		};
-
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			propertyID,
-			webDataStreamID,
+		// Test survey triggering.
+		provideSiteInfo( registry, {
+			usingProxy: true,
 		} );
+		mockSurveyEndpoints();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetEnhancedMeasurementSettings( disabledSettingsMock, {
-				propertyID,
-				webDataStreamID,
-			} );
+		// Test that the SVG image is not rendered within JS snapshots in the below tests.
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
+	} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetProperty( properties[ 0 ], { propertyID } );
-
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
-			{
-				body: JSON.stringify( [
-					ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-				] ),
-				status: 200,
-			}
-		);
+	afterEach( () => {
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render correctly when the user does have the edit scope granted', async () => {
@@ -106,7 +71,7 @@ describe( 'SetupBanner', () => {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
 
-		const { container, getByText } = render( <SetupBanner />, {
+		const { container, getByText } = render( <SetupBannerComponent />, {
 			registry,
 		} );
 
@@ -122,13 +87,7 @@ describe( 'SetupBanner', () => {
 	} );
 
 	it( 'should render correctly when the user does not have the edit scope granted', () => {
-		mockSurveyEndpoints();
-
-		provideSiteInfo( registry, {
-			usingProxy: true,
-		} );
-
-		const { container, getByText } = render( <SetupBanner />, {
+		const { container, getByText } = render( <SetupBannerComponent />, {
 			registry,
 		} );
 

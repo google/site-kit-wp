@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
 import {
@@ -42,8 +42,6 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 import { forwardRef } from 'react';
-
-const { useSelect, useDispatch } = Data;
 
 const SettingsNotice = forwardRef( ( props, ref ) => {
 	const {
@@ -94,8 +92,11 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 					<Button
 						tertiary
 						onClick={ () => {
-							dismissItem( dismiss );
-							dismissCallback();
+							if ( typeof dismiss === 'string' ) {
+								dismissItem( dismiss );
+							}
+
+							dismissCallback?.();
 						} }
 					>
 						{ dismissLabel }
@@ -121,6 +122,7 @@ SettingsNotice.propTypes = {
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
 	OuterCTA: PropTypes.elementType,
+	dismiss: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	dismissCallback: PropTypes.func,
 };

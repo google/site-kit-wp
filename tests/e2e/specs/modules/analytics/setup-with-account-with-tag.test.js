@@ -1,3 +1,5 @@
+/* eslint complexity: [ "error", 16 ] */
+
 /**
  * WordPress dependencies
  */
@@ -14,6 +16,7 @@ import {
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	step,
 	useRequestInterception,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
@@ -28,6 +31,21 @@ async function proceedToSetUpAnalytics() {
 			res.url().match( 'analytics-4/data/account-summaries' )
 		),
 	] );
+}
+
+async function assertSetupSuccessful() {
+	await step( 'see setup success notification', async () => {
+		// While a 10s wait has not been observed, the default 5s timeout often failed here.
+		await page.waitForSelector( '.googlesitekit-subtle-notification', {
+			timeout: 10_000,
+		} );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-subtle-notification__content p',
+			{
+				text: /Congrats on completing the setup for Analytics!/i,
+			}
+		);
+	} );
 }
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
@@ -132,6 +150,16 @@ describe( 'setting up the Analytics module with an existing account and existing
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [
+							fixtures.availableAudiences[ 2 ].name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					} ),
+				} );
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
 				request.respond( {
 					status: 200,
@@ -201,19 +229,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 			{ text: /test ga4 webdatastream/i }
 		);
 
-		await expect( page ).toClick( 'button', {
+		await expect( page ).toClick( 'button:not([disabled])', {
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await assertSetupSuccessful();
 	} );
 
 	it( 'does allow Analytics to be set up with an existing tag if it is a GA4 tag', async () => {
@@ -225,18 +245,10 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toClick( 'button', {
+		await expect( page ).toClick( 'button:not([disabled])', {
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await assertSetupSuccessful();
 	} );
 } );

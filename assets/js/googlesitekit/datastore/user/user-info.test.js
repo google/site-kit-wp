@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
@@ -56,7 +55,6 @@ describe( 'core/user userInfo', () => {
 
 	afterEach( () => {
 		delete global[ userDataGlobal ];
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -217,6 +215,21 @@ describe( 'core/user userInfo', () => {
 				} );
 			} );
 
+			it( 'accepts an optional errorRedirectURL to add as a query parameter', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveConnectURL( userData.connectURL );
+				const errorRedirectURL =
+					'http://example.com/test/error-redirect/';
+				const connectURL = registry
+					.select( CORE_USER )
+					.getConnectURL( { errorRedirectURL } );
+
+				expect( connectURL ).toMatchQueryParameters( {
+					errorRedirect: errorRedirectURL,
+				} );
+			} );
+
 			it( 'does not add query parameters when no options are passed', () => {
 				registry
 					.dispatch( CORE_USER )
@@ -224,6 +237,7 @@ describe( 'core/user userInfo', () => {
 				const connectURL = registry.select( CORE_USER ).getConnectURL();
 				expect( connectURL ).not.toContain( '&additional_scopes' );
 				expect( connectURL ).not.toContain( '&redirect' );
+				expect( connectURL ).not.toContain( '&errorRedirect' );
 			} );
 		} );
 

@@ -23,10 +23,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Badge from '../Badge';
-const { useSelect } = Data;
 
 export default function KeyMetricsNewBadge() {
 	// This is necessary to conditionally render the badge
@@ -51,12 +50,16 @@ export default function KeyMetricsNewBadge() {
 		}
 	}, [ initialKeyMetricsSetupCompleted, isKeyMetricsSetupCompleted ] );
 
+	// In new ACR design "New" badge is shown only initially before
+	// KMW is setup, afterwards, "New" badge is not visible anymore.
+	if ( isKeyMetricsSetupCompleted || ! isNew ) {
+		return null;
+	}
+
 	return (
-		isNew && (
-			<Badge
-				className="googlesitekit-new-badge"
-				label={ __( 'New', 'google-site-kit' ) }
-			/>
-		)
+		<Badge
+			className="googlesitekit-new-badge"
+			label={ __( 'New', 'google-site-kit' ) }
+		/>
 	);
 }

@@ -28,16 +28,18 @@
 
 	.mdc-checkbox__content {
 		padding-top: 9px;
+
+		&:has(.googlesitekit-badge) {
+			padding-top: 8px;
+		}
 	}
 
 	label {
 		cursor: pointer;
-		font-family: $f-secondary;
 		font-size: $fs-label-md;
 		font-weight: $fw-medium;
 		line-height: $lh-label-md;
 		position: relative;
-		width: 100%;
 
 		&:hover {
 			text-decoration: none;

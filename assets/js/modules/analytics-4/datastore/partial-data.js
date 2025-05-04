@@ -25,15 +25,17 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
-
-const { createRegistrySelector } = Data;
 
 export const RESOURCE_TYPE_AUDIENCE = 'audience';
 export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
@@ -53,16 +55,11 @@ const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
 	controlCallback: ( { resourceSlug, resourceType, date } ) =>
-		API.set(
-			'modules',
-			'analytics-4',
-			'save-resource-data-availability-date',
-			{
-				resourceSlug,
-				resourceType,
-				date,
-			}
-		),
+		set( 'modules', 'analytics-4', 'save-resource-data-availability-date', {
+			resourceSlug,
+			resourceType,
+			date,
+		} ),
 	argsToParams: ( resourceSlug, resourceType, date ) => ( {
 		resourceSlug,
 		resourceType,
@@ -182,7 +179,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getResourceDataAvailabilityDates() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if (
 			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDates() !==
@@ -203,8 +200,7 @@ const baseResolvers = {
 	},
 
 	*getResourceDataAvailabilityDate( resourceSlug, resourceType ) {
-		const { select, __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
+		const { select, resolveSelect } = yield commonActions.getRegistry();
 
 		if (
 			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDate(
@@ -215,8 +211,8 @@ const baseResolvers = {
 			return;
 		}
 
-		const resourceAvailabilityDates = yield Data.commonActions.await(
-			__experimentalResolveSelect(
+		const resourceAvailabilityDates = yield commonActions.await(
+			resolveSelect(
 				MODULES_ANALYTICS_4
 			).getResourceDataAvailabilityDates()
 		);
@@ -226,17 +222,20 @@ const baseResolvers = {
 			undefined
 		) {
 			// Ensure the settings are loaded.
-			yield Data.commonActions.await(
-				__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			yield commonActions.await(
+				Promise.all( [
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				] )
 			);
 
 			// Validate if the resourceSlug is a valid resource.
 			switch ( resourceType ) {
 				case RESOURCE_TYPE_AUDIENCE:
-					yield Data.commonActions.await(
-						__experimentalResolveSelect(
+					yield commonActions.await(
+						resolveSelect(
 							MODULES_ANALYTICS_4
-						).getAvailableAudiences()
+						).getOrSyncAvailableAudiences()
 					);
 
 					if (
@@ -271,8 +270,8 @@ const baseResolvers = {
 					return;
 			}
 
-			yield Data.commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			yield commonActions.await(
+				resolveSelect( CORE_USER ).getAuthentication()
 			);
 
 			// Return early if user is not authenticated.
@@ -285,8 +284,8 @@ const baseResolvers = {
 				return;
 			}
 
-			const reportArgs = yield Data.commonActions.await(
-				__experimentalResolveSelect(
+			const reportArgs = yield commonActions.await(
+				resolveSelect(
 					MODULES_ANALYTICS_4
 				).getPartialDataReportOptions( resourceSlug, resourceType )
 			);
@@ -296,10 +295,8 @@ const baseResolvers = {
 				return;
 			}
 
-			const report = yield Data.commonActions.await(
-				__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
-					reportArgs
-				)
+			const report = yield commonActions.await(
+				resolveSelect( MODULES_ANALYTICS_4 ).getReport( reportArgs )
 			);
 
 			const hasReportError = !! select(
@@ -337,13 +334,10 @@ const baseResolvers = {
 	},
 
 	*getPartialDataReportOptions() {
-		const { __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
+		const { resolveSelect } = yield commonActions.getRegistry();
 
-		yield Data.commonActions.await(
-			__experimentalResolveSelect(
-				MODULES_ANALYTICS_4
-			).getPropertyCreateTime()
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getPropertyCreateTime()
 		);
 	},
 };
@@ -439,14 +433,14 @@ const baseSelectors = {
 	 *
 	 * @since 1.127.0
 	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {string} audienceSlug Audience slug.
+	 * @param {Object} state                Data store's state.
+	 * @param {string} audienceResourceName Audience resource name.
 	 * @return {boolean} Returns TRUE if partial data, otherwise FALSE or undefined while loading.
 	 */
 	isAudiencePartialData: createRegistrySelector(
-		( select ) => ( state, audienceSlug ) =>
+		( select ) => ( state, audienceResourceName ) =>
 			select( MODULES_ANALYTICS_4 ).isResourcePartialData(
-				audienceSlug,
+				audienceResourceName,
 				RESOURCE_TYPE_AUDIENCE
 			)
 	),
@@ -510,6 +504,8 @@ const baseSelectors = {
 				return undefined;
 			}
 
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			const startDate = getDateString( new Date( propertyCreateTime ) );
 			const endDate = select( CORE_USER ).getReferenceDate();
 
@@ -555,7 +551,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchSaveResourceDataAvailabilityDateStore, {
+const store = combineStores( fetchSaveResourceDataAvailabilityDateStore, {
 	actions: baseActions,
 	controls: baseControls,
 	initialState: baseInitialState,

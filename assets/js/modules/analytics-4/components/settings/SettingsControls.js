@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
@@ -35,12 +35,10 @@ import {
 	WebDataStreamSelect,
 	WebDataStreamNameInput,
 } from '../common';
-import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
-const { useSelect } = Data;
 
 export default function SettingsControls( props ) {
 	const { hasModuleAccess } = props;
@@ -89,10 +87,6 @@ export default function SettingsControls( props ) {
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }
-
-			<SettingsEnhancedMeasurementSwitch
-				hasModuleAccess={ hasModuleAccess }
-			/>
 		</div>
 	);
 }

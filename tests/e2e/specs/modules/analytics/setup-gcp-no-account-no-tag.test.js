@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 16 ] */
+
 /**
  * WordPress dependencies
  */
@@ -83,20 +85,12 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 						fixtures.defaultEnhancedMeasurementSettings
 					),
 				} );
-			} else if ( url.match( 'analytics/data/report?' ) ) {
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
 			} else if ( url.match( 'analytics-4/data/report?' ) ) {
 				request.respond( {
 					status: 200,
 					body: '{}',
 				} );
-			} else if (
-				url.match( 'pagespeed-insights/data/pagespeed' ) ||
-				url.match( 'analytics/data/goals' )
-			) {
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'analytics-4/data/create-property' ) ) {
 				request.respond( {
@@ -112,6 +106,16 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 				request.respond( {
 					body: JSON.stringify( fixtures.googleTagSettings ),
 					status: 200,
+				} );
+			} else if ( url.match( 'user/data/audience-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [
+							fixtures.availableAudiences[ 2 ].name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					} ),
 				} );
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
@@ -229,11 +233,9 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
+		await page.waitForSelector( '.googlesitekit-subtle-notification' );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}

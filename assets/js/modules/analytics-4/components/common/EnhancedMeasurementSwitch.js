@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
@@ -43,14 +43,16 @@ import {
 import SupportLink from '../../../../components/SupportLink';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
+import Tick from '../../../../../svg/icons/tick.svg';
 
 export default function EnhancedMeasurementSwitch( {
+	className,
 	onClick,
 	disabled = false,
 	loading = false,
 	formName = ENHANCED_MEASUREMENT_FORM,
 	isEnhancedMeasurementAlreadyEnabled = false,
+	showTick = false,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
@@ -94,6 +96,7 @@ export default function EnhancedMeasurementSwitch( {
 		<div
 			className={ classnames(
 				'googlesitekit-analytics-enable-enhanced-measurement',
+				className,
 				{
 					'googlesitekit-analytics-enable-enhanced-measurement--loading':
 						loading,
@@ -107,9 +110,17 @@ export default function EnhancedMeasurementSwitch( {
 				/>
 			) }
 			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
-				<p className="googlesitekit-margin-top-0">
-					Enhanced measurement is enabled for this web data stream
-				</p>
+				<div className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label">
+					{ showTick && (
+						<div className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-tick">
+							<Tick />
+						</div>
+					) }
+					{ __(
+						'Enhanced measurement is enabled for this web data stream',
+						'google-site-kit'
+					) }
+				</div>
 			) }
 			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
@@ -123,7 +134,7 @@ export default function EnhancedMeasurementSwitch( {
 					hideLabel={ false }
 				/>
 			) }
-			<p>
+			<p className="googlesitekit-module-settings-group__helper-text">
 				{ createInterpolateElement(
 					__(
 						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
@@ -148,4 +159,5 @@ EnhancedMeasurementSwitch.propTypes = {
 	disabled: PropTypes.bool,
 	loading: PropTypes.bool,
 	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
+	showTick: PropTypes.bool,
 };

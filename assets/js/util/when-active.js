@@ -19,10 +19,9 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { hyphenCaseToPascalCase } from '../googlesitekit/data/transform-case';
-const { useSelect } = Data;
 
 /**
  * Higher-Order Component to render wrapped components when selected module is active and connected.

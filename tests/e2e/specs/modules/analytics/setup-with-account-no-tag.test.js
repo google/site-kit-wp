@@ -69,9 +69,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await page.setRequestInterception( true );
 
 		useRequestInterception( ( request ) => {
-			const measurementID = 'G-2B7M8YQ1K6';
-			const containerMock = fixtures.container[ measurementID ];
-
 			if (
 				request
 					.url()
@@ -106,11 +103,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					status: 200,
 					body: JSON.stringify( {} ),
 				} );
-			} else if ( request.url().match( 'analytics/data/report?' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [] ),
-				} );
 			} else if (
 				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
 			) {
@@ -128,6 +120,16 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( fixtures.conversionEvents ),
+				} );
+			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [
+							fixtures.availableAudiences[ 2 ].name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					} ),
 				} );
 			} else if (
 				request
@@ -178,9 +180,31 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {
+				const requestURL = new URL( request.url() );
+				const destinationID =
+					requestURL.searchParams.get( 'destinationID' );
+				const googleTagID = global.googlesitekit.data
+					.select( 'modules/analytics-4' )
+					.googleTagID();
+				const container = {
+					...fixtures.containerE2E[ 'G-500' ],
+					tagIds: [ destinationID, googleTagID ],
+				};
 				request.respond( {
-					body: JSON.stringify( containerMock ),
+					body: JSON.stringify( container ),
 					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				const googleTagID = global.googlesitekit.data
+					.select( 'modules/analytics-4' )
+					.googleTagID();
+				// eslint-disable-next-line sitekit/acronym-case
+				const destination = { destinationId: googleTagID };
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [ destination ] ),
 				} );
 			} else {
 				request.continue();
@@ -308,11 +332,15 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} );
 
 			await step( 'redirect and check notification bar', async () => {
+				await page.waitForNavigation();
 				await page.waitForSelector(
-					'.googlesitekit-publisher-win--win-success'
+					'.googlesitekit-subtle-notification__content p',
+					{
+						timeout: 5_000,
+					}
 				);
 				await expect( page ).toMatchElement(
-					'.googlesitekit-publisher-win__title',
+					'.googlesitekit-subtle-notification__content p',
 					{
 						text: /Congrats on completing the setup for Analytics!/i,
 					}

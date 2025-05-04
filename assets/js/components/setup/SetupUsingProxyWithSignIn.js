@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 16 ] */
+
 /**
  * External dependencies
  */
@@ -29,13 +31,13 @@ import {
 	Fragment,
 	useCallback,
 } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
@@ -64,7 +66,7 @@ import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
-const { useSelect, useDispatch } = Data;
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -148,7 +150,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 				if ( ! error ) {
 					await trackEvent(
-						viewContext,
+						`${ viewContext }_setup`,
 						'start_setup_with_analytics'
 					);
 
@@ -157,11 +159,29 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 
 			if ( proxySetupURL ) {
-				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
+				await Promise.all( [
+					// Cache the start of the user setup journey.
+					// This will be used for event tracking logic after successful setup.
+					setItem( 'start_user_setup', true ),
+					trackEvent(
+						`${ viewContext }_setup`,
+						'start_user_setup',
+						'proxy'
+					),
+				] );
 			}
 
 			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
+				await Promise.all( [
+					// Cache the start of the site setup journey.
+					// This will be used for event tracking logic after successful setup.
+					setItem( 'start_site_setup', true ),
+					trackEvent(
+						`${ viewContext }_setup`,
+						'start_site_setup',
+						'proxy'
+					),
+				] );
 			}
 
 			if ( moduleReauthURL && proxySetupURL ) {
@@ -207,8 +227,12 @@ export default function SetupUsingProxyWithSignIn() {
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 			punycode.toUnicode( new URL( siteURL ).hostname )
 		);
+		// Note: This is referencing a button labelled "Sign in with Google"
+		// in the Site Kit UI, not referencing the "Sign in with Google" service.
+		//
+		// Do not use `_x( 'Sign in with Google', 'Service name', 'google-site-kit' )` for Sign in with Google text here.
 		description = __(
-			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.',
+			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click “Sign in with Google“ below to generate new credentials.',
 			'google-site-kit'
 		);
 	} else if (
@@ -388,8 +412,9 @@ export default function SetupUsingProxyWithSignIn() {
 																		! complete
 																	}
 																>
-																	{ __(
+																	{ _x(
 																		'Sign in with Google',
+																		'Prompt to authenticate Site Kit with Google Account',
 																		'google-site-kit'
 																	) }
 																</Button>

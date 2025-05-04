@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_COUNTRIES,
@@ -39,9 +39,9 @@ import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '../../../../components/KeyMetrics';
-const { useSelect, useInViewSelect } = Data;
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { reportRowsWithSetValues } from '../../utils/report-rows-with-set-values';
 
 function TopCountriesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -62,11 +62,15 @@ function TopCountriesWidget( { Widget } ) {
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
-	const topCountriesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topCountriesReportOptions )
+	const topCountriesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport(
+				topCountriesReportOptions
+			),
+		[ topCountriesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -84,7 +88,6 @@ function TopCountriesWidget( { Widget } ) {
 	);
 
 	const { rows = [], totals = [] } = topCountriesReport || {};
-
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
@@ -116,7 +119,7 @@ function TopCountriesWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_COUNTRIES }
 			loading={ loading }
-			rows={ rows }
+			rows={ reportRowsWithSetValues( rows ) }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }

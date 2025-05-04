@@ -46,7 +46,7 @@ import {
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
 import DateMarker from './DateMarker';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -58,10 +58,8 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import { stringToDate, getDateString } from '../../util/date-range';
-import { getLocale } from '../../util';
+import { stringToDate, getDateString, getLocale } from '../../util';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
 	const {
@@ -236,6 +234,8 @@ export default function GoogleChart( props ) {
 
 	// Only use markers if the date is within the current date range.
 	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
+		// Valid use of `new Date()` with an argument.
+		// eslint-disable-next-line sitekit/no-direct-date
 		return isDateWithinRange( new Date( dateMarker.date ) );
 	} );
 
@@ -262,6 +262,8 @@ export default function GoogleChart( props ) {
 
 		// Add the dotted line and tooltip for each date marker.
 		dateMarkersInRange.forEach( ( dateMarker, index ) => {
+			// Valid use of `new Date()` with an argument.
+			// eslint-disable-next-line sitekit/no-direct-date
 			const dateFromMarker = new Date( dateMarker.date );
 
 			const chartLine = document.getElementById(

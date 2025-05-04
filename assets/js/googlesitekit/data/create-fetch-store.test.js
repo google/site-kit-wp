@@ -30,9 +30,9 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
-import { subscribeUntil, unsubscribeFromAll } from '../../../../tests/js/utils';
+import { get, setUsingCache } from 'googlesitekit-api';
+import { combineStores } from 'googlesitekit-data';
+import { subscribeUntil } from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
 import { createErrorStore } from './create-error-store';
 
@@ -51,7 +51,7 @@ const STORE_PARAMS = {
 	},
 	controlCallback: ( params ) => {
 		const { aParam, objParam } = params;
-		return API.get( 'core', 'test', 'some-data', {
+		return get( 'core', 'test', 'some-data', {
 			aParam,
 			objParam,
 		} );
@@ -76,7 +76,7 @@ describe( 'createFetchStore store', () => {
 	let store;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -90,11 +90,7 @@ describe( 'createFetchStore store', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -231,7 +227,7 @@ describe( 'createFetchStore store', () => {
 				beforeEach( () => {
 					registry = createRegistry();
 
-					storeDefinition = Data.combineStores(
+					storeDefinition = combineStores(
 						createFetchStore( STORE_PARAMS ),
 						createErrorStore( TEST_STORE )
 					);

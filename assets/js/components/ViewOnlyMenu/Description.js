@@ -20,12 +20,12 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -36,7 +36,7 @@ import {
 import { trackEvent } from '../../util';
 import Link from '../../components/Link';
 import useViewContext from '../../hooks/useViewContext';
-const { useDispatch, useSelect } = Data;
+import { setItem } from '../../googlesitekit/api/cache';
 
 export default function Description() {
 	const viewContext = useViewContext();
@@ -61,11 +61,16 @@ export default function Description() {
 		async ( event ) => {
 			event.preventDefault();
 
-			await trackEvent(
-				`${ viewContext }_headerbar_viewonly`,
-				'start_user_setup',
-				proxySetupURL ? 'proxy' : 'custom-oauth'
-			);
+			await Promise.all( [
+				// Cache the start of the user setup journey.
+				// This will be used for event tracking logic after successful setup.
+				setItem( 'start_user_setup', true ),
+				trackEvent(
+					`${ viewContext }_headerbar_viewonly`,
+					'start_user_setup',
+					proxySetupURL ? 'proxy' : 'custom-oauth'
+				),
+			] );
 
 			navigateTo( proxySetupURL );
 		},
@@ -114,7 +119,11 @@ export default function Description() {
 			<p>{ description }</p>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
-					{ __( 'Sign in with Google', 'google-site-kit' ) }
+					{ _x(
+						'Sign in with Google',
+						'Service name',
+						'google-site-kit'
+					) }
 				</Button>
 			) }
 		</li>

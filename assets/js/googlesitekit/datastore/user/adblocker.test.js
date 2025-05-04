@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
@@ -47,7 +46,6 @@ describe( 'core/user adblocker', () => {
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		mockDetectAnyAdblocker.mockReset();
 	} );
 

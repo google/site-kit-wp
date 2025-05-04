@@ -19,9 +19,10 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '../../data/create-error-store';
 import adblocker from './adblocker';
+import audienceSettings from './audience-settings';
 import authentication from './authentication';
 import { CORE_USER } from './constants';
 import dateRange from './date-range';
@@ -38,11 +39,13 @@ import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
+import conversionReportingSettings from './conversion-reporting-settings';
 
-const store = Data.combineStores(
-	Data.commonStore,
+const store = combineStores(
+	commonStore,
 	createErrorStore( CORE_USER ),
 	adblocker,
+	audienceSettings,
 	authentication,
 	dateRange,
 	disconnect,
@@ -57,7 +60,8 @@ const store = Data.combineStores(
 	surveys,
 	tracking,
 	userInfo,
-	userInputSettings
+	userInputSettings,
+	conversionReportingSettings
 );
 
 export const {

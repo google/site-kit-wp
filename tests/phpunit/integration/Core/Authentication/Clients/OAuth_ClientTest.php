@@ -19,11 +19,13 @@ use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Query;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
@@ -86,24 +88,26 @@ class OAuth_ClientTest extends TestCase {
 			$client->get_client(),
 			function ( Request $request ) use ( $activity_metrics ) {
 				if ( 0 !== strpos( $request->getUri(), 'https://oauth2.googleapis.com/token' ) ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				$body = Query::parse( $request->getBody() );
 
 				// Ensure the token refresh request contains the set of active consumers.
 				if ( $activity_metrics->get_for_refresh_token()['active_consumers'] !== $body['active_consumers'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'access_token' => 'new-test-access-token',
-							'expires_in'   => 3599,
-							'token_type'   => 'Bearer',
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
 						)
 					)
 				);
@@ -326,9 +330,10 @@ class OAuth_ClientTest extends TestCase {
 		$user_options = new User_Options( $context );
 		$client       = new OAuth_Client( $context, null, $user_options );
 
-		$base_scopes        = $client->get_required_scopes();
-		$post_auth_redirect = 'http://example.com/test/redirect/url';
-		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
+		$base_scopes              = $client->get_required_scopes();
+		$post_auth_redirect       = 'http://example.com/test/redirect/url';
+		$post_auth_error_redirect = 'http://example.com/test/redirect/error/url';
+		$authentication_url       = $client->get_authentication_url( $post_auth_redirect, $post_auth_error_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 
@@ -350,7 +355,7 @@ class OAuth_ClientTest extends TestCase {
 		// Does not include any saved additional scopes.
 		$saved_extra_scopes = array( 'http://example.com/saved/extra-scope' );
 		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $saved_extra_scopes );
-		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $post_auth_error_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
@@ -363,7 +368,7 @@ class OAuth_ClientTest extends TestCase {
 			'http://example.com/foo/bar',
 			'http://example.com/bar/baz',
 		);
-		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $extra_scopes );
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $post_auth_error_redirect, $extra_scopes );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/v2/auth?', $authentication_url );
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
@@ -373,6 +378,9 @@ class OAuth_ClientTest extends TestCase {
 
 		// Verify the notification query parameter has been added to the redirect URL.
 		$this->assertEquals( add_query_arg( 'notification', 'authentication_success', $post_auth_redirect ), $user_options->get( OAuth_Client::OPTION_REDIRECT_URL ) );
+
+		// Verify the error redirect is saved.
+		$this->assertEquals( $post_auth_error_redirect, $user_options->get( OAuth_Client::OPTION_ERROR_REDIRECT_URL ) );
 	}
 
 	public function test_get_authentication_url__with_additional_scopes() {
@@ -387,7 +395,7 @@ class OAuth_ClientTest extends TestCase {
 			'https://example.com/test/scope/c',
 		);
 
-		$authentication_url = $client->get_authentication_url( '', $additional_scopes );
+		$authentication_url = $client->get_authentication_url( '', '', $additional_scopes );
 
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$requested_scopes = explode( ' ', $params['scope'] );
@@ -462,23 +470,25 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'emailAddresses' => array(
-								array( 'value' => 'fresh@foo.com' ),
-							),
-							'photos'         => array(
-								array( 'url' => 'https://example.com/fresh.jpg' ),
-							),
-							'names'          => array(
-								array( 'displayName' => 'Dr Funkenstein' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
 						)
 					)
 				);
@@ -525,23 +535,25 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'emailAddresses' => array(
-								array( 'value' => 'fresh@foo.com' ),
-							),
-							'photos'         => array(
-								array( 'url' => 'https://example.com/fresh.jpg' ),
-							),
-							'names'          => array(
-								array( 'displayName' => 'Dr Funkenstein' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
 						)
 					)
 				);
@@ -557,6 +569,107 @@ class OAuth_ClientTest extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			// Verify the redirect URL is preserved, including the original notification query parameter.
 			$this->assertEquals( $success_redirect, $redirect->get_location() );
+		}
+	}
+
+	public function test_authorize_user__transient_storage_prevents_duplicate_setups() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$transients   = new Transients( $context );
+
+		// Set up test data.
+		$this->fake_site_connection();
+		$_GET['code'] = 'test-code';
+		$code_hash    = md5( 'test-code' );
+
+		// FIRST AUTHORIZATION ATTEMPT.
+
+		$client           = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
+		$success_redirect = admin_url( 'success-redirect' );
+		$client->get_authentication_url( $success_redirect );
+
+		// Mock Google client for token fetching.
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
+			function ( Request $request ) {
+				$url = parse_url( $request->getUri() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'test@example.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/photo.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Test User' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )
+							->willReturn(
+								array(
+									'access_token'  => 'test-access-token',
+									'refresh_token' => 'test-refresh-token',
+									'expires_in'    => 3600,
+								)
+							);
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		// First run should complete the auth flow and store the redirect URL in transients.
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$redirect_url = $redirect->get_location();
+			$this->assertStringStartsWith( "$success_redirect?", $redirect_url );
+		}
+
+		// Verify the redirect URL was stored in transients.
+		$stored_redirect = $transients->get( $code_hash );
+		$this->assertEquals( $redirect_url, $stored_redirect, 'The redirect URL should be stored in transients with the correct hash' );
+
+		// SECOND AUTHORIZATION ATTEMPT.
+
+		// Create a new client instance to test the second attempt.
+		$client2 = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
+		$client2->get_authentication_url( $success_redirect );
+
+		// For the second client, we can verify it never calls `fetchAccessTokenWithAuthCode`
+		// by setting up a mock that will fail the test if called.
+		$google_client_mock2 = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+
+		$google_client_mock2->expects( $this->never() )
+			->method( 'fetchAccessTokenWithAuthCode' );
+
+		$this->force_set_property( $client2, 'google_client', $google_client_mock2 );
+
+		// Now call `authorize_user` a second time.
+		try {
+			$client2->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException on second attempt!' );
+		} catch ( RedirectException $redirect2 ) {
+			// Verify the stored URL is used for the redirect.
+			$this->assertEquals( $stored_redirect, $redirect2->get_location() );
 		}
 	}
 
@@ -577,8 +690,8 @@ class OAuth_ClientTest extends TestCase {
 			return $method->invoke( $client, $args );
 		};
 
-		$map_meta_cap = function( $user_id ) {
-			return function( $caps, $cap, $uid ) use ( $user_id ) {
+		$map_meta_cap = function ( $user_id ) {
+			return function ( $caps, $cap, $uid ) use ( $user_id ) {
 				if ( Permissions::MANAGE_OPTIONS === $cap && $uid === $user_id ) {
 					return array( 'manage_options' );
 				}
@@ -628,10 +741,10 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 				// Return a failing response
-				return new Response( 500 );
+				return new FulfilledPromise( new Response( 500 ) );
 			}
 		);
 
@@ -666,22 +779,24 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUri() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'emailAddresses' => array(
-								array( 'value' => 'fresh@foo.com' ),
-							),
-							'photos'         => array(
-								array( 'url' => 'https://example.com/fresh.jpg' ),
-							),
-							'names'          => array(
-								array( 'displayName' => 'Dr Funkenstein' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
 						)
 					)
 				);
@@ -703,23 +818,6 @@ class OAuth_ClientTest extends TestCase {
 
 		// This ensures the previous defer was properly restored.
 		$this->assertTrue( $google_client_mock->shouldDefer() );
-	}
-
-	public function test_using_proxy() {
-		$this->setExpectedDeprecated( OAuth_Client::class . '::using_proxy' );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$client  = new OAuth_Client( $context );
-
-		// Use proxy by default.
-		$this->assertTrue( $client->using_proxy() );
-
-		// Don't use proxy when regular OAuth client ID is used.
-		$this->fake_site_connection();
-		$this->assertFalse( $client->using_proxy() );
-
-		// Use proxy when proxy site ID is used.
-		$this->fake_proxy_site_connection();
-		$this->assertTrue( $client->using_proxy() );
 	}
 
 	public function test_get_proxy_permissions_url() {

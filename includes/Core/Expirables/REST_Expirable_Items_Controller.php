@@ -22,7 +22,7 @@ use WP_REST_Server;
 /**
  * Class for handling expirable items rest routes.
  *
- * @since n.e.x.t
+ * @since 1.128.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class REST_Expirable_Items_Controller {
 	/**
 	 * Expirable_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 * @var Expirable_Items
 	 */
 	protected $expirable_items;
@@ -39,7 +39,7 @@ class REST_Expirable_Items_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param Expirable_Items $expirable_items Expirable items instance.
 	 */
@@ -50,7 +50,7 @@ class REST_Expirable_Items_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 */
 	public function register() {
 		add_filter(
@@ -76,12 +76,12 @@ class REST_Expirable_Items_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_manage_expirable_item = function() {
+		$can_manage_expirable_item = function () {
 			return current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 

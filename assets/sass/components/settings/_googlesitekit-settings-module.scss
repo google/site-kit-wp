@@ -54,8 +54,6 @@
 		.googlesitekit-settings-module__status-icon--warning {
 			background-color: $c-white;
 			color: $c-selective-yellow;
-			height: 26px;
-			width: 26px;
 		}
 
 		.googlesitekit-settings-module__content {
@@ -70,7 +68,9 @@
 		}
 
 		.googlesitekit-settings-module__content--open {
+			border: none;
 			display: block;
+			margin-top: -10px; // Remove some default duplicated <Grid> padding gap between header and content
 		}
 
 		.googlesitekit-settings-module__heading {
@@ -91,7 +91,7 @@
 		.googlesitekit-settings-module__heading-icon {
 			height: auto;
 			margin-right: $grid-gap-phone;
-			width: 24px;
+			width: 40px;
 		}
 
 		.googlesitekit-settings-module__heading-badges {
@@ -113,9 +113,24 @@
 			border-bottom: 1px solid $c-mercury;
 			margin-bottom: 1em;
 
-			&:last-child {
+			&:last-child,
+			&:has(+ .googlesitekit-module-settings-group) {
 				border-bottom: none;
 				margin-bottom: 0;
+			}
+		}
+
+		.googlesitekit-settings-module__fields-group--read-only {
+			border: none;
+
+			& > span {
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
+
+			.mdc-text-field-helper-text {
+				color: $c-surfaces-on-background-variant;
 			}
 		}
 
@@ -133,6 +148,11 @@
 			display: flex;
 			flex-wrap: wrap;
 			margin: 0;
+		}
+
+		.googlesitekit-error-notice__icon {
+			height: 32px;
+			width: 32px;
 		}
 
 		.googlesitekit-error-notice__retry-button + .googlesitekit-settings-module__meta-items {
@@ -179,6 +199,12 @@
 				letter-spacing: $ls-s;
 				line-height: $lh-body-md;
 				margin: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				.mdc-linear-progress {
+					margin: 8px 0;
+				}
 			}
 
 			.googlesitekit-settings-module__meta-item-data--wrap {
@@ -284,9 +310,13 @@
 			}
 
 			.mdc-button {
-				background-color: $c-surfaces-surface-2;
-				color: $c-surfaces-on-surface;
+				color: $c-surfaces-inverse-on-surface;
 				font-weight: $fw-medium;
+			}
+
+			.mdc-button:disabled {
+				background-color: $c-interactive-disable-container;
+				color: $c-interactive-on-disable-container;
 			}
 
 			.googlesitekit-settings-module__status {

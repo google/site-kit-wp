@@ -24,33 +24,62 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, commonActions } = Data;
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, dismissedItems ) {
-	return {
-		...state,
-		dismissedItems: Array.isArray( dismissedItems ) ? dismissedItems : [],
-	};
-}
+const reducerCallback = createReducer( ( state, dismissedItems ) => {
+	state.dismissedItems = Array.isArray( dismissedItems )
+		? dismissedItems
+		: [];
+} );
 
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
+		get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
 	reducerCallback,
+} );
+
+const fetchRemoveDismissedItemsStore = createFetchStore( {
+	baseName: 'removeDismissedItems',
+	controlCallback: ( { slugs } ) => {
+		return set(
+			'core',
+			'user',
+			'dismissed-items',
+			{
+				slugs,
+			},
+			{ method: 'DELETE' }
+		);
+	},
+	reducerCallback,
+	argsToParams: ( slugs ) => {
+		return { slugs };
+	},
+	validateParams: ( { slugs } ) => {
+		invariant( Array.isArray( slugs ), 'slugs must be an array.' );
+		invariant(
+			slugs.every( ( slug ) => typeof slug === 'string' ),
+			'All slugs must be strings.'
+		);
+	},
 } );
 
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
 	controlCallback: ( { slug, expiresInSeconds } ) =>
-		API.set( 'core', 'user', 'dismiss-item', {
+		set( 'core', 'user', 'dismiss-item', {
 			slug,
 			expiration: expiresInSeconds,
 		} ),
@@ -69,6 +98,7 @@ const fetchDismissItemStore = createFetchStore( {
 
 const baseInitialState = {
 	dismissedItems: undefined,
+	isDismissingItems: {},
 };
 
 const baseActions = {
@@ -85,7 +115,8 @@ const baseActions = {
 	dismissItem: createValidatedAction(
 		( slug, options = {} ) => {
 			const { expiresInSeconds = 0 } = options;
-			invariant( slug, 'A tour slug is required to dismiss a tour.' );
+			invariant( slug, 'A slug is required to dismiss an item.' );
+			invariant( typeof slug === 'string', 'A slug must be a string.' );
 			invariant(
 				Number.isInteger( expiresInSeconds ),
 				'expiresInSeconds must be an integer.'
@@ -93,12 +124,70 @@ const baseActions = {
 		},
 		function* ( slug, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
-			return yield fetchDismissItemStore.actions.fetchDismissItem(
-				slug,
-				expiresInSeconds
+
+			const registry = yield commonActions.getRegistry();
+
+			registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
+
+			const { response, error } =
+				yield fetchDismissItemStore.actions.fetchDismissItem(
+					slug,
+					expiresInSeconds
+				);
+
+			registry.dispatch( CORE_USER ).setIsItemDimissing( slug, false );
+
+			return { response, error };
+		}
+	),
+
+	/**
+	 * Removes dismissed items by their slugs.
+	 *
+	 * @since 1.133.0
+	 *
+	 * @param {...string} slugs Dismissed item slugs to remove.
+	 * @return {Object} Redux-style action.
+	 */
+	removeDismissedItems: createValidatedAction(
+		( ...slugs ) => {
+			invariant(
+				slugs.length > 0,
+				'At least one slug must be provided.'
+			);
+			invariant(
+				slugs.every( ( slug ) => typeof slug === 'string' ),
+				'All slugs must be strings.'
+			);
+		},
+		function ( ...slugs ) {
+			return fetchRemoveDismissedItemsStore.actions.fetchRemoveDismissedItems(
+				slugs
 			);
 		}
 	),
+	setIsItemDimissing( slug, isDismissing ) {
+		return {
+			payload: { slug, isDismissing },
+			type: 'SET_IS_ITEM_DISMISSING',
+		};
+	},
+};
+
+const baseReducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case 'SET_IS_ITEM_DISMISSING':
+			const { slug, isDismissing } = payload;
+			return {
+				...state,
+				isDismissingItems: {
+					[ slug ]: isDismissing,
+				},
+			};
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -146,9 +235,9 @@ const baseSelectors = {
 	 * @param {string} slug  Item slug.
 	 * @return {(boolean|undefined)} True if the item is being dismissed, otherwise false.
 	 */
-	isDismissingItem: createRegistrySelector( ( select ) => ( state, slug ) => {
-		return select( CORE_USER ).isFetchingDismissItem( slug );
-	} ),
+	isDismissingItem( state, slug ) {
+		return !! state.isDismissingItems[ slug ];
+	},
 };
 
 export const {
@@ -158,15 +247,17 @@ export const {
 	reducer,
 	resolvers,
 	selectors,
-} = Data.combineStores(
+} = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
 		resolvers: baseResolvers,
+		reducer: baseReducer,
 		selectors: baseSelectors,
 	},
 	fetchDismissItemStore,
-	fetchGetDismissedItemsStore
+	fetchGetDismissedItemsStore,
+	fetchRemoveDismissedItemsStore
 );
 
 export default {

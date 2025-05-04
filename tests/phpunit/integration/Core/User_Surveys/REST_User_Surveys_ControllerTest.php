@@ -24,7 +24,8 @@ use WP_REST_Request;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
 
-	use RestTestTrait, Fake_Site_Connection_Trait;
+	use RestTestTrait;
+	use Fake_Site_Connection_Trait;
 
 	/**
 	 * REST_User_Surveys_Controller object.
@@ -89,7 +90,15 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->controller->register();
 
 		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
-		$this->assertEquals( 5, count( $routes ) );
+		$this->assertEqualSets(
+			array(
+				'survey-event',
+				'survey-trigger',
+				'survey-timeouts',
+				'survey',
+			),
+			array_keys( $routes )
+		);
 
 		$args = $routes['survey-event']->get_args();
 		$this->assertEquals( 'core/user/data/survey-event', $routes['survey-event']->get_uri() );
@@ -100,13 +109,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$args = $routes['survey-trigger']->get_args();
 		$this->assertEquals( 'core/user/data/survey-trigger', $routes['survey-trigger']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
-		$this->assertTrue( is_callable( $args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
-		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ) );
-
-		$args = $routes['survey-timeout']->get_args();
-		$this->assertEquals( 'core/user/data/survey-timeout', $routes['survey-timeout']->get_uri() );
 		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
 		$this->assertTrue( is_callable( $args[0]['callback'] ) );
 		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
@@ -153,7 +155,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 
 		$this->subscribe_to_wp_http_requests(
-			function() {},
+			function () {},
 			array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array(),
@@ -168,6 +170,48 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertEqualSets( $survey, $this->queue->front() );
 	}
 
+	public function test_survey_trigger__adds_timeout_when_ttl_provided() {
+		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+
+		$this->subscribe_to_wp_http_requests(
+			function () {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( array() ),
+			)
+		);
+
+		$this->fake_proxy_site_connection();
+		$data     = array(
+			'triggerID' => 'test_trigger',
+			'ttl'       => '1337',
+		);
+		$response = $this->send_request( 'survey-trigger', $data );
+
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
+		$this->assertContains( 'test_trigger', $this->timeouts->get_survey_timeouts() );
+	}
+
+	public function test_survey_trigger__no_timeout_when_no_ttl_provided() {
+		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+
+		$this->subscribe_to_wp_http_requests(
+			function () {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( array() ),
+			)
+		);
+
+		$this->fake_proxy_site_connection();
+		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
+
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
+		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+	}
+
 	public function data_survey_event_response_codes() {
 		return array(
 			'successful' => array( 200 ),
@@ -180,7 +224,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 */
 	public function test_survey_event_survey_shown( $code ) {
 		$this->subscribe_to_wp_http_requests(
-			function() {},
+			function () {},
 			array(
 				'response' => array( 'code' => $code ),
 				'headers'  => array(),
@@ -254,7 +298,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 
 		$this->subscribe_to_wp_http_requests(
-			function() {},
+			function () {},
 			array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array(),
@@ -300,31 +344,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 	}
 
-	public function test_survey_timeout() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$this->timeouts->add( 'foo', 100 );
-		$this->timeouts->add( 'baz', -10 );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey-timeout' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug'    => 'bar',
-					// phpcs icorrectly triggers an error for the following line, thus we need to disable phpcs check for it.
-					'timeout' => 100, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
-				),
-			)
-		);
-
-		$this->assertEqualSets(
-			array( 'foo', 'bar' ),
-			rest_get_server()->dispatch( $request )->get_data()
-		);
-	}
-
 	public function test_survey() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -360,5 +379,4 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$this->assertEqualSets( array( 'survey' => $survey ), $response );
 	}
-
 }

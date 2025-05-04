@@ -87,7 +87,21 @@
 		right: -5px;
 	}
 
-	.mdc-select--minimal.mdc-select--focused .mdc-select__dropdown-icon {
+	.mdc-select--focused .mdc-select__dropdown-icon {
 		transform: rotate(180deg) translateY(0);
+	}
+
+	// Helper text
+	.mdc-select + .mdc-select-helper-text {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+		margin: 10px 0 0;
+		opacity: 1;
+
+		&::before {
+			display: none;
+		}
 	}
 }

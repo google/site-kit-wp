@@ -17,28 +17,11 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
+import Notifications from './Notifications';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function SubtleNotifications() {
-	// Each notification component rendered here has its own logic to determine
-	// whether it should be displayed; in most cases none of these components
-	// will be displayed, but it's also (currently) possible for multiple
-	// notifications to be displayed if they each meet their criteria and haven't
-	// been dismissed by the user.
-	//
-	// Because these notifications are subtle and small, this is acceptable UX.
-	return (
-		<Fragment>
-			<GA4AdSenseLinkedNotification />
-			<SetupSuccessSubtleNotification />
-		</Fragment>
-	);
+	return <Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV } />;
 }

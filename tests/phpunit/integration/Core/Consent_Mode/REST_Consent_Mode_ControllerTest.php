@@ -14,9 +14,11 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Consent_Mode\Consent_Mode_Settings;
 use Google\Site_Kit\Core\Consent_Mode\REST_Consent_Mode_Controller;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
@@ -24,6 +26,7 @@ use WP_REST_Request;
 class REST_Consent_Mode_ControllerTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use FakeInstalledPlugins;
 	use RestTestTrait;
 
 	/**
@@ -47,8 +50,17 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	 */
 	private $context;
 
+	/**
+	 * Modules instance.
+	 *
+	 * @var Modules
+	 */
+	private $modules;
+
 	public function set_up() {
 		parent::set_up();
+		// Avoid unexpected results when running locally.
+		$this->mock_installed_plugins();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -57,13 +69,15 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$options       = new Options( $this->context );
 
 		$this->settings   = new Consent_Mode_Settings( $options );
-		$this->controller = new REST_Consent_Mode_Controller( $this->settings );
+		$this->modules    = new Modules( $this->context );
+		$this->controller = new REST_Consent_Mode_Controller( $this->modules, $this->settings, $options );
 	}
 
 	public function tear_down() {
 		parent::tear_down();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_is_module_connected' );
 	}
 
 	public function test_register() {
@@ -77,9 +91,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	public function test_get_settings() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 		// Setup the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
@@ -98,9 +110,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	public function test_get_settings__requires_authenticated_admin() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 
 		$original_settings = array(
 			'enabled' => true,
@@ -119,9 +129,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	public function test_set_settings() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 		// Setup the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
@@ -152,9 +160,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	public function test_set_settings__requires_authenticated_admin() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 
 		$original_settings = array(
 			'enabled' => true,
@@ -188,9 +194,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	 * @dataProvider provider_wrong_settings_data
 	 */
 	public function test_set_settings__wrong_data( $settings ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-mode' );
 		$request->set_body_params(
@@ -231,9 +235,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 			$this->markTestSkipped( 'This test does not run on multisite.' );
 		}
 
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 		// Setup the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
@@ -247,9 +249,11 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$wp_consent_plugin = $response_data['wpConsentPlugin'];
 
+		// Plugin not installed (see mock_installed_plugins)
 		$this->assertFalse( $wp_consent_plugin['installed'] );
+		// Plugin is not installed, hence cannot be activated.
+		$this->assertFalse( $wp_consent_plugin['activateURL'] );
 
-		$this->assertStringStartsWith( 'http://example.org/wp-admin/plugins.php?action=activate&plugin=wp-consent-api%2Fwp-consent-api.php&_wpnonce=', $wp_consent_plugin['activateURL'] );
 		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', $wp_consent_plugin['installURL'] );
 	}
 
@@ -261,9 +265,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on multisite.' );
 		}
 
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 		// Setup the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
@@ -285,9 +287,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 	}
 
 	public function test_get_api_info__requires_authenticated_admin() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
+		$this->setup_rest();
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-api-info' );
 		$response = rest_get_server()->dispatch( $request );
@@ -295,6 +295,19 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		// This admin hasn't authenticated with the Site Kit proxy service yet,
 		// so they aren't allowed to modify Dashboard Sharing settings.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	public function test_get_ads_measurement_status() {
+		$this->setup_rest();
+		// Setup the site and admin user to make a successful REST request.
+		$this->grant_manage_options_permission();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
 	}
 
 	private function grant_manage_options_permission() {
@@ -311,5 +324,140 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 				'access_token' => 'valid-auth-token',
 			)
 		);
+	}
+
+	private function setup_rest() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+	}
+
+	public function test_get_ads_measurement_status__requires_authenticated_admin() {
+		$this->setup_rest();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	public function test_get_ads_measurement_status__early_return_on_first_passing_check() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$check_calls = array(
+			'first'  => 0,
+			'second' => 0,
+			'third'  => 0,
+		);
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( &$check_calls ) {
+				return array(
+					function () use ( &$check_calls ) {
+						$check_calls['first']++;
+						return false;
+					},
+					function () use ( &$check_calls ) {
+						$check_calls['second']++;
+						return true;
+					},
+					function () use ( &$check_calls ) {
+						$check_calls['third']++;
+						return false;
+					},
+				);
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertTrue( $response_data['connected'] );
+		$this->assertEquals( 1, $check_calls['first'] );
+		$this->assertEquals( 1, $check_calls['second'] );
+		$this->assertEquals( 0, $check_calls['third'] );
+	}
+
+	public function test_get_ads_measurement_status__handles_empty_checks_array() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		add_filter( 'googlesitekit_ads_measurement_connection_checks', '__return_empty_array' );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
+	}
+
+	public function data_non_callable_checks_provider() {
+		return array(
+			'numeric literal'        => array( 42 ),
+			'incorrect array format' => array( array( 'too', 'many', 'args' ) ),
+			'null value'             => array( null ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_non_callable_checks_provider
+	 */
+	public function test_get_ads_measurement_status__handles_non_callable_checks( $non_callable_check ) {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( $non_callable_check ) {
+				return array( $non_callable_check );
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
+	}
+
+	public function data_non_array_filter_result_provider() {
+		return array(
+			'empty string' => array( '' ),
+			'boolean true' => array( true ),
+			'null'         => array( null ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_non_array_filter_result_provider
+	 */
+	public function test_get_ads_measurement_status__handles_non_array_filter_result( $non_array_value ) {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( $non_array_value ) {
+				return $non_array_value;
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
 	}
 }

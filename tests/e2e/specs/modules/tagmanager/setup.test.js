@@ -90,6 +90,11 @@ describe( 'Tag Manager module setup', () => {
 				request.respond( { status: 200, body: '[]' } );
 			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'core/site/data/ads-measurement-status' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { connected: true } ),
+				} );
 			} else {
 				request.continue();
 			}
@@ -193,11 +198,9 @@ describe( 'Tag Manager module setup', () => {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
-			await page.waitForSelector(
-				'.googlesitekit-publisher-win--win-success'
-			);
+			await page.waitForSelector( '.googlesitekit-subtle-notification' );
 			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__title',
+				'.googlesitekit-subtle-notification__content p',
 				{
 					text: /Congrats on completing the setup for Tag Manager!/i,
 				}
@@ -289,11 +292,9 @@ describe( 'Tag Manager module setup', () => {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
-			await page.waitForSelector(
-				'.googlesitekit-publisher-win--win-success'
-			);
+			await page.waitForSelector( '.googlesitekit-subtle-notification' );
 			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__title',
+				'.googlesitekit-subtle-notification__content p',
 				{
 					text: /Congrats on completing the setup for Tag Manager!/i,
 				}
@@ -415,10 +416,10 @@ describe( 'Tag Manager module setup', () => {
 						text: new RegExp( 'complete setup', 'i' ),
 					} );
 					await page.waitForSelector(
-						'.googlesitekit-publisher-win--win-success'
+						'.googlesitekit-subtle-notification'
 					);
 					await expect( page ).toMatchElement(
-						'.googlesitekit-publisher-win__title',
+						'.googlesitekit-subtle-notification__content p',
 						{
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}

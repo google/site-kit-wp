@@ -24,15 +24,17 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 import { getDateString } from '../../../util';
-
-const { createRegistrySelector } = Data;
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 	'RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA';
@@ -40,7 +42,7 @@ const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	baseName: 'saveCustomDimensionDataAvailableState',
 	controlCallback: ( { customDimension } ) =>
-		API.set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
+		set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
 			customDimension,
 		} ),
 	argsToParams: ( customDimension ) => ( { customDimension } ),
@@ -115,11 +117,10 @@ const baseActions = {
 	 * @param {string} customDimension Custom dimension slug.
 	 */
 	*checkCustomDimensionDataAvailability( customDimension ) {
-		const { select, __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
+		const { select, resolveSelect } = yield commonActions.getRegistry();
 
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		if (
@@ -134,8 +135,8 @@ const baseActions = {
 			return;
 		}
 
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+		yield commonActions.await(
+			resolveSelect( CORE_USER ).getAuthentication()
 		);
 
 		if ( ! select( CORE_USER ).isAuthenticated() ) {
@@ -146,8 +147,8 @@ const baseActions = {
 			return;
 		}
 
-		const reportArgs = yield Data.commonActions.await(
-			__experimentalResolveSelect(
+		const reportArgs = yield commonActions.await(
+			resolveSelect(
 				MODULES_ANALYTICS_4
 			).getDataAvailabilityReportOptions( customDimension )
 		);
@@ -160,23 +161,15 @@ const baseActions = {
 			return;
 		}
 
-		const report = yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getReport(
-				reportArgs
-			)
+		const report = yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getReport( reportArgs )
 		);
 
 		const hasReportError = !! select(
 			MODULES_ANALYTICS_4
 		).getErrorForSelector( 'getReport', [ reportArgs ] );
 
-		const isGatheringData =
-			hasReportError ||
-			! report?.rows?.length ||
-			// If the only dimension value is '(not set)', then there is no data. See https://support.google.com/analytics/answer/13504892.
-			( report.rowCount === 1 &&
-				report.rows[ 0 ].dimensionValues?.[ 0 ]?.value ===
-					'(not set)' );
+		const isGatheringData = hasReportError || ! report?.rows?.length;
 
 		yield baseActions.receiveIsCustomDimensionGatheringData(
 			customDimension,
@@ -212,7 +205,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*isCustomDimensionGatheringData( customDimension ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		// If the gatheringData flag is already set, return early.
 		if (
@@ -242,13 +235,10 @@ const baseResolvers = {
 	},
 
 	*getDataAvailabilityReportOptions() {
-		const { __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
+		const { resolveSelect } = yield commonActions.getRegistry();
 
-		yield Data.commonActions.await(
-			__experimentalResolveSelect(
-				MODULES_ANALYTICS_4
-			).getPropertyCreateTime()
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getPropertyCreateTime()
 		);
 	},
 };
@@ -330,11 +320,19 @@ const baseSelectors = {
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			return {
+				// Valid use of `new Date()` with an argument.
+				// eslint-disable-next-line sitekit/no-direct-date
 				startDate: getDateString( new Date( propertyCreateTime ) ),
 				endDate,
 				dimensions: [ `customEvent:${ customDimension }` ],
+				dimensionFilters: {
+					[ `customEvent:${ customDimension }` ]: {
+						filterType: 'emptyFilter',
+						notExpression: true,
+					},
+				},
 				metrics: [ { name: 'eventCount' } ],
-				limit: 2,
+				limit: 1,
 			};
 		}
 	),
@@ -384,17 +382,14 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores(
-	fetchSaveCustomDimensionDataAvailableStateStore,
-	{
-		actions: baseActions,
-		controls: baseControls,
-		initialState: baseInitialState,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchSaveCustomDimensionDataAvailableStateStore, {
+	actions: baseActions,
+	controls: baseControls,
+	initialState: baseInitialState,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isBoolean } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -29,8 +30,12 @@ import { createRegistrySelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -48,15 +53,13 @@ import {
 	isValidPropertyID,
 	isValidPropertySelection,
 } from '../utils/validation';
-import { actions as webDataStreamActions } from './webdatastreams';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
-const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'property',
@@ -66,15 +69,10 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, property, { propertyID } ) {
-		return {
-			...state,
-			propertiesByID: {
-				...state.propertiesByID,
-				[ propertyID ]: property,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, property, { propertyID } ) => {
+		state.propertiesByID = state.propertiesByID || {};
+		state.propertiesByID[ propertyID ] = property;
+	} ),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -86,7 +84,7 @@ const fetchGetPropertyStore = createFetchStore( {
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'properties',
@@ -96,22 +94,16 @@ const fetchGetPropertiesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, properties, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: properties,
-			},
-			propertiesByID: properties.reduce(
-				( accum, property ) => ( {
-					...accum,
-					[ property._id ]: property,
-				} ),
-				state.propertiesByID || {}
-			),
-		};
-	},
+	reducerCallback: createReducer( ( state, properties, { accountID } ) => {
+		state.properties = state.properties || {};
+		state.propertiesByID = state.propertiesByID || {};
+
+		state.properties[ accountID ] = properties;
+
+		for ( const property of properties ) {
+			state.propertiesByID[ property._id ] = property;
+		}
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -123,22 +115,19 @@ const fetchGetPropertiesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback( { accountID } ) {
-		return API.set( 'modules', 'analytics-4', 'create-property', {
+		return set( 'modules', 'analytics-4', 'create-property', {
 			accountID,
 		} );
 	},
-	reducerCallback( state, property, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: [
-					...( state.properties[ accountID ] || [] ),
-					property,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, property, { accountID } ) => {
+		state.properties = state.properties || {};
+
+		if ( ! state.properties[ accountID ] ) {
+			state.properties[ accountID ] = [];
+		}
+
+		state.properties[ accountID ].push( property );
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -150,14 +139,17 @@ const fetchCreatePropertyStore = createFetchStore( {
 const fetchGetGoogleTagSettingsStore = createFetchStore( {
 	baseName: 'getGoogleTagSettings',
 	controlCallback( { measurementID } ) {
-		return API.get( 'modules', 'analytics-4', 'google-tag-settings', {
+		return get( 'modules', 'analytics-4', 'google-tag-settings', {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings ) {
+	reducerCallback( state, googleTagSettings, { measurementID } ) {
 		return {
 			...state,
-			googleTagSettings,
+			googleTagSettings: {
+				...state.googleTagSettings,
+				[ measurementID ]: googleTagSettings,
+			},
 		};
 	},
 	argsToParams( measurementID ) {
@@ -168,8 +160,34 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchSetGoogleTagIDMismatch = createFetchStore( {
+	baseName: 'setGoogleTagIDMismatch',
+	controlCallback( { hasMismatchedTag } ) {
+		return set( 'modules', 'analytics-4', 'set-google-tag-id-mismatch', {
+			hasMismatchedTag,
+		} );
+	},
+	reducerCallback( state, hasMismatchedTag ) {
+		return {
+			...state,
+			moduleData: {
+				...state.moduleData,
+				hasMismatchedTag: !! hasMismatchedTag,
+			},
+		};
+	},
+	argsToParams( hasMismatchedTag ) {
+		return { hasMismatchedTag };
+	},
+	validateParams( { hasMismatchedTag } = {} ) {
+		invariant(
+			isBoolean( hasMismatchedTag ),
+			'hasMismatchedTag must be boolean.'
+		);
+	},
+} );
+
 // Actions
-const WAIT_FOR_PROPERTY_SUMMARIES = 'WAIT_FOR_PROPERTY_SUMMARIES';
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
@@ -177,7 +195,6 @@ const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
-	hasMismatchedTag: false,
 	isMatchingAccountProperty: false,
 	isWebDataStreamAvailable: true,
 };
@@ -195,7 +212,7 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
-			const { dispatch } = yield Data.commonActions.getRegistry();
+			const { dispatch } = yield commonActions.getRegistry();
 
 			const { response, error } =
 				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
@@ -204,9 +221,7 @@ const baseActions = {
 
 			if ( response ) {
 				// Refresh account summaries to load the new property.
-				yield dispatch(
-					MODULES_ANALYTICS_4
-				).fetchGetAccountSummaries();
+				yield dispatch( MODULES_ANALYTICS_4 ).resetAccountSummaries();
 			}
 
 			return { response, error };
@@ -229,7 +244,7 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID ) {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 			const {
 				setPropertyCreateTime,
 				setSettings,
@@ -252,9 +267,9 @@ const baseActions = {
 			setWebDataStreamID( '' );
 
 			if ( propertyID ) {
-				const property = yield Data.commonActions.await(
+				const property = yield commonActions.await(
 					registry
-						.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+						.resolveSelect( MODULES_ANALYTICS_4 )
 						.getProperty( propertyID )
 				);
 
@@ -263,11 +278,11 @@ const baseActions = {
 				}
 			}
 
-			yield webDataStreamActions.waitForWebDataStreams( propertyID );
-
-			let webdatastream = registry
-				.select( MODULES_ANALYTICS_4 )
-				.getMatchingWebDataStreamByPropertyID( propertyID );
+			let webdatastream = yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStreamByPropertyID( propertyID )
+			);
 
 			if ( ! webdatastream ) {
 				const webdatastreams = registry
@@ -301,10 +316,8 @@ const baseActions = {
 	 */
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
-		const accounts = yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getAccountSummaries()
+		const accounts = yield commonActions.await(
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
@@ -320,7 +333,7 @@ const baseActions = {
 			[]
 		);
 
-		return yield Data.commonActions.await(
+		return yield commonActions.await(
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.matchPropertyByURL( propertyIDs, url )
@@ -336,14 +349,14 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAccountProperty( accountID ) {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield baseActions.waitForPropertySummaries( accountID );
+		const registry = yield commonActions.getRegistry();
 
 		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const propertySummaries = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertySummaries( accountID );
+		const propertySummaries = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getPropertySummaries( accountID )
+		);
 
 		const property = yield baseActions.matchPropertyByURL(
 			( propertySummaries || [] ).map( ( { _id } ) => _id ),
@@ -408,7 +421,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -424,9 +437,7 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.__experimentalResolveSelect(
-										MODULES_ANALYTICS_4
-									)
+									.resolveSelect( MODULES_ANALYTICS_4 )
 									.getProperty( propertyID )
 							);
 						}
@@ -464,7 +475,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -477,9 +488,7 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.__experimentalResolveSelect(
-										MODULES_ANALYTICS_4
-									)
+									.resolveSelect( MODULES_ANALYTICS_4 )
 									.getProperty( propertyID )
 							);
 						}
@@ -492,18 +501,6 @@ const baseActions = {
 	},
 
 	/**
-	 * Waits for property summaries to be loaded for an account.
-	 *
-	 * @since 1.118.0
-	 */
-	*waitForPropertySummaries() {
-		yield {
-			payload: {},
-			type: WAIT_FOR_PROPERTY_SUMMARIES,
-		};
-	},
-
-	/**
 	 * Updates settings for a given measurement ID.
 	 *
 	 * @since 1.94.0
@@ -511,7 +508,7 @@ const baseActions = {
 	 * @param {string} measurementID Measurement ID.
 	 */
 	*updateSettingsForMeasurementID( measurementID ) {
-		const { select, dispatch, __experimentalResolveSelect } =
+		const { select, dispatch, resolveSelect } =
 			yield commonActions.getRegistry();
 
 		if ( ! measurementID ) {
@@ -528,23 +525,24 @@ const baseActions = {
 
 		// Wait for authentication to be resolved to check scopes.
 		yield commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			resolveSelect( CORE_USER ).getAuthentication()
 		);
 		if ( ! select( CORE_USER ).hasScope( TAGMANAGER_READ_SCOPE ) ) {
 			return;
 		}
 
-		const { response, error } =
-			yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		const googleTagSettings = yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagSettings(
 				measurementID
-			);
+			)
+		);
 
-		if ( error ) {
+		if ( ! googleTagSettings ) {
 			return;
 		}
 
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
-			response;
+			googleTagSettings;
 
 		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
 		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
@@ -563,14 +561,28 @@ const baseActions = {
 	 * Sets if GA4 has mismatched Google Tag ID.
 	 *
 	 * @since 1.96.0
+	 * @since 1.130.0 Updated to send value to the endpoint.
+	 *
+	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
+	 */
+	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+		yield fetchSetGoogleTagIDMismatch.actions.fetchSetGoogleTagIDMismatch(
+			hasMismatchedTag
+		);
+	},
+
+	/**
+	 * Sets if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since 1.130.0
 	 *
 	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
 	 * @return {Object} Redux-style action.
 	 */
-	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+	*receiveHasMismatchGoogleTagID( hasMismatchedTag ) {
 		return {
 			type: SET_HAS_MISMATCHED_TAG,
-			payload: { hasMismatchedTag },
+			payload: { hasMismatchedTag: !! hasMismatchedTag },
 		};
 	},
 
@@ -595,8 +607,8 @@ const baseActions = {
 	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
-		const { select, dispatch, __experimentalResolveSelect } =
-			yield Data.commonActions.getRegistry();
+		const { select, dispatch, resolveSelect } =
+			yield commonActions.getRegistry();
 
 		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 			TAGMANAGER_READ_SCOPE
@@ -607,9 +619,7 @@ const baseActions = {
 		}
 
 		// Wait for modules to be available before selecting.
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
+		yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 
 		const { isModuleConnected } = select( CORE_MODULES );
 
@@ -618,8 +628,8 @@ const baseActions = {
 		}
 
 		// Wait for module settings to be available before selecting.
-		yield Data.commonActions.await(
-			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const {
@@ -638,20 +648,26 @@ const baseActions = {
 
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
+		// The "last synced" value should reflect the real time this action
+		// was performed, so we don't use the reference date here.
+		const timestamp = Date.now(); // eslint-disable-line sitekit/no-direct-date
+
 		if (
 			!! googleTagLastSyncedAtMs &&
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
+			timestamp - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
 		) {
 			return;
 		}
 
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs( timestamp );
+
 		const googleTagID = getGoogleTagID();
 
 		if ( !! googleTagID ) {
-			const googleTagContainer = yield Data.commonActions.await(
-				__experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getGoogleTagContainer( measurementID )
+			const googleTagContainer = yield commonActions.await(
+				resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagContainer(
+					measurementID
+				)
 			);
 
 			if ( ! googleTagContainer ) {
@@ -666,60 +682,53 @@ const baseActions = {
 		const googleTagAccountID = getGoogleTagAccountID();
 		const googleTagContainerID = getGoogleTagContainerID();
 
-		const googleTagContainerDestinations = yield Data.commonActions.await(
-			__experimentalResolveSelect(
+		const googleTagContainerDestinations = yield commonActions.await(
+			resolveSelect(
 				MODULES_ANALYTICS_4
 			).getGoogleTagContainerDestinations(
 				googleTagAccountID,
 				googleTagContainerID
 			)
-		);
+		) || []; // Fallback used in the event of an error.
 
 		const googleTagContainerDestinationIDs =
-			googleTagContainerDestinations.map(
+			googleTagContainerDestinations?.map(
 				// eslint-disable-next-line sitekit/acronym-case
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			googleTagContainerDestinationIDs,
-			googleTagLastSyncedAtMs: Date.now(),
-		} );
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagContainerDestinationIDs(
+			googleTagContainerDestinationIDs
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
 };
 
-const baseControls = {
-	[ WAIT_FOR_PROPERTY_SUMMARIES ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
-			return async () => {
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getAccountSummaries();
-			};
-		}
-	),
-};
+const baseControls = {};
 
-function baseReducer( state, { type, payload } ) {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case MATCHING_ACCOUNT_PROPERTY:
-			return { ...state, ...payload };
-		case SET_HAS_MISMATCHED_TAG:
-			return {
-				...state,
-				hasMismatchedTag: payload.hasMismatchedTag,
-			};
-		case SET_IS_WEBDATASTREAM_AVAILABLE:
-			return {
-				...state,
-				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
-			};
+		case MATCHING_ACCOUNT_PROPERTY: {
+			state.isMatchingAccountProperty = payload.isMatchingAccountProperty;
+			break;
+		}
+
+		case SET_HAS_MISMATCHED_TAG: {
+			state.moduleData = state.moduleData || {};
+			state.moduleData.hasMismatchedTag = payload.hasMismatchedTag;
+			break;
+		}
+
+		case SET_IS_WEBDATASTREAM_AVAILABLE: {
+			state.isWebDataStreamAvailable = payload.isWebDataStreamAvailable;
+			break;
+		}
+
 		default:
-			return state;
+			break;
 	}
-}
+} );
 
 const baseResolvers = {
 	*getProperties( accountID ) {
@@ -727,7 +736,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
 		const properties = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -739,7 +748,7 @@ const baseResolvers = {
 		}
 	},
 	*getProperty( propertyID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const property = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperty( propertyID );
@@ -747,13 +756,20 @@ const baseResolvers = {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
 	},
+	*getPropertySummaries( accountID ) {
+		const { resolveSelect } = yield commonActions.getRegistry();
+
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(
+				accountID
+			)
+		);
+	},
 	*getPropertyCreateTime() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		// Ensure settings are available to select.
-		yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getSettings()
+		yield commonActions.await(
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const propertyID = registry
@@ -768,7 +784,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const cachedPropertyCreateTime = yield Data.commonActions.await(
+		const cachedPropertyCreateTime = yield commonActions.await(
 			getItem(
 				`analytics4-properties-getPropertyCreateTime-${ propertyID }`
 			)
@@ -782,9 +798,9 @@ const baseResolvers = {
 			return;
 		}
 
-		const property = yield Data.commonActions.await(
+		const property = yield commonActions.await(
 			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.resolveSelect( MODULES_ANALYTICS_4 )
 				.getProperty( propertyID )
 		);
 
@@ -793,7 +809,7 @@ const baseResolvers = {
 		}
 
 		// Cache this value for 1 hour (the default cache time).
-		yield Data.commonActions.await(
+		yield commonActions.await(
 			setItem(
 				`analytics4-properties-getPropertyCreateTime-${ propertyID }`,
 				property.createTime
@@ -803,6 +819,24 @@ const baseResolvers = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
+	},
+	*getGoogleTagSettings( measurementID ) {
+		if ( ! measurementID ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+		const googleTagSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagSettings( measurementID );
+
+		if ( googleTagSettings !== undefined ) {
+			return googleTagSettings;
+		}
+
+		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+			measurementID
+		);
 	},
 };
 
@@ -860,6 +894,19 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets Google tag settings.
+	 *
+	 * @since 1.150.0
+	 *
+	 * @param {Object} state         Data store's state.
+	 * @param {string} measurementID Measurement ID.
+	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
+	 */
+	getGoogleTagSettings( state, measurementID ) {
+		return state.googleTagSettings?.[ measurementID ];
+	},
+
+	/**
 	 * Determines whether we are matching account property or not.
 	 *
 	 * @since 1.98.0
@@ -869,18 +916,6 @@ const baseSelectors = {
 	 */
 	isMatchingAccountProperty( state ) {
 		return state.isMatchingAccountProperty;
-	},
-
-	/**
-	 * Checks if GA4 has mismatched Google Tag ID.
-	 *
-	 * @since 1.96.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} If GA4 has mismatched Google Tag ID.
-	 */
-	hasMismatchedGoogleTagID( state ) {
-		return state.hasMismatchedTag;
 	},
 
 	/**
@@ -917,11 +952,12 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchCreatePropertyStore,
 	fetchGetPropertiesStore,
 	fetchGetPropertyStore,
 	fetchGetGoogleTagSettingsStore,
+	fetchSetGoogleTagIDMismatch,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

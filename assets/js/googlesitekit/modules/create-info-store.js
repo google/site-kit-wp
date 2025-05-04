@@ -29,11 +29,12 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { CORE_USER } from '../datastore/user/constants';
-
-const { createRegistryControl, createRegistrySelector } = Data;
 
 // Actions
 const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';
@@ -61,11 +62,10 @@ export const createInfoStore = (
 	const controls = {
 		[ WAIT_FOR_REAUTH_RESOLVERS ]: createRegistryControl(
 			( registry ) => async () => {
-				const { __experimentalResolveSelect } = registry;
+				const { resolveSelect } = registry;
 				const { getAuthentication, getConnectURL } =
-					__experimentalResolveSelect( CORE_USER );
-				const { getSiteInfo } =
-					__experimentalResolveSelect( CORE_SITE );
+					resolveSelect( CORE_USER );
+				const { getSiteInfo } = resolveSelect( CORE_SITE );
 
 				await Promise.all( [
 					// Authentication is needed for checking `needsReauthentication`.

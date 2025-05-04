@@ -24,45 +24,30 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import {
-	DAY_IN_SECONDS,
-	getTimeInSeconds,
-	trackEvent,
-} from '../../../../../util';
-import BannerNotification from '../../../../../components/notifications/BannerNotification';
+import { DAY_IN_SECONDS } from '../../../../../util';
 import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
-import ErrorNotice from '../../../../../components/ErrorNotice';
-import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
-import useViewContext from '../../../../../hooks/useViewContext';
-
-const { useDispatch, useSelect } = Data;
+import Description from '../../../../../googlesitekit/notifications/components/common/Description';
+import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import ActionsCTALinkDismiss from '../../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
 
 export default function SetupBanner( props ) {
-	const {
-		children,
-		errorNotice,
-		isDismissed,
-		isSaving,
-		onDismiss,
-		onSubmit,
-	} = props;
-
-	const viewContext = useViewContext();
+	const { id, Notification, errorNotice, isSaving, onDismiss, onSubmit } =
+		props;
 
 	// The `enhanced_measurement` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
@@ -135,28 +120,18 @@ export default function SetupBanner( props ) {
 		setValues,
 	] );
 
-	const handleDismiss = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'dismiss_notification'
-		);
+	const isUsingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const { triggerSurvey } = useDispatch( CORE_USER );
 
-		onDismiss?.();
-	}, [ onDismiss, viewContext ] );
-
-	const handleLearnMore = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'click_learn_more_link'
-		);
-	}, [ viewContext ] );
-
-	useEffect( () => {
-		trackEvent(
-			`${ viewContext }_enhanced-measurement-notification`,
-			'view_notification'
-		);
-	}, [ viewContext ] );
+	const handleView = useCallback( () => {
+		if ( isUsingProxy ) {
+			triggerSurvey( 'view_enhanced_measurement_cta', {
+				ttl: DAY_IN_SECONDS,
+			} );
+		}
+	}, [ triggerSurvey, isUsingProxy ] );
 
 	const description = hasEditScope
 		? __(
@@ -169,55 +144,60 @@ export default function SetupBanner( props ) {
 		  );
 
 	return (
-		<BannerNotification
-			id="googlesitekit-enhanced-measurement-activation-banner"
-			className="googlesitekit-enhanced-measurement-setup-banner"
-			title={ __(
-				'Understand how visitors interact with your content',
-				'google-site-kit'
-			) }
-			description={ description }
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL={ documentationURL }
-			onLearnMoreClick={ handleLearnMore }
-			ctaComponent={
-				<SpinnerButton
-					onClick={ handleSubmitChanges }
-					isSaving={ isSaving || isNavigatingToOAuthURL }
-				>
-					{ __( 'Enable now', 'google-site-kit' ) }
-				</SpinnerButton>
-			}
-			footer={
-				<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
-					{ __(
-						'You can always add/edit this in the Site Kit Settings',
-						'google-site-kit'
-					) }
-				</p>
-			}
-			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
-			WinImageSVG={ () => <SuccessGreenSVG /> }
-			format="small"
-			// Although the banner does handle its own dismiss state via a dismissable item, we still need to
-			// provide a value here to ensure BannerNotification's own dismiss state is expired.
-			dismissExpires={ getTimeInSeconds( 'month' ) }
-			onDismiss={ handleDismiss }
+		<Notification
+			className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
+			onView={ handleView }
 		>
-			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
-			{ ! isDismissed && (
-				<SurveyViewTrigger
-					triggerID="view_enhanced_measurement_cta"
-					ttl={ DAY_IN_SECONDS }
-				/>
-			) }
-			{ children }
-		</BannerNotification>
+			<NotificationWithSmallRightSVG
+				title={ __(
+					'Understand how visitors interact with your content',
+					'google-site-kit'
+				) }
+				description={
+					<Description
+						text={ description }
+						learnMoreLink={
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ documentationURL }
+							/>
+						}
+						errorText={ errorNotice?.message }
+					/>
+				}
+				actions={
+					<Fragment>
+						<ActionsCTALinkDismiss
+							id={ id }
+							ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
+							onCTAClick={ handleSubmitChanges }
+							dismissOnCTAClick={ false }
+							isSaving={ isSaving || isNavigatingToOAuthURL }
+							dismissLabel={ __(
+								'Maybe later',
+								'google-site-kit'
+							) }
+							onDismiss={ onDismiss }
+							ctaDismissOptions={ { skipHidingFromQueue: true } }
+						/>
+					</Fragment>
+				}
+				footer={ __(
+					'You can always add/edit this in the Site Kit Settings',
+					'google-site-kit'
+				) }
+				SVG={ SuccessGreenSVG }
+			/>
+		</Notification>
 	);
 }
 
 SetupBanner.propTypes = {
-	onSubmitSuccess: PropTypes.func,
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType,
+	errorNotice: PropTypes.object,
+	isSaving: PropTypes.bool,
+	onSubmit: PropTypes.func,
 	onDismiss: PropTypes.func,
-	children: PropTypes.node,
 };

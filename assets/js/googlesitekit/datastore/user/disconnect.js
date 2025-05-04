@@ -19,17 +19,15 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import { createRegistrySelector, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-
-const { createRegistrySelector } = Data;
 
 const fetchDisconnectStore = createFetchStore( {
 	baseName: 'disconnect',
 	controlCallback: () => {
-		return API.set( 'core', 'user', 'disconnect' );
+		return set( 'core', 'user', 'disconnect' );
 	},
 	reducerCallback: ( state, disconnected ) => {
 		return {
@@ -63,7 +61,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchDisconnectStore, {
+const store = combineStores( fetchDisconnectStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	selectors: baseSelectors,

@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -132,25 +134,25 @@ class Debug_Data {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $string     Input string to redact.
+	 * @param string $input_string     Input string to redact.
 	 * @param int    $mask_start Starting position of redaction and length of preserved characters.
 	 *                             If positive, characters are redacted from the end, preserving the first X characters.
 	 *                             If negative, characters are redacted from the beginning preserving the last X characters.
 	 * @return string
 	 */
-	public static function redact_debug_value( $string, $mask_start = 4 ) {
-		if ( ! is_scalar( $string ) ) {
+	public static function redact_debug_value( $input_string, $mask_start = 4 ) {
+		if ( ! is_scalar( $input_string ) ) {
 			return '';
 		}
 
-		$string = (string) $string;
+		$input_string = (string) $input_string;
 		if ( $mask_start < 0 ) {
-			$redacted = substr( $string, 0, $mask_start );
-			$unmasked = substr( $string, $mask_start );
+			$redacted = substr( $input_string, 0, $mask_start );
+			$unmasked = substr( $input_string, $mask_start );
 			return str_repeat( '•', strlen( $redacted ) ) . $unmasked;
 		} else {
-			$redacted = substr( $string, $mask_start );
-			$unmasked = substr( $string, 0, $mask_start );
+			$redacted = substr( $input_string, $mask_start );
+			$unmasked = substr( $input_string, 0, $mask_start );
 			return $unmasked . str_repeat( '•', strlen( $redacted ) );
 		}
 	}
@@ -192,13 +194,10 @@ class Debug_Data {
 			'enabled_features'     => $this->get_feature_fields(),
 		);
 
-		if ( Feature_Flags::enabled( 'conversionInfra' ) ) {
-			$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
-		}
-
+		$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
 		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
-
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
+		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
 
 		$fields = array_filter(
 			array_merge(
@@ -335,7 +334,6 @@ class Debug_Data {
 			'value' => __( 'Verified outside of Site Kit', 'google-site-kit' ),
 			'debug' => 'verified-non-site-kit',
 		);
-
 	}
 
 
@@ -420,7 +418,7 @@ class Debug_Data {
 			$fields[ "{$module_slug}_shared_roles" ] = array_merge(
 				array(
 					/* translators: %s: module name */
-					'label' => sprintf( __( '%s Shared Roles', 'google-site-kit' ), $module->name ),
+					'label' => sprintf( __( '%s: Shared Roles', 'google-site-kit' ), $module->name ),
 				),
 				$this->get_module_shared_role_names( $module_settings['sharedRoles'] )
 			);
@@ -428,7 +426,7 @@ class Debug_Data {
 			$fields[ "{$module_slug}_management" ] = array_merge(
 				array(
 					/* translators: %s: module name */
-					'label' => sprintf( __( '%s Management', 'google-site-kit' ), $module->name ),
+					'label' => sprintf( __( '%s: Management', 'google-site-kit' ), $module->name ),
 				),
 				$this->get_module_management( $module_settings['management'] )
 			);
@@ -457,7 +455,7 @@ class Debug_Data {
 		$wp_role_names     = wp_roles()->get_names();
 		$shared_role_names = array_filter(
 			$wp_role_names,
-			function( $key ) use ( $role_slugs ) {
+			function ( $key ) use ( $role_slugs ) {
 				return in_array( $key, $role_slugs, true );
 			},
 			ARRAY_FILTER_USE_KEY
@@ -644,4 +642,44 @@ class Debug_Data {
 		);
 	}
 
+	/**
+	 * Gets the key metrics status fields.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @return array
+	 */
+	private function get_key_metrics_fields() {
+		$is_setup_complete    = ( new Key_Metrics_Setup_Completed_By( $this->options ) )->get();
+		$key_metrics_settings = ( new Key_Metrics_Settings( $this->user_options ) )->get();
+
+		if ( ! $is_setup_complete ) {
+			return array(
+				'key_metrics_status' => array(
+					'label' => __( 'Key Metrics Status', 'google-site-kit' ),
+					'value' => __( 'Not setup', 'google-site-kit' ),
+				),
+			);
+		}
+
+		$key_metrics_status = isset( $key_metrics_settings['isWidgetHidden'] ) && $key_metrics_settings['isWidgetHidden'] ?
+			__( 'Setup and Disabled', 'google-site-kit' ) :
+			__( 'Setup and Enabled', 'google-site-kit' );
+
+		// A minimum of 2 key metrics need to be saved to prevent "default" tailored metrics to render.
+		$key_metrics_source = isset( $key_metrics_settings['widgetSlugs'] ) && count( $key_metrics_settings['widgetSlugs'] ) > 1 ?
+			__( 'Manual Selection', 'google-site-kit' ) :
+			__( 'Tailored Metrics', 'google-site-kit' );
+
+		return array(
+			'key_metrics_status' => array(
+				'label' => __( 'Key Metrics Status', 'google-site-kit' ),
+				'value' => $key_metrics_status,
+			),
+			'key_metrics_source' => array(
+				'label' => __( 'Key Metrics Source', 'google-site-kit' ),
+				'value' => $key_metrics_source,
+			),
+		);
+	}
 }

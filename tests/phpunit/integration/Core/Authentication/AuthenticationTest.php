@@ -32,6 +32,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_Screen;
@@ -297,14 +298,16 @@ class AuthenticationTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$oauth_client->get_client(),
 			function () {
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'access_token' => 'new-test-access-token',
-							'expires_in'   => 3599,
-							'token_type'   => 'Bearer',
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
 						)
 					)
 				);
@@ -376,14 +379,16 @@ class AuthenticationTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$oauth_client->get_client(),
 			function () {
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'access_token' => 'new-test-access-token',
-							'expires_in'   => 3599,
-							'token_type'   => 'Bearer',
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
 						)
 					)
 				);
@@ -492,29 +497,6 @@ class AuthenticationTest extends TestCase {
 			'\Google\Site_Kit\Core\Authentication\Profile',
 			$auth->profile()
 		);
-	}
-
-	public function test_disconnect() {
-		$user_id      = $this->factory()->user->create();
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user_id );
-		$auth         = new Authentication( $context, $options, $user_options );
-
-		foreach ( $this->get_user_option_keys() as $key ) {
-			$user_options->set( $key, "test-$key-value" );
-		}
-
-		$mock_google_client = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
-			->setMethods( array( 'revokeToken' ) )->getMock();
-		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
-		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
-
-		$auth->disconnect();
-
-		foreach ( $this->get_user_option_keys() as $key ) {
-			$this->assertFalse( $user_options->get( $key ) );
-		}
 	}
 
 	public function test_get_connect_url() {
@@ -688,7 +670,7 @@ class AuthenticationTest extends TestCase {
 		$authentication = new Authentication( $context, $options );
 		$authentication->register();
 
-		$home_url_hook = function() {
+		$home_url_hook = function () {
 			return 'https://example.com/subsite';
 		};
 
@@ -724,7 +706,7 @@ class AuthenticationTest extends TestCase {
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(
 			'user_has_cap',
-			function( $caps ) {
+			function ( $caps ) {
 				$caps[ Permissions::SETUP ] = true;
 				return $caps;
 			}

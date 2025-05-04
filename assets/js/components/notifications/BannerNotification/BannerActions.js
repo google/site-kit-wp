@@ -28,10 +28,9 @@ import { useState } from '@wordpress/element';
 /*
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-const { useSelect } = Data;
 
 export default function BannerActions( props ) {
 	const {
@@ -42,6 +41,7 @@ export default function BannerActions( props ) {
 		ctaCallback,
 		dismissLabel,
 		dismissCallback,
+		dismissIsTertiary,
 	} = props;
 
 	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
@@ -84,7 +84,7 @@ export default function BannerActions( props ) {
 
 			{ dismissLabel && (
 				<Button
-					tertiary={ ctaLink || ctaComponent }
+					tertiary={ ctaLink || ctaComponent || dismissIsTertiary }
 					onClick={ dismissCallback }
 					disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
 				>
@@ -103,4 +103,5 @@ BannerActions.propTypes = {
 	ctaCallback: PropTypes.func,
 	dismissLabel: PropTypes.string,
 	dismissCallback: PropTypes.func,
+	dismissIsTertiary: PropTypes.bool,
 };

@@ -101,6 +101,7 @@ export default function JoyrideTooltip( props ) {
 
 	// Provides button content as well as aria-label & title attribute values.
 	const joyrideLocale = {
+		close: dismissLabel,
 		last: dismissLabel,
 	};
 
@@ -108,9 +109,15 @@ export default function JoyrideTooltip( props ) {
 		switch ( type ) {
 			case EVENTS.TOUR_START:
 				onTourStart();
+				global.document.body.classList.add(
+					'googlesitekit-showing-tooltip'
+				);
 				break;
 			case EVENTS.TOUR_END:
 				onTourEnd();
+				global.document.body.classList.remove(
+					'googlesitekit-showing-tooltip'
+				);
 				break;
 			case EVENTS.STEP_AFTER:
 				// This is not strictly necessary as the tooltip will hide without it,
@@ -154,7 +161,7 @@ export default function JoyrideTooltip( props ) {
 }
 
 JoyrideTooltip.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.node,
 	content: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,

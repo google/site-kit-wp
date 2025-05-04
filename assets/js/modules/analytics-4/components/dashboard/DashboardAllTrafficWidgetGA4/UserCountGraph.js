@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
@@ -43,7 +44,6 @@ import ReportError from '../../../../../components/ReportError';
 import { createZeroDataRow } from './utils';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { getDateString, stringToDate } from '../../../../../util';
-const { useSelect } = Data;
 
 export default function UserCountGraph( props ) {
 	const { loaded, error, report, gatheringData } = props;
@@ -117,7 +117,7 @@ export default function UserCountGraph( props ) {
 
 	const [ , ...ticks ] = chartData.slice( 1 ).map( ( [ date ] ) => date );
 
-	const chartOptions = { ...UserCountGraph.chartOptions };
+	const chartOptions = cloneDeep( UserCountGraph.chartOptions );
 
 	chartOptions.series[ 0 ].color = graphLineColor;
 	chartOptions.hAxis.ticks = ticks;
@@ -145,6 +145,8 @@ export default function UserCountGraph( props ) {
 						? [
 								{
 									date: getDateString(
+										// Valid use of `new Date()` with an argument.
+										// eslint-disable-next-line sitekit/no-direct-date
 										new Date( propertyCreateTime )
 									),
 									text: __(

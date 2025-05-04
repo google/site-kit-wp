@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
@@ -34,7 +34,7 @@ const fetchStoreReducerCallback = ( state, tracking ) => ( {
 const fetchGetTrackingStore = createFetchStore( {
 	baseName: 'getTracking',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'tracking' );
+		return get( 'core', 'user', 'tracking' );
 	},
 	reducerCallback: fetchStoreReducerCallback,
 } );
@@ -42,7 +42,7 @@ const fetchGetTrackingStore = createFetchStore( {
 const fetchSaveTrackingStore = createFetchStore( {
 	baseName: 'setTracking',
 	controlCallback: ( enabled ) =>
-		API.set( 'core', 'user', 'tracking', { enabled: !! enabled } ),
+		set( 'core', 'user', 'tracking', { enabled: !! enabled } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( enabled ) => enabled,
 } );
@@ -103,7 +103,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*isTrackingEnabled() {
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 		if ( select( CORE_USER ).isTrackingEnabled() === undefined ) {
 			yield fetchGetTrackingStore.actions.fetchGetTracking();
 		}
@@ -137,17 +137,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetTrackingStore,
-	fetchSaveTrackingStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchGetTrackingStore, fetchSaveTrackingStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

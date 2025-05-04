@@ -19,11 +19,14 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-const { createRegistrySelector } = Data;
 
 // Actions
 const RECEIVE_NONCES = 'RECEIVE_NONCES';
@@ -31,7 +34,7 @@ const RECEIVE_NONCES = 'RECEIVE_NONCES';
 const fetchGetNoncesStore = createFetchStore( {
 	baseName: 'getNonces',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'nonces', undefined, {
+		return get( 'core', 'user', 'nonces', undefined, {
 			useCache: false,
 		} );
 	},
@@ -83,22 +86,13 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getNonces() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
-		const existingNonces = yield registry.select( CORE_USER ).getNonces();
-
-		if ( existingNonces ) {
-			return existingNonces;
+		if ( registry.select( CORE_USER ).getNonces() ) {
+			return;
 		}
 
-		const { error, response } =
-			yield fetchGetNoncesStore.actions.fetchGetNonces();
-
-		if ( ! error ) {
-			yield fetchGetNoncesStore.actions.receiveGetNonces( {
-				...response,
-			} );
-		}
+		yield fetchGetNoncesStore.actions.fetchGetNonces();
 	},
 };
 
@@ -136,7 +130,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetNoncesStore, {
+const store = combineStores( fetchGetNoncesStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

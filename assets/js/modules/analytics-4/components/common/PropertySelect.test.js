@@ -28,92 +28,69 @@ import {
 	act,
 	render,
 	provideUserAuthentication,
+	createTestRegistry,
 } from '../../../../../../tests/js/test-utils';
 
-const accountID = fixtures.accountSummaries[ 1 ]._id;
-const properties = fixtures.accountSummaries[ 1 ].propertySummaries;
+const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;
+const properties =
+	fixtures.accountSummaries.accountSummaries[ 1 ].propertySummaries;
 const propertyIDs = properties.map( ( { _id } ) => _id );
 
-const setupRegistry = ( registry ) => {
-	const { dispatch } = registry;
+describe( 'PropertySelect', () => {
+	let registry;
 
-	dispatch( CORE_SITE ).receiveSiteInfo( {
-		referenceSiteURL: 'http://example.com',
-	} );
-	provideUserAuthentication( registry );
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-		propertyID: properties[ 0 ]._id,
-	} );
-	dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
+	beforeEach( () => {
+		registry = createTestRegistry();
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-		fixtures.accountSummaries
-	);
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
-		'getAccountSummaries',
-		[]
-	);
+		const { dispatch } = registry;
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, {
-		accountID,
-	} );
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
-		accountID,
-	] );
-
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
-			propertyIDs,
+		dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: 'http://example.com',
 		} );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getWebDataStreamsBatch', [ properties[ 0 ]._id ] );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetWebDataStreams( fixtures.webDataStreams, {
+		provideUserAuthentication( registry );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: properties[ 0 ]._id,
 		} );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getWebDataStreams', [ properties[ 0 ]._id ] );
-};
+		dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
 
-const setupEmptyRegistry = ( registry ) => {
-	const { dispatch } = registry;
-
-	provideUserAuthentication( registry );
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
-
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-		fixtures.accountSummaries.map( ( account ) => ( {
-			...account,
-			propertySummaries: [],
-		} ) )
-	);
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
-		'getAccountSummaries',
-		[]
-	);
-};
-
-describe( 'PropertySelect', () => {
-	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
-		const { getAllByRole } = render( <PropertySelect />, {
-			setupRegistry: setupEmptyRegistry,
-		} );
-
-		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ 0 ].textContent ).toMatch(
-			/set up a new property/i
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
+			fixtures.accountSummaries
 		);
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+			'getAccountSummaries',
+			[]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, {
+			accountID,
+		} );
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
+			accountID,
+		] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
+				propertyIDs,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getWebDataStreamsBatch', [
+				properties[ 0 ]._id,
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreams( fixtures.webDataStreams, {
+				propertyID: properties[ 0 ]._id,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getWebDataStreams', [ properties[ 0 ]._id ] );
 	} );
 
 	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
-			setupRegistry,
+			registry,
 		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -125,7 +102,7 @@ describe( 'PropertySelect', () => {
 	it( 'should disable the property select if the user does not have module access', () => {
 		const { container, getAllByRole } = render(
 			<PropertySelect hasModuleAccess={ false } />,
-			{ setupRegistry }
+			{ registry }
 		);
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -141,8 +118,8 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should not render if account ID is not valid', () => {
-		const { container, registry } = render( <PropertySelect />, {
-			setupRegistry,
+		const { container } = render( <PropertySelect />, {
+			registry,
 		} );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
@@ -183,10 +160,9 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', () => {
-		const { getAllByRole, container, registry } = render(
-			<PropertySelect />,
-			{ setupRegistry }
-		);
+		const { getAllByRole, container } = render( <PropertySelect />, {
+			registry,
+		} );
 		const allProperties = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperties( accountID );
@@ -201,5 +177,35 @@ describe( 'PropertySelect', () => {
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyID();
 		expect( targetProperty._id ).toEqual( newPropertyID );
+	} );
+
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
+		registry = createTestRegistry();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( accountID );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: fixtures.accountSummaries.accountSummaries.map(
+				( account ) => ( {
+					...account,
+					propertySummaries: [],
+				} )
+			),
+			nextPageToken: null,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
+
+		const { getAllByRole } = render( <PropertySelect />, {
+			registry,
+		} );
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength( 1 );
+		expect( listItems[ 0 ].textContent ).toMatch(
+			/set up a new property/i
+		);
 	} );
 } );

@@ -25,23 +25,30 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
-import { ProgressBar } from 'googlesitekit-components';
 import OptionalSettingsView from './OptionalSettingsView';
-import SettingsEnhancedMeasurementView from './SettingsEnhancedMeasurementView';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting, {
+	BLANK_SPACE,
+} from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-import useMigrateAdsConversionID from '../../hooks/useMigrateAdsConversionID';
-const { useSelect } = Data;
+import { useFeature } from '../../../../hooks/useFeature';
+import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamID,
+} from '../../utils/validation';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function SettingsView() {
+	const fpmEnabled = useFeature( 'firstPartyMode' );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -66,14 +73,45 @@ export default function SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getServiceEntityAccessURL()
 	);
 
-	const isMigratingAdsConversionID = useMigrateAdsConversionID();
+	const webDataStreamID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+	);
+
+	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
+		if (
+			! isValidPropertyID( propertyID ) ||
+			! isValidWebDataStreamID( webDataStreamID )
+		) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
+			propertyID,
+			webDataStreamID
+		);
+	} );
+
+	const isConversionTrackingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isConversionTrackingEnabled()
+	);
+
+	const isFPMEnabled = useSelect( ( select ) => {
+		if ( ! fpmEnabled ) {
+			return false;
+		}
+
+		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
+			select( CORE_SITE );
+
+		return (
+			isFirstPartyModeEnabled() &&
+			isFPMHealthy() &&
+			isScriptAccessEnabled()
+		);
+	} );
 
 	if ( ! propertyID || propertyID === PROPERTY_CREATE ) {
 		return null;
-	}
-
-	if ( isMigratingAdsConversionID ) {
-		return <ProgressBar />;
 	}
 
 	return (
@@ -175,7 +213,7 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-						{ ! useSnippet && (
+						{ useSnippet === false && (
 							<span>
 								{ __(
 									'Snippet is not inserted',
@@ -183,13 +221,39 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
+						{ useSnippet === undefined && BLANK_SPACE }
 					</p>
 				</div>
 			</div>
 
-			<SettingsEnhancedMeasurementView />
-
 			<OptionalSettingsView />
+
+			<SettingsStatuses
+				statuses={ [
+					{
+						label: __( 'Enhanced Measurement', 'google-site-kit' ),
+						status: isEnhancedMeasurementStreamEnabled,
+					},
+					{
+						label: __(
+							'Enhanced Conversion Tracking',
+							'google-site-kit'
+						),
+						status: isConversionTrackingEnabled,
+					},
+					...( fpmEnabled
+						? [
+								{
+									label: __(
+										'First-party mode',
+										'google-site-kit'
+									),
+									status: isFPMEnabled,
+								},
+						  ]
+						: [] ),
+				] }
+			/>
 		</div>
 	);
 }

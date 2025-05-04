@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	numFmt,
@@ -51,7 +51,6 @@ import Link from '../../../../../components/Link';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
-const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( props ) {
 	const { loaded, error, report, dimensionValue, gatheringData } = props;

@@ -101,30 +101,49 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$original_settings = array(
-			'widgetSlugs'    => array( 'widgetA' ),
-			'isWidgetHidden' => false,
-		);
-
-		$changed_settings = array(
-			'widgetSlugs'    => array( 'widgetB' ),
-			'isWidgetHidden' => true,
-		);
-
-		$this->settings->register();
-		$this->settings->set( $original_settings );
-
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'settings' => $changed_settings,
+					'settings' => array(
+						'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4', 'widget5' ),
+						'isWidgetHidden' => false,
+					),
 				),
 			)
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
+
+		$this->assertEquals( 200, $response->get_status() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'widgetSlugs'    => array(
+							'widget0',
+							'widget1',
+							'widget2',
+							'widget3',
+							'widget4',
+							'widget5',
+							'widget6',
+							'widget7',
+							'widget8',
+							'widget9',
+						),
+						'isWidgetHidden' => false,
+					),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
 	}
 
 	public function test_set_settings__only__isWidgetHidden() {
@@ -242,7 +261,17 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			),
 			'too many widget slugs' => array(
 				array(
-					'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4' ),
+					'widgetSlugs'    => array(
+						'widget0',
+						'widget1',
+						'widget2',
+						'widget3',
+						'widget4',
+						'widget5',
+						'widget6',
+						'widget7',
+						'widget8',
+					),
 					'isWidgetHidden' => true,
 				),
 			),
@@ -254,5 +283,4 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 			),
 		);
 	}
-
 }

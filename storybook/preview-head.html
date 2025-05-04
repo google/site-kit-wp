@@ -1,0 +1,17 @@
+<link
+	rel="stylesheet"
+	id="googlesitekit-fonts-css"
+	href="https://fonts.googleapis.com/css?family=Google+Sans+Text:400,500|Google+Sans+Display:400,500,700&amp;subset=latin-ext&amp;display=swap"
+	media="all"
+/>
+<script>
+	window.addEventListener( 'load', async () => {
+		// Wait for all web fonts to be loaded.
+		await Promise.all(
+			[ ...document.fonts.values() ].map( ( font ) => font.load() )
+		);
+
+		// Signal Backstop that the environment is ready to go.
+		document.body.classList.add( 'backstopjs-ready' );
+	} );
+</script>

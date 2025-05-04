@@ -24,12 +24,16 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-const { createRegistrySelector, commonActions } = Data;
+
 const { getRegistry } = commonActions;
 
 function reducerCallback( state, expirableItems ) {
@@ -42,14 +46,14 @@ function reducerCallback( state, expirableItems ) {
 const fetchGetExpirableItemsStore = createFetchStore( {
 	baseName: 'getExpirableItems',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'expirable-items', {}, { useCache: false } ),
+		get( 'core', 'user', 'expirable-items', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchSetExpirableItemTimersStore = createFetchStore( {
 	baseName: 'setExpirableItemTimers',
 	controlCallback: ( items ) =>
-		API.set( 'core', 'user', 'set-expirable-item-timers', items ),
+		set( 'core', 'user', 'set-expirable-item-timers', items ),
 	reducerCallback,
 	argsToParams: ( items = [] ) => {
 		return items.map( ( item ) => {
@@ -114,7 +118,7 @@ const baseSelectors = {
 	/**
 	 * Returns the expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} Items if exists, `undefined` if not resolved yet.
@@ -126,7 +130,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the item exists in expirable items.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.
@@ -145,7 +149,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the item is active and not expired.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.
@@ -165,7 +169,10 @@ const baseSelectors = {
 				return false;
 			}
 
-			return expiresInSeconds > Math.floor( Date.now() / 1000 );
+			// We shouldn't use the getReferenceDate selector here because it returns
+			// date only whilst we need the current time as well to properly determine
+			// whether the expiration time passed or not.
+			return expiresInSeconds > Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 		}
 	),
 };
@@ -177,7 +184,7 @@ export const {
 	reducer,
 	resolvers,
 	selectors,
-} = Data.combineStores(
+} = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

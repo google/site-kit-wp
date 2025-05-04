@@ -22,9 +22,9 @@
 import {
 	createTestRegistry,
 	provideModules,
-	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 
 describe( 'ConfirmDisableConsentModeDialog', () => {
@@ -32,12 +32,17 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideModules( registry );
 	} );
 
 	it( 'should display appropriate subtitle with Ads not connected', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: false, connected: false },
-		] );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetAdsMeasurementStatus(
+				{ connected: false },
+				{ useCache: false }
+			);
 
 		const { getByText, waitForRegistry } = render(
 			<ConfirmDisableConsentModeDialog
@@ -53,15 +58,18 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 		expect(
 			getByText(
-				/Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to/i
+				/Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to:/i
 			)
 		).toBeInTheDocument();
 	} );
 
 	it( 'should display appropriate subtitle with Ads connected', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
-		] );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetAdsMeasurementStatus(
+				{ connected: true },
+				{ useCache: false }
+			);
 
 		const { getByText, waitForRegistry } = render(
 			<ConfirmDisableConsentModeDialog
@@ -77,61 +85,12 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 
 		expect(
 			getByText(
-				/Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom/i
+				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:/i
 			)
 		).toBeInTheDocument();
-	} );
-
-	it( 'should display appropriate subtitle with Ads not connected and Switzerland included in list of consent mode regions', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: false, connected: false },
-		] );
-
-		provideSiteInfo( registry, { consentModeRegions: [ 'CH' ] } );
-
-		const { getByText, waitForRegistry } = render(
-			<ConfirmDisableConsentModeDialog
-				onConfirm={ () => {} }
-				onCancel={ () => {} }
-			/>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
 
 		expect(
-			getByText(
-				/Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to/i
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'should display appropriate subtitle with Ads connected and Switzerland included in list of consent mode regions', async () => {
-		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
-		] );
-
-		provideSiteInfo( registry, { consentModeRegions: [ 'CH' ] } );
-
-		const { getByText, waitForRegistry } = render(
-			<ConfirmDisableConsentModeDialog
-				onConfirm={ () => {} }
-				onCancel={ () => {} }
-			/>,
-			{
-				registry,
-				features: [ 'consentModeSwitzerland' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByText(
-				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland/i
-			)
+			getByText( /How visitors interact with your site via Analytics/i )
 		).toBeInTheDocument();
 	} );
 } );

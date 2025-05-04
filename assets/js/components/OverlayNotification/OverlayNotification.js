@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { Slide } from '@material-ui/core';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -30,13 +31,12 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
-const { useDispatch, useSelect } = Data;
-
 export default function OverlayNotification( {
+	className,
 	children,
 	GraphicDesktop,
 	GraphicMobile,
@@ -72,9 +72,14 @@ export default function OverlayNotification( {
 		return null;
 	}
 
+	const classes = classnames(
+		'googlesitekit-overlay-notification',
+		className
+	);
+
 	if ( breakpoint === BREAKPOINT_SMALL ) {
 		return (
-			<div className="googlesitekit-overlay-notification">
+			<div className={ classes }>
 				{ children }
 
 				{ GraphicMobile && <GraphicMobile /> }
@@ -84,7 +89,7 @@ export default function OverlayNotification( {
 
 	return (
 		<Slide direction="up" in={ isShowingNotification }>
-			<div className="googlesitekit-overlay-notification">
+			<div className={ classes }>
 				{ GraphicDesktop && <GraphicDesktop /> }
 
 				{ children }
@@ -94,6 +99,7 @@ export default function OverlayNotification( {
 }
 
 OverlayNotification.propTypes = {
+	className: PropTypes.string,
 	children: PropTypes.node,
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,

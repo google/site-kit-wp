@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { FORM_ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from './constants';
@@ -28,7 +28,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
@@ -48,7 +47,7 @@ describe( 'modules/analytics-4 accounts', () => {
 	const countryCode = 'US';
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -59,11 +58,7 @@ describe( 'modules/analytics-4 accounts', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -170,7 +165,8 @@ describe( 'modules/analytics-4 accounts', () => {
 		} );
 
 		describe( 'selectAccount', () => {
-			const accountID = fixtures.accountSummaries[ 1 ]._id;
+			const accountID =
+				fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 
 			beforeEach( () => {
 				[
@@ -184,7 +180,8 @@ describe( 'modules/analytics-4 accounts', () => {
 						new RegExp(
 							'^/google-site-kit/v1/modules/analytics-4/data/property?'
 						),
-						fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ],
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries[ 0 ],
 					],
 					[
 						new RegExp(
@@ -209,7 +206,8 @@ describe( 'modules/analytics-4 accounts', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperties(
-						fixtures.accountSummaries[ 1 ].propertySummaries,
+						fixtures.accountSummaries.accountSummaries[ 1 ]
+							.propertySummaries,
 						{
 							accountID,
 						}
@@ -238,11 +236,52 @@ describe( 'modules/analytics-4 accounts', () => {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.selectAccount( accountID );
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-				).toBe(
-					fixtures.accountSummaries[ 1 ].propertySummaries[ 0 ]._id
+				expect( store.getState().settings.propertyID ).toBe(
+					fixtures.accountSummaries.accountSummaries[ 1 ]
+						.propertySummaries[ 0 ]._id
 				);
+			} );
+		} );
+
+		describe( 'fetchGetAccountSummaries', () => {
+			it( 'supports when no account summaries returned', async () => {
+				fetchMock.get( accountSummariesEndpoint, {
+					body: { nextPageToken: null },
+					status: 200,
+				} );
+				const { fetchGetAccountSummaries } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
+
+				await fetchGetAccountSummaries();
+
+				expect( store.getState().accountSummaries ).toEqual( [] );
+			} );
+		} );
+
+		describe( 'sortAccountSummaries', () => {
+			it( 'should sort account summaries in state by their display names', async () => {
+				const summary = {
+					account: 'accounts/123',
+					_id: '123',
+					propertySummaries: [],
+				};
+				const summaryA = { displayName: 'Account A', ...summary };
+				const summaryB = { displayName: 'Account B', ...summary };
+				const summaryC = { displayName: 'Account C', ...summary };
+				const { receiveGetAccountSummaries, sortAccountSummaries } =
+					registry.dispatch( MODULES_ANALYTICS_4 );
+
+				receiveGetAccountSummaries( {
+					accountSummaries: [ summaryC, summaryA, summaryB ],
+				} );
+
+				await sortAccountSummaries();
+
+				expect( store.getState().accountSummaries ).toEqual( [
+					summaryA,
+					summaryB,
+					summaryC,
+				] );
 			} );
 		} );
 	} );
@@ -269,17 +308,21 @@ describe( 'modules/analytics-4 accounts', () => {
 				const accountSummaries = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAccountSummaries();
+
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
 				expect( accountSummaries ).toHaveLength(
-					fixtures.accountSummaries.length
+					fixtures.accountSummaries.accountSummaries.length
 				);
 			} );
 
 			it( 'should not make a network request if properties for this account are already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( fixtures.accountSummaries );
+					.receiveGetAccountSummaries( {
+						accountSummaries:
+							fixtures.accountSummaries.accountSummaries,
+						nextPageToken: null,
+					} );
 
 				const accountSummaries = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -292,9 +335,11 @@ describe( 'modules/analytics-4 accounts', () => {
 				expect( fetchMock ).not.toHaveFetched(
 					accountSummariesEndpoint
 				);
-				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
+				expect( accountSummaries ).toEqual(
+					fixtures.accountSummaries.accountSummaries
+				);
 				expect( accountSummaries ).toHaveLength(
-					fixtures.accountSummaries.length
+					fixtures.accountSummaries.accountSummaries.length
 				);
 			} );
 
@@ -322,6 +367,74 @@ describe( 'modules/analytics-4 accounts', () => {
 					.getAccountSummaries();
 				expect( accountSummaries ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should make 3 requests to the account summaries endpoint when nextPageToken is not null twice, then null for the third time', async () => {
+				// Simulate the first two responses with nextPageToken and the third with null
+				const firstResponse = {
+					accountSummaries: [
+						fixtures.accountSummaries.accountSummaries[ 0 ],
+					], // Pick only the first element
+					nextPageToken: 'token1',
+				};
+				const secondResponse = {
+					accountSummaries: [
+						fixtures.accountSummaries.accountSummaries[ 1 ],
+					], // Pick the second element
+					nextPageToken: 'token2',
+				};
+				const thirdResponse = {
+					accountSummaries: [
+						fixtures.accountSummaries.accountSummaries[ 2 ],
+					], // Pick the third element
+					nextPageToken: null, // Third time, nextPageToken is null
+				};
+
+				// Mock fetch for each call
+				fetchMock.getOnce( accountSummariesEndpoint, {
+					body: firstResponse,
+					status: 200,
+				} );
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries\\?pageToken=token1.*'
+					),
+					{
+						body: secondResponse,
+						status: 200,
+					}
+				);
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries\\?pageToken=token2.*'
+					),
+					{
+						body: thirdResponse,
+						status: 200,
+					}
+				);
+
+				// Initial state
+				const initialAccountSummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccountSummaries();
+				expect( initialAccountSummaries ).toBeUndefined();
+
+				// Resolve the action
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
+
+				// Check that the endpoint was fetched 3 times
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
+
+				// Check that the final result is the concatenation of all summaries
+				const accountSummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccountSummaries();
+
+				expect( accountSummaries ).toHaveLength( 3 ); // Total length from all responses (3 elements)
 			} );
 		} );
 

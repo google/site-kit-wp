@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Switch } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import ErrorText from '../../components/ErrorText';
@@ -37,8 +37,7 @@ import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useDispatch, useSelect } = Data;
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();
@@ -64,7 +63,13 @@ export default function ConsentModeSwitch( { loading } ) {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const { triggerSurvey } = useDispatch( CORE_USER );
+	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isPromptDismissed(
+			CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
+		)
+	);
 
 	async function saveSettings() {
 		setSaveError( null );
@@ -81,6 +86,11 @@ export default function ConsentModeSwitch( { loading } ) {
 
 		if ( error ) {
 			setSaveError( error );
+			return;
+		}
+
+		if ( ! isDismissed ) {
+			await dismissPrompt( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG );
 		}
 	}
 

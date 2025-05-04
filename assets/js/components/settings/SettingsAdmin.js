@@ -24,8 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import Layout from '../layout/Layout';
@@ -38,12 +39,11 @@ import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
 import PreviewBlock from '../PreviewBlock';
 import SettingsCardVisitorGroups from '../../modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
-import { useFeature } from '../../hooks/useFeature';
-const { useSelect } = Data;
 
 export default function SettingsAdmin() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
+	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -147,7 +147,7 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ audienceSegmentationEnabled && isAnalyticsConnected && (
+			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
 				<Cell size={ 12 }>
 					<SettingsCardVisitorGroups />
 				</Cell>

@@ -41,7 +41,8 @@
 			width: 100%;
 		}
 
-		body.googlesitekit-showing-feature-tour & {
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
 			position: static;
 		}
 
@@ -62,7 +63,7 @@
 
 		.mdc-chip {
 			background-color: $c-base;
-			border: 1px solid $c-neutral-n-50;
+			border: 1px solid $c-surfaces-inverse-on-surface;
 			border-radius: $br-lg;
 			color: $c-surfaces-on-surface;
 			font-size: $fs-title-sm;

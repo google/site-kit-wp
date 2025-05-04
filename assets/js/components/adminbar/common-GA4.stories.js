@@ -27,7 +27,7 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
 import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { DAY_IN_SECONDS } from '../../util';
@@ -73,7 +73,7 @@ const adminbarAnalytics4OptionSets = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 	{
-		startDate: '2020-12-31',
+		startDate: '2020-12-03',
 		endDate: '2021-01-27',
 		metrics: [
 			{

@@ -35,7 +35,6 @@ import {
 	muteFetch,
 	provideModules,
 	provideSiteInfo,
-	unsubscribeFromAll,
 } from '../../../../../../../tests/js/utils';
 import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -75,10 +74,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 		container = renderResult.container;
 		getByRole = renderResult.getByRole;
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'Place Tag step', () => {
@@ -372,6 +367,95 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				writable: true,
 				value: originalReferrer,
 			} );
+		} );
+	} );
+
+	describe( 'I published my message step', () => {
+		beforeEach( async () => {
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+				)
+			);
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				)
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /enable message/i } )
+				);
+			} );
+		} );
+
+		it( 'should return to dashboard with success notice when `I published my message` link is clicked', async () => {
+			const dashboardURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-dashboard' );
+
+			const setupSuccessURL = addQueryArgs( dashboardURL, {
+				notification: 'ad_blocking_recovery_setup_success',
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				),
+				{ body: { success: true }, status: 200 }
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', {
+						name: /I published my message/i,
+					} )
+				);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'adBlockingRecovery_adsense-abr',
+				'confirm_message_ready_secondary_cta'
+			);
+
+			// Save updated Ad Blocking Recovery Settings.
+			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
+				{
+					data: {
+						adBlockingRecoverySetupStatus: 'setup-confirmed',
+					},
+				}
+			);
+
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				setupSuccessURL
+			);
+		} );
+
+		it( 'should fire the tracking event for `I published my message` when it is clicked', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				),
+				{ body: { success: true }, status: 200 }
+			);
+
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: /I published my message/i } )
+				);
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'adBlockingRecovery_adsense-abr',
+				'confirm_message_ready_secondary_cta'
+			);
 		} );
 	} );
 

@@ -25,11 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
+import { WEEK_IN_SECONDS, dateSub, trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import SettingsNotice, {
 	TYPE_INFO,
@@ -39,8 +39,6 @@ import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
 import withIntersectionObserver from '../../../../util/withIntersectionObserver';
 
-const { useSelect } = Data;
-
 const SettingsNoticeWithIntersectionObserver =
 	withIntersectionObserver( SettingsNotice );
 
@@ -48,18 +46,27 @@ export default function AdsConversionIDSettingsNotice() {
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
-	);
-	const isNoticeDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
+
+	const shouldShowNotice = useSelect( ( select ) => {
+		const isDismissed = select( CORE_USER ).isItemDismissed(
 			ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY
-		)
-	);
-	const shouldShowNotice =
-		false === isNoticeDismissed && // User has not dismissed the notice.
-		adsConversionIDMigratedAtMs && // Data migration has happened.
-		Date.now() - adsConversionIDMigratedAtMs <= 28 * DAY_IN_SECONDS * 1000; // If it has been <= 28 days since the migration.
+		);
+		if ( isDismissed ) {
+			return false;
+		}
+
+		const adsConversionIDMigratedAtMs =
+			select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs();
+		if ( ! adsConversionIDMigratedAtMs ) {
+			return false;
+		}
+
+		// If it has been <= 28 days since the migration.
+		const referenceDate = select( CORE_USER ).getReferenceDate();
+		const fourWeeksAgo = dateSub( referenceDate, 4 * WEEK_IN_SECONDS );
+		return fourWeeksAgo.getTime() <= adsConversionIDMigratedAtMs;
+	} );
+
 	const viewContext = useViewContext();
 	const trackDismissNotificationEvent = () => {
 		trackEvent(
@@ -94,7 +101,7 @@ export default function AdsConversionIDSettingsNotice() {
 			Icon={ InfoCircleIcon }
 			notice={ createInterpolateElement(
 				__(
-					'Ads Conversion Tracking ID has been moved to <a>Ads settings</a>',
+					'Ads Conversion ID has been moved to <a>Ads settings</a>',
 					'google-site-kit'
 				),
 				{

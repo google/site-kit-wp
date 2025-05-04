@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Tests\Modules\Analytics_4\Audience_SettingsTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Analytics_4
- * @copyright 2024 Google LLC
+ * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -11,169 +11,175 @@
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
-use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
-class Audience_SettingsTest extends TestCase {
+class Audience_SettingsTest extends SettingsTestCase {
 
 	/**
-	 * Audience_Settings instance.
+	 * Settings object.
 	 *
 	 * @var Audience_Settings
 	 */
 	private $audience_settings;
 
+	/**
+	 * Options instance.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
+	 * Admin ID.
+	 *
+	 * @var int
+	 */
+	private $user_id;
+
 	public function set_up() {
 		parent::set_up();
-		$user_id      = $this->factory()->user->create();
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options = new User_Options( $context, $user_id );
-		$meta_key     = $user_options->get_meta_key( Audience_Settings::OPTION );
 
-		unregister_meta_key( 'user', $meta_key );
-		// Needed to unregister the instance registered during plugin bootstrap.
-		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
-
-		$this->audience_settings = new Audience_Settings( $user_options );
-
-		$this->audience_settings->register();
-	}
-
-	public function data_audience_settings() {
-		return array(
-			'empty by default' => array(
-				null,
-				array(),
-			),
-			'non-array - bool' => array(
-				false,
-				array(),
-			),
-			'non-array - int'  => array(
-				123,
-				array(),
-			),
-			'empty array of configuredAudiences and null isAudienceSegmentationWidgetHidden flag' => array(
-				array(
-					'configuredAudiences'                => array(),
-					'isAudienceSegmentationWidgetHidden' => null,
-				),
-				array(
-					'configuredAudiences' => array(),
-				),
-			),
-			'array of configuredAudiences with non-string elements' => array(
-				array( 'configuredAudiences' => array( 'validAudienceResourceName1', false, true, null, array(), 'validAudienceResourceName2', '' ) ),
-				array( 'configuredAudiences' => array( 'validAudienceResourceName1', 'validAudienceResourceName2' ) ),
-			),
-			'array of configuredAudiences and int isAudienceSegmentationWidgetHidden flag' => array(
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => 1,
-				),
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => true,
-				),
-			),
-			'array of configuredAudiences and int isAudienceSegmentationWidgetHidden flag' => array(
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => 0,
-				),
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => true,
-				),
-			),
-			'array of configuredAudiences and a string isAudienceSegmentationWidgetHidden flag' => array(
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => 'some string',
-				),
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => true,
-				),
-			),
-			'array of configuredAudiences and a true isAudienceSegmentationWidgetHidden flag' => array(
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => true,
-				),
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => true,
-				),
-			),
-			'array of configuredAudiences and a false isAudienceSegmentationWidgetHidden flag' => array(
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => false,
-				),
-				array(
-					'configuredAudiences'                => array( 'validAudienceResourceName1', 'validAudienceResourceName1' ),
-					'isAudienceSegmentationWidgetHidden' => false,
-				),
-			),
-		);
+		$this->options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->audience_settings = new Audience_Settings( $this->options );
 	}
 
 	/**
-	 * @dataProvider data_audience_settings
-	 *
-	 * @param mixed $input    Values to pass to the `set()` method.
-	 * @param array $expected The expected sanitized array.
+	 * @inheritDoc
 	 */
-	public function test_get_sanitize_callback( $input, $expected ) {
-		$this->audience_settings->set( $input );
-		$this->assertEquals( $expected, $this->audience_settings->get() );
+	protected function get_option_name() {
+		return Audience_Settings::OPTION;
+	}
+
+	public function test_get_default() {
+		$this->audience_settings->register();
+
+		$default = $this->audience_settings->get_default();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'availableAudiences'                   => null,
+				'availableAudiencesLastSyncedAt'       => 0,
+				'audienceSegmentationSetupCompletedBy' => null,
+			),
+			$default
+		);
+	}
+
+	public function test_get_type() {
+		$this->audience_settings->register();
+
+		$this->assertEquals( 'array', $this->audience_settings->get_type() );
+	}
+
+	public function test_get_sanitize_callback_with_valid_values() {
+		$this->audience_settings->register();
+
+		$this->options->set(
+			$this->get_option_name(),
+			array(
+				'availableAudiences'                   => array( 'test' ),
+				'availableAudiencesLastSyncedAt'       => 1,
+				'audienceSegmentationSetupCompletedBy' => 1,
+			)
+		);
+
+		$sanitized_settings = $this->audience_settings->get();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'availableAudiences'                   => array( 'test' ),
+				'availableAudiencesLastSyncedAt'       => 1,
+				'audienceSegmentationSetupCompletedBy' => 1,
+			),
+			$sanitized_settings
+		);
+	}
+
+	public function test_get_sanitize_callback_with_invalid_values() {
+		$this->audience_settings->register();
+
+		$this->options->set(
+			$this->get_option_name(),
+			array(
+				'availableAudiences'                   => 1,
+				'availableAudiencesLastSyncedAt'       => 'test',
+				'audienceSegmentationSetupCompletedBy' => 'test',
+			)
+		);
+
+		$sanitized_settings = $this->audience_settings->get();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'availableAudiences'                   => null,
+				'availableAudiencesLastSyncedAt'       => 0,
+				'audienceSegmentationSetupCompletedBy' => null,
+			),
+			$sanitized_settings
+		);
 	}
 
 	public function test_merge() {
-		$original_settings = array(
-			'configuredAudiences'                => array( 'widgetA' ),
-			'isAudienceSegmentationWidgetHidden' => false,
+		$this->audience_settings->register();
+
+		$this->options->set(
+			$this->get_option_name(),
+			array(
+				'availableAudiences'                   => array( 'test' ),
+				'availableAudiencesLastSyncedAt'       => 1,
+				'audienceSegmentationSetupCompletedBy' => 1,
+			)
 		);
 
-		$changed_settings = array(
-			'configuredAudiences'                => array( 'widgetB' ),
-			'isAudienceSegmentationWidgetHidden' => true,
+		$this->audience_settings->merge(
+			array(
+				'availableAudiences'                   => array( 'test2' ),
+				'availableAudiencesLastSyncedAt'       => 2,
+				'audienceSegmentationSetupCompletedBy' => 2,
+			)
 		);
 
-		// Make sure settings can be updated even without having them set initially
-		$this->audience_settings->merge( $original_settings );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
+		$settings = $this->audience_settings->get();
 
-		// Make sure invalid keys aren't set
-		$this->audience_settings->merge( array( 'test_key' => 'test_value' ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
-
-		// Make sure that we can update settings partially
-		$this->audience_settings->set( $original_settings );
-		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => true ) );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'configuredAudiences'                => $original_settings['configuredAudiences'],
-				'isAudienceSegmentationWidgetHidden' => true,
+				'availableAudiences'                   => array( 'test2' ),
+				'availableAudiencesLastSyncedAt'       => 2,
+				'audienceSegmentationSetupCompletedBy' => 2,
+			),
+			$settings
+		);
+	}
+
+	public function test_merge_with_invalid_values() {
+		$this->audience_settings->register();
+
+		$this->options->set(
+			$this->get_option_name(),
+			array(
+				'availableAudiences'                   => array( 'test' ),
+				'availableAudiencesLastSyncedAt'       => 1,
+				'audienceSegmentationSetupCompletedBy' => 1,
+			)
+		);
+
+		$new_settings = $this->audience_settings->merge(
+			array(
+				'availableAudiences'                   => 1,
+				'availableAudiencesLastSyncedAt'       => 'test',
+				'audienceSegmentationSetupCompletedBy' => 'test',
+			)
+		);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'availableAudiences'                   => null,
+				'availableAudiencesLastSyncedAt'       => 0,
+				'audienceSegmentationSetupCompletedBy' => null,
 			),
 			$this->audience_settings->get()
 		);
-
-		// Make sure that we can update all settings at once
-		$this->audience_settings->set( $original_settings );
-		$this->audience_settings->merge( $changed_settings );
-		$this->assertEqualSetsWithIndex( $changed_settings, $this->audience_settings->get() );
-
-		// Make sure that we can't set wrong format for the isAudienceSegmentationWidgetHidden property
-		$this->audience_settings->set( $original_settings );
-		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
-
-		// Make sure that we can't set wrong format for the configuredAudiences property
-		$this->audience_settings->set( $original_settings );
-		$this->audience_settings->merge( array( 'configuredAudiences' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
 	}
 }

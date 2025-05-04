@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 17 ] */
+
 /**
  * Internal dependencies
  */
@@ -75,6 +77,12 @@ module.exports = {
 				// Ignore imports, because they may not respect our rules.
 				if ( isImported( node ) ) {
 					importedNames.push( node.name );
+					return;
+				}
+
+				// Ignore identifiers that are a function call or argument, we can assume the identifier will be validated at the point of declaration,
+				// but want to allow those which are exceptions to the rule to be invoked or passed into functions without raising a linting error.
+				if ( node.parent?.type === 'CallExpression' ) {
 					return;
 				}
 

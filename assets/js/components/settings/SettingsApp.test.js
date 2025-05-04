@@ -32,7 +32,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	muteFetch,
-	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -57,6 +56,8 @@ describe( 'SettingsApp', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetAuthentication( { needsReauthentication: false } );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry
 			.dispatch( CORE_SITE )
@@ -120,6 +121,11 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		history.push( '/admin-settings' );
 
 		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
@@ -136,8 +142,8 @@ describe( 'SettingsApp', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
-	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', () => {
-		const { getAllByRole } = render( <SettingsApp />, {
+	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', async () => {
+		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
 			history,
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
@@ -146,6 +152,9 @@ describe( 'SettingsApp', () => {
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'connect-more-services' ) ]
 		);
+
+		await waitForRegistry();
+
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
 
@@ -166,6 +175,11 @@ describe( 'SettingsApp', () => {
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
 		const { getAllByRole, waitForRegistry } = render( <SettingsApp />, {
@@ -179,8 +193,6 @@ describe( 'SettingsApp', () => {
 		fireEvent.click(
 			getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ]
 		);
-
-		await act( waitForRegistry );
 
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );

@@ -24,8 +24,8 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -33,7 +33,7 @@ import { createReducer } from '../../../googlesitekit/data/create-reducer';
 const fetchGetGoogleTagContainerStore = createFetchStore( {
 	baseName: 'getGoogleTagContainer',
 	controlCallback( { measurementID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'container-lookup',
@@ -57,7 +57,7 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 	baseName: 'getGoogleTagContainerDestinations',
 	controlCallback( { gtmAccountID, gtmContainerID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'container-destinations',
@@ -109,7 +109,7 @@ const baseReducer = ( state, { type } ) => {
 
 const baseResolvers = {
 	*getGoogleTagContainer( measurementID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const container = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getGoogleTagContainer( measurementID );
@@ -122,7 +122,7 @@ const baseResolvers = {
 	},
 
 	*getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const containerDestinations = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID );
@@ -165,7 +165,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetGoogleTagContainerStore,
 	fetchGetGoogleTagContainerDestinationsStore,
 	{

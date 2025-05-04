@@ -25,12 +25,16 @@ import { isPlainObject, isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-const { commonActions, createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 function fetchStoreReducerCallback( state, inputSettings ) {
@@ -40,7 +44,7 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'user-input-settings', undefined, {
+		get( 'core', 'user', 'user-input-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -49,7 +53,7 @@ const fetchGetUserInputSettingsStore = createFetchStore( {
 const fetchSaveUserInputSettingsStore = createFetchStore( {
 	baseName: 'saveUserInputSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'user-input-settings', { settings } ),
+		set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
@@ -97,7 +101,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveUserInputSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
 		const trim = ( value ) => value.trim();
@@ -162,11 +166,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*maybeTriggerUserInputSurvey() {
-		const { __experimentalResolveSelect, dispatch } =
-			yield commonActions.getRegistry();
+		const { resolveSelect, dispatch } = yield commonActions.getRegistry();
 
 		const settings = yield commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getUserInputSettings()
+			resolveSelect( CORE_USER ).getUserInputSettings()
 		);
 
 		const settingsAnsweredOther = Object.keys( settings ).filter( ( key ) =>
@@ -189,39 +192,35 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
+
 	switch ( type ) {
 		case SET_USER_INPUT_SETTING: {
-			return {
-				...state,
-				inputSettings: {
-					...state.inputSettings,
-					[ payload.settingID ]: {
-						...( ( state.inputSettings || {} )[
-							payload.settingID
-						] || {} ),
-						values: payload.values,
-					},
-				},
-			};
+			state.inputSettings = state.inputSettings || {};
+
+			if ( ! state.inputSettings[ payload.settingID ] ) {
+				state.inputSettings[ payload.settingID ] = {};
+			}
+
+			state.inputSettings[ payload.settingID ].values = payload.values;
+			break;
 		}
+
 		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
-			return {
-				...state,
-				isSavingInputSettings: payload.isSaving,
-			};
+			state.isSavingInputSettings = payload.isSaving;
+			break;
 		}
+
 		case RESET_USER_INPUT_SETTINGS: {
-			return {
-				...state,
-				inputSettings: state.savedInputSettings,
-			};
+			state.inputSettings = state.savedInputSettings;
+			break;
 		}
-		default: {
-			return state;
-		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getUserInputSettings() {
@@ -257,6 +256,19 @@ const baseSelectors = {
 	getUserInputSettings( state ) {
 		const { inputSettings } = state;
 		return inputSettings;
+	},
+
+	/**
+	 * Gets saved input settings info for this user.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Saved user input settings.
+	 */
+	getSavedUserInputSettings( state ) {
+		const { savedInputSettings } = state;
+		return savedInputSettings;
 	},
 
 	/**
@@ -343,7 +355,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetUserInputSettingsStore,
 	fetchSaveUserInputSettingsStore,
 	{

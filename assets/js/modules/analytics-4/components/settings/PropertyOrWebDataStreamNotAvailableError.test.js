@@ -29,8 +29,9 @@ import * as fixtures from '../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 
-const accountID = fixtures.accountSummaries[ 1 ]._id;
-const properties = fixtures.accountSummaries[ 1 ].propertySummaries;
+const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;
+const properties =
+	fixtures.accountSummaries.accountSummaries[ 1 ].propertySummaries;
 const propertyID = properties[ 0 ]._id;
 const measurementID =
 	fixtures.webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId; // eslint-disable-line sitekit/acronym-case
@@ -61,11 +62,22 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			.setMeasurementID( measurementID );
 	} );
 
-	it( 'should not render when properties are not loaded yet', () => {
+	it( 'should not render when properties are not loaded yet', async () => {
+		/*
+		 * We need to freeze the `GET:account-summaries` request twice here, as it will be called a
+		 * second time while resolvers are run post-render. This is due to the initial endpoint
+		 * response being frozen, meaning the `getAccountSummaries()` resolver is unable to resolve
+		 * itself the first time around, and will be called again when `getAccountSummaries()` is
+		 * re-selected by another resolver.
+		 *
+		 * In practice, this is not an issue because the `PropertyOrWebDataStreamNotAvailableError`
+		 * component is not rendered until the account summaries are already loaded.
+		 */
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
-			)
+			),
+			{ repeat: 2 }
 		);
 
 		registry
@@ -74,7 +86,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 				propertyIDs: [ propertyID ],
 			} );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess
 				isDisabled={ false }
@@ -83,9 +95,11 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 		);
 
 		expect( container ).toBeEmptyDOMElement();
+
+		await waitForRegistry();
 	} );
 
-	it( 'should not render when Web Data Streams are not loaded yet', () => {
+	it( 'should not render when Web Data Streams are not loaded yet', async () => {
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
@@ -96,7 +110,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAccountSummaries( fixtures.accountSummaries );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess
 				isDisabled={ false }
@@ -104,13 +118,15 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			{ registry }
 		);
 
+		await waitForRegistry();
+
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when selected property and Web Data Stream are available', () => {
+	it( 'should not render when selected property and Web Data Stream are available', async () => {
 		provideGA4PropertyAndWebDataStream( registry );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess
 				isDisabled={ false }
@@ -118,19 +134,23 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			{ registry }
 		);
 
+		await waitForRegistry();
+
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not render when user does not have module access', () => {
+	it( 'should not render when user does not have module access', async () => {
 		provideGA4PropertyAndWebDataStream( registry );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess={ false }
 				isDisabled={ false }
 			/>,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -149,7 +169,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render error message when selected Web Data Stream is not available', () => {
+	it( 'should render error message when selected Web Data Stream is not available', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAccountSummaries( fixtures.accountSummaries );
@@ -160,36 +180,41 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 			}
 		);
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess
 				isDisabled={ false }
 			/>,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			`The previously selected web data stream with measurement ID ${ measurementID } is no longer available.`
 		);
 	} );
 
-	it( 'should render error message when selected property is not available', () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAccountSummaries( [] );
+	it( 'should render error message when selected property is not available', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: [],
+			nextPageToken: null,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
 				propertyIDs: [ propertyID ],
 			} );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
 				hasModuleAccess
 				isDisabled={ false }
 			/>,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			`The previously selected property with ID ${ propertyID } is no longer available.`

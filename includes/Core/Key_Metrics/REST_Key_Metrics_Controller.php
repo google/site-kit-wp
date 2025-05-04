@@ -93,7 +93,7 @@ class REST_Key_Metrics_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$has_capabilities = function() {
+		$has_capabilities = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
@@ -133,7 +133,8 @@ class REST_Key_Metrics_Controller {
 							// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
 							// which we can solely rely on `maxItems` in the schema validation (see below).
 							// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
-							if ( $num_widgets > 4 ) {
+							$max_num_widgets = 8;
+							if ( $num_widgets > $max_num_widgets ) {
 								return new WP_Error(
 									'rest_invalid_param',
 									__( 'No more than 4 key metrics can be selected.', 'google-site-kit' ),
@@ -170,7 +171,7 @@ class REST_Key_Metrics_Controller {
 										'widgetSlugs'    => array(
 											'type'     => 'array',
 											'required' => false,
-											'maxItems' => 4,
+											'maxItems' => 8,
 											'items'    => array(
 												'type' => 'string',
 											),
@@ -184,5 +185,4 @@ class REST_Key_Metrics_Controller {
 			),
 		);
 	}
-
 }

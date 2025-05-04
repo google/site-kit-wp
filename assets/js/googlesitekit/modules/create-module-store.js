@@ -24,13 +24,14 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { createNotificationsStore } from '../data/create-notifications-store';
 import {
 	createSettingsStore,
 	makeDefaultSubmitChanges,
 	makeDefaultCanSubmitChanges,
 	makeDefaultRollbackChanges,
+	makeDefaultHaveSettingsChanged,
 } from '../data/create-settings-store';
 import { createErrorStore } from '../data/create-error-store';
 import { createInfoStore } from './create-info-store';
@@ -72,6 +73,7 @@ export function createModuleStore( slug, args = {} ) {
 		requiresSetup = true,
 		submitChanges,
 		rollbackChanges,
+		validateHaveSettingsChanged = null,
 		validateCanSubmitChanges,
 		validateIsSetupBlocked = undefined,
 	} = args;
@@ -118,6 +120,9 @@ export function createModuleStore( slug, args = {} ) {
 				storeName,
 				settingSlugs,
 				initialSettings,
+				validateHaveSettingsChanged:
+					validateHaveSettingsChanged ||
+					makeDefaultHaveSettingsChanged(),
 			}
 		);
 
@@ -132,9 +137,9 @@ export function createModuleStore( slug, args = {} ) {
 		} );
 
 		// To prevent duplication errors during combining stores, we don't need to combine
-		// Data.commonStore here since settingsStore already uses commonActions and commonControls
-		// from the Data.commonStore.
-		combinedStore = Data.combineStores(
+		// commonStore here since settingsStore already uses commonActions and commonControls
+		// from the commonStore.
+		combinedStore = combineStores(
 			notificationsStore,
 			settingsStore,
 			submitChangesStore,
@@ -143,8 +148,8 @@ export function createModuleStore( slug, args = {} ) {
 			setupBlockedStore
 		);
 	} else {
-		combinedStore = Data.combineStores(
-			Data.commonStore,
+		combinedStore = combineStores(
+			commonStore,
 			notificationsStore,
 			infoStore,
 			setupBlockedStore,

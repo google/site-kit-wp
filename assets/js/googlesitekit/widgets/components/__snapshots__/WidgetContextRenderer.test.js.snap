@@ -1,5 +1,79 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`WidgetContextRenderer should render the registered widget area with a subtitle component 1`] = `
+<div
+  class="googlesitekit-widget-context"
+>
+  <div
+    class="mdc-layout-grid googlesitekit-hidden googlesitekit-widget-area googlesitekit-widget-area--TestArea1 googlesitekit-widget-area--composite"
+  />
+  <div
+    class="mdc-layout-grid googlesitekit-widget-area googlesitekit-widget-area--TestArea3 googlesitekit-widget-area--composite"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="googlesitekit-widget-area-header mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <h3
+          class="googlesitekit-widget-area-header__title googlesitekit-heading-3"
+        >
+          Dashboard Body
+        </h3>
+        <div
+          class="googlesitekit-widget-area-header__details"
+        >
+          <h4
+            class="googlesitekit-widget-area-header__subtitle"
+          >
+            Component title
+          </h4>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget-area-widgets"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="mdc-layout-grid"
+          >
+            <div
+              class="mdc-layout-grid__inner"
+            >
+              <div
+                class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+              >
+                <div
+                  class="googlesitekit-widget googlesitekit-widget--TestWidget1"
+                >
+                  <div
+                    class="googlesitekit-widget__body"
+                  >
+                    <div>
+                      Foo bar!
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mdc-layout-grid__inner"
+    />
+  </div>
+</div>
+`;
+
 exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
 <div
   class="googlesitekit-widget-context"
@@ -64,6 +138,9 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="mdc-layout-grid__inner"
+    />
   </div>
   <div
     class="mdc-layout-grid googlesitekit-widget-area googlesitekit-widget-area--TestArea2 googlesitekit-widget-area--composite"
@@ -125,6 +202,9 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="mdc-layout-grid__inner"
+    />
   </div>
 </div>
 `;

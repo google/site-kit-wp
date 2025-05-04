@@ -28,12 +28,21 @@ import {
 } from '../../../../../../tests/js/utils';
 import SetupMainPAX from './SetupMainPAX';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { Cell, Grid, Row } from '../../../../material-components';
 
-function Template( { setupRegistry = () => {} } ) {
+function Template() {
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<SetupMainPAX />
-		</WithRegistrySetup>
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<SetupMainPAX />
+						</Cell>
+					</Row>
+				</Grid>
+			</section>
+		</div>
 	);
 }
 
@@ -52,9 +61,7 @@ Default.args = {
 		} );
 	},
 };
-Default.scenario = {
-	label: 'Modules/Ads/Setup/SetupMainPAX/Default',
-};
+Default.scenario = {};
 
 export const WithoutAdWordsScope = Template.bind( {} );
 WithoutAdWordsScope.storyName = 'WithoutAdWordsScope';
@@ -67,17 +74,40 @@ WithoutAdWordsScope.args = {
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 	},
 };
-WithoutAdWordsScope.scenario = {
-	label: 'Modules/Ads/Setup/SetupMainPAX/WithoutAdWordsScope',
+WithoutAdWordsScope.scenario = {};
+
+export const WithGoogleForWooCommerceConflict = Template.bind( {} );
+WithGoogleForWooCommerceConflict.storyName = 'WithGoogleForWooCommerceConflict';
+WithGoogleForWooCommerceConflict.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADS ).setSettings( {
+			conversionID: 'AW-123456789',
+		} );
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				'google-listings-and-ads': { conversionID: 'AW-123456789' },
+			},
+		} );
+
+		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [ ADWORDS_SCOPE ],
+		} );
+	},
 };
+WithGoogleForWooCommerceConflict.scenario = {};
 
 export default {
 	title: 'Modules/Ads/Setup/SetupMainPAX',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				args.setupRegistry?.( registry );
 			};
 
 			return (

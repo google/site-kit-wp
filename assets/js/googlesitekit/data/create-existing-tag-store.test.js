@@ -19,12 +19,11 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { setUsingCache } from 'googlesitekit-api';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import {
 	createTestRegistry,
 	muteFetch,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createExistingTagStore } from './create-existing-tag-store';
@@ -40,15 +39,15 @@ describe( 'createExistingTagStore store', () => {
 	let store;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.registerStore(
 			TEST_STORE,
-			Data.combineStores(
-				Data.commonStore,
+			combineStores(
+				commonStore,
 				createExistingTagStore( {
 					storeName: TEST_STORE,
 					tagMatchers,
@@ -62,11 +61,7 @@ describe( 'createExistingTagStore store', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -121,30 +116,6 @@ describe( 'createExistingTagStore store', () => {
 					.dispatch( TEST_STORE )
 					.receiveGetExistingTag( existingTag );
 				expect( store.getState().existingTag ).toBe( existingTag );
-			} );
-		} );
-
-		describe( 'waitForExistingTag', () => {
-			it( 'supports asynchronous waiting for tag', async () => {
-				const expectedTag = 'test-tag-value';
-				fetchMock.getOnce(
-					{ query: { tagverify: '1' } },
-					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
-				);
-
-				const promise = registry
-					.dispatch( TEST_STORE )
-					.waitForExistingTag();
-				expect( registry.select( TEST_STORE ).getExistingTag() ).toBe(
-					undefined
-				);
-
-				await promise;
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( TEST_STORE ).getExistingTag() ).toBe(
-					expectedTag
-				);
 			} );
 		} );
 	} );

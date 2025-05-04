@@ -16,32 +16,43 @@
  * limitations under the License.
  */
 
+@mixin mdc-button-tertiary-styles( $ink-color, $hover-bg, $focus-bg ) {
+	@include mdc-button-ink-color( $ink-color );
+
+	&:hover {
+		@include mdc-button-filled-accessible( $hover-bg );
+		@include mdc-button-ink-color( $ink-color );
+	}
+
+	&:active,
+	&:focus {
+		@include mdc-button-filled-accessible( $focus-bg );
+		@include mdc-button-ink-color( $ink-color );
+	}
+}
+
 .googlesitekit-subtle-notification {
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
+	color: $c-content-on-primary-container;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: $grid-gap-phone;
+	padding: 14px $grid-gap-phone;
 
 	@media (min-width: $bp-tablet) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
-		padding: 18px $grid-gap-desktop;
+		padding: 14px $grid-gap-desktop;
 	}
 
 	.googlesitekit-subtle-notification__icon {
-		display: none;
-
-		@media (min-width: $bp-tablet) {
-			display: block;
-		}
+		display: flex;
 	}
 
 	.googlesitekit-subtle-notification__content {
-		color: $c-content-on-primary-container;
 		font-family: $f-primary;
 		font-size: $fs-title-md;
 		font-weight: $fw-medium;
@@ -53,25 +64,156 @@
 		}
 
 		p {
+			margin: 0 0 10px;
 			@media (min-width: $bp-tablet) {
 				margin: 0;
+			}
+
+			& > a {
+				color: inherit;
+				text-decoration: underline;
 			}
 		}
 	}
 
 	.mdc-button {
+		font-weight: $fw-medium;
 		margin: 0 auto;
+		min-height: 32px;
+		padding: 6px $grid-gap-phone;
 
 		&.mdc-button--tertiary:not(:disabled) {
-			color: $c-site-kit-sk-600;
+			color: $c-content-on-primary-container;
 		}
 
 		@media (min-width: $bp-tablet) {
+			margin: 0;
+		}
+
+		&.mdc-button--raised {
+			font-weight: $fw-medium;
+			padding: 6px $grid-gap-phone;
+		}
+	}
+
+	.googlesitekit-subtle-notification__action {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: $grid-gap-phone;
+		justify-content: end;
+		width: 100%;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: initial;
+			width: initial;
+		}
+
+		.mdc-button {
 			margin: 0;
 		}
 	}
 
 	p.googlesitekit-subtle-notification__secondary_description {
 		font-weight: $fw-normal;
+	}
+
+	.googlesitekit-subtle-notification__cta {
+
+		&:not(.googlesitekit-subtle-notification__cta--spinner__running) {
+
+			svg {
+				margin-inline-start: 6px;
+			}
+		}
+
+		&.googlesitekit-subtle-notification__cta--spinner__running {
+
+			.mdc-button__label {
+				margin-left: 3px;
+			}
+		}
+	}
+
+	&.googlesitekit-subtle-notification--info {
+		background-color: $c-surfaces-background;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-surfaces-on-surface;
+		}
+
+		.mdc-button {
+
+			&.googlesitekit-subtle-notification__cta {
+				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
+			}
+		}
+
+		.mdc-button--tertiary {
+			@include mdc-button-tertiary-styles(
+				$c-surfaces-on-surface,
+				$c-interactive-tertiary-hover,
+				$c-interactive-tertiary-focus
+			);
+		}
+	}
+
+	&.googlesitekit-subtle-notification--warning {
+		background-color: $c-utility-warning-container;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-utility-on-warning-container;
+		}
+
+		.mdc-button {
+
+			&.googlesitekit-subtle-notification__cta {
+				@include mdc-button-filled-accessible($c-utility-on-warning-container);
+			}
+		}
+
+		.mdc-button--tertiary {
+			@include mdc-button-tertiary-styles(
+				$c-utility-on-warning-container,
+				$c-interactive-callout-warning-hover,
+				$c-interactive-callout-warning-focus
+			);
+		}
+	}
+
+	&.googlesitekit-subtle-notification--new-feature {
+		background-color: $c-violet-v-50;
+
+		.googlesitekit-subtle-notification__icon,
+		.googlesitekit-subtle-notification__content {
+			color: $c-violet-v-600;
+		}
+
+		.mdc-button {
+
+			&.mdc-button--raised {
+				@include mdc-button-filled-accessible($c-violet-v-600);
+			}
+		}
+
+		/* These styles are inherently at the same specificity as the warning styles above. */
+		/* stylelint-disable-next-line no-descending-specificity */
+		.mdc-button--tertiary {
+
+			@include mdc-button-ink-color( $c-violet-v-600 );
+
+			&:hover {
+				@include mdc-button-filled-accessible( rgba( $c-violet-v-200, 0.6 ) );
+				@include mdc-button-ink-color( $c-violet-v-600 );
+			}
+
+			&:active,
+			&:focus {
+				@include mdc-button-filled-accessible( $c-violet-v-200 );
+				@include mdc-button-ink-color( $c-violet-v-600 );
+			}
+		}
 	}
 }

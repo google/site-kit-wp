@@ -24,27 +24,34 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
+import Description from '../../googlesitekit/notifications/components/common/Description';
 
-export default function AuthError() {
+export default function AuthError( { id, Notification } ) {
 	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
-	if ( ! error ) {
-		return null;
-	}
 
 	return (
-		<BannerNotification
-			id="autherror"
-			title={ __(
-				'Site Kit can’t access necessary data',
-				'google-site-kit'
-			) }
-			description={ error.message }
-			ctaLink={ error.data.reconnectURL }
-			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }
-		/>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ __(
+					'Site Kit can’t access necessary data',
+					'google-site-kit'
+				) }
+				description={ <Description text={ error.message } /> }
+				actions={
+					<CTALink
+						id={ id }
+						ctaLabel={ __(
+							'Redo the plugin setup',
+							'google-site-kit'
+						) }
+						ctaLink={ error.data.reconnectURL }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }

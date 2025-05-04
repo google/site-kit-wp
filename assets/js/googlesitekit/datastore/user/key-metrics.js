@@ -23,8 +23,13 @@ import { isEmpty, isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	createRegistrySelector,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -38,17 +43,31 @@ import {
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_WIDGETS } from '../../widgets/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '../../../modules/analytics-4/datastore/constants';
 
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 
 const { receiveError, clearError } = errorStoreActions;
-const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
@@ -59,7 +78,7 @@ const baseInitialState = {
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'getKeyMetricsSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'key-metrics', undefined, {
+		get( 'core', 'user', 'key-metrics', undefined, {
 			// Never cache key metrics requests, we want them to be
 			// up-to-date with what's in settings, and they don't
 			// make requests to Google APIs so it's not a slow request.
@@ -74,7 +93,7 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'key-metrics', { settings } ),
+		set( 'core', 'user', 'key-metrics', { settings } ),
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
@@ -122,7 +141,7 @@ const baseActions = {
 
 		yield clearError( 'saveKeyMetricsSettings', [] );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
@@ -154,26 +173,25 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
 	switch ( type ) {
 		case SET_KEY_METRICS_SETTING: {
-			return {
-				...state,
-				keyMetricsSettings: {
-					...state.keyMetricsSettings,
-					[ payload.settingID ]: payload.value,
-				},
-			};
+			if ( ! state.keyMetricsSettings ) {
+				state.keyMetricsSettings = {};
+			}
+			state.keyMetricsSettings[ payload.settingID ] = payload.value;
+			break;
 		}
 		default: {
-			return state;
+			break;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getKeyMetricsSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		const keyMetricsSettings = registry
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
@@ -232,71 +250,262 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets the Key Metric widget slugs.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
+	 */
+	getRegularKeyMetricsWidgetIDs: createRegistrySelector( ( select ) => () => {
+		const postTypes = select( CORE_SITE ).getPostTypes() || [];
+		const hasProductPostType = postTypes.some(
+			( { slug } ) => slug === 'product'
+		);
+
+		return {
+			publish_blog: [
+				KM_ANALYTICS_RETURNING_VISITORS,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+			],
+			publish_news: [
+				KM_ANALYTICS_PAGES_PER_VISIT,
+				KM_ANALYTICS_VISIT_LENGTH,
+				KM_ANALYTICS_VISITS_PER_VISITOR,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
+			monetize_content: [
+				KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			sell_products_or_service: [
+				hasProductPostType
+					? KM_ANALYTICS_POPULAR_PRODUCTS
+					: KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			],
+			sell_products: [
+				hasProductPostType
+					? KM_ANALYTICS_POPULAR_PRODUCTS
+					: KM_ANALYTICS_POPULAR_CONTENT,
+				KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+			],
+			provide_services: [
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				KM_ANALYTICS_POPULAR_CONTENT,
+			],
+			share_portfolio: [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+				KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+				KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+			],
+		};
+	} ),
+
+	/**
+	 * Gets the Conversion Key Reporting Metric widget slugs.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs.
+	 */
+	getConversionTailoredKeyMetricsWidgetIDs: createRegistrySelector(
+		( select ) => ( state, includeConversionTailoredMetrics ) => {
+			const postTypes = select( CORE_SITE ).getPostTypes() ?? [];
+			const hasProductPostType = postTypes.some(
+				( { slug } ) => slug === 'product'
+			);
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
+
+			const showConversionTailoredMetrics = ( events ) => {
+				return events.some(
+					( event ) =>
+						userInputSettings?.includeConversionEvents?.values?.includes(
+							event
+						) ||
+						( Array.isArray( includeConversionTailoredMetrics ) &&
+							includeConversionTailoredMetrics?.includes(
+								event
+							) )
+				);
+			};
+
+			return {
+				publish_blog: [
+					KM_ANALYTICS_TOP_CATEGORIES,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] )
+						? [
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+				],
+				publish_news: [
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					KM_ANALYTICS_TOP_CITIES,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] )
+						? [
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+				],
+				monetize_content: [
+					KM_ANALYTICS_MOST_ENGAGING_PAGES,
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_NEW_VISITORS,
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_VISIT_LENGTH,
+					KM_ANALYTICS_VISITS_PER_VISITOR,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				sell_products_or_service: [
+					hasProductPostType
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						  ]
+						: [] ),
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] )
+						? [
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+						  ]
+						: [] ),
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				sell_products: [
+					hasProductPostType
+						? KM_ANALYTICS_POPULAR_PRODUCTS
+						: KM_ANALYTICS_POPULAR_CONTENT,
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+						  ]
+						: [] ),
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] )
+						? [
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+						  ]
+						: [] ),
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+				provide_services: [
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+				],
+				share_portfolio: [
+					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+					KM_ANALYTICS_POPULAR_AUTHORS,
+					...( showConversionTailoredMetrics( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] )
+						? [
+								KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+								KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+						  ]
+						: [] ),
+					KM_ANALYTICS_POPULAR_CONTENT,
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+				],
+			};
+		}
+	),
+
+	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
 	 * @since 1.103.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
 	 */
-	getAnswerBasedMetrics: createRegistrySelector( ( select ) => () => {
-		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+	getAnswerBasedMetrics: createRegistrySelector(
+		( select ) =>
+			( state, purposeOverride, includeConversionTailoredMetrics ) => {
+				const userInputSettings =
+					select( CORE_USER ).getUserInputSettings();
 
-		if ( userInputSettings === undefined ) {
-			return undefined;
-		}
+				if ( userInputSettings === undefined ) {
+					return undefined;
+				}
 
-		const purpose = userInputSettings?.purpose?.values?.[ 0 ];
+				const purpose =
+					purposeOverride ??
+					userInputSettings?.purpose?.values?.[ 0 ];
 
-		const hasProductPostType = () => {
-			const postTypes = select( CORE_SITE ).getPostTypes();
-			return postTypes.some( ( { slug } ) => slug === 'product' );
-		};
+				const widgetIDs = select(
+					CORE_USER
+				).getConversionTailoredKeyMetricsWidgetIDs(
+					includeConversionTailoredMetrics
+				);
 
-		switch ( purpose ) {
-			case 'publish_blog':
-				return [
-					KM_ANALYTICS_RETURNING_VISITORS,
-					KM_ANALYTICS_NEW_VISITORS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-				];
-
-			case 'publish_news':
-				return [
-					KM_ANALYTICS_PAGES_PER_VISIT,
-					KM_ANALYTICS_VISIT_LENGTH,
-					KM_ANALYTICS_VISITS_PER_VISITOR,
-					KM_ANALYTICS_MOST_ENGAGING_PAGES,
-				];
-			case 'monetize_content':
-				return [
-					KM_ANALYTICS_POPULAR_CONTENT,
-					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-					KM_ANALYTICS_NEW_VISITORS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-				];
-
-			case 'sell_products_or_service':
-				return [
-					hasProductPostType()
-						? KM_ANALYTICS_POPULAR_PRODUCTS
-						: KM_ANALYTICS_POPULAR_CONTENT,
-					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-				];
-
-			case 'share_portfolio':
-				return [
-					KM_ANALYTICS_NEW_VISITORS,
-					KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-				];
-			default:
-				return [];
-		}
-	} ),
+				return widgetIDs[ purpose ] || [];
+			}
+	),
 
 	/**
 	 * Gets the Key Metric widget slugs selected by the user.
@@ -311,7 +520,46 @@ const baseSelectors = {
 		if ( keyMetricsSettings === undefined ) {
 			return undefined;
 		}
-		return keyMetricsSettings.widgetSlugs;
+
+		if ( ! Array.isArray( keyMetricsSettings.widgetSlugs ) ) {
+			return [];
+		}
+
+		// Even though a user may have picked their own metrics, there is a chance that they no longer
+		// are "available" if they require certain custom dimensions, detected events, feature flags, etc. which no
+		// longer exist. So we should filter these out by using the displayInWidgetArea() callback.
+		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
+		const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
+			( slug ) => {
+				const widget = KEY_METRICS_WIDGETS[ slug ];
+
+				if ( ! widget ) {
+					return false;
+				}
+
+				if (
+					widget.displayInWidgetArea &&
+					typeof widget.displayInWidgetArea === 'function'
+				) {
+					return widget.displayInWidgetArea(
+						select,
+						isViewOnly,
+						slug
+					);
+				}
+
+				return true;
+			}
+		);
+
+		// If only one widget tile remains after filtering, return an empty array.
+		// This triggers the `getKeyMetrics` selector to use the default set of widgets
+		// instead of hiding the entire widget area (which happens if only one tile is active).
+		if ( filteredWidgetSlugs.length === 1 ) {
+			return [];
+		}
+
+		return filteredWidgetSlugs;
 	} ),
 
 	/**
@@ -352,62 +600,22 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets key metrics settings, taking into account whether the user has view-only access.
-	 * If the user has view-only access and the custom dimensions required by the selected widgets are unavailable,
-	 * the widget slugs will be removed from the settings. If only one widget remains after filtering, the widget slugs
-	 * will be an empty array to prevent hiding the widget area.
+	 * Gets key metrics settings.
 	 *
 	 * @since 1.103.0
-	 * @since 1.114.0 Checks for view-only access and adjusts the `widgetSlugs` accordingly.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
 	 */
-	getKeyMetricsSettings: createRegistrySelector( ( select ) => ( state ) => {
+	getKeyMetricsSettings( state ) {
 		const keyMetricsSettings = state.keyMetricsSettings;
 
 		if ( ! keyMetricsSettings ) {
 			return undefined;
 		}
 
-		const isViewOnly = ! select( CORE_USER ).isAuthenticated();
-
-		if ( isViewOnly ) {
-			// Filter out widget slugs that depend on unavailable custom dimensions.
-			const filteredWidgetSlugs = keyMetricsSettings.widgetSlugs.filter(
-				( slug ) => {
-					const widget = KEY_METRICS_WIDGETS[ slug ];
-
-					if ( ! widget ) {
-						return false;
-					}
-
-					if ( widget.displayInList ) {
-						return widget.displayInList( select, isViewOnly );
-					}
-
-					return true;
-				}
-			);
-
-			// If only one widget remains after filtering, return an empty array.
-			// This prevents hiding the widget area when only one widget is available.
-			// This triggers the `getKeyMetrics` selector to use the default widgets instead.
-			if ( filteredWidgetSlugs.length === 1 ) {
-				return {
-					...keyMetricsSettings,
-					widgetSlugs: [],
-				};
-			}
-
-			return {
-				...keyMetricsSettings,
-				widgetSlugs: filteredWidgetSlugs,
-			};
-		}
-
 		return keyMetricsSettings;
-	} ),
+	},
 
 	/**
 	 * Determines whether the key metrics settings are being saved or not.
@@ -476,7 +684,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetKeyMetricsSettingsStore,
 	fetchSaveKeyMetricsSettingsStore,
 	{

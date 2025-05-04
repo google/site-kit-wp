@@ -26,12 +26,12 @@ import PropTypes from 'prop-types';
  */
 import { useCallback } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
@@ -51,14 +51,14 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
 import { trackEvent } from '../../../util';
-import { SelectionPanelFooter } from '../../SelectionPanel';
-const { useSelect, useDispatch } = Data;
+import SelectionPanelFooter from './SelectionPanelFooter';
 
 export default function Footer( {
 	isOpen,
 	closePanel,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
+	isFullScreen = false,
 } ) {
 	const viewContext = useViewContext();
 
@@ -67,9 +67,6 @@ export default function Footer( {
 			KEY_METRICS_SELECTION_FORM,
 			KEY_METRICS_SELECTED
 		)
-	);
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
@@ -81,33 +78,27 @@ export default function Footer( {
 		return tile?.requiredCustomDimensions || [];
 	} );
 
-	const hasMissingCustomDimensions = useSelect( ( select ) => {
-		if ( ! requiredCustomDimensions?.length ) {
-			return false;
-		}
+	const hasMissingCustomDimensions = useInViewSelect(
+		( select ) => {
+			if ( ! requiredCustomDimensions?.length ) {
+				return false;
+			}
 
-		const hasCustomDimensions = select(
-			MODULES_ANALYTICS_4
-		).hasCustomDimensions( requiredCustomDimensions );
+			const hasCustomDimensions = select(
+				MODULES_ANALYTICS_4
+			).hasCustomDimensions( requiredCustomDimensions );
 
-		return ! hasCustomDimensions;
-	} );
+			return ! hasCustomDimensions;
+		},
+		[ requiredCustomDimensions ]
+	);
 
-	const hasAnalytics4EditScope = useSelect( ( select ) =>
+	const hasAnalytics4EditScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const saveError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveKeyMetricsSettings', [
-			{
-				...keyMetricsSettings,
-				widgetSlugs: selectedMetrics,
-			},
-		] )
 	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
@@ -133,6 +124,10 @@ export default function Footer( {
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
+	const conversionReportingSpecificKeyMetricsWidgets = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
+	);
 
 	const saveSettings = useCallback(
 		async ( widgetSlugs ) => {
@@ -147,93 +142,88 @@ export default function Footer( {
 		[ saveKeyMetricsSettings ]
 	);
 
-	const onSaveSuccess = useCallback( () => {
-		trackEvent( trackingCategory, 'metrics_sidebar_save' );
+	const onSaveSuccess = useCallback(
+		( selectedItemSlugs ) => {
+			const userSavedConversionReportingKeyMetricsList = Object.values(
+				conversionReportingSpecificKeyMetricsWidgets
+			)
+				.flat()
+				.some( ( slug ) => selectedItemSlugs.includes( slug ) );
 
-		if ( isGA4Connected && hasMissingCustomDimensions ) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				autoSubmit: true,
-			} );
-
-			if ( ! hasAnalytics4EditScope ) {
-				// Let parent component know that the user is navigating to OAuth URL
-				// so that the panel is kept open.
-				onNavigationToOAuthURL();
-
-				// Ensure the panel is closed, just in case the user navigates to
-				// the OAuth URL before the function is fully executed.
-				closePanel();
-
-				setPermissionScopeError( {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: __(
-						'Additional permissions are required to create new Analytics custom dimensions',
-						'google-site-kit'
-					),
-					data: {
-						status: 403,
-						scopes: [ EDIT_SCOPE ],
-						skipModal: true,
-						redirectURL,
-					},
-				} );
+			// Include the conversion_reporting tracking label if necessary.
+			if ( userSavedConversionReportingKeyMetricsList ) {
+				trackEvent(
+					trackingCategory,
+					'metrics_sidebar_save',
+					'conversion_reporting'
+				);
+			} else {
+				trackEvent( trackingCategory, 'metrics_sidebar_save' );
 			}
-		}
-	}, [
-		trackingCategory,
-		isGA4Connected,
-		hasMissingCustomDimensions,
-		setValues,
-		hasAnalytics4EditScope,
-		onNavigationToOAuthURL,
-		closePanel,
-		setPermissionScopeError,
-		redirectURL,
-	] );
+
+			if ( isGA4Connected && hasMissingCustomDimensions ) {
+				setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					autoSubmit: true,
+				} );
+
+				if ( ! hasAnalytics4EditScope ) {
+					// Let parent component know that the user is navigating to OAuth URL
+					// so that the panel is kept open.
+					onNavigationToOAuthURL();
+
+					// Ensure the panel is closed, just in case the user navigates to
+					// the OAuth URL before the function is fully executed.
+					closePanel();
+
+					setPermissionScopeError( {
+						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+						message: __(
+							'Additional permissions are required to create new Analytics custom dimensions',
+							'google-site-kit'
+						),
+						data: {
+							status: 403,
+							scopes: [ EDIT_SCOPE ],
+							skipModal: true,
+							redirectURL,
+						},
+					} );
+				}
+			}
+		},
+		[
+			trackingCategory,
+			isGA4Connected,
+			hasMissingCustomDimensions,
+			setValues,
+			hasAnalytics4EditScope,
+			onNavigationToOAuthURL,
+			closePanel,
+			setPermissionScopeError,
+			redirectURL,
+			conversionReportingSpecificKeyMetricsWidgets,
+		]
+	);
 
 	const onCancel = useCallback( () => {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
 	}, [ trackingCategory ] );
-
-	const selectedMetricsCount = selectedMetrics?.length || 0;
-	let metricsLimitError;
-	if ( selectedMetricsCount < MIN_SELECTED_METRICS_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Minimum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select at least %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-			MIN_SELECTED_METRICS_COUNT,
-			selectedMetricsCount
-		);
-	} else if ( selectedMetricsCount > MAX_SELECTED_METRICS_COUNT ) {
-		metricsLimitError = sprintf(
-			/* translators: 1: Maximum number of metrics that can be selected. 2: Number of selected metrics. */
-			__(
-				'Select up to %1$d metrics (%2$d selected)',
-				'google-site-kit'
-			),
-
-			MAX_SELECTED_METRICS_COUNT,
-			selectedMetricsCount
-		);
-	}
 
 	return (
 		<SelectionPanelFooter
 			savedItemSlugs={ savedMetrics }
 			selectedItemSlugs={ selectedMetrics }
 			saveSettings={ saveSettings }
-			saveError={ saveError }
-			itemLimitError={ metricsLimitError }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
 			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
-			onSaveSuccess={ onSaveSuccess }
+			onSaveSuccess={ () => {
+				onSaveSuccess( selectedMetrics );
+			} }
 			onCancel={ onCancel }
 			isOpen={ isOpen }
 			closePanel={ closePanel }
+			isFullScreen={ isFullScreen }
 		/>
 	);
 }
@@ -243,4 +233,5 @@ Footer.propTypes = {
 	closePanel: PropTypes.func.isRequired,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
+	isFullScreen: PropTypes.bool,
 };

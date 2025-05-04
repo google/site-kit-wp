@@ -14,6 +14,14 @@
     "fetchMock": false
   },
   "rules": {
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          "^@wordpress-core\/?.*"
+        ]
+      }
+    ],
     "jsdoc/check-tag-names": "error",
     "jsdoc/check-types": "error",
     "jsdoc/check-line-alignment": [
@@ -53,7 +61,7 @@
     "no-useless-escape": "error",
     "complexity": [
       "error",
-      20
+      15
     ],
     "no-restricted-globals": [
       "error",
@@ -112,6 +120,7 @@
       "googlesitekit-api",
       "googlesitekit-widgets",
       "googlesitekit-components",
+      "googlesitekit-notifications",
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim"
     ],
@@ -167,6 +176,17 @@
         "filenames/match-exported": [
           "off"
         ]
+      }
+    },
+    {
+      "files": [
+        "webpack/*",
+        "**/__factories__/*",
+        "*.stories.js",
+        "*.test.js"
+      ],
+      "rules": {
+        "sitekit/no-direct-date": "off"
       }
     }
   ],

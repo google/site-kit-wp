@@ -43,9 +43,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../../analytics-4/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-const { useSelect } = Data;
 
 function SourceLinkAnalytics4() {
 	const viewOnlyDashboard = useViewOnly();

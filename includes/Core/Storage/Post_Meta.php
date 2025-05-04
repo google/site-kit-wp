@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-final class Post_Meta implements Post_Meta_Interface {
+final class Post_Meta implements Meta_Interface {
 
 	/**
 	 * Gets post meta.
@@ -76,5 +76,4 @@ final class Post_Meta implements Post_Meta_Interface {
 	public function delete( $post_id, $key, $value = '' ) {
 		return delete_post_meta( $post_id, $key, $value );
 	}
-
 }

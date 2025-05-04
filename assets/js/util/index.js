@@ -32,49 +32,13 @@ export * from './storage';
 export * from './i18n';
 export * from './markdown';
 export * from './convert-time';
-export * from './date-range';
+export * from './dates';
 export * from './chart';
 export * from './urls';
 export * from './is-valid-numeric-id';
 export * from './isnumeric';
 export * from './safely-sort';
-
-global._gsktag = trackEvent;
-/**
- * Transforms a period string into a number of seconds.
- *
- * @since 1.0.0
- *
- * @param {string} period The period to transform.
- * @return {number} The number of seconds.
- */
-export const getTimeInSeconds = ( period ) => {
-	const minute = 60;
-	const hour = minute * 60;
-	const day = hour * 24;
-	const week = day * 7;
-	const month = day * 30;
-	const year = day * 365;
-	switch ( period ) {
-		case 'minute':
-			return minute;
-
-		case 'hour':
-			return hour;
-
-		case 'day':
-			return day;
-
-		case 'week':
-			return week;
-
-		case 'month':
-			return month;
-
-		case 'year':
-			return year;
-	}
-};
+export * from './partition-report';
 
 /**
  * Calculates the change between two values.

@@ -20,112 +20,168 @@
 
 	.googlesitekit-setup__wrapper--key-metrics-setup-cta {
 
-		.googlesitekit-widget-key-metrics-text__wrapper {
-			text-align: center;
+		.mdc-layout-grid {
+			padding: 0;
+		}
 
-			@media (min-width: $bp-nonMobile) {
-				margin: 5px 10px 0 5px;
-				text-align: initial;
+		.mdc-layout-grid__inner {
+			grid-template-columns: 1fr;
+			overflow: hidden;
+			position: relative;
+		}
+
+		.googlesitekit-widget-key-metrics-content__wrapper {
+			padding: $grid-gap-desktop $grid-gap-desktop 0;
+
+			@media (min-width: $bp-desktop) {
+				max-width: 56%;
+				padding: $grid-gap-desktop + 11 $grid-gap-desktop 31px;
+			}
+
+			@media (min-width: 1024px) and (max-width: 1279px) {
+				max-width: 60%;
+				padding: $grid-gap-desktop + 11 $grid-gap-desktop 31px;
+			}
+
+			@media (min-width: $bp-xlarge) {
+				max-width: 54%;
+				padding: $grid-gap-desktop + 10 $grid-gap-desktop 43px;
 			}
 		}
 
-		.googlesitekit-widget-key-metrics-svg__wrapper {
-			align-items: center;
-			display: flex;
-			justify-content: center;
-			padding: 18px 0;
-
-			@media (min-width: $bp-nonMobile) {
-				padding: 0;
+		.googlesitekit-preview-block {
+			@media (min-width: 800px) {
+				max-width: 42%;
+				min-height: 100%;
+				position: absolute;
+				right: 0;
+				top: 0;
 			}
 
-			@media (min-width: $width-desktop + 1 + px) {
-				justify-content: flex-end;
+			@media (min-width: $bp-xxxlarge) {
+				max-width: 30%;
 			}
 		}
 
-		.googlesitekit-ghost-cards {
-			display: grid;
+		div.googlesitekit-widget-key-metrics-svg__wrapper {
+			overflow: hidden;
+
+			&.mdc-layout-grid__cell {
+				grid-column: 1;
+				grid-row: auto;
+				padding-top: 20px;
+
+				@media (min-width: $bp-desktop) {
+					grid-column: unset;
+					grid-column-end: span 4;
+					grid-row: 1 / -1;
+					padding-top: 0;
+				}
+			}
 
 			svg {
-				width: 100%;
-			}
-		}
+				display: block;
+				margin: 0 auto;
+				max-height: 140px;
 
-		.googlesitekit-ghost-cards--three-horizontal {
-			gap: 2%;
-			grid-auto-flow: column;
+				@media (min-width: $bp-desktop) {
+					max-height: 310px;
+					max-width: 45%;
+					position: absolute;
+					right: 0;
+					top: 0;
+				}
 
-			svg {
-				max-height: 120px;
-			}
-		}
+				@media (min-width: 1181px) and (max-width: 1279px) {
+					max-height: 340px;
+					top: -35px;
+				}
 
-		.googlesitekit-ghost-cards--two-horizontal {
-			gap: 3%;
-			grid-auto-flow: column;
-
-			svg {
-				max-height: 150px;
-			}
-		}
-
-		.googlesitekit-ghost-cards--two-vertical {
-			gap: 10%;
-			grid-auto-flow: row;
-			margin-bottom: 3%;
-
-			svg {
-				max-height: 75px;
+				@media (min-width: $bp-xlarge) {
+					max-height: 290px;
+					top: 0;
+				}
+				@media (min-width: $bp-xxlarge + 1 + px) {
+					top: -50px;
+				}
+				@media (min-width: 1700px) {
+					max-height: 340px;
+					max-width: 35%;
+				}
+				@media (min-width: $bp-wpdb4) {
+					max-height: 370px;
+					right: -15px;
+					top: -65px;
+				}
 			}
 		}
 
 		.googlesitekit-publisher-win__title {
+			color: $c-surfaces-on-background;
 			display: grid;
 			font-size: $fs-title-md;
-			font-weight: $fw-medium;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xxs;
 			line-height: $lh-title-md;
 			margin: 0;
 			place-content: center;
 
 			@media (min-width: $bp-nonMobile) {
+				font-size: $fs-headline-sm;
+				letter-spacing: unset;
+				line-height: $lh-headline-sm;
 				place-content: start;
+			}
+
+			@media (min-width: $bp-desktop) {
+				font-size: $fs-headline-md;
+				line-height: $lh-headline-md;
 			}
 		}
 
 		p {
+			color: $c-surfaces-on-background;
 			display: grid;
-			font-size: $fs-body-sm;
-			line-height: $lh-body-sm;
+			font-size: $fs-label-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
 			margin: 5px 0;
-			place-content: center;
 
 			@media (min-width: $bp-nonMobile) {
-				place-content: start;
+				font-size: $fs-title-sm;
+				letter-spacing: $ls-s;
+				line-height: $lh-title-sm;
+			}
+
+			@media (min-width: $bp-desktop) {
+				font-size: $fs-title-md;
+				letter-spacing: $ls-m;
+				line-height: $lh-title-md;
 			}
 		}
 
 		.googlesitekit-widget-key-metrics-actions__wrapper {
-			display: grid;
-			place-content: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 4px;
+			margin-top: $grid-gap-desktop - 4px;
 
 			a,
 			button {
-				margin-top: 10px;
 				place-content: center;
 				text-align: center;
-				width: 100%;
+				width: auto;
 			}
 
 			@media (min-width: $bp-nonMobile) {
-				display: flex;
-				gap: 4px;
-				margin-left: 5px;
-				place-content: start;
+				gap: $cta-gap-tablet;
+			}
+
+			@media (min-width: $bp-nonMobile) {
+				margin-top: $grid-gap-desktop;
 
 				a,
 				button {
-					margin-top: 25px;
 					width: auto;
 				}
 			}
@@ -137,9 +193,72 @@
 	}
 
 	.googlesitekit-widget-key-metrics-footer {
+		padding: 0 8px;
 
-		button.googlesitekit-cta-link {
-			color: $c-surfaces-on-background-variant;
+		@media (min-width: $bp-desktop) {
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary {
+		div.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
+			div.googlesitekit-widget-key-metrics-footer__cta-wrapper {
+				gap: 6px;
+				grid-template-columns: 1fr 1fr;
+
+				span {
+					display: block;
+
+					@media (min-width: $bp-tablet) {
+						display: inline;
+					}
+				}
+
+				.googlesitekit-cta-link {
+					color: $c-content-secondary;
+				}
+			}
+		}
+
+		.googlesitekit-widget--keyMetricsConnectGA4All {
+			.googlesitekit-widget-key-metrics-text__wrapper {
+				text-align: center;
+				@media (min-width: $bp-nonMobile) {
+					text-align: initial;
+				}
+			}
+			div.googlesitekit-widget-key-metrics-svg__wrapper {
+				svg {
+					@media (min-width: 800px) {
+						max-height: 228px;
+						position: absolute;
+						right: 0;
+						top: -25px;
+					}
+
+					@media (min-width: $bp-desktop) {
+						max-height: 265px;
+						top: -25px;
+					}
+
+					@media (min-width: 1024px) {
+						max-height: 310px;
+						right: 0;
+						top: -46px;
+					}
+
+					@media (min-width: $bp-xlarge) {
+						max-height: 260px;
+						right: 0;
+						top: -14px;
+					}
+					@media (min-width: $bp-wpdb4) {
+						max-height: 370px;
+						right: 0;
+						top: -67px;
+					}
+				}
+			}
 		}
 	}
 
@@ -148,6 +267,45 @@
 		.googlesitekit-publisher-win__title {
 			color: $c-utility-error;
 			font-family: $f-primary;
+		}
+
+		.googlesitekit-widget-key-metrics-actions__wrapper {
+			justify-content: center;
+
+			@media (min-width: $bp-tablet) {
+				justify-content: flex-start;
+			}
+		}
+	}
+}
+
+html[dir="rtl"] {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-setup__wrapper--key-metrics-setup-cta {
+
+			.googlesitekit-preview-block {
+				@media (min-width: 800px) {
+					left: 0;
+					right: unset;
+				}
+			}
+
+			.googlesitekit-widget-key-metrics-svg__wrapper {
+
+				svg {
+					@media (min-width: $bp-desktop) {
+						left: 0;
+						right: unset;
+						transform: scaleX(-1);
+					}
+
+					@media (min-width: $bp-wpdb4) {
+						left: -15px;
+					}
+				}
+			}
 		}
 	}
 }

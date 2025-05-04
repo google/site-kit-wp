@@ -138,6 +138,10 @@ class URL {
 	 * @return string[] Hostname variations.
 	 */
 	public static function permute_site_hosts( $hostname ) {
+		if ( ! $hostname || ! is_string( $hostname ) ) {
+			return array();
+		}
+
 		// See \Requests_IDNAEncoder::is_ascii.
 		$is_ascii = preg_match( '/(?:[^\x00-\x7F])/', $hostname ) !== 1;
 		$is_www   = 0 === strpos( $hostname, 'www.' );
@@ -170,5 +174,4 @@ class URL {
 
 		return $hosts;
 	}
-
 }

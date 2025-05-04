@@ -21,20 +21,37 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ADS } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import {
+	submitChanges,
+	rollbackChanges,
+	validateCanSubmitChanges,
+	validateHaveSettingsChanged,
+} from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'ads', {
-	ownedSettingsSlugs: [ 'conversionID', 'paxConversionID', 'extCustomerID' ],
+	ownedSettingsSlugs: [
+		'conversionID',
+		'paxConversionID',
+		'extCustomerID',
+		'customerID',
+		'userID',
+	],
 	storeName: MODULES_ADS,
 	settingSlugs: [
 		'conversionID',
 		'ownerID',
 		'paxConversionID',
+		'customerID',
 		'extCustomerID',
+		'formattedExtCustomerID',
+		'userID',
+		'accountOverviewURL',
 	],
 	requiresSetup: true,
 	submitChanges,
+	rollbackChanges,
 	validateCanSubmitChanges,
+	validateHaveSettingsChanged,
 } );
 
 export default baseModuleStore;

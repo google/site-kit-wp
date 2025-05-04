@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const fetchGetDeveloperPluginState = createFetchStore( {
 	baseName: 'getDeveloperPluginState',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'developer-plugin', undefined, {
+		return get( 'core', 'site', 'developer-plugin', undefined, {
 			useCache: false,
 		} );
 	},
@@ -45,7 +45,7 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getDeveloperPluginState() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingDeveloperPluginState = registry
 			.select( CORE_SITE )
@@ -85,7 +85,7 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetDeveloperPluginState, {
+const store = combineStores( fetchGetDeveloperPluginState, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

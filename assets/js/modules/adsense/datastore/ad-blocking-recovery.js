@@ -24,8 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -33,8 +38,6 @@ import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';
 import adBlockingRecoveryTagMatcher from '../util/ad-blocking-recovery-tag-matcher';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-
-const { createRegistryControl, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
@@ -45,11 +48,7 @@ const RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
 const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 	baseName: 'syncAdBlockingRecoveryTags',
 	controlCallback: () => {
-		return API.set(
-			'modules',
-			'adsense',
-			'sync-ad-blocking-recovery-tags'
-		);
+		return set( 'modules', 'adsense', 'sync-ad-blocking-recovery-tags' );
 	},
 } );
 
@@ -102,9 +101,10 @@ const controls = {
 				homeURL,
 			} );
 
+			const { getHTMLForURL } = registry.resolveSelect( CORE_SITE );
+
 			for ( const url of existingTagURLs ) {
-				await registry.dispatch( CORE_SITE ).waitForHTMLForURL( url );
-				const html = registry.select( CORE_SITE ).getHTMLForURL( url );
+				const html = await getHTMLForURL( url );
 				const tagFound = extractExistingTag(
 					html,
 					adBlockingRecoveryTagMatcher
@@ -138,7 +138,7 @@ const reducer = createReducer( ( state, { type, payload } ) => {
 
 const resolvers = {
 	*getExistingAdBlockingRecoveryTag() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingAdBlockingRecoveryTag = registry
 			.select( MODULES_ADSENSE )
@@ -189,7 +189,7 @@ const selectors = {
 	),
 };
 
-const store = Data.combineStores( fetchSyncAdBlockingRecoveryTagsStore, {
+const store = combineStores( fetchSyncAdBlockingRecoveryTagsStore, {
 	initialState,
 	actions,
 	reducer,

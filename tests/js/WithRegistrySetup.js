@@ -30,8 +30,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-const { useRegistry } = Data;
+import { useRegistry } from 'googlesitekit-data';
 
 function WithRegistrySetup( { func, children } ) {
 	const registry = useRegistry();

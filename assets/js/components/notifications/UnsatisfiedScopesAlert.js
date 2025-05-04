@@ -16,31 +16,37 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 16 ] */
+
 /**
  * External dependencies
  */
 import { uniq } from 'lodash';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { listFormat } from '../../util';
+import { getItem } from '../../googlesitekit/api/cache';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-const { useSelect } = Data;
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
 
 // Map of scope IDs to Site Kit module slugs.
 const scopeIDToSlug = {
@@ -83,8 +89,12 @@ function mapScopesToModuleNames( scopes, modules ) {
 	);
 }
 
-export default function UnsatisfiedScopesAlert() {
+export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	const doingCTARef = useRef();
+
+	const [ inProgressModuleSetup, setInProgressModuleSetup ] =
+		useState( false );
+
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
@@ -119,6 +129,45 @@ export default function UnsatisfiedScopesAlert() {
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
+
+	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
+
+	// Fetch the module setup in progress from cache.
+	useMount( async () => {
+		const { cacheHit, value } = await getItem( 'module_setup' );
+
+		if ( cacheHit ) {
+			setInProgressModuleSetup( value );
+		}
+	} );
+
+	const onCTAClick = useCallback( async () => {
+		doingCTARef.current = true;
+
+		if ( ! inProgressModuleSetup ) {
+			return;
+		}
+
+		const { error, response } = await activateModule(
+			inProgressModuleSetup
+		);
+
+		if ( ! error ) {
+			navigateTo( response.moduleReauthURL );
+		} else {
+			setInternalServerError( {
+				id: 'activate-module-error',
+				description: error.message,
+			} );
+		}
+	}, [
+		activateModule,
+		inProgressModuleSetup,
+		navigateTo,
+		setInternalServerError,
+	] );
 
 	// Some external scenarios where we navigate to the OAuth service or connect URL may coincide with a request which populates the
 	// list of unsatisfied scopes. In these scenarios we want to avoid showing this banner as the user is already being directed to
@@ -196,18 +245,21 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	return (
-		<BannerNotification
-			id="authentication error"
-			title={ title }
-			description={ message }
-			format="small"
-			type="win-error"
-			isDismissible={ false }
-			ctaLink={ connectURL }
-			onCTAClick={ () => {
-				doingCTARef.current = true;
-			} }
-			ctaLabel={ ctaLabel }
-		/>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ title }
+				description={ <Description text={ message } /> }
+				actions={
+					<CTALink
+						id={ id }
+						ctaLabel={ ctaLabel }
+						ctaLink={
+							inProgressModuleSetup ? undefined : connectURL
+						}
+						onCTAClick={ onCTAClick }
+					/>
+				}
+			/>
+		</Notification>
 	);
 }

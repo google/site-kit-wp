@@ -24,12 +24,10 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-
-const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
@@ -82,15 +80,18 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.107.0 Extended to support an optional CTA component.
 	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
+	 * @since 1.128.0 Extended to make title optional, support an optional Footer component, and added support for an optional `hasNewBadge` parameter.
 	 *
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.
-	 * @param {string}      settings.title                 Title for this widget area.
+	 * @param {string}      [settings.title]               Optional. Title for this widget area.
 	 * @param {string}      [settings.subtitle]            Optional. Subtitle for this widget area.
 	 * @param {WPComponent} [settings.Icon]                Optional. React component to render icon for this widget area.
 	 * @param {string}      [settings.style]               Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
 	 * @param {number}      [settings.priority]            Optional. Priority for this widget area. Default: 10.
-	 * @param {WPComponent} [settings.CTA]                 React component used as CTA appearing beside the subtitle.
+	 * @param {boolean}     [settings.hasNewBadge]         Optional. Whether this widget area should display a new badge.
+	 * @param {WPComponent} [settings.CTA]                 Optional. React component used as CTA appearing beside the subtitle.
+	 * @param {WPComponent} [settings.Footer]              Optional. React component used as footer for the widget area.
 	 * @param {Function}    [settings.filterActiveWidgets] Optional. Function used to filter active widgets.
 	 * @return {Object} Redux-style action.
 	 */
@@ -102,12 +103,13 @@ export const actions = {
 			title,
 			subtitle,
 			Icon,
+			hasNewBadge = false,
 			CTA,
+			Footer,
 			filterActiveWidgets,
 		} = {}
 	) {
 		invariant( slug, 'slug is required.' );
-		invariant( title, 'settings.title is required.' );
 		invariant(
 			Object.values( WIDGET_AREA_STYLES ).includes( style ),
 			`settings.style must be one of: ${ WidgetAreaStyleKeys }.`
@@ -122,7 +124,9 @@ export const actions = {
 					title,
 					subtitle,
 					Icon,
+					hasNewBadge,
 					CTA,
+					Footer,
 					filterActiveWidgets,
 				},
 			},

@@ -19,18 +19,27 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import Notification from '../../googlesitekit/notifications/components/Notification';
+import Description from '../../googlesitekit/notifications/components/common/Description';
 
 export default function InternalServerError() {
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
+
 	if ( ! error ) {
 		return null;
 	}
 
-	return <BannerNotification { ...error } />;
+	return (
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ error.title }
+				description={ <Description text={ error.description } /> }
+			/>
+		</Notification>
+	);
 }

@@ -25,14 +25,13 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Layout from '../layout/Layout';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-const { useDispatch, useSelect } = Data;
 
 export default function SettingsPlugin() {
 	const showAdminBar = useSelect( ( select ) =>

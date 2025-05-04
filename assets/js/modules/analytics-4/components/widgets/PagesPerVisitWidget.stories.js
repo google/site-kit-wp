@@ -29,7 +29,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PagesPerVisitWidget from './PagesPerVisitWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import {
 	CORE_USER,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -110,10 +110,6 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/ZeroData',
-	delay: 250,
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -139,10 +135,6 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/Error',
-	delay: 250,
-};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -167,11 +159,6 @@ InsufficientPermissions.args = {
 			reportOptions,
 		] );
 	},
-};
-
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/InsufficientPermissions',
-	delay: 250,
 };
 
 export default {

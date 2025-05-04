@@ -18,7 +18,7 @@
  */
 add_action(
 	'wp_head',
-	function() {
+	function () {
 		apply_filters( 'the_content', '' );
 	}
 );

@@ -64,10 +64,12 @@ $c-mango-tango: #e77d5b;
 $c-thunderbird: #ac4220;
 $c-solitude: #f8faff;
 $c-heather: #b8bdb9;
-$c-gallery: #ebeef0;
-$c-gallery-2: #ebeef0;
+$c-gallery: #ededed;
+$c-porcelain: #ebeef0;
+$c-pumice: #c4c7c5;
+$c-vivid-blue: #1a73e8;
 $c-fiord: #1b3870;
-$c-iron: #b8bdb9;
+$c-iron: #dadce0;
 $c-shark: #232824;
 $c-oslo-gray: #7b807d;
 $c-jordy-blue: #7f9cd4;
@@ -183,7 +185,7 @@ $c-background-notice-info: $c-surfaces-surface-1;
 $c-background-notice-suggestion: $c-solitude;
 
 $c-border: $c-boulder;
-$c-border-light: $c-neutral-n-50;
+$c-border-light: $c-surfaces-inverse-on-surface;
 $c-border-medium: $c-silver;
 $c-border-brand: $c-royal-blue;
 $c-border-notice-info-hover: $c-jordy-blue;
@@ -200,7 +202,7 @@ $c-icon-notice-info: $c-denim;
 $c-icon-notice-suggestion: $c-denim;
 
 $c-chart-1: $c-cornflower-blue;
-$c-chart-2: $c-scooter;
+$c-chart-2: $c-teal-t-300;
 $c-chart-3: $c-elm;
 $c-chart-4: $c-purple-heart;
 
@@ -267,16 +269,19 @@ $width-wpAdminBarTablet: 783;
 $width-desktop: 960;
 $width-xlarge: 1280;
 $width-xxlarge: 1440;
+$width-xxxlarge: 1500;
 
 // Custom Media Breakpoints
 $bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;
 $bp-tablet: $width-tablet + px;
 $bp-nonMobile: $width-tablet + 1 + px;
+$bp-nonTablet: $width-desktop + 1 + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
 $bp-desktop: $width-desktop + px;
 $bp-xlarge: $width-xlarge + px;
 $bp-xxlarge: $width-xxlarge + px;
+$bp-xxxlarge: $width-xxxlarge + px;
 
 // Specific for WP Dashboard
 $bp-wpdb1: 800px;
@@ -298,6 +303,7 @@ $mdc-layout-grid-breakpoints: (
 /* stylelint-enable */
 
 $mdc-button-min-height: 40px;
+$mdc-button-callout-min-height: 32px;
 $mdc-typography-font-family: $f-primary;
 $mdc-typography-styles-subtitle1: (
 	font-size: $fs-body-md,
@@ -305,6 +311,7 @@ $mdc-typography-styles-subtitle1: (
 $mdc-text-field-error: $c-utility-error;
 $mdc-text-field-placeholder-ink-color: $c-interactive-on-disable-container;
 $mdc-text-field-label: $c-interactive-on-disable-container;
+$mdc-switch-label-margin-left: 10px;
 
 // Custom max width for settings notice content
 $max-width-settings-notice-content: 1098px;
@@ -334,9 +341,9 @@ $c-authorize-application-sys-light-primary: #0b57d0;
 $c-authorize-application-sys-light-on-primary: $c-base;
 $c-authorize-application-sys-light-on-surface: #1f1f1f;
 $c-authorize-application-sys-light-outline: #747775;
-$c-authorize-application-gallery: #ededed; // Gallery color name from http://chir.ag/projects/name-that-color/.
-$c-authorize-application-pumice: #c4c7c5; // Pumice color name as above.
-$c-authorize-application-vivid-blue: #1a73e8; // Vivid Blue color name as above.
+$c-authorize-application-code-background: $c-gallery;
+$c-authorize-application-divider: $c-pumice;
+$c-authorize-application-brand-color: $c-vivid-blue;
 
 $fs-authorize-application-headline-sm: 24px;
 $fs-authorize-application-title-lg: 18px;
@@ -352,3 +359,16 @@ $lh-authorize-application-label-md: 16px;
 $lh-authorize-application-body-md: 20px;
 
 // End Authorize Application screen specific styles.
+
+// Start Reader Revenue Manager block editor specific styles.
+$c-reader-revenue-manager-button-background: $c-base;
+$c-reader-revenue-manager-button-border: $c-iron;
+$c-reader-revenue-manager-button-text: $c-vivid-blue;
+
+$f-reader-revenue-manager-button: "Google Sans", Roboto-Regular, sans-serif, arial;
+
+// End Reader Revenue Manager block editor specific styles.
+
+// Setup CTA specific styles.
+$cta-gap-phone: 4px;
+$cta-gap-tablet: 10px;

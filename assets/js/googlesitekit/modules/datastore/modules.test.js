@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
+import Modules from 'googlesitekit-modules';
+import { combineStores } from 'googlesitekit-data';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -28,7 +30,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -133,14 +134,13 @@ describe( 'core/modules modules', () => {
 	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
 		// make sure we're opting-out of the cache for the correct requests.
-		await API.invalidateCache();
+		await invalidateCache();
 
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
 	} );
 
 	afterEach( () => {
-		unsubscribeFromAll( registry );
 		delete global[ dashboardSharingDataBaseVar ];
 	} );
 
@@ -856,6 +856,25 @@ describe( 'core/modules modules', () => {
 						.SettingsEditComponent
 				).toEqual( SettingsEditComponent );
 			} );
+
+			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
+				const DashboardMainEffectComponent = () => 'main';
+				const DashboardEntityEffectComponent = () => 'entity';
+
+				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
+					DashboardMainEffectComponent,
+					DashboardEntityEffectComponent,
+				} );
+
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.DashboardMainEffectComponent
+				).toEqual( DashboardMainEffectComponent );
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.DashboardEntityEffectComponent
+				).toEqual( DashboardEntityEffectComponent );
+			} );
 		} );
 
 		describe( 'fetchGetModules', () => {
@@ -1193,6 +1212,20 @@ describe( 'core/modules modules', () => {
 
 				expect( module.SettingsViewComponent ).toEqual( null );
 				expect( module.SettingsEditComponent ).toEqual( null );
+			} );
+
+			it( 'defaults DashboardMainEffectComponent and DashboardEntityEffectComponent components to `null` if not provided', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( 'test-module' );
+
+				const module = registry
+					.select( CORE_MODULES )
+					.getModule( 'test-module' );
+
+				expect( module.DashboardMainEffectComponent ).toEqual( null );
+				expect( module.DashboardEntityEffectComponent ).toEqual( null );
 			} );
 		} );
 
@@ -1655,19 +1688,27 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns features when modules are loaded', () => {
-				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+				provideModules( registry );
+				provideModuleRegistrations( registry, [
+					{
+						slug: 'analytics-4',
+						features: [ 'feature one', 'feature two' ],
+					},
+				] );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
 					.getModuleFeatures( 'analytics-4' );
 
-				expect( featuresLoaded ).toMatchObject(
-					fixturesKeyValue[ 'analytics-4' ].features
-				);
+				expect( featuresLoaded ).toStrictEqual( [
+					'feature one',
+					'feature two',
+				] );
 			} );
 
 			it( 'returns an empty object when requesting features for a non-existent module', () => {
-				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+				provideModules( registry );
+				provideModuleRegistrations( registry );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
@@ -1754,6 +1795,90 @@ describe( 'core/modules modules', () => {
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
 					'search-console'
 				);
+			} );
+		} );
+
+		describe( 'hasModuleOwnership', () => {
+			it( 'should return undefined if `getModules` is not resolved yet', async () => {
+				muteFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					[]
+				);
+
+				const moduleStoreName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( 'search-console' );
+
+				expect( moduleStoreName ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+
+			it( 'should return undefined if `moduleOwnerID` is not resolved yet', async () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/settings'
+					),
+					{
+						body: {
+							ownerID: 1,
+						},
+					}
+				);
+
+				const moduleOwnerID = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getOwnerID();
+
+				expect( moduleOwnerID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getSettings();
+			} );
+
+			it( 'should return undefined if `getID` is not resolved yet', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 1 );
+
+				const loggedInUserID = registry.select( CORE_USER ).getID();
+
+				expect( loggedInUserID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+			} );
+
+			it( 'should return true if `moduleOwnerID` and `loggedInUserID` are equal', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry, { id: 1 } );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 1 );
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBe( true );
 			} );
 		} );
 
@@ -2043,7 +2168,7 @@ describe( 'core/modules modules', () => {
 				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = await registry
-					.__experimentalResolveSelect( CORE_MODULES )
+					.resolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject( {} );
@@ -2056,7 +2181,7 @@ describe( 'core/modules modules', () => {
 				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = await registry
-					.__experimentalResolveSelect( CORE_MODULES )
+					.resolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject(
@@ -2145,6 +2270,95 @@ describe( 'core/modules modules', () => {
 					).length
 				).toEqual( Object.values( shareableModules ).length );
 				await waitForDefaultTimeouts();
+			} );
+		} );
+
+		describe( 'getDetailsLinkURL', () => {
+			it( 'should return null if module is not found', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.getDetailsLinkURL( 'unregistered-module' )
+				).toBeNull();
+			} );
+
+			it( 'should return null if module does not define homepage', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.getDetailsLinkURL( 'search-console' )
+				).toBeNull();
+			} );
+
+			it( 'should return module homepage', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						homepage: 'https://example.com',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveUserInfo( { email: 'test@example.com' } );
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.getDetailsLinkURL( 'search-console' )
+				).toBe(
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com&Email=test%40example.com'
+				);
+			} );
+
+			it( 'should be overridden by module defined selector', () => {
+				const slug = 'test-module';
+				const moduleStoreName = `test/${ slug }`;
+
+				registry.registerStore(
+					moduleStoreName,
+					combineStores(
+						Modules.createModuleStore( slug, {
+							storeName: moduleStoreName,
+						} ),
+						{
+							selectors: {
+								getDetailsLinkURL: () =>
+									'https://example.com/custom-link',
+							},
+						}
+					)
+				);
+
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( slug, { storeName: moduleStoreName } );
+
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug,
+						name: 'Test Module',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_MODULES ).getDetailsLinkURL( slug )
+				).toBe( 'https://example.com/custom-link' );
 			} );
 		} );
 	} );

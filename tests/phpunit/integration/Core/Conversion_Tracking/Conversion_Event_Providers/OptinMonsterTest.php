@@ -50,12 +50,11 @@ class OptinMonsterTest extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-' . OptinMonster::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->optinmonster->register_script();
 		$this->assertInstanceOf( Script::class, $script );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
-
 }

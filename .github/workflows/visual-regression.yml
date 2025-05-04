@@ -6,7 +6,7 @@ on:
       - main
       - develop
       - 'feature/**'
-    # Only run if CSS/JS/MD-related files changed.
+    # Only run if CSS/JS related files changed.
     paths:
       - '.github/workflows/visual-regression.yml'
       - 'assets/**'
@@ -15,13 +15,11 @@ on:
       - '!assets/**/*.test.js'
       - '**.stories.js'
       - 'tests/backstop/**'
-      - '.storybook/**'
+      - 'storybook/**'
       - '**.scss'
       - '.nvmrc'
       - '**/package.json'
       - 'package-lock.json'
-      - 'src/tests/backstop/config.js'
-      - 'docker/backstopjs/Dockerfile'
     types:
       - opened
       - reopened
@@ -39,18 +37,25 @@ jobs:
     timeout-minutes: 30
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+
+      # nvm@7 is the minimum version required for npm workspace support.
+      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
+      # This can be removed once our node base version comes with nvm@7 or greater.
+      - name: Install npm Globally
+        run: npm run install-global-npm
+
       - name: npm install
         run: npm ci
       - name: Run Backstopjs
         run: npm run test:visualtest
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: vrt-report

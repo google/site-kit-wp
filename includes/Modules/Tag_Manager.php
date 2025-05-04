@@ -56,8 +56,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -100,6 +99,48 @@ final class Tag_Manager extends Module
 
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			30
+		);
+	}
+
+	/**
+	 * Checks if the Tag Manager module is connected and contains an Ads Conversion Tracking (AWCT) tag.
+	 *
+	 * @since 1.151.0
+	 *
+	 * @return bool Whether or not Ads measurement is connected via this module.
+	 */
+	public function check_ads_measurement_connection() {
+		if ( ! $this->is_connected() ) {
+			return false;
+		}
+
+		$settings = $this->get_settings()->get();
+
+		$live_containers_versions = $this->get_data(
+			'live-container-version',
+			array(
+				'accountID'           => $settings['accountID'],
+				'internalContainerID' => $settings['internalContainerID'],
+			)
+		);
+
+		if ( empty( $live_containers_versions->tag ) ) {
+			return false;
+		}
+
+		return in_array(
+			'awct',
+			array_column( $live_containers_versions->tag, 'type' ),
+			true
+		);
 	}
 
 	/**
@@ -141,7 +182,7 @@ final class Tag_Manager extends Module
 
 		$container_id_errors = array_filter(
 			$container_ids,
-			function( $container_id ) {
+			function ( $container_id ) {
 				return ! $container_id;
 			}
 		);
@@ -174,22 +215,22 @@ final class Tag_Manager extends Module
 
 		return array(
 			'tagmanager_account_id'       => array(
-				'label' => __( 'Tag Manager account ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
 			),
 			'tagmanager_container_id'     => array(
-				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Container ID', 'google-site-kit' ),
 				'value' => $settings['containerID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['containerID'], 7 ),
 			),
 			'tagmanager_amp_container_id' => array(
-				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: AMP Container ID', 'google-site-kit' ),
 				'value' => $settings['ampContainerID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
 			),
 			'tagmanager_use_snippet'      => array(
-				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),
+				'label' => __( 'Tag Manager: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
@@ -446,11 +487,12 @@ final class Tag_Manager extends Module
 	 * Gets the configured TagManager service instance.
 	 *
 	 * @since 1.2.0
+	 * @since 1.142.0 Made method public.
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.
 	 */
-	private function get_tagmanager_service() {
+	public function get_tagmanager_service() {
 		return $this->get_service( 'tagmanager' );
 	}
 
@@ -466,7 +508,6 @@ final class Tag_Manager extends Module
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code', 'google-site-kit' ),
-			'order'       => 6,
 			'homepage'    => __( 'https://tagmanager.google.com/', 'google-site-kit' ),
 		);
 	}
@@ -601,7 +642,7 @@ final class Tag_Manager extends Module
 		}
 
 		$all_containers = array_map(
-			function( $container ) {
+			function ( $container ) {
 				return $container->getPublicId();
 			},
 			$containers->getContainer()
@@ -609,5 +650,4 @@ final class Tag_Manager extends Module
 
 		return empty( array_diff( $configured_containers, $all_containers ) );
 	}
-
 }

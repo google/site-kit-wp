@@ -29,8 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { SpinnerButton } from 'googlesitekit-components';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import Badge from '../../../../components/Badge';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import SupportLink from '../../../../components/SupportLink';
@@ -42,8 +42,6 @@ import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
-
-const { useDispatch, useSelect } = Data;
 
 export default function AdBlockingRecoverySetupCTANotice() {
 	const inView = useInView();
@@ -63,6 +61,9 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	);
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
+	);
+	const isNavigatingToRecoveryPageURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -115,9 +116,13 @@ export default function AdBlockingRecoverySetupCTANotice() {
 			}
 			className="googlesitekit-settings-notice-ad-blocking-recovery-cta"
 			OuterCTA={ () => (
-				<Button onClick={ handleCTAClick }>
+				<SpinnerButton
+					onClick={ handleCTAClick }
+					isSaving={ isNavigatingToRecoveryPageURL }
+					disabled={ isNavigatingToRecoveryPageURL }
+				>
 					{ __( 'Set up now', 'google-site-kit' ) }
-				</Button>
+				</SpinnerButton>
 			) }
 		>
 			{ createInterpolateElement(
@@ -130,7 +135,6 @@ export default function AdBlockingRecoverySetupCTANotice() {
 						<SupportLink
 							path="/adsense/answer/11576589"
 							external
-							hideExternalIndicator
 							onClick={ handleLearnMoreClick }
 						/>
 					),

@@ -24,8 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	createRegistrySelector,
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
 	isValidAccountID,
@@ -34,12 +39,8 @@ import {
 	isValidUsageContext,
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { createRegistrySelector, createRegistryControl } = Data;
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-
-// Actions
-const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
@@ -53,7 +54,7 @@ const fetchGetContainersStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'tagmanager',
 			'containers',
@@ -92,24 +93,18 @@ const fetchCreateContainerStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', {
+		return set( 'modules', 'tagmanager', 'create-container', {
 			accountID,
 			usageContext,
 			name,
 		} );
 	},
-	reducerCallback( state, container, { accountID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: [
-					...( state.containers[ accountID ] || [] ),
-					container,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, container, { accountID } ) => {
+		if ( ! state.containers[ accountID ] ) {
+			state.containers[ accountID ] = [];
+		}
+		state.containers[ accountID ].push( container );
+	} ),
 } );
 
 const baseInitialState = {
@@ -177,7 +172,8 @@ const baseActions = {
 			);
 		},
 		function* ( containerID ) {
-			const { select, dispatch } = yield Data.commonActions.getRegistry();
+			const { select, dispatch, resolveSelect } =
+				yield commonActions.getRegistry();
 			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
 			if ( ! isValidAccountID( accountID ) ) {
@@ -188,7 +184,9 @@ const baseActions = {
 			// and no selections are done in the getContainers resolver, so we wait here.
 			// This will not guarantee that containers exist, as an account may also have no containers
 			// it will simply wait for `getContainers` to be resolved for this account ID.
-			yield baseActions.waitForContainers( accountID );
+			yield commonActions.await(
+				resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
+			);
 
 			const container = select( MODULES_TAGMANAGER ).getContainerByID(
 				accountID,
@@ -213,62 +211,17 @@ const baseActions = {
 			}
 		}
 	),
-
-	/**
-	 * Waits for containers to be resolved for the given account ID.
-	 *
-	 * @since 1.12.0
-	 * @private
-	 *
-	 * @param {string} accountID Google Tag Manager account ID to await containers for.
-	 * @return {Object} Redux-style action.
-	 */
-	waitForContainers: createValidatedAction(
-		( accountID ) => {
-			invariant(
-				isValidAccountID( accountID ),
-				'A valid accountID is required to wait for containers.'
-			);
-		},
-		function* ( accountID ) {
-			return {
-				payload: { accountID },
-				type: WAIT_FOR_CONTAINERS,
-			};
-		}
-	),
 };
 
-const baseControls = {
-	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
-		( registry ) =>
-			( { payload: { accountID } } ) => {
-				// Select first to ensure resolution is always triggered.
-				registry
-					.select( MODULES_TAGMANAGER )
-					.getContainers( accountID );
-				const areContainersLoaded = () =>
-					registry
-						.select( MODULES_TAGMANAGER )
-						.hasFinishedResolution( 'getContainers', [
-							accountID,
-						] );
+const baseControls = {};
 
-				if ( areContainersLoaded() ) {
-					return;
-				}
+function* resolveGetContainers( accountID ) {
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-				return new Promise( ( resolve ) => {
-					const unsubscribe = registry.subscribe( () => {
-						if ( areContainersLoaded() ) {
-							unsubscribe();
-							resolve();
-						}
-					} );
-				} );
-			}
-	),
-};
+	yield commonActions.await(
+		resolveSelect( MODULES_TAGMANAGER ).getContainers( accountID )
+	);
+}
 
 const baseResolvers = {
 	*getContainers( accountID ) {
@@ -276,7 +229,7 @@ const baseResolvers = {
 			return;
 		}
 
-		const { select } = yield Data.commonActions.getRegistry();
+		const { select } = yield commonActions.getRegistry();
 
 		if ( ! select( MODULES_TAGMANAGER ).getContainers( accountID ) ) {
 			yield fetchGetContainersStore.actions.fetchGetContainers(
@@ -284,6 +237,9 @@ const baseResolvers = {
 			);
 		}
 	},
+
+	getWebContainers: resolveGetContainers,
+	getAMPContainers: resolveGetContainers,
 };
 
 const baseSelectors = {
@@ -425,7 +381,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetContainersStore,
 	fetchCreateContainerStore,
 	{

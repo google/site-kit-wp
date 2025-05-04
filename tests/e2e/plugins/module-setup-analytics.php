@@ -15,6 +15,7 @@
 namespace Google\Site_Kit\Tests\E2E\Modules\Analytics;
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Destination;
 
 const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
@@ -85,25 +86,6 @@ function filter_webdatastream_by_property_ids( $items, $property_ids ) {
 add_action(
 	'rest_api_init',
 	function () {
-		$accounts = array(
-			array(
-				'id'          => ACCOUNT_ID_A,
-				'kind'        => 'analytics#account',
-				'name'        => 'Test Account A',
-				'permissions' => array(
-					'effective' => array( 'COLLABORATE', 'EDIT', 'MANAGE_USERS', 'READ_AND_ANALYZE' ),
-				),
-			),
-			array(
-				'id'          => ACCOUNT_ID_B,
-				'kind'        => 'analytics#account',
-				'name'        => 'Test Account B',
-				'permissions' => array(
-					'effective' => array( 'COLLABORATE', 'EDIT', 'MANAGE_USERS', 'READ_AND_ANALYZE' ),
-				),
-			),
-		);
-
 		$account_summaries = array(
 			array(
 				'account'           => 'accounts/' . ACCOUNT_ID_A,
@@ -113,6 +95,7 @@ add_action(
 				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property',
+						'parent'      => 'account/' . ACCOUNT_ID_A,
 						'property'    => 'properties/' . GA4_PROPERTY_ID_X,
 						'_id'         => GA4_PROPERTY_ID_X,
 					),
@@ -126,6 +109,7 @@ add_action(
 				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property',
+						'parent'      => 'account/' . ACCOUNT_ID_B,
 						'property'    => 'properties/' . GA4_PROPERTY_ID_Y,
 						'_id'         => GA4_PROPERTY_ID_Y,
 					),
@@ -139,6 +123,7 @@ add_action(
 				'propertySummaries' => array(
 					array(
 						'displayName' => 'Example Property Z',
+						'parent'      => 'account/' . ACCOUNT_ID_C,
 						'property'    => 'properties/' . GA4_PROPERTY_ID_Z,
 						'_id'         => GA4_PROPERTY_ID_Z,
 					),
@@ -204,61 +189,14 @@ add_action(
 
 		register_rest_route(
 			REST_Routes::REST_ROOT,
-			'modules/analytics/data/accounts-properties-profiles',
-			array(
-				'methods'             => 'GET',
-				'callback'            => function () use ( $accounts ) {
-					$response = array(
-						'accounts'   => $accounts,
-						'properties' => array(),
-						'profiles'   => array(),
-					);
-
-					return $response;
-				},
-				'permission_callback' => '__return_true',
-			),
-			true
-		);
-
-		register_rest_route(
-			REST_Routes::REST_ROOT,
 			'modules/analytics-4/data/account-summaries',
 			array(
 				'methods'             => 'GET',
 				'callback'            => function () use ( $account_summaries ) {
-					return $account_summaries;
-				},
-				'permission_callback' => '__return_true',
-			),
-			true
-		);
-
-		// Called when switching accounts
-		register_rest_route(
-			REST_Routes::REST_ROOT,
-			'modules/analytics/data/properties-profiles',
-			array(
-				'methods'             => 'GET',
-				'callback'            => function () {
 					return array(
-						'properties' => array(),
-						'profiles'   => array(),
+						'accountSummaries' => $account_summaries,
+						'nextPageToken'    => null,
 					);
-				},
-				'permission_callback' => '__return_true',
-			),
-			true
-		);
-
-		// Called when switching properties
-		register_rest_route(
-			REST_Routes::REST_ROOT,
-			'modules/analytics/data/profiles',
-			array(
-				'methods'             => 'GET',
-				'callback'            => function () {
-					return array();
 				},
 				'permission_callback' => '__return_true',
 			),
@@ -328,6 +266,31 @@ add_action(
 					$webdatastreams = filter_webdatastream_by_property_ids( $ga4_webdatastreams, array( $request->get_param( 'propertyID' ) ) );
 
 					return $webdatastreams;
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/container-destinations',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) {
+					$account_id   = $request->get_param( 'accountID' );
+					$container_id = $request->get_param( 'containerID' );
+					$destination  = new Destination();
+					$destination->setPath( "accounts/$account_id/containers/$container_id/destinations/1" );
+					$destination->setAccountId( $account_id );
+					$destination->setContainerId( $container_id );
+					$destination->setDestinationLinkId( '1' );
+					$destination->setDestinationId( 'G-000' ); // Matches nothing here currently.
+					$destination->setName( 'Non-existent destination' );
+
+					return array(
+						$destination,
+					);
 				},
 				'permission_callback' => '__return_true',
 			),

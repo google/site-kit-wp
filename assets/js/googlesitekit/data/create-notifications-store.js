@@ -24,8 +24,12 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';
 
 // Actions
@@ -73,22 +77,19 @@ export const createNotificationsStore = (
 	const fetchGetNotificationsStore = createFetchStore( {
 		baseName: 'getNotifications',
 		controlCallback: () => {
-			return API.get( type, identifier, datapoint );
+			return get( type, identifier, datapoint );
 		},
-		reducerCallback: ( state, notifications ) => {
-			return {
-				...state,
-				serverNotifications: notifications.reduce(
-					( acc, notification ) => {
-						return {
-							...acc,
-							[ notification.id ]: notification,
-						};
-					},
-					{}
-				),
-			};
-		},
+		reducerCallback: createReducer( ( state, notifications ) => {
+			state.serverNotifications = notifications.reduce(
+				( acc, notification ) => {
+					return {
+						...acc,
+						[ notification.id ]: notification,
+					};
+				},
+				{}
+			);
+		} ),
 	} );
 
 	const actions = {
@@ -182,7 +183,7 @@ export const createNotificationsStore = (
 
 	const resolvers = {
 		*getNotifications() {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 			const notifications = registry
 				.select( STORE_NAME )
 				.getNotifications();
@@ -236,7 +237,7 @@ export const createNotificationsStore = (
 		},
 	};
 
-	const store = Data.combineStores( fetchGetNotificationsStore, {
+	const store = combineStores( fetchGetNotificationsStore, {
 		initialState,
 		actions,
 		controls,

@@ -17,12 +17,21 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SettingsEdit from './SettingsEdit';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	WithTestRegistry,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
@@ -100,7 +109,7 @@ PaxConnected.parameters = {
 	features: [ 'adsPax' ],
 };
 PaxConnected.decorators = [
-	( Story, { parameters } ) => {
+	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
@@ -112,12 +121,134 @@ PaxConnected.decorators = [
 		};
 
 		return (
-			<WithRegistrySetup
-				func={ setupRegistry }
-				features={ parameters.features || [] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
+		);
+	},
+];
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'With ICE Enabled';
+IceEnabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsEdit/ICE',
+	delay: 250,
+};
+IceEnabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// Unset the value set in the previous scenario.
+			registry.dispatch( MODULES_ADS ).setConversionID( null );
+
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: 'AW-54321',
+				paxConversionID: '',
+				extCustomerID: '',
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const IcePaxEnabled = Template.bind( null );
+IcePaxEnabled.storyName = 'With ICE & PAX Enabled';
+IcePaxEnabled.scenario = {
+	label: 'Modules/Ads/Settings/SettingsEdit/ICE_PAX',
+	delay: 250,
+};
+IcePaxEnabled.parameters = {
+	features: [ 'adsPax' ],
+};
+IcePaxEnabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
+				conversionID: '',
+				paxConversionID: 'AW-54321',
+				extCustomerID: 'C-23482345986',
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const FirstPartyModeEnabled = Template.bind( null );
+FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
+FirstPartyModeEnabled.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const fpmServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			);
+
+			const fpmSettings = {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			};
+
+			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
+				body: fpmSettings,
+			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetFirstPartyModeSettings( fpmSettings );
+		};
+
+		return (
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'firstPartyMode' ] }
+			>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export const FirstPartyModeDisabledWithWarning = Template.bind( null );
+FirstPartyModeDisabledWithWarning.storyName =
+	'FirstPartyModeDisabledWithWarning';
+FirstPartyModeDisabledWithWarning.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const fpmServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			);
+
+			const fpmSettings = {
+				isEnabled: true,
+				isFPMHealthy: false,
+				isScriptAccessEnabled: false,
+			};
+
+			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
+				body: fpmSettings,
+			} );
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetFirstPartyModeSettings( fpmSettings );
+		};
+
+		return (
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'firstPartyMode' ] }
+			>
+				<Story />
+			</WithTestRegistry>
 		);
 	},
 ];

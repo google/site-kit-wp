@@ -29,7 +29,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
@@ -40,7 +40,7 @@ import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-const { useSelect } = Data;
+import DataBlockGroup from '../DataBlockGroup';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
@@ -97,7 +97,7 @@ export default function WPDashboardWidgets() {
 		analyticsModuleActive && analyticsModuleConnected;
 
 	return (
-		<div
+		<DataBlockGroup
 			className={ classnames(
 				'googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--twoup',
 				{
@@ -132,6 +132,6 @@ export default function WPDashboardWidgets() {
 					<WPDashboardPopularPagesGA4Widget />
 				</Fragment>
 			) }
-		</div>
+		</DataBlockGroup>
 	);
 }

@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES,
@@ -41,7 +41,7 @@ import {
 } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-const { useSelect, useInViewSelect } = Data;
+import { reportRowsWithSetValues } from '../../utils/report-rows-with-set-values';
 
 function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -62,11 +62,13 @@ function TopCitiesWidget( { Widget } ) {
 				desc: true,
 			},
 		],
-		limit: 3,
+		limit: 4,
 	};
 
-	const topCitiesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions )
+	const topCitiesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions ),
+		[ topcCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -84,7 +86,6 @@ function TopCitiesWidget( { Widget } ) {
 	);
 
 	const { rows = [], totals = [] } = topCitiesReport || {};
-
 	const totalUsers = totals[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 	const columns = [
@@ -116,7 +117,7 @@ function TopCitiesWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_CITIES }
 			loading={ loading }
-			rows={ rows }
+			rows={ reportRowsWithSetValues( rows ) }
 			columns={ columns }
 			ZeroState={ ZeroDataMessage }
 			error={ error }

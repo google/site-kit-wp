@@ -21,11 +21,10 @@
  */
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	untilResolved,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
 
@@ -33,7 +32,7 @@ describe( 'modules/analytics tags', () => {
 	let registry;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -42,11 +41,7 @@ describe( 'modules/analytics tags', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'selectors', () => {
@@ -72,7 +67,7 @@ describe( 'modules/analytics tags', () => {
 						window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}
 						gtag('js', new Date());
-						
+
 						gtag('config', '${ expectedTag }');
 					</script>
 				`,

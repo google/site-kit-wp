@@ -26,12 +26,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { timeZonesByCountryCode } from '../../../utils/countries-timezones';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-
-const { useSelect, useDispatch } = Data;
 
 export default function TimezoneSelect() {
 	const countryCode = useSelect( ( select ) =>

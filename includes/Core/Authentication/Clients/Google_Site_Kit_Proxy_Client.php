@@ -14,8 +14,8 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth2;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Utils;
 use Exception;
 
 /**
@@ -82,7 +82,7 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 			$token = $token['access_token'];
 		}
 
-		$body    = Psr7\stream_for(
+		$body    = Utils::streamFor(
 			http_build_query(
 				array(
 					'client_id' => $this->getClientId(),

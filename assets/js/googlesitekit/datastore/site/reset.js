@@ -19,17 +19,15 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import { createRegistrySelector, combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
-
-const { createRegistrySelector } = Data;
 
 const fetchResetStore = createFetchStore( {
 	baseName: 'reset',
 	controlCallback: () => {
-		return API.set( 'core', 'site', 'reset' );
+		return set( 'core', 'site', 'reset' );
 	},
 } );
 
@@ -63,7 +61,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchResetStore, {
+const store = combineStores( fetchResetStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	selectors: baseSelectors,

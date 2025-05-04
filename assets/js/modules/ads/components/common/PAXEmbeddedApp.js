@@ -26,32 +26,24 @@ import { useInterval } from 'react-use';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useRegistry } from 'googlesitekit-data';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import CTA from '../../../../components/notifications/CTA';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET } from '../../../analytics-4/datastore/constants';
-import { createPaxServices } from '../../pax/services';
-import { useMemoOne } from 'use-memo-one';
-import { formatPaxDate } from '../../pax/utils';
+import { createPaxConfig, createPaxServices, formatPaxDate } from '../../pax';
 
-const { useRegistry, useSelect } = Data;
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',
 	onLaunch,
 	onCampaignCreated,
+	onFinishAndCloseSignUpFlow,
 } ) {
 	const [ launchGoogleAdsAvailable, setLaunchGoogleAdsAvailable ] = useState(
 		typeof global?.google?.ads?.integration?.integrator?.launchGoogleAds ===
@@ -61,13 +53,6 @@ export default function PAXEmbeddedApp( {
 	const [ hasLaunchedPAXApp, setHasLaunchedPAXApp ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ launchError, setLaunchError ] = useState( undefined );
-
-	const registry = useRegistry();
-
-	const paxServices = useMemo( () => {
-		return createPaxServices( registry, { onCampaignCreated } );
-	}, [ registry, onCampaignCreated ] );
-
 	const paxDateRange = useSelect( ( select ) => {
 		if ( displayMode !== 'reporting' ) {
 			return {};
@@ -83,29 +68,8 @@ export default function PAXEmbeddedApp( {
 	);
 
 	const instanceID = useInstanceId( PAXEmbeddedApp, 'PAXEmbeddedApp' );
-
+	const elementID = `googlesitekit-pax-embedded-app-${ instanceID }`;
 	const paxAppRef = useRef();
-
-	const elementID = useMemoOne( () => {
-		return `googlesitekit-pax-embedded-app-${ instanceID }`;
-	}, [ instanceID ] );
-
-	const paxConfig = useMemoOne( () => {
-		return {
-			...( global?._googlesitekitPAXConfig || {} ),
-			clientConfig: {
-				contentContainer: `#${ elementID }`,
-			},
-			contentConfig: {
-				partnerAdsExperienceConfig: {
-					reportingStyle:
-						displayMode === 'reporting'
-							? 'REPORTING_STYLE_MINI'
-							: 'REPORTING_STYLE_FULL',
-				},
-			},
-		};
-	}, [ elementID, displayMode ] );
 
 	const setDateRangeForReportingMode = useCallback( () => {
 		if (
@@ -121,18 +85,32 @@ export default function PAXEmbeddedApp( {
 		}
 	}, [ displayMode, paxDateRange.endDate, paxDateRange.startDate ] );
 
+	const registry = useRegistry();
 	const launchPAXApp = useCallback( async () => {
-		if ( hasLaunchedPAXApp || paxAppRef.current ) {
+		// State is only checked here because app ref is only set on successful launch.
+		if ( hasLaunchedPAXApp ) {
 			return;
 		}
-
+		// Prevent multiple launches.
 		setHasLaunchedPAXApp( true );
+
+		const config = createPaxConfig( {
+			contentContainer: `#${ elementID }`,
+			reportingStyle:
+				displayMode === 'reporting'
+					? 'REPORTING_STYLE_MINI'
+					: 'REPORTING_STYLE_FULL',
+		} );
+		const services = createPaxServices( registry, {
+			onCampaignCreated,
+			onFinishAndCloseSignUpFlow,
+		} );
 
 		try {
 			paxAppRef.current =
 				await global.google.ads.integration.integrator.launchGoogleAds(
-					paxConfig,
-					paxServices
+					config,
+					services
 				);
 
 			setDateRangeForReportingMode();
@@ -148,11 +126,14 @@ export default function PAXEmbeddedApp( {
 
 		setIsLoading( false );
 	}, [
+		displayMode,
+		elementID,
 		hasLaunchedPAXApp,
-		paxConfig,
-		paxServices,
-		setDateRangeForReportingMode,
+		onCampaignCreated,
+		onFinishAndCloseSignUpFlow,
 		onLaunch,
+		registry,
+		setDateRangeForReportingMode,
 	] );
 
 	useInterval(
@@ -175,7 +156,7 @@ export default function PAXEmbeddedApp( {
 	);
 
 	useEffect( () => {
-		if ( launchGoogleAdsAvailable ) {
+		if ( launchGoogleAdsAvailable && ! hasLaunchedPAXApp ) {
 			launchPAXApp();
 		}
 	}, [
@@ -221,4 +202,6 @@ export default function PAXEmbeddedApp( {
 PAXEmbeddedApp.propTypes = {
 	displayMode: PropTypes.oneOf( [ 'default', 'reporting', 'setup' ] ),
 	onLaunch: PropTypes.func,
+	onCampaignCreated: PropTypes.func,
+	onFinishAndCloseSignUpFlow: PropTypes.func,
 };

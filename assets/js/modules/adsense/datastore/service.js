@@ -24,13 +24,11 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { parseDomain } from '../util/url';
-
-const { createRegistrySelector } = Data;
 
 export const selectors = {
 	/**
@@ -87,7 +85,7 @@ export const selectors = {
 			utm_medium: 'wordpress_signup',
 		};
 		if ( undefined !== siteURL ) {
-			query.url = siteURL;
+			query.url = parseDomain( siteURL );
 		}
 
 		return addQueryArgs( 'https://www.google.com/adsense/signup', query );
@@ -215,6 +213,18 @@ export const selectors = {
 
 			return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 		}
+	),
+
+	/**
+	 * Overrides the details link URL for this module.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => () =>
+			select( MODULES_ADSENSE ).getServiceAccountManageSitesURL()
 	),
 };
 

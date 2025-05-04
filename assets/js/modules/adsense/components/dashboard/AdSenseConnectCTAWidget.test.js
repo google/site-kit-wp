@@ -19,6 +19,13 @@
 /**
  * Internal dependencies
  */
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
+
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 import {
 	act,
@@ -33,9 +40,15 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
+
+	const WidgetWithComponentProps = withWidgetComponentProps(
+		'adsenseConnectCTA'
+	)( AdSenseConnectCTAWidget );
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
@@ -60,13 +73,6 @@ describe( 'AdSenseConnectCTA', () => {
 				}
 			);
 
-			function Widget( { children } ) {
-				return <div>{ children }</div>;
-			}
-			function WidgetNull() {
-				return <div>NULL</div>;
-			}
-
 			container = render(
 				<div>
 					<div id="adminmenu">
@@ -74,10 +80,7 @@ describe( 'AdSenseConnectCTA', () => {
 							Settings
 						</a>
 					</div>
-					<AdSenseConnectCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
+					<WidgetWithComponentProps />
 				</div>,
 				{ registry }
 			);
@@ -93,35 +96,19 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should open the tooltip', () => {
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).toBeInTheDocument();
+			expect( mockShowTooltip ).toHaveBeenCalled();
+		} );
+	} );
+
+	it( 'should render WidgetNull when the widget is being dismissed', () => {
+		registry
+			.dispatch( CORE_USER )
+			.setIsItemDimissing( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY, true );
+
+		const { container } = render( <WidgetWithComponentProps />, {
+			registry,
 		} );
 
-		it( 'should close the tooltip on clicking the close button', async () => {
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector( '.googlesitekit-tooltip-close' )
-				);
-			} );
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on clicking the dismiss button', async () => {
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector(
-						'.googlesitekit-tooltip-buttons > button'
-					)
-				);
-			} );
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
-		} );
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

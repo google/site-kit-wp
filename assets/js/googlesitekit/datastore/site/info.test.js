@@ -22,7 +22,6 @@
 import {
 	createTestRegistry,
 	untilResolved,
-	unsubscribeFromAll,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
@@ -40,6 +39,7 @@ describe( 'core/site site info', () => {
 		setupErrorMessage: null,
 		setupErrorRedoURL: null,
 		siteName: 'Something Test',
+		siteLocale: 'en-US',
 		timezone: 'America/Denver',
 		usingProxy: true,
 		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
@@ -50,6 +50,7 @@ describe( 'core/site site info', () => {
 			},
 		],
 		productPostType: [ 'product' ],
+		isMultisite: false,
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -69,7 +70,6 @@ describe( 'core/site site info', () => {
 	afterEach( () => {
 		delete global[ baseInfoVar ];
 		delete global[ entityInfoVar ];
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -188,6 +188,44 @@ describe( 'core/site site info', () => {
 				} ).not.toThrow(
 					'keyMetricsSetupCompletedBy must be a number.'
 				);
+			} );
+		} );
+
+		describe( 'setSetupErrorCode', () => {
+			it( 'sets the `setupErrorCode` property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setSetupErrorCode( 'error_code' );
+
+				expect( store.getState().siteInfo.setupErrorCode ).toBe(
+					'error_code'
+				);
+			} );
+
+			it( 'requires a string or null argument', () => {
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode();
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSetupErrorCode( undefined );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( true );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( 1 );
+				} ).toThrow( 'setupErrorCode must be a string or null.' );
+
+				expect( () => {
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( null );
+
+					registry.dispatch( CORE_SITE ).setSetupErrorCode( 'error' );
+				} ).not.toThrow( 'setupErrorCode must be a string or null.' );
 			} );
 		} );
 	} );
@@ -356,6 +394,7 @@ describe( 'core/site site info', () => {
 			[ 'getProxySetupURL', 'proxySetupURL' ],
 			[ 'getProxyPermissionsURL', 'proxyPermissionsURL' ],
 			[ 'getSiteName', 'siteName' ],
+			[ 'getSiteLocale', 'siteLocale' ],
 			[ 'getSetupErrorCode', 'setupErrorCode' ],
 			[ 'getSetupErrorMessage', 'setupErrorMessage' ],
 			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
@@ -375,6 +414,7 @@ describe( 'core/site site info', () => {
 			[ 'getProductPostType', 'productPostType' ],
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 			[ 'getConsentModeRegions', 'consentModeRegions' ],
+			[ 'isMultisite', 'isMultisite' ],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
@@ -537,6 +577,62 @@ describe( 'core/site site info', () => {
 						.select( CORE_SITE )
 						.isSiteURLMatch( 'http://example.org/' )
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getAdminSettingsURL', () => {
+			it( 'uses a resolver to load site info, then returns settings URL if set', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( CORE_SITE ).getAdminSettingsURL();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				expect( adminSettingsURL ).toContain( '/options-general.php' );
+			} );
+
+			it( 'returns admin settings URL containing "options-general.php" when it is single site', async () => {
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( baseInfo );
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				expect( adminSettingsURL ).toContain( 'options-general.php' );
+			} );
+
+			it( 'returns admin settings URL containing "network/settings.php" for multisite setups', async () => {
+				const baseInfoMultisite = { ...baseInfo, isMultisite: true };
+
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( baseInfoMultisite );
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				expect( adminSettingsURL ).toContain( 'network/settings.php' );
+			} );
+
+			it( 'returns undefined if site info is not resolved', async () => {
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
+				expect( global[ entityInfoVar ] ).toEqual( undefined );
+
+				const adminSettingsURL = registry
+					.select( CORE_SITE )
+					.getAdminSettingsURL();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect( adminSettingsURL ).toBeUndefined();
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

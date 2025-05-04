@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -23,12 +25,18 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\UserAuthenticationTrait;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\ContainerVersion;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Tag;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Modules
  */
 class Tag_ManagerTest extends TestCase {
+	use UserAuthenticationTrait;
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
@@ -52,7 +60,21 @@ class Tag_ManagerTest extends TestCase {
 		);
 	}
 
-	public function test_register_template_redirect_amp() {
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$tagmanager->register();
+
+		$this->assertEquals(
+			array(
+				array( $tagmanager, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
+	public function test_register__template_redirect_amp() {
 		$context    = $this->get_amp_primary_context();
 		$tagmanager = new Tag_Manager( $context );
 
@@ -108,7 +130,7 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
 	}
 
-	public function test_register_template_redirect_non_amp() {
+	public function test_register__template_redirect_non_amp() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$tagmanager = new Tag_Manager( $context );
 
@@ -369,7 +391,7 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_module_exists' );
 		add_filter(
 			'googlesitekit_module_exists',
-			function( $exists, $slug ) {
+			function ( $exists, $slug ) {
 				return 'analytics-4' === $slug ? false : true;
 			},
 			10,
@@ -415,6 +437,78 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertEquals(
 			$expected,
 			Tag_Manager::sanitize_container_name( $input )
+		);
+	}
+
+	/**
+	 * @dataProvider data_ads_measurement_data
+	 * @param $tag Tag[] Array of container tag instances.
+	 * @param $expected_result bool
+	 */
+	public function test_check_ads_measurement_connection( $tag, $expected_result ) {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user_id );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$tagmanager     = new Tag_Manager( $context, $options, $user_options, $authentication );
+
+		$account_id            = '123456789';
+		$container_id          = 'GTM-987654321';
+		$internal_container_id = '234567891';
+
+		$tagmanager->get_settings()->merge(
+			array(
+				'containerID'         => $container_id,
+				'accountID'           => $account_id,
+				'internalContainerID' => $internal_container_id,
+			)
+		);
+
+		$this->set_user_access_token( $user_id, 'valid-auth-token' );
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$tagmanager->get_scopes()
+		);
+
+		FakeHttp::fake_google_http_handler(
+			$tagmanager->get_client(),
+			function ( Request $request ) use ( $account_id, $internal_container_id, $tag ) {
+				$uri = $request->getUri();
+
+				if (
+					'tagmanager.googleapis.com' !== $uri->getHost()
+					|| false === strpos( $uri->getPath(), "/accounts/{$account_id}/containers/{$internal_container_id}/versions:live" )
+				) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				$data = new ContainerVersion();
+				$data->setTag( $tag );
+
+				return new FulfilledPromise(
+					new Response( 200, array(), json_encode( $data->toSimpleObject() ) )
+				);
+			}
+		);
+
+		$this->assertSame( $expected_result, $tagmanager->check_ads_measurement_connection() );
+	}
+
+	public function data_ads_measurement_data() {
+		$awct_tag = new Tag();
+		$awct_tag->setType( 'awct' );
+
+		return array(
+			'awct tag present' => array(
+				'container tag'   => array( $awct_tag ),
+				'expected_result' => true,
+			),
+			'no tags present'  => array(
+				'container tag'   => array(),
+				'expected_result' => false,
+			),
 		);
 	}
 
@@ -509,16 +603,18 @@ class Tag_ManagerTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$module->get_client(),
 			function () {
-				return new Response(
-					200,
-					array(),
-					json_encode(
-						array(
-							'container' => array(
-								array( 'publicId' => 'GTM-123456' ),
-								array( 'publicId' => 'GTM-123457' ),
-								array( 'publicId' => 'GTM-123458' ),
-							),
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'container' => array(
+									array( 'publicId' => 'GTM-123456' ),
+									array( 'publicId' => 'GTM-123457' ),
+									array( 'publicId' => 'GTM-123458' ),
+								),
+							)
 						)
 					)
 				);

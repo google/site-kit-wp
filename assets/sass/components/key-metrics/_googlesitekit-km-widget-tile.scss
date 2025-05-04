@@ -29,6 +29,10 @@
 			padding: 18px 24px;
 		}
 
+		.googlesitekit-info-tooltip {
+			color: $c-teal-t-500;
+		}
+
 		.googlesitekit-km-widget-tile__title-container {
 			display: flex;
 			flex-basis: 50%;
@@ -36,7 +40,7 @@
 		}
 
 		.googlesitekit-km-widget-tile__title {
-			color: $c-neutral-n-500;
+			color: $c-surfaces-on-background-variant;
 			flex: 1;
 			font-family: $f-primary;
 			font-size: $fs-label-sm;
@@ -104,6 +108,7 @@
 			font-size: $fs-title-lg;
 			font-weight: 500;
 			margin-top: 4px;
+			text-transform: capitalize;
 
 			@media (min-width: $bp-nonMobile) {
 				margin: 5px 0 0;
@@ -194,7 +199,6 @@
 		.googlesitekit-cta--error {
 			background: $c-white;
 			border: 2px solid $c-utility-on-error-container;
-
 			padding: 14px;
 
 			@media (min-width: $bp-nonMobile) {
@@ -206,10 +210,14 @@
 				column-gap: $grid-gap-phone / 2;
 				display: flex;
 				flex-basis: 50%;
+
+				svg {
+					color: $c-teal-t-500;
+				}
 			}
 
 			.googlesitekit-cta__header_text {
-				color: $c-neutral-n-500;
+				color: $c-surfaces-on-background-variant;
 				font-family: $f-primary;
 				font-size: $fs-label-sm;
 				font-weight: $fw-normal;
@@ -218,7 +226,7 @@
 			}
 
 			.googlesitekit-cta__title {
-				color: $c-neutral-n-900;
+				color: $c-surfaces-on-background;
 				font-family: $f-primary;
 				font-size: 18px;
 				font-weight: $fw-normal;
@@ -236,7 +244,7 @@
 				}
 
 				.googlesitekit-error-retry-text {
-					color: $c-neutral-n-900;
+					color: $c-surfaces-on-background;
 					flex: 1;
 					margin: 0;
 					margin-right: 14px;
@@ -260,7 +268,7 @@
 				}
 
 				.googlesitekit-cta-link {
-					color: $c-teal-t-500;
+					color: $c-content-secondary;
 				}
 			}
 		}
@@ -272,10 +280,6 @@
 		.mdc-layout-grid__inner {
 
 			@media (min-width: $bp-tablet) {
-				grid-template-rows: auto 1fr auto 1fr;
-			}
-
-			@media (min-width: $bp-desktop) {
 				grid-template-rows: auto 1fr;
 			}
 		}
@@ -289,7 +293,7 @@
 			}
 
 			@media (min-width: $bp-desktop) {
-				grid-row: 1 / -1;
+				grid-row: span 2;
 			}
 		}
 
@@ -326,7 +330,6 @@
 			}
 		}
 
-		.googlesitekit-widget--connectModuleCTATile,
 		.googlesitekit-widget--addMetricCTATile .googlesitekit-km-add-metric-cta-tile {
 			@media (min-width: $bp-tablet) {
 				grid-column: 1 / -1;

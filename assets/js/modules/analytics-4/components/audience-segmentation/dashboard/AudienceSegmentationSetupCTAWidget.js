@@ -1,7 +1,7 @@
 /**
- * KeyMetricsSetupCTAWidget component.
+ * AudienceSegmentationSetupCTAWidget component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,119 +24,221 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../util/when-active';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_GROUPS,
+} from '../../../../../googlesitekit/notifications/datastore/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
+import useViewContext from '../../../../../hooks/useViewContext';
+import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { WEEK_IN_SECONDS } from '../../../../../util';
+import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
+import AudienceErrorModal from './AudienceErrorModal';
+import NotificationWithSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
+import ActionsCTALinkDismiss from '../../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
+import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
+import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
-import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
-import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
 
-function AudienceSegmentationSetupCTAWidget( { Widget, title, description } ) {
-	const [ isSaving, setIsSaving ] = useState( false );
+export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
+	'audience_segmentation_setup_cta-notification';
+
+const breakpointSVGMap = {
+	[ BREAKPOINT_SMALL ]: BannerGraphicsSVGMobile,
+	[ BREAKPOINT_TABLET ]: BannerGraphicsSVGTablet,
+};
+function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
+	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
-	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
-	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
+	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const onEnableGroups = useCallback( () => {
-		setIsSaving( true );
-	}, [] );
+	const { invalidateResolution, dismissNotification } =
+		useDispatch( CORE_NOTIFICATIONS );
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const tooltipSettings = {
+		tooltipSlug: id,
+		title: __(
+			'You can always enable groups in Settings later',
+			'google-site-kit'
+		),
+		content: __(
+			'The visitors group section will be added to your dashboard once you set it up.',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
+
+	const isDismissalFinal = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
+	);
+
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_SEGMENTATION_SETUP_FORM,
+			'autoSubmit'
+		)
+	);
+
+	const [ showErrorModal, setShowErrorModal ] = useState( false );
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const onSuccess = useCallback( () => {
+		invalidateResolution( 'getQueuedNotifications', [
+			viewContext,
+			NOTIFICATION_GROUPS.DEFAULT,
+		] );
+		dismissNotification( id );
+		// Dismiss success notification in settings.
+		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
+	}, [
+		dismissItem,
+		id,
+		invalidateResolution,
+		dismissNotification,
+		viewContext,
+	] );
+
+	const onError = useCallback( () => {
+		setShowErrorModal( true );
+	}, [ setShowErrorModal ] );
+
+	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
+		useEnableAudienceGroup( {
+			onSuccess,
+			onError,
+		} );
+
+	const { clearPermissionScopeError } = useDispatch( CORE_USER );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const onCancel = useCallback( () => {
+		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
+			autoSubmit: false,
+		} );
+		clearPermissionScopeError();
+		setSetupErrorCode( null );
+		setShowErrorModal( false );
+	}, [ clearPermissionScopeError, setSetupErrorCode, setValues ] );
+
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+
+	const gaTrackingProps = {
+		gaTrackingEventArgs: {
+			category: trackEventCategory,
+		},
+	};
 
 	return (
-		<Widget
-			noPadding
-			className="googlesitekit-audience-segmentation-setup-cta-widget"
-		>
-			<Grid collapsed>
-				<Row>
-					<Cell
-						smSize={ 6 }
-						mdSize={ 8 }
-						lgSize={ 7 }
-						className="googlesitekit-widget-audience-segmentation-primary-cell"
-					>
-						<div className="googlesitekit-widget-audience-segmentation-text__wrapper">
-							<h3 className="googlesitekit-publisher-win__title">
-								{ title }
-							</h3>
-							<p>{ description }</p>
-						</div>
-						<div className="googlesitekit-widget-audience-segmentation-actions__wrapper">
-							<Fragment>
-								<SpinnerButton
-									className="googlesitekit-audience-segmentation-cta-button"
-									onClick={ onEnableGroups }
-									isSaving={ isSaving }
-								>
-									{ isSaving
-										? __(
-												'Enabling groups',
-												'google-site-kit'
-										  )
-										: __(
-												'Enable groups',
-												'google-site-kit'
-										  ) }
-								</SpinnerButton>
-								<Button
-									tertiary
-									onClick={ () => {
-										return false; // @todo update when logic ready.
-									} }
-								>
-									{ __( 'Maybe later', 'google-site-kit' ) }
-								</Button>
-							</Fragment>
-						</div>
-					</Cell>
-					{ ! isMobileBreakpoint && ! isTabletBreakpoint && (
-						<Cell
-							alignBottom
-							className="googlesitekit-widget-audience-segmentation-svg__wrapper"
-							smSize={ 6 }
-							mdSize={ 3 }
-							lgSize={ 5 }
-						>
-							<BannerGraphicsSVGDesktop />
-						</Cell>
+		<Fragment>
+			<Notification { ...gaTrackingProps }>
+				<NotificationWithSVG
+					id={ id }
+					title={ __(
+						'Learn how different types of visitors interact with your site',
+						'google-site-kit'
 					) }
-					{ isTabletBreakpoint && (
-						<Cell
-							className="googlesitekit-widget-audience-segmentation-svg__wrapper"
-							mdSize={ 8 }
-						>
-							<BannerGraphicsSVGTablet />
-						</Cell>
-					) }
-					{ isMobileBreakpoint && (
-						<Cell
-							className="googlesitekit-widget-audience-segmentation-svg__wrapper"
-							smSize={ 8 }
-						>
-							<BannerGraphicsSVGMobile />
-						</Cell>
-					) }
-				</Row>
-			</Grid>
-		</Widget>
+					description={
+						<p>
+							{ __(
+								'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like “new“ and “returning“. To set up these new groups, Site Kit needs to update your Google Analytics property.',
+								'google-site-kit'
+							) }
+						</p>
+					}
+					actions={
+						<ActionsCTALinkDismiss
+							id={ id }
+							className="googlesitekit-setup-cta-banner__actions-wrapper"
+							ctaLabel={
+								isSaving
+									? __( 'Enabling groups', 'google-site-kit' )
+									: __( 'Enable groups', 'google-site-kit' )
+							}
+							onCTAClick={ onEnableGroups }
+							isSaving={ isSaving }
+							dismissOnCTAClick={ false }
+							dismissLabel={
+								isDismissalFinal
+									? __(
+											'Don’t show again',
+											'google-site-kit'
+									  )
+									: __( 'Maybe later', 'google-site-kit' )
+							}
+							onDismiss={ showTooltip }
+							ctaDismissOptions={ {
+								skipHidingFromQueue: true,
+							} }
+							dismissExpires={
+								isDismissalFinal ? 0 : 2 * WEEK_IN_SECONDS
+							}
+							{ ...gaTrackingProps }
+						/>
+					}
+					SVG={
+						breakpointSVGMap[ breakpoint ] ??
+						BannerGraphicsSVGDesktop
+					}
+					primaryCellSizes={ {
+						lg: 7,
+						md: 8,
+					} }
+					SVGCellSizes={ {
+						lg: 5,
+					} }
+				/>
+			</Notification>
+			{ ( showErrorModal || hasOAuthError ) && (
+				<AudienceErrorModal
+					hasOAuthError={ hasOAuthError }
+					apiErrors={ apiErrors.length ? apiErrors : failedAudiences }
+					onRetry={ onEnableGroups }
+					inProgress={ isSaving }
+					onCancel={
+						hasOAuthError
+							? onCancel
+							: () => setShowErrorModal( false )
+					}
+					trackEventCategory={ `${ viewContext }_audiences-setup` }
+				/>
+			) }
+		</Fragment>
 	);
 }
 
 AudienceSegmentationSetupCTAWidget.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetNull: PropTypes.elementType,
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
-	AudienceSegmentationSetupCTAWidget
-);
+export default compose(
+	whenActive( { moduleName: 'analytics-4' } ),
+	withWidgetComponentProps( 'audienceSegmentationSetupCTA' )
+)( AudienceSegmentationSetupCTAWidget );

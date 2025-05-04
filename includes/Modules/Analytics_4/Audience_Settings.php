@@ -3,108 +3,138 @@
  * Class Google\Site_Kit\Modules\Analytics_4\Audience_Settings
  *
  * @package   Google\Site_Kit\Modules\Analytics_4
- * @copyright 2024 Google LLC
+ * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
 namespace Google\Site_Kit\Modules\Analytics_4;
 
-use Google\Site_Kit\Core\Storage\User_Setting;
-use Google\Site_Kit\Core\Util\Sanitize;
+use Google\Site_Kit\Core\Storage\Setting;
+use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 
 /**
- * Class for Analytics 4 audience settings.
+ * Class for Audience_Settings.
  *
- * @since 1.124.0
+ * @since 1.148.0
  * @access private
  * @ignore
  */
-class Audience_Settings extends User_Setting {
+class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_Interface {
 
 	/**
-	 * The user option name for audience setting.
+	 * The option name for this setting.
 	 */
-	const OPTION = 'googlesitekit_audience_settings';
+	const OPTION = 'googlesitekit_analytics-4_audience_settings';
 
 	/**
-	 * Gets the expected value type.
+	 * Gets the default value for settings.
 	 *
-	 * @since 1.124.0
+	 * @since 1.148.0
 	 *
-	 * @return string The type name.
+	 * @return mixed The default value.
 	 */
-	protected function get_type() {
-		return 'object';
-	}
-
-	/**
-	 * Gets the default value.
-	 *
-	 * @since 1.124.0
-	 *
-	 * @return array The default value.
-	 */
-	protected function get_default() {
+	public function get_default() {
 		return array(
-			'configuredAudiences'                => array(),
-			'isAudienceSegmentationWidgetHidden' => false,
+			'availableAudiences'                   => null,
+			'availableAudiencesLastSyncedAt'       => 0,
+			'audienceSegmentationSetupCompletedBy' => null,
 		);
 	}
 
 	/**
-	 * Merges an array of settings to update.
+	 * Gets the type of the setting.
 	 *
-	 * @since 1.124.0
+	 * @since 1.148.0
 	 *
-	 * @param array $partial Partial settings array to save.
-	 * @return bool True on success, false on failure.
+	 * @return string The type of the setting.
 	 */
-	public function merge( array $partial ) {
-		$settings = $this->get();
-		$partial  = array_filter(
-			$partial,
-			function ( $value ) {
-				return null !== $value;
-			}
-		);
-
-		$allowed_settings = array(
-			'configuredAudiences'                => true,
-			'isAudienceSegmentationWidgetHidden' => true,
-		);
-
-		$updated = array_intersect_key( $partial, $allowed_settings );
-
-		return $this->set( array_merge( $settings, $updated ) );
+	public function get_type() {
+		return 'array';
 	}
 
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since 1.124.0
+	 * @since 1.148.0
 	 *
-	 * @return callable Sanitize callback.
+	 * @return callable|null
 	 */
 	protected function get_sanitize_callback() {
-		return function ( $settings ) {
-			if ( ! is_array( $settings ) ) {
-				return array();
-			}
-
-			$sanitized_settings = array();
-
-			if ( isset( $settings['configuredAudiences'] ) ) {
-				$sanitized_settings['configuredAudiences'] = Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
-			}
-
-			if ( isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {
-				$sanitized_settings['isAudienceSegmentationWidgetHidden'] = false !== $settings['isAudienceSegmentationWidgetHidden'];
-			}
-
-			return $sanitized_settings;
+		return function ( $option ) {
+			return $this->sanitize( $option );
 		};
 	}
 
+	/**
+	 * Gets the view-only keys for the setting.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @return array List of view-only keys.
+	 */
+	public function get_view_only_keys() {
+		return array(
+			'availableAudiences',
+			'audienceSegmentationSetupCompletedBy',
+		);
+	}
 
+	/**
+	 * Merges the given settings with the existing ones. It will keep the old settings
+	 * value for the properties that are not present in the given settings.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @param array $settings The settings to merge.
+	 *
+	 * @return array The merged settings.
+	 */
+	public function merge( $settings ) {
+		$existing_settings = $this->get();
+		$updated_settings  = array_merge( $existing_settings, $settings );
+
+		$this->set( $updated_settings );
+
+		return $updated_settings;
+	}
+
+	/**
+	 * Sanitizes the settings.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @param array $option The option to sanitize.
+	 *
+	 * @return array The sanitized settings.
+	 */
+	private function sanitize( $option ) {
+		$new_option = $this->get();
+
+		if ( isset( $option['availableAudiences'] ) ) {
+			if ( is_array( $option['availableAudiences'] ) ) {
+				$new_option['availableAudiences'] = $option['availableAudiences'];
+			} else {
+				$new_option['availableAudiences'] = null;
+			}
+		}
+
+		if ( isset( $option['availableAudiencesLastSyncedAt'] ) ) {
+			if ( is_int( $option['availableAudiencesLastSyncedAt'] ) ) {
+				$new_option['availableAudiencesLastSyncedAt'] = $option['availableAudiencesLastSyncedAt'];
+			} else {
+				$new_option['availableAudiencesLastSyncedAt'] = 0;
+			}
+		}
+
+		if ( isset( $option['audienceSegmentationSetupCompletedBy'] ) ) {
+			if ( is_int( $option['audienceSegmentationSetupCompletedBy'] ) ) {
+				$new_option['audienceSegmentationSetupCompletedBy'] = $option['audienceSegmentationSetupCompletedBy'];
+			} else {
+				$new_option['audienceSegmentationSetupCompletedBy'] = null;
+			}
+		}
+
+		return $new_option;
+	}
 }

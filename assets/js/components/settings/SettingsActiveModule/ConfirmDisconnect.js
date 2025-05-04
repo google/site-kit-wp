@@ -31,7 +31,7 @@ import { ESCAPE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModalDialog from '../../ModalDialog';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -40,7 +40,6 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { clearCache } from '../../../googlesitekit/api/cache';
 import { listFormat, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function ConfirmDisconnect( { slug } ) {
 	const viewContext = useViewContext();
@@ -132,19 +131,6 @@ export default function ConfirmDisconnect( { slug } ) {
 		name
 	);
 
-	const hasFeatures = features?.length > 0;
-
-	const subtitle = hasFeatures
-		? sprintf(
-				/* translators: %s: module name */
-				__(
-					'By disconnecting the %s module from Site Kit, you will no longer have access to:',
-					'google-site-kit'
-				),
-				name
-		  )
-		: null;
-
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
 		dependentModulesText = sprintf(
@@ -160,10 +146,11 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	return (
 		<ModalDialog
+			className="googlesitekit-settings-module__confirm-disconnect-modal"
 			dialogActive
 			handleDialog={ handleDialog }
+			onClose={ handleDialog }
 			title={ title }
-			subtitle={ subtitle }
 			provides={ features }
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }

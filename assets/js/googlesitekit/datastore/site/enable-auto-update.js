@@ -24,14 +24,17 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 import { CORE_USER } from '../user/constants';
 
 const { receiveError, clearError } = errorStoreActions;
-const { createRegistrySelector } = Data;
 
 const fetchEnableAutoUpdateStore = createFetchStore( {
 	baseName: 'enableAutoUpdate',
@@ -77,13 +80,13 @@ const baseActions = {
 	*enableAutoUpdate() {
 		yield clearError( 'enableAutoUpdate', [] );
 
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_USER ).getNonces()
+		yield commonActions.await(
+			registry.resolveSelect( CORE_USER ).getNonces()
 		);
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_SITE ).getSiteInfo()
+		yield commonActions.await(
+			registry.resolveSelect( CORE_SITE ).getSiteInfo()
 		);
 
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
@@ -96,9 +99,7 @@ const baseActions = {
 			} );
 
 		if ( response?.success ) {
-			yield registry
-				.dispatch( CORE_SITE )
-				.setSiteKitAutoUpdatesEnabled( true );
+			registry.dispatch( CORE_SITE ).setSiteKitAutoUpdatesEnabled( true );
 		}
 
 		if ( error ) {
@@ -133,7 +134,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchEnableAutoUpdateStore, {
+const store = combineStores( fetchEnableAutoUpdateStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	selectors: baseSelectors,

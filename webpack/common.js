@@ -109,17 +109,6 @@ exports.manifestArgs = ( mode ) => ( {
 					file.path,
 					file.chunk.contentHash.javascript
 				);
-			} else if (
-				file.chunk.name?.startsWith( 'googlesitekit-components-' )
-			) {
-				// Exception for 'googlesitekit-components' because it's a dynamic asset
-				// with multiple possible file names.
-				seedObj[ 'googlesitekit-components' ] =
-					seedObj[ 'googlesitekit-components' ] || [];
-
-				seedObj[ 'googlesitekit-components' ].push(
-					entry( file.path, file.chunk.contentHash.javascript )
-				);
 			} else if ( file.isInitial ) {
 				// Normal entries.
 				seedObj[ file.chunk.name ] = entry(
@@ -165,6 +154,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
@@ -213,20 +203,9 @@ exports.createRules = ( mode ) => [
 		...noAMDParserRule,
 	},
 	{
-		test: RegExp( 'node_modules/@material/web/.*.js' ),
-		use: [
-			{
-				loader: 'babel-loader',
-				options: {
-					sourceMap: mode !== 'production',
-					babelrc: false,
-					configFile: false,
-					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
-				},
-			},
-		],
-		...noAMDParserRule,
+		test: /\.mjs$/,
+		include: /node_modules/,
+		type: 'javascript/auto',
 	},
 ];
 
@@ -262,12 +241,18 @@ exports.GOOGLESITEKIT_VERSION = googleSiteKitVersion
 
 const corePackages = [
 	'api-fetch',
+	'block-editor',
+	'blocks',
+	'components',
 	'compose',
 	'data',
 	'dom-ready',
+	'editor',
+	'edit-post',
 	'element',
 	'icons',
 	'keycodes',
+	'plugins',
 	'url',
 ];
 
@@ -275,6 +260,9 @@ exports.corePackages = corePackages;
 
 const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+	'googlesitekit-api': [ 'googlesitekit', 'api' ],
+	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 };
 
 exports.gutenbergExternals = gutenbergExternals;

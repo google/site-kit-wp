@@ -21,6 +21,10 @@
  */
 import { ENHANCED_MEASUREMENT_ENABLED } from '../datastore/constants';
 import * as accountUtils from './account';
+import {
+	populatePropertyAndAccountIds,
+	populateAccountSummaries,
+} from './account';
 
 describe( 'getAccountDefaults', () => {
 	const siteURL = 'https://example.com/';
@@ -117,5 +121,177 @@ describe( 'getAccountDefaults', () => {
 				getAccountDefaults( { siteName, siteURL, timezone } )
 			).toHaveProperty( ENHANCED_MEASUREMENT_ENABLED, true );
 		} );
+	} );
+} );
+
+describe( 'populateAccountID', () => {
+	const { populateAccountID } = accountUtils;
+
+	it( 'should append the account ID if a valid account URL is present', () => {
+		const account = {
+			account: 'accounts/12345',
+		};
+
+		const result = populateAccountID( account );
+
+		expect( result ).toEqual( {
+			account: 'accounts/12345',
+			_id: '12345',
+		} );
+	} );
+
+	it( 'should return the same object if account ID is not in expected format', () => {
+		const account = {
+			account: 'not-a-valid-url',
+		};
+
+		const result = populateAccountID( account );
+
+		expect( result ).toEqual( {
+			account: 'not-a-valid-url',
+		} );
+	} );
+
+	it( 'should return the same object if account ID is missing', () => {
+		const account = {
+			account: '',
+		};
+
+		const result = populateAccountID( account );
+
+		expect( result ).toEqual( {
+			account: '',
+		} );
+	} );
+} );
+
+describe( 'populatePropertyAndAccountIds', () => {
+	it( 'should append _id and _accountID when both property and parent fields are valid', () => {
+		const property = {
+			property: 'properties/123',
+			parent: 'accounts/456',
+		};
+
+		const result = populatePropertyAndAccountIds( property );
+
+		expect( result._id ).toBe( '123' );
+		expect( result._accountID ).toBe( '456' );
+	} );
+
+	it( 'should append only _id when parent is not valid', () => {
+		const property = {
+			property: 'properties/123',
+			parent: 'invalid-string',
+		};
+
+		const result = populatePropertyAndAccountIds( property );
+
+		expect( result._id ).toBe( '123' );
+		expect( result._accountID ).toBeUndefined();
+	} );
+
+	it( 'should append only _accountID when property is not valid', () => {
+		const property = {
+			property: 'invalid-string',
+			parent: 'accounts/456',
+		};
+
+		const result = populatePropertyAndAccountIds( property );
+
+		expect( result._id ).toBeUndefined();
+		expect( result._accountID ).toBe( '456' );
+	} );
+
+	it( 'should not append _id or _accountID when there are no valid matches', () => {
+		const property = {
+			property: 'invalid-string',
+			parent: 'invalid-string',
+		};
+
+		const result = populatePropertyAndAccountIds( property );
+
+		expect( result._id ).toBeUndefined();
+		expect( result._accountID ).toBeUndefined();
+	} );
+
+	it( 'should not append _id or _accountID for empty property and parent fields', () => {
+		const property = {
+			property: '',
+			parent: '',
+		};
+
+		const result = populatePropertyAndAccountIds( property );
+
+		expect( result._id ).toBeUndefined();
+		expect( result._accountID ).toBeUndefined();
+	} );
+
+	it( 'should not throw and should return an unchanged object when fields are missing', () => {
+		const property = {};
+
+		const result = populatePropertyAndAccountIds( property );
+
+		expect( result._id ).toBeUndefined();
+		expect( result._accountID ).toBeUndefined();
+		expect( result ).toEqual( {} );
+	} );
+} );
+
+describe( 'populateAccountSummaries', () => {
+	it( 'returns given if not array', () => {
+		expect( populateAccountSummaries( 123 ) ).toBe( 123 );
+		expect( populateAccountSummaries( null ) ).toBe( null );
+		expect( populateAccountSummaries( {} ) ).toEqual( {} );
+	} );
+
+	it( 'populates account IDs for all summaries', () => {
+		const sumA = { account: 'accounts/123' };
+		const sumB = { account: 'accounts/234' };
+		const sumC = { account: 'accounts/345' };
+
+		const result = populateAccountSummaries( [ sumA, sumB, sumC ] );
+
+		expect( result ).toMatchObject( [
+			{ _id: '123', ...sumA },
+			{ _id: '234', ...sumB },
+			{ _id: '345', ...sumC },
+		] );
+	} );
+
+	it( 'populates account + property IDs for all property summaries', () => {
+		const sumA = { account: 'accounts/123', propertySummaries: [] };
+		const sumB = { account: 'accounts/234' };
+		const sumC = {
+			account: 'accounts/345',
+			propertySummaries: [
+				{ parent: 'accounts/345', property: 'properties/3450' },
+				{ parent: 'accounts/345', property: 'properties/3451' },
+			],
+		};
+
+		const result = populateAccountSummaries( [ sumA, sumB, sumC ] );
+
+		expect( result ).toMatchObject( [
+			{ ...sumA, _id: '123' },
+			{ ...sumB, _id: '234', propertySummaries: [] },
+			{
+				...sumC,
+				_id: '345',
+				propertySummaries: [
+					{
+						parent: 'accounts/345',
+						_accountID: '345',
+						property: 'properties/3450',
+						_id: '3450',
+					},
+					{
+						parent: 'accounts/345',
+						_accountID: '345',
+						property: 'properties/3451',
+						_id: '3451',
+					},
+				],
+			},
+		] );
 	} );
 } );

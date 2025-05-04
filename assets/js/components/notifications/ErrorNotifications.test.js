@@ -26,6 +26,8 @@ import {
 	provideUserAuthentication,
 	provideModules,
 	provideSiteInfo,
+	provideNotifications,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import {
 	CORE_USER,
@@ -33,38 +35,85 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
+
+	const permissionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/permissions'
+	);
+
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	const searchAnalyticsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		muteFetch( permissionsEndpoint );
+		muteFetch( reportEndpoint );
+		muteFetch( searchAnalyticsEndpoint );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
-	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
+	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', async () => {
 		provideUserAuthentication( registry, {
 			authenticated: false,
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/analytics.readonly',
 			],
 		} );
-		const { container } = render( <ErrorNotifications />, {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideNotifications( registry );
+
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+		await waitForRegistry();
+
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'renders UnsatisfiedScopesAlert when user is authenticated', () => {
+	it( 'renders UnsatisfiedScopesAlert when user is authenticated', async () => {
 		provideUserAuthentication( registry, {
+			grantedScopes: [ TAGMANAGER_READ_SCOPE ],
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/analytics.readonly',
 			],
 		} );
-		const { container } = render( <ErrorNotifications />, {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideNotifications( registry );
+
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
@@ -72,7 +121,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'renders `Get help` link', () => {
+	it( 'renders `Get help` link', async () => {
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/analytics.readonly',
@@ -83,9 +132,15 @@ describe( 'ErrorNotifications', () => {
 			setupErrorCode: 'error_code',
 			setupErrorMessage: 'An error occurred',
 		} );
-		const { container, getByRole } = render( <ErrorNotifications />, {
-			registry,
-		} );
+		provideNotifications( registry );
+		const { container, getByRole, waitForRegistry } = render(
+			<ErrorNotifications />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Get help' );
 		expect( getByRole( 'link', { name: /get help/i } ) ).toHaveAttribute(
@@ -96,7 +151,7 @@ describe( 'ErrorNotifications', () => {
 		);
 	} );
 
-	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
+	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -109,10 +164,14 @@ describe( 'ErrorNotifications', () => {
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 			],
 		} );
+		provideNotifications( registry );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			'Site Kit needs additional permissions to detect updates to tags on your site'
@@ -120,17 +179,28 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
+	it( 'does not render the GTE message if there are multiple unsatisfied scopes', async () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 				'https://www.googleapis.com/auth/analytics.readonly',
 			],
 		} );
+		provideNotifications( registry );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
@@ -138,27 +208,22 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
+	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', async () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/tagmanager.readonly',
+				'https://www.googleapis.com/auth/analytics.readonly',
 			],
-		} );
-
-		const { container } = render( <ErrorNotifications />, {
-			registry,
-		} );
-
-		expect( container ).toHaveTextContent(
-			'Site Kit can’t access necessary data'
-		);
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', () => {
-		provideUserAuthentication( registry, {
 			authenticated: false,
 		} );
+		provideNotifications( registry );
 		provideSiteInfo( registry, {
 			setupErrorRedoURL: '#',
 			setupErrorCode: 'access_denied',
@@ -166,16 +231,26 @@ describe( 'ErrorNotifications', () => {
 				'Setup was interrupted because you did not grant the necessary permissions',
 		} );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
 		expect( container ).toHaveTextContent( 'Redo the plugin setup' );
 	} );
 
-	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', () => {
+	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', async () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
+		] );
 		provideUserAuthentication( registry );
+		provideNotifications( registry );
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',
 			setupErrorMessage:
@@ -183,15 +258,17 @@ describe( 'ErrorNotifications', () => {
 			setupErrorRedoURL: '#',
 		} );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
 		expect( container ).not.toHaveTextContent( 'Redo the plugin setup' );
 	} );
 
-	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporarily persisted', () => {
+	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporarily persisted', async () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry, {
 			isAuthenticated: true,
@@ -212,10 +289,13 @@ describe( 'ErrorNotifications', () => {
 					],
 				},
 			} );
+		provideNotifications( registry );
 
-		const { container } = render( <ErrorNotifications />, {
+		const { container, waitForRegistry } = render( <ErrorNotifications />, {
 			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
 		expect( container ).not.toHaveTextContent( 'Grant permission' );

@@ -30,6 +30,7 @@ export { default as defaultEnhancedMeasurementSettings } from './default-enhance
 export { default as pageTitles } from './page-titles.json';
 export { default as properties } from './properties.json';
 export { default as report } from './report.json';
+export { default as pivotReport } from './pivot-report.json';
 export { default as webDataStreams } from './webdatastreams.json';
 export { default as webDataStreamsBatch } from './webdatastreams-batch.json';
 export { default as webDataStreamsBatchSetup } from './webdatastreams-batch-setup.json';

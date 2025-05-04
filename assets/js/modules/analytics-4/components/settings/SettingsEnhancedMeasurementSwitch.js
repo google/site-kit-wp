@@ -29,7 +29,7 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
@@ -45,7 +45,6 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
-const { useSelect, useDispatch } = Data;
 
 export default function SettingsEnhancedMeasurementSwitch( {
 	hasModuleAccess,
@@ -199,6 +198,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	return (
 		<EnhancedMeasurementSwitch
+			showTick
 			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={

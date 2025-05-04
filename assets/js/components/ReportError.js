@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
 	isInsufficientPermissionsError,
@@ -43,7 +43,6 @@ import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 import useViewOnly from '../hooks/useViewOnly';
-const { useSelect } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
 	const isViewOnly = useViewOnly();

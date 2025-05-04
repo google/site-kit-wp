@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Persistent_Registration;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -33,8 +34,11 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
-use Google\Site_Kit\Modules\Ads\Tag_Guard;
+use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
 use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
@@ -43,6 +47,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 
 /**
  * Class representing the Ads module.
@@ -51,7 +56,7 @@ use Google\Site_Kit\Modules\Ads\AMP_Tag;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation {
+final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
@@ -63,7 +68,33 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	const MODULE_SLUG = 'ads';
 
-	const SCOPE = 'https://www.googleapis.com/auth/adwords';
+	const SCOPE                 = 'https://www.googleapis.com/auth/adwords';
+	const SUPPORT_CONTENT_SCOPE = 'https://www.googleapis.com/auth/supportcontent';
+
+	/**
+	 * Conversion_Tracking instance.
+	 *
+	 * @since 1.147.0
+	 * @var Conversion_Tracking
+	 */
+	protected $conversion_tracking;
+
+	/**
+	 * Class constructor.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @param Context             $context        Context object.
+	 * @param Options|null        $options        Options object.
+	 * @param User_Options|null   $user_options   User options object.
+	 * @param Authentication|null $authentication Authentication object.
+	 * @param Assets|null         $assets         Assets object.
+	 */
+	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$this->conversion_tracking = new Conversion_Tracking( $context );
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -74,8 +105,35 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		$this->register_scopes_hook();
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			10
+		);
+	}
+
+	/**
+	 * Registers functionality independent of module activation.
+	 *
+	 * @since 1.148.0
+	 */
+	public function register_persistent() {
+		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
+	}
+
+	/**
+	 * Checks if the Ads module is connected and contributing to Ads measurement.
+	 *
+	 * @since 1.151.0
+	 *
+	 * @return bool True if the Ads module is connected, false otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		return $this->is_connected();
 	}
 
 	/**
@@ -117,22 +175,14 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 				'googlesitekit-ads-pax-config',
 				array(
 					'global'        => '_googlesitekitPAXConfig',
-					'data_callback' => function() {
+					'data_callback' => function () {
 						if ( ! current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
 							return array();
 						}
 
-						return array(
-							'authAccess'      => array(
-								'oauthTokenAccess' => array(
-									'token' => (string) $this->authentication->get_oauth_client()->get_access_token(),
-								),
-							),
-							'locale'          => substr( $this->context->get_locale( 'user' ), 0, 2 ),
-							'debuggingConfig' => array(
-								'env' => 'PROD',
-							),
-						);
+						$config = new PAX_Config( $this->context, $this->authentication->token() );
+
+						return $config->get();
 					},
 				)
 			);
@@ -145,13 +195,14 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					// The Ads module is already connected.
 					$this->is_connected() ||
 					// Or the user is on the Ads module setup screen.
-					is_admin() && $is_googlesitekit_dashboard && $is_ads_slug && $is_re_auth
+					( ( ( is_admin() && $is_googlesitekit_dashboard ) && $is_ads_slug ) && $is_re_auth )
 				)
 			) {
 				$assets[] = new Script(
 					'googlesitekit-ads-pax-integrator',
 					array(
-						'src'          => 'https://www.gstatic.com/pax/latest/pax_integrator.js',
+						// When updating, mirror the fixed version for google-pax-sdk in package.json.
+						'src'          => 'https://www.gstatic.com/pax/1.1.4/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -167,6 +218,44 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	}
 
 	/**
+	 * Populates module data needed independent of Ads module activation.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	protected function persistent_inline_modules_data( $modules_data ) {
+		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
+			return $modules_data;
+		}
+
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
+		}
+
+		$active_wc  = class_exists( 'WooCommerce' );
+		$active_gla = defined( 'WC_GLA_VERSION' );
+
+		$gla_ads_conversion_action = get_option( 'gla_ads_conversion_action' );
+
+		$modules_data['ads']['plugins'] = array(
+			'woocommerce'             => array(
+				'active'    => $active_wc,
+				'installed' => $active_wc || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
+			),
+			'google-listings-and-ads' => array(
+				'active'       => $active_gla,
+				'installed'    => $active_gla || Plugin_Status::is_plugin_installed( 'google-listings-and-ads/google-listings-and-ads.php' ),
+				'adsConnected' => $active_gla && get_option( 'gla_ads_id' ),
+				'conversionID' => is_array( $gla_ads_conversion_action ) ? $gla_ads_conversion_action['conversion_id'] : '',
+			),
+		);
+
+		return $modules_data;
+	}
+
+	/**
 	 * Populates module data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.126.0
@@ -175,12 +264,15 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @return array Inline modules data.
 	 */
 	private function inline_modules_data( $modules_data ) {
-		if ( $this->is_connected() && Feature_Flags::enabled( 'adsPax' ) ) {
-			// Add the data under the `ads` key to make it clear it's scoped to this module.
-			$modules_data['ads'] = array(
-				'supportedConversionEvents' => array(),
-			);
+		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
+			return $modules_data;
 		}
+
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
+		}
+
+		$modules_data['ads']['supportedConversionEvents'] = $this->get_supported_conversion_events();
 
 		return $modules_data;
 	}
@@ -198,7 +290,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			$options        = $this->get_settings()->get();
 
 			if ( in_array( self::SCOPE, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
-				return array( self::SCOPE );
+				return array( self::SCOPE, self::SUPPORT_CONTENT_SCOPE );
 			}
 		}
 
@@ -216,8 +308,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		return array(
 			'slug'        => 'ads',
 			'name'        => _x( 'Ads', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Track conversions for your existing Google Ads campaigns', 'google-site-kit' ),
-			'order'       => 1,
+			'description' => Feature_Flags::enabled( 'adsPax' ) ? __( 'Grow sales, leads or awareness for your business by advertising with Google Ads', 'google-site-kit' ) : __( 'Track conversions for your existing Google Ads campaigns', 'google-site-kit' ),
 			'homepage'    => __( 'https://google.com/ads', 'google-site-kit' ),
 		);
 	}
@@ -294,7 +385,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		}
 
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		$tag->use_guard( new Has_Tag_Guard( $ads_conversion_id ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( ! $tag->can_register() ) {
@@ -317,13 +408,24 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$debug_fields = array(
 			'ads_conversion_tracking_id' => array(
-				'label' => __( 'Ads Conversion Tracking ID', 'google-site-kit' ),
+				'label' => __( 'Ads: Conversion ID', 'google-site-kit' ),
 				'value' => $settings['conversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
+
+		// Add fields from First-party mode.
+		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
+		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
+			$first_party_mode             = new First_Party_Mode( $this->context );
+			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+
+			$debug_fields = array_merge( $debug_fields, $fields_from_first_party_mode );
+		}
+
+		return $debug_fields;
 	}
 
 	/**
@@ -337,4 +439,26 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		return new Tag_Matchers();
 	}
 
+	/**
+	 * Returns events supported by active providers from the conversion tracking infrastructure.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return array Array of supported conversion events, or empty array.
+	 */
+	public function get_supported_conversion_events() {
+		$providers = $this->conversion_tracking->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
+		}
+
+		return array_unique( $events );
+	}
 }

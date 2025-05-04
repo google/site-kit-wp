@@ -88,6 +88,19 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 	},
 };
 
+export const ENUM_CONVERSION_EVENTS = {
+	ADD_TO_CART: 'add_to_cart',
+	PURCHASE: 'purchase',
+	SUBMIT_LEAD_FORM: 'submit_lead_form',
+	GENERATE_LEAD: 'generate_lead',
+	CONTACT: 'contact',
+};
+export const CONVERSION_REPORTING_LEAD_EVENTS = [
+	ENUM_CONVERSION_EVENTS.CONTACT,
+	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+	ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+];
+
 // Audience enums.
 export const AUDIENCE_FILTER_CLAUSE_TYPE_ENUM = {
 	AUDIENCE_CLAUSE_TYPE_UNSPECIFIED: 'AUDIENCE_CLAUSE_TYPE_UNSPECIFIED',
@@ -104,3 +117,122 @@ export const AUDIENCE_FILTER_SCOPE_ENUM = {
 	AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS:
 		'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
 };
+
+export const SITE_KIT_AUDIENCE_DEFINITIONS = {
+	'new-visitors': {
+		description: 'People who visited the site for the first time',
+		displayName: 'New visitors',
+		membershipDurationDays: -1, // The longest duration, 540 days.
+		filterClauses: [
+			{
+				clauseType: 'INCLUDE',
+				simpleFilter: {
+					scope: 'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
+					filterExpression: {
+						andGroup: {
+							filterExpressions: [
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												dimensionOrMetricFilter: {
+													fieldName: 'newVsReturning',
+													stringFilter: {
+														matchType: 'EXACT',
+														value: 'new',
+													},
+												},
+											},
+										],
+									},
+								},
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												notExpression: {
+													dimensionOrMetricFilter: {
+														fieldName: 'groupId',
+														stringFilter: {
+															matchType: 'EXACT',
+															value: 'created_by_googlesitekit:new_visitors',
+														},
+													},
+												},
+											},
+										],
+									},
+								},
+							],
+						},
+					},
+				},
+			},
+		],
+	},
+	'returning-visitors': {
+		description: 'People who have visited your site at least once before',
+		displayName: 'Returning visitors',
+		membershipDurationDays: -1, // The longest duration, 540 days.
+		filterClauses: [
+			{
+				clauseType: 'INCLUDE',
+				simpleFilter: {
+					scope: 'AUDIENCE_FILTER_SCOPE_ACROSS_ALL_SESSIONS',
+					filterExpression: {
+						andGroup: {
+							filterExpressions: [
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												dimensionOrMetricFilter: {
+													fieldName: 'newVsReturning',
+													stringFilter: {
+														matchType: 'EXACT',
+														value: 'returning',
+													},
+												},
+											},
+										],
+									},
+								},
+								{
+									orGroup: {
+										filterExpressions: [
+											{
+												notExpression: {
+													dimensionOrMetricFilter: {
+														fieldName: 'groupId',
+														stringFilter: {
+															matchType: 'EXACT',
+															value: 'created_by_googlesitekit:returning_visitors',
+														},
+													},
+												},
+											},
+										],
+									},
+								},
+							],
+						},
+					},
+				},
+			},
+		],
+	},
+};
+
+export const AUDIENCE_SEGMENTATION_SETUP_FORM = 'audiencePermissionsSetup';
+
+export const AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE =
+	'audienceTileCustomDimensionCreate';
+
+export const AUDIENCE_TYPE_SORT_ORDER = {
+	USER_AUDIENCE: 0,
+	SITE_KIT_AUDIENCE: 1,
+	DEFAULT_AUDIENCE: 2,
+};
+
+export const AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX =
+	'audience-selection-panel-expirable-new-badge-';

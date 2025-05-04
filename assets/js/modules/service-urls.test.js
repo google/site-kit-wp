@@ -76,10 +76,20 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 			'https://pagespeed.web.dev/foo-path',
 			'https://pagespeed.web.dev/foo-path?bar=baz',
 		],
+		'modules/reader-revenue-manager': [
+			'https://publishercenter.google.com/?utm_source=sitekit',
+			'https://publishercenter.google.com/foo-path?utm_source=sitekit',
+			'https://publishercenter.google.com/foo-path?bar=baz&utm_source=sitekit',
+		],
 		'modules/search-console': [
 			'https://search.google.com/search-console',
 			'https://search.google.com/search-console/foo-path',
 			'https://search.google.com/search-console/foo-path?bar=baz',
+		],
+		'modules/sign-in-with-google': [
+			'https://developers.google.com/identity/site-kit',
+			'https://developers.google.com/identity/site-kit#/foo-path',
+			'https://developers.google.com/identity/site-kit?bar=baz#/foo-path',
 		],
 		'modules/tagmanager': [
 			'https://tagmanager.google.com/',

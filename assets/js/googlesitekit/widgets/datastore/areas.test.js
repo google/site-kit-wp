@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_WIDGETS } from './constants';
 import Null from '../../../components/Null';
 import SiteKitLogo from '../../../../svg/graphics/logo-sitekit.svg';
@@ -34,10 +31,6 @@ describe( 'core/widgets Widget areas', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_WIDGETS ].store;
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -135,32 +128,17 @@ describe( 'core/widgets Widget areas', () => {
 				} ).toThrow( 'slug is required.' );
 			} );
 
-			it( 'requires settings', () => {
-				// (It will throw for the first missing param, because the settings argument is
-				// always defined .)
+			it( 'allows settings without a title', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_WIDGETS )
-						.registerWidgetArea( 'my-cool-slug' );
-				} ).toThrow( 'settings.title is required.' );
-			} );
-
-			it( 'requires a title in settings', () => {
-				expect( () => {
-					registry
-						.dispatch( CORE_WIDGETS )
-						.registerWidgetArea( 'header', {} );
-				} ).toThrow( 'settings.title is required.' );
-
-				expect( () => {
-					registry
-						.dispatch( CORE_WIDGETS )
-						.registerWidgetArea( 'header', {
-							title: 'Analytics Header',
+						.registerWidgetArea( 'my-cool-slug', {
 							subtitle: 'Analytics tell you about visitors',
 						} );
 				} ).not.toThrow();
+			} );
 
+			it( 'correctly handles settings with a title', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_WIDGETS )
@@ -170,8 +148,6 @@ describe( 'core/widgets Widget areas', () => {
 							style: 'composite',
 						} );
 				} ).not.toThrow();
-
-				expect( console ).toHaveWarned();
 			} );
 
 			it( 'should register multiple widget areas', () => {
@@ -509,12 +485,16 @@ describe( 'core/widgets Widget areas', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getWidgetArea( 'TestArea' )
 				).toEqual( {
-					Icon: undefined,
-					priority: 10,
+					slug: 'TestArea',
 					title: 'Test Header',
 					subtitle: 'Cool stuff for yoursite.com',
+					Icon: undefined,
 					style: 'composite',
-					slug: 'TestArea',
+					priority: 10,
+					hasNewBadge: false,
+					CTA: undefined,
+					Footer: undefined,
+					filterActiveWidgets: undefined,
 				} );
 			} );
 

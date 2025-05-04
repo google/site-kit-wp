@@ -19,33 +19,30 @@
 /**
  * WordPress dependencies
  */
-import { _x, sprintf, _n, __ } from '@wordpress/i18n';
+import { _x, sprintf, _n } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { Grid, Row, Cell } from '../../../../material-components/layout';
+import { Grid, Cell } from '../../../../material-components/layout';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
 import whenActive from '../../../../util/when-active';
 import { calculateOverallPageMetricsData } from '../../utils/overall-page-metrics';
-import { getURLPath, trackEvent } from '../../../../util';
+import { getURLPath } from '../../../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
-import useViewContext from '../../../../hooks/useViewContext';
-import NewBadge from '../../../../components/NewBadge';
-const { useSelect, useInViewSelect } = Data;
+import DataBlockGroup from '../../../../components/DataBlockGroup';
 
 function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -53,7 +50,6 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	);
 
 	const viewOnlyDashboard = useViewOnly();
-	const viewContext = useViewContext();
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -130,24 +126,13 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	} );
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
-
-	const sessionsLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/9191807',
-		} )
-	);
-
-	const engagementRateLearnMoreURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/12195621',
-		} )
 	);
 
 	function Header() {
@@ -178,10 +163,6 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	}
 
-	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
-		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
-	}, [ viewContext ] );
-
 	if ( isLoading || isGatheringData === undefined ) {
 		return (
 			<Widget Footer={ Footer }>
@@ -200,41 +181,10 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 
 	const data = calculateOverallPageMetricsData( report, dates.startDate );
 
-	const badges = {
-		sessions: (
-			<NewBadge
-				tooltipTitle={ __(
-					'Visitor interactions with your site within a given time frame (30 min by default).',
-					'google-site-kit'
-				) }
-				learnMoreLink={ sessionsLearnMoreURL }
-				onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-			/>
-		),
-		engagementRate: (
-			<NewBadge
-				tooltipTitle={ __(
-					'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
-					'google-site-kit'
-				) }
-				learnMoreLink={ engagementRateLearnMoreURL }
-				onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-			/>
-		),
-	};
-
-	// Check if any of the data blocks have a badge.
-	//
-	// If no data blocks have a badge, we shouldn't even render an
-	// empty badge container, and save some vertical space in the `DataBlock`.
-	const hasMetricWithBadge = data.some( ( { metric } ) => {
-		return !! badges[ metric ];
-	} );
-
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
-				<Row>
+				<DataBlockGroup className="mdc-layout-grid__inner">
 					{ data.map(
 						( {
 							metric,
@@ -259,14 +209,11 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 											gatheringData={ isGatheringData }
 										/>
 									}
-									badge={
-										badges[ metric ] || hasMetricWithBadge
-									}
 								/>
 							</Cell>
 						)
 					) }
-				</Row>
+				</DataBlockGroup>
 			</Grid>
 		</Widget>
 	);

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 
@@ -30,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -45,12 +46,17 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-import ga4ReportingTour from '../../../../../feature-tours/ga4-reporting';
-const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
+
+	const breakpoint = useBreakpoint();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
@@ -98,14 +104,17 @@ function ModulePopularPagesWidgetGA4( props ) {
 		] )
 	);
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
+				: undefined,
+		[ error, report, args ]
 	);
 
 	const loaded = useSelect( ( select ) => {
@@ -116,14 +125,9 @@ function ModulePopularPagesWidgetGA4( props ) {
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
 
-	const isGA4ReportingTourActive = useSelect(
-		( select ) => select( CORE_USER ).getCurrentTour() === ga4ReportingTour
-	);
-
 	const loading = ! loaded || isGatheringData === undefined;
 
-	// Bypass loading state if showing GA4 tour.
-	if ( loading && ! isGA4ReportingTourActive ) {
+	if ( loading ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewTable padding />
@@ -183,7 +187,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
 			description: __( 'Sessions', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.1.value',
 			className: 'googlesitekit-table__head-item--sessions',
 			Component( { fieldValue } ) {
@@ -195,7 +198,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Engagement Rate', 'google-site-kit' ),
 			description: __( 'Engagement Rate', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			className: 'googlesitekit-table__head-item--engagement-rate',
 			Component( { fieldValue } ) {
@@ -205,7 +207,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
-			hideOnMobile: true,
 			field: 'metricValues.3.value',
 			Component( { fieldValue } ) {
 				return <span>{ numFmt( fieldValue, 's' ) }</span>;
@@ -213,33 +214,39 @@ function ModulePopularPagesWidgetGA4( props ) {
 		},
 	];
 
-	let rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
-	let ZeroState = ZeroDataMessage;
-	// Use a custom zero state when the GA4 reporting tour is active
-	// while data is still loading.
-	if ( loading && isGA4ReportingTourActive ) {
-		rows = [];
-		ZeroState = function () {
-			return <PreviewTable rows={ rows.length || 10 } />;
-		};
-	} else {
-		// Combine the titles from the pageTitles with the rows from the metrics report.
-		rows.forEach( ( row ) => {
-			const url = row.dimensionValues[ 0 ].value;
-			row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
-		} );
-	}
+	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	const ZeroState = ZeroDataMessage;
+
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensionValues[ 0 ].value;
+		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
+	} );
+
+	const tabbedLayout =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
+	const reportTable = (
+		<ReportTable
+			className={ classnames( {
+				'googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout':
+					tabbedLayout,
+			} ) }
+			rows={ rows }
+			columns={ tableColumns }
+			zeroState={ ZeroState }
+			gatheringData={ isGatheringData }
+			tabbedLayout={ tabbedLayout }
+		/>
+	);
 
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
-			<TableOverflowContainer>
-				<ReportTable
-					rows={ rows }
-					columns={ tableColumns }
-					zeroState={ ZeroState }
-					gatheringData={ isGatheringData }
-				/>
-			</TableOverflowContainer>
+			{ tabbedLayout ? (
+				reportTable
+			) : (
+				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
+			) }
 		</Widget>
 	);
 }

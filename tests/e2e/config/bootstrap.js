@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 20 ] */
+
 /**
  * External dependencies
  */
@@ -231,6 +233,11 @@ function observeConsoleLogging() {
 		if (
 			text.match( /^twenty[a-z-]+ was added to the iframe incorrectly/ )
 		) {
+			return;
+		}
+
+		// WordPress 6.6 logs when loading the block editor which causes console error.
+		if ( text.startsWith( 'Warning: You are importing createRoot from' ) ) {
 			return;
 		}
 

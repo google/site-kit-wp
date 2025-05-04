@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Analytics_4;
 
 /**
@@ -61,7 +62,7 @@ class Synchronize_AdsLinked {
 	public function register() {
 		add_action(
 			self::CRON_SYNCHRONIZE_ADS_LINKED,
-			function() {
+			function () {
 				$this->synchronize_ads_linked_data();
 			}
 		);
@@ -73,6 +74,12 @@ class Synchronize_AdsLinked {
 	 * @since 1.124.0
 	 */
 	protected function synchronize_ads_linked_data() {
+		$ads_connected = apply_filters( 'googlesitekit_is_module_connected', false, Ads::MODULE_SLUG );
+
+		if ( $ads_connected ) {
+			return;
+		}
+
 		$owner_id     = $this->analytics_4->get_owner_id();
 		$restore_user = $this->user_options->switch_user( $owner_id );
 
@@ -122,8 +129,7 @@ class Synchronize_AdsLinked {
 
 		if ( $analytics_4_connected && ! $cron_already_scheduled ) {
 			wp_schedule_single_event(
-				// Schedule the task to run in 24 hours.
-				time() + ( DAY_IN_SECONDS ),
+				time() + ( WEEK_IN_SECONDS ),
 				self::CRON_SYNCHRONIZE_ADS_LINKED
 			);
 		}

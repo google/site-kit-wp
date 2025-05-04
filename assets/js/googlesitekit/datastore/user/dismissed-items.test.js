@@ -22,12 +22,13 @@
 import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
 describe( 'core/user dismissed-items', () => {
-	const fetchGetDismissedItems = new RegExp(
+	const fetchDismissedItems = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 	const fetchDismissItem = new RegExp(
@@ -88,13 +89,195 @@ describe( 'core/user dismissed-items', () => {
 				).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'should dispatch an error if the slug is not a string', async () => {
+				try {
+					await registry.dispatch( CORE_USER ).dismissItem( true );
+				} catch ( error ) {
+					expect( error.message ).toMatch(
+						'A slug must be a string.'
+					);
+				}
+			} );
+		} );
+
+		describe( 'removeDismissItems', () => {
+			it( 'should delete the specified dismissed items and return the remaining set of items', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [ 'foo', 'bar', 'baz' ] );
+
+				fetchMock.postOnce(
+					fetchDismissedItems,
+					{
+						body: [ 'baz' ],
+					},
+					{
+						headers: {
+							// The @wordpress/api-fetch middleware uses this header to tunnel DELETE requests via POST.
+							// See https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/api-fetch/src/middlewares/http-v1.js#L36
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+
+				await registry
+					.dispatch( CORE_USER )
+					.removeDismissedItems( 'foo', 'bar' );
+
+				expect( fetchMock ).toHaveFetched(
+					fetchDismissedItems,
+					{
+						body: {
+							data: {
+								slugs: [ 'foo', 'bar' ],
+							},
+						},
+					},
+					{
+						headers: {
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const dismissedItems = registry
+					.select( CORE_USER )
+					.getDismissedItems();
+
+				expect( dismissedItems ).toEqual( [ 'baz' ] );
+			} );
+
+			it( 'requires one or more valid slugs as arguments', () => {
+				expect( () => {
+					registry.dispatch( CORE_USER ).removeDismissedItems();
+				} ).toThrow( 'At least one slug must be provided.' );
+
+				expect( () => {
+					registry.dispatch( CORE_USER ).removeDismissedItems( 123 );
+				} ).toThrow( 'All slugs must be strings.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_USER )
+						.removeDismissedItems( 'foo', 123 );
+				} ).toThrow( 'All slugs must be strings.' );
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.postOnce(
+					fetchDismissedItems,
+					{
+						body: response,
+						status: 500,
+					},
+					{
+						headers: {
+							// @wordpress/api-fetch middleware uses this header to tunnel DELETE requests via POST.
+							// See https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/api-fetch/src/middlewares/http-v1.js#L36
+							'X-HTTP-Method-Override': 'DELETE',
+						},
+					}
+				);
+
+				await registry
+					.dispatch( CORE_USER )
+					.removeDismissedItems( 'foo' );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getErrorForAction( 'removeDismissedItems', [
+							[ 'foo' ],
+						] )
+				).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'setDismissedItems', () => {
+			it( 'should set the dismissing state for an item', () => {
+				const slug = 'foo-bar';
+
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_USER )
+					.setIsItemDimissing( slug, false );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+
+			it( 'should always set the boolean value', () => {
+				const slug = 'foo-bar';
+
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, 1 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+
+			it( 'should set dismissing state to true while dismissing item', () => {
+				const slug = 'foo-bar';
+
+				freezeFetch( fetchDismissItem );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+
+				registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+			} );
+
+			it( 'should set dismissing state to false after dismissing item', async () => {
+				const slug = 'foo-bar';
+
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ slug ],
+					status: 200,
+				} );
+
+				// Explicitly set dismissing state to true.
+				registry.dispatch( CORE_USER ).setIsItemDimissing( slug, true );
+
+				await registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
 		} );
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getDismissedItems', () => {
 			it( 'should return undefined util resolved', async () => {
-				muteFetch( fetchGetDismissedItems, [] );
+				muteFetch( fetchDismissedItems, [] );
 				expect(
 					registry.select( CORE_USER ).getDismissedItems()
 				).toBeUndefined();
@@ -102,7 +285,7 @@ describe( 'core/user dismissed-items', () => {
 			} );
 
 			it( 'should return dismissed items received from API', async () => {
-				fetchMock.getOnce( fetchGetDismissedItems, {
+				fetchMock.getOnce( fetchDismissedItems, {
 					body: [ 'foo', 'bar' ],
 				} );
 
@@ -126,7 +309,7 @@ describe( 'core/user dismissed-items', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce( fetchGetDismissedItems, {
+				fetchMock.getOnce( fetchDismissedItems, {
 					body: response,
 					status: 500,
 				} );
@@ -152,7 +335,7 @@ describe( 'core/user dismissed-items', () => {
 
 		describe( 'isItemDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
-				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+				fetchMock.getOnce( fetchDismissedItems, { body: [] } );
 				expect(
 					registry.select( CORE_USER ).isItemDismissed( 'foo' )
 				).toBeUndefined();

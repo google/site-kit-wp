@@ -19,7 +19,13 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,29 +33,44 @@ import PropTypes from 'prop-types';
 import { Button } from 'googlesitekit-components';
 import LightbulbIcon from '../../../../../../svg/icons/lightbulb.svg';
 
-export default function InfoNotice( { content, dismissLabel, onDismiss } ) {
-	return (
-		<div className="googlesitekit-audience-segmentation-info-notice">
-			<LightbulbIcon width="20" height="20" />
-			<div className="googlesitekit-audience-segmentation-info-notice__body">
-				<p>{ content }</p>
-
-				{ dismissLabel && (
-					<Button
-						tertiary
-						onClick={ onDismiss }
-						className="googlesitekit-audience-segmentation-info-notice__dismiss"
-					>
-						{ dismissLabel }
-					</Button>
+const InfoNotice = forwardRef(
+	(
+		{ className, content, dismissLabel, Icon = LightbulbIcon, onDismiss },
+		ref
+	) => {
+		return (
+			<div
+				ref={ ref }
+				className={ classnames(
+					'googlesitekit-audience-segmentation-info-notice',
+					className
 				) }
+			>
+				<Icon width="20" height="20" />
+				<div className="googlesitekit-audience-segmentation-info-notice__body">
+					<p>{ content }</p>
+
+					{ dismissLabel && (
+						<Button
+							tertiary
+							onClick={ onDismiss }
+							className="googlesitekit-audience-segmentation-info-notice__dismiss"
+						>
+							{ dismissLabel }
+						</Button>
+					) }
+				</div>
 			</div>
-		</div>
-	);
-}
+		);
+	}
+);
 
 InfoNotice.propTypes = {
+	className: PropTypes.string,
 	content: PropTypes.string.isRequired,
 	dismissLabel: PropTypes.string,
+	Icon: PropTypes.elementType,
 	onDismiss: PropTypes.func,
 };
+
+export default InfoNotice;

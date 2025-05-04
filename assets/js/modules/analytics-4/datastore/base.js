@@ -25,6 +25,7 @@ import {
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
+	validateHaveSettingsChanged,
 } from './settings';
 import { convertDateStringToUNIXTimestamp } from '../../../util';
 
@@ -60,12 +61,14 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'adsConversionIDMigratedAtMs',
 		'adsLinked',
 		'adsLinkedLastSyncedAt',
-		'availableAudiences',
-		'availableAudiencesLastSyncedAt',
+		'detectedEvents',
+		'newConversionEventsLastUpdateAt',
+		'lostConversionEventsLastUpdateAt',
 	],
 	submitChanges,
 	rollbackChanges,
 	validateCanSubmitChanges,
+	validateHaveSettingsChanged,
 } );
 
 const originalSetPropertyCreateTime =

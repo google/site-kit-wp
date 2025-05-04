@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PlaceholderTile should render correctly when there are no configurable non default audiences available 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-audience-segmentation-tile-placeholder"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-audience-segmentation-tile-placeholder__container"
+      >
+        <svg />
+        <div
+          class="googlesitekit-audience-segmentation-tile-placeholder__body googlesitekit-audience-segmentation-tile-placeholder__body--without-selectable-audiences"
+        >
+          <h3
+            class="googlesitekit-audience-segmentation-tile-placeholder__title"
+          >
+            Create more visitor groups
+          </h3>
+          <p
+            class="googlesitekit-audience-segmentation-tile-placeholder__description"
+          >
+            Learn more about how to group site visitors in 
+            <a
+              aria-label="Analytics (opens in a new tab)"
+              class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+              href="https://support.google.com/analytics/answer/12799087?hl=en-US"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Analytics
+              </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PlaceholderTile when there are configurable non default audiences available should render correctly 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-audience-segmentation-tile-placeholder"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-audience-segmentation-tile-placeholder__container"
+      >
+        <svg />
+        <div
+          class="googlesitekit-audience-segmentation-tile-placeholder__body"
+        >
+          <h3
+            class="googlesitekit-audience-segmentation-tile-placeholder__title"
+          >
+            Compare your group to other groups
+          </h3>
+          <p
+            class="googlesitekit-audience-segmentation-tile-placeholder__description"
+          >
+            <button
+              class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Select
+              </span>
+            </button>
+             another group to compare with your current group or learn more about how to group site visitors in 
+            <a
+              aria-label="Analytics (opens in a new tab)"
+              class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+              href="https://support.google.com/analytics/answer/12799087?hl=en-US"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Analytics
+              </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

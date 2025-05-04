@@ -20,9 +20,8 @@
  * Internal dependencies
  */
 import { createRegistry } from '@wordpress/data';
-import Data from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import {
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/utils';
@@ -34,10 +33,6 @@ const STORE_NAME = `modules/${ MODULE_SLUG }`;
 
 describe( 'createGatheringDataStore', () => {
 	let registry;
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
 
 	describe( 'args', () => {
 		it( 'should throw an error if no module slug is provided', () => {
@@ -78,7 +73,7 @@ describe( 'createGatheringDataStore', () => {
 			registry = createRegistry();
 			store = registry.registerStore(
 				STORE_NAME,
-				Data.combineStores(
+				combineStores(
 					createGatheringDataStore( MODULE_SLUG, {
 						storeName: STORE_NAME,
 						selectDataAvailability: () => {},
@@ -156,8 +151,8 @@ describe( 'createGatheringDataStore', () => {
 			it( 'should return undefined if it is not resolved yet', () => {
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,
@@ -173,8 +168,8 @@ describe( 'createGatheringDataStore', () => {
 			it( 'should return the value of gathering data if it is set and do nothing else', async () => {
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,
@@ -198,8 +193,8 @@ describe( 'createGatheringDataStore', () => {
 			it( 'should return FALSE and do nothing else when data is available on load', async () => {
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,
@@ -224,8 +219,8 @@ describe( 'createGatheringDataStore', () => {
 			it( 'should call selectDataAvailability to determine gathering data state when data is not available on load', async () => {
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,
@@ -248,8 +243,8 @@ describe( 'createGatheringDataStore', () => {
 
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,
@@ -286,8 +281,8 @@ describe( 'createGatheringDataStore', () => {
 
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
 							selectDataAvailability,
@@ -314,8 +309,8 @@ describe( 'createGatheringDataStore', () => {
 
 				registry.registerStore(
 					STORE_NAME,
-					Data.combineStores(
-						Data.commonStore,
+					combineStores(
+						commonStore,
 						createErrorStore( STORE_NAME ),
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,

@@ -24,12 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import Description from '../../googlesitekit/notifications/components/common/Description';
+import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
 
-export default function SetupErrorNotification() {
+export default function SetupErrorNotification( { id, Notification } ) {
 	// These will be `null` if no errors exist.
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
@@ -38,22 +39,27 @@ export default function SetupErrorNotification() {
 		select( CORE_SITE ).getSetupErrorRedoURL()
 	);
 
-	if ( ! setupErrorMessage ) {
-		return null;
-	}
-
 	return (
-		<BannerNotification
-			id="setup_error"
-			type="win-error"
-			title={ __(
-				'Oops! There was a problem during set up. Please try again.',
-				'google-site-kit'
-			) }
-			description={ setupErrorMessage }
-			isDismissible={ false }
-			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }
-			ctaLink={ setupErrorRedoURL }
-		/>
+		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+			<NotificationError
+				title={ __(
+					'Oops! There was a problem during set up. Please try again.',
+					'google-site-kit'
+				) }
+				description={ <Description text={ setupErrorMessage } /> }
+				actions={
+					setupErrorRedoURL && (
+						<CTALink
+							id={ id }
+							ctaLabel={ __(
+								'Redo the plugin setup',
+								'google-site-kit'
+							) }
+							ctaLink={ setupErrorRedoURL }
+						/>
+					)
+				}
+			/>
+		</Notification>
 	);
 }

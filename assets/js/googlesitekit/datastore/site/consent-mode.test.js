@@ -17,16 +17,13 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	provideModules,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'core/site Consent Mode', () => {
 	let registry;
@@ -36,7 +33,7 @@ describe( 'core/site Consent Mode', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -44,11 +41,7 @@ describe( 'core/site Consent Mode', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -302,128 +295,127 @@ describe( 'core/site Consent Mode', () => {
 		} );
 
 		describe( 'isAdsConnected', () => {
-			it( 'returns false if both the Ads and Analytics modules are disconnected', () => {
-				provideModules( registry, [
-					{
-						slug: 'ads',
-						active: false,
-						connected: false,
-					},
-					{
-						slug: 'analytics-4',
-						active: false,
-						connected: false,
-					},
-				] );
+			const adsMeasurementStatusEndpointRegExp = new RegExp(
+				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+			);
 
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					false
-				);
-			} );
+			it( 'uses a resolver to make a network request', async () => {
+				const response = { connected: true };
 
-			it( 'returns true if the Ads module is connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'ads',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					true
-				);
-			} );
-
-			it( 'returns undefined if the Ads module is disconnected and the Analytics module settings have not loaded', () => {
-				provideModules( registry, [
-					{
-						slug: 'ads',
-						active: false,
-						connected: false,
-					},
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
-
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					undefined
-				);
-			} );
-
-			it( 'returns true if Analytics and Ads are linked', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					adsLinked: true,
-					// Set the following to default, as otherwise if it is set to
-					// undefined, the `core/site` `isAdsConnected` selector will
-					// return undefined.
-					googleTagContainerDestinationIDs: null,
+				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
+					body: response,
+					status: 200,
 				} );
 
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					true
+				const initialIsAdsConnected = registry
+					.select( CORE_SITE )
+					.isAdsConnected();
+
+				expect( initialIsAdsConnected ).toBeUndefined();
+
+				await untilResolved( registry, CORE_SITE ).isAdsConnected();
+
+				const isAdsConnected = registry
+					.select( CORE_SITE )
+					.isAdsConnected();
+
+				expect( isAdsConnected ).toEqual( response.connected );
+
+				expect( fetchMock ).toHaveFetched(
+					adsMeasurementStatusEndpointRegExp
 				);
 			} );
 
-			it( 'returns true if Ads is connected via Google Tag', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					googleTagContainerDestinationIDs: [ 'AW-12345' ],
-					// Set the following to default, as otherwise if it is set to
-					// undefined, the `core/site` `isAdsConnected` selector will
-					// return undefined.
-					adsLinked: false,
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
 				} );
 
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					true
+				const initialIsAdsConnected = registry
+					.select( CORE_SITE )
+					.isAdsConnected();
+
+				expect( initialIsAdsConnected ).toBeUndefined();
+
+				await untilResolved( registry, CORE_SITE ).isAdsConnected();
+
+				const isAdsConnected = registry
+					.select( CORE_SITE )
+					.isAdsConnected();
+
+				// Verify the API info is still undefined after the selector is resolved.
+				expect( isAdsConnected ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetched(
+					adsMeasurementStatusEndpointRegExp
 				);
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isAdsConnectedUncached', () => {
+			const adsMeasurementStatusEndpointRegExp = new RegExp(
+				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+			);
+
+			it( 'uses a resolver to make a network request with useCache', async () => {
+				const response = { connected: true };
+
+				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
+					body: response,
+					status: 200,
+				} );
+
+				const initialIsAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+				expect( initialIsAdsConnectedUncached ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).isAdsConnectedUncached();
+
+				expect( fetchMock ).toHaveFetched(
+					adsMeasurementStatusEndpointRegExp
+				);
+
+				const isAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+
+				expect( isAdsConnectedUncached ).toEqual( response.connected );
 			} );
 
-			it( 'returns false if the Ads module is disconnected, Analytics and Ads are not linked, and the Google Tag does not have an Ads conversion tracking ID as a destination', () => {
-				provideModules( registry, [
-					{
-						slug: 'ads',
-						active: false,
-						connected: false,
-					},
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					adsLinked: false,
-					googleTagContainerDestinationIDs: null,
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce( adsMeasurementStatusEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
 				} );
 
-				expect( registry.select( CORE_SITE ).isAdsConnected() ).toBe(
-					false
+				const initialIsAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+				expect( initialIsAdsConnectedUncached ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).isAdsConnectedUncached();
+
+				const isAdsConnectedUncached = registry
+					.select( CORE_SITE )
+					.isAdsConnectedUncached();
+
+				expect( isAdsConnectedUncached ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetched(
+					adsMeasurementStatusEndpointRegExp
 				);
+
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

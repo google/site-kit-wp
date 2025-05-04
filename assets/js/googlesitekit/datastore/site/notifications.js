@@ -24,8 +24,8 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import { combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createNotificationsStore } from '../../data/create-notifications-store';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -41,7 +41,7 @@ const isValidNotificationID = ( notificationID ) =>
 const fetchMarkNotificationStore = createFetchStore( {
 	baseName: 'markNotification',
 	controlCallback: ( { notificationID, notificationState } ) => {
-		return API.set( 'core', 'site', 'mark-notification', {
+		return set( 'core', 'site', 'mark-notification', {
 			notificationID,
 			notificationState,
 		} );
@@ -125,7 +125,7 @@ const baseActions = {
 	),
 };
 
-const notifications = Data.combineStores(
+const notifications = combineStores(
 	createNotificationsStore( 'core', 'site', 'notifications', {
 		storeName: CORE_SITE,
 	} ),

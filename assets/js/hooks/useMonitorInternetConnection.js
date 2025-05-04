@@ -24,21 +24,20 @@ import { useLifecycles, useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
+import apiFetch from '@wordpress/api-fetch';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-
-const { useDispatch, useSelect } = Data;
 
 /**
  * Monitors the user's internet connection status.
  *
  * @since 1.118.0
+ * @since 1.136.0 Changed the connection check endpoint.
  */
 export function useMonitorInternetConnection() {
 	const { setIsOnline } = useDispatch( CORE_UI );
@@ -54,32 +53,22 @@ export function useMonitorInternetConnection() {
 		}
 
 		try {
-			const connectionCheckResponse = await API.get(
-				'core',
-				'site',
-				'connection-check',
-				undefined,
-				{
-					useCache: false,
-				}
-			);
-
-			// We are only interested if the request was successful, to
-			// confirm online status.
-			const canReachConnectionCheck = !! connectionCheckResponse;
-
-			setIsOnline( canReachConnectionCheck );
+			await apiFetch( { path: '/google-site-kit/v1/' } );
 		} catch ( err ) {
-			setIsOnline( false );
+			if ( err?.code === 'fetch_error' ) {
+				setIsOnline( false );
+				return;
+			}
 		}
+		// If the request succeeded or failed for any other reason,
+		// we should still be online.
+		setIsOnline( true );
 	}, [ setIsOnline ] );
 
 	useLifecycles(
 		() => {
 			global.addEventListener( 'online', checkInternetConnection );
 			global.addEventListener( 'offline', checkInternetConnection );
-
-			checkInternetConnection();
 		},
 		() => {
 			global.removeEventListener( 'online', checkInternetConnection );

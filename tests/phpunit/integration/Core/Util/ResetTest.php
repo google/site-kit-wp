@@ -25,7 +25,9 @@ use WPDieException;
  * @group Util
  */
 class ResetTest extends TestCase {
-	use OptionsTestTrait, UserOptionsTestTrait, TransientsTestTrait;
+	use OptionsTestTrait;
+	use UserOptionsTestTrait;
+	use TransientsTestTrait;
 
 	const TEST_OPTION = 'googlesitekit_test_option';
 
@@ -51,9 +53,14 @@ class ResetTest extends TestCase {
 		update_option( 'googlesitekit-keep', 'keep' );
 
 		$post_id = $this->factory()->post->create();
+		$term_id = $this->factory()->term->create();
 		add_post_meta( $post_id, 'googlesitekitkeep', 'keep' );
 		add_post_meta( $post_id, 'googlesitekit-keep', 'keep' );
 		add_post_meta( $post_id, 'googlesitekit_keep', 'delete' );
+
+		add_term_meta( $term_id, 'googlesitekitkeep', 'keep' );
+		add_term_meta( $term_id, 'googlesitekit-keep', 'keep' );
+		add_term_meta( $term_id, 'googlesitekit_keep', 'delete' );
 
 		$this->run_reset( $context );
 
@@ -65,6 +72,11 @@ class ResetTest extends TestCase {
 		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekitkeep', true ) );
 		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekit-keep', true ) );
 		$this->assertEquals( '', get_post_meta( $post_id, 'googlesitekit_keep', true ) );
+
+		// Ensure term meta that do not start with googlesitekit_ are not deleted.
+		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekitkeep', true ) );
+		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekit-keep', true ) );
+		$this->assertEquals( '', get_term_meta( $term_id, 'googlesitekit_keep', true ) );
 	}
 
 	/**

@@ -23,6 +23,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
+      - 'webpack/*.config.js'
       - 'webpack.config.js'
       - 'tests/e2e/**'
       - '!assets/**/__tests__/**/*.js'
@@ -54,6 +55,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
+      - 'webpack/*.config.js'
       - 'webpack.config.js'
       - 'tests/e2e/**'
       - '!assets/**/__tests__/**/*.js'
@@ -80,23 +82,32 @@ jobs:
       matrix:
         amp_version: ['']
         wp_version: ['latest', 'nightly']
+        ca_cert_refresh: ['']
         include:
           - amp_version: '1.5.5'
-            wp_version: '5.2.16'
+            wp_version: '5.2.21'
+            ca_cert_refresh: true
     env:
       AMP_VERSION: ${{ matrix.amp_version }}
       WP_VERSION: ${{ matrix.wp_version }}
+      CA_CERT_REFRESH: ${{ matrix.ca_cert_refresh }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+
+      # nvm@7 is the minimum version required for npm workspace support.
+      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
+      # This can be removed once our node base version comes with nvm@7 or greater.
+      - name: Install npm Globally
+        run: npm run install-global-npm
 
       - name: npm install
         run: npm ci
@@ -116,7 +127,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -132,8 +143,10 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: e2e-screenshots
-          path: tests/e2e/screenshots
+          name: e2e-debugging-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]-amp[${{ matrix.amp_version }}]
+          path: |
+            ~/.npm/_logs/
+            tests/e2e/screenshots/

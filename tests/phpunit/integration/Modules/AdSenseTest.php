@@ -25,15 +25,18 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\AdBlockingRecoveryTag;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\ListAlertsResponse;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use ReflectionMethod;
 use WP_REST_Request;
@@ -47,6 +50,7 @@ class AdSenseTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use ModulesHelperTrait;
 
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -179,6 +183,31 @@ class AdSenseTest extends TestCase {
 		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
 	}
 
+	public function test_register__if_analytics_is_active_sync_adsense_link_settings() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$adsense = new AdSense( $context );
+
+		remove_all_actions( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
+
+		$this->force_connect_modules( Analytics_4::MODULE_SLUG );
+
+		$adsense->register();
+
+		// Set the needed option values so checks can pass.
+		$adsense->get_settings()->merge(
+			array(
+				'accountID'            => 'pub-0987654321',
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		$this->assertEquals(
+			did_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
+			1
+		);
+	}
+
 	/**
 	 * @dataProvider block_on_consent_provider
 	 * @param bool $enabled
@@ -232,7 +261,6 @@ class AdSenseTest extends TestCase {
 
 		$this->assertStringContainsString( 'google-adsense-platform-domain', $output );
 		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output );
-
 	}
 
 	/**
@@ -393,12 +421,12 @@ class AdSenseTest extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function () {
 				$response = new AdBlockingRecoveryTag();
 				$response->setTag( 'test-recovery-tag' );
 				$response->setErrorProtectionCode( 'test-error-protection-code' );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 
@@ -432,7 +460,7 @@ class AdSenseTest extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function () {
 				$mock_alert_severe = new Alert();
 				$mock_alert_severe->setSeverity( 'SEVERE' );
 
@@ -442,7 +470,7 @@ class AdSenseTest extends TestCase {
 				$response = new ListAlertsResponse();
 				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 
@@ -475,7 +503,7 @@ class AdSenseTest extends TestCase {
 
 		FakeHttp::fake_google_http_handler(
 			$adsense->get_client(),
-			function() {
+			function () {
 				$mock_alert_severe = new Alert();
 				$mock_alert_severe->setSeverity( 'SEVERE' );
 
@@ -485,7 +513,7 @@ class AdSenseTest extends TestCase {
 				$response = new ListAlertsResponse();
 				$response->setAlerts( array( $mock_alert_severe, $mock_alert_warning ) );
 
-				return new Response( 200, array(), json_encode( $response ) );
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 

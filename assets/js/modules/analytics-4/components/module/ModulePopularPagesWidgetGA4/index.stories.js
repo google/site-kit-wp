@@ -36,7 +36,7 @@ import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import ModulePopularPagesWidgetGA4 from '.';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 
 const reportOptions = [
 	{
@@ -87,7 +87,7 @@ const reportOptions = [
 		// Gathering/zero data report.
 		dimensions: [ 'date' ],
 		metrics: [ { name: 'totalUsers' } ],
-		startDate: '2020-12-09',
+		startDate: '2020-11-11',
 		endDate: '2021-01-05',
 	},
 ];

@@ -438,7 +438,6 @@ class Google_ProxyTest extends TestCase {
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
-			'gm3Components'    => array( 'enabled' => true ),
 			'test.featureName' => array( 'enabled' => true ),
 		);
 
@@ -492,7 +491,7 @@ class Google_ProxyTest extends TestCase {
 	 * @group ms-excluded
 	 */
 	public function test_get_platform() {
-		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText
 	}
 
 	/**
@@ -634,7 +633,7 @@ class Google_ProxyTest extends TestCase {
 	private function mock_http_failure( $request_url, $response_error ) {
 		add_filter(
 			'pre_http_request',
-			function( $response, $parsed_args, $url ) use ( $request_url, $response_error ) {
+			function ( $response, $parsed_args, $url ) use ( $request_url, $response_error ) {
 				if ( $url === $request_url ) {
 					return $response_error;
 				} else {
@@ -645,5 +644,4 @@ class Google_ProxyTest extends TestCase {
 			3
 		);
 	}
-
 }

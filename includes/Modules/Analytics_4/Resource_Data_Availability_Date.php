@@ -11,7 +11,10 @@
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Storage\Options_Interface;
 use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 
 /**
  * Class for managing Analytics 4 resource data availability date.
@@ -53,16 +56,26 @@ class Resource_Data_Availability_Date {
 	protected $settings;
 
 	/**
+	 * Options instance.
+	 *
+	 * @since 1.151.0
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.127.0
 	 *
-	 * @param Transients      $transients Transients instance.
-	 * @param Module_Settings $settings Module settings instance.
+	 * @param Transients        $transients Transients instance.
+	 * @param Module_Settings   $settings Module settings instance.
+	 * @param Audience_Settings $audience_settings Audience_Settings instance.
 	 */
-	public function __construct( Transients $transients, Module_Settings $settings ) {
-		$this->transients = $transients;
-		$this->settings   = $settings;
+	public function __construct( Transients $transients, Module_Settings $settings, Audience_Settings $audience_settings ) {
+		$this->transients        = $transients;
+		$this->settings          = $settings;
+		$this->audience_settings = $audience_settings;
 	}
 
 	/**
@@ -229,8 +242,8 @@ class Resource_Data_Availability_Date {
 	 * @return array List of available audience resource names.
 	 */
 	private function get_available_audience_resource_names() {
-		$settings            = $this->settings->get();
-		$available_audiences = $settings['availableAudiences'] ?? array();
+		$available_audiences = $this->audience_settings->get();
+		$available_audiences = $available_audiences['availableAudiences'] ?? array();
 
 		return array_map(
 			function ( $audience ) {

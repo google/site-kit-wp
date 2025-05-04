@@ -46,6 +46,8 @@ function ModalDialog( {
 	className = '',
 	dialogActive = false,
 	handleDialog = null,
+	onOpen = null,
+	onClose = null,
 	title = null,
 	provides,
 	handleConfirm,
@@ -56,6 +58,7 @@ function ModalDialog( {
 	inProgress = false,
 	small = false,
 	medium = false,
+	buttonLink = null,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
@@ -64,6 +67,8 @@ function ModalDialog( {
 	return (
 		<Dialog
 			open={ dialogActive }
+			onOpen={ onOpen }
+			onClose={ onClose }
 			aria-describedby={ hasProvides ? describedByID : undefined }
 			tabIndex="-1"
 			className={ classnames( className, {
@@ -123,14 +128,26 @@ function ModalDialog( {
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Button>
-				<SpinnerButton
-					onClick={ handleConfirm }
-					danger={ danger }
-					disabled={ inProgress }
-					isSaving={ inProgress }
-				>
-					{ confirmButton || __( 'Disconnect', 'google-site-kit' ) }
-				</SpinnerButton>
+				{ buttonLink ? (
+					<Button
+						href={ buttonLink }
+						onClick={ handleConfirm }
+						target="_blank"
+						danger={ danger }
+					>
+						{ confirmButton }
+					</Button>
+				) : (
+					<SpinnerButton
+						onClick={ handleConfirm }
+						danger={ danger }
+						disabled={ inProgress }
+						isSaving={ inProgress }
+					>
+						{ confirmButton ||
+							__( 'Disconnect', 'google-site-kit' ) }
+					</SpinnerButton>
+				) }
 			</DialogFooter>
 		</Dialog>
 	);
@@ -143,11 +160,14 @@ ModalDialog.propTypes = {
 	dialogActive: PropTypes.bool,
 	handleDialog: PropTypes.func,
 	handleConfirm: PropTypes.func.isRequired,
+	onOpen: PropTypes.func,
+	onClose: PropTypes.func,
 	title: PropTypes.string,
 	confirmButton: PropTypes.string,
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
+	buttonLink: PropTypes.string,
 };
 
 export default ModalDialog;

@@ -33,10 +33,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
+import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from '../constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import ModuleIcon from '../../ModuleIcon';
@@ -48,7 +48,6 @@ import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
-const { useSelect } = Data;
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -66,6 +65,9 @@ export default function Header( { slug } ) {
 	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
+	);
+	const requirementsError = useSelect( ( select ) =>
+		select( CORE_MODULES )?.getCheckRequirementsError( slug )
 	);
 
 	const openHeader = useCallback( () => {
@@ -118,7 +120,12 @@ export default function Header( { slug } ) {
 		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
 	} else {
 		moduleStatus = (
-			<Button href={ adminReauthURL } onClick={ onActionClick }>
+			<Button
+				href={ adminReauthURL }
+				onClick={ onActionClick }
+				disabled={ requirementsError ? true : false }
+				inverse
+			>
 				{ sprintf(
 					/* translators: %s: module name. */
 					__( 'Complete setup for %s', 'google-site-kit' ),
@@ -155,7 +162,7 @@ export default function Header( { slug } ) {
 					>
 						<ModuleIcon
 							slug={ slug }
-							size={ 24 }
+							size={ 40 }
 							className="googlesitekit-settings-module__heading-icon"
 						/>
 
@@ -173,7 +180,16 @@ export default function Header( { slug } ) {
 									hasLeftSpacing
 								/>
 							) }
-							{ slug === 'ads' && <NewBadge hasLeftSpacing /> }
+							{ BETA_MODULES.includes( slug ) && (
+								<Badge
+									className="googlesitekit-badge--beta"
+									label={ __( 'Beta', 'google-site-kit' ) }
+									hasLeftSpacing
+								/>
+							) }
+							{ NEW_MODULES.includes( slug ) && (
+								<NewBadge hasLeftSpacing />
+							) }
 						</div>
 					</Cell>
 

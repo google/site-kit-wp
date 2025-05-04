@@ -19,12 +19,11 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -32,19 +31,15 @@ describe( 'modules/analytics-4 conversion-events', () => {
 	let registry;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'selectors', () => {
@@ -64,7 +59,7 @@ describe( 'modules/analytics-4 conversion-events', () => {
 				expect( initialConversionEvents ).toBeUndefined();
 
 				const conversionEvents = await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getConversionEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -110,7 +105,7 @@ describe( 'modules/analytics-4 conversion-events', () => {
 				);
 
 				await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getConversionEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

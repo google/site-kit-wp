@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { castArray, mapValues } from 'lodash';
+import { debounce, keyBy, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -38,11 +38,14 @@ import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
 import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
 import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import * as coreNotifications from '../../assets/js/googlesitekit/notifications';
 import * as modulesAds from '../../assets/js/modules/ads';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
+import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-revenue-manager';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
+import * as modulesSignInWithGoogle from '../../assets/js/modules/sign-in-with-google';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
@@ -53,6 +56,8 @@ import {
 	PERMISSION_VIEW_MODULE_DETAILS,
 	PERMISSION_MANAGE_OPTIONS,
 	CORE_USER,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_NEW_VISITORS,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
@@ -68,13 +73,16 @@ const allCoreStores = [
 	coreUser,
 	coreUi,
 	coreWidgets,
+	coreNotifications,
 ];
 const allCoreModules = [
 	modulesAds,
 	modulesAdSense,
 	modulesAnalytics4,
 	modulesPageSpeedInsights,
+	modulesReaderRevenueManager,
 	modulesSearchConsole,
+	modulesSignInWithGoogle,
 	modulesTagManager,
 ];
 
@@ -250,6 +258,8 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		productPostType: 'product',
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
+		anyoneCanRegister: false,
+		isMultisite: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -412,13 +422,78 @@ export function provideTracking( registry, enabled = true ) {
  */
 export const provideKeyMetrics = ( registry, extraData = {} ) => {
 	const defaults = {
-		widgetSlugs: [ 'test-slug' ],
+		widgetSlugs: [
+			KM_ANALYTICS_NEW_VISITORS,
+			KM_ANALYTICS_RETURNING_VISITORS,
+		],
 		isWidgetHidden: false,
 	};
 	registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 		...defaults,
 		...extraData,
 	} );
+};
+
+/**
+ * Provides key metrics user input settings data to the given registry.
+ *
+ * @since 1.140.0
+ *
+ * @param {Object} registry    The registry to set up.
+ * @param {Object} [extraData] Extra data to merge with the default settings.
+ */
+export const provideKeyMetricsUserInputSettings = (
+	registry,
+	extraData = {}
+) => {
+	const defaults = {
+		purpose: {
+			values: [ 'publish_news' ],
+			scope: 'site',
+		},
+		includeConversionEvents: {
+			values: [],
+			scope: 'site',
+		},
+	};
+	registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+		...defaults,
+		...extraData,
+	} );
+};
+
+/**
+ * Provides notifications data to the given registry.
+ *
+ * @since 1.149.0
+ *
+ * @param {Object}   registry    The registry to set up.
+ * @param {Object[]} [extraData] List of notification objects to be merged with defaults. Default empty array.
+ */
+export const provideNotifications = ( registry, extraData ) => {
+	const { registerNotification: realRegisterNotification, ...Notifications } =
+		coreNotifications.createNotifications( registry );
+
+	const extraDataByID = keyBy( extraData, 'id' );
+	// Decorate `Notifications.registerNotification` with a function to apply extra data.
+	const registeredNotifications = new Set();
+	const testRegisterNotification = ( id, settings ) => {
+		registeredNotifications.add( id );
+		return realRegisterNotification( id, {
+			...settings,
+			...extraDataByID[ id ],
+		} );
+	};
+	Notifications.registerNotification = testRegisterNotification;
+	// Register defaults with any potential overrides via extraData.
+	coreNotifications.registerNotifications( Notifications );
+
+	// Register any additional notifications provided.
+	Object.entries( extraDataByID )
+		.filter( ( [ id ] ) => ! registeredNotifications.has( id ) )
+		.forEach( ( [ id, settings ] ) =>
+			realRegisterNotification( id, settings )
+		);
 };
 
 /**
@@ -446,13 +521,16 @@ export const muteFetch = ( matcher, response = {} ) => {
  * Useful for simulating a loading state.
  *
  * @since 1.12.0
+ * @since 1.145.0 Added `repeat` option.
  * @private
  *
- * @param {(string|RegExp|Function|URL|Object)} matcher Criteria for deciding which requests to mock.
- *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {(string|RegExp|Function|URL|Object)} matcher          Criteria for deciding which requests to mock.
+ *                                                               (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ * @param {Object}                              [options]        Optional. Additional options for the mock.
+ * @param {number}                              [options.repeat] Optional. Number of times to mock the request. Defaults to 1.
  */
-export const freezeFetch = ( matcher ) => {
-	fetchMock.once( matcher, new Promise( () => {} ) );
+export const freezeFetch = ( matcher, { repeat = 1 } = {} ) => {
+	fetchMock.mock( matcher, new Promise( () => {} ), { repeat } );
 };
 
 /**
@@ -471,13 +549,6 @@ export const registerAllStoresOn = ( registry ) => {
 	[ ...allCoreStores, ...allCoreModules ].forEach( ( { registerStore } ) =>
 		registerStore?.( registry )
 	);
-};
-
-const unsubscribes = [];
-export const subscribeWithUnsubscribe = ( registry, ...args ) => {
-	const unsubscribe = registry.subscribe( ...args );
-	unsubscribes.push( unsubscribe );
-	return unsubscribe;
 };
 
 /**
@@ -508,23 +579,25 @@ export const untilResolved = ( registry, storeName ) => {
 	);
 };
 
-export const subscribeUntil = ( registry, predicates ) => {
-	predicates = castArray( predicates );
-
+/**
+ * Subscribes to the given registry until all predicates are satisfied.
+ *
+ * @since 1.11.0
+ * @private
+ *
+ * @param {Object}      registry   WP data registry instance.
+ * @param {...Function} predicates Predicate functions.
+ * @return {Promise} Promise that resolves once all predicates are satisfied.
+ */
+export const subscribeUntil = ( registry, ...predicates ) => {
 	return new Promise( ( resolve ) => {
-		subscribeWithUnsubscribe( registry, () => {
+		const unsubscribe = registry.subscribe( () => {
 			if ( predicates.every( ( predicate ) => predicate() ) ) {
+				unsubscribe();
 				resolve();
 			}
 		} );
 	} );
-};
-
-export const unsubscribeFromAll = () => {
-	let unsubscribe;
-	while ( ( unsubscribe = unsubscribes.shift() ) ) {
-		unsubscribe();
-	}
 };
 
 /**
@@ -570,24 +643,59 @@ export const waitForTimeouts = ( timeout ) => {
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
+ * @since 1.141.0 Reimplemented using debounced timer for reliability. Not compatible with fake timers.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
-	const updates = [];
-	const listener = () =>
-		updates.push( new Promise( ( resolve ) => resolve() ) );
-	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
+	if ( jest.isMockFunction( setTimeout ) ) {
+		// Fail if attempted to use.
+		return () => {
+			throw new Error(
+				'waitForRegistry cannot be used with fake timers!'
+			);
+		};
+	}
 
-	// Return a function that:
-	// - Waits until the next tick for updates.
-	// - Waits for all pending resolvers to resolve.
-	// We unsubscribe afterwards to allow for potential additions while
-	// Promise.all is resolving.
+	let unsubscribe;
+	const waitForRegistry = new Promise( ( resolve ) => {
+		const listener = debounce( resolve, 50, {
+			leading: false,
+			trailing: true,
+		} );
+		unsubscribe = registry.subscribe( listener );
+	} );
+
+	let stateDidUpdate;
+	// On the first state update, clear the fallback.
+	const unsubStateUpdateListener = registry.subscribe( () => {
+		stateDidUpdate = true;
+		unsubStateUpdateListener();
+	} );
 	return async () => {
-		await Promise.all( [ ...updates, waitForDefaultTimeouts() ] );
-		unsubscribe();
+		const promises = [ waitForRegistry ];
+
+		if ( ! stateDidUpdate ) {
+			// If no state update was observed yet, allow 50ms for it to still happen or reject the promise.
+			promises.push(
+				new Promise( ( resolve, reject ) => {
+					setTimeout( () => {
+						if ( stateDidUpdate ) {
+							resolve();
+							return;
+						}
+						reject(
+							new Error(
+								'waitForRegistry: No state changes were observed! Replace waitForRegistry with waitFor.'
+							)
+						);
+					}, 50 );
+				} )
+			);
+		}
+
+		await Promise.all( promises ).finally( unsubscribe );
 	};
 };
 

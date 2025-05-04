@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -26,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
 import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
@@ -42,18 +43,17 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import { getContextScrollTop } from '../../util/scroll';
+import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect, useDispatch } = Data;
+import whenActive from '../../util/when-active';
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
-export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
+function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const breakpoint = useBreakpoint();
 
 	const dashboardType = useDashboardType();
@@ -127,12 +127,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		endDate,
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
-		filter: {
-			fieldName: 'adSourceName',
-			stringFilter: {
-				matchType: 'EXACT',
-				value: `Google AdSense account (${ adSenseAccountID })`,
-			},
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
 		},
 		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 1,
@@ -198,7 +194,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 				`#${ ANCHOR_ID_MONETIZATION }`
 			);
 			global.scrollTo( {
-				top: getContextScrollTop( widgetClass, breakpoint ),
+				top: getNavigationalScrollTop( widgetClass, breakpoint ),
 				behavior: 'smooth',
 			} );
 		}, 50 );
@@ -257,3 +253,8 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 		</OverlayNotification>
 	);
 }
+
+export default compose(
+	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: 'adsense' } )
+)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );

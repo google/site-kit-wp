@@ -40,8 +40,14 @@ import {
 	ChangeMetricsLink,
 } from '../../components/KeyMetrics';
 import AddMetricCTATile from '../../components/KeyMetrics/AddMetricCTATile';
-import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import KeyMetricsNewBadge from '../../components/KeyMetrics/KeyMetricsNewBadge';
+import MetricsWidgetSubtitle from '../../components/KeyMetrics/MetricsWidgetSubtitle';
+import ConnectGA4CTAWidget from '../../modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
+import {
+	AudienceAreaFooter,
+	ChangeGroupsLink,
+} from '../../modules/analytics-4/components/audience-segmentation/dashboard';
+import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -74,6 +80,7 @@ export function registerDefaults( widgetsAPI ) {
 		// Main dashboard
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
@@ -97,10 +104,7 @@ export function registerDefaults( widgetsAPI ) {
 					<KeyMetricsNewBadge />
 				</Fragment>
 			),
-			subtitle: __(
-				'Track progress towards your goals with tailored metrics',
-				'google-site-kit'
-			),
+			subtitle: MetricsWidgetSubtitle,
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 			CTA: ChangeMetricsLink,
@@ -134,6 +138,35 @@ export function registerDefaults( widgetsAPI ) {
 			),
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC
+	);
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		{
+			subtitle: __(
+				'Understand how different visitor groups interact with your site',
+				'google-site-kit'
+			),
+			hasNewBadge: true,
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 2,
+			CTA: ChangeGroupsLink,
+			Footer: AudienceAreaFooter,
+			filterActiveWidgets( select, areaWidgets ) {
+				const isAudienceSegmentationWidgetHidden =
+					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
+				if (
+					isAudienceSegmentationWidgetHidden === undefined ||
+					isAudienceSegmentationWidgetHidden
+				) {
+					return [];
+				}
+
+				return areaWidgets;
+			},
 		},
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
@@ -262,7 +295,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isAuthenticated() &&
 				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
@@ -283,7 +315,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 				const isGA4Connected =
@@ -316,7 +347,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
@@ -337,7 +367,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
 			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
@@ -346,6 +375,68 @@ export function registerDefaults( widgetsAPI ) {
 				}
 
 				return keyMetrics.length < 3;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricThird',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 5 ) {
+					return false;
+				}
+
+				return keyMetrics.length < 8;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricFourth',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			hideOnBreakpoints: [ BREAKPOINT_SMALL ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 5 ) {
+					return false;
+				}
+
+				return keyMetrics.length < 7;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricFifth',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			hideOnBreakpoints: [ BREAKPOINT_SMALL ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 5 ) {
+					return false;
+				}
+
+				return keyMetrics.length < 6;
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]

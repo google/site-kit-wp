@@ -30,12 +30,10 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { commonActions, createRegistrySelector } from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
 import { negateDefined } from '../../../util/negate';
-
-const { createRegistrySelector } = Data;
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -49,6 +47,7 @@ const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 const SET_KEY_METRICS_SETUP_COMPLETED_BY = 'SET_KEY_METRICS_SETUP_COMPLETED_BY';
+const SET_SETUP_ERROR_CODE = 'SET_SETUP_ERROR_CODE';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -128,6 +127,27 @@ export const actions = {
 			type: SET_KEY_METRICS_SETUP_COMPLETED_BY,
 		};
 	},
+
+	/**
+	 * Sets `setupErrorCode` value.
+	 *
+	 * @since 1.131.0
+	 *
+	 * @param {string|null} setupErrorCode Error code from setup, or `null` if no error.
+	 * @return {Object} Redux-style action.
+	 */
+	setSetupErrorCode( setupErrorCode ) {
+		// setupErrorCode can be a string or null.
+		invariant(
+			typeof setupErrorCode === 'string' || setupErrorCode === null,
+			'setupErrorCode must be a string or null.'
+		);
+
+		return {
+			payload: { setupErrorCode },
+			type: SET_SETUP_ERROR_CODE,
+		};
+	},
 };
 
 export const controls = {};
@@ -150,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
+				siteLocale,
 				timezone,
 				usingProxy,
 				webStoriesActive,
@@ -165,6 +186,8 @@ export const reducer = ( state, { payload, type } ) => {
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupNew,
 				consentModeRegions,
+				anyoneCanRegister,
+				isMultisite,
 			} = payload.siteInfo;
 
 			return {
@@ -184,6 +207,7 @@ export const reducer = ( state, { payload, type } ) => {
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
+					siteLocale,
 					timezone,
 					usingProxy,
 					webStoriesActive,
@@ -199,6 +223,8 @@ export const reducer = ( state, { payload, type } ) => {
 					keyMetricsSetupCompletedBy,
 					keyMetricsSetupNew,
 					consentModeRegions,
+					anyoneCanRegister,
+					isMultisite,
 				},
 			};
 		}
@@ -230,6 +256,16 @@ export const reducer = ( state, { payload, type } ) => {
 				},
 			};
 
+		case SET_SETUP_ERROR_CODE:
+			const { setupErrorCode } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					setupErrorCode,
+				},
+			};
+
 		default: {
 			return state;
 		}
@@ -238,7 +274,7 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_SITE ).getSiteInfo() ) {
 			return;
@@ -263,6 +299,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			usingProxy,
 			webStoriesActive,
@@ -278,6 +315,8 @@ export const resolvers = {
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupNew,
 			consentModeRegions,
+			anyoneCanRegister,
+			isMultisite,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -302,6 +341,7 @@ export const resolvers = {
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
+			siteLocale,
 			timezone,
 			postTypes,
 			usingProxy: !! usingProxy,
@@ -317,6 +357,8 @@ export const resolvers = {
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupNew,
 			consentModeRegions,
+			anyoneCanRegister,
+			isMultisite,
 		} );
 	},
 };
@@ -560,6 +602,30 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Retrieves an admin settings URL, pointing to either network or single-site settings
+	 * depending on whether the site is multisite.
+	 *
+	 * @since 1.146.0
+	 *
+	 * @return {string|undefined} The admin settings URL, or undefined if required data is unavailable.
+	 */
+	getAdminSettingsURL: createRegistrySelector( ( select ) => () => {
+		const adminURL = select( CORE_SITE ).getAdminURL();
+		const isMultisite = select( CORE_SITE ).isMultisite();
+
+		if ( adminURL === undefined || isMultisite === undefined ) {
+			return undefined;
+		}
+
+		return new URL(
+			isMultisite === true
+				? 'network/settings.php'
+				: 'options-general.php',
+			adminURL
+		).href;
+	} ),
+
+	/**
 	 * Gets a site's timezone.
 	 *
 	 * @since 1.9.0
@@ -588,6 +654,18 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets a site's locale.
+	 *
+	 * @since 1.147.0
+	 *
+	 * @return {(string|undefined)} The site locale.
+	 */
+	getSiteLocale: createRegistrySelector(
+		( select ) => () =>
+			select( CORE_SITE ).getSiteInfo()?.siteLocale?.replace( '_', '-' )
+	),
 
 	/**
 	 * Gets a setup error code, if one exists.
@@ -856,11 +934,31 @@ export const selectors = {
 	/**
 	 * Get the static list of consent mode regions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.128.0
 	 *
 	 * @return {Array<string>} Array of consent mode regions.
 	 */
 	getConsentModeRegions: getSiteInfoProperty( 'consentModeRegions' ),
+
+	/**
+	 * Checks if user registrations are open on this WordPress site.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if registrations are open; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	getAnyoneCanRegister: getSiteInfoProperty( 'anyoneCanRegister' ),
+
+	/**
+	 * Checks if WordPress site is running in the multisite mode.
+	 *
+	 * @since 1.142.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	isMultisite: getSiteInfoProperty( 'isMultisite' ),
 };
 
 export default {

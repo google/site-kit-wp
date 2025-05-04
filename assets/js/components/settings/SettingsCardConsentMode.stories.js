@@ -81,6 +81,13 @@ WithAdsConnected.args = {
 			adsLinked: false,
 			googleTagContainerDestinationIDs: null,
 		} );
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetAdsMeasurementStatus(
+				{ connected: true },
+				{ useCache: false }
+			);
 	},
 };
 WithAdsConnected.scenario = {

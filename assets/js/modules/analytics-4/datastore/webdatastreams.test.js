@@ -24,19 +24,19 @@ import { pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
+import { populateAccountSummaries } from '../utils/account';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
@@ -85,7 +85,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -95,11 +95,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -416,6 +412,31 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( webDataStreamsEndpoint, {
+					body: fixtures.webDataStreams,
+					status: 200,
+				} );
+
+				const initialDataStreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStreamByPropertyID( propertyID );
+				expect( initialDataStreams ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getMatchingWebDataStreamByPropertyID( propertyID );
+
+				expect( fetchMock ).toHaveFetched( webDataStreamsEndpoint, {
+					body: {
+						data: {
+							propertyID,
+						},
+					},
+				} );
+			} );
+
 			it( 'should return undefined if web data streams arent loaded yet', () => {
 				jest.useFakeTimers();
 
@@ -685,36 +706,48 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
 
 				expect( matchedProperties ).toEqual( {
-					1000: '1A2BCD345E',
+					1000: 'G-1A2BCD345E',
 				} );
 			} );
 		} );
 
 		describe( 'getAnalyticsConfigByMeasurementIDs', () => {
-			const accountSummaries = [
-				{
-					_id: '123456',
-					propertySummaries: [
-						{ _id: '1122334455' },
-						{ _id: '1122334456' },
-						{ _id: '1122334457' },
-					],
-				},
-				{
-					_id: '123457',
-					propertySummaries: [
-						{ _id: '1122334465' },
-						{ _id: '1122334466' },
-					],
-				},
-				{
-					_id: '123458',
-					propertySummaries: [ { _id: '1122334475' } ],
-				},
-			];
+			const accountSummaries = {
+				accountSummaries: [
+					{
+						propertySummaries: [
+							{ property: 'properties/1122334455' },
+							{ property: 'properties/1122334456' },
+							{ property: 'properties/1122334457' },
+						],
+						account: 'accounts/123456',
+					},
+					{
+						propertySummaries: [
+							{ property: 'properties/1122334465' },
+							{ property: 'properties/1122334466' },
+						],
+						account: 'accounts/123457',
+					},
+					{
+						propertySummaries: [
+							{ property: 'properties/1122334475' },
+						],
+						account: 'accounts/123458',
+					},
+					{
+						account: 'accounts/123459',
+						// If an account has no properties, propertySummaries will not be set.
+						// This is important to test to catch cases that assume it is present.
+					},
+				],
+				nextPageToken: null,
+			};
 
-			const propertyIDs = accountSummaries
-				.map( ( { propertySummaries } ) =>
+			const propertyIDs = populateAccountSummaries(
+				accountSummaries.accountSummaries
+			)
+				.map( ( { propertySummaries = [] } ) =>
 					propertySummaries.map( ( { _id } ) => _id )
 				)
 				.reduce( ( acc, propIDs ) => [ ...acc, ...propIDs ], [] );
@@ -782,9 +815,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					accountID: 'UA-abcd',
-				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
@@ -793,7 +823,10 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			it( 'should return NULL when no summaries are returned from the endpoint', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( [] );
+					.receiveGetAccountSummaries( {
+						accountSummaries: [],
+						nextPageToken: null,
+					} );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -918,6 +951,37 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		describe( 'doesWebDataStreamExist', () => {
 			const propertyID = '12345';
 
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( webDataStreamsEndpoint, {
+					body: fixtures.webDataStreams,
+					status: 200,
+				} );
+
+				const initialDataStreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.doesWebDataStreamExist(
+						propertyID,
+						'Test GA4 WebDataStream'
+					);
+				expect( initialDataStreams ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).doesWebDataStreamExist(
+					propertyID,
+					'Test GA4 WebDataStream'
+				);
+
+				expect( fetchMock ).toHaveFetched( webDataStreamsEndpoint, {
+					body: {
+						data: {
+							propertyID,
+						},
+					},
+				} );
+			} );
+
 			it( 'should return undefined if web data streams are not loaded yet', () => {
 				jest.useFakeTimers();
 
@@ -969,7 +1033,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		} );
 
 		describe( 'isLoadingWebDataStreams', () => {
-			const accounts = fixtures.accountSummaries;
+			const accounts = fixtures.accountSummaries.accountSummaries;
 			const properties = accounts[ 1 ].propertySummaries;
 			const accountID = accounts[ 1 ]._id;
 			const propertyID = properties[ 0 ]._id;
@@ -994,7 +1058,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.finishResolution( 'getWebDataStreams', [ propertyID ] );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accounts );
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.finishResolution( 'getAccountSummaries', [] );

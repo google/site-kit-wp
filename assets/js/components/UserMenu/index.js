@@ -37,7 +37,7 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
 import ModalDialog from '../ModalDialog';
 import { trackEvent } from '../../util';
@@ -47,12 +47,13 @@ import Details from './Details';
 import Item from './Item';
 import DisconnectIcon from '../../../svg/icons/disconnect.svg';
 import ManageSitesIcon from '../../../svg/icons/manage-sites.svg';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) =>
@@ -71,6 +72,13 @@ export default function UserMenu() {
 		} )
 	);
 
+	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+			'isAutoCreatingCustomDimensionsForAudience'
+		)
+	);
+
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
@@ -85,19 +93,23 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
+	const handleClose = () => {
+		toggleDialog( false );
+		setMenuOpen( false );
+	};
+
 	useEffect( () => {
-		const handleDialogClose = ( e ) => {
+		const handleEscapeKeyPress = ( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
-				toggleDialog( false );
-				setMenuOpen( false );
+				handleClose();
 			}
 		};
 
-		global.addEventListener( 'keyup', handleDialogClose );
+		global.addEventListener( 'keyup', handleEscapeKeyPress );
 
 		return () => {
-			global.removeEventListener( 'keyup', handleDialogClose );
+			global.removeEventListener( 'keyup', handleEscapeKeyPress );
 		};
 	}, [] );
 
@@ -200,6 +212,7 @@ export default function UserMenu() {
 				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 			>
 				<Button
+					disabled={ isAutoCreatingCustomDimensionsForAudience }
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
@@ -224,20 +237,29 @@ export default function UserMenu() {
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
-					aria-label={ __( 'Account', 'google-site-kit' ) }
+					aria-label={
+						isAutoCreatingCustomDimensionsForAudience
+							? undefined
+							: __( 'Account', 'google-site-kit' )
+					}
 					tooltip
 					tooltipEnterDelayInMS={ 500 }
 					customizedTooltip={
-						<span aria-label={ accountLabel }>
-							<strong>
-								{ __( 'Google Account', 'google-site-kit' ) }
-							</strong>
-							<br />
-							<br />
-							{ userFullName }
-							{ userFullName && <br /> }
-							{ userEmail }
-						</span>
+						isAutoCreatingCustomDimensionsForAudience ? null : (
+							<span aria-label={ accountLabel }>
+								<strong>
+									{ __(
+										'Google Account',
+										'google-site-kit'
+									) }
+								</strong>
+								<br />
+								<br />
+								{ userFullName }
+								{ userFullName && <br /> }
+								{ userEmail }
+							</span>
+						)
 					}
 				/>
 
@@ -282,6 +304,7 @@ export default function UserMenu() {
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }
+					onClose={ handleClose }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __(
 						'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.',

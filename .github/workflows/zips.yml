@@ -1,3 +1,4 @@
+
 name: Plugin Zip Files
 
 on:
@@ -24,6 +25,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
+      - 'webpack/*.config.js'
       - 'webpack.config.js'
       - 'feature-flags.json'
     tags: ['**']
@@ -49,6 +51,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
+      - 'webpack/*.config.js'
       - 'webpack.config.js'
       - 'feature-flags.json'
     types:
@@ -64,11 +67,6 @@ on:
         description: Release version
         required: false
         default: ''
-      dry_run:
-        type: boolean
-        description: Run the publishing process without committing.
-        required: false
-        default: false
 
 concurrency:
   group: zips-${{ github.event_name }}-${{ github.ref }}
@@ -85,7 +83,7 @@ jobs:
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
@@ -94,8 +92,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -104,27 +102,32 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+      # nvm@7 is the minimum version required for npm workspace support.
+      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
+      # This can be removed once our node base version comes with nvm@7 or greater.
+      - name: Install npm Globally
+        run: npm run install-global-npm
       - name: npm install
         run: |
           npm ci
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p ${{ github.ref }}
-          sudo chown -R $(id -u):$(id -g) .
+          mkdir -p "${{ github.ref }}"
+          sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
+          mv ./*.zip "${{ github.ref }}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv *.zip ${{ github.ref }}/google-site-kit.zip
+          mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zip-files
           path: ${{ github.ref }}
@@ -135,15 +138,15 @@ jobs:
     if: github.event_name != 'workflow_dispatch'
     needs: build-zips
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: zip-files
           path: ${{ github.ref }}
-      - uses: google-github-actions/auth@v1
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - name: Upload PR files
-        uses: google-github-actions/upload-cloud-storage@v1
+        uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: ${{ github.ref }}
           destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
@@ -155,10 +158,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     needs: upload-to-cloud-storage
+    permissions:
+      pull-requests: write
     steps:
       - name: Check the comment exists
         id: find-comment
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
@@ -171,18 +176,18 @@ jobs:
           - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
           - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
-          echo "body<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "$body" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
+          echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
+          echo "$body" >> "$GITHUB_OUTPUT"
+          echo "${delimiter}" >> "$GITHUB_OUTPUT"
       - name: Create comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id == '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
       - name: Update comment on PR with links to build files
         if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           edit-mode: replace
@@ -194,10 +199,10 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - uses: google-github-actions/auth@v1
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - uses: google-github-actions/setup-gcloud@v1
+      - uses: google-github-actions/setup-gcloud@v2
       - name: Prune PR files
         run: gcloud storage rm gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}/**
 
@@ -206,21 +211,52 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     needs: remove-zips
+    permissions:
+      pull-requests: write
     steps:
       - name: Check the comment exists
         id: find-comment
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: github-actions[bot]
           body-includes: Build files for
       - name: Update comment on PR with links to plugin builds
         if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           edit-mode: replace
           body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
+
+  dryrun-publish-to-wporg:
+    name: '[DRY RUN] Publish to WordPress.org'
+    runs-on: ubuntu-latest
+    # environment: do not define to omit SVN credentials + deployment protection rules for this dry-run.
+    if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
+    needs: build-zips
+    timeout-minutes: 20
+    steps:
+      - name: Install SVN ( Subversion )
+        run: |
+          sudo apt-get update
+          sudo apt-get install subversion
+      - uses: actions/download-artifact@v4
+        with:
+          name: zip-files
+          path: /tmp
+      - name: Extract
+        run: |
+          unzip /tmp/google-site-kit.zip
+      - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+        with:
+          dry-run: true
+        env:
+          BUILD_DIR: ./google-site-kit
+          SLUG: google-site-kit
+          SVN_PASSWORD: no-op-password
+          SVN_USERNAME: no-op-username
+          VERSION: ${{ inputs.release_version }}
 
   publish-to-wporg:
     name: Publish to WordPress.org
@@ -230,18 +266,20 @@ jobs:
     needs: build-zips
     timeout-minutes: 20
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Install SVN ( Subversion )
+        run: |
+          sudo apt-get update
+          sudo apt-get install subversion
+      - uses: actions/download-artifact@v4
         with:
           name: zip-files
           path: /tmp
       - name: Extract
         run: |
           unzip /tmp/google-site-kit.zip
-          echo .distignore > .distignore
       - uses: 10up/action-wordpress-plugin-deploy@2.2.2
-        with:
-          dry-run: ${{ inputs.dry_run }}
         env:
+          BUILD_DIR: ./google-site-kit
           SLUG: google-site-kit
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}

@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import KeyMetricsCTAContent from '../../../../components/KeyMetrics/KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from '../../../../components/KeyMetrics/KeyMetricsCTAFooter';
@@ -40,7 +40,6 @@ import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../../../hooks/useDebounce';
-const { useSelect, useDispatch } = Data;
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {
@@ -148,6 +147,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 							KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
 						)
 					}
+					showDismiss
 				/>
 			) }
 		>

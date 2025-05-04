@@ -35,7 +35,7 @@ import {
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -48,12 +48,8 @@ const reportOptions = {
 	endDate: '2020-09-07',
 	dimensions: [ 'pagePath', 'adSourceName' ],
 	metrics: [ { name: 'totalAdRevenue' } ],
-	filter: {
-		fieldName: 'adSourceName',
-		stringFilter: {
-			matchType: 'EXACT',
-			value: `Google AdSense account (${ adSenseAccountID })`,
-		},
+	dimensionFilters: {
+		adSourceName: `Google AdSense account (${ adSenseAccountID })`,
 	},
 	orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 	limit: 5,

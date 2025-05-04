@@ -24,13 +24,16 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../util/permissions';
 import { createFetchStore } from '../../data/create-fetch-store';
-const { createRegistrySelector } = Data;
 
 // Actions
 const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
@@ -40,7 +43,7 @@ const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 const fetchGetCapabilitiesStore = createFetchStore( {
 	baseName: 'getCapabilities',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'permissions', undefined, {
+		return get( 'core', 'user', 'permissions', undefined, {
 			useCache: false,
 		} );
 	},
@@ -113,7 +116,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*refreshCapabilities() {
-		const { dispatch } = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield commonActions.getRegistry();
 
 		const { response, error } =
 			yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
@@ -163,7 +166,7 @@ const baseReducer = ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getCapabilities() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_USER ).getCapabilities() ) {
 			return;
@@ -337,7 +340,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchGetCapabilitiesStore, {
+const store = combineStores( fetchGetCapabilitiesStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,

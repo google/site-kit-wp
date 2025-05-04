@@ -19,13 +19,12 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
-	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -44,7 +43,7 @@ describe( 'modules/tagmanager containers', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -56,12 +55,8 @@ describe( 'modules/tagmanager containers', () => {
 			.receiveGetSettings( defaultSettings );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -469,7 +464,7 @@ describe( 'modules/tagmanager containers', () => {
 		} );
 
 		describe( 'getWebContainers', () => {
-			it( 'uses the getContainers resolver to make a network request', async () => {
+			it( 'should use a resolver to make a network request', async () => {
 				const account = factories.accountBuilder();
 				const containers = factories.buildContainers( 3, {
 					// eslint-disable-next-line sitekit/acronym-case
@@ -495,7 +490,7 @@ describe( 'modules/tagmanager containers', () => {
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
-				).getContainers( accountID );
+				).getWebContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -544,7 +539,7 @@ describe( 'modules/tagmanager containers', () => {
 		} );
 
 		describe( 'getAMPContainers', () => {
-			it( 'uses the getContainers resolver to make a network request', async () => {
+			it( 'should use a resolver to make a network request', async () => {
 				const account = factories.accountBuilder();
 				const containers = factories.buildContainers( 3, {
 					// eslint-disable-next-line sitekit/acronym-case
@@ -570,7 +565,7 @@ describe( 'modules/tagmanager containers', () => {
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
-				).getContainers( accountID );
+				).getAMPContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(

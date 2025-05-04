@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 18 ] */
+
 /**
  * External dependencies
  */
@@ -33,7 +35,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import NavKeyMetricsIcon from '../../../svg/icons/nav-key-metrics-icon.svg';
 import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
@@ -67,11 +69,10 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { getContextScrollTop } from '../../util/scroll';
+import { getNavigationalScrollTop } from '../../util/scroll';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useViewOnly from '../../hooks/useViewOnly';
-const { useSelect, useDispatch } = Data;
 
 export default function Navigation() {
 	const dashboardType = useDashboardType();
@@ -227,7 +228,7 @@ export default function Navigation() {
 			global.scrollTo( {
 				top:
 					chipID !== getDefaultChipID()
-						? getContextScrollTop( `#${ chipID }`, breakpoint )
+						? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
@@ -263,7 +264,7 @@ export default function Navigation() {
 		setTimeout( () => {
 			const scrollTo =
 				chipID !== defaultChipID
-					? getContextScrollTop( `#${ chipID }`, breakpoint )
+					? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
 					: 0;
 
 			if ( global.scrollY === scrollTo ) {

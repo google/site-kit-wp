@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	CORE_SITE,
 	AMP_MODE_PRIMARY,
@@ -36,7 +36,6 @@ import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
@@ -55,7 +54,7 @@ describe( 'modules/tagmanager accounts', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -72,11 +71,7 @@ describe( 'modules/tagmanager accounts', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {

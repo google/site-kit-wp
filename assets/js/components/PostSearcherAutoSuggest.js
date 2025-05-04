@@ -38,12 +38,11 @@ import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import { useSelect } from 'googlesitekit-data';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
-const { useSelect } = Data;
 const noop = () => {};
 
 export default function PostSearcherAutoSuggest( {
@@ -155,7 +154,7 @@ export default function PostSearcherAutoSuggest( {
 			( async function request() {
 				setIsLoading( true );
 
-				const fetchPromise = API.get(
+				const fetchPromise = get(
 					'core',
 					'search',
 					'entity-search',

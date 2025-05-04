@@ -34,11 +34,10 @@ const path = require( 'path' );
 /**
  * Internal dependencies
  */
-const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
-const storybookConfig = require( '../../.storybook/main' );
-const rootURL = '/dist/iframe.html?id=';
+const storybookConfig = require( '../../storybook/main' );
+const rootURL = 'file:///src/dist/iframe.html?id=';
 
-const storybookDir = path.resolve( __dirname, '../../.storybook' );
+const storybookDir = path.resolve( __dirname, '../../storybook' );
 const storyFiles = flatten(
 	storybookConfig.stories
 		.map( ( storiesPattern ) =>
@@ -116,23 +115,7 @@ storyFiles.forEach( ( storyFile ) => {
 	}
 } );
 
-const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
-	return {
-		label: `${ story.kind }/${ story.name }`,
-		url: `${ rootURL }${ story.id }`,
-		readySelector: story.parameters.options.readySelector,
-		hoverSelector: story.parameters.options.hoverSelector,
-		clickSelector: story.parameters.options.clickSelector,
-		clickSelectors: story.parameters.options.clickSelectors,
-		postInteractionWait: story.parameters.options.postInteractionWait,
-		delay: story.parameters.options.delay,
-		onReadyScript: story.parameters.options.onReadyScript,
-		misMatchThreshold: story.parameters.options.misMatchThreshold,
-	};
-} );
-
-const scenarios = [ ...legacyScenarios, ...csfScenarios ];
-module.exports = scenarios.map( ( scenario ) => {
+module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';
 
 	const readySelector = scenario.readySelector

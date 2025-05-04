@@ -31,15 +31,17 @@ import { useDebounce } from '../../../../hooks/useDebounce';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
 import { MODULES_ADS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
-const { useSelect, useDispatch } = Data;
 
-export default function ConversionIDTextField( { helperText } ) {
+export default function ConversionIDTextField( {
+	helperText,
+	hideHeading = false,
+} ) {
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
 	);
@@ -72,9 +74,11 @@ export default function ConversionIDTextField( { helperText } ) {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
-			<h4 className="googlesitekit-settings-module__fields-group-title">
-				{ __( 'Conversion Tracking ID', 'google-site-kit' ) }
-			</h4>
+			{ ! hideHeading && (
+				<h4 className="googlesitekit-settings-module__fields-group-title">
+					{ __( 'Conversion ID', 'google-site-kit' ) }
+				</h4>
+			) }
 
 			{ helperText && (
 				<p className="googlesitekit-settings-module__fields-group-helper-text">
@@ -83,7 +87,7 @@ export default function ConversionIDTextField( { helperText } ) {
 			) }
 
 			<TextField
-				label={ __( 'Conversion Tracking ID', 'google-site-kit' ) }
+				label={ __( 'Conversion ID', 'google-site-kit' ) }
 				className={ classnames(
 					'googlesitekit-text-field-conversion-tracking-id',
 					{

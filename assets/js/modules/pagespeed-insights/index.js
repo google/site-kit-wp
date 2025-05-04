@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -32,6 +33,9 @@ import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';
 
 export { registerStore } from './datastore';
 
@@ -42,10 +46,11 @@ export const registerModule = ( modules ) => {
 		Icon: PageSpeedInsightsIcon,
 		features: [
 			__(
-				'Website performance reports for mobile and desktop',
+				'Website performance reports for mobile and desktop will be disabled',
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 	} );
 };
 
@@ -63,4 +68,34 @@ export const registerWidgets = ( widgets ) => {
 			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 		]
 	);
+};
+
+export const NOTIFICATIONS = {
+	'setup-success-notification-psi': {
+		Component: SetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if (
+				'authentication_success' === notification &&
+				slug === 'pagespeed-insights'
+			) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+};
+
+export const registerNotifications = ( notificationsAPI ) => {
+	for ( const notificationID in NOTIFICATIONS ) {
+		notificationsAPI.registerNotification(
+			notificationID,
+			NOTIFICATIONS[ notificationID ]
+		);
+	}
 };

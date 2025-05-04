@@ -24,11 +24,20 @@
 			margin-bottom: 0;
 		}
 
-		.googlesitekit-settings-module__fields-group-helper-text {
-			color: $c-neutral-n-500;
+		p.googlesitekit-settings-module__fields-group-helper-text {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-md;
 			font-weight: $fw-normal;
 			margin-bottom: 20px;
 			margin-top: 6px;
+		}
+
+		p.mdc-dialog__lead {
+			font-size: $fs-title-sm;
+		}
+
+		.googlesitekit-setup-module__inputs {
+			margin-bottom: 34px;
 		}
 	}
 }

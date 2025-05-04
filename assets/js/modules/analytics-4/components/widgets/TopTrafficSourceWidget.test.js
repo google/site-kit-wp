@@ -26,6 +26,7 @@ import {
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import {
+	createTestRegistry,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
@@ -40,61 +41,61 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
-import WidgetNull from '../../../../googlesitekit/widgets/components/WidgetNull';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../../../../util/errors';
 
 describe( 'TopTrafficSourceWidget', () => {
-	const { Widget } = getWidgetComponentProps(
+	const widgetProps = getWidgetComponentProps(
 		KM_ANALYTICS_TOP_TRAFFIC_SOURCE
 	);
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
 
-	it( 'renders correctly with the expected metrics', async () => {
-		const { container, waitForRegistry } = render(
-			<TopTrafficSourceWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
+	let registry;
+	let dateRangeDates;
+	beforeEach( () => {
+		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		dateRangeDates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		provideKeyMetrics( registry );
+		provideModules( registry, withConnected( 'analytics-4' ) );
+	} );
 
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideKeyMetrics( registry );
-					provideAnalytics4MockReport( registry, {
-						compareStartDate: '2020-07-14',
-						compareEndDate: '2020-08-10',
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						dimensions: [ 'sessionDefaultChannelGroup' ],
-						metrics: [
-							{
-								name: 'totalUsers',
-							},
-						],
-						limit: 1,
-						orderBy: 'totalUsers',
-					} );
-
-					provideAnalytics4MockReport( registry, {
-						compareStartDate: '2020-07-14',
-						compareEndDate: '2020-08-10',
-						startDate: '2020-08-11',
-						endDate: '2020-09-07',
-						metrics: [
-							{
-								name: 'totalUsers',
-							},
-						],
-					} );
+	it( 'should render correctly with the expected metrics', async () => {
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'totalUsers',
 				},
+			],
+			limit: 1,
+			orderBy: 'totalUsers',
+		} );
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+		} );
+		const { container, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{
+				registry,
 			}
 		);
 		await waitForRegistry();
@@ -102,7 +103,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'retries both reports when an error is encountered', async () => {
+	it( 'should retry both reports when an error is encountered', async () => {
 		fetchMock.getOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
@@ -130,30 +131,13 @@ describe( 'TopTrafficSourceWidget', () => {
 			}
 		);
 
-		const { container, getByText, waitForRegistry } = render(
-			<TopTrafficSourceWidget
-				Widget={ Widget }
-				WidgetNull={ WidgetNull }
-			/>,
-			{
-				setupRegistry: ( registry ) => {
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
-					provideModules( registry, [
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: true,
-						},
-					] );
-					provideModuleRegistrations( registry );
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( {} );
-					provideKeyMetrics( registry );
-				},
+		const { container, getByText, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{
+				registry,
 			}
 		);
 
@@ -169,10 +153,7 @@ describe( 'TopTrafficSourceWidget', () => {
 			),
 			{
 				body: getAnalytics4MockResponse( {
-					compareStartDate: '2020-07-14',
-					compareEndDate: '2020-08-10',
-					startDate: '2020-08-11',
-					endDate: '2020-09-07',
+					...dateRangeDates,
 					dimensions: [ 'sessionDefaultChannelGroup' ],
 					metrics: [
 						{
@@ -192,10 +173,7 @@ describe( 'TopTrafficSourceWidget', () => {
 			),
 			{
 				body: getAnalytics4MockResponse( {
-					compareStartDate: '2020-07-14',
-					compareEndDate: '2020-08-10',
-					startDate: '2020-08-11',
-					endDate: '2020-09-07',
+					...dateRangeDates,
 					metrics: [
 						{
 							name: 'totalUsers',
@@ -219,6 +197,66 @@ describe( 'TopTrafficSourceWidget', () => {
 				)
 			).toBeInTheDocument();
 		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the generic error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: ERROR_INTERNAL_SERVER_ERROR,
+			message: 'Internal server error',
+			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );

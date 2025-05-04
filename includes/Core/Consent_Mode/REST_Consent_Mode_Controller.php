@@ -10,12 +10,21 @@
 
 namespace Google\Site_Kit\Core\Consent_Mode;
 
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Tag_Manager\Settings as Tag_Manager_Settings;
+use Google\Site_Kit\Modules\Tag_Manager;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
+use WP_Error;
 
 /**
  * Class for handling Consent Mode.
@@ -34,15 +43,40 @@ class REST_Consent_Mode_Controller {
 	 */
 	private $consent_mode_settings;
 
+	/**
+	 * Modules instance.
+	 *
+	 * @since 1.142.0
+	 * @var Modules
+	 */
+	protected $modules;
+
+	/**
+	 * Options instance.
+	 *
+	 * @since 1.142.0
+	 * @var Options
+	 */
+	protected $options;
+
 		/**
 		 * Constructor.
 		 *
 		 * @since 1.122.0
+		 * @since 1.142.0 Introduces Modules as an argument.
 		 *
+		 * @param Modules               $modules               Modules instance.
 		 * @param Consent_Mode_Settings $consent_mode_settings Consent_Mode_Settings instance.
+		 * @param Options               $options               Optional. Option API instance. Default is a new instance.
 		 */
-	public function __construct( Consent_Mode_Settings $consent_mode_settings ) {
+	public function __construct(
+		Modules $modules,
+		Consent_Mode_Settings $consent_mode_settings,
+		Options $options
+	) {
+		$this->modules               = $modules;
 		$this->consent_mode_settings = $consent_mode_settings;
+		$this->options               = $options;
 	}
 
 	/**
@@ -93,6 +127,10 @@ class REST_Consent_Mode_Controller {
 	protected function get_rest_routes() {
 		$can_manage_options = function () {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
+		};
+
+		$can_update_plugins = function () {
+			return current_user_can( Permissions::UPDATE_PLUGINS );
 		};
 
 		return array(
@@ -150,38 +188,35 @@ class REST_Consent_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
+							// Here we intentionally use a non-plugin-specific detection strategy.
 							$is_active = function_exists( 'wp_set_consent' );
-							$installed = $is_active;
-							$slug      = 'wp-consent-api';
-							$plugin    = "$slug/$slug.php";
-
-							$response = array(
+							$response  = array(
 								'hasConsentAPI' => $is_active,
 							);
 
+							// Alternate wp_nonce_url without esc_html breaking query parameters.
+							$nonce_url = function ( $action_url, $action ) {
+								return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
+							};
+
 							if ( ! $is_active ) {
-								if ( ! function_exists( 'get_plugins' ) ) {
-									require_once ABSPATH . 'wp-admin/includes/plugin.php';
-								}
-								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
-									if ( $installed_plugin === $plugin ) {
-										$installed = true;
-										break;
-									}
-								}
+								$installed_plugin = $this->get_consent_api_plugin_file();
 
-								// Alternate wp_nonce_url without esc_html breaking query parameters.
-								$nonce_url = function ( $action_url, $action ) {
-									return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
-								};
-								$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
-								$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
-
-								$response['wpConsentPlugin'] = array(
-									'installed'   => $installed,
-									'activateURL' => current_user_can( 'activate_plugin', $plugin ) ? esc_url_raw( $activate_url ) : false,
-									'installURL'  => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
+								$consent_plugin = array(
+									'installed'   => (bool) $installed_plugin,
+									'installURL'  => false,
+									'activateURL' => false,
 								);
+
+								if ( ! $installed_plugin && current_user_can( 'install_plugins' ) ) {
+									$consent_plugin['installURL'] = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=wp-consent-api' ), 'install-plugin_wp-consent-api' );
+								}
+
+								if ( $installed_plugin && current_user_can( 'activate_plugin', $installed_plugin ) ) {
+									$consent_plugin['activateURL'] = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $installed_plugin ), 'activate-plugin_' . $installed_plugin );
+								}
+
+								$response['wpConsentPlugin'] = $consent_plugin;
 							}
 
 							return new WP_REST_Response( $response );
@@ -190,6 +225,76 @@ class REST_Consent_Mode_Controller {
 					),
 				)
 			),
+			new REST_Route(
+				'core/site/data/consent-api-activate',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function () {
+							require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+							$slug      = 'wp-consent-api';
+							$plugin    = "$slug/$slug.php";
+
+							$activated = activate_plugin( $plugin );
+
+							if ( is_wp_error( $activated ) ) {
+								return new WP_Error( 'invalid_module_slug', $activated->get_error_message() );
+							}
+
+							return new WP_REST_Response( array( 'success' => true ) );
+						},
+						'permission_callback' => $can_update_plugins,
+					),
+				),
+			),
+			new REST_Route(
+				'core/site/data/ads-measurement-status',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
+
+							if ( ! is_array( $checks ) ) {
+								return new WP_REST_Response( array( 'connected' => false ) );
+							}
+
+							foreach ( $checks as $check ) {
+								if ( ! is_callable( $check ) ) {
+									continue;
+								}
+
+								if ( $check() ) {
+									return new WP_REST_Response( array( 'connected' => true ) );
+								}
+							}
+
+							return new WP_REST_Response( array( 'connected' => false ) );
+						},
+						'permission_callback' => $can_manage_options,
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Gets the plugin file of the installed WP Consent API if found.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @return false|string
+	 */
+	protected function get_consent_api_plugin_file() {
+		// Check the default location first.
+		if ( Plugin_Status::is_plugin_installed( 'wp-consent-api/wp-consent-api.php' ) ) {
+			return 'wp-consent-api/wp-consent-api.php';
+		}
+
+		// Here we make an extra effort to attempt to detect the plugin if installed in a non-standard location.
+		return Plugin_Status::is_plugin_installed(
+			fn ( $installed_plugin ) => 'https://wordpress.org/plugins/wp-consent-api' === $installed_plugin['PluginURI']
 		);
 	}
 }

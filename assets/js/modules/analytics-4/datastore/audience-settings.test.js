@@ -1,7 +1,7 @@
 /**
  * `modules/analytics-4` data store: audience settings tests.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,385 +19,231 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	freezeFetch,
-	provideModules,
-	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
-	let store;
 
-	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	const saveAudienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
-
-	const audienceSettingsResponse = {
-		configuredAudiences: [ 'audienceA', 'audienceB' ],
-		isAudienceSegmentationWidgetHidden: false,
-	};
-
-	beforeAll( () => {
-		API.setUsingCache( false );
-	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideModules( registry );
-		store = registry.stores[ MODULES_ANALYTICS_4 ].store;
-	} );
 
-	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+			authenticated: true,
+		} );
 	} );
 
 	describe( 'actions', () => {
-		describe( 'setConfiguredAudiences', () => {
-			it( 'should throw an error if the provided audiences are not an array', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setConfiguredAudiences( 'audienceA' );
-				} ).toThrow( 'Configured audiences should be an array.' );
-			} );
-
-			it( 'should set the provided audiences in the store', () => {
+		describe( 'setAvailableAudiences', () => {
+			it( 'should set availableAudiences', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setConfiguredAudiences(
-						audienceSettingsResponse.configuredAudiences
-					);
-
+					.setAvailableAudiences( availableAudiencesFixture );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
-				).toEqual( audienceSettingsResponse.configuredAudiences );
+						.getOrSyncAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
+			} );
+
+			it( 'should validate availableAudiences', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setAvailableAudiences( 'invalid' )
+				).toThrow( 'Available audiences should be an array.' );
 			} );
 		} );
 
-		describe( 'setAudienceSegmentationWidgetHidden', () => {
-			it( 'should throw an error if the provided value is not a boolean', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setAudienceSegmentationWidgetHidden( 'audienceA' );
-				} ).toThrow(
-					'Audience segmentation widget visibility should be a boolean.'
-				);
-			} );
-
-			it( 'should set the audience segmentation widget visibility in the store', () => {
+		describe( 'setAudienceSegmentationSetupCompletedBy', () => {
+			it( 'should set setAudienceSegmentationSetupCompletedBy', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAudienceSegmentationWidgetHidden( true );
-
+					.setAudienceSegmentationSetupCompletedBy( 1 );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isAudienceSegmentationWidgetHidden()
-				).toEqual( true );
+						.getAudienceSegmentationSetupCompletedBy()
+				).toEqual( 1 );
+			} );
+
+			it( 'should validate setAudienceSegmentationSetupCompletedBy', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setAudienceSegmentationSetupCompletedBy( 'invalid' )
+				).toThrow(
+					'audienceSegmentationSetupCompletedBy by should be an integer.'
+				);
 			} );
 		} );
 
 		describe( 'saveAudienceSettings', () => {
-			beforeEach( () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setConfiguredAudiences(
-						audienceSettingsResponse.configuredAudiences
-					);
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAudienceSegmentationWidgetHidden(
-						audienceSettingsResponse.isAudienceSegmentationWidgetHidden
-					);
-			} );
+			it( 'should save audience settings', async () => {
+				const settings = {
+					availableAudiences: availableAudiencesFixture,
+					audienceSegmentationSetupCompletedBy: 1,
+				};
 
-			it( 'should save settings and add it to the store', async () => {
-				fetchMock.postOnce( audienceSettingsEndpoint, {
-					body: audienceSettingsResponse,
+				fetchMock.post( saveAudienceSettingsEndpoint, {
+					body: settings,
 					status: 200,
 				} );
 
-				await registry
+				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.saveAudienceSettings();
+					.saveAudienceSettings( settings );
 
-				// Ensure the proper body parameters were sent.
-				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
-					body: {
-						data: {
-							settings: audienceSettingsResponse,
-						},
-					},
-				} );
-
-				expect( store.getState().audienceSettings ).toMatchObject( {
-					settings: audienceSettingsResponse,
-					savedSettings: audienceSettingsResponse,
-				} );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( response ).toEqual( settings );
+				expect( error ).toBeUndefined();
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
+			it( 'requires availableAudiences to be an array', () => {
+				const settings = {
+					availableAudiences: 'invalid',
+					audienceSegmentationSetupCompletedBy: 1,
 				};
 
-				fetchMock.post( audienceSettingsEndpoint, {
-					body: response,
-					status: 500,
-				} );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.saveAudienceSettings();
-
-				expect(
+				expect( () =>
 					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getErrorForAction( 'saveAudienceSettings', [] )
-				).toMatchObject( response );
-
-				expect( console ).toHaveErrored();
-			} );
-
-			it( 'optionally saves additional settings besides whatever is stored', async () => {
-				const audienceSettings = {
-					...audienceSettingsResponse,
-					isAudienceSegmentationWidgetHidden: true,
-				};
-
-				fetchMock.postOnce( audienceSettingsEndpoint, {
-					body: audienceSettings,
-					status: 200,
-				} );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.saveAudienceSettings( {
-						isAudienceSegmentationWidgetHidden: true,
-					} );
-
-				// Ensure the proper body parameters were sent.
-				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
-					body: {
-						data: {
-							settings: audienceSettings,
-						},
-					},
-				} );
-
-				expect( store.getState().audienceSettings ).toMatchObject( {
-					settings: audienceSettings,
-					savedSettings: audienceSettings,
-				} );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+						.dispatch( MODULES_ANALYTICS_4 )
+						.saveAudienceSettings( settings )
+				).toThrow( 'availableAudiences should be an array.' );
 			} );
 		} );
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getAudienceSettings', () => {
-			it( 'should return undefined while audience settings are loading', async () => {
-				freezeFetch( audienceSettingsEndpoint );
+		describe( 'getOrSyncAvailableAudiences', () => {
+			const syncAvailableAudiences = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+			);
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
-				).toBeUndefined();
-
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should not make a network request if audience settings exist', async () => {
+			it( 'should not sync cached audiences when the availableAudiences setting is not undefined', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
+					.setAvailableAudiences( availableAudiencesFixture );
 
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudienceSettings();
-
-				expect( fetchMock ).not.toHaveFetched(
-					audienceSettingsEndpoint
-				);
-			} );
-
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.getOnce( audienceSettingsEndpoint, {
-					body: audienceSettingsResponse,
-					status: 200,
-				} );
-
-				registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudienceSettings();
-
-				expect( fetchMock ).toHaveFetched( audienceSettingsEndpoint, {
-					body: {
-						settings: audienceSettingsResponse,
-					},
-				} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getAudienceSettings()
-				).toMatchObject( audienceSettingsResponse );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-		} );
-
-		describe( 'getConfiguredAudiences', () => {
-			it( 'should return undefined while audience settings are loading', async () => {
-				freezeFetch( audienceSettingsEndpoint );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
-				).toBeUndefined();
-
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.getOnce( audienceSettingsEndpoint, {
-					body: audienceSettingsResponse,
-					status: 200,
-				} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudienceSettings();
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
-				).toEqual( audienceSettingsResponse.configuredAudiences );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
-			it( 'should return the configured audiences from the audience settings', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getConfiguredAudiences()
-				).toEqual( audienceSettingsResponse.configuredAudiences );
-			} );
-		} );
-
-		describe( 'isAudienceSegmentationWidgetHidden', () => {
-			it( 'should return undefined while audience settings are loading', async () => {
-				freezeFetch( audienceSettingsEndpoint );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isAudienceSegmentationWidgetHidden()
-				).toBeUndefined();
-
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.getOnce( audienceSettingsEndpoint, {
-					body: audienceSettingsResponse,
-					status: 200,
-				} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isAudienceSegmentationWidgetHidden()
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAudienceSettings();
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isAudienceSegmentationWidgetHidden()
-				).toEqual(
-					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
-				);
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
-			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isAudienceSegmentationWidgetHidden()
-				).toEqual(
-					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
-				);
-			} );
-		} );
-
-		describe( 'haveConfiguredAudiencesChanged', () => {
-			it( 'should compare the current configured audiences with the saved ones', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAudienceSettings( audienceSettingsResponse );
-
-				const hasChanged = registry
+				const availableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
-					.haveConfiguredAudiencesChanged();
+					.getOrSyncAvailableAudiences();
 
-				expect( hasChanged ).toBe( false );
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( availableAudiences ).toEqual(
+					availableAudiencesFixture
+				);
+			} );
 
-				// Change the settings.
+			it( 'should sync cached audiences when availableAudiences is null for authenticated user', async () => {
+				fetchMock.postOnce( syncAvailableAudiences, {
+					body: JSON.stringify( availableAudiencesFixture ),
+					status: 200,
+				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setConfiguredAudiences( [ 'audienceC' ] );
+					.receiveGetAudienceSettings( {
+						availableAudiences: null,
+					} );
 
-				const hasChangedAfterSet = registry
-					.select( MODULES_ANALYTICS_4 )
-					.haveConfiguredAudiencesChanged();
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					configuredAudiences: [
+						'properties/12345/audiences/1',
+						'properties/12345/audiences/2',
+					],
+				} );
 
-				expect( hasChangedAfterSet ).toBe( true );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getOrSyncAvailableAudiences()
+				).toBeNull();
+
+				// Wait until the resolver has finished fetching the audiences.
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getOrSyncAvailableAudiences();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched( syncAvailableAudiences );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getOrSyncAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
+			} );
+		} );
+
+		describe( 'getAvailableAudiences', () => {
+			it( 'should return availableAudiences', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( availableAudiencesFixture );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( availableAudiencesFixture );
+			} );
+
+			it( 'should return undefined if availableAudiences is not loaded', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getAudienceSegmentationSetupCompletedBy', () => {
+			it( 'should return getAudienceSegmentationSetupCompletedBy', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAudienceSegmentationSetupCompletedBy( 1 );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudienceSegmentationSetupCompletedBy()
+				).toEqual( 1 );
+			} );
+
+			it( 'should return undefined if getAudienceSegmentationSetupCompletedBy is not loaded', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+					),
+					{
+						body: {
+							audienceSegmentationSetupCompletedBy: null,
+						},
+					}
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAudienceSegmentationSetupCompletedBy()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAudienceSettings();
 			} );
 		} );
 	} );

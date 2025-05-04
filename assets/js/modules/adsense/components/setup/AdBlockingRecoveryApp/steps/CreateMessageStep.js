@@ -30,7 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
 import Link from '../../../../../../components/Link';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
@@ -43,7 +43,6 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
-const { useSelect, useDispatch } = Data;
 
 export default function CreateMessageStep() {
 	const viewContext = useViewContext();
@@ -120,6 +119,29 @@ export default function CreateMessageStep() {
 		viewContext,
 	] );
 
+	const onSecondaryCTAClick = useCallback( async () => {
+		setAdBlockingRecoverySetupStatus(
+			ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
+		);
+
+		const { error } = await saveSettings();
+
+		if ( ! error ) {
+			await trackEvent(
+				`${ viewContext }_adsense-abr`,
+				'confirm_message_ready_secondary_cta'
+			);
+
+			navigateTo( setupSuccessURL );
+		}
+	}, [
+		setAdBlockingRecoverySetupStatus,
+		saveSettings,
+		navigateTo,
+		setupSuccessURL,
+		viewContext,
+	] );
+
 	useMount( () => {
 		trackEvent( `${ viewContext }_adsense-abr`, 'setup_create_message' );
 	} );
@@ -177,13 +199,24 @@ export default function CreateMessageStep() {
 							</Link>
 						</Fragment>
 					) : (
-						<Button
-							href={ privacyMessagingURL }
-							target="_blank"
-							onClick={ onCTAClick }
-						>
-							{ __( 'Create message', 'google-site-kit' ) }
-						</Button>
+						<Fragment>
+							<Button
+								href={ privacyMessagingURL }
+								target="_blank"
+								onClick={ onCTAClick }
+							>
+								{ __( 'Create message', 'google-site-kit' ) }
+							</Button>
+							<Link
+								onClick={ onSecondaryCTAClick }
+								disabled={ isSaving }
+							>
+								{ __(
+									'I published my message',
+									'google-site-kit'
+								) }
+							</Link>
+						</Fragment>
 					) }
 				</div>
 				{ createMessageCTAClicked && (

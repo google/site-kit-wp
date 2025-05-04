@@ -50,12 +50,11 @@ class Contact_Form_7Test extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'gsk-cep-' . Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-' . Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
 		$script = $this->contactform->register_script();
 		$this->assertInstanceOf( Script::class, $script );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
-
 }

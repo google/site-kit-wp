@@ -38,6 +38,8 @@ import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
 } from '../../../../googlesitekit/datastore/site/constants';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry
@@ -54,7 +56,11 @@ function selectFirstWebContainer( registry, accountID ) {
 }
 
 function Template() {
-	return <ModuleSetup moduleSlug="tagmanager" />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<ModuleSetup moduleSlug="tagmanager" />
+		</ViewContextProvider>
+	);
 }
 
 export const Loading = Template.bind( {} );

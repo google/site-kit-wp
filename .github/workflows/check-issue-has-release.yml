@@ -24,12 +24,12 @@ jobs:
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork ) && github.event.review.state == 'approved'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           # Use modern Node for native fetch in script.
           node-version: '18.x'
-      
+
       - name: Check issue for release tag
         run: ./bin/check-issue-has-release.js
         env:

@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 20 ] */
+
 /**
  * WordPress dependencies
  */
@@ -150,12 +152,50 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 					body: JSON.stringify( fixtures.googleTagSettings ),
 				} );
+			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {
+						configuredAudiences: [
+							fixtures.availableAudiences[ 2 ].name,
+						],
+						isAudienceSegmentationWidgetHidden: false,
+					} ),
+				} );
 			} else if (
 				request.url().match( 'analytics-4/data/container-lookup' )
 			) {
+				const requestURL = new URL( request.url() );
+				const destinationID =
+					requestURL.searchParams.get( 'destinationID' );
+				const container = {
+					...fixtures.containerE2E[ 'G-500' ],
+					tagIds: [ destinationID ],
+				};
 				request.respond( {
-					body: JSON.stringify( fixtures.container ),
+					body: JSON.stringify( container ),
 					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/container-destinations' )
+			) {
+				const googleTagID = global.googlesitekit.data
+					.select( 'modules/analytics-4' )
+					.googleTagID();
+				// eslint-disable-next-line sitekit/acronym-case
+				const destination = { destinationId: googleTagID };
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [ destination ] ),
+				} );
+			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+				const requestURL = new URL( request.url() );
+				const propertyID = requestURL.searchParams.get( 'propertyID' );
+				const property = fixtures.properties.find(
+					( { _id } ) => _id === propertyID
+				);
+				request.respond( {
+					body: JSON.stringify( property ),
 				} );
 			} else if (
 				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
@@ -277,6 +317,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-cta-link', {
 			text: /set up analytics/i,
 		} );
+		await pageWait();
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
@@ -301,26 +342,28 @@ describe( 'Analytics write scope requests', () => {
 
 		interceptCreatePropertyRequest = true;
 
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-			text: /proceed/i,
-		} );
-
-		// expect( console ).toHaveErrored(); // Permission scope error.
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-property' )
-		);
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
-
-		// They should end up on the dashboard.
 		await Promise.all( [
-			page.waitForNavigation(),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: /proceed/i,
+			} ),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-property' )
+			),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
 		] );
 
+		// They should end up on the dashboard.
+		await page.waitForNavigation();
+		await page.waitForSelector(
+			'.googlesitekit-subtle-notification__content p',
+			{
+				timeout: 5_000,
+			}
+		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
@@ -372,13 +415,15 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new web data stream/i,
 		} );
 
-		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /complete setup/i,
-		} );
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-button--raised', {
+				text: /complete setup/i,
+			} ),
 
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
@@ -396,12 +441,10 @@ describe( 'Analytics write scope requests', () => {
 		);
 
 		// They should end up on the dashboard.
-		await Promise.all( [
-			page.waitForNavigation(),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await page.waitForNavigation();
+		await page.waitForTimeout( 5000 );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}

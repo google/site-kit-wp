@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import Module from './Module';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -37,12 +37,17 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
 
 export default function DashboardSharingSettings() {
+	const hasRecoverableModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasRecoverableModules()
+	);
+
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
+
+	const showManageColumn = hasRecoverableModules || hasMultipleAdmins;
 
 	const sortedShareableModules = useSelect( ( select ) => {
 		const userID = select( CORE_USER ).getID();
@@ -80,7 +85,7 @@ export default function DashboardSharingSettings() {
 				'googlesitekit-dashboard-sharing-settings',
 				{
 					'googlesitekit-dashboard-sharing-settings--has-multiple-admins':
-						hasMultipleAdmins,
+						showManageColumn,
 				}
 			) }
 		>
@@ -92,7 +97,7 @@ export default function DashboardSharingSettings() {
 					{ __( 'Who can view', 'google-site-kit' ) }
 				</div>
 
-				{ hasMultipleAdmins && (
+				{ showManageColumn && (
 					<div className="googlesitekit-dashboard-sharing-settings__column--manage">
 						{ __(
 							'Who can manage view access',
@@ -103,14 +108,17 @@ export default function DashboardSharingSettings() {
 			</header>
 
 			<div className="googlesitekit-dashboard-sharing-settings__main">
-				{ sortedShareableModules.map( ( { slug, name, owner } ) => (
-					<Module
-						key={ slug }
-						moduleSlug={ slug }
-						moduleName={ name }
-						ownerUsername={ owner?.login }
-					/>
-				) ) }
+				{ sortedShareableModules.map(
+					( { slug, name, owner, recoverable } ) => (
+						<Module
+							key={ slug }
+							moduleSlug={ slug }
+							moduleName={ name }
+							ownerUsername={ owner?.login }
+							recoverable={ recoverable }
+						/>
+					)
+				) }
 			</div>
 		</div>
 	);

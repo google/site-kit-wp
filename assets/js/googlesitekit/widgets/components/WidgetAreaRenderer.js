@@ -30,7 +30,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
 import { getStickyHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
@@ -46,10 +46,12 @@ import {
 import InViewProvider from '../../../components/InViewProvider';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
+import WidgetErrorHandler from '../../../components/WidgetErrorHandler';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
 import useLatestIntersection from '../../../hooks/useLatestIntersection';
-const { useSelect } = Data;
+import WidgetAreaHeader from './WidgetAreaHeader';
+import { useWindowWidth } from '../../../hooks/useWindowSize';
 
 /**
  * Gets root margin value for the intersection hook.
@@ -84,6 +86,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
+	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
@@ -95,6 +98,9 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const widgetArea = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
+
+	const { Icon, title, style, subtitle, CTA, Footer } = widgetArea;
+
 	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug, {
 			modules: viewableModules ? viewableModules : undefined,
@@ -129,6 +135,8 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 		} );
 	}, [ intersectionEntry, slug, activeContextID, contextID ] );
 
+	const ctaWithSmallWindow = CTA && windowWidth <= 782;
+
 	if ( viewableModules === undefined ) {
 		return null;
 	}
@@ -160,22 +168,22 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
-			<WidgetRenderer
-				OverrideComponent={
-					overrideComponents[ i ]
-						? () => {
-								const { Component, metadata } =
-									overrideComponents[ i ];
-								return <Component { ...metadata } />;
-						  }
-						: undefined
-				}
-				slug={ widget.slug }
-			/>
+			<WidgetErrorHandler slug={ widget.slug }>
+				<WidgetRenderer
+					OverrideComponent={
+						overrideComponents[ i ]
+							? () => {
+									const { Component, metadata } =
+										overrideComponents[ i ];
+									return <Component { ...metadata } />;
+							  }
+							: undefined
+					}
+					slug={ widget.slug }
+				/>
+			</WidgetErrorHandler>
 		</WidgetCellWrapper>
 	) );
-
-	const { Icon, title, style, subtitle, CTA } = widgetArea;
 
 	return (
 		<InViewProvider value={ inViewState }>
@@ -193,29 +201,13 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							className="googlesitekit-widget-area-header"
 							size={ 12 }
 						>
-							{ Icon && <Icon width={ 33 } height={ 33 } /> }
-
-							{ title && (
-								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-									{ title }
-								</h3>
-							) }
-
-							{ ( subtitle || CTA ) && (
-								<div className="googlesitekit-widget-area-header__details">
-									{ subtitle && (
-										<h4 className="googlesitekit-widget-area-header__subtitle">
-											{ subtitle }
-										</h4>
-									) }
-
-									{ CTA && (
-										<div className="googlesitekit-widget-area-header__cta">
-											<CTA />
-										</div>
-									) }
-								</div>
-							) }
+							<WidgetAreaHeader
+								slug={ slug }
+								Icon={ Icon }
+								title={ title }
+								subtitle={ subtitle }
+								CTA={ CTA }
+							/>
 						</Cell>
 					</Row>
 
@@ -232,6 +224,30 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 							) }
 						</Row>
 					</div>
+					<Row>
+						{ ctaWithSmallWindow && (
+							<Cell
+								className="googlesitekit-widget-area-footer"
+								lgSize={ 12 }
+								mdSize={ 4 }
+								smSize={ 2 }
+							>
+								<div className="googlesitekit-widget-area-footer__cta">
+									<CTA />
+								</div>
+							</Cell>
+						) }
+						{ Footer && (
+							<Cell
+								className="googlesitekit-widget-area-footer"
+								lgSize={ 12 }
+								mdSize={ ctaWithSmallWindow ? 4 : 8 }
+								smSize={ ctaWithSmallWindow ? 2 : 4 }
+							>
+								<Footer />
+							</Cell>
+						) }
+					</Row>
 				</Grid>
 			) }
 			{

@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Grid, Cell, Row } from '../../material-components';
@@ -41,13 +41,11 @@ import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
-const { useDispatch, useSelect } = Data;
-
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
 
 	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
+		select( CORE_SITE ).isAdsConnectedUncached()
 	);
 
 	const isConsentModeEnabled = useSelect( ( select ) =>

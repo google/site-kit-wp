@@ -31,18 +31,23 @@ import { sprintf, _n } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
-import { USER_INPUT_QUESTION_POST_FREQUENCY } from './util/constants';
+import {
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
 	slug,
+	descriptions,
 	options,
 	max,
 	next,
@@ -53,6 +58,7 @@ export default function UserInputSelectOptions( {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
+
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( values )
 	);
@@ -90,6 +96,8 @@ export default function UserInputSelectOptions( {
 		}
 	}, [ max ] );
 
+	const { setValues } = useDispatch( CORE_FORMS );
+
 	const onClick = useCallback(
 		( event ) => {
 			const { target } = event;
@@ -113,9 +121,15 @@ export default function UserInputSelectOptions( {
 				checkedValues.join()
 			);
 
+			if ( slug === USER_INPUT_QUESTIONS_PURPOSE ) {
+				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+					[ slug ]: values,
+				} );
+			}
+
 			setUserInputSetting( slug, checkedValues );
 		},
-		[ max, setUserInputSetting, slug, values, viewContext ]
+		[ max, setUserInputSetting, slug, values, viewContext, setValues ]
 	);
 
 	const onKeyDown = useCallback(
@@ -141,9 +155,14 @@ export default function UserInputSelectOptions( {
 	const ListComponent = max === 1 ? Radio : Checkbox;
 
 	const items = Object.keys( options ).map( ( optionSlug ) => {
+		if ( 'sell_products_or_service' === optionSlug ) {
+			return false;
+		}
+
 		const props = {
 			id: `${ slug }-${ optionSlug }`,
 			value: optionSlug,
+			description: descriptions?.[ optionSlug ],
 			checked: values.includes( optionSlug ),
 			onKeyDown,
 			alignLeft: alignLeftOptions,
@@ -210,6 +229,7 @@ export default function UserInputSelectOptions( {
 
 UserInputSelectOptions.propTypes = {
 	slug: PropTypes.string.isRequired,
+	descriptions: PropTypes.shape( {} ),
 	options: PropTypes.shape( {} ).isRequired,
 	max: PropTypes.number,
 	next: PropTypes.func,

@@ -1,0 +1,71 @@
+/**
+ * Audience Selection Panel styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-acr-km-selection-panel {
+
+		@media (min-width: $bp-nonMobile) {
+			width: 578px;
+		}
+
+		.googlesitekit-selection-panel-items {
+			flex: 1;
+		}
+
+		.googlesitekit-selection-panel-footer__actions {
+			width: 100%;
+
+			.googlesitekit-selection-panel-footer__item-count {
+				margin-right: auto;
+				order: 1;
+			}
+
+			button {
+				order: 2;
+			}
+		}
+	}
+
+	.googlesitekit-km-selection-panel {
+
+		.googlesitekit-selection-panel-footer__actions {
+			width: 100%;
+
+			@media (max-width: $bp-mobileOnly) {
+				flex-wrap: wrap;
+				justify-content: flex-end;
+			}
+
+			.googlesitekit-selection-panel-footer__item-count {
+				margin-right: auto;
+				order: 1;
+
+				@media (max-width: $bp-mobileOnly) {
+					order: 1;
+					text-align: left;
+					width: 100%;
+				}
+			}
+
+			button {
+				order: 2;
+			}
+		}
+	}
+}

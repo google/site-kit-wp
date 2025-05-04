@@ -35,7 +35,7 @@ import {
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
@@ -57,7 +57,7 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
-const { useSelect, useInViewSelect, useDispatch } = Data;
+import { decodeAmpersand } from '../../utils';
 
 /**
  * Gets the report options for the Popular Products widget.
@@ -92,6 +92,7 @@ function getPopularProductsWidgetReportOptions( select ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 }
 
@@ -137,10 +138,12 @@ function PopularProductsWidget( props ) {
 
 	const showWidget = isPopularProductsWidgetActive || productPostType;
 
-	const report = useInViewSelect( ( select ) =>
-		showWidget
-			? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-			: undefined
+	const report = useInViewSelect(
+		( select ) =>
+			showWidget
+				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+				: undefined,
+		[ showWidget, reportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -149,13 +152,15 @@ function PopularProductsWidget( props ) {
 		] )
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		! error && report
-			? select( MODULES_ANALYTICS_4 ).getPageTitles(
-					report,
-					reportOptions
-			  )
-			: undefined
+	const titles = useInViewSelect(
+		( select ) =>
+			! error && report
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						report,
+						reportOptions
+				  )
+				: undefined,
+		[ error, report, reportOptions ]
 	);
 
 	const loading = useSelect( ( select ) =>
@@ -174,7 +179,7 @@ function PopularProductsWidget( props ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ];
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,

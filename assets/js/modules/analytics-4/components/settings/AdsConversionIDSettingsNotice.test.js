@@ -18,7 +18,7 @@
 
 import { ADS_CONVERSION_ID_NOTICE_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS } from '../../../../util';
+import { DAY_IN_SECONDS, dateSub } from '../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import { render } from '../../../../../../tests/js/test-utils';
@@ -26,11 +26,13 @@ import { createTestRegistry } from '../../../../../../tests/js/utils';
 
 describe( 'AdsConversionIDSettingsNotice', () => {
 	let registry;
+	let referenceDate;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		referenceDate = registry.select( CORE_USER ).getReferenceDate();
 	} );
 
 	it( 'should not render if the migration has not been performed', () => {
@@ -45,8 +47,10 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 
 	it( 'should not render if it has been over 28 days since the migration', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			adsConversionIDMigratedAtMs:
-				Date.now() - 29 * DAY_IN_SECONDS * 1000, // 29 days ago.
+			adsConversionIDMigratedAtMs: dateSub(
+				referenceDate,
+				29 * DAY_IN_SECONDS
+			).getTime(), // 29 days ago.
 		} );
 
 		const { container } = render( <AdsConversionIDSettingsNotice />, {
@@ -64,7 +68,10 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 			] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			adsConversionIDMigratedAtMs: Date.now() - 7 * DAY_IN_SECONDS * 1000, // 7 days ago.
+			adsConversionIDMigratedAtMs: dateSub(
+				referenceDate,
+				7 * DAY_IN_SECONDS
+			).getTime(), // 7 days ago.
 		} );
 
 		const { container } = render( <AdsConversionIDSettingsNotice />, {
@@ -76,7 +83,10 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 
 	it( 'should render the notice', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			adsConversionIDMigratedAtMs: Date.now() - 7 * DAY_IN_SECONDS * 1000, // 7 days ago.
+			adsConversionIDMigratedAtMs: dateSub(
+				referenceDate,
+				7 * DAY_IN_SECONDS
+			).getTime(), // 7 days ago.
 		} );
 
 		const { container } = render( <AdsConversionIDSettingsNotice />, {
@@ -84,7 +94,7 @@ describe( 'AdsConversionIDSettingsNotice', () => {
 		} );
 
 		expect( container ).toHaveTextContent(
-			'Ads Conversion Tracking ID has been moved to Ads settings'
+			'Ads Conversion ID has been moved to Ads settings'
 		);
 
 		expect( container ).toMatchSnapshot();

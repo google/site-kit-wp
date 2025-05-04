@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -45,8 +45,6 @@ import {
 import useViewOnly from '../hooks/useViewOnly';
 import Link from './Link';
 
-const { useSelect, useDispatch } = Data;
-
 export default function ReportErrorActions( props ) {
 	const {
 		moduleSlug,
@@ -55,7 +53,10 @@ export default function ReportErrorActions( props ) {
 		hideGetHelpLink,
 		buttonVariant,
 		onRetry,
+		onRequestAccess,
 		getHelpClassName,
+		RequestAccessButton,
+		RetryButton,
 	} = props;
 
 	const isViewOnly = useViewOnly();
@@ -125,25 +126,35 @@ export default function ReportErrorActions( props ) {
 
 	return (
 		<div className="googlesitekit-report-error-actions">
-			{ showRequestAccessURL && (
-				<Button
-					href={ requestAccessURL }
-					target="_blank"
-					danger={ buttonVariant === 'danger' }
-					tertiary={ buttonVariant === 'tertiary' }
-				>
-					{ __( 'Request access', 'google-site-kit' ) }
-				</Button>
-			) }
-			{ showRetry && (
-				<Fragment>
+			{ showRequestAccessURL &&
+				( typeof RequestAccessButton === 'function' ? (
+					<RequestAccessButton
+						requestAccessURL={ requestAccessURL }
+					/>
+				) : (
 					<Button
-						onClick={ handleRetry }
+						onClick={ onRequestAccess }
+						href={ requestAccessURL }
+						target="_blank"
 						danger={ buttonVariant === 'danger' }
 						tertiary={ buttonVariant === 'tertiary' }
 					>
-						{ __( 'Retry', 'google-site-kit' ) }
+						{ __( 'Request access', 'google-site-kit' ) }
 					</Button>
+				) ) }
+			{ showRetry && (
+				<Fragment>
+					{ typeof RetryButton === 'function' ? (
+						<RetryButton handleRetry={ handleRetry } />
+					) : (
+						<Button
+							onClick={ handleRetry }
+							danger={ buttonVariant === 'danger' }
+							tertiary={ buttonVariant === 'tertiary' }
+						>
+							{ __( 'Retry', 'google-site-kit' ) }
+						</Button>
+					) }
 					{ ! hideGetHelpLink && (
 						<span className="googlesitekit-error-retry-text">
 							{ createInterpolateElement(
@@ -199,5 +210,8 @@ ReportErrorActions.propTypes = {
 	hideGetHelpLink: PropTypes.bool,
 	buttonVariant: PropTypes.string,
 	onRetry: PropTypes.func,
+	onRequestAccess: PropTypes.func,
 	getHelpClassName: PropTypes.string,
+	RequestAccessButton: PropTypes.elementType,
+	RetryButton: PropTypes.elementType,
 };

@@ -4,7 +4,6 @@
 import { render, act } from '@testing-library/react';
 import { renderHook, act as actHook } from '@testing-library/react-hooks';
 import { Router } from 'react-router-dom';
-import invariant from 'invariant';
 import { createMemoryHistory } from 'history';
 
 /**
@@ -44,15 +43,14 @@ export function setEnabledFeatures( features ) {
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @private
  *
- * @param {*}        ui                      Any valid React child element.
- * @param {Object}   [options]               Optional. Render options.
- * @param {string[]} [options.features]      Feature flags to enable for this hook render.
- * @param {Function} [options.setupRegistry] A function which accepts the registry instance to configure it.
- * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
- * @param {History}  [options.history]       History object for React Router. Defaults to MemoryHistory.
- * @param {string}   [options.route]         Route to pass to history as starting route.
- * @param {boolean}  [options.inView]        If the component should consider itself in-view (see `useInView` hook).
- * @param {string}   [options.viewContext]   `viewContext` to use for this component and its children.
+ * @param {*}        ui                    Any valid React child element.
+ * @param {Object}   [options]             Optional. Render options.
+ * @param {string[]} [options.features]    Feature flags to enable for this hook render.
+ * @param {Object}   [options.registry]    A specific registry instance to use. Defaults to a fresh test registry with all stores.
+ * @param {History}  [options.history]     History object for React Router. Defaults to MemoryHistory.
+ * @param {string}   [options.route]       Route to pass to history as starting route.
+ * @param {boolean}  [options.inView]      If the component should consider itself in-view (see `useInView` hook).
+ * @param {string}   [options.viewContext] `viewContext` to use for this component and its children.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
@@ -62,7 +60,6 @@ const customRender = ( ui, options = {} ) => {
 	setEnabledFeatures( options.features || [] );
 
 	const {
-		setupRegistry = ( r ) => r,
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
 		route = undefined,
@@ -71,11 +68,6 @@ const customRender = ( ui, options = {} ) => {
 		...renderOptions
 	} = options;
 
-	invariant(
-		typeof setupRegistry === 'function',
-		'options.setupRegistry must be a function.'
-	);
-	setupRegistry( registry );
 	let setInView;
 
 	if ( route ) {
@@ -203,8 +195,11 @@ const customRenderHook = ( callback, options = {} ) => {
 		);
 	}
 
+	const waitForRegistry = createWaitForRegistry( registry );
+
 	return {
 		...renderHook( callback, { wrapper: Wrapper, ...renderHookOptions } ),
+		waitForRegistry: () => actHook( waitForRegistry ),
 		setInView,
 		registry,
 	};

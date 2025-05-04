@@ -30,8 +30,8 @@ import { createRegistrySelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
@@ -87,7 +87,7 @@ const fetchStoreReducerCallback = createReducer(
 const fetchGetEnhancedMeasurementSettingsStore = createFetchStore( {
 	baseName: 'getEnhancedMeasurementSettings',
 	controlCallback( { propertyID, webDataStreamID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'enhanced-measurement-settings',
@@ -120,7 +120,7 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 		webDataStreamID,
 		enhancedMeasurementSettings,
 	} ) =>
-		API.set( 'modules', 'analytics-4', 'enhanced-measurement-settings', {
+		set( 'modules', 'analytics-4', 'enhanced-measurement-settings', {
 			propertyID,
 			webDataStreamID,
 			enhancedMeasurementSettings,
@@ -220,11 +220,11 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID, webDataStreamID, enabled ) {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
-			const currentSettings = yield Data.commonActions.await(
+			const currentSettings = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID
@@ -247,7 +247,7 @@ const baseActions = {
 				streamEnabled,
 			};
 
-			return yield Data.commonActions.await(
+			return yield commonActions.await(
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setEnhancedMeasurementSettings(
@@ -294,11 +294,11 @@ const baseActions = {
 			);
 		},
 		function* ( propertyID, webDataStreamID ) {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
-			const currentSettings = yield Data.commonActions.await(
+			const currentSettings = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getEnhancedMeasurementSettings(
 						propertyID,
 						webDataStreamID
@@ -373,7 +373,7 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseResolvers = {
 	*getEnhancedMeasurementSettings( propertyID, webDataStreamID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		// Only fetch enhanced measurement settings if there are none in the store for the given data stream.
 		const enhancedMeasurementSettings = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -388,7 +388,7 @@ const baseResolvers = {
 	},
 
 	*isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 		// Only fetch enhanced measurement settings if the `streamEnabled` setting is not already in the store.
 		const isEnhancedMeasurementStreamEnabled = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -530,7 +530,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetEnhancedMeasurementSettingsStore,
 	fetchUpdateEnhancedMeasurementSettingsStore,
 	{

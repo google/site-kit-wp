@@ -1,7 +1,7 @@
 /**
  * `modules/analytics-4` data store: audience settings.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,52 +20,59 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isEqual, isPlainObject } from 'lodash';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
+import {
+	combineStores,
+	createValidatedAction,
+} from '../../../googlesitekit/data/utils';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
-const { createRegistrySelector } = Data;
 const { receiveError, clearError } = errorStoreActions;
 
-const validateAudienceSettings = ( settings ) => {
+/**
+ * Validates audience settings.
+ *
+ * @since 1.148.0
+ *
+ * @param {Object} audienceSettings Audience settings to validate.
+ * @return {void}
+ */
+function validateAudienceSettings( audienceSettings ) {
 	invariant(
-		isPlainObject( settings ),
-		'Audience settings should be an object.'
+		isPlainObject( audienceSettings ),
+		'audienceSettings should be an object.'
 	);
 	invariant(
-		Array.isArray( settings.configuredAudiences ),
-		'Configured audiences should be an array.'
+		Array.isArray( audienceSettings.availableAudiences ),
+		'availableAudiences should be an array.'
 	);
 	invariant(
-		typeof settings.isAudienceSegmentationWidgetHidden === 'boolean',
-		'Audience segmentation widget visibility should be a boolean.'
+		typeof audienceSettings.audienceSegmentationSetupCompletedBy ===
+			'number',
+		'audienceSegmentationSetupCompletedBy should be an integer.'
 	);
-};
+}
 
-const fetchStoreReducerCallback = createReducer(
-	( state, audienceSettings ) => {
-		if ( ! state.audienceSettings ) {
-			state.audienceSettings = {};
-		}
-
-		state.audienceSettings.settings = audienceSettings;
-		state.audienceSettings.savedSettings = audienceSettings;
-	}
-);
+const fetchStoreReducerCallback = createReducer( ( state, settings ) => {
+	state.audienceSettings = settings;
+} );
 
 const fetchGetAudienceSettingsStore = createFetchStore( {
 	baseName: 'getAudienceSettings',
 	controlCallback() {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'audience-settings',
@@ -81,16 +88,30 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 const fetchSaveAudienceSettingsStore = createFetchStore( {
 	baseName: 'saveAudienceSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'modules', 'analytics-4', 'audience-settings', { settings } ),
+		set( 'modules', 'analytics-4', 'save-audience-settings', {
+			settings,
+		} ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateAudienceSettings,
 } );
 
+const fetchSyncAvailableAudiencesStore = createFetchStore( {
+	baseName: 'syncAvailableAudiences',
+	controlCallback: () => set( 'modules', 'analytics-4', 'sync-audiences' ),
+	reducerCallback: createReducer( ( state, audiences ) => {
+		if ( ! state.audienceSettings ) {
+			state.audienceSettings = {};
+		}
+
+		state.audienceSettings.availableAudiences = audiences;
+	} ),
+} );
+
 // Actions
-const SET_CONFIGURED_AUDIENCES = 'SET_CONFIGURED_AUDIENCES';
-const SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN =
-	'SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN';
+const SET_AVAILABLE_AUDIENCES = 'SET_AVAILABLE_AUDIENCES';
+const SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY =
+	'SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY';
 
 const baseInitialState = {
 	audienceSettings: undefined,
@@ -98,36 +119,66 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
+	 * Sets the available audiences.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @param {Array} availableAudiences Available audience resource names.
+	 * @return {Object} Redux-style action.
+	 */
+	setAvailableAudiences( availableAudiences ) {
+		invariant(
+			Array.isArray( availableAudiences ),
+			'Available audiences should be an array.'
+		);
+
+		return {
+			type: SET_AVAILABLE_AUDIENCES,
+			payload: { availableAudiences },
+		};
+	},
+
+	/**
+	 * Sets the user who set up Audience Segmentation.
+	 *
+	 * @since 1.148.0
+	 *
+	 * @param {number} audienceSegmentationSetupCompletedBy ID for the user who set up Audience Segmentation.
+	 * @return {Object} Redux-style action.
+	 */
+	setAudienceSegmentationSetupCompletedBy(
+		audienceSegmentationSetupCompletedBy
+	) {
+		// Should be an integer.
+		invariant(
+			typeof audienceSegmentationSetupCompletedBy === 'number',
+			'audienceSegmentationSetupCompletedBy by should be an integer.'
+		);
+
+		return {
+			type: SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY,
+			payload: { audienceSegmentationSetupCompletedBy },
+		};
+	},
+
+	/**
 	 * Saves the audience settings.
 	 *
-	 * @since 1.124.0
+	 * @since 1.148.0
 	 *
-	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
+	 * @param {Object} settings Audience settings to save.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	saveAudienceSettings: createValidatedAction(
-		( settings = {} ) => {
-			invariant(
-				isPlainObject( settings ),
-				'audience settings should be an object to save.'
-			);
+		( settings ) => {
+			validateAudienceSettings( settings );
 		},
-		function* ( settings = {} ) {
+		function* ( settings ) {
 			yield clearError( 'saveAudienceSettings', [] );
-
-			const registry = yield Data.commonActions.getRegistry();
-			const audienceSettings = yield Data.commonActions.await(
-				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-					.getAudienceSettings()
-			);
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(
-					{
-						...audienceSettings,
-						...settings,
-					}
+					settings
 				);
 
 			if ( error ) {
@@ -137,175 +188,129 @@ const baseActions = {
 			return { response, error };
 		}
 	),
-
-	/**
-	 * Sets the configured audiences.
-	 *
-	 * @since 1.124.0
-	 *
-	 * @param {Array} audienceResourceNames Configured audience resource names.
-	 * @return {Object} Redux-style action.
-	 */
-	setConfiguredAudiences( audienceResourceNames ) {
-		invariant(
-			Array.isArray( audienceResourceNames ),
-			'Configured audiences should be an array.'
-		);
-
-		return {
-			type: SET_CONFIGURED_AUDIENCES,
-			payload: { audienceResourceNames },
-		};
-	},
-
-	/**
-	 * Sets the audience segmentation widget visibility.
-	 *
-	 * @since 1.124.0
-	 *
-	 * @param {boolean} isWidgetHidden Whether or not the audience segmentation widget is hidden.
-	 * @return {Object} Redux-style action.
-	 */
-	setAudienceSegmentationWidgetHidden( isWidgetHidden ) {
-		invariant(
-			typeof isWidgetHidden === 'boolean',
-			'Audience segmentation widget visibility should be a boolean.'
-		);
-
-		return {
-			type: SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN,
-			payload: { isWidgetHidden },
-		};
-	},
 };
-
-const baseControls = {};
-
-const baseReducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_CONFIGURED_AUDIENCES: {
-			const { audienceResourceNames } = payload;
-
-			if ( ! state.audienceSettings ) {
-				state.audienceSettings = {};
-			}
-
-			state.audienceSettings.settings = {
-				...state.audienceSettings.settings,
-				configuredAudiences: audienceResourceNames,
-			};
-
-			break;
-		}
-
-		case SET_AUDIENCE_SEGMENTATION_WIDGET_HIDDEN: {
-			const { isWidgetHidden } = payload;
-
-			if ( ! state.audienceSettings ) {
-				state.audienceSettings = {};
-			}
-
-			state.audienceSettings.settings = {
-				...state.audienceSettings.settings,
-				isAudienceSegmentationWidgetHidden: isWidgetHidden,
-			};
-
-			break;
-		}
-
-		default: {
-			break;
-		}
-	}
-} );
 
 const baseResolvers = {
 	*getAudienceSettings() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
+		const { select } = registry;
 
-		const audienceSettings = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAudienceSettings();
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
 
 		if ( audienceSettings === undefined ) {
 			yield fetchGetAudienceSettingsStore.actions.fetchGetAudienceSettings();
 		}
 	},
+
+	*getOrSyncAvailableAudiences() {
+		const registry = yield commonActions.getRegistry();
+
+		const audiences = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAvailableAudiences();
+
+		if ( audiences === null ) {
+			registry.dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences();
+		}
+	},
 };
+
+const baseReducer = createReducer( ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_AVAILABLE_AUDIENCES:
+			const { availableAudiences } = payload;
+			state.audienceSettings = {
+				...state.audienceSettings,
+				availableAudiences,
+			};
+			break;
+
+		case SET_AUDIENCE_SEGMENTATION_SETUP_COMPLETED_BY:
+			const { audienceSegmentationSetupCompletedBy } = payload;
+			state.audienceSettings = {
+				...state.audienceSettings,
+				audienceSegmentationSetupCompletedBy,
+			};
+			break;
+
+		default:
+			break;
+	}
+} );
 
 const baseSelectors = {
 	/**
-	 * Gets the audience settings.
+	 * Gets the available audiences.
 	 *
-	 * @since 1.124.0
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Audience settings; `undefined` if not loaded.
+	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
-	getAudienceSettings( state ) {
-		return state.audienceSettings?.settings;
+	getAvailableAudiences( state ) {
+		return state.audienceSettings?.availableAudiences;
+	},
+
+	getOrSyncAvailableAudiences( state ) {
+		return state.audienceSettings?.availableAudiences;
 	},
 
 	/**
-	 * Gets the configured audiences from the audience settings.
+	 * Gets the audience settings.
 	 *
-	 * @since 1.124.0
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} An array with configured audiences; `undefined` if not loaded.
+	 * @return {Object|undefined} Audience settings, or `undefined` if not loaded.
 	 */
-	getConfiguredAudiences: createRegistrySelector( ( select ) => () => {
-		const audienceSettings =
-			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
-
-		return audienceSettings?.configuredAudiences;
-	} ),
+	getAudienceSettings( state ) {
+		return state.audienceSettings;
+	},
 
 	/**
-	 * Gets the audience segmentation widget visibility from the audience settings.
+	 * Gets the last time the available audiences were synced.
 	 *
-	 * @since 1.124.0
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Whether or not the audience segmentation widget is hidden; `undefined` if not loaded.
+	 * @return {(number|undefined)} Last time the available audiences were synced, or `undefined` if not loaded.
 	 */
-	isAudienceSegmentationWidgetHidden: createRegistrySelector(
+	getAvailableAudiencesLastSyncedAt: createRegistrySelector(
 		( select ) => () => {
 			const audienceSettings =
-				select( MODULES_ANALYTICS_4 ).getAudienceSettings();
-
-			return audienceSettings?.isAudienceSegmentationWidgetHidden;
+				select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+			return audienceSettings.availableAudiencesLastSyncedAt;
 		}
 	),
 
 	/**
-	 * Checks if the configured audiences have changed from the saved settings.
+	 * Gets the user who set up Audience Segmentation.
 	 *
-	 * @since 1.124.0
+	 * @since 1.151.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} True if configured audiences have changed, otherwise false.
+	 * @return {(number|null|undefined)} ID for the user who set up Audience Segmentation, `null` if not set, or `undefined` if not loaded.
 	 */
-	haveConfiguredAudiencesChanged( state ) {
-		const { settings, savedSettings } = state.audienceSettings || {};
-
-		return ! isEqual(
-			settings?.configuredAudiences,
-			savedSettings?.configuredAudiences
-		);
-	},
+	getAudienceSegmentationSetupCompletedBy: createRegistrySelector(
+		( select ) => () => {
+			const audienceSettings =
+				select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+			return audienceSettings.audienceSegmentationSetupCompletedBy;
+		}
+	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetAudienceSettingsStore,
 	fetchSaveAudienceSettingsStore,
+	fetchSyncAvailableAudiencesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
+		reducer: baseReducer,
 	}
 );
 

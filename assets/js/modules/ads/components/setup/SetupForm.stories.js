@@ -28,11 +28,16 @@ import {
 } from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 function Template( { setupRegistry = () => {} } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<ModuleSetup moduleSlug="ads" />
+			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+				<ModuleSetup moduleSlug="ads" />
+			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
 }
@@ -144,6 +149,12 @@ export default {
 
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( {
+						enabled: false,
+					} );
 
 				registry
 					.dispatch( MODULES_ADS )

@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
+
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -59,7 +61,7 @@ class REST_Modules_Controller {
 	public function register() {
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
@@ -185,19 +187,19 @@ class REST_Modules_Controller {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_setup = function() {
+		$can_setup = function () {
 			return current_user_can( Permissions::SETUP );
 		};
 
-		$can_authenticate = function() {
+		$can_authenticate = function () {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
-		$can_list_data = function() {
+		$can_list_data = function () {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
-		$can_view_insights = function() {
+		$can_view_insights = function () {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
 				return true;
@@ -206,7 +208,7 @@ class REST_Modules_Controller {
 			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
 		};
 
-		$can_manage_options = function() {
+		$can_manage_options = function () {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
 				return true;
@@ -225,7 +227,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function () {
 							$modules = array_map(
 								array( $this, 'prepare_module_data_for_response' ),
 								$this->modules->get_available_modules()
@@ -244,7 +246,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request['data'];
 							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
 
@@ -304,7 +306,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							try {
 								$module = $this->modules->get_module( $request['slug'] );
 							} catch ( Exception $e ) {
@@ -332,7 +334,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request['data'];
 							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
 
@@ -386,7 +388,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							$modules = $this->modules->get_available_modules();
 							if ( ! isset( $modules[ $slug ] ) ) {
@@ -423,7 +425,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) use ( $can_manage_options ) {
+						'callback'            => function ( WP_REST_Request $request ) use ( $can_manage_options ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -456,7 +458,7 @@ class REST_Modules_Controller {
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -480,7 +482,7 @@ class REST_Modules_Controller {
 							'data' => array(
 								'type'              => 'object',
 								'description'       => __( 'Settings to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
+								'validate_callback' => function ( $value ) {
 									return is_array( $value );
 								},
 							),
@@ -502,7 +504,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -538,7 +540,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -560,7 +562,7 @@ class REST_Modules_Controller {
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$slug = $request['slug'];
 							try {
 								$module = $this->modules->get_module( $slug );
@@ -584,7 +586,7 @@ class REST_Modules_Controller {
 							'data' => array(
 								'type'              => 'object',
 								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
+								'validate_callback' => function ( $value ) {
 									return is_array( $value );
 								},
 							),
@@ -611,7 +613,7 @@ class REST_Modules_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
+						'callback'            => function ( WP_REST_Request $request ) {
 							$data = $request['data'];
 							$slugs = isset( $data['slugs'] ) ? $data['slugs'] : array();
 

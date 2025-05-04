@@ -25,10 +25,9 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
-const { useSelect } = Data;
 
 export default function SurveyTerms() {
 	const privacy = useSelect( ( select ) =>
@@ -47,10 +46,20 @@ export default function SurveyTerms() {
 				),
 				{
 					privacy: (
-						<Link href={ privacy } external hideExternalIndicator />
+						<Link
+							href={ privacy }
+							external
+							hideExternalIndicator
+							noFlex
+						/>
 					),
 					terms: (
-						<Link href={ terms } external hideExternalIndicator />
+						<Link
+							href={ terms }
+							external
+							hideExternalIndicator
+							noFlex
+						/>
 					),
 				}
 			) }

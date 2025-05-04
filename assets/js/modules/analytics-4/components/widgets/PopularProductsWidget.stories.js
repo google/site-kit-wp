@@ -37,7 +37,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { STRATEGY_ZIP, getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
@@ -72,6 +72,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	keepEmptyRows: false,
 };
 
 const pageTitlesReportOptions = {
@@ -140,6 +141,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularProductsWidget/Ready',
 	delay: 250,
 };
@@ -180,6 +182,7 @@ ReadyViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ReadyViewOnly.scenario = {
+	// eslint-disable-next-line sitekit/no-storybook-scenario-label
 	label: 'KeyMetrics/PopularProductsWidget/ReadyViewOnly',
 	delay: 250,
 };
@@ -206,10 +209,6 @@ ZeroData.args = {
 			options: reportOptions,
 		} );
 	},
-};
-ZeroData.scenario = {
-	label: 'KeyMetrics/PopularProductsWidget/ZeroData',
-	delay: 250,
 };
 
 export const NoProductPostType = Template.bind( {} );
@@ -254,10 +253,6 @@ Error.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
-};
-Error.scenario = {
-	label: 'KeyMetrics/PopularProducts/Error',
-	delay: 250,
 };
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
@@ -338,10 +333,6 @@ InsufficientPermissions.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
-};
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/PopularProducts/InsufficientPermissions',
-	delay: 250,
 };
 
 export default {

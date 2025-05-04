@@ -27,7 +27,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,
@@ -41,7 +41,7 @@ import DashboardOverallPageMetricsWidgetGA4 from './DashboardOverallPageMetricsW
 const gatheringReportOptions = {
 	dimensions: [ 'date' ],
 	metrics: [ { name: 'totalUsers' } ],
-	startDate: '2020-08-11',
+	startDate: '2020-07-14',
 	endDate: '2020-09-07',
 };
 
@@ -78,11 +78,11 @@ const reportOptions = [
 	{
 		dimensions: [ 'date' ],
 		metrics: [ { name: 'totalUsers' } ],
-		startDate: '2020-08-11',
+		startDate: '2020-07-14',
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page/';
+const currentEntityURL = 'https://www.example.com/example-page-3/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,
@@ -252,7 +252,6 @@ LoadedEntityURL.args = {
 };
 LoadedEntityURL.scenario = {
 	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
-	delay: 500,
 };
 
 export const LoadingEntityURL = Template.bind( {} );

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll } from 'react-use';
+import { useWindowScroll, useKey } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -30,17 +30,16 @@ import {
 	createInterpolateElement,
 	useEffect,
 	useCallback,
-	useRef,
+	useState,
 } from '@wordpress/element';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
@@ -49,7 +48,7 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
+import { ESCAPE } from '@wordpress/keycodes';
 import Portal from '../../Portal';
 import {
 	Dialog,
@@ -61,14 +60,13 @@ import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
 
-const { useSelect, useDispatch } = Data;
-
 export default function DashboardSharingDialog() {
+	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
+		useState( false );
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
 
 	const settingsDialogOpen = useSelect(
@@ -89,13 +87,17 @@ export default function DashboardSharingDialog() {
 		);
 	} );
 
-	const triggeredTourRef = useRef();
-	const handleTriggerOnDemandTour = useCallback( () => {
-		if ( ! triggeredTourRef.current ) {
-			triggeredTourRef.current = true;
-			triggerOnDemandTour( sharingSettingsTour );
+	useEffect( () => {
+		if ( shouldFocusResetButton ) {
+			const resetButton = document.querySelector(
+				'.googlesitekit-reset-sharing-permissions-button'
+			);
+			if ( resetButton ) {
+				resetButton.focus();
+			}
+			setShouldFocusResetButton( false );
 		}
-	}, [ triggerOnDemandTour ] );
+	}, [ shouldFocusResetButton ] );
 
 	const dialogStyles = {};
 	// On mobile, the dialog box's flexbox is set to stretch items within to cover
@@ -130,28 +132,59 @@ export default function DashboardSharingDialog() {
 	const closeResetDialog = useCallback( () => {
 		setValue( RESET_SETTINGS_DIALOG, false );
 		openSettingsDialog();
+		setShouldFocusResetButton( true );
 	}, [ openSettingsDialog, setValue ] );
 
 	const closeDialog = useCallback( () => {
 		if ( resetDialogOpen ) {
 			closeResetDialog();
-
 			return null;
 		}
 
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
+	// Handle escape key for reset dialog
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		closeResetDialog
+	);
+
+	// Handle clicking on the scrim (outside the dialog)
+	useEffect( () => {
+		const handleScrimClick = ( event ) => {
+			if (
+				resetDialogOpen &&
+				event.target.classList.contains( 'mdc-dialog__scrim' )
+			) {
+				closeResetDialog();
+			}
+		};
+
+		document.addEventListener( 'click', handleScrimClick );
+
+		return () => {
+			document.removeEventListener( 'click', handleScrimClick );
+		};
+	}, [ resetDialogOpen, closeResetDialog ] );
+
 	return (
 		<Portal>
 			<Dialog
 				open={ settingsDialogOpen || resetDialogOpen }
-				onOpen={ handleTriggerOnDemandTour }
 				onClose={ closeDialog }
 				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }
+				/* Prevent default modal behavior as we are simulating multiple modals within a single modal here for the settings and reset dialogs. */
 				escapeKeyAction={
-					editingUserRoleSelect === undefined ? 'close' : ''
+					editingUserRoleSelect === undefined && ! resetDialogOpen
+						? 'close'
+						: ''
+				}
+				scrimClickAction={
+					editingUserRoleSelect === undefined && ! resetDialogOpen
+						? 'close'
+						: ''
 				}
 			>
 				<div

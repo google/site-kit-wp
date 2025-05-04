@@ -24,13 +24,13 @@ import { times } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
-	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import {
@@ -57,7 +57,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 	];
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -70,12 +70,8 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -192,6 +188,9 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				},
 			};
 			it( 'does not make a network request if there are no missing custom dimensions', async () => {
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'product', label: 'Product' } ],
+				} );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: customDimensionNames,
@@ -473,13 +472,29 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( hasCustomDimensions ).toBe( undefined );
 			} );
 
-			it( 'returns false when available custom dimensions are null or not set', () => {
+			it( 'returns undefined when available custom dimensions are null', () => {
 				provideUserAuthentication( registry, { authenticated: false } );
 				registry.dispatch( CORE_USER ).receiveCapabilities( {
 					googlesitekit_manage_options: false,
 				} );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					availableCustomDimensions: null,
+				} );
+
+				const hasCustomDimensions = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasCustomDimensions( [ 'googlesitekit_post_author' ] );
+
+				expect( hasCustomDimensions ).toBe( undefined );
+			} );
+
+			it( 'returns false when available custom dimensions are empty or not set', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					googlesitekit_manage_options: false,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: [],
 				} );
 
 				const hasCustomDimensions = registry

@@ -1,0 +1,131 @@
+/**
+ * Full screen metric selection app styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-metric-selection {
+
+		.googlesitekit-user-input__footer-container--fullscreen {
+			bottom: 0;
+			left: 160px;
+			position: fixed;
+			width: calc(100vw - 160px);
+			z-index: 99;
+
+			.googlesitekit-selection-panel-footer {
+				background: $c-white;
+				border-top: 1px solid $c-mercury;
+				bottom: 0;
+				padding: 24px 36px;
+				position: static;
+
+				.googlesitekit-selection-panel-footer__content {
+					margin-top: 0;
+				}
+
+				.googlesitekit-selection-panel-footer__item-count {
+					@media (max-width: $bp-mobileOnly) {
+						order: 1;
+						text-align: left;
+						width: 100%;
+					}
+				}
+
+				.googlesitekit-selection-panel-footer__actions {
+					justify-content: space-between;
+					width: 100%;
+
+					@media (max-width: $bp-mobileOnly) {
+						flex-wrap: wrap;
+						justify-content: flex-end;
+					}
+
+					button {
+						@media (max-width: $bp-mobileOnly) {
+							order: 2;
+						}
+					}
+				}
+			}
+
+			.googlesitekit-selection-panel-error {
+				padding: 14px 48px;
+			}
+		}
+
+		.googlesitekit-module-page {
+
+			.googlesitekit-user-input__content {
+				margin-bottom: 30px;
+				padding-bottom: 30px;
+			}
+		}
+	}
+}
+
+// Adapt the fixed position bar based on the folded state of the WordPress menu
+.sb-show-main {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-metric-selection {
+
+			.googlesitekit-user-input__footer-container--fullscreen {
+				left: 0;
+				width: 100vw;
+			}
+		}
+	}
+}
+
+.auto-fold {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-metric-selection {
+
+			.googlesitekit-user-input__footer-container--fullscreen {
+				left: 0;
+				width: 100vw;
+
+				@media (min-width: $bp-wpAdminBarTablet) {
+					left: 36px;
+					width: calc(100vw - 36px);
+				}
+				@media (min-width: $bp-desktop) {
+					left: 160px;
+					width: calc(100vw - 160px);
+				}
+			}
+		}
+	}
+}
+
+.folded {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-metric-selection {
+
+			.googlesitekit-user-input__footer-container--fullscreen {
+				left: 36px;
+				width: calc(100vw - 36px);
+			}
+		}
+	}
+}

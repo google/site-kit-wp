@@ -19,13 +19,12 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_TAGMANAGER } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
-	unsubscribeFromAll,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
@@ -36,7 +35,7 @@ describe( 'modules/tagmanager versions', () => {
 	let registry;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -44,11 +43,7 @@ describe( 'modules/tagmanager versions', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {

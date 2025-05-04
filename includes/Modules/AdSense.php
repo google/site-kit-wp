@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
+
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
@@ -63,6 +65,7 @@ use Google\Site_Kit\Core\Tags\Guards\WP_Query_404_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use WP_Error;
 use WP_REST_Response;
 
@@ -73,8 +76,7 @@ use WP_REST_Response;
  * @access private
  * @ignore
  */
-final class AdSense extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
+final class AdSense extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Tag {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -152,9 +154,12 @@ final class AdSense extends Module
 
 		// Reset AdSense link settings in Analytics when accountID changes.
 		$this->get_settings()->on_change(
-			function( $old_value, $new_value ) {
+			function ( $old_value, $new_value ) {
 				if ( $old_value['accountID'] !== $new_value['accountID'] ) {
 					$this->reset_analytics_adsense_linked_settings();
+				}
+				if ( ! empty( $new_value['accountSetupComplete'] ) && ! empty( $new_value['siteSetupComplete'] ) ) {
+					do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 				}
 			}
 		);
@@ -226,35 +231,35 @@ final class AdSense extends Module
 
 		return array(
 			'adsense_account_id'                       => array(
-				'label' => __( 'AdSense account ID', 'google-site-kit' ),
+				'label' => __( 'AdSense: Account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
 			'adsense_client_id'                        => array(
-				'label' => __( 'AdSense client ID', 'google-site-kit' ),
+				'label' => __( 'AdSense: Client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
 			'adsense_account_status'                   => array(
-				'label' => __( 'AdSense account status', 'google-site-kit' ),
+				'label' => __( 'AdSense: Account status', 'google-site-kit' ),
 				'value' => $settings['accountStatus'],
 			),
 			'adsense_site_status'                      => array(
-				'label' => __( 'AdSense site status', 'google-site-kit' ),
+				'label' => __( 'AdSense: Site status', 'google-site-kit' ),
 				'value' => $settings['siteStatus'],
 			),
 			'adsense_use_snippet'                      => array(
-				'label' => __( 'AdSense snippet placed', 'google-site-kit' ),
+				'label' => __( 'AdSense: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
 			'adsense_web_stories_adunit_id'            => array(
-				'label' => __( 'Web Stories Ad Unit ID', 'google-site-kit' ),
+				'label' => __( 'AdSense: Web Stories Ad Unit ID', 'google-site-kit' ),
 				'value' => $settings['webStoriesAdUnit'],
 				'debug' => $settings['webStoriesAdUnit'],
 			),
 			'adsense_setup_completed_timestamp'        => array(
-				'label' => __( 'AdSense setup completed at', 'google-site-kit' ),
+				'label' => __( 'AdSense: Setup completed at', 'google-site-kit' ),
 				'value' => $settings['setupCompletedTimestamp'] ? date_i18n(
 					get_option( 'date_format' ),
 					$settings['setupCompletedTimestamp']
@@ -263,7 +268,7 @@ final class AdSense extends Module
 			),
 			'adsense_abr_use_snippet'                  => array(
 				'label' => __(
-					'Ad Blocking Recovery snippet placed',
+					'AdSense: Ad Blocking Recovery snippet placed',
 					'google-site-kit'
 				),
 				'value' => $settings['useAdBlockingRecoverySnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
@@ -271,7 +276,7 @@ final class AdSense extends Module
 			),
 			'adsense_abr_use_error_protection_snippet' => array(
 				'label' => __(
-					'Ad Blocking Recovery error protection snippet placed',
+					'AdSense: Ad Blocking Recovery error protection snippet placed',
 					'google-site-kit'
 				),
 				'value' => $settings['useAdBlockingRecoveryErrorSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
@@ -279,7 +284,7 @@ final class AdSense extends Module
 			),
 			'adsense_abr_setup_status'                 => array(
 				'label' => __(
-					'Ad Blocking Recovery setup status',
+					'AdSense: Ad Blocking Recovery setup status',
 					'google-site-kit'
 				),
 				'value' => $this->get_ad_blocking_recovery_setup_status_label(
@@ -288,7 +293,6 @@ final class AdSense extends Module
 				'debug' => $settings['adBlockingRecoverySetupStatus'],
 			),
 		);
-
 	}
 
 	/**
@@ -364,7 +368,7 @@ final class AdSense extends Module
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:notifications':
-				return function() {
+				return function () {
 					$settings = $this->get_settings()->get();
 
 					if ( empty( $settings['accountID'] ) ) {
@@ -378,7 +382,7 @@ final class AdSense extends Module
 					}
 					$alerts = array_filter(
 						$alerts,
-						function( Google_Service_Adsense_Alert $alert ) {
+						function ( Google_Service_Adsense_Alert $alert ) {
 							return 'SEVERE' === $alert->getSeverity();
 						}
 					);
@@ -746,7 +750,6 @@ final class AdSense extends Module
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
-			'order'       => 2,
 			'homepage'    => add_query_arg( $idenfifier_args, 'https://adsense.google.com/start' ),
 		);
 	}
@@ -1146,5 +1149,4 @@ final class AdSense extends Module
 			$dismissed_prompts->remove( 'ad-blocking-recovery-notification' );
 		}
 	}
-
 }

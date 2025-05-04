@@ -23,13 +23,19 @@ import WidgetContextRenderer from './WidgetContextRenderer';
 import { CORE_WIDGETS } from '../datastore/constants';
 import {
 	createTestRegistry,
+	muteFetch,
 	provideModules,
 	render,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
+import { Fragment } from '@wordpress/element';
 
 function WidgetComponent() {
 	return <div>Foo bar!</div>;
+}
+
+function SubTitleComponent() {
+	return <Fragment>Component title</Fragment>;
 }
 
 function WidgetComponentEmpty( { WidgetNull } ) {
@@ -54,6 +60,11 @@ describe( 'WidgetContextRenderer', () => {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.assignWidgetArea( 'TestArea1', 'TestContext' );
+
+		const fetchGetExpiredItems = new RegExp(
+			'^/google-site-kit/v1/core/user/data/expirable-items'
+		);
+		muteFetch( fetchGetExpiredItems );
 	} );
 
 	it( 'should render the registered widget areas', async () => {
@@ -83,6 +94,44 @@ describe( 'WidgetContextRenderer', () => {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( 'TestWidget2', 'TestArea2' );
+
+		const { container, waitForRegistry } = render(
+			<WidgetContextRenderer slug="TestContext" />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		await waitFor( () => {
+			expect(
+				container.querySelectorAll( '.googlesitekit-widget-context' )
+			).toHaveLength( 1 );
+			expect(
+				container.querySelector( '.googlesitekit-widget-context' )
+			).toMatchSnapshot();
+		} );
+	} );
+
+	it( 'should render the registered widget area with a subtitle component', async () => {
+		// Register a second widget area.
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea3', {
+			title: 'Dashboard Body',
+			subtitle: SubTitleComponent,
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'TestArea3', 'TestContext' );
+
+		// Register active widgets in the areas.
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget1', {
+			Component: WidgetComponent,
+			width: 'full',
+		} );
+
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'TestWidget1', 'TestArea3' );
 
 		const { container, waitForRegistry } = render(
 			<WidgetContextRenderer slug="TestContext" />,

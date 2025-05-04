@@ -44,8 +44,9 @@ describe( 'Site Health', () => {
 			text: /site kit by google/i,
 		} );
 
-		await expect( page ).toMatchElement( 'td', {
-			text: /Search Console Shared Roles/i,
+		// The element is a `td` on older verisons of WP and `th` on more recent versions.
+		await expect( page ).toMatchElement( 'th,td', {
+			text: /Search Console: Shared Roles/i,
 		} );
 	} );
 } );

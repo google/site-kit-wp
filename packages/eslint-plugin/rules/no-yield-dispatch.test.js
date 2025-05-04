@@ -78,5 +78,23 @@ ruleTester.run( 'no-yield-dispatch', rule, {
 				},
 			],
 		},
+		{
+			code: 'function* anotherGeneratorWithRegistryDispatchWithAction() { yield registry.dispatch( CORE_MODULES ).activateModule( slug ); }',
+			errors: [
+				{
+					message:
+						'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.',
+				},
+			],
+		},
+		{
+			code: 'function* anotherGeneratorWithRegistryDispatchWithAssignedAction() { const result = yield registry.dispatch( CORE_MODULES ).activateModule( slug ); }',
+			errors: [
+				{
+					message:
+						'Only plain objects should be yielded from action generator functions. dispatch always returns a Promise.',
+				},
+			],
+		},
 	],
 } );

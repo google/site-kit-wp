@@ -29,7 +29,7 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CATEGORIES,
@@ -47,7 +47,7 @@ import {
 import whenActive from '../../../../util/when-active';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-const { useSelect, useInViewSelect } = Data;
+import { splitCategories } from '../../utils';
 
 /**
  * Gets the report options for the Top Categories widget.
@@ -68,9 +68,7 @@ function getReportOptions( select ) {
 		dimensionFilters: {
 			// Make sure that we select only rows without (not set) records.
 			'customEvent:googlesitekit_post_categories': {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: '(not set)',
+				filterType: 'emptyFilter',
 				notExpression: true,
 			},
 		},
@@ -84,14 +82,19 @@ function getReportOptions( select ) {
 			},
 		],
 		limit: 3,
+		keepEmptyRows: false,
 	};
 }
 
 function TopCategoriesWidget( { Widget } ) {
 	const topCategoriesReportOptions = useSelect( getReportOptions );
 
-	const topCategoriesReport = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( topCategoriesReportOptions )
+	const topCategoriesReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport(
+				topCategoriesReportOptions
+			),
+		[ topCategoriesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -118,7 +121,7 @@ function TopCategoriesWidget( { Widget } ) {
 
 				const categoriesList =
 					typeof categories?.value === 'string'
-						? categories.value.split( '; ' )
+						? splitCategories( categories.value )
 						: [];
 
 				const categoriesString = listFormat(

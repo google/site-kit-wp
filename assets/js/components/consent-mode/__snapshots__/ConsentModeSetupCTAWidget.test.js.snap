@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConsentModeSetupCTAWidget should render the widget 1`] = `
+<div>
+  <section
+    id="consent-mode-setup-cta-widget"
+  >
+    <div
+      class="googlesitekit-widget-context"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-widget-area"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-widget googlesitekit-widget--no-padding googlesitekit-setup-cta-banner googlesitekit-setup-cta-banner--single-column googlesitekit-setup-cta-banner--consent-mode-setup-cta-widget"
+            >
+              <div
+                class="googlesitekit-setup-cta-banner__cells"
+              >
+                <div
+                  class="googlesitekit-setup-cta-banner__primary-cell"
+                >
+                  <h3
+                    class="googlesitekit-setup-cta-banner__title"
+                  >
+                    Enable Consent Mode to preserve tracking for your Ads campaigns
+                  </h3>
+                  <div
+                    class="googlesitekit-setup-cta-banner__description"
+                  >
+                    <p>
+                      <span>
+                        Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.
+                      </span>
+                       
+                      <a
+                        aria-label="Learn more about consent mode (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://sitekit.withgoogle.com/support/?doc=consent-mode"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Learn more
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
+                        </span>
+                      </a>
+                    </p>
+                  </div>
+                  <div
+                    class="googlesitekit-setup-cta-banner__actions-wrapper"
+                  >
+                    <a
+                      class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                      href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings"
+                      role="button"
+                      target="_self"
+                    >
+                      <span
+                        class="mdc-button__label"
+                      >
+                        Enable consent mode
+                      </span>
+                    </a>
+                    <button
+                      class="mdc-button mdc-button--tertiary"
+                      target="_self"
+                    >
+                      <span
+                        class="mdc-button__label"
+                      >
+                        Maybe later
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-setup-cta-banner__svg-wrapper--consent-mode-setup-cta-widget"
+                >
+                  <svg />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

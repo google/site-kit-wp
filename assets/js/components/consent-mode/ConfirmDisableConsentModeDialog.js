@@ -28,14 +28,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { listFormat, trackEvent } from '../../util';
 import ModalDialog from '../ModalDialog';
 import useViewContext from '../../hooks/useViewContext';
-
-const { useSelect } = Data;
 
 export default function ConfirmDisableConsentModeDialog( {
 	onConfirm,
@@ -44,10 +42,7 @@ export default function ConfirmDisableConsentModeDialog( {
 	const viewContext = useViewContext();
 
 	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
-	);
-	const consentModeRegions = useSelect( ( select ) =>
-		select( CORE_SITE ).getConsentModeRegions()
+		select( CORE_SITE ).isAdsConnectedUncached()
 	);
 
 	const dependentModuleNames = useSelect( ( select ) =>
@@ -82,16 +77,9 @@ export default function ConfirmDisableConsentModeDialog( {
 		__( 'Track how visitors interact with your site', 'google-site-kit' ),
 	];
 	let subtitle = __(
-		'Disabling consent mode may affect your ability in the European Economic Area and the United Kingdom to:',
+		'Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to:',
 		'google-site-kit'
 	);
-
-	if ( consentModeRegions?.includes( 'CH' ) ) {
-		subtitle = __(
-			'Disabling consent mode may affect your ability in the European Economic Area, the UK and Switzerland to:',
-			'google-site-kit'
-		);
-	}
 
 	if ( isAdsConnected ) {
 		provides = [
@@ -102,25 +90,20 @@ export default function ConfirmDisableConsentModeDialog( {
 			),
 		];
 		subtitle = __(
-			'Disabling consent mode may affect your ability to track these in the European Economic Area and the United Kingdom:',
+			'Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:',
 			'google-site-kit'
 		);
-
-		if ( consentModeRegions?.includes( 'CH' ) ) {
-			subtitle = __(
-				'Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:',
-				'google-site-kit'
-			);
-		}
 	}
 
 	return (
 		<ModalDialog
+			className="googlesitekit-settings-module__confirm-disconnect-modal"
 			dialogActive
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
 			handleDialog={ onCancel }
+			onClose={ onCancel }
 			provides={ provides }
 			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }

@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../material-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
@@ -37,7 +37,7 @@ import GoogleChart from '../../../../components/GoogleChart';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { getDateString } from '../../../../util';
-const { useSelect } = Data;
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 export default function AnalyticsStats( props ) {
 	const {
@@ -60,6 +60,9 @@ export default function AnalyticsStats( props ) {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
 
 	const propertyCreateTime = useSelect( ( select ) => {
 		if ( isViewOnly ) {
@@ -74,6 +77,8 @@ export default function AnalyticsStats( props ) {
 	if ( propertyCreateTime ) {
 		dateMarkers = [
 			{
+				// Valid use of `new Date()` with an argument.
+				// eslint-disable-next-line sitekit/no-direct-date
 				date: getDateString( new Date( propertyCreateTime ) ),
 				text: __(
 					'Google Analytics property created',
@@ -91,6 +96,7 @@ export default function AnalyticsStats( props ) {
 		data,
 		selectedStats,
 		dateRangeLength,
+		referenceDate,
 		dataLabels,
 		tooltipDataFormats,
 		chartDataFormats

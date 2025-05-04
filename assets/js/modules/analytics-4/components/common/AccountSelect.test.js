@@ -28,57 +28,56 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
 
-const setupRegistry = ( registry ) => {
-	provideSiteInfo( registry, {
-		referenceSiteURL: 'http://googlekitlocal.10uplabs.com',
+describe( 'AccountSelect', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideSiteInfo( registry, {
+			referenceSiteURL: 'http://googlekitlocal.10uplabs.com',
+		} );
+
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 	} );
 
-	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
-
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetAccountSummaries( fixtures.accountSummaries );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getAccountSummaries', [] );
-};
-
-const setupLoadingRegistry = ( registry ) => {
-	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
-};
-
-const setupEmptyRegistry = ( registry ) => {
-	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
-
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( [] );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getAccountSummaries', [] );
-};
-
-describe( 'AccountSelect', () => {
 	it( 'should render an option for each analytics account', () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
+
+		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new account".
 		expect( listItems ).toHaveLength(
-			fixtures.accountSummaries.length + 1
+			fixtures.accountSummaries.accountSummaries.length + 1
 		);
 	} );
 
 	it( 'should have a "Set up a new account" item at the end of the list', () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
+
+		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems[ listItems.length - 1 ].textContent ).toMatch(
@@ -98,7 +97,7 @@ describe( 'AccountSelect', () => {
 			)
 		);
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
-			setupRegistry: setupLoadingRegistry,
+			registry,
 		} );
 
 		await waitFor( () => {
@@ -110,21 +109,34 @@ describe( 'AccountSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only setup when no accounts exist', () => {
-		const { getAllByRole } = render( <AccountSelect />, {
-			setupRegistry: setupEmptyRegistry,
+	it( 'should render a select box with only setup when no accounts exist', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: [],
+			nextPageToken: null,
 		} );
+
+		const { getAllByRole, waitForRegistry } = render( <AccountSelect />, {
+			registry,
+		} );
+
+		await waitForRegistry();
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ listItems.length - 1 ].textContent ).toMatch(
-			/set up a new account/i
-		);
+		expect( listItems[ 0 ].textContent ).toMatch( /set up a new account/i );
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', () => {
-		const { getByText, container, registry } = render( <AccountSelect />, {
-			setupRegistry,
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( fixtures.accountSummaries );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
+
+		const { getByText, container } = render( <AccountSelect />, {
+			registry,
 		} );
 		const originalAccountID = registry
 			.select( MODULES_ANALYTICS_4 )

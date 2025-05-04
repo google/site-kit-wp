@@ -22,12 +22,13 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const { accountSummaries, webDataStreamsBatch, googleTagSettings } = fixtures;
-const accounts = accountSummaries;
+const accounts = accountSummaries.accountSummaries;
 const properties = accounts[ 1 ].propertySummaries;
 const accountID = accounts[ 1 ]._id;
 const propertyID = properties[ 0 ]._id;
@@ -36,10 +37,10 @@ const measurementID =
 	// eslint-disable-next-line sitekit/acronym-case
 	webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId;
 
-function Template( {} ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics-4">
 				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 					<Grid>
 						<Row>
@@ -55,12 +56,44 @@ function Template( {} ) {
 }
 
 export const Default = Template.bind( null );
-Default.storyName = 'SettingsView';
+Default.storyName = 'Default';
+Default.scenario = {};
+Default.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+
+export const IceEnabled = Template.bind( null );
+IceEnabled.storyName = 'SettingsView ICE Enabled';
+IceEnabled.args = {
+	enhancedConversionTracking: true,
+};
+IceEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+
+export const IceResolving = Template.bind( null );
+IceResolving.storyName = 'SettingsView ICE Resolving';
+IceResolving.args = {
+	enhancedConversionTracking: 'resolving',
+};
+IceResolving.parameters = {
+	features: [ 'firstPartyMode' ],
+};
+
+export const FPMEnabled = Template.bind( null );
+FPMEnabled.storyName = 'SettingsView First-party mode Enabled';
+FPMEnabled.args = {
+	enhancedConversionTracking: false,
+	firstPartyMode: true,
+};
+FPMEnabled.parameters = {
+	features: [ 'firstPartyMode' ],
+};
 
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -86,6 +119,22 @@ export default {
 						webDataStreamID,
 						true
 					);
+
+				if ( args.enhancedConversionTracking !== 'resolving' ) {
+					registry
+						.dispatch( CORE_SITE )
+						.setConversionTrackingEnabled(
+							args.enhancedConversionTracking || false
+						);
+				}
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetFirstPartyModeSettings( {
+						isEnabled: args.firstPartyMode || false,
+						isFPMHealthy: args.firstPartyMode || false,
+						isScriptAccessEnabled: args.firstPartyMode || false,
+					} );
 			};
 
 			return (

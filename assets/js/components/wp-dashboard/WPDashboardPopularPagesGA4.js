@@ -21,6 +21,7 @@
  */
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -30,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
@@ -42,7 +43,6 @@ import TableOverflowContainer from '../TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,
@@ -76,12 +76,15 @@ export default function WPDashboardPopularPagesGA4( {
 		limit: 5,
 	};
 
-	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
+	const report = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportArgs ),
+		[ reportArgs ]
 	);
 
-	const titles = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPageTitles( report, reportArgs )
+	const titles = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getPageTitles( report, reportArgs ),
+		[ report, reportArgs ]
 	);
 
 	const error = useSelect( ( select ) =>
@@ -146,7 +149,12 @@ export default function WPDashboardPopularPagesGA4( {
 
 	return (
 		/* TODO: decouple the styles from search-console class */
-		<div className="googlesitekit-search-console-widget">
+		<div
+			className={ classnames( 'googlesitekit-search-console-widget', {
+				'googlesitekit-search-console-widget--empty-data':
+					isGatheringData || ! rows?.length,
+			} ) }
+		>
 			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
 			</h3>

@@ -24,17 +24,16 @@ import { delay } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import API from 'googlesitekit-api';
+import { withSelect } from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_SETUP,
@@ -43,12 +42,10 @@ import {
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Layout from '../layout/Layout';
-import { trackEvent } from '../../util';
 import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
-const { withSelect } = Data;
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -86,7 +83,7 @@ class SetupUsingGCP extends Component {
 	}
 
 	async resetAndRestart() {
-		await API.set( 'core', 'site', 'reset' );
+		await set( 'core', 'site', 'reset' );
 		await clearCache();
 
 		this.setState( {
@@ -190,22 +187,8 @@ class SetupUsingGCP extends Component {
 		return '';
 	}
 
-	async onButtonClick() {
-		const { isSiteKitConnected, connectURL } = this.state;
-
-		await trackEvent(
-			VIEW_CONTEXT_SPLASH,
-			'start_user_setup',
-			'custom-oauth'
-		);
-
-		if ( ! isSiteKitConnected ) {
-			await trackEvent(
-				VIEW_CONTEXT_SPLASH,
-				'start_site_setup',
-				'custom-oauth'
-			);
-		}
+	onButtonClick() {
+		const { connectURL } = this.state;
 
 		document.location = connectURL;
 	}
@@ -358,8 +341,9 @@ class SetupUsingGCP extends Component {
 																		.onButtonClick
 																}
 															>
-																{ __(
+																{ _x(
 																	'Sign in with Google',
+																	'Service name',
 																	'google-site-kit'
 																) }
 															</Button>

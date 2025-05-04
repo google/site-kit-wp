@@ -20,27 +20,133 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ADS } from '../../datastore/constants';
+import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
+import { useFeature } from '../../../../hooks/useFeature';
+import DisplaySetting from '../../../../components/DisplaySetting';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Link from '../../../../components/Link';
+import SettingsGroup from '../../../../components/settings/SettingsGroup';
+import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
 
 export default function SettingsForm() {
-	return (
-		<div className="googlesitekit-ads-settings-fields">
-			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
+	const paxEnabled = useFeature( 'adsPax' );
+	const fpmEnabled = useFeature( 'firstPartyMode' );
 
-			<div className="googlesitekit-setup-module__inputs">
-				<ConversionIDTextField
-					helperText={ __(
-						'The Conversion Tracking ID will help track the performance of ad campaigns for the corresponding account',
+	const conversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getConversionID()
+	);
+
+	const paxConversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getPaxConversionID()
+	);
+
+	const extCustomerID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getExtCustomerID()
+	);
+
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversion-tracking'
+		)
+	);
+
+	const conversionIDValue =
+		paxEnabled && paxConversionID ? paxConversionID : conversionID;
+
+	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
+
+	return (
+		<Fragment>
+			<div className="googlesitekit-ads-settings-fields">
+				<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
+
+				{ ! isPaxView && (
+					<div className="googlesitekit-setup-module__inputs">
+						<ConversionIDTextField
+							helperText={ __(
+								'The Conversion ID will help track the performance of ad campaigns for the corresponding account',
+								'google-site-kit'
+							) }
+						/>
+					</div>
+				) }
+
+				{ isPaxView && (
+					<div>
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Conversion ID', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ conversionIDValue === '' &&
+									__( 'None', 'google-site-kit' ) }
+								{ conversionIDValue ||
+									( typeof conversionIDValue ===
+										'undefined' && (
+										<DisplaySetting
+											value={ conversionIDValue }
+										/>
+									) ) }
+							</p>
+						</div>
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Customer ID', 'google-site-kit' ) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ extCustomerID === '' &&
+									__( 'None', 'google-site-kit' ) }
+								{ extCustomerID ||
+									( typeof extCustomerID === 'undefined' && (
+										<DisplaySetting
+											value={ extCustomerID }
+										/>
+									) ) }
+							</p>
+						</div>
+					</div>
+				) }
+
+				<SettingsGroup
+					title={ __(
+						'Improve your measurement',
 						'google-site-kit'
 					) }
-				/>
+				>
+					<ConversionTrackingToggle>
+						{ createInterpolateElement(
+							__(
+								'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<Link
+										href={
+											conversionTrackingDocumentationURL
+										}
+										external
+										aria-label={ __(
+											'Learn more about conversion tracking',
+											'google-site-kit'
+										) }
+									/>
+								),
+							}
+						) }
+					</ConversionTrackingToggle>
+					{ fpmEnabled && <FirstPartyModeToggle /> }
+				</SettingsGroup>
 			</div>
-		</div>
+		</Fragment>
 	);
 }

@@ -32,7 +32,8 @@ use WP_REST_Request;
  */
 final class Admin_Bar {
 
-	use Requires_Javascript_Trait, Method_Proxy_Trait;
+	use Requires_Javascript_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Plugin context.
@@ -111,14 +112,14 @@ final class Admin_Bar {
 		add_filter( 'amp_dev_mode_element_xpaths', array( $this, 'add_amp_dev_mode' ) );
 		add_filter(
 			'googlesitekit_rest_routes',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
 
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
-			function( $routes ) {
+			function ( $routes ) {
 				return array_merge(
 					$routes,
 					array(
@@ -354,11 +355,11 @@ final class Admin_Bar {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_authenticate = function() {
+		$can_authenticate = function () {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
-		$settings_callback = function() {
+		$settings_callback = function () {
 			return array(
 				'enabled' => $this->admin_bar_enabled->get(),
 			);
@@ -375,7 +376,7 @@ final class Admin_Bar {
 					),
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) use ( $settings_callback ) {
+						'callback'            => function ( WP_REST_Request $request ) use ( $settings_callback ) {
 							$data    = $request->get_param( 'data' );
 
 							if ( isset( $data['enabled'] ) ) {
@@ -402,5 +403,4 @@ final class Admin_Bar {
 			),
 		);
 	}
-
 }

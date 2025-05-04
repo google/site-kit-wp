@@ -25,25 +25,20 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
-const { useSelect } = Data;
+import { getUserInputQuestions } from './util/constants';
 
-export default function UserInputQuestionInfo( {
-	slug,
-	title,
-	description,
-	questionNumber,
-} ) {
+export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 	const hasMultipleUser = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
@@ -54,24 +49,17 @@ export default function UserInputQuestionInfo( {
 		select( CORE_USER ).getUserInputSettingAuthor( slug )
 	);
 
+	const questions = getUserInputQuestions();
+	const description = questions[ questionNumber - 1 ]?.description || '';
+
 	return (
 		<Fragment>
 			<Cell
 				className="googlesitekit-user-input__question-instructions"
-				lgSize={ 5 }
+				lgSize={ 6 }
 				mdSize={ 8 }
 				smSize={ 4 }
 			>
-				<p className="googlesitekit-user-input__question-number">
-					{ sprintf(
-						/* translators: %s: the number of the question */
-						__( '%s out of 3', 'google-site-kit' ),
-						questionNumber
-					) }
-				</p>
-
-				<h1>{ title }</h1>
-
 				{ description && (
 					<p className="googlesitekit-user-input__question-instructions--description">
 						{ description }
@@ -111,7 +99,5 @@ export default function UserInputQuestionInfo( {
 
 UserInputQuestionInfo.propTypes = {
 	slug: PropTypes.string.isRequired,
-	title: PropTypes.string.isRequired,
-	description: PropTypes.string,
 	questionNumber: PropTypes.number,
 };

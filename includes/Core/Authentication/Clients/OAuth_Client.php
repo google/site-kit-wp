@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
 use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
@@ -40,6 +41,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 	const OPTION_ADDITIONAL_AUTH_SCOPES = 'googlesitekit_additional_auth_scopes';
 	const OPTION_REDIRECT_URL           = 'googlesitekit_redirect_url';
+	const OPTION_ERROR_REDIRECT_URL     = 'googlesitekit_error_redirect_url';
 	const CRON_REFRESH_PROFILE_DATA     = 'googlesitekit_cron_refresh_profile_data';
 
 	/**
@@ -67,6 +69,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	private $active_consumers;
 
 	/**
+	 * Transients instance.
+	 *
+	 * @since 1.150.0
+	 * @var Transients
+	 */
+	private $transients;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -78,6 +88,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
 	 * @param Profile      $profile      Optional. Profile instance. Default is a new instance.
 	 * @param Token        $token        Optional. Token instance. Default is a new instance.
+	 * @param Transients   $transients   Optional. Transients instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -86,7 +97,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 		Credentials $credentials = null,
 		Google_Proxy $google_proxy = null,
 		Profile $profile = null,
-		Token $token = null
+		Token $token = null,
+		Transients $transients = null
 	) {
 		parent::__construct(
 			$context,
@@ -101,6 +113,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$this->owner_id         = new Owner_ID( $this->options );
 		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
 		$this->active_consumers = new Active_Consumers( $this->user_options );
+		$this->transients       = $transients ?: new Transients( $this->context );
 	}
 
 	/**
@@ -217,7 +230,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$granted_scopes     = $this->get_granted_scopes();
 		$unsatisfied_scopes = array_filter(
 			$scopes,
-			function( $scope ) use ( $granted_scopes ) {
+			function ( $scope ) use ( $granted_scopes ) {
 				return ! Scopes::is_satisfied_by( $scope, $granted_scopes );
 			}
 		);
@@ -347,10 +360,11 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.34.1 Updated handling of $additional_scopes to restore rewritten scope.
 	 *
 	 * @param string   $redirect_url      Redirect URL after authentication.
+	 * @param string   $error_redirect_url Redirect URL after authentication error.
 	 * @param string[] $additional_scopes List of additional scopes to request.
 	 * @return string Authentication URL.
 	 */
-	public function get_authentication_url( $redirect_url = '', $additional_scopes = array() ) {
+	public function get_authentication_url( $redirect_url = '', $error_redirect_url = '', $additional_scopes = array() ) {
 		if ( empty( $redirect_url ) ) {
 			$redirect_url = $this->context->admin_url( 'splash' );
 		}
@@ -380,6 +394,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$redirect_url = remove_query_arg( 'error', $redirect_url );
 
 		$this->user_options->set( self::OPTION_REDIRECT_URL, $redirect_url );
+		$this->user_options->set( self::OPTION_ERROR_REDIRECT_URL, $error_redirect_url );
 
 		// Ensure the latest required scopes are requested.
 		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
@@ -399,8 +414,28 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function authorize_user() {
-		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) );
-		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) );
+		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) ?? '' );
+		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) ?? '' );
+
+		// If we have a code, check if there's a stored redirect URL to prevent duplicate setups.
+		// The OAuth2 spec requires that an authorization code can only be used once.
+		// If `fetchAccessTokenWithAuthCode()` is called more than once with the same code, Google will return an error.
+		// This may happen when users click the final setup button multiple times or
+		// if there are concurrent requests with the same authorization code.
+		// By storing the successful redirect URL in transients and reusing it for duplicate
+		// requests with the same code, we ensure a smooth setup experience even when
+		// the same code is encountered multiple times.
+		if ( ! empty( $code ) ) {
+			$code_hash       = md5( $code );
+			$stored_redirect = $this->transients->get( $code_hash );
+
+			// If we have a stored redirect URL and valid credentials, redirect to prevent duplicate setup.
+			if ( ! empty( $stored_redirect ) && $this->credentials->has() ) {
+				wp_safe_redirect( $stored_redirect );
+				exit();
+			}
+		}
+
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
@@ -457,7 +492,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		}
 		$scopes = array_filter(
 			$scopes,
-			function( $scope ) {
+			function ( $scope ) {
 				if ( ! is_string( $scope ) ) {
 					return false;
 				}
@@ -510,9 +545,19 @@ final class OAuth_Client extends OAuth_Client_Base {
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 			}
 			$this->user_options->delete( self::OPTION_REDIRECT_URL );
+			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
 		} else {
 			// No redirect_url is set, use default page.
 			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+		}
+
+		// Store the redirect URL in transients using the authorization code hash as the key.
+		// This prevents duplicate setup attempts if the user clicks the setup CTA button multiple times,
+		// as subsequent requests with the same code will be redirected to the stored URL.
+		// Must be done before the redirect to ensure the URL is available for any duplicate requests.
+		if ( ! empty( $code ) && ! empty( $redirect_url ) ) {
+			$code_hash = md5( $code );
+			$this->transients->set( $code_hash, $redirect_url, 5 * MINUTE_IN_SECONDS );
 		}
 
 		wp_safe_redirect( $redirect_url );
@@ -563,24 +608,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 		} finally {
 			$restore_defer();
 		}
-	}
-
-	/**
-	 * Determines whether the authentication proxy is used.
-	 *
-	 * In order to streamline the setup and authentication flow, the plugin uses a proxy mechanism based on an external
-	 * service. This can be overridden by providing actual GCP credentials with the {@see 'googlesitekit_oauth_secret'}
-	 * filter.
-	 *
-	 * @since 1.0.0
-	 * @deprecated 1.9.0
-	 *
-	 * @return bool True if proxy authentication is used, false otherwise.
-	 */
-	public function using_proxy() {
-		_deprecated_function( __METHOD__, '1.9.0', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-		return $this->credentials->using_proxy();
 	}
 
 	/**
@@ -639,6 +666,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		parent::delete_token();
 
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
+		$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
 	}
 
@@ -649,6 +677,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.77.0
 	 */
 	private function authorize_user_redirect_url() {
+		$error_redirect_url = $this->user_options->get( self::OPTION_ERROR_REDIRECT_URL );
+
+		if ( $error_redirect_url ) {
+			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
+			return $error_redirect_url;
+		}
+
 		return current_user_can( Permissions::VIEW_DASHBOARD )
 			? $this->context->admin_url( 'dashboard' )
 			: $this->context->admin_url( 'splash' );

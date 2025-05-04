@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
 import audiences from './audiences';
@@ -27,31 +27,39 @@ import audienceSettings from './audience-settings';
 import baseModuleStore from './base';
 import containers from './containers';
 import conversionEvents from './conversion-events';
+import conversionReporting from './conversion-reporting';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
 import enhancedMeasurement from './enhanced-measurement';
 import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
+import pivotReport from './pivot-report';
 import service from './service';
+import settings from './settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
+import moduleData from './module-data';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 
-const store = Data.combineStores(
+const store = combineStores(
 	accounts,
 	audiences,
 	audienceSettings,
 	baseModuleStore,
+	moduleData,
 	containers,
 	conversionEvents,
+	conversionReporting,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	customDimensions,
 	customDimensionsGatheringData,
 	enhancedMeasurement,
 	partialData,
+	pivotReport,
 	properties,
 	report,
+	settings,
 	service,
 	tags,
 	webdatastreams

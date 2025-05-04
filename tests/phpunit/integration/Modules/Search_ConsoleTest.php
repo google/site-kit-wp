@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -22,7 +23,13 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Modules
@@ -184,6 +191,55 @@ class Search_ConsoleTest extends TestCase {
 		);
 	}
 
+	public function test_get_data_matched_sites() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$oauth_client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$oauth_client->set_granted_scopes(
+			$oauth_client->get_required_scopes()
+		);
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Prepare 2 matching sites to be returned to ensure sorting works as expected.
+		// The domain can have www or not, or have a different scheme by default and still be considered a match.
+		$site_root = new WmxSite();
+		$site_root->setPermissionLevel( 'siteOwner' );
+		$site_root->setSiteUrl( home_url() );
+
+		$site_www = new WmxSite();
+		$site_www->setPermissionLevel( 'siteOwner' );
+		$site_www->setSiteUrl( str_replace( '//', '//www.', home_url() ) );
+		// Root should be returned first as they are ordered by URL.
+		$sites = array( $site_www, $site_root );
+
+		FakeHttp::fake_google_http_handler(
+			$search_console->get_client(),
+			function ( Request $request ) use ( $sites ) {
+				if ( $request->getUri()->getHost() !== 'searchconsole.googleapis.com' ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				$sites_response = new SitesListResponse();
+				$sites_response->setSiteEntry( $sites );
+
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode( $sites_response )
+					)
+				);
+			}
+		);
+
+		$data = $search_console->get_data( 'matched-sites' );
+
+		$this->assertNotWPError( $data );
+		$this->assertCount( 2, $data );
+		$this->assertEquals( $site_root->getSiteUrl(), $data[0]['siteURL'] );
+		$this->assertEquals( $site_www->getSiteUrl(), $data[1]['siteURL'] );
+	}
+
 	public function test_get_module_scopes() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -247,5 +303,4 @@ class Search_ConsoleTest extends TestCase {
 	protected function get_module_with_data_available_state() {
 		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
-
 }

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	MODULES_TAGMANAGER,
 	ACCOUNT_CREATE,
@@ -45,7 +45,6 @@ import {
 } from './__factories__';
 import {
 	createTestRegistry,
-	unsubscribeFromAll,
 	muteFetch,
 	provideModules,
 } from '../../../../../tests/js/utils';
@@ -96,7 +95,7 @@ describe( 'modules/tagmanager settings', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -111,12 +110,8 @@ describe( 'modules/tagmanager settings', () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	function setPrimaryAMP() {
@@ -485,6 +480,32 @@ describe( 'modules/tagmanager settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'areSettingsEditDependenciesLoaded', () => {
+			it( 'should return false if getAccounts selector has not resolved', () => {
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.startResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( false );
+			} );
+
+			it( 'should return true if getAccounts selector has resolved', () => {
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.finishResolution( 'getAccounts', [] );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.areSettingsEditDependenciesLoaded()
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'returns true while submitting changes', async () => {
 				registry

@@ -24,11 +24,13 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { set } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createRegistryControl,
+} from 'googlesitekit-data';
 import { createFetchStore } from '../data/create-fetch-store';
-
-const { createRegistryControl } = Data;
 
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
 const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
@@ -77,8 +79,7 @@ export const createGatheringDataStore = (
 
 	const fetchSaveDataAvailableStateStore = createFetchStore( {
 		baseName: 'saveDataAvailableState',
-		controlCallback: () =>
-			API.set( 'modules', moduleSlug, 'data-available' ),
+		controlCallback: () => set( 'modules', moduleSlug, 'data-available' ),
 	} );
 
 	const initialState = {
@@ -186,7 +187,7 @@ export const createGatheringDataStore = (
 
 	const resolvers = {
 		*isGatheringData() {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
 			// If the gatheringData flag is already set, return early.
 			if (
@@ -261,7 +262,7 @@ export const createGatheringDataStore = (
 		},
 	};
 
-	return Data.combineStores( fetchSaveDataAvailableStateStore, {
+	return combineStores( fetchSaveDataAvailableStateStore, {
 		actions,
 		controls,
 		initialState,

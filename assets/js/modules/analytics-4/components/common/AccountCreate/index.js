@@ -25,8 +25,8 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { invalidateCache } from 'googlesitekit-api';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	FORM_ACCOUNT_CREATE,
@@ -50,8 +50,7 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
-
-const { useDispatch, useSelect } = Data;
+import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -100,6 +99,8 @@ export default function AccountCreate() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
+		useDispatch( CORE_SITE );
 
 	const hasRequiredScope = hasEditScope;
 
@@ -107,7 +108,7 @@ export default function AccountCreate() {
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await API.invalidateCache( 'modules', 'analytics-4' );
+				await invalidateCache( 'modules', 'analytics-4' );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
@@ -173,16 +174,19 @@ export default function AccountCreate() {
 
 		const { error } = await createAccount();
 		if ( ! error ) {
+			setConversionTrackingEnabled( true );
+			await saveConversionTrackingSettings();
 			setIsNavigating( true );
 		}
 	}, [
-		createAccount,
-		setIsNavigating,
 		hasEditScope,
 		hasGTMScope,
-		setPermissionScopeError,
 		setValues,
 		viewContext,
+		createAccount,
+		setPermissionScopeError,
+		setConversionTrackingEnabled,
+		saveConversionTrackingSettings,
 	] );
 
 	// If the user ends up back on this component with the required scope granted,
@@ -246,7 +250,18 @@ export default function AccountCreate() {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<EnhancedMeasurementSwitch formName={ FORM_ACCOUNT_CREATE } />
+				<EnhancedMeasurementSwitch
+					formName={ FORM_ACCOUNT_CREATE }
+					className="googlesitekit-margin-bottom-0"
+				/>
+
+				<SetupEnhancedConversionTrackingNotice
+					className="googlesitekit-margin-top-0"
+					message={ __(
+						'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+						'google-site-kit'
+					) }
+				/>
 			</div>
 
 			<p>

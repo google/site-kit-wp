@@ -29,9 +29,15 @@ import {
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 
 function Template() {
-	return <AdBlockingRecoveryApp />;
+	return (
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
+			<AdBlockingRecoveryApp />
+		</ViewContextProvider>
+	);
 }
 
 export const StepOne = Template.bind( {} );
@@ -79,7 +85,24 @@ StepTwoAfterCTAClick.args = {
 };
 StepTwoAfterCTAClick.scenario = {
 	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
-	delay: 250,
+};
+
+export const StepTwoSetupConfirmed = Template.bind( {} );
+StepTwoSetupConfirmed.storyName = 'Step 2 - Setup Confirmed';
+StepTwoSetupConfirmed.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setSettings( {
+			adBlockingRecoverySetupStatus:
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+		} );
+
+		registry.dispatch( CORE_UI ).setValues( {
+			[ AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED ]: true,
+		} );
+	},
+};
+StepTwoSetupConfirmed.scenario = {
+	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Confirmed',
 };
 
 export default {

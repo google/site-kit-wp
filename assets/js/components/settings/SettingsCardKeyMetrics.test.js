@@ -24,10 +24,13 @@ import { render, waitFor } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideKeyMetrics,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -35,12 +38,15 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
 
-	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {
-		mockSurveyEndpoints();
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
+		provideModules( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		mockSurveyEndpoints();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
 		muteFetch(
 			new RegExp(
@@ -50,7 +56,9 @@ describe( 'SettingsCardKeyMetrics', () => {
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
 		);
+	} );
 
+	it( 'should trigger a survey when the Key Metrics Setup CTA is in view', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -60,11 +68,79 @@ describe( 'SettingsCardKeyMetrics', () => {
 		} );
 
 		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: {
-					data: { triggerID: 'view_kmw_setup_cta' },
-				},
-			} )
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: 'view_kmw_setup_cta' },
+					},
+				} )
+			)
 		);
+	} );
+
+	it( 'should show ConversionReportingSettingsSubtleNotification when Key metrics are not setup', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show ConversionReportingSettingsSubtleNotification when Key metrics are setup manually', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideKeyMetrics( registry );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).toBeInTheDocument();
+
+		// Default content should be replaced with ConversionReportingSettingsSubtleNotification,
+		// so it should not be shown at the same time as ACR notification.
+		expect(
+			container.querySelector( '.googlesitekit-user-input__notification' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not show ConversionReportingSettingsSubtleNotification when Key metrics are setup using tailored metrics', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( true );
+
+		const { container, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+		).not.toBeInTheDocument();
 	} );
 } );

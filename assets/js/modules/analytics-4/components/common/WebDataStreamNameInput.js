@@ -32,7 +32,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
@@ -46,8 +46,6 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '../../utils/validation';
-
-const { useSelect, useDispatch } = Data;
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>

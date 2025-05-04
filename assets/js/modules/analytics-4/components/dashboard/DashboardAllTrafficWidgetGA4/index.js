@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 19 ] */
+
 /**
  * WordPress dependencies
  */
@@ -26,7 +28,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -48,8 +50,6 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
-import { getSampleReportArgs } from '../../../../analytics-4/utils/report-args';
-const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -116,7 +116,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 				desc: true,
 			},
 		],
-		limit: 6,
 	};
 
 	const graphArgs = {
@@ -160,12 +159,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			pieArgs,
 		] )
 	);
-	const pieChartReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
-		);
-	} );
+	const pieChartReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, pieArgs ]
+	);
 
 	const userCountGraphLoaded = useSelect(
 		( select ) =>
@@ -179,12 +181,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			graphArgs,
 		] )
 	);
-	const userCountGraphReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
-		);
-	} );
+	const userCountGraphReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, graphArgs ]
+	);
 
 	const totalUsersLoaded = useSelect(
 		( select ) =>
@@ -198,12 +203,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			totalsArgs,
 		] )
 	);
-	const totalUsersReport = useInViewSelect( ( select ) => {
-		return (
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
-		);
-	} );
+	const totalUsersReport = useInViewSelect(
+		( select ) => {
+			return (
+				canViewSharedAnalytics4 &&
+				select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
+			);
+		},
+		[ canViewSharedAnalytics4, totalsArgs ]
+	);
 
 	const reportArgs = {
 		dates: {
@@ -302,12 +310,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	// The User Dimensions Pie Chart uses the sample report to check
 	// for zero data, so we need to retry the sample report to make
 	// sure the pie chart reloads correctly.
-	const sampleReportError = useSelect( ( select ) => {
-		const args = getSampleReportArgs( select );
-		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			args,
-		] );
-	} );
+	const sampleReportError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			select( MODULES_ANALYTICS_4 ).getSampleReportArgs(),
+		] )
+	);
 
 	const retryableErrors = [
 		pieChartError,

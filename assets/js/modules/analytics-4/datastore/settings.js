@@ -20,11 +20,13 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
+import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidPropertyID,
@@ -39,7 +41,6 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -51,6 +52,8 @@ import {
 } from './constants';
 import { isValidConversionID } from '../../ads/utils/validation';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -64,7 +67,19 @@ export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 export const INVARIANT_INVALID_ADS_CONVERSION_ID =
 	'a valid ads adsConversionID is required to submit changes';
 
-export async function submitChanges( { select, dispatch } ) {
+const store = {
+	selectors: {
+		areSettingsEditDependenciesLoaded: createRegistrySelector(
+			( select ) => () =>
+				select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAccountSummaries'
+				)
+		),
+	},
+};
+export default store;
+
+export async function submitChanges( { dispatch, select, resolveSelect } ) {
 	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
 		const accountID = select( MODULES_ANALYTICS_4 ).getAccountID();
@@ -96,11 +111,7 @@ export async function submitChanges( { select, dispatch } ) {
 		let webDataStreamAlreadyExists = false;
 
 		if ( isValidPropertyID( propertyID ) ) {
-			await dispatch( MODULES_ANALYTICS_4 ).waitForWebDataStreams(
-				propertyID
-			);
-
-			webDataStreamAlreadyExists = select(
+			webDataStreamAlreadyExists = await resolveSelect(
 				MODULES_ANALYTICS_4
 			).doesWebDataStreamExist( propertyID, webDataStreamName );
 		}
@@ -157,10 +168,12 @@ export async function submitChanges( { select, dispatch } ) {
 	const { error } = await saveSettings( select, dispatch );
 
 	if ( error ) {
-		return error;
+		return { error };
 	}
 
-	await API.invalidateCache( 'modules', 'analytics-4' );
+	dispatch( CORE_USER ).resetUserAudienceSettings();
+
+	await invalidateCache( 'modules', 'analytics-4' );
 
 	return {};
 }
@@ -185,6 +198,34 @@ async function saveSettings( select, dispatch ) {
 
 		if ( error ) {
 			return { error };
+		}
+	}
+
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	if ( haveFirstPartyModeSettingsChanged ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveFirstPartyModeSettings();
+
+		if ( error ) {
+			return { error };
+		}
+
+		if (
+			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				FPM_SETUP_CTA_BANNER_NOTIFICATION
+			)
+		) {
+			const { error: dismissError } =
+				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					FPM_SETUP_CTA_BANNER_NOTIFICATION
+				) ) || {};
+
+			if ( dismissError ) {
+				return { error: dismissError };
+			}
 		}
 	}
 
@@ -224,8 +265,8 @@ async function updateEnhancedMeasurementSettings( {
 		);
 
 		if ( shouldDismissActivationBanner ) {
-			await dispatch( CORE_USER ).dismissItem(
-				ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+				'enhanced-measurement-notification'
 			);
 		}
 	}
@@ -236,6 +277,8 @@ async function updateEnhancedMeasurementSettings( {
 export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
+		dispatch( CORE_SITE ).resetConversionTrackingSettings();
+		dispatch( CORE_SITE ).resetFirstPartyModeSettings();
 	}
 
 	dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
@@ -297,4 +340,29 @@ export function validateCanSubmitChanges( select ) {
 			INVARIANT_INVALID_ADS_CONVERSION_ID
 		);
 	}
+}
+
+export function validateHaveSettingsChanged( select, state, keys ) {
+	const { settings, savedSettings } = state;
+	const haveConversionTrackingSettingsChanged =
+		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
+
+	const haveFirstPartyModeSettingsChanged =
+		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+
+	if ( keys ) {
+		invariant(
+			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+				haveConversionTrackingSettingsChanged ||
+				haveFirstPartyModeSettingsChanged,
+			INVARIANT_SETTINGS_NOT_CHANGED
+		);
+	}
+
+	invariant(
+		! isEqual( settings, savedSettings ) ||
+			haveConversionTrackingSettingsChanged ||
+			haveFirstPartyModeSettingsChanged,
+		INVARIANT_SETTINGS_NOT_CHANGED
+	);
 }

@@ -34,8 +34,13 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	createRegistrySelector,
+	createRegistryControl,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -46,8 +51,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
-
-const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -77,7 +80,10 @@ const moduleDefaults = {
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
+	onCompleteSetup: undefined,
 	checkRequirements: () => true,
+	DashboardMainEffectComponent: null,
+	DashboardEntityEffectComponent: null,
 };
 
 const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
@@ -93,7 +99,9 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 
 			return module;
 		} )
-		.sort( ( a, b ) => a.order - b.order )
+		.sort(
+			( a, b ) => a.order - b.order || a.name?.localeCompare( b.name )
+		)
 		.reduce( ( acc, module ) => {
 			return { ...acc, [ module.slug ]: module };
 		}, {} );
@@ -125,7 +133,7 @@ const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
-		return API.get( 'core', 'modules', 'list', null, {
+		return get( 'core', 'modules', 'list', null, {
 			useCache: false,
 		} );
 	},
@@ -143,7 +151,7 @@ const fetchGetModulesStore = createFetchStore( {
 const fetchSetModuleActivationStore = createFetchStore( {
 	baseName: 'setModuleActivation',
 	controlCallback: ( { slug, active } ) => {
-		return API.set( 'core', 'modules', 'activation', {
+		return set( 'core', 'modules', 'activation', {
 			slug,
 			active,
 		} );
@@ -171,7 +179,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 const fetchCheckModuleAccessStore = createFetchStore( {
 	baseName: 'checkModuleAccess',
 	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'check-access', { slug } );
+		return set( 'core', 'modules', 'check-access', { slug } );
 	},
 	reducerCallback: ( state, { access }, { slug } ) => {
 		return {
@@ -193,7 +201,7 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 const fetchRecoverModulesStore = createFetchStore( {
 	baseName: 'recoverModules',
 	controlCallback: ( { slugs } ) => {
-		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
+		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
 	reducerCallback: ( state, recoveredModules ) => {
 		return {
@@ -337,7 +345,11 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
+	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
+	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
+	 * @param {WPComponent}    [settings.DashboardEntityEffectComponent]   Optional. React component to render the effects on entity dashboard. Default none.
 	 */
 	registerModule: createValidatedAction(
 		( slug ) => {
@@ -355,9 +367,13 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
 				SettingsSetupIncompleteComponent,
+				SetupComponent,
+				overrideSetupSuccessNotification = false,
+				onCompleteSetup,
 				checkRequirements,
+				DashboardMainEffectComponent,
+				DashboardEntityEffectComponent,
 			} = {}
 		) {
 			const settings = {
@@ -370,9 +386,13 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
 				SettingsSetupIncompleteComponent,
+				SetupComponent,
+				overrideSetupSuccessNotification,
+				onCompleteSetup,
 				checkRequirements,
+				DashboardMainEffectComponent,
+				DashboardEntityEffectComponent,
 			};
 
 			yield {
@@ -383,7 +403,7 @@ const baseActions = {
 				type: REGISTER_MODULE,
 			};
 
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield commonActions.getRegistry();
 
 			// As we can specify a custom checkRequirements function here, we're
 			// invalidating the resolvers for activation checks.
@@ -470,7 +490,7 @@ const baseActions = {
 			invariant( Array.isArray( slugs ), 'slugs must be an array' );
 		},
 		function* ( slugs ) {
-			const { dispatch, select } = yield Data.commonActions.getRegistry();
+			const { dispatch, select } = yield commonActions.getRegistry();
 			const { response } =
 				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
 					slugs
@@ -486,7 +506,7 @@ const baseActions = {
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
 				// Reload the module's settings from the server.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch( storeName ).fetchGetSettings()
 				);
 			}
@@ -503,7 +523,7 @@ const baseActions = {
 				);
 
 				// Refresh user capabilities from the server.
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					dispatch( CORE_USER ).refreshCapabilities()
 				);
 			}
@@ -560,13 +580,11 @@ export const baseControls = {
 			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select, __experimentalResolveSelect } ) =>
+		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
 				const { slug } = payload;
 				// Ensure the module is loaded before selecting the store name.
-				await __experimentalResolveSelect( CORE_MODULES ).getModule(
-					slug
-				);
+				await resolveSelect( CORE_MODULES ).getModule( slug );
 
 				const storeName =
 					select( CORE_MODULES ).getModuleStoreName( slug );
@@ -577,9 +595,7 @@ export const baseControls = {
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
-					return await __experimentalResolveSelect(
-						storeName
-					).getAdminReauthURL();
+					return await resolveSelect( storeName ).getAdminReauthURL();
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -662,17 +678,14 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { __experimentalResolveSelect } =
-		yield Data.commonActions.getRegistry();
+	const { resolveSelect } = yield commonActions.getRegistry();
 
-	yield Data.commonActions.await(
-		__experimentalResolveSelect( CORE_MODULES ).getModules()
-	);
+	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 }
 
 const baseResolvers = {
 	*getModules() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingModules = registry.select( CORE_MODULES ).getModules();
 
@@ -682,10 +695,10 @@ const baseResolvers = {
 	},
 
 	*canActivateModule( slug ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const { select, __experimentalResolveSelect } = registry;
-		const module = yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
+		const registry = yield commonActions.getRegistry();
+		const { select, resolveSelect } = registry;
+		const module = yield commonActions.await(
+			resolveSelect( CORE_MODULES ).getModule( slug )
 		);
 		// At this point, all modules are loaded so we can safely select getModule below.
 
@@ -724,7 +737,7 @@ const baseResolvers = {
 			} );
 		} else {
 			try {
-				yield Data.commonActions.await(
+				yield commonActions.await(
 					module.checkRequirements( registry )
 				);
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
@@ -735,7 +748,7 @@ const baseResolvers = {
 	},
 
 	*hasModuleAccess( slug ) {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const existingCheckAccess = registry
 			.select( CORE_MODULES )
@@ -749,9 +762,9 @@ const baseResolvers = {
 	},
 
 	*getRecoverableModules() {
-		const registry = yield Data.commonActions.getRegistry();
-		const modules = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		const registry = yield commonActions.getRegistry();
+		const modules = yield commonActions.await(
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
@@ -769,7 +782,7 @@ const baseResolvers = {
 	},
 
 	*getSharedOwnershipModules() {
-		const registry = yield Data.commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
 			return;
@@ -1252,17 +1265,18 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if current user has ownership or access to the given module.
+	 * Checks if current user has ownership of the given module.
 	 *
-	 * @since 1.92.0
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
-	 *                               `false` if the user doesn't have ownership or access.
-	 *                               `undefined` If the state is still being resolved,
+	 * @return {(boolean|null|undefined)} `true` if the user has ownership.
+	 *                               	    `false` if the user doesn't have ownership.
+	 *                               	    `null` if the module doesn't exist.
+	 *                               	    `undefined` If the state is still being resolved.
 	 */
-	hasModuleOwnershipOrAccess: createRegistrySelector(
+	hasModuleOwnership: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
 			const moduleStoreName =
 				select( CORE_MODULES ).getModuleStoreName( moduleSlug );
@@ -1275,7 +1289,7 @@ const baseSelectors = {
 			// This is either caused by a module not being loaded or an incorrect module
 			// name being used.
 			if ( select( moduleStoreName ) === null ) {
-				return false;
+				return null;
 			}
 
 			const moduleOwnerID = select( moduleStoreName ).getOwnerID();
@@ -1288,6 +1302,39 @@ const baseSelectors = {
 
 			if ( moduleOwnerID === loggedInUserID ) {
 				return true;
+			}
+
+			return false;
+		}
+	),
+
+	/**
+	 * Checks if current user has ownership or access to the given module.
+	 *
+	 * @since 1.92.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
+	 *                               `false` if the user doesn't have ownership or access.
+	 *                               `undefined` If the state is still being resolved.
+	 */
+	hasModuleOwnershipOrAccess: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			const hasOwnership =
+				select( CORE_MODULES ).hasModuleOwnership( moduleSlug );
+
+			if ( hasOwnership === true ) {
+				return true;
+			}
+
+			if ( hasOwnership === undefined ) {
+				return undefined;
+			}
+
+			// If the module doesn't exist, the user can't have ownership or access.
+			if ( hasOwnership === null ) {
+				return false;
 			}
 
 			return select( CORE_MODULES ).hasModuleAccess( moduleSlug );
@@ -1314,6 +1361,25 @@ const baseSelectors = {
 
 		return calculateRecoverableModules( modules, state.recoverableModules );
 	} ),
+
+	/**
+	 * Checks if there are any recoverable modules for dashboard sharing.
+	 *
+	 * @since 1.133.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if there are recoverable modules.
+	 * 								 `false` if there are none.
+	 * 								 `undefined` if not loaded.
+	 */
+	hasRecoverableModules: ( state ) => {
+		// Return `undefined` if recoverableModules haven't been loaded yet.
+		if ( state.recoverableModules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( state.recoverableModules ).length > 0;
+	},
 
 	/**
 	 * Gets the list of shared ownership modules for dashboard sharing.
@@ -1385,9 +1451,49 @@ const baseSelectors = {
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
 	},
+
+	/**
+	 * Gets the details link URL for a module.
+	 *
+	 * Returns the module homepage by default. This can be overwritten by a
+	 * custom selector of the same name in the module store implementation.
+	 *
+	 * @since 1.144.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(string|null|undefined)} Details link URL; `null` if module is not available, or does not have a homepage. `undefined` if data is still loading.
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			if ( module === null ) {
+				return null;
+			}
+
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+			const { getDetailsLinkURL } = select( storeName ) || {};
+
+			if ( typeof getDetailsLinkURL === 'function' ) {
+				return getDetailsLinkURL();
+			}
+
+			if ( ! module.homepage ) {
+				return null;
+			}
+
+			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
+	),
 };
 
-const store = Data.combineStores(
+const store = combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,
