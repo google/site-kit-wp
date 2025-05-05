@@ -60,4 +60,6 @@ CTAButton.propTypes = {
 	inProgress: PropTypes.bool,
 	onClick: PropTypes.func.isRequired,
 	href: PropTypes.string,
+	external: PropTypes.bool,
+	hideExternalIndicator: PropTypes.bool,
 };
