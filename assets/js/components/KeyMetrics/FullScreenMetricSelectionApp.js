@@ -83,12 +83,6 @@ export default function FullScreenMetricSelectionApp() {
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
-	// useEffect( () => {
-	// 	if ( isKeyMetricsSetupCompleted && mainDashboardURL ) {
-	// 		navigateTo( mainDashboardURL );
-	// 	}
-	// }, [ mainDashboardURL, navigateTo, isKeyMetricsSetupCompleted ] );
-
 	useEffect( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
