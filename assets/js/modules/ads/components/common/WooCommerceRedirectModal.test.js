@@ -29,6 +29,7 @@ import {
 	provideModules,
 	provideUserCapabilities,
 	provideModuleRegistrations,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -40,6 +41,11 @@ import {
 	PLUGINS,
 } from '../../datastore/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
+import * as tracking from '../../../../util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'WooCommerceRedirectModal', () => {
 	mockLocation();
@@ -90,6 +96,60 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 	} );
 
+	it( 'tracks the correct event when viewed with only WooCommerce active', async () => {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: false,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		const { waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'view_modal',
+			'wc'
+		);
+	} );
+
+	it( 'tracks the correct event when viewed with Google for WooCommerce active', async () => {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		const { waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'view_modal',
+			'gfw'
+		);
+	} );
+
 	it( 'does not render when dismissed', async () => {
 		await registry
 			.dispatch( CORE_SITE )
@@ -106,7 +166,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'clicking "Continue with Site Kit" should trigger ads module activation and invoke onDismiss callback', async () => {
+	it( 'should trigger ads module activation and invoke the onDismiss callback when clicking "Continue with Site Kit"', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -117,14 +177,14 @@ describe( 'WooCommerceRedirectModal', () => {
 		const { getByText, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
+
 		await waitForRegistry();
 
 		const continueWithSiteKitButton = getByText(
 			/continue with site kit/i
 		);
-		fireEvent.click( continueWithSiteKitButton );
 
-		await waitForRegistry();
+		fireEvent.click( continueWithSiteKitButton );
 
 		expect( onDismiss ).toHaveBeenCalled();
 
@@ -133,7 +193,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		).toBe( true );
 	} );
 
-	it( 'clicking "Continue with Site Kit" should invoke onBeforeSetupCallback if passed', async () => {
+	it( 'should invoke onBeforeSetupCallback if passed when clicking "Continue with Site Kit"', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -159,15 +219,94 @@ describe( 'WooCommerceRedirectModal', () => {
 		const continueWithSiteKitButton = getByText(
 			/continue with site kit/i
 		);
-		fireEvent.click( continueWithSiteKitButton );
 
-		await waitForRegistry();
+		fireEvent.click( continueWithSiteKitButton );
 
 		expect( onDismiss ).toHaveBeenCalled();
 		expect( onBeforeSetupCallback ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Use Google for WooCommerce" should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active', async () => {
+	it( 'should trigger the correct internal tracking event when only WooCommerce is active and "Continue with Site Kit" is clicked', async () => {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: false,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+
+		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		const continueWithSiteKitButton = getByText(
+			/continue with site kit/i
+		);
+
+		fireEvent.click( continueWithSiteKitButton );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_sk',
+			'wc'
+		);
+	} );
+
+	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active and "Continue with Site Kit" is clicked', async () => {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					adsConnected: false,
+				},
+			},
+		} );
+
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+
+		const { getByText, waitForRegistry } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		const continueWithSiteKitButton = getByText(
+			/continue with site kit/i
+		);
+
+		fireEvent.click( continueWithSiteKitButton );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_sk',
+			'gfw'
+		);
+	} );
+
+	it( 'should link to the install plugin page with Google for WooCommerce search term when Google for WooCommerce is not active and "Use Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 
 		const notification =
@@ -212,7 +351,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Use Google for WooCommerce" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active', async () => {
+	it( 'should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and "Use Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 		const dismissNotificationSpy = jest.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
@@ -263,9 +402,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/Use Google for WooCommerce/i
 		);
 
-		fireEvent.click( useGoogleForWooCommerceButton );
-
-		await waitForRegistry();
+		await act( async () => {
+			await fireEvent.click( useGoogleForWooCommerceButton );
+		} );
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
@@ -273,7 +412,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 	} );
 
-	it( 'clicking "View current Ads account" should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected', async () => {
+	it( 'should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected when "View current Ads account" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
 		const dismissNotificationSpy = jest.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
@@ -309,12 +448,15 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry,
 		} );
 
+		await waitForRegistry();
+
 		const viewCurrentAdsAccountButton = getByText(
 			/view current ads account/i
 		);
-		fireEvent.click( viewCurrentAdsAccountButton );
 
-		await waitForRegistry();
+		await act( async () => {
+			await fireEvent.click( viewCurrentAdsAccountButton );
+		} );
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
@@ -330,7 +472,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
-	it( 'clicking "Create another account" should trigger ads module activation and dismiss the modal', async () => {
+	it( 'should trigger ads module activation and dismiss the modal when "Create another account" is clicked', async () => {
 		fetchMock.postOnce( moduleActivationEndpoint, {
 			body: { success: true },
 		} );
@@ -356,17 +498,127 @@ describe( 'WooCommerceRedirectModal', () => {
 			registry,
 		} );
 
+		await waitForRegistry();
+
 		const createAnotherAccountButton = getByRole( 'button', {
 			name: /create another account/i,
 		} );
 
 		fireEvent.click( createAnotherAccountButton );
 
-		await waitForRegistry();
-
 		expect(
 			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
 		).toBe( true );
 		expect( onDismiss ).toHaveBeenCalled();
+	} );
+
+	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active with no Ads account linked when "Continue with Google for WooCommerce" is clicked', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+					adsConnected: false,
+				},
+			},
+		} );
+		const { container, waitForRegistry, getByText } = render(
+			<ModalComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.mdc-button:not(.mdc-dialog__cancel-button)'
+			)
+		).toHaveAttribute(
+			'href',
+			'http://example.com/wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard'
+		);
+
+		const useGoogleForWooCommerceButton = getByText(
+			/Use Google for WooCommerce/i
+		);
+
+		await act( async () => {
+			await fireEvent.click( useGoogleForWooCommerceButton );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_gfw',
+			'gfw'
+		);
+	} );
+
+	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active with Ads account linked when "Continue with Google for WooCommerce" is clicked', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {} );
+
+		const notification =
+			ADS_NOTIFICATIONS[ 'account-linked-via-google-for-woocommerce' ];
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				'account-linked-via-google-for-woocommerce',
+				notification
+			);
+
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			plugins: {
+				[ PLUGINS.WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+				},
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					installed: true,
+					adsConnected: true,
+				},
+			},
+		} );
+		const { waitForRegistry, getByText } = render( <ModalComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		mockTrackEvent.mockClear();
+
+		const viewCurrentAdsAccountButton = getByText(
+			/View current Ads account/i
+		);
+
+		await act( async () => {
+			await fireEvent.click( viewCurrentAdsAccountButton );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
+			'choose_gfw',
+			'gfw'
+		);
 	} );
 } );
