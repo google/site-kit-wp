@@ -26,7 +26,13 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo, Fragment, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useMemo,
+	Fragment,
+	useState,
+	useEffect,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -49,6 +55,8 @@ import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -58,6 +66,7 @@ export default function WooCommerceRedirectModal( {
 	onBeforeSetupCallback = null,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
+	const viewContext = useViewContext();
 
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -68,6 +77,18 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+	const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
+
+	useEffect( () => {
+		if ( dialogActive ) {
+			trackEvent(
+				`${ viewContext }_pax_wc-redirect`,
+				'view_modal',
+				trackEventLabel
+			);
+		}
+	}, [ dialogActive, viewContext, trackEventLabel ] );
+
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
 		const hasGoogleForWooCommerceAdsAccount =
 			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
@@ -82,9 +103,6 @@ export default function WooCommerceRedirectModal( {
 
 		return false;
 	} );
-	const isWooCommerceActivated = useSelect( ( select ) =>
-		select( MODULES_ADS ).isWooCommerceActivated()
-	);
 
 	const isModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
@@ -117,39 +135,48 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleGoogleForWooCommerceRedirect = useCallback( () => {
+	const handleGoogleForWooCommerceRedirect = useCallback( async () => {
 		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
 
-		setIsSaving( 'primary' );
-		onDismiss?.();
+		await trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_gfw',
+			trackEventLabel
+		);
 
-		navigateTo( googleForWooCommerceRedirectURI );
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			setIsSaving( 'primary' );
+			navigateTo( googleForWooCommerceRedirectURI );
+		}
+		onDismiss?.();
+		onClose?.();
 	}, [
 		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
 		dismissNotification,
 		setIsSaving,
 		onDismiss,
+		onClose,
 		navigateTo,
 		googleForWooCommerceRedirectURI,
+		viewContext,
+		trackEventLabel,
+		isGoogleForWooCommerceAdsConnected,
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( 'ads' );
 
 	const onContinueWithSiteKit = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_sk',
+			trackEventLabel
+		);
+
 		if ( ! onContinue ) {
 			setIsSaving( 'tertiary' );
 			onDismiss?.();
-			if (
-				( isWooCommerceActivated ||
-					isGoogleForWooCommerceAdsConnected ) &&
-				! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed
-			) {
-				dismissNotification(
-					'account-linked-via-google-for-woocommerce'
-				);
-			}
 		}
 
 		if ( onContinue ) {
@@ -168,10 +195,8 @@ export default function WooCommerceRedirectModal( {
 		onBeforeSetupCallback,
 		onSetupCallback,
 		onContinue,
-		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
-		isGoogleForWooCommerceAdsConnected,
-		isWooCommerceActivated,
-		dismissNotification,
+		viewContext,
+		trackEventLabel,
 	] );
 
 	if ( isModalDismissed && ! isSaving ) {

@@ -35,10 +35,8 @@ import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/data
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
 import { MINUTE_IN_SECONDS } from '../../../../util';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
@@ -57,50 +55,45 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 		} );
 	}, [ setCacheItem ] );
 
+	// The "Keep existing account" button is used as the "CTA" button
+	// because it should look like the "primary" CTA here.
+	// Its purpose, however, is to simply dismiss the notification.
 	const onCTAClick = useCallback( async () => {
+		await dismissWooCommerceRedirectModal();
+		dismissNotification( id, { skipHidingFromQueue: true } );
+	}, [ dismissWooCommerceRedirectModal, dismissNotification, id ] );
+
+	// The "Create new account" button is used as the "Dismiss" button
+	// because it should look like the "secondary" action here.
+	// Its purpose is to setup a new account AND also dismiss the notification.
+	// The `dismissNotification()` callback is not called additionally here
+	// as it called automatically within the decorated `dismissButton.onClick()`
+	// handler in `<NoticeNotification>`.
+	const onDismissClick = useCallback( async () => {
 		setIsSaving( true );
-		await dismissNotification( id, { skipHidingFromQueue: true } );
 		await dismissWooCommerceRedirectModal();
 		onSetupCallback();
-	}, [
-		setIsSaving,
-		onSetupCallback,
-		dismissWooCommerceRedirectModal,
-		dismissNotification,
-		id,
-	] );
+	}, [ setIsSaving, onSetupCallback, dismissWooCommerceRedirectModal ] );
 
 	return (
 		<Notification>
-			<SubtleNotification
-				type="new-feature"
+			<NoticeNotification
+				notificationID={ id }
+				type="new"
 				description={ __(
 					'We’ve detected an existing Ads account via the Google for WooCommerce plugin. You can still create a new Ads account using Site Kit.',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						dismissLabel={ __(
-							'Keep existing account',
-							'google-site-kit'
-						) }
-						onDismiss={ dismissWooCommerceRedirectModal }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __(
-							'Create new account',
-							'google-site-kit'
-						) }
-						onCTAClick={ onCTAClick }
-						isSaving={ isSaving }
-						tertiary
-					/>
-				}
-				reverseCTAs
+				dismissButton={ {
+					label: __( 'Create new account', 'google-site-kit' ),
+					onClick: onDismissClick,
+					disabled: isSaving,
+				} }
+				ctaButton={ {
+					label: __( 'Keep existing account', 'google-site-kit' ),
+					onClick: onCTAClick,
+					disabled: isSaving,
+				} }
 			/>
 		</Notification>
 	);

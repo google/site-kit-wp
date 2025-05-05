@@ -27,7 +27,7 @@ const { ProvidePlugin } = require( 'webpack' );
 /**
  * Internal dependencies
  */
-const { siteKitExternals, svgRule } = require( '../webpack/common' );
+const { rootDir, siteKitExternals, svgRule } = require( '../webpack/common' );
 
 // eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
@@ -41,16 +41,9 @@ module.exports = async ( { config } ) => {
 				if ( api === 'i18n' ) {
 					return require.resolve( '@wordpress/i18n' );
 				}
-
-				// Set "googlesitekit-components" to the entry point which can load GM2 or GM3 components.
-				if ( api === 'components' ) {
-					return path.resolve(
-						'storybook/assets/js/googlesitekit-components.js'
-					);
-				}
 			}
 
-			return path.resolve( `assets/js/${ global }-${ api }.js` );
+			return path.resolve( rootDir, `assets/js/${ global }-${ api }.js` );
 		}
 	);
 
@@ -60,7 +53,7 @@ module.exports = async ( { config } ) => {
 			...config.resolve.alias,
 			...siteKitPackageAliases,
 		},
-		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
+		modules: [ rootDir, 'node_modules' ],
 	};
 
 	config.plugins = [
@@ -81,7 +74,7 @@ module.exports = async ( { config } ) => {
 					loader: 'postcss-loader',
 					options: {
 						postcssOptions: {
-							path: './',
+							config: rootDir + '/assets/postcss.config.js',
 						},
 					},
 				},
@@ -92,31 +85,13 @@ module.exports = async ( { config } ) => {
 						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
 						sassOptions: {
 							includePaths: [
-								path.resolve( __dirname, '../node_modules/' ),
+								path.resolve( rootDir, 'node_modules/' ),
 							],
 						},
 					},
 				},
 			],
-			include: path.resolve( __dirname, '../' ),
-		},
-		{
-			test: RegExp( 'node_modules/@material/web/.*.js' ),
-			use: [
-				{
-					loader: 'babel-loader',
-					options: {
-						sourceMap: true,
-						babelrc: false,
-						configFile: false,
-						cacheDirectory: true,
-						presets: [
-							'@wordpress/default',
-							'@babel/preset-react',
-						],
-					},
-				},
-			],
+			include: rootDir,
 		},
 		{
 			test: /\.mjs$/,

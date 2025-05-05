@@ -23,11 +23,12 @@ import { isEmpty, isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import {
 	CORE_USER,
@@ -77,7 +78,7 @@ const baseInitialState = {
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'getKeyMetricsSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'key-metrics', undefined, {
+		get( 'core', 'user', 'key-metrics', undefined, {
 			// Never cache key metrics requests, we want them to be
 			// up-to-date with what's in settings, and they don't
 			// make requests to Google APIs so it's not a slow request.
@@ -92,7 +93,7 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'key-metrics', { settings } ),
+		set( 'core', 'user', 'key-metrics', { settings } ),
 	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
 		keyMetricsSettings,
@@ -172,22 +173,21 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
 	switch ( type ) {
 		case SET_KEY_METRICS_SETTING: {
-			return {
-				...state,
-				keyMetricsSettings: {
-					...state.keyMetricsSettings,
-					[ payload.settingID ]: payload.value,
-				},
-			};
+			if ( ! state.keyMetricsSettings ) {
+				state.keyMetricsSettings = {};
+			}
+			state.keyMetricsSettings[ payload.settingID ] = payload.value;
+			break;
 		}
 		default: {
-			return state;
+			break;
 		}
 	}
-};
+} );
 
 const baseResolvers = {
 	*getKeyMetricsSettings() {

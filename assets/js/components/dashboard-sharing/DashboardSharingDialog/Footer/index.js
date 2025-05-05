@@ -133,7 +133,11 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					settingsDialogOpen &&
 					! showNotice && (
 						<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
-							<Link onClick={ openResetDialog } danger>
+							<Link
+								onClick={ openResetDialog }
+								className="googlesitekit-reset-sharing-permissions-button"
+								danger
+							>
 								{ __(
 									'Reset sharing permissions',
 									'google-site-kit'
@@ -175,4 +179,5 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 
 Footer.propTypes = {
 	closeDialog: PropTypes.func.isRequired,
+	openResetDialog: PropTypes.func.isRequired,
 };
