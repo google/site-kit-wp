@@ -24,13 +24,20 @@ import PropTypes from 'prop-types';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 
-export default function CTAButton( { label, disabled, inProgress, onClick } ) {
+export default function CTAButton( {
+	label,
+	disabled,
+	inProgress,
+	onClick,
+	href,
+} ) {
 	return (
 		<SpinnerButton
 			className="googlesitekit-notice__cta"
 			disabled={ disabled }
 			isSaving={ inProgress }
 			onClick={ onClick }
+			href={ href }
 		>
 			{ label }
 		</SpinnerButton>
@@ -43,4 +50,5 @@ CTAButton.propTypes = {
 	disabled: PropTypes.bool,
 	inProgress: PropTypes.bool,
 	onClick: PropTypes.func.isRequired,
+	href: PropTypes.string,
 };
