@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,6 +35,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
@@ -104,9 +104,11 @@ export default function Footer( {
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
 	// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
-	const redirectURL = addQueryArgs( global.location.href, {
-		notification: 'custom_dimensions',
-	} );
+	const redirectURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			notification: 'custom_dimensions',
+		} )
+	);
 
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		const OAuthURL = select( CORE_USER ).getConnectURL( {

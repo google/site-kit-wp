@@ -41,7 +41,7 @@ export default function PanelContent( {
 	closePanel,
 	savedViewableMetrics,
 	showHeader = true,
-	setIsNavigatingToOAuthURL,
+	setIsNavigatingToOAuthURL = () => {},
 	isFullScreen = false,
 } ) {
 	return (
