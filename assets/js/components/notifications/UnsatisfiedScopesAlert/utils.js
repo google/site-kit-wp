@@ -31,6 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { listFormat } from '../../../util';
 
+const MESSAGE_MULTIPLE = 'multiple';
+const MESSAGE_SINGULAR = 'single';
+const MESSAGE_GENERIC = 'generic';
+
 /**
  * Maps unsatisfied scopes to module names.
  *
@@ -84,10 +88,6 @@ export function getUnsatisfiedScopesMessage(
 	modules,
 	temporaryPersistedPermissionsError
 ) {
-	const MESSAGE_MULTIPLE = 'multiple';
-	const MESSAGE_SINGULAR = 'single';
-	const MESSAGE_GENERIC = 'generic';
-
 	let messageID;
 	let moduleNames;
 	if (
@@ -114,7 +114,7 @@ export function getUnsatisfiedScopesMessage(
 	}
 
 	const title = __(
-		"Site Kit can't access necessary data",
+		'Site Kit can’t access necessary data',
 		'google-site-kit'
 	);
 	const ctaLabel = temporaryPersistedPermissionsError?.data
@@ -127,7 +127,7 @@ export function getUnsatisfiedScopesMessage(
 			message = sprintf(
 				/* translators: %s: List of product names */
 				__(
-					"Site Kit can't access all relevant data because you haven't granted all permissions requested during setup. To use Site Kit, you'll need to redo the setup for: %s – make sure to approve all permissions at the authentication stage.",
+					'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all permissions at the authentication stage.',
 					'google-site-kit'
 				),
 				listFormat( moduleNames )
@@ -137,7 +137,7 @@ export function getUnsatisfiedScopesMessage(
 			message = sprintf(
 				/* translators: %s: Product name */
 				__(
-					"Site Kit can't access the relevant data from %1$s because you haven't granted all permissions requested during setup. To use Site Kit, you'll need to redo the setup for %1$s – make sure to approve all permissions at the authentication stage.",
+					'Site Kit can’t access the relevant data from %1$s because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all permissions at the authentication stage.',
 					'google-site-kit'
 				),
 				moduleNames[ 0 ]
@@ -145,7 +145,7 @@ export function getUnsatisfiedScopesMessage(
 			break;
 		case MESSAGE_GENERIC:
 			message = __(
-				"Site Kit can't access all relevant data because you haven't granted all permissions requested during setup. To use Site Kit, you'll need to redo the setup – make sure to approve all permissions at the authentication stage.",
+				'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup – make sure to approve all permissions at the authentication stage.',
 				'google-site-kit'
 			);
 			break;

@@ -116,7 +116,7 @@ describe( 'ErrorNotifications', () => {
 		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
-			"Site Kit can't access necessary data"
+			'Site Kit can’t access necessary data'
 		);
 		expect( container ).toMatchSnapshot();
 	} );
@@ -203,7 +203,7 @@ describe( 'ErrorNotifications', () => {
 		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
-			"Site Kit can't access necessary data"
+			'Site Kit can’t access necessary data'
 		);
 		expect( container ).toMatchSnapshot();
 	} );
