@@ -22,6 +22,7 @@ import useNotificationEvents from '../../hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { Grid, Cell, Row } from '../../../../material-components';
+import propTypes from 'prop-types';
 
 export default function NoticeNotification( {
 	notificationID,
@@ -71,5 +72,8 @@ export default function NoticeNotification( {
 }
 
 NoticeNotification.propTypes = {
-	...Notice.propTypes,
+	notificationID: propTypes.string.isRequired,
+	children: propTypes.node,
+	dismissButton: propTypes.object,
+	ctaButton: propTypes.object,
 };
