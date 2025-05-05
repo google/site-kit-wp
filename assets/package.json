@@ -75,7 +75,6 @@
 		"@wordpress/babel-preset-default": "^4.17.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"autoprefixer": "^10.4.21",
-		"babel-loader": "^10.0.0",
 		"copy-webpack-plugin": "^13.0.0",
 		"create-file-webpack": "^1.0.2",
 		"css-loader": "^7.1.2",
