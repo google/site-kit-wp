@@ -78,7 +78,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( "Site Kit can't access necessary data" )
+			getByText( 'Site Kit can’t access necessary data' )
 		).toBeInTheDocument();
 	} );
 
