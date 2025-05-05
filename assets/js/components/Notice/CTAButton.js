@@ -59,5 +59,5 @@ CTAButton.propTypes = {
 	disabled: PropTypes.bool,
 	inProgress: PropTypes.bool,
 	onClick: PropTypes.func.isRequired,
-	target: PropTypes.string,
+	href: PropTypes.string,
 };
