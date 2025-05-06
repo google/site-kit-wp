@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { Grid, Cell, Row } from '../../material-components';
 
 /**
  * WordPress dependencies
@@ -41,30 +40,21 @@ export default function ConversionReportingDashboardSubtleNotification( {
 	dismissCTALabel = __( 'Maybe later', 'google-site-kit' ),
 } ) {
 	return (
-		<Grid>
-			<Row>
-				<Cell alignMiddle size={ 12 }>
-					<Notice
-						type="new"
-						title={ __(
-							'New key metrics were added!',
-							'google-site-kit'
-						) }
-						description={ description }
-						dismissButton={ {
-							label: dismissCTALabel,
-							onClick: onDismiss,
-						} }
-						ctaButton={ {
-							label: ctaLabel,
-							onClick: handleCTAClick,
-							inProgress: isSaving,
-							disabled: isSaving,
-						} }
-					/>
-				</Cell>
-			</Row>
-		</Grid>
+		<Notice
+			type="new"
+			title={ __( 'New key metrics were added!', 'google-site-kit' ) }
+			description={ description }
+			dismissButton={ {
+				label: dismissCTALabel,
+				onClick: onDismiss,
+			} }
+			ctaButton={ {
+				label: ctaLabel,
+				onClick: handleCTAClick,
+				inProgress: isSaving,
+				disabled: isSaving,
+			} }
+		/>
 	);
 }
 
