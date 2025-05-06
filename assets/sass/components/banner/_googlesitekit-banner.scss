@@ -1,0 +1,125 @@
+/**
+ * Banner styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-banner {
+	background-color: $c-surfaces-surface;
+	display: grid;
+	grid-template-columns: 1fr;
+
+	@media (min-width: $width-desktop + 1 + px) {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.googlesitekit-banner__content {
+		padding: $grid-gap-phone;
+
+		@media (min-width: $width-tablet + 1 + px) {
+			padding: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-banner__footer {
+		border-top: 1px solid $c-utility-divider;
+		grid-column: 1 / -1;
+		padding: $grid-gap-desktop;
+
+		p {
+			font-family: $f-primary;
+			font-size: $fs-label-md;
+			font-weight: $fw-medium;
+			line-height: $lh-label-md;
+		}
+	}
+
+	p.googlesitekit-banner__title {
+		font-family: $f-primary;
+		font-size: $fs-title-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xxs;
+		line-height: $lh-title-md;
+		margin: 0 0 10px;
+
+		@media (min-width: $width-tablet + 1 + px) {
+			font-family: $f-secondary;
+			font-size: $fs-headline-sm;
+			font-weight: $fw-normal;
+			letter-spacing: 0;
+			line-height: $lh-headline-sm;
+			margin: 0 0 8px;
+		}
+
+		@media (min-width: $width-desktop + 1 + px) {
+			font-size: $fs-headline-md;
+			line-height: $lh-headline-md;
+		}
+	}
+
+	.googlesitekit-banner__description {
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+
+		margin: 0;
+	}
+
+	.googlesitekit-banner__description p {
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+
+		&:first-child {
+			margin-top: 0;
+		}
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	p.googlesitekit-banner__help-text {
+		color: $c-surfaces-on-surface-variant;
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+	}
+
+	.googlesitekit-notice__action {
+		margin-top: 20px;
+	}
+
+	.googlesitekit-banner__svg-wrapper {
+		display: flex;
+		height: 100%;
+		justify-content: center;
+		overflow: hidden;
+
+		@media (min-width: $width-desktop + 1 + px) {
+			justify-content: flex-end;
+		}
+
+		svg {
+			max-height: 136px;
+
+			@media (min-width: $width-desktop + 1 + px) {
+				height: 100%;
+				max-height: 136px;
+				scale: 1.31;
+
+				transform-origin: initial;
+			}
+		}
+	}
+}
