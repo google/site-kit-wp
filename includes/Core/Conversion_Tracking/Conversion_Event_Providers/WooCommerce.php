@@ -222,9 +222,13 @@ class WooCommerce extends Conversion_Events_Provider {
 		}
 
 		$formatted = array(
-			'id'    => $product_id,
-			'name'  => $product->get_title(),
-			'price' => $this->get_formatted_price( $price ),
+			'id'         => $product_id,
+			'name'       => $product->get_title(),
+			'categories' => array_map(
+				fn( $category ) => array( 'name' => $category->name ),
+				wc_get_product_terms( $product_id, 'product_cat', array( 'number' => 5 ) )
+			),
+			'price'      => $this->get_formatted_price( $price ),
 		);
 
 		if ( $quantity ) {
@@ -300,7 +304,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @return int
 	 */
-	public function get_formatted_price( $value ): int {
+	public function get_formatted_price( $value ) {
 		return intval(
 			round(
 				( (float) wc_format_decimal( $value ) ) * ( 10 ** absint( wc_get_price_decimals() ) ),
