@@ -51,7 +51,7 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 	};
 
 	useEffect( () => {
-		// If notification is not viewed yet and is in view, start the timer
+		// If notification is not viewed yet and is in view, start the timer.
 		if ( ! viewed && isInView ) {
 			clearExistingTimeout();
 
