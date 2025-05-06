@@ -59,9 +59,15 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	// because it should look like the "primary" CTA here.
 	// Its purpose, however, is to simply dismiss the notification.
 	const onCTAClick = useCallback( async () => {
+		setIsSaving( true );
+		await dismissNotification( id );
 		await dismissWooCommerceRedirectModal();
-		dismissNotification( id, { skipHidingFromQueue: true } );
-	}, [ dismissWooCommerceRedirectModal, dismissNotification, id ] );
+	}, [
+		setIsSaving,
+		dismissWooCommerceRedirectModal,
+		dismissNotification,
+		id,
+	] );
 
 	// The "Create new account" button is used as the "Dismiss" button
 	// because it should look like the "secondary" action here.
@@ -71,8 +77,8 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	// handler in `<NoticeNotification>`.
 	const onDismissClick = useCallback( async () => {
 		setIsSaving( true );
+		await onSetupCallback();
 		await dismissWooCommerceRedirectModal();
-		onSetupCallback();
 	}, [ setIsSaving, onSetupCallback, dismissWooCommerceRedirectModal ] );
 
 	return (
