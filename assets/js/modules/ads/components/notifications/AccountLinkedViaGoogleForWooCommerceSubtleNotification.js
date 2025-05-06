@@ -60,13 +60,15 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	// Its purpose, however, is to simply dismiss the notification.
 	const onCTAClick = useCallback( async () => {
 		setIsSaving( true );
-		await dismissNotification( id );
+		await dismissNotification( id, { skipHidingFromQueue: true } );
 		await dismissWooCommerceRedirectModal();
+		onSetupCallback();
 	}, [
 		setIsSaving,
 		dismissWooCommerceRedirectModal,
 		dismissNotification,
 		id,
+		onSetupCallback,
 	] );
 
 	// The "Create new account" button is used as the "Dismiss" button
@@ -77,9 +79,15 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	// handler in `<NoticeNotification>`.
 	const onDismissClick = useCallback( async () => {
 		setIsSaving( true );
+		await dismissNotification( id );
 		await onSetupCallback();
 		await dismissWooCommerceRedirectModal();
-	}, [ setIsSaving, onSetupCallback, dismissWooCommerceRedirectModal ] );
+	}, [
+		setIsSaving,
+		dismissNotification,
+		onSetupCallback,
+		dismissWooCommerceRedirectModal,
+	] );
 
 	return (
 		<Notification>
@@ -92,12 +100,12 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 				) }
 				dismissButton={ {
 					label: __( 'Create new account', 'google-site-kit' ),
-					onClick: onDismissClick,
+					onClick: onCTAClick,
 					disabled: isSaving,
 				} }
 				ctaButton={ {
 					label: __( 'Keep existing account', 'google-site-kit' ),
-					onClick: onCTAClick,
+					onClick: onDismissClick,
 					disabled: isSaving,
 				} }
 			/>
