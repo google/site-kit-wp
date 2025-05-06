@@ -75,7 +75,6 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	}, [
 		setIsSaving,
 		dismissNotification,
-		onSetupCallback,
 		dismissWooCommerceRedirectModal,
 		id,
 	] );
