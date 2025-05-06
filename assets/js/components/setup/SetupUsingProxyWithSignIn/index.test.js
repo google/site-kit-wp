@@ -1,7 +1,7 @@
 /**
  * SetupUsingProxyWithSignIn component tests.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,15 @@ import {
 	provideUserInfo,
 	provideUserCapabilities,
 	muteFetch,
-} from '../../../../tests/js/test-utils';
-import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
+} from '../../../../../tests/js/test-utils';
+import coreModulesFixture from '../../../googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
+import { VIEW_CONTEXT_SPLASH } from '../../../googlesitekit/constants';
 
 jest.mock(
-	'./CompatibilityChecks',
+	'../CompatibilityChecks',
 	() =>
 		( { children } ) =>
 			children( { complete: true } )

@@ -1,7 +1,7 @@
 /**
  * SetupUsingProxyWithSignIn Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,24 +24,24 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
-import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
+import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_AUTHENTICATE,
-} from '../../googlesitekit/datastore/user/constants';
+} from '../../../googlesitekit/datastore/user/constants';
 import {
 	provideSiteConnection,
 	provideUserAuthentication,
 	provideModules,
 	provideUserCapabilities,
 	provideSiteInfo,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';
+import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 
 function Template() {
 	return (
