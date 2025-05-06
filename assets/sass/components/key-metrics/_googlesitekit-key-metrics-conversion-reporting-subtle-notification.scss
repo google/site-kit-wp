@@ -19,28 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-acr-subtle-notification {
-		background-color: $c-violet-v-50;
-		color: $c-violet-v-600;
 		padding: $grid-gap-phone - 2px $grid-gap-desktop;
-
-		.mdc-button--raised:not(:disabled) {
-			background-color: $c-violet-v-600;
-		}
-
-		.googlesitekit-subtle-notification__content,
-		.mdc-button--tertiary:not(:disabled),
-		p > a {
-			color: inherit;
-		}
-
-		.googlesitekit-subtle-notification__action {
-			grid-gap: 10px;
-			justify-content: flex-end;
-
-			@media (min-width: $bp-tablet) {
-				grid-gap: $grid-gap-phone;
-			}
-		}
 	}
 
 	.googlesitekit-widget--keyMetricsEventDetectionCalloutNotification {
