@@ -49,11 +49,7 @@ Default.args = {
 		},
 	},
 };
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/ConnectAdSenseCTATileWidget',
-	delay: 250,
-};
+Default.scenario = {};
 
 export const WithSingleWidget = Template.bind( {} );
 WithSingleWidget.storyName = 'ConnectAdSenseCTATileWidget (for single widget)';

@@ -47,10 +47,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConversionReportingNotificationCTAWidget';
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/ConversionReportingNotificationCTAWidget',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/ConversionReportingNotificationCTAWidget',

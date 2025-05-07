@@ -106,11 +106,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularContentWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -131,11 +127,7 @@ ReadyViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularContentWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

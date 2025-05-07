@@ -49,9 +49,7 @@ function Template( { viewContext } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'KeyMetrics/MetricsSelectionPanel',
-};
+Default.scenario = {};
 
 export const ViewOnly = Template.bind( {} );
 ViewOnly.storyName = 'View-only user';
