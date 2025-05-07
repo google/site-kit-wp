@@ -1,9 +1,9 @@
-FROM node:16.14.2-bullseye
+FROM node:22.14.0-bookworm
 
 # Prevent intractive prompts from apt-get.
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG BACKSTOPJS_VERSION=6.1.1
+ARG BACKSTOPJS_VERSION=6.3.25
 ENV BACKSTOPJS_VERSION=$BACKSTOPJS_VERSION
 
 RUN apt-get update
@@ -20,7 +20,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 \
 
 # Install the Chromium requirements, specify a Chromium build for stability.
 RUN apt-get install -yq \
-    chromium=120.0.6099.224-1~deb11u1 \
+    chromium=136.0.7103.59-2~deb12u2 \
     ca-certificates
 
 RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i -g backstopjs@${BACKSTOPJS_VERSION} && \
