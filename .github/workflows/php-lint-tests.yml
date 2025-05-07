@@ -15,6 +15,11 @@ on:
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
+      - feature-flags.json
+      - readme.txt
+      - changelog.txt
+      - assets/js/analytics-advanced-tracking.js
+      - 'assets/**/*.json'
   pull_request:
     branches:
       - develop
@@ -30,6 +35,11 @@ on:
       - 'phpunit*.xml*'
       - 'composer.json'
       - 'composer.lock'
+      - feature-flags.json
+      - readme.txt
+      - changelog.txt
+      - assets/js/analytics-advanced-tracking.js
+      - 'assets/**/*.json'
     types:
       - opened
       - reopened
