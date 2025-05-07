@@ -16,13 +16,10 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 17 ] */
-
 /**
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { identity } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -41,29 +38,20 @@ import {
 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
-import SearchConsoleStats from './SearchConsoleStats';
-import { ActivateAnalyticsCTA, AnalyticsStats } from '../../common';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics-4/datastore/constants';
+import Chart from './Chart';
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-
-	const breakpoint = useBreakpoint();
 
 	const viewOnly = useViewOnly();
 
@@ -85,9 +73,6 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-	const isGA4Active = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
@@ -384,82 +369,21 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>
 
-			{ ( selectedStats === 0 || selectedStats === 1 ) && (
-				<SearchConsoleStats
-					data={ searchConsoleData }
-					dateRangeLength={ dateRangeLength }
-					selectedStats={ selectedStats }
-					metrics={ SearchFunnelWidgetGA4.metrics }
-					gatheringData={ isSearchConsoleGatheringData }
-				/>
-			) }
-
-			{ canViewSharedAnalytics4 &&
-				( ! isGA4Active || ! isGA4Connected ) &&
-				BREAKPOINT_SMALL === breakpoint && (
-					<Grid>
-						<Row>
-							<Cell>
-								<ActivateAnalyticsCTA
-									title={ __(
-										'Conversions completed',
-										'google-site-kit'
-									) }
-								/>
-							</Cell>
-						</Row>
-					</Grid>
-				) }
-
-			{ selectedStats === 2 && (
-				<AnalyticsStats
-					data={ ga4VisitorsOverviewAndStatsData }
-					dateRangeLength={ dateRangeLength }
-					selectedStats={ 0 }
-					metrics={ SearchFunnelWidgetGA4.metrics }
-					dataLabels={ [
-						__( 'Unique Visitors', 'google-site-kit' ),
-					] }
-					tooltipDataFormats={ [
-						( x ) => parseFloat( x ).toLocaleString(),
-					] }
-					statsColor={
-						SearchFunnelWidgetGA4.metrics[ selectedStats ].color
-					}
-					gatheringData={ isGA4GatheringData }
-					moduleSlug="analytics-4"
-				/>
-			) }
-
-			{ canViewSharedAnalytics4 &&
-				( selectedStats === 3 || selectedStats === 4 ) && (
-					<AnalyticsStats
-						data={ ga4StatsData }
-						dateRangeLength={ dateRangeLength }
-						// The selected stats order defined in the parent component does not match the order from the API.
-						selectedStats={ selectedStats - 3 }
-						metrics={ SearchFunnelWidgetGA4.metrics }
-						dataLabels={ [
-							__( 'Conversions', 'google-site-kit' ),
-							__( 'Engagement Rate %', 'google-site-kit' ),
-						] }
-						tooltipDataFormats={ [
-							( x ) => parseFloat( x ).toLocaleString(),
-							( x ) =>
-								numFmt( x / 100, {
-									style: 'percent',
-									signDisplay: 'never',
-									maximumFractionDigits: 2,
-								} ),
-						] }
-						chartDataFormats={ [ identity, ( x ) => x * 100 ] }
-						statsColor={
-							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
-						}
-						gatheringData={ isGA4GatheringData }
-						moduleSlug="analytics-4"
-					/>
-				) }
+			<Chart
+				canViewSharedAnalytics4={ canViewSharedAnalytics4 }
+				dateRangeLength={ dateRangeLength }
+				ga4StatsData={ ga4StatsData }
+				ga4VisitorsOverviewAndStatsData={
+					ga4VisitorsOverviewAndStatsData
+				}
+				isGA4Connected={ isGA4Connected }
+				isGA4GatheringData={ isGA4GatheringData }
+				isSearchConsoleGatheringData={ isSearchConsoleGatheringData }
+				metrics={ SearchFunnelWidgetGA4.metrics }
+				searchConsoleData={ searchConsoleData }
+				selectedStats={ selectedStats }
+				showRecoverableAnalytics={ showRecoverableAnalytics }
+			/>
 		</Widget>
 	);
 }
