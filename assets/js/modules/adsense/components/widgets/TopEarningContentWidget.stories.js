@@ -111,10 +111,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -135,10 +132,7 @@ ReadyViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -221,10 +215,7 @@ AdSenseNotLinked.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
 	},
 };
-AdSenseNotLinked.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/AdSenseNotLinked',
-	delay: 250,
-};
+AdSenseNotLinked.scenario = {};
 
 export default {
 	title: 'Key Metrics/TopEarningContentWidget',

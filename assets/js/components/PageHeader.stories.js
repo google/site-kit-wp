@@ -63,9 +63,7 @@ export function VRTStory() {
 }
 
 VRTStory.storyName = 'All Page Headers VRT';
-VRTStory.scenario = {
-	label: 'Global/Page Headers',
-};
+VRTStory.scenario = {};
 
 export default {
 	title: 'Global/Page Headers',
