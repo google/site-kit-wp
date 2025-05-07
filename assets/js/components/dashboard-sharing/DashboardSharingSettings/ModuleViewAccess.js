@@ -20,15 +20,14 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, forwardRef } from '@wordpress/element';
+import { forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import PropTypes from 'prop-types';
 import UserRoleSelect from '../UserRoleSelect';
-import WarningNotice from '../../WarningNotice';
-import Link from '../../Link';
+import Notice from '../../Notice';
 
 const ModuleViewAccess = forwardRef(
 	(
@@ -53,23 +52,19 @@ const ModuleViewAccess = forwardRef(
 
 		if ( recoverable ) {
 			return (
-				<WarningNotice>
-					{ createInterpolateElement(
-						__(
-							'Managing user required to manage view access. <Link>Learn more</Link>',
-							'google-site-kit'
-						),
-						{
-							Link: (
-								<Link
-									href={ recoverableModuleSupportLink }
-									external
-									hideExternalIndicator
-								/>
-							),
-						}
+				<Notice
+					type="warning"
+					description={ __(
+						'Managing user required to manage view access.',
+						'google-site-kit'
 					) }
-				</WarningNotice>
+					ctaButton={ {
+						label: 'Learn more',
+						href: recoverableModuleSupportLink,
+						external: true,
+						hideExternalIndicator: true,
+					} }
+				/>
 			);
 		}
 
