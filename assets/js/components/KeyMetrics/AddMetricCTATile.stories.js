@@ -32,9 +32,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'AddMetricCTATile';
-Default.scenario = {
-	label: 'KeyMetrics/AddMetricCTATile',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/AddMetricCTATile',

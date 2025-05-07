@@ -49,11 +49,7 @@ Default.args = {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 	},
 };
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/Default',
-	delay: 250,
-};
+Default.scenario = {};
 
 export const DismissedOnce = Template.bind( {} );
 DismissedOnce.storyName = 'Dismissed Once';
@@ -79,11 +75,7 @@ DismissedOnce.args = {
 		} );
 	},
 };
-DismissedOnce.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/DismissedOnce',
-	delay: 250,
-};
+DismissedOnce.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupCTATile',
