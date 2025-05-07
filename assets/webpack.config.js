@@ -29,16 +29,11 @@ const testBundleConfig = require( './webpack/testBundle.config' );
 
 function* webpackConfig( env, argv ) {
 	const { mode } = argv;
-	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
 
 	// Build the settings js..
-	yield modulesConfig( mode, rules, ANALYZE );
-
-	if ( ANALYZE ) {
-		return;
-	}
+	yield modulesConfig( mode, rules );
 
 	// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
 	yield basicModulesConfig( mode );

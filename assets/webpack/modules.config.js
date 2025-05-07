@@ -24,13 +24,10 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
-const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
-const WebpackBar = require( 'webpackbar' );
-const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
-const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
+const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
 const CreateFileWebpack = require( 'create-file-webpack' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
  * Internal dependencies
@@ -41,15 +38,16 @@ const {
 	configTemplate,
 	manifestArgs,
 	externals,
-	createMinimizerRules,
 	GOOGLESITEKIT_VERSION,
 	resolve,
 } = require( '../../webpack/common' );
+const { createMinimizerRules } = require( './common' );
 
-module.exports = ( mode, rules, ANALYZE ) => {
+module.exports = function ( mode, rules ) {
 	const isProduction = mode === 'production';
 
 	return {
+		name: 'Module Entry Points',
 		entry: {
 			// New Modules (Post-JSR).
 			'googlesitekit-api': './js/googlesitekit-api.js',
@@ -109,9 +107,10 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			// If multiple webpack runtimes (from different compilations) are used on the
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
 			// namespace.
-			// See: https://v4.webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit_webpackJsonp',
+			// See: https://webpack.js.org/configuration/output/#outputchunkloadingglobal
+			chunkLoadingGlobal: '__googlesitekit_webpackJsonp',
 		},
+		amd: false,
 		performance: {
 			maxEntrypointSize: 175000,
 		},
@@ -122,16 +121,7 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			new ProvidePlugin( {
 				React: '@wordpress/element',
 			} ),
-			new WebpackBar( {
-				name: 'Module Entry Points',
-				color: '#fbbc05',
-			} ),
-			new CircularDependencyPlugin( {
-				exclude: /node_modules/,
-				failOnError: true,
-				allowAsyncCycles: false,
-				cwd: process.cwd(),
-			} ),
+			new ProgressPlugin(),
 			new CreateFileWebpack( {
 				path: rootDir + '/dist',
 				fileName: 'config.php',
@@ -140,7 +130,7 @@ module.exports = ( mode, rules, ANALYZE ) => {
 					`array( ${ formattedFeaturesToPHPArray } )`
 				),
 			} ),
-			new ManifestPlugin( {
+			new WebpackManifestPlugin( {
 				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
@@ -156,17 +146,14 @@ module.exports = ( mode, rules, ANALYZE ) => {
 				emitWarning: true,
 				failOnError: true,
 			} ),
-			...( ANALYZE ? [ new BundleAnalyzerPlugin() ] : [] ),
 		],
 		optimization: {
-			minimizer: createMinimizerRules( mode ),
-			/*
-                The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
-                Without this, imported modules are initialized for each runtime chunk separately which
-                results in duplicate module initialization when a shared module is imported by separate entries
-                on the same page.
-                See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
-            */
+			minimizer: createMinimizerRules(),
+			// The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
+			// Without this, imported modules are initialized for each runtime chunk separately which
+			// results in duplicate module initialization when a shared module is imported by separate entries
+			// on the same page.
+			// See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
 			runtimeChunk: 'single',
 			splitChunks: {
 				cacheGroups: {

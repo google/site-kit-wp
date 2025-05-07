@@ -19,12 +19,10 @@
 /**
  * External dependencies
  */
-const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const WebpackBar = require( 'webpackbar' );
 
 /**
  * Internal dependencies
@@ -35,10 +33,11 @@ const {
 	resolve,
 	gutenbergExternals,
 	createRules,
-	createMinimizerRules,
 } = require( '../../webpack/common' );
+const { createMinimizerRules } = require( './common' );
 
 module.exports = ( mode ) => ( {
+	name: 'Gutenberg Blocks Entry Points',
 	entry: {
 		// Reader Revenue Manager
 		'reader-revenue-manager/block-editor-plugin/index':
@@ -97,16 +96,6 @@ module.exports = ( mode ) => ( {
 		],
 	},
 	plugins: [
-		new WebpackBar( {
-			name: 'Gutenberg Blocks Entry Points',
-			color: '#deff13',
-		} ),
-		new CircularDependencyPlugin( {
-			exclude: /node_modules/,
-			failOnError: true,
-			allowAsyncCycles: false,
-			cwd: process.cwd(),
-		} ),
 		new CopyWebpackPlugin( {
 			patterns: [
 				{
@@ -120,7 +109,7 @@ module.exports = ( mode ) => ( {
 				},
 			],
 		} ),
-		new ManifestPlugin( {
+		new WebpackManifestPlugin( {
 			...manifestArgs( mode ),
 			filter( file ) {
 				return ( file.name || '' ).match( /\.js$/ );
@@ -136,7 +125,8 @@ module.exports = ( mode ) => ( {
 		} ),
 	],
 	optimization: {
-		minimizer: createMinimizerRules( mode ),
+		minimizer: createMinimizerRules(),
 	},
 	resolve,
+	amd: false,
 } );

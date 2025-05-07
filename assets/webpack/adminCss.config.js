@@ -20,8 +20,7 @@
  * External dependencies
  */
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
-const WebpackBar = require( 'webpackbar' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
  * Internal dependencies
@@ -29,6 +28,7 @@ const WebpackBar = require( 'webpackbar' );
 const { rootDir, manifestArgs } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
+	name: 'Plugin CSS',
 	entry: {
 		'googlesitekit-admin-css': './sass/admin.scss',
 		'googlesitekit-adminbar-css': './sass/adminbar.scss',
@@ -75,14 +75,10 @@ module.exports = ( mode ) => ( {
 		new MiniCssExtractPlugin( {
 			filename:
 				'production' === mode
-					? '/assets/css/[name]-[contenthash].min.css'
-					: '/assets/css/[name].css',
+					? 'assets/css/[name]-[contenthash].min.css'
+					: 'assets/css/[name].css',
 		} ),
-		new WebpackBar( {
-			name: 'Plugin CSS',
-			color: '#4285f4',
-		} ),
-		new ManifestPlugin( {
+		new WebpackManifestPlugin( {
 			...manifestArgs( mode ),
 			filter( file ) {
 				return ( file.name || '' ).match( /\.css$/ );

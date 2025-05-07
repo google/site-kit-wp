@@ -31,6 +31,7 @@ import {
 	useEffect,
 	useCallback,
 	useState,
+	useRef,
 } from '@wordpress/element';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
@@ -63,6 +64,7 @@ import Footer from './Footer';
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
 		useState( false );
+	const ref = useRef( undefined );
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -152,6 +154,14 @@ export default function DashboardSharingDialog() {
 
 	// Handle clicking on the scrim (outside the dialog)
 	useEffect( () => {
+		if ( ! ref.current ) {
+			return;
+		}
+
+		const {
+			current: { ownerDocument },
+		} = ref;
+
 		const handleScrimClick = ( event ) => {
 			if (
 				resetDialogOpen &&
@@ -161,12 +171,12 @@ export default function DashboardSharingDialog() {
 			}
 		};
 
-		document.addEventListener( 'click', handleScrimClick );
+		ownerDocument.addEventListener( 'click', handleScrimClick );
 
 		return () => {
-			document.removeEventListener( 'click', handleScrimClick );
+			ownerDocument.removeEventListener( 'click', handleScrimClick );
 		};
-	}, [ resetDialogOpen, closeResetDialog ] );
+	}, [ ref, resetDialogOpen, closeResetDialog ] );
 
 	return (
 		<Portal>
@@ -190,6 +200,7 @@ export default function DashboardSharingDialog() {
 				<div
 					className="googlesitekit-dialog__back-wrapper"
 					aria-hidden={ breakpoint !== BREAKPOINT_SMALL }
+					ref={ ref }
 				>
 					<Button
 						aria-label={ __( 'Back', 'google-site-kit' ) }

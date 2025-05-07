@@ -257,6 +257,7 @@ export function setupAnalytics4Error(
 }
 
 export function setupAnalytics4Property( registry, createdDayBefore = 10 ) {
+	// eslint-disable-next-line sitekit/no-direct-date
 	const createTime = new Date(
 		Date.now() - DAY_IN_SECONDS * createdDayBefore * 1000
 	).toISOString();
