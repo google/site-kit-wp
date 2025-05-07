@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserDimensionsPieChart should render the pie chart with data 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"
+  >
+    <div
+      class="googlesitekit-widget--analyticsAllTraffic__dimensions-chart"
+    >
+      <div
+        class="googlesitekit-chart googlesitekit-chart--PieChart"
+        id="googlesitekit-chart-0"
+        tabindex="-1"
+      >
+        <div
+          class="googlesitekit-chart-loading"
+        >
+          <div
+            class="googlesitekit-preview-block googlesitekit-chart-loading__wrapper"
+            style="width: 300px; height: 300px;"
+          >
+            <div
+              class="googlesitekit-preview-block__wrapper googlesitekit-preview-block__wrapper--circle"
+            />
+          </div>
+        </div>
+        <div
+          class="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+        >
+          <span>
+            By
+          </span>
+           channels
+        </div>
+      </div>
+      <div
+        class="googlesitekit-widget--analyticsAllTraffic__legend"
+        role="region"
+      >
+        <button
+          class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__dot"
+              style="background-color: rgb(254, 206, 114);"
+            />
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__label"
+              data-label="Affiliates"
+            >
+              Affiliates
+            </span>
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__underlay"
+              style="background-color: rgb(254, 206, 114);"
+            />
+          </span>
+        </button>
+        <button
+          class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__dot"
+              style="background-color: rgb(169, 131, 230);"
+            />
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__label"
+              data-label="Email"
+            >
+              Email
+            </span>
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__underlay"
+              style="background-color: rgb(169, 131, 230);"
+            />
+          </span>
+        </button>
+        <button
+          class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__dot"
+              style="background-color: rgb(190, 212, 255);"
+            />
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__label"
+              data-label="Paid Search"
+            >
+              Paid Search
+            </span>
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__underlay"
+              style="background-color: rgb(190, 212, 255);"
+            />
+          </span>
+        </button>
+        <button
+          class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__dot"
+              style="background-color: rgb(238, 146, 218);"
+            />
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__label"
+              data-label="Direct"
+            >
+              Direct
+            </span>
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__underlay"
+              style="background-color: rgb(238, 146, 218);"
+            />
+          </span>
+        </button>
+        <button
+          class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice googlesitekit-widget--analyticsAllTraffic__legend-others"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__dot"
+              style="background-color: rgb(255, 155, 122);"
+            />
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__label"
+              data-label="Others"
+            >
+              Others
+            </span>
+            <span
+              class="googlesitekit-widget--analyticsAllTraffic__underlay"
+              style="background-color: rgb(255, 155, 122);"
+            />
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UserDimensionsPieChart should render the zero data state when all metrics in the report are zero 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"
+  >
+    <div
+      class="googlesitekit-widget--analyticsAllTraffic__dimensions-chart"
+    >
+      <div
+        class="googlesitekit-widget--analyticsAllTraffic__chart-zero-data"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-widget--analyticsAllTraffic__legend googlesitekit-widget--analyticsAllTraffic__legend--single"
+        role="region"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UserDimensionsPieChart should render the zero data state when the \`dataMap\` has less than 2 items 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"
+  >
+    <div
+      class="googlesitekit-widget--analyticsAllTraffic__dimensions-chart"
+    >
+      <div
+        class="googlesitekit-widget--analyticsAllTraffic__chart-zero-data"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-widget--analyticsAllTraffic__legend"
+        role="region"
+      />
+    </div>
+  </div>
+</div>
+`;

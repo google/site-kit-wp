@@ -493,7 +493,7 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
-	const showZeroDataChart = hasZeroData;
+	const showZeroDataChart = hasZeroData || dataMap.length < 2;
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
