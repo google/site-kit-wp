@@ -88,6 +88,9 @@ const Notice = forwardRef(
 								disabled={ ctaButton.disabled }
 								href={ ctaButton.href }
 								external={ ctaButton.external }
+								hideExternalIndicator={
+									ctaButton.hideExternalIndicator
+								}
 							/>
 						) }
 				</div>
