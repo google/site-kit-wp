@@ -277,8 +277,8 @@ class WooCommerce extends Conversion_Events_Provider {
 				'currency_code'  => $order->get_currency(),
 				'tax_total'      => $this->get_formatted_price( $order->get_total_tax() ),
 				'shipping_total' => $this->get_formatted_price( $order->get_total_shipping() ),
+				'total_price'    => $this->get_formatted_price( $order->get_total() ),
 			),
-			'total_price' => $this->get_formatted_price( $order->get_total() ),
 			'items'       => array_map(
 				function ( $item ) {
 					return array_merge(
