@@ -141,6 +141,7 @@ export default function PublicationOnboardingStateNotice() {
 	return (
 		<Notice
 			type="warning"
+			className="googlesitekit-publication-onboarding-state-notice"
 			title={ noticeText }
 			ctaButton={ {
 				label: buttonText,
