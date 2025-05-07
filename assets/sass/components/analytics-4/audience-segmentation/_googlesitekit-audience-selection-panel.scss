@@ -198,30 +198,8 @@
 			}
 		}
 
-		.googlesitekit-audience-selection-panel__audience-creation-notice-info {
-
-			.googlesitekit-notice--warning {
-				align-items: center;
-				border-radius: 8px;
-				flex-direction: row;
-				gap: $grid-gap-phone;
-				margin: 18px 0;
-				padding: $grid-gap-phone / 2 $grid-gap-phone;
-			}
-
-			.googlesitekit-notice__content {
-				flex: 1;
-
-				p {
-					font-size: $fs-body-sm;
-					font-weight: $fw-normal;
-				}
-			}
-
-			.googlesitekit-subtle-notification__action {
-				justify-content: initial;
-				width: initial;
-			}
+		.googlesitekit-notice--warning {
+			margin: 18px 0;
 		}
 
 		.googlesitekit-audience-creation-error-notice {
