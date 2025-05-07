@@ -47,6 +47,7 @@ import LearnMoreLink from '../../../../googlesitekit/notifications/components/co
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -245,37 +246,28 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
+			<NoticeNotification
+				type="warning"
+				notificationID={ id }
+				{ ...gaTrackingProps }
+				title={ __(
+					'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
+					'google-site-kit'
+				) }
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+					onClick: dismissNotice,
+				} }
+				ctaButton={ {
+					label: __(
+						'Complete publication setup',
 						'google-site-kit'
-					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Complete publication setup',
-								'google-site-kit'
-							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							{ ...gaTrackingProps }
-						/>
-					}
-					type="warning"
-				/>
-			</Notification>
+					),
+					href: serviceURL,
+					onClick: onCTAClick,
+					external: true,
+				} }
+			/>
 		);
 	}
 
