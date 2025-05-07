@@ -52,11 +52,9 @@ export default function Banner( {
 	const isMobileOrTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-	const SVGComponent =
-		isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
+	const SVGData = isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
 
-	const svgAlignmentStyle =
-		SVGComponent && svg?.alignItems ? { alignItems: svg.alignItems } : {};
+	const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 
 	return (
 		<div className={ classnames( 'googlesitekit-banner', className ) }>
@@ -83,18 +81,19 @@ export default function Banner( {
 						( ctaButton?.onClick || ctaButton?.href ) && (
 							<CTAButton { ...ctaButton } />
 						) }
-					{ dismissButton?.label && dismissButton?.onClick && (
+					{ dismissButton?.onClick && (
 						<DismissButton { ...dismissButton } />
 					) }
 				</div>
 			</div>
 
 			<div
-				className="googlesitekit-banner__svg-wrapper"
-				style={ svgAlignmentStyle }
-			>
-				<SVGComponent />
-			</div>
+				className={ classnames(
+					'googlesitekit-banner__svg-wrapper',
+					svgMode && `googlesitekit-banner__svg-wrapper--${ svgMode }`
+				) }
+				style={ { backgroundImage: `url(${ SVGData })` } }
+			/>
 
 			{ footer && <Footer>{ footer }</Footer> }
 		</div>
@@ -112,7 +111,7 @@ Banner.propTypes = {
 	svg: PropTypes.shape( {
 		desktop: PropTypes.elementType,
 		mobile: PropTypes.elementType,
-		verticalAlign: PropTypes.oneOf( [ 'top', 'middle', 'bottom' ] ),
+		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
 	children: PropTypes.node,
 };

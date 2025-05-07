@@ -22,11 +22,17 @@
 import { Fragment } from 'react';
 import Banner from '.';
 import { Cell, Grid, Row } from '../../material-components';
-import DesktopSVG from './../../../svg/graphics/key-metrics-setup-cta-small-desktop.svg';
-import MobileSVG from './../../../svg/graphics/key-metrics-setup-cta-mobile.svg';
+import AdSenseDesktopSVG from './../../../svg/graphics/banner-adsense-setup-cta.load-as-data.svg';
+import AdSenseMobileSVG from './../../../svg/graphics/banner-adsense-setup-cta-mobile.load-as-data.svg';
+import AdBlockingRecoveryDesktopSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta.load-as-data.svg';
+import AdBlockingRecoveryMobileSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.load-as-data.svg';
+import ConversionsDesktopSVG from './../../../svg/graphics/banner-conversions-setup-cta.load-as-data.svg';
+import ConversionsMobileSVG from './../../../svg/graphics/banner-conversions-setup-cta-mobile.load-as-data.svg';
+import EnhancedMeasurementDesktopSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta.load-as-data.svg';
+import EnhancedMeasurementMobileSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta-mobile.load-as-data.svg';
+import SignInWithGoogleDesktopSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta.load-as-data.svg';
+import SignInWithGoogleMobileSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta-mobile.load-as-data.svg';
 import Link from '../Link';
-
-const svgAlignments = [ 'start', 'center', 'end' ];
 
 function Template() {
 	return (
@@ -35,34 +41,51 @@ function Template() {
 				<Cell size={ 12 }>
 					<h3>Setup CTA Banners</h3>
 
+					<em>Simple Banner</em>
 					<Banner
-						title="Setup CTA Banner"
-						description="Setup CTA Banner with minimal required properties."
+						title="Unlock your site’s earning potential"
+						description={
+							<Fragment>
+								Sites just like yours are earning up to $2000
+								per year with AdSense.
+								<br />
+								Connect AdSense today.
+							</Fragment>
+						}
 						ctaButton={ {
-							label: 'Setup up now',
+							label: 'Get started',
 							onClick: () => {},
 						} }
 						dismissButton={ {
-							label: 'Dismiss',
+							label: 'Maybe later',
 							onClick: () => {},
 						} }
 						svg={ {
-							mobile: MobileSVG,
-							desktop: DesktopSVG,
+							mobile: AdSenseMobileSVG,
+							desktop: AdSenseDesktopSVG,
+							verticalPosition: 'top',
 						} }
 					/>
 					<br />
+					<em>
+						Banner with Top Aligned SVG, Multiple Paragraphs and
+						Help Text
+					</em>
 					<Banner
-						title="Setup CTA Banner with Multiple Paragraphs"
+						title="Recover revenue lost to ad blockers"
 						description={
 							<Fragment>
 								<p>
-									Setup CTA banner with multiple paragraphs
-									passed to description.
+									Display a message to give site visitors with
+									an ad blocker the option to allow ads on
+									your site. Site Kit will place an ad
+									blocking recovery tag on your site.{ ' ' }
+									<Link>Learn more</Link>
 								</p>
 								<p>
-									Setup CTA banner with multiple paragraphs
-									passed to description.
+									Publishers see up to 1 in 5 users choose to
+									allow ads once they encounter an ad blocking
+									recovery message*
 								</p>
 							</Fragment>
 						}
@@ -71,98 +94,81 @@ function Template() {
 							onClick: () => {},
 						} }
 						dismissButton={ {
-							label: 'Dismiss',
 							onClick: () => {},
 						} }
 						svg={ {
-							mobile: MobileSVG,
-							desktop: DesktopSVG,
+							mobile: AdBlockingRecoveryMobileSVG,
+							desktop: AdBlockingRecoveryDesktopSVG,
+							verticalPosition: 'top',
 						} }
+						helpText="* Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop"
 					/>
 					<br />
+					<em>Banner with Footer</em>
 					<Banner
-						title="Setup CTA Banner with Learn More Link"
-						description="Setup CTA Banner with Learn More Link."
+						title="Get personalized suggestions for user interaction metrics based on your goals"
+						description="Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site."
 						svg={ {
-							mobile: MobileSVG,
-							desktop: DesktopSVG,
+							mobile: ConversionsMobileSVG,
+							desktop: ConversionsDesktopSVG,
+							verticalPosition: 'top',
 						} }
 						ctaButton={ {
-							label: 'Setup up now',
+							label: 'Get tailored metrics',
 							onClick: () => {},
 						} }
 						dismissButton={ {
-							label: 'Dismiss',
-							onClick: () => {},
-						} }
-						learnMoreLink={ {
-							label: 'More information',
-							href: '#',
-						} }
-					/>
-					<br />
-					<Banner
-						title="Setup CTA Banner with Help Text"
-						description="Setup CTA Banner with Help Text."
-						svg={ {
-							mobile: MobileSVG,
-							desktop: DesktopSVG,
-						} }
-						ctaButton={ {
-							label: 'Setup up now',
-							onClick: () => {},
-						} }
-						dismissButton={ {
-							label: 'Dismiss',
-							onClick: () => {},
-						} }
-						helpText="This is a help text."
-					/>
-					<br />
-					{ svgAlignments.map( ( alignment ) => (
-						<Fragment key={ alignment }>
-							<Banner
-								title={ `Setup CTA Banner with ${ alignment.toUpperCase() } SVG Alignment` }
-								description={ `Setup CTA Banner with  ${ alignment.toUpperCase() } SVG Alignment. A longer description to allow the alignment of the included SVGs to be clearly visible. The SVGs will align to the top, middle or bottom based on the passed value.  A longer description to allow the alignment of the included SVGs to be clearly visible. The SVGs will align to the top, middle or bottom based on the passed value. ` }
-								svg={ {
-									mobile: MobileSVG,
-									desktop: DesktopSVG,
-									alignItems: alignment,
-								} }
-								ctaButton={ {
-									label: 'Setup up now',
-									onClick: () => {},
-								} }
-								dismissButton={ {
-									label: 'Dismiss',
-									onClick: () => {},
-								} }
-							/>
-							<br />
-						</Fragment>
-					) ) }
-
-					<Banner
-						title="Setup CTA Banner with Footer"
-						description="Setup CTA Banner with Footer."
-						svg={ {
-							mobile: MobileSVG,
-							desktop: DesktopSVG,
-						} }
-						ctaButton={ {
-							label: 'Setup up now',
-							onClick: () => {},
-						} }
-						dismissButton={ {
-							label: 'Dismiss',
 							onClick: () => {},
 						} }
 						footer={
 							<div>
-								<span>Extra banner footer.</span>{ ' ' }
-								<Link>Footer link</Link>
+								<span>Interested in specific metrics?</span>{ ' ' }
+								<Link>Select your own metrics</Link>
 							</div>
 						}
+					/>
+					<br />
+					<em>Banner with Center Aligned SVG and Learn More Link</em>
+					<Banner
+						title="Understand how visitors interact with your content"
+						description="Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required - you'll be redirected to give permission for Site Kit to enable it on your behalf."
+						learnMoreLink={ {
+							href: 'https://example.com',
+						} }
+						ctaButton={ {
+							label: 'Enable now',
+							onClick: () => {},
+						} }
+						dismissButton={ {
+							onClick: () => {},
+						} }
+						svg={ {
+							mobile: EnhancedMeasurementMobileSVG,
+							desktop: EnhancedMeasurementDesktopSVG,
+							verticalPosition: 'center',
+						} }
+						helpText="You can always add/edit this in the Site Kit Settings."
+					/>
+					<br />
+					<em>Banner with Bottom Aligned SVG</em>
+					<Banner
+						title="Boost onboarding, security, and trust on your site using Sign in with Google"
+						description="Provide your site visitors with a simple, secure, and personalized experience by adding a Sign in with Google button to your login page."
+						learnMoreLink={ {
+							href: 'https://example.com',
+						} }
+						ctaButton={ {
+							label: 'Setup up Sign in with Google',
+							onClick: () => {},
+						} }
+						dismissButton={ {
+							onClick: () => {},
+						} }
+						svg={ {
+							mobile: SignInWithGoogleMobileSVG,
+							desktop: SignInWithGoogleDesktopSVG,
+							verticalPosition: 'bottom',
+						} }
 					/>
 				</Cell>
 			</Row>

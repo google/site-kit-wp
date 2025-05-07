@@ -22,13 +22,14 @@
 	grid-template-columns: 1fr;
 
 	@media (min-width: $width-desktop + 1 + px) {
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr 40%;
 	}
 
 	.googlesitekit-banner__content {
 		padding: $grid-gap-phone;
 
 		@media (min-width: $width-tablet + 1 + px) {
+			min-height: 188px;
 			padding: $grid-gap-desktop;
 		}
 	}
@@ -101,25 +102,32 @@
 	}
 
 	.googlesitekit-banner__svg-wrapper {
-		display: flex;
-		height: 100%;
-		justify-content: center;
-		overflow: hidden;
+		background-position: center bottom;
+		background-repeat: no-repeat;
+		background-size: contain;
+		height: 146px;
+		margin: 0 auto;
+		width: 90%;
 
 		@media (min-width: $width-desktop + 1 + px) {
-			justify-content: flex-end;
+			// y axis positioning is set below based on the dynamic class added in the Banner component.
+			background-position-x: right;
+			background-repeat: no-repeat;
+			background-size: 100%;
+			height: 100%;
+			width: 100%;
 		}
+	}
 
-		svg {
-			max-height: 136px;
-
-			@media (min-width: $width-desktop + 1 + px) {
-				height: 100%;
-				max-height: 136px;
-				scale: 1.31;
-
-				transform-origin: initial;
-			}
+	@media (min-width: $width-desktop + 1 + px) {
+		.googlesitekit-banner__svg-wrapper--top {
+			background-position-y: top;
+		}
+		.googlesitekit-banner__svg-wrapper--center {
+			background-position-y: center;
+		}
+		.googlesitekit-banner__svg-wrapper--bottom {
+			background-position-y: bottom;
 		}
 	}
 }
