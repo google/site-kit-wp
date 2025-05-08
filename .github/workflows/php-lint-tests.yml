@@ -8,13 +8,13 @@ on:
     # Only run if PHP-related files changed.
     paths:
       - '.github/workflows/php-lint-tests.yml'
-      - includes/**
-      - tests/phpunit/**
+      - 'includes/**'
+      - 'tests/phpunit/**'
       - '**.php'
       - 'phpcs.xml*'
       - 'phpunit*.xml*'
-      - 'composer.json'
-      - 'composer.lock'
+      - composer.json
+      - composer.lock
       - feature-flags.json
       - readme.txt
       - changelog.txt
@@ -33,8 +33,8 @@ on:
       - '**.php'
       - 'phpcs.xml*'
       - 'phpunit*.xml*'
-      - 'composer.json'
-      - 'composer.lock'
+      - composer.json
+      - composer.lock
       - feature-flags.json
       - readme.txt
       - changelog.txt
