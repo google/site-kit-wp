@@ -266,6 +266,11 @@ export default function DashboardMainApp() {
 
 			<OverlayNotificationsRenderer />
 
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>
+
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_KEY_METRICS }
