@@ -29,6 +29,7 @@ import {
 	createRegistryControl,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { getStorage } from '../../../util/storage';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
@@ -46,12 +47,24 @@ const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 const QUEUE_NOTIFICATION = 'QUEUE_NOTIFICATION';
 const RESET_QUEUE = 'RESET_QUEUE';
+const MARK_NOTIFICATION_SEEN = 'MARK_NOTIFICATION_SEEN';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
+const PERSIST_SEEN_NOTIFICATIONS = 'PERSIST_SEEN_NOTIFICATIONS';
+
+const NOTIFICATION_SEEN_STORAGE_KEY = 'googlesitekit_notification_seen';
+
+const storage = getStorage();
+
+const isValidNotificationID = ( notificationID ) =>
+	'string' === typeof notificationID;
 
 export const initialState = {
 	notifications: {},
 	queuedNotifications: {},
+	seenNotifications: JSON.parse(
+		storage.getItem( NOTIFICATION_SEEN_STORAGE_KEY ) || '{}'
+	),
 };
 
 export const actions = {
@@ -187,6 +200,47 @@ export const actions = {
 			type: QUEUE_NOTIFICATION,
 		};
 	},
+
+	/**
+	 * Marks a notification as seen on the current date.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} notificationID Notification ID.
+	 * @return {Object} Redux-style action.
+	 */
+	markNotificationSeen: createValidatedAction(
+		( notificationID ) => {
+			invariant(
+				isValidNotificationID( notificationID ),
+				'a valid notification ID is required to mark a notification as seen.'
+			);
+		},
+		function* ( notificationID ) {
+			const registry = yield commonActions.getRegistry();
+
+			// Only dispatch action for dismissible notifications.
+			const notification = registry
+				.select( CORE_NOTIFICATIONS )
+				.getNotification( notificationID );
+
+			if ( notification?.isDismissible ) {
+				const dateSeen = registry
+					.select( CORE_USER )
+					.getReferenceDate();
+
+				yield {
+					payload: { dateSeen, notificationID },
+					type: MARK_NOTIFICATION_SEEN,
+				};
+
+				yield {
+					type: PERSIST_SEEN_NOTIFICATIONS,
+				};
+			}
+		}
+	),
+
 	/**
 	 * Dismisses the given notification by its id.
 	 *
@@ -279,6 +333,11 @@ export const controls = {
 					registry.resolveSelect( CORE_USER ).getDismissedPrompts(),
 				] );
 
+				// Get the seen notifications to rotate same priority notifications.
+				const seenNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getSeenNotifications();
+
 				let potentialNotifications = Object.values( notifications )
 					.filter( ( notification ) =>
 						notification?.featureFlag
@@ -294,16 +353,23 @@ export const controls = {
 					.filter( ( { isDismissible, id } ) =>
 						isDismissible ? ! isNotificationDismissed( id ) : true
 					)
-					.map( ( { checkRequirements, ...notification } ) => ( {
-						...notification,
-						checkRequirements,
-						async check() {
-							if ( checkRequirements ) {
-								return await checkRequirements( registry );
-							}
-							return true;
-						},
-					} ) );
+					.map( ( { checkRequirements, ...notification } ) => {
+						const viewCount =
+							seenNotifications[ notification.id ]?.length || 0;
+
+						return {
+							...notification,
+							viewCount,
+							checkRequirements,
+							async check() {
+								if ( checkRequirements ) {
+									return await checkRequirements( registry );
+								}
+								return true;
+							},
+						};
+					} )
+					.sort( ( a, b ) => a.viewCount - b.viewCount );
 
 				const { queueNotification } =
 					registry.dispatch( CORE_NOTIFICATIONS );
@@ -321,6 +387,18 @@ export const controls = {
 					}
 				} while ( nextNotification );
 			}
+	),
+	[ PERSIST_SEEN_NOTIFICATIONS ]: createRegistryControl(
+		( registry ) => () => {
+			const seenNotifications = registry
+				.select( CORE_NOTIFICATIONS )
+				.getSeenNotifications();
+
+			storage.setItem(
+				NOTIFICATION_SEEN_STORAGE_KEY,
+				JSON.stringify( seenNotifications )
+			);
+		}
 	),
 };
 
@@ -359,6 +437,25 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
+		case MARK_NOTIFICATION_SEEN: {
+			const { dateSeen, notificationID } = payload;
+			const seenNotifications = { ...state.seenNotifications };
+
+			// Initialize array if it doesn't exist.
+			if ( ! seenNotifications[ notificationID ] ) {
+				seenNotifications[ notificationID ] = [];
+			}
+
+			// Only add the date if it's not already in the array.
+			if ( ! seenNotifications[ notificationID ].includes( dateSeen ) ) {
+				seenNotifications[ notificationID ].push( dateSeen );
+			}
+
+			state.seenNotifications = seenNotifications;
+
+			break;
+		}
+
 		case DISMISS_NOTIFICATION: {
 			const { id } = payload;
 
@@ -393,6 +490,32 @@ export const resolvers = {
 };
 
 export const selectors = {
+	/**
+	 * Gets all view dates for each notification, keyed by notification ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Object with notification IDs as keys and array of dates viewed as the value.
+	 */
+	getSeenNotifications( state ) {
+		return state.seenNotifications;
+	},
+
+	/**
+	 * Gets the dates when a specific notification was seen.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state          Data store's state.
+	 * @param {string} notificationID Notification ID.
+	 * @return {Array} Array of dates when the notification was seen.
+	 */
+	getNotificationSeenDates( state, notificationID ) {
+		const { seenNotifications } = state;
+		return seenNotifications[ notificationID ] ?? [];
+	},
+
 	/**
 	 * Fetches all registered notifications from state, regardless of whether they are dismissed or not.
 	 *
