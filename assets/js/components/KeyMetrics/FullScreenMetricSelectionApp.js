@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../material-components';
@@ -43,12 +42,7 @@ import {
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function FullScreenMetricSelectionApp() {
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setValues } = useDispatch( CORE_FORMS );
-
-	const mainDashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
@@ -62,10 +56,6 @@ export default function FullScreenMetricSelectionApp() {
 			'getUserInputSettings'
 		);
 	} );
-
-	const closePanel = useCallback( () => {
-		navigateTo( mainDashboardURL );
-	}, [ navigateTo, mainDashboardURL ] );
 
 	const savedViewableMetrics = useSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
@@ -150,7 +140,6 @@ export default function FullScreenMetricSelectionApp() {
 												smSize={ 6 }
 											>
 												<PanelContent
-													closePanel={ closePanel }
 													savedViewableMetrics={
 														savedViewableMetrics
 													}

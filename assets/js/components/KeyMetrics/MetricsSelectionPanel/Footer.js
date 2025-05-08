@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { noop } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -30,7 +31,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import {
+	useSelect,
+	useDispatch,
+	useInViewSelect,
+	useRegistry,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
@@ -50,16 +56,18 @@ import {
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
+import { snapshotAllStores } from '../../../googlesitekit/data/create-snapshot-store';
 import { trackEvent } from '../../../util';
 import SelectionPanelFooter from './SelectionPanelFooter';
 
 export default function Footer( {
 	isOpen,
-	closePanel,
+	closePanel = noop,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
 	isFullScreen = false,
 } ) {
+	const registry = useRegistry();
 	const viewContext = useViewContext();
 
 	const selectedMetrics = useSelect( ( select ) =>
@@ -123,9 +131,15 @@ export default function Footer( {
 		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 	} );
 
+	const mainDashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	const conversionReportingSpecificKeyMetricsWidgets = useSelect(
 		( select ) =>
 			select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
@@ -145,7 +159,7 @@ export default function Footer( {
 	);
 
 	const onSaveSuccess = useCallback(
-		( selectedItemSlugs ) => {
+		async ( selectedItemSlugs ) => {
 			const userSavedConversionReportingKeyMetricsList = Object.values(
 				conversionReportingSpecificKeyMetricsWidgets
 			)
@@ -190,26 +204,48 @@ export default function Footer( {
 							redirectURL,
 						},
 					} );
+
+					return;
 				}
+
+				// Snapshot `CORE_FORMS` store to ensure the form data is retained
+				// across page navigations.
+				if ( isFullScreen ) {
+					await snapshotAllStores( registry );
+				}
+			}
+
+			// In the full screen app, navigate to the dashboard after saving.
+			if ( isFullScreen ) {
+				navigateTo( mainDashboardURL );
 			}
 		},
 		[
-			trackingCategory,
+			conversionReportingSpecificKeyMetricsWidgets,
 			isGA4Connected,
 			hasMissingCustomDimensions,
+			isFullScreen,
+			trackingCategory,
 			setValues,
 			hasAnalytics4EditScope,
 			onNavigationToOAuthURL,
 			closePanel,
 			setPermissionScopeError,
 			redirectURL,
-			conversionReportingSpecificKeyMetricsWidgets,
+			registry,
+			navigateTo,
+			mainDashboardURL,
 		]
 	);
 
 	const onCancel = useCallback( () => {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
-	}, [ trackingCategory ] );
+
+		// In the full screen app, navigate to the dashboard after canceling.
+		if ( isFullScreen ) {
+			navigateTo( mainDashboardURL );
+		}
+	}, [ isFullScreen, mainDashboardURL, navigateTo, trackingCategory ] );
 
 	return (
 		<SelectionPanelFooter
@@ -232,7 +268,7 @@ export default function Footer( {
 
 Footer.propTypes = {
 	isOpen: PropTypes.bool,
-	closePanel: PropTypes.func.isRequired,
+	closePanel: PropTypes.func,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
 	isFullScreen: PropTypes.bool,
