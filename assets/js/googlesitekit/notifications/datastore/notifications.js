@@ -441,12 +441,12 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			const { notificationID, currentDate } = payload;
 			const seenNotifications = { ...state.seenNotifications };
 
-			// Initialize array if it doesn't exist
+			// Initialize array if it doesn't exist.
 			if ( ! seenNotifications[ notificationID ] ) {
 				seenNotifications[ notificationID ] = [];
 			}
 
-			// Only add the date if it's not already in the array
+			// Only add the date if it's not already in the array.
 			if (
 				! seenNotifications[ notificationID ].includes( currentDate )
 			) {
@@ -496,12 +496,12 @@ export const resolvers = {
 
 export const selectors = {
 	/**
-	 * Gets all seen notifications view date arrays.
+	 * Gets all view dates for each notification, keyed by notification ID.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Object with notification IDs as keys and view count as values.
+	 * @return {Object} Object with notification IDs as keys and array of dates viewed as the value.
 	 */
 	getSeenNotifications( state ) {
 		return state.seenNotifications;

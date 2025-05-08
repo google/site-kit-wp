@@ -28,7 +28,6 @@ import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import { CORE_UI } from '../../../datastore/ui/constants';
 import Notification from '.';
 
-// Create a reusable NotificationWrapper component for tests
 function NotificationWrapper() {
 	return (
 		<Notification id="test-notification">
@@ -56,7 +55,7 @@ jest.mock( '../../hooks/useHasBeenViewed', () => {
 	};
 } );
 
-// Export the mock for direct access in tests
+// Export the mock for direct access in tests.
 export const mockUseHasBeenViewed = jest.requireMock(
 	'../../hooks/useHasBeenViewed'
 ).useHasBeenViewed;

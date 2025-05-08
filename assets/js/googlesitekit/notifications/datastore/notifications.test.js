@@ -421,7 +421,7 @@ describe( 'core/notifications Notifications', () => {
 				expect( seenNotifications ).toEqual( {} );
 			} );
 
-			it( 'should return seen notifications with their view counts', async () => {
+			it( 'should return seen notifications with their dates viewed as an array', async () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
 				registerNotification( 'notification-1', {
 					Component: TestNotificationComponent,
