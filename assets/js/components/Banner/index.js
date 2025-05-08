@@ -45,7 +45,7 @@ export default function Banner( {
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
-	svg,
+	svg, // NOTE: SVGs must be imported with the ?url suffix for use as a backgroundImage in this component.
 	footer,
 } ) {
 	const breakpoint = useBreakpoint();

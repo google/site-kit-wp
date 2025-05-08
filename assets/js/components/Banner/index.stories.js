@@ -22,16 +22,19 @@
 import { Fragment } from 'react';
 import Banner from '.';
 import { Cell, Grid, Row } from '../../material-components';
-import AdSenseDesktopSVG from './../../../svg/graphics/banner-adsense-setup-cta.load-as-data.svg';
-import AdSenseMobileSVG from './../../../svg/graphics/banner-adsense-setup-cta-mobile.load-as-data.svg';
-import AdBlockingRecoveryDesktopSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta.load-as-data.svg';
-import AdBlockingRecoveryMobileSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.load-as-data.svg';
-import ConversionsDesktopSVG from './../../../svg/graphics/banner-conversions-setup-cta.load-as-data.svg';
-import ConversionsMobileSVG from './../../../svg/graphics/banner-conversions-setup-cta-mobile.load-as-data.svg';
-import EnhancedMeasurementDesktopSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta.load-as-data.svg';
-import EnhancedMeasurementMobileSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta-mobile.load-as-data.svg';
-import SignInWithGoogleDesktopSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta.load-as-data.svg';
-import SignInWithGoogleMobileSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta-mobile.load-as-data.svg';
+// TODO: This rule should be updated to allow query parameters in import paths.
+/* eslint-disable import/no-unresolved */
+import AdSenseDesktopSVG from './../../../svg/graphics/banner-adsense-setup-cta.svg?url';
+import AdSenseMobileSVG from './../../../svg/graphics/banner-adsense-setup-cta-mobile.svg?url';
+import AdBlockingRecoveryDesktopSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
+import AdBlockingRecoveryMobileSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
+import ConversionsDesktopSVG from './../../../svg/graphics/banner-conversions-setup-cta.svg?url';
+import ConversionsMobileSVG from './../../../svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
+import EnhancedMeasurementDesktopSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
+import EnhancedMeasurementMobileSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
+import SignInWithGoogleDesktopSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
+import SignInWithGoogleMobileSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
+/* eslint-enable import/no-unresolved */
 import Link from '../Link';
 
 function Template() {

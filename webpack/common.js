@@ -169,28 +169,27 @@ exports.noAMDParserRule = noAMDParserRule;
 
 const svgRules = [
 	{
-		test: /\.load-as-data\.svg$/,
-		use: [
+		oneOf: [
 			{
-				loader: 'url-loader',
+				test: /\.svg$/,
+				resourceQuery: /url/,
+				use: 'url-loader',
 			},
-		],
-	},
-	{
-		test: /\.svg$/,
-		exclude: /\.load-as-data\.svg$/,
-		use: [
 			{
-				loader: '@svgr/webpack',
-				options: {
-					// strip width & height to allow manual override using props
-					dimensions: false,
-				},
+				test: /\.svg$/,
+				use: [
+					{
+						loader: '@svgr/webpack',
+						options: {
+							// strip width & height to allow manual override using props
+							dimensions: false,
+						},
+					},
+				],
 			},
 		],
 	},
 ];
-
 exports.svgRules = svgRules;
 
 exports.createRules = ( mode ) => [
