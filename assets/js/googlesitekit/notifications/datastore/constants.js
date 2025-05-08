@@ -28,6 +28,7 @@ export const NOTIFICATION_AREAS = {
 	ERRORS: 'notification-area-errors',
 	BANNERS_ABOVE_NAV: 'notification-area-banners-above-nav',
 	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
+	OVERLAYS: 'notification-area-overlays',
 };
 
 export const NOTIFICATION_GROUPS = {
