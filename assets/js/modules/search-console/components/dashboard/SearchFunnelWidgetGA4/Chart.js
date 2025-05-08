@@ -150,5 +150,4 @@ Chart.propTypes = {
 	metrics: PropTypes.array.isRequired,
 	searchConsoleData: PropTypes.array,
 	selectedStats: PropTypes.number.isRequired,
-	showRecoverableAnalytics: PropTypes.bool,
 };
