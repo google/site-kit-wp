@@ -141,14 +141,14 @@ export default function Chart( {
 }
 
 Chart.propTypes = {
-	canViewSharedAnalytics4: PropTypes.bool.isRequired,
+	canViewSharedAnalytics4: PropTypes.bool,
 	dateRangeLength: PropTypes.number.isRequired,
-	ga4StatsData: PropTypes.object.isRequired,
-	ga4VisitorsOverviewAndStatsData: PropTypes.object.isRequired,
-	isGA4GatheringData: PropTypes.bool.isRequired,
-	isSearchConsoleGatheringData: PropTypes.bool.isRequired,
+	ga4StatsData: PropTypes.object,
+	ga4VisitorsOverviewAndStatsData: PropTypes.object,
+	isGA4GatheringData: PropTypes.bool,
+	isSearchConsoleGatheringData: PropTypes.bool,
 	metrics: PropTypes.array.isRequired,
-	searchConsoleData: PropTypes.array.isRequired,
+	searchConsoleData: PropTypes.array,
 	selectedStats: PropTypes.number.isRequired,
-	showRecoverableAnalytics: PropTypes.bool.isRequired,
+	showRecoverableAnalytics: PropTypes.bool,
 };
