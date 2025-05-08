@@ -129,10 +129,7 @@ Loaded.args = {
 		}
 	},
 };
-Loaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loaded',
-	delay: 250,
-};
+Loaded.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -153,9 +150,7 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loading',
-};
+Loading.scenario = {};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -199,9 +194,7 @@ DataUnavailable.args = {
 		}
 	},
 };
-DataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/DataUnavailable',
-};
+DataUnavailable.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -226,10 +219,7 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -255,9 +245,7 @@ Error.args = {
 		}
 	},
 };
-Error.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Error',
-};
+Error.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4',

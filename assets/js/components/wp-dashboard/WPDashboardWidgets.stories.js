@@ -106,8 +106,6 @@ ReadyWithActivateAnalyticsCTA.args = {
 };
 
 ReadyWithActivateAnalyticsCTA.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
 	delay: 6000, // This extra delay is required to fix unstable VRTs.
 };
 

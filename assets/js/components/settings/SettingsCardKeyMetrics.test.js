@@ -94,7 +94,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).toBeInTheDocument();
 	} );
 
@@ -115,7 +115,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).toBeInTheDocument();
 
 		// Default content should be replaced with ConversionReportingSettingsSubtleNotification,
@@ -140,7 +140,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).not.toBeInTheDocument();
 	} );
 } );

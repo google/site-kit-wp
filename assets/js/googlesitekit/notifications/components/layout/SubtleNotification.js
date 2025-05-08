@@ -63,8 +63,6 @@ const SubtleNotification = forwardRef(
 									type === 'success',
 								'googlesitekit-subtle-notification--warning':
 									type === 'warning',
-								'googlesitekit-subtle-notification--new-feature':
-									type === 'new-feature',
 							}
 						) }
 					>

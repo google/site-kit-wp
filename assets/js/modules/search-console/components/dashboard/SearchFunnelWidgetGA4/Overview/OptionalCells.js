@@ -40,12 +40,11 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../../hooks/useBreakpoint';
+import { getCellProps } from './utils';
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,
 	error,
-	halfCellProps,
-	quarterCellProps,
 	showGA4,
 	showConversionsCTA,
 	showRecoverableGA4,
@@ -61,6 +60,9 @@ export default function OptionalCells( {
 	);
 	const analyticsModuleActiveAndConnected =
 		ga4ModuleActive && ga4ModuleConnected;
+
+	const { quarterCellProps, halfCellProps } =
+		getCellProps( showConversionsCTA );
 
 	return (
 		<Fragment>
@@ -110,8 +112,6 @@ export default function OptionalCells( {
 OptionalCells.propTypes = {
 	canViewSharedAnalytics4: PropTypes.bool.isRequired,
 	error: PropTypes.object,
-	halfCellProps: PropTypes.object.isRequired,
-	quarterCellProps: PropTypes.object.isRequired,
 	showGA4: PropTypes.bool.isRequired,
 	showConversionsCTA: PropTypes.bool.isRequired,
 	showRecoverableGA4: PropTypes.bool,

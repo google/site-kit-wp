@@ -38,10 +38,7 @@ Positive.args = {
 	currentValue: 100,
 	previousValue: 91,
 };
-Positive.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/Positive',
-	delay: 250,
-};
+Positive.scenario = {};
 
 export const Negative = Template.bind( {} );
 Negative.storyName = 'Negative';
@@ -52,10 +49,7 @@ Negative.args = {
 	currentValue: 91,
 	previousValue: 103,
 };
-Negative.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/Negative',
-	delay: 250,
-};
+Negative.scenario = {};
 
 export const ZeroChange = Template.bind( {} );
 ZeroChange.storyName = 'Zero Change';
@@ -66,10 +60,7 @@ ZeroChange.args = {
 	currentValue: 100,
 	previousValue: 100,
 };
-ZeroChange.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/ZeroChange',
-	delay: 250,
-};
+ZeroChange.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -82,10 +73,7 @@ ZeroData.args = {
 };
 // Since the "Zero" state is similar for all "numeric" KMW tiles, this should be
 // the sole scenario and should not be added to any other "numeric" type KMW components.
-ZeroData.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -99,9 +87,7 @@ Loading.args = {
 };
 // Since the "Loading" state is the same for all KMW tiles, this is the sole scenario
 // and should not be added to any other generic `MetricTile___` or KMW component.
-Loading.scenario = {
-	label: 'KeyMetrics/MetricTileNumeric/Loading',
-};
+Loading.scenario = {};
 Loading.decorators = [
 	( Story ) => {
 		// Ensure the animation is paused for VRT tests to correctly capture the loading state.

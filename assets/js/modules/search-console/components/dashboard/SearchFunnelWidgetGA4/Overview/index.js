@@ -16,54 +16,32 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 20 ] */
-
 /**
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { Grid, Row, Cell } from '../../../../../../material-components';
-import { extractSearchConsoleDashboardData } from '../../../../util';
-import { calculateChange, trackEvent } from '../../../../../../util';
+import { useSelect } from 'googlesitekit-data';
+import { Grid, Row } from '../../../../../../material-components';
+import { trackEvent } from '../../../../../../util';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
-	DASHBOARD_TYPE_ENTITY,
 } from '../../../../../../hooks/useDashboardType';
-import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
-import NewBadge from '../../../../../../components/NewBadge';
-import DataBlockGroup from '../../../../../../components/DataBlockGroup';
-
-function getDatapointAndChange( report, selectedStat, divider = 1 ) {
-	return {
-		datapoint:
-			report?.totals?.[ 0 ]?.metricValues?.[ selectedStat ]?.value /
-			divider,
-		change: calculateChange(
-			report?.totals?.[ 1 ]?.metricValues?.[ selectedStat ]?.value,
-			report?.totals?.[ 0 ]?.metricValues?.[ selectedStat ]?.value
-		),
-	};
-}
+import DataBlocks from './DataBlocks';
 
 export default function Overview( props ) {
 	const {
@@ -103,19 +81,6 @@ export default function Overview( props ) {
 	const ga4ModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
-	const ga4ModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
-	);
-	const isGA4GatheringData = useInViewSelect(
-		( select ) =>
-			ga4ModuleConnected
-				? select( MODULES_ANALYTICS_4 ).isGatheringData()
-				: false,
-		[ ga4ModuleConnected ]
-	);
-	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -125,47 +90,6 @@ export default function Overview( props ) {
 			path: '/analytics/answer/12195621',
 		} )
 	);
-
-	const {
-		totalClicks,
-		totalImpressions,
-		totalClicksChange,
-		totalImpressionsChange,
-	} = extractSearchConsoleDashboardData( searchConsoleData, dateRangeLength );
-
-	let ga4ConversionsChange = null;
-	let ga4ConversionsDatapoint = null;
-	let ga4EngagementRateDatapoint = null;
-	let ga4EngagementRateChange = null;
-	let ga4VisitorsDatapoint = null;
-	let ga4VisitorsChange = null;
-
-	if (
-		ga4ModuleActive &&
-		isPlainObject( ga4Data ) &&
-		isPlainObject( ga4VisitorsData )
-	) {
-		( { change: ga4ConversionsChange } = getDatapointAndChange(
-			ga4Data,
-			0,
-			100
-		) );
-		ga4ConversionsDatapoint =
-			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
-
-		( {
-			datapoint: ga4EngagementRateDatapoint,
-			change: ga4EngagementRateChange,
-		} = getDatapointAndChange( ga4Data, 1 ) );
-
-		ga4VisitorsDatapoint =
-			ga4VisitorsData?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
-		( { change: ga4VisitorsChange } = getDatapointAndChange(
-			ga4VisitorsData,
-			0,
-			100
-		) );
-	}
 
 	const showGA4 =
 		canViewSharedAnalytics4 &&
@@ -186,168 +110,28 @@ export default function Overview( props ) {
 			// GA4 default "purchase" conversion event with no data value.
 			( ga4ConversionsData?.length === 1 &&
 				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
-				ga4ConversionsDatapoint === '0' ) );
-
-	const quarterCellProps = {
-		smSize: 2,
-		mdSize: showConversionsCTA ? 4 : 2,
-		lgSize: 3,
-	};
-
-	const oneThirdCellProps = {
-		smSize: 2,
-		mdSize: 4,
-		lgSize: 4,
-	};
-
-	const halfCellProps = {
-		smSize: 4,
-		mdSize: 4,
-		lgSize: 6,
-	};
-
-	const threeQuartersCellProps = {
-		smSize: 4,
-		mdSize: 4,
-		lgSize: 9,
-	};
-
-	const fullCellProps = {
-		smSize: 4,
-		mdSize: 8,
-		lgSize: 12,
-	};
-
-	// Collection of all the data blocks to be displayed
-	const dataBlocks = [
-		{
-			id: 'impressions',
-			stat: 0,
-			title: __( 'Total Impressions', 'google-site-kit' ),
-			datapoint: totalImpressions,
-			change: totalImpressionsChange,
-			isGatheringData: isSearchConsoleGatheringData,
-		},
-		{
-			id: 'clicks',
-			stat: 1,
-			title: __( 'Total Clicks', 'google-site-kit' ),
-			datapoint: totalClicks,
-			change: totalClicksChange,
-			isGatheringData: isSearchConsoleGatheringData,
-		},
-		...( showGA4
-			? [
-					{
-						id: 'visitors',
-						stat: 2,
-						title: __(
-							'Unique Visitors from Search',
-							'google-site-kit'
-						),
-						datapoint: ga4VisitorsDatapoint,
-						change: ga4VisitorsChange,
-						isGatheringData: isGA4GatheringData,
-					},
-			  ]
-			: [] ),
-		...( showGA4 &&
-		dashboardType === DASHBOARD_TYPE_MAIN &&
-		! showConversionsCTA
-			? [
-					{
-						id: 'conversions',
-						stat: 3,
-						title: __( 'Conversions', 'google-site-kit' ),
-						datapoint: ga4ConversionsDatapoint,
-						change: ga4ConversionsChange,
-						isGatheringData: isGA4GatheringData,
-					},
-			  ]
-			: [] ),
-		...( showGA4 && dashboardType === DASHBOARD_TYPE_ENTITY
-			? [
-					{
-						id: 'engagement-rate',
-						stat: 4,
-						title: __( 'Engagement Rate', 'google-site-kit' ),
-						datapoint: ga4EngagementRateDatapoint,
-						datapointUnit: '%',
-						change: ga4EngagementRateChange,
-						isGatheringData: isGA4GatheringData,
-						badge: (
-							<NewBadge
-								tooltipTitle={ __(
-									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
-									'google-site-kit'
-								) }
-								learnMoreLink={ engagementRateLearnMoreURL }
-								onLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
-							/>
-						),
-					},
-			  ]
-			: [] ),
-	];
-
-	const dataBlockWrapperCellProps = {
-		2: halfCellProps,
-		3: threeQuartersCellProps,
-		4: fullCellProps,
-	};
-
-	const dataBlockCellProps = {
-		2: {
-			...halfCellProps,
-			smSize: 2,
-		},
-		3: oneThirdCellProps,
-		4: quarterCellProps,
-	};
+				ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value === '0' ) );
 
 	return (
 		<Grid>
 			<Row>
-				<Cell { ...dataBlockWrapperCellProps[ dataBlocks.length ] }>
-					<DataBlockGroup className="mdc-layout-grid__inner">
-						{ dataBlocks.map( ( dataBlock, index ) => (
-							<Cell
-								key={ dataBlock.id }
-								{ ...dataBlockCellProps[ dataBlocks.length ] }
-							>
-								<DataBlock
-									stat={ dataBlock.stat }
-									className={ `googlesitekit-data-block--${
-										dataBlock.id
-									} googlesitekit-data-block--button-${
-										index + 1
-									}` }
-									title={ dataBlock.title }
-									datapoint={ dataBlock.datapoint }
-									datapointUnit={
-										dataBlock.datapointUnit
-											? dataBlock.datapointUnit
-											: undefined
-									}
-									change={ dataBlock.change }
-									changeDataUnit="%"
-									context="button"
-									selected={
-										selectedStats === dataBlock.stat
-									}
-									handleStatSelection={ handleStatsSelection }
-									gatheringData={ dataBlock.isGatheringData }
-								/>
-							</Cell>
-						) ) }
-					</DataBlockGroup>
-				</Cell>
+				<DataBlocks
+					ga4Data={ ga4Data }
+					ga4VisitorsData={ ga4VisitorsData }
+					searchConsoleData={ searchConsoleData }
+					selectedStats={ selectedStats }
+					handleStatsSelection={ handleStatsSelection }
+					dateRangeLength={ dateRangeLength }
+					showGA4={ showGA4 }
+					dashboardType={ dashboardType }
+					showConversionsCTA={ showConversionsCTA }
+					engagementRateLearnMoreURL={ engagementRateLearnMoreURL }
+					onGA4NewBadgeLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
+				/>
 
 				<OptionalCells
 					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
-					halfCellProps={ halfCellProps }
-					quarterCellProps={ quarterCellProps }
 					showGA4={ showGA4 }
 					showConversionsCTA={ showConversionsCTA }
 					showRecoverableAnalytics={ showRecoverableAnalytics }

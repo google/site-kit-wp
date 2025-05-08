@@ -73,16 +73,19 @@ const Notice = forwardRef(
 						<DismissButton
 							label={ dismissButton.label }
 							onClick={ dismissButton.onClick }
+							disabled={ dismissButton.disabled }
 						/>
 					) }
-					{ ctaButton?.label && ctaButton?.onClick && (
-						<CTAButton
-							label={ ctaButton.label }
-							onClick={ ctaButton.onClick }
-							inProgress={ ctaButton.inProgress }
-							disabled={ ctaButton.disabled }
-						/>
-					) }
+					{ ctaButton?.label &&
+						( ctaButton?.onClick || ctaButton?.href ) && (
+							<CTAButton
+								label={ ctaButton.label }
+								onClick={ ctaButton.onClick }
+								inProgress={ ctaButton.inProgress }
+								disabled={ ctaButton.disabled }
+								href={ ctaButton.href }
+							/>
+						) }
 				</div>
 			</div>
 		);

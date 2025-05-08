@@ -56,7 +56,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Global/Admin Bar', // eslint-disable-line sitekit/no-storybook-scenario-label
 	readySelector: '.googlesitekit-data-block',
 	delay: 250,
 };
