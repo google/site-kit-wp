@@ -47,7 +47,6 @@ export default function Chart( {
 	dateRangeLength,
 	ga4StatsData,
 	ga4VisitorsOverviewAndStatsData,
-	isGA4Connected,
 	isGA4GatheringData,
 	isSearchConsoleGatheringData,
 	metrics,
@@ -58,6 +57,9 @@ export default function Chart( {
 
 	const isGA4Active = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+	);
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
 	return (
@@ -143,7 +145,6 @@ Chart.propTypes = {
 	dateRangeLength: PropTypes.number.isRequired,
 	ga4StatsData: PropTypes.object.isRequired,
 	ga4VisitorsOverviewAndStatsData: PropTypes.object.isRequired,
-	isGA4Connected: PropTypes.bool.isRequired,
 	isGA4GatheringData: PropTypes.bool.isRequired,
 	isSearchConsoleGatheringData: PropTypes.bool.isRequired,
 	metrics: PropTypes.array.isRequired,

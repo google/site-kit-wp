@@ -376,7 +376,6 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				ga4VisitorsOverviewAndStatsData={
 					ga4VisitorsOverviewAndStatsData
 				}
-				isGA4Connected={ isGA4Connected }
 				isGA4GatheringData={ isGA4GatheringData }
 				isSearchConsoleGatheringData={ isSearchConsoleGatheringData }
 				metrics={ SearchFunnelWidgetGA4.metrics }
