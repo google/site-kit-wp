@@ -6,6 +6,6 @@
 	"title": "Sign in with Google",
 	"category": "widgets",
 	"icon": "google",
-	"description": "Allow users to sign in to your site using their Google Account.",
+	"description": "Hello QA testing.",
 	"textdomain": "google-site-kit"
 }
