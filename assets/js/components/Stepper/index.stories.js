@@ -53,37 +53,27 @@ function Template( { activeStep: initialActiveStep } ) {
 
 export const Inactive = Template.bind( {} );
 Inactive.storyName = 'Inactive';
-Inactive.scenario = {
-	label: 'Components/Stepper/Inactive',
-};
+Inactive.scenario = {};
 
 export const FirstStepActive = Template.bind( {} );
 FirstStepActive.storyName = 'First Step Active';
 FirstStepActive.args = { activeStep: 0 };
-FirstStepActive.scenario = {
-	label: 'Components/Stepper/FirstStepActive',
-};
+FirstStepActive.scenario = {};
 
 export const MiddleStepActive = Template.bind( {} );
 MiddleStepActive.storyName = 'Middle Step Active';
 MiddleStepActive.args = { activeStep: 1 };
-MiddleStepActive.scenario = {
-	label: 'Components/Stepper/MiddleStepActive',
-};
+MiddleStepActive.scenario = {};
 
 export const LastStepActive = Template.bind( {} );
 LastStepActive.storyName = 'Last Step Active';
 LastStepActive.args = { activeStep: 2 };
-LastStepActive.scenario = {
-	label: 'Components/Stepper/LastStepActive',
-};
+LastStepActive.scenario = {};
 
 export const Complete = Template.bind( {} );
 Complete.storyName = 'Complete';
 Complete.args = { activeStep: 3 };
-Complete.scenario = {
-	label: 'Components/Stepper/Complete',
-};
+Complete.scenario = {};
 
 export default {
 	title: 'Components/Stepper',

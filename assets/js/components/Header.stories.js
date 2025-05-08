@@ -96,7 +96,6 @@ PluginHeader.args = {
 	},
 };
 PluginHeader.scenario = {
-	label: 'Global/Plugin Header',
 	hierarchyRootSeparator: '|',
 	hierarchySeparator: {},
 	delay: 3000,
@@ -111,7 +110,6 @@ HeaderWithDateSelector.args = {
 	},
 };
 HeaderWithDateSelector.scenario = {
-	label: 'Global/Plugin Header with Date Selector',
 	hierarchyRootSeparator: '|',
 	hierarchySeparator: {},
 	delay: 3000,

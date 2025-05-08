@@ -39,6 +39,9 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	features: [ 'conversionReporting' ],
+};
 Default.scenario = {};
 
 export default {

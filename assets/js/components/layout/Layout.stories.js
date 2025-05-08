@@ -36,9 +36,7 @@ function Template( { ...args } ) {
 
 export const WithHeaderFooterAndCTAs = Template.bind( {} );
 WithHeaderFooterAndCTAs.storyName = 'Layout with Header Footer and CTAs';
-WithHeaderFooterAndCTAs.scenario = {
-	label: 'Global/Layout/Layout with Header Footer and CTAs',
-};
+WithHeaderFooterAndCTAs.scenario = {};
 WithHeaderFooterAndCTAs.args = {
 	header: true,
 	footer: true,
@@ -51,9 +49,7 @@ WithHeaderFooterAndCTAs.args = {
 
 export const WithHeaderAndFooter = Template.bind( {} );
 WithHeaderAndFooter.storyName = 'Layout with Header and Footer';
-WithHeaderAndFooter.scenario = {
-	label: 'Global/Layout/Layout with Header and Footer',
-};
+WithHeaderAndFooter.scenario = {};
 WithHeaderAndFooter.args = {
 	header: true,
 	footer: true,

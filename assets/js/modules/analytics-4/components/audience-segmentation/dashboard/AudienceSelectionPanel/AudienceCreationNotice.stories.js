@@ -42,9 +42,7 @@ function Template( {} ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationNotice/Default',
-};
+Default.scenario = {};
 
 export const WithOneAudience = Template.bind( {} );
 WithOneAudience.storyName = 'WithOneAudience';
