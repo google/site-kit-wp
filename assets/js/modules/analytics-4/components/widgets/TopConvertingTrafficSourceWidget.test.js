@@ -26,6 +26,7 @@ import {
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../tests/js/utils/zeroReports';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
@@ -33,12 +34,18 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import {
+	provideAnalytics4MockReport,
+	getAnalytics4MockResponse,
+} from '../../../analytics-4/utils/data-mock';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {
 	let registry;
@@ -73,6 +80,50 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
+
+		const { container, waitForRegistry } = render(
+			<TopConvertingTrafficSourceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'renders correctly with no data in the comparison date range', async () => {
+		const reportOptions = {
+			...registry.select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} ),
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'sessionConversionRate',
+				},
+			],
+			limit: 1,
+			orderBy: 'sessionConversionRate',
+		};
+
+		const report = getAnalytics4MockResponse( reportOptions );
+
+		const modifiedReport =
+			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+				report,
+				'date_range_1',
+				'remove'
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( modifiedReport, {
+				options: reportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ reportOptions ] );
 
 		const { container, waitForRegistry } = render(
 			<TopConvertingTrafficSourceWidget { ...widgetProps } />,
