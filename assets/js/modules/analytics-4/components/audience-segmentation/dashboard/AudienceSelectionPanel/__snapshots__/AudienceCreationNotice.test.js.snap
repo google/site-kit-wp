@@ -179,37 +179,33 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
       </div>
     </div>
     <div
-      class="googlesitekit-audience-selection-panel__audience-creation-notice-info"
+      class="googlesitekit-notice googlesitekit-notice--warning"
     >
       <div
-        class="googlesitekit-notice googlesitekit-notice--warning"
+        class="googlesitekit-notice__content"
       >
-        <div
-          class="googlesitekit-notice__content"
+        <p
+          class="googlesitekit-notice__title"
+        />
+        <p
+          class="googlesitekit-notice__description"
         >
-          <p
-            class="googlesitekit-notice__title"
-          >
-            Creating these groups require more data tracking. You will be directed to update your Analytics property.
-          </p>
-          <p
-            class="googlesitekit-notice__description"
-          />
-        </div>
-        <div
-          class="googlesitekit-notice__action"
+          Creating these groups require more data tracking. You will be directed to update your Analytics property.
+        </p>
+      </div>
+      <div
+        class="googlesitekit-notice__action"
+      >
+        <button
+          class="mdc-button mdc-button--tertiary"
+          target="_self"
         >
-          <button
-            class="mdc-button mdc-button--tertiary"
-            target="_self"
+          <span
+            class="mdc-button__label"
           >
-            <span
-              class="mdc-button__label"
-            >
-              Got it
-            </span>
-          </button>
-        </div>
+            Got it
+          </span>
+        </button>
       </div>
     </div>
   </div>
