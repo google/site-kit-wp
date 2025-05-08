@@ -225,12 +225,12 @@ export const actions = {
 				.getNotification( notificationID );
 
 			if ( notification?.isDismissible ) {
-				const currentDate = registry
+				const dateSeen = registry
 					.select( CORE_USER )
 					.getReferenceDate();
 
 				yield {
-					payload: { notificationID, currentDate },
+					payload: { dateSeen, notificationID },
 					type: MARK_NOTIFICATION_SEEN,
 				};
 
@@ -438,7 +438,7 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case MARK_NOTIFICATION_SEEN: {
-			const { notificationID, currentDate } = payload;
+			const { dateSeen, notificationID } = payload;
 			const seenNotifications = { ...state.seenNotifications };
 
 			// Initialize array if it doesn't exist.
@@ -447,13 +447,8 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			}
 
 			// Only add the date if it's not already in the array.
-			if (
-				! seenNotifications[ notificationID ].includes( currentDate )
-			) {
-				seenNotifications[ notificationID ] = [
-					...seenNotifications[ notificationID ],
-					currentDate,
-				];
+			if ( ! seenNotifications[ notificationID ].includes( dateSeen ) ) {
+				seenNotifications[ notificationID ].push( dateSeen );
 			}
 
 			state.seenNotifications = seenNotifications;
@@ -518,7 +513,7 @@ export const selectors = {
 	 */
 	getNotificationSeenDates( state, notificationID ) {
 		const { seenNotifications } = state;
-		return seenNotifications[ notificationID ] || [];
+		return seenNotifications[ notificationID ] ?? [];
 	},
 
 	/**
