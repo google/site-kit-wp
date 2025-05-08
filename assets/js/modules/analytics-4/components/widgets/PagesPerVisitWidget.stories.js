@@ -82,10 +82,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/PagesPerVisit/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

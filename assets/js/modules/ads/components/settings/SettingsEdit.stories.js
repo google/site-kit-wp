@@ -56,10 +56,7 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/Default',
-	delay: 500,
-};
+Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -101,10 +98,7 @@ export default {
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
-PaxConnected.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/PAX',
-	delay: 500,
-};
+PaxConnected.scenario = {};
 PaxConnected.parameters = {
 	features: [ 'adsPax' ],
 };
@@ -130,10 +124,7 @@ PaxConnected.decorators = [
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
-IceEnabled.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/ICE',
-	delay: 500,
-};
+IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -157,10 +148,7 @@ IceEnabled.decorators = [
 
 export const IcePaxEnabled = Template.bind( null );
 IcePaxEnabled.storyName = 'With ICE & PAX Enabled';
-IcePaxEnabled.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/ICE_PAX',
-	delay: 500,
-};
+IcePaxEnabled.scenario = {};
 IcePaxEnabled.parameters = {
 	features: [ 'adsPax' ],
 };

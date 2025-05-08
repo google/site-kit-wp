@@ -37,9 +37,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'UnsatisfiedScopesAlertGTE';
-Default.scenario = {
-	label: 'Global/Notifications/Errors/UnsatisfiedScopeGTESupport',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlertGTE',
