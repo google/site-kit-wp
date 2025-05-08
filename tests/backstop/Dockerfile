@@ -20,7 +20,7 @@ RUN apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 \
 
 # Install the Chromium requirements, specify a Chromium build for stability.
 RUN apt-get install -yq \
-    chromium=136.0.7103.59-2~deb12u2 \
+    chromium-common=134.0.6998.35-1~deb12u1 \
     ca-certificates
 
 RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i -g backstopjs@${BACKSTOPJS_VERSION} && \
