@@ -38,4 +38,6 @@ function sendEvent( action, metadata ) {
 const events = window._googlesitekitAnalyticsTrackingData || []; // eslint-disable-line no-restricted-globals
 if ( Array.isArray( events ) ) {
 	setUpAdvancedTracking( events, sendEvent );
+	// eslint-disable-next-line no-console
+	console.log( 'Hello QA testing' );
 }
