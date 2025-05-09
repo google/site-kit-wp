@@ -247,6 +247,30 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const { publicationOnboardingState, paymentOption } =
+				( await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings() ) || {};
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			const showingSuccessNotification =
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
+			if (
+				publicationOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+				[ 'noPayment', '' ].includes( paymentOption ) &&
+				! showingSuccessNotification
+			) {
+				return true;
+			}
+
+			return false;
+		},
 	},
 };
 
