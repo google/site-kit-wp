@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
-import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
+import OverlayNotification from '../../../../googlesitekit/notifications/components/layout/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
 import SupportLink from '../../../../components/SupportLink';
@@ -53,7 +53,7 @@ const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'rrmIntroductoryOverlayNotification';
 
-function RRMIntroductoryOverlayNotification() {
+function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 	const isViewOnly = useViewOnly();
 	const dashboardType = useDashboardType();
 	const viewContext = useViewContext();
@@ -141,81 +141,63 @@ function RRMIntroductoryOverlayNotification() {
 		trackEvent( gaEventCategory, 'click_learn_more_link', gaEventLabel );
 	};
 
-	return (
-		<OverlayNotification
-			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-introductory-notification"
-			GraphicDesktop={ ReaderRevenueManagerIntroductoryGraphicDesktop }
-			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
-			shouldShowNotification={ shouldShowNotification }
-			notificationID={ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION }
-			onShow={ () => {
-				trackEvent(
-					gaEventCategory,
-					'view_notification',
-					gaEventLabel
-				);
-			} }
-		>
-			<div className="googlesitekit-overlay-notification__body">
-				<h3>
-					{ paymentOption === 'noPayment'
-						? __(
-								'New! Monetize your content with Reader Revenue Manager',
-								'google-site-kit'
-						  )
-						: __(
-								'Complete account setup with Reader Revenue Manager',
-								'google-site-kit'
-						  ) }
-				</h3>
-				<p>
-					{ paymentOption === 'noPayment'
-						? createInterpolateElement(
-								__(
-									'Now you can offer your users subscription options to access content behind a paywall, or make voluntary contributions. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<SupportLink
-											path="/news/publisher-center/answer/11449914"
-											external
-											hideExternalIndicator
-											onClick={ handleLearnMoreClick }
-										/>
-									),
-								}
-						  )
-						: __(
-								'Easily monetize your content by offering users subscription options to access content behind a paywall, or make voluntary contributions.',
-								'google-site-kit'
-						  ) }
-				</p>
-			</div>
-			<div className="googlesitekit-overlay-notification__actions">
-				<Button
-					tertiary
-					disabled={ isDismissing }
-					onClick={ handleDismiss }
-				>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
+	const title =
+		paymentOption === 'noPayment'
+			? __(
+					'New! Monetize your content with Reader Revenue Manager',
+					'google-site-kit'
+			  )
+			: __(
+					'Complete account setup with Reader Revenue Manager',
+					'google-site-kit'
+			  );
 
-				<Button
-					disabled={ isDismissing }
-					href={
-						paymentOption === 'noPayment' ? serviceURL : supportURL
+	const description =
+		paymentOption === 'noPayment'
+			? createInterpolateElement(
+					__(
+						'Now you can offer your users subscription options to access content behind a paywall, or make voluntary contributions. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<SupportLink
+								path="/news/publisher-center/answer/11449914"
+								external
+								hideExternalIndicator
+								onClick={ handleLearnMoreClick }
+							/>
+						),
 					}
-					onClick={ handleCTAClick }
-					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
-					target="_blank"
-				>
-					{ paymentOption === 'noPayment'
-						? __( 'Explore features', 'google-site-kit' )
-						: __( 'Learn more', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</OverlayNotification>
+			  )
+			: __(
+					'Easily monetize your content by offering users subscription options to access content behind a paywall, or make voluntary contributions.',
+					'google-site-kit'
+			  );
+
+	return (
+		<Notification>
+			<OverlayNotification
+				notificationID={ id }
+				title={ title }
+				description={ description }
+				ctaButton={ {
+					label:
+						paymentOption === 'noPayment'
+							? __( 'Explore features', 'google-site-kit' )
+							: __( 'Learn more', 'google-site-kit' ),
+					href:
+						paymentOption === 'noPayment' ? serviceURL : supportURL,
+					target: '_blank',
+					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
+				} }
+				dismissButton // Renders the default "Maybe later" button with GA Tracking.
+				GraphicDesktop={
+					ReaderRevenueManagerIntroductoryGraphicDesktop
+				}
+				GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
+			/>
+		</Notification>
 	);
 }
 
