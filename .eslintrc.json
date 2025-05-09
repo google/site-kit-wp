@@ -128,12 +128,12 @@
       "alias": {
         "map": [
           [
-            "@svg(.*)\\?url",
-            "assets/svg"
+            "@/(.*\\.svg)\\?url",
+            "assets/"
           ],
           [
-            "@svg(.*)",
-            "assets/svg"
+            "@/(.*)",
+            "assets/"
           ],
           [
             "@wordpress-core",
