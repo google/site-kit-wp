@@ -25,20 +25,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import OverlayNotification from '../../../../googlesitekit/notifications/components/layout/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
 import SupportLink from '../../../../components/SupportLink';
 import useDashboardType from '../../../../hooks/useDashboardType';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import whenActive from '../../../../util/when-active';
 import { trackEvent } from '../../../../util';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -73,12 +71,6 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 		)
 	);
 
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem(
-			RRM_INTRODUCTORY_OVERLAY_NOTIFICATION
-		)
-	);
-
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
 			path: 'reader-revenue-manager',
@@ -94,8 +86,6 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 		} )
 	);
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
 	const showingSuccessNotification =
 		notification === 'authentication_success' &&
 		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
@@ -107,10 +97,6 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 		! showingSuccessNotification &&
 		publicationOnboardingState === ONBOARDING_COMPLETE &&
 		[ 'noPayment', '' ].includes( paymentOption );
-
-	const dismissNotice = () => {
-		dismissOverlayNotification( RRM_INTRODUCTORY_OVERLAY_NOTIFICATION );
-	};
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_rrm-introductory-notification`,
