@@ -44,11 +44,7 @@ export default function ModuleSettingsWarning( { slug } ) {
 	return (
 		<Notice
 			type="warning"
-			description={ sprintf(
-				/* translators: %s: Erorr message. */
-				__( '%s ', 'google-site-kit' ),
-				error.message
-			) }
+			description={ error.message }
 		/>
 	);
 }
