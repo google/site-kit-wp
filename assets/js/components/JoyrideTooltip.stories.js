@@ -36,7 +36,6 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	label: 'Global/JoyrideTooltip/DefaultTooltip',
 	delay: 1000,
 };
 

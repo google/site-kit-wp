@@ -85,9 +85,7 @@ Ready.args = {
 		);
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingPurchasesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

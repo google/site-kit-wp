@@ -32,7 +32,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 */
-	protected $products;
+	protected $products = array();
 
 	/**
 	 * Current product added to the cart.
@@ -165,10 +165,6 @@ class WooCommerce extends Conversion_Events_Provider {
 			function () {
 				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
 
-				if ( ! wp_script_is( $script_slug, 'enqueued' ) || ! function_exists( 'get_woocommerce_currency' ) ) {
-					return;
-				}
-
 				$inline_script = join(
 					"\n",
 					array(
@@ -179,7 +175,7 @@ class WooCommerce extends Conversion_Events_Provider {
 					)
 				);
 
-				wp_add_inline_script( $script_slug, preg_replace( '/\s+/', ' ', $inline_script ), 'before' );
+				wp_add_inline_script( $script_slug, $inline_script, 'before' );
 			}
 		);
 	}

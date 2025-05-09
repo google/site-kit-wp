@@ -63,9 +63,7 @@ Default.decorators = [
 		);
 	},
 ];
-Default.scenario = {
-	label: 'Setup / Using GCP/Step One',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Setup/SetupUsingGCP',
