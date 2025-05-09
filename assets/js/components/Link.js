@@ -32,7 +32,8 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ArrowIcon from '../../svg/icons/arrow.svg';
+// import ArrowIcon from '../../svg/icons/arrow.svg';
+import arrowIconData from '@svg/icons/arrow.svg?url';
 import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
 import BackIcon from '../../svg/icons/back.svg';
 import ExternalIcon from '../../svg/icons/external.svg';
@@ -168,7 +169,16 @@ const Link = forwardRef( ( props, ref ) => {
 	}
 
 	if ( arrow && ! inverse ) {
-		trailingIconToUse = <ArrowIcon width={ 14 } height={ 14 } />;
+		trailingIconToUse = // <ArrowIcon width={ 14 } height={ 14 } />;
+			(
+				<span
+					style={ {
+						background: `url(${ arrowIconData }) no-repeat center`,
+						width: '14px',
+						height: '14px',
+					} }
+				/>
+			);
 	}
 
 	if ( arrow && inverse ) {
