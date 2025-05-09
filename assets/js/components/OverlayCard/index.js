@@ -66,7 +66,7 @@ OverlayCard.propTypes = {
 		...buttonProps,
 		href: PropTypes.string,
 		target: PropTypes.string,
-		trailingIcon: PropTypes.elementType,
+		trailingIcon: PropTypes.object,
 	} ),
 	dismissButton: PropTypes.shape( buttonProps ),
 	GraphicDesktop: PropTypes.elementType,
