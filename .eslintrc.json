@@ -129,11 +129,11 @@
         "map": [
           [
             "@svg(.*)\\?url",
-            "./assets/svg"
+            "assets/svg"
           ],
           [
             "@svg(.*)",
-            "./assets/svg"
+            "assets/svg"
           ],
           [
             "@wordpress-core",
