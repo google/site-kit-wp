@@ -50,7 +50,7 @@ module.exports = async ( { config } ) => {
 	config.resolve = {
 		...config.resolve,
 		alias: {
-			'@svg': path.resolve( rootDir, 'assets/svg' ),
+			'@': path.resolve( rootDir, 'assets' ),
 			...config.resolve.alias,
 			...siteKitPackageAliases,
 		},

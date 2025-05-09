@@ -44,7 +44,7 @@ exports.projectPath = projectPath;
 
 exports.resolve = {
 	alias: {
-		'@svg': path.resolve( rootDir, 'assets/svg' ),
+		'@': path.resolve( rootDir, 'assets' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),

@@ -32,11 +32,11 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import arrowIconData from '@svg/icons/arrow.svg?url';
+import arrowIconData from '@/svg/icons/arrow.svg?url';
 import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
 import BackIcon from '../../svg/icons/back.svg';
 import ExternalIcon from '../../svg/icons/external.svg';
-import IconWrapper from './IconWrapper';
+import IconWrapper from '@/js/components/IconWrapper';
 
 const BUTTON = 'BUTTON';
 const BUTTON_DISABLED = 'BUTTON_DISABLED';
