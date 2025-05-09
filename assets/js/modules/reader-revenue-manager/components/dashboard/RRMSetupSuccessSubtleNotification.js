@@ -212,7 +212,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 				type="warning"
 				{ ...gaTrackingProps }
 				title={ __(
-					'Your Reader Revenue Manager account was successfully set up, but your publication is still awaiting review.',
+					'Your Reader Revenue Manager account was successfully set up!',
 					'google-site-kit'
 				) }
 				description={ __(
