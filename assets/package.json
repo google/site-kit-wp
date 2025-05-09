@@ -1,10 +1,13 @@
 {
 	"scripts": {
+		"prebuild:dev": "npm run remove-dist",
 		"build": "npm run build:production",
+		"prebuild:production": "npm run remove-dist",
 		"build:dev": "webpack --mode=development --devtool cheap-module-eval-source-map --output-pathinfo",
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
-		"watch": "npm run build:dev -- --watch"
+		"watch": "npm run build:dev -- --watch",
+		"remove-dist": "rimraf ./../dist/"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
