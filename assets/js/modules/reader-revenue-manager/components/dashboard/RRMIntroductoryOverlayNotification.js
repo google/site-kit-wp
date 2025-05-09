@@ -30,46 +30,26 @@ import OverlayNotification from '../../../../googlesitekit/notifications/compone
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
 import SupportLink from '../../../../components/SupportLink';
-import useDashboardType from '../../../../hooks/useDashboardType';
 import { useSelect } from 'googlesitekit-data';
-import useQueryArg from '../../../../hooks/useQueryArg';
 import useViewContext from '../../../../hooks/useViewContext';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import whenActive from '../../../../util/when-active';
 import { trackEvent } from '../../../../util';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-
-const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
 export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'rrmIntroductoryOverlayNotification';
 
-function RRMIntroductoryOverlayNotification( { id, Notification } ) {
-	const isViewOnly = useViewOnly();
-	const dashboardType = useDashboardType();
+export default function RRMIntroductoryOverlayNotification( {
+	id,
+	Notification,
+} ) {
 	const viewContext = useViewContext();
-
-	const [ notification ] = useQueryArg( 'notification' );
-	const [ slug ] = useQueryArg( 'slug' );
 
 	const { publicationID, publicationOnboardingState, paymentOption } =
 		useSelect(
 			( select ) =>
 				select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
 		);
-
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			RRM_INTRODUCTORY_OVERLAY_NOTIFICATION
-		)
-	);
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
@@ -85,18 +65,6 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 			path: '/news/publisher-center/answer/11449914',
 		} )
 	);
-
-	const showingSuccessNotification =
-		notification === 'authentication_success' &&
-		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
-
-	const shouldShowNotification =
-		isDismissed === false &&
-		! isViewOnly &&
-		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
-		! showingSuccessNotification &&
-		publicationOnboardingState === ONBOARDING_COMPLETE &&
-		[ 'noPayment', '' ].includes( paymentOption );
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_rrm-introductory-notification`,
@@ -171,7 +139,3 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 		</Notification>
 	);
 }
-
-export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
-	RRMIntroductoryOverlayNotification
-);
