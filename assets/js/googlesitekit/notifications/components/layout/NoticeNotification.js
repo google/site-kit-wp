@@ -37,7 +37,10 @@ export default function NoticeNotification( {
 
 	const handleDismissWithTrackEvent = async ( event ) => {
 		await dismissButton?.onClick?.( event );
-		trackEvents.dismiss();
+		trackEvents.dismiss(
+			props.gaTrackingEventArgs?.label,
+			props.gaTrackingEventArgs?.value
+		);
 		dismissNotification( notificationID, {
 			...dismissButton.dismissOptions,
 		} );
@@ -45,7 +48,10 @@ export default function NoticeNotification( {
 
 	const handleCTAClickWithTrackEvent = async ( event ) => {
 		await ctaButton?.onClick?.( event );
-		trackEvents.confirm();
+		trackEvents.confirm(
+			props.gaTrackingEventArgs?.label,
+			props.gaTrackingEventArgs?.value
+		);
 	};
 
 	return (
