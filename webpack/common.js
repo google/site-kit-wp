@@ -44,6 +44,7 @@ exports.projectPath = projectPath;
 
 exports.resolve = {
 	alias: {
+		'@svg': path.resolve( rootDir, 'assets/svg' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),
@@ -168,14 +169,23 @@ const noAMDParserRule = { parser: { amd: false } };
 exports.noAMDParserRule = noAMDParserRule;
 
 const svgRule = {
-	test: /\.svg$/,
-	use: [
+	oneOf: [
 		{
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
+			test: /\.svg$/,
+			resourceQuery: /url/,
+			use: 'url-loader',
+		},
+		{
+			test: /\.svg$/,
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// strip width & height to allow manual override using props
+						dimensions: false,
+					},
+				},
+			],
 		},
 	],
 };
