@@ -44,6 +44,7 @@ exports.projectPath = projectPath;
 
 exports.resolve = {
 	alias: {
+		'@': path.resolve( rootDir, 'assets' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),
@@ -168,14 +169,24 @@ const noAMDParserRule = { parser: { amd: false } };
 exports.noAMDParserRule = noAMDParserRule;
 
 const svgRule = {
-	test: /\.svg$/,
-	use: [
+	// Copy the rule amendment that will be introduced in https://github.com/google/site-kit-wp/pull/10734.
+	oneOf: [
 		{
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
+			test: /\.svg$/,
+			resourceQuery: /url/,
+			use: 'url-loader',
+		},
+		{
+			test: /\.svg$/,
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// strip width & height to allow manual override using props
+						dimensions: false,
+					},
+				},
+			],
 		},
 	],
 };

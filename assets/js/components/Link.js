@@ -32,11 +32,13 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ArrowIcon from '../../svg/icons/arrow.svg';
+// Verify the `@` alias works for `.svg?url` imports.
+import arrowIconData from '@/svg/icons/arrow.svg?url';
 import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
 import BackIcon from '../../svg/icons/back.svg';
 import ExternalIcon from '../../svg/icons/external.svg';
-import IconWrapper from './IconWrapper';
+// Verify the `@` alias also works for JS imports.
+import IconWrapper from '@/js/components/IconWrapper';
 
 const BUTTON = 'BUTTON';
 const BUTTON_DISABLED = 'BUTTON_DISABLED';
@@ -168,7 +170,15 @@ const Link = forwardRef( ( props, ref ) => {
 	}
 
 	if ( arrow && ! inverse ) {
-		trailingIconToUse = <ArrowIcon width={ 14 } height={ 14 } />;
+		trailingIconToUse = (
+			<span
+				style={ {
+					background: `url(${ arrowIconData }) no-repeat center`,
+					width: '14px',
+					height: '14px',
+				} }
+			/>
+		);
 	}
 
 	if ( arrow && inverse ) {
