@@ -112,33 +112,17 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 		dismissOverlayNotification( RRM_INTRODUCTORY_OVERLAY_NOTIFICATION );
 	};
 
-	const gaEventCategory = `${ viewContext }_rrm-introductory-notification`;
-	const gaEventLabel = `${ publicationOnboardingState }:${
-		paymentOption || ''
-	}`;
-
-	const handleDismiss = () => {
-		trackEvent(
-			gaEventCategory,
-			'dismiss_notification',
-			gaEventLabel
-		).finally( () => {
-			dismissNotice();
-		} );
-	};
-
-	const handleCTAClick = () => {
-		trackEvent(
-			gaEventCategory,
-			'confirm_notification',
-			gaEventLabel
-		).finally( () => {
-			dismissNotice();
-		} );
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_rrm-introductory-notification`,
+		label: `${ publicationOnboardingState }:${ paymentOption || '' }`,
 	};
 
 	const handleLearnMoreClick = () => {
-		trackEvent( gaEventCategory, 'click_learn_more_link', gaEventLabel );
+		trackEvent(
+			gaTrackingEventArgs.category,
+			'click_learn_more_link',
+			gaTrackingEventArgs.label
+		);
 	};
 
 	const title =
@@ -176,7 +160,7 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 			  );
 
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<OverlayNotification
 				notificationID={ id }
 				title={ title }
@@ -190,8 +174,9 @@ function RRMIntroductoryOverlayNotification( { id, Notification } ) {
 						paymentOption === 'noPayment' ? serviceURL : supportURL,
 					target: '_blank',
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
+					gaTrackingEventArgs,
 				} }
-				dismissButton // Renders the default "Maybe later" button with GA Tracking.
+				dismissButton={ { gaTrackingEventArgs } }
 				GraphicDesktop={
 					ReaderRevenueManagerIntroductoryGraphicDesktop
 				}
