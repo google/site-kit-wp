@@ -32,10 +32,12 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+// Verify the `@` alias works for `.svg?url` imports.
 import arrowIconData from '@/svg/icons/arrow.svg?url';
 import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
 import BackIcon from '../../svg/icons/back.svg';
 import ExternalIcon from '../../svg/icons/external.svg';
+// Verify the `@` alias also works for JS imports.
 import IconWrapper from '@/js/components/IconWrapper';
 
 const BUTTON = 'BUTTON';

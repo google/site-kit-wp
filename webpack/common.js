@@ -169,6 +169,7 @@ const noAMDParserRule = { parser: { amd: false } };
 exports.noAMDParserRule = noAMDParserRule;
 
 const svgRule = {
+	// Copy the rule amendment that will be introduced in https://github.com/google/site-kit-wp/pull/10734.
 	oneOf: [
 		{
 			test: /\.svg$/,
