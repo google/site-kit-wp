@@ -28,7 +28,7 @@ import RegistrationDisabledNotice from './RegistrationDisabledNotice';
 import AnyoneCanRegisterDisabledNotice from './AnyoneCanRegisterDisabledNotice';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 
-export default function SettingsNotice( { className } ) {
+export default function SettingsNotice() {
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
@@ -68,10 +68,10 @@ export default function SettingsNotice( { className } ) {
 		<Fragment>
 			{ anyoneCanRegister === false &&
 				! shouldShowRegistrationDisabledNotice && (
-					<AnyoneCanRegisterDisabledNotice className={ className } />
+					<AnyoneCanRegisterDisabledNotice />
 				) }
 			{ shouldShowRegistrationDisabledNotice && (
-				<RegistrationDisabledNotice className={ className } />
+				<RegistrationDisabledNotice />
 			) }
 		</Fragment>
 	);

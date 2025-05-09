@@ -51,10 +51,8 @@ import CloseIcon from '../../../../../../../svg/icons/close.svg';
 import SpinnerButton, {
 	SPINNER_POSITION,
 } from '../../../../../../googlesitekit/components-gm2/SpinnerButton';
-import SubtleNotification, {
-	VARIANTS,
-} from '../../../../../../components/notifications/SubtleNotification';
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
+import Notice from '../../../../../../components/Notice';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -332,18 +330,18 @@ export default function AudienceCreationNotice() {
 					) ) }
 			</div>
 			{ ! hasAnalytics4EditScope && ! isEditScopeNoticeDismissed && (
-				<div className="googlesitekit-audience-selection-panel__audience-creation-notice-info">
-					<SubtleNotification
-						title={ __(
-							'Creating these groups require more data tracking. You will be directed to update your Analytics property.',
-							'google-site-kit'
-						) }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ handleDismissEditScopeNotice }
-						variant={ VARIANTS.WARNING }
-						hideIcon
-					/>
-				</div>
+				<Notice
+					type="warning"
+					description={ __(
+						'Creating these groups require more data tracking. You will be directed to update your Analytics property.',
+						'google-site-kit'
+					) }
+					dismissButton={ {
+						label: __( 'Got it', 'google-site-kit' ),
+						onClick: handleDismissEditScopeNotice,
+					} }
+					hideIcon
+				/>
 			) }
 			{ ( apiErrors.length > 0 || hasOAuthError ) && (
 				<AudienceCreationErrorNotice

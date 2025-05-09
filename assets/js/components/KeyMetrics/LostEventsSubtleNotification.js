@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -32,10 +27,8 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { Button } from 'googlesitekit-components';
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Warning from '../../../svg/icons/warning.svg';
 import Link from '../Link';
+import Notice from '../Notice';
 
 export default function LostEventsSubtleNotification( {
 	onSelectMetricsCallback,
@@ -47,8 +40,8 @@ export default function LostEventsSubtleNotification( {
 		)
 	);
 	return (
-		<SubtleNotification
-			className="googlesitekit-acr-subtle-notification googlesitekit-acr-subtle-notification__lost-events"
+		<Notice
+			type="warning"
 			title={ __( 'Unavailable metrics data', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(
@@ -68,22 +61,18 @@ export default function LostEventsSubtleNotification( {
 					),
 				}
 			) }
-			dismissCTA={
-				<Button tertiary onClick={ onDismissCallback }>
-					{ __( 'Got it', 'google-site-kit' ) }
-				</Button>
-			}
-			additionalCTA={
-				<Button onClick={ onSelectMetricsCallback }>
-					{ __( 'Select metrics', 'google-site-kit' ) }
-				</Button>
-			}
-			icon={ <Warning width={ 24 } height={ 24 } /> }
+			dismissButton={ {
+				label: __( 'Got it', 'google-site-kit' ),
+				onClick: onDismissCallback,
+			} }
+			ctaButton={ {
+				label: __( 'Select metrics', 'google-site-kit' ),
+				onClick: onSelectMetricsCallback,
+			} }
 		/>
 	);
 }
 
 LostEventsSubtleNotification.propTypes = {
-	onSelectMetricsCallback: PropTypes.func.isRequired,
-	onDismissCallback: PropTypes.func.isRequired,
+	...Notice.propTypes,
 };

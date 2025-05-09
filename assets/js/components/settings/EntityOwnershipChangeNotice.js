@@ -32,9 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import SettingsNotice from '../SettingsNotice/SettingsNotice';
-import { TYPE_WARNING } from '../SettingsNotice/utils';
 import { listFormat } from '../../util';
+import Notice from '../Notice';
 
 export default function EntityOwnershipChangeNotice( { slug } ) {
 	const slugs = Array.isArray( slug ) ? slug : [ slug ];
@@ -97,9 +96,9 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 	}
 
 	return (
-		<SettingsNotice
-			type={ TYPE_WARNING }
-			notice={ sprintf(
+		<Notice
+			type="warning"
+			title={ sprintf(
 				/* translators: %s: module name. */
 				__(
 					'By clicking confirm changes, you’re granting other users view-only access to data from %s via your Google account. You can always manage this later in the dashboard sharing settings.',

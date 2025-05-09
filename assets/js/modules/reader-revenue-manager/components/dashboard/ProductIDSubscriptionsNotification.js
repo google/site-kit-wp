@@ -31,9 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 export default function ProductIDSubscriptionsNotification( {
 	id,
@@ -45,26 +43,20 @@ export default function ProductIDSubscriptionsNotification( {
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
 				type="warning"
 				description={ __(
 					'To complete your Reader Revenue Manager paywall setup, add your product IDs in settings',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Edit settings', 'google-site-kit' ) }
-						ctaLink={ `${ settingsURL }#connected-services/reader-revenue-manager/edit` }
-					/>
-				}
+				ctaButton={ {
+					label: __( 'Edit settings', 'google-site-kit' ),
+					href: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+				} }
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+				} }
 			/>
 		</Notification>
 	);

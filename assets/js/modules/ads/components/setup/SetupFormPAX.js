@@ -36,7 +36,7 @@ import { MODULES_ADS } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ConversionIDTextField } from '../common';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import WarningNotice from '../../../../components/WarningNotice';
+import Notice from '../../../../components/Notice';
 
 export default function SetupFormPAX( {
 	finishSetup,
@@ -96,12 +96,14 @@ export default function SetupFormPAX( {
 			</div>
 
 			{ isDuplicateAdsIDDetected && (
-				<WarningNotice className="googlesitekit-ads-setup__ads-id-conflict-warning">
-					{ __(
+				<Notice
+					className="googlesitekit-ads-setup__ads-id-conflict-warning"
+					type="warning"
+					description={ __(
 						'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.',
 						'google-site-kit'
 					) }
-				</WarningNotice>
+				/>
 			) }
 
 			<div className="googlesitekit-setup-module__action">

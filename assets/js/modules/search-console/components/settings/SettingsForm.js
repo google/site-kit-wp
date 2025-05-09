@@ -31,9 +31,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { PropertySelect } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { TYPE_INFO } from '../../../../components/SettingsNotice';
-import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import Notice from '../../../../components/Notice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
@@ -56,10 +54,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			</div>
 
 			{ hasModuleAccess === false && (
-				<SettingsNotice
-					type={ TYPE_INFO }
-					Icon={ WarningIcon }
-					notice={ createInterpolateElement(
+				<Notice
+					type="warning"
+					description={ createInterpolateElement(
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(

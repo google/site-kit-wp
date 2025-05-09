@@ -39,12 +39,9 @@ import {
 	SnippetModeSelect,
 } from '../common';
 import ProductIDSettings from './ProductIDSettings';
-import SettingsNotice, {
-	TYPE_INFO,
-} from '../../../../components/SettingsNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
+import Notice from '../../../../components/Notice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
@@ -161,10 +158,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					<PublicationOnboardingStateNotice />
 				) }
 				{ ! hasModuleAccess && (
-					<SettingsNotice
-						type={ TYPE_INFO }
-						Icon={ WarningIcon }
-						notice={ createInterpolateElement(
+					<Notice
+						type="warning"
+						description={ createInterpolateElement(
 							sprintf(
 								/* translators: %s: module owner's name */
 								__(

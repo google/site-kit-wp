@@ -127,9 +127,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			expect( getByText( ctaText ) ).toBeInTheDocument();
 
 			expect(
-				container.querySelector(
-					'.googlesitekit-subtle-notification__cta'
-				)
+				container.querySelector( '.googlesitekit-notice__cta' )
 			).toHaveAttribute( 'href', expectedServiceURL );
 
 			expect( container.firstChild ).toHaveClass(

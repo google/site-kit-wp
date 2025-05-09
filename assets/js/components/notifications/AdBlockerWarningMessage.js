@@ -25,17 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Link from '../Link';
-import WarningNotice from '../WarningNotice';
-import ExternalIcon from '../../../svg/icons/external-rounded.svg';
+import Notice from '../Notice';
 
 export default function AdBlockerWarningMessage( {
-	className = '',
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -44,33 +40,23 @@ export default function AdBlockerWarningMessage( {
 	}
 
 	return (
-		<WarningNotice className={ className }>
-			{ createInterpolateElement(
-				sprintf(
-					/* translators: 1: The warning message. 2: "Get help" text. */
-					__( '%1$s. <Link>%2$s</Link>', 'google-site-kit' ),
-					warningMessage,
-					__( 'Get help', 'google-site-kit' )
-				),
-				{
-					Link: (
-						<Link
-							href={ getHelpLink }
-							external
-							hideExternalIndicator
-							trailingIcon={
-								<ExternalIcon width={ 15 } height={ 15 } />
-							}
-						/>
-					),
-				}
+		<Notice
+			type="warning"
+			description={ sprintf(
+				/* translators: 1: The warning message. */
+				__( '%1$s ', 'google-site-kit' ),
+				warningMessage
 			) }
-		</WarningNotice>
+			ctaButton={ {
+				label: __( 'Get help', 'google-site-kit' ),
+				href: getHelpLink,
+				external: true,
+			} }
+		/>
 	);
 }
 
 AdBlockerWarningMessage.propTypes = {
-	className: PropTypes.string,
 	getHelpLink: PropTypes.string,
 	warningMessage: PropTypes.string,
 };
