@@ -248,6 +248,14 @@ export const NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { resolveSelect } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
 			const { publicationOnboardingState, paymentOption } =
 				( await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
@@ -255,7 +263,6 @@ export const NOTIFICATIONS = {
 
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
-
 			const showingSuccessNotification =
 				notification === 'authentication_success' &&
 				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
