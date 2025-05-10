@@ -128,9 +128,8 @@ export default function RRMIntroductoryOverlayNotification( {
 						paymentOption === 'noPayment' ? serviceURL : supportURL,
 					target: '_blank',
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
-					gaTrackingEventArgs,
 				} }
-				dismissButton={ { gaTrackingEventArgs } }
+				dismissButton
 				GraphicDesktop={
 					ReaderRevenueManagerIntroductoryGraphicDesktop
 				}
