@@ -15,25 +15,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Node dependencies
- */
-import path from 'path';
-
-/**
- * External dependencies
- */
-import initStoryshots from '@storybook/addon-storyshots';
-import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
-
-initStoryshots( {
-	suite: 'Puppeteer storyshots',
-	configPath: path.resolve( __dirname, '../storybook' ),
-	test: puppeteerTest( {
-		// eslint-disable-next-line sitekit/acronym-case
-		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
-		setupTimeout: 5000,
-		testTimeout: 5000,
-	} ),
-} );
