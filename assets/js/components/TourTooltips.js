@@ -99,8 +99,8 @@ export default function TourTooltips( {
 
 	const viewContext = useViewContext();
 
-	const stepIndex = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( stepKey )
+	const stepIndex = useSelect(
+		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
 	);
 	const run = useSelect( ( select ) => {
 		return (
