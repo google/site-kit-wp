@@ -155,10 +155,6 @@ class WooCommerce extends Conversion_Events_Provider {
 					),
 					'before'
 				);
-
-				// Output the script tag to track the purchase event in
-				// Analytics.
-				BC_Functions::wp_print_inline_script_tag( "window?._googlesitekit?.gtagEvent?.( 'purchase' );" );
 			},
 			10,
 			1
