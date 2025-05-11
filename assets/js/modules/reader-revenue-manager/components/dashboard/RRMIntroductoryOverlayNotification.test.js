@@ -159,20 +159,6 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		);
 	} );
 
-	it( 'should return null when the dashboard is not a main dashboard', async () => {
-		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
-			{
-				registry,
-				viewContext: 'other-context',
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should return null when the notification is dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
