@@ -32,20 +32,20 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
+import { DAY_IN_SECONDS } from '../../../../../util';
 import { isZeroReport } from '../../../utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { DAY_IN_SECONDS } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DataSourceLink from './DataSourceLink';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
+import useAllTrafficWidgetReport from '../../../hooks/useAllTrafficWidgetReport';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
-import useAllTrafficWidgetReport from '../../../hooks/useAllTrafficWidgetReport';
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
