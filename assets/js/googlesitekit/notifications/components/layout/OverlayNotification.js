@@ -81,5 +81,5 @@ export default function OverlayNotification( {
 OverlayNotification.propTypes = {
 	notificationID: PropTypes.string,
 	ctaButton: PropTypes.object,
-	dismissButton: PropTypes.oneOf( [ PropTypes.object, PropTypes.bool ] ),
+	dismissButton: PropTypes.oneOfType( [ PropTypes.object, PropTypes.bool ] ),
 };
