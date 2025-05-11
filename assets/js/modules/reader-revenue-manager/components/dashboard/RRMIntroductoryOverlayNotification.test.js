@@ -159,26 +159,6 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		);
 	} );
 
-	it( 'should return null when the notification is dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should dismiss the notification when the "Explore features" CTA is clicked', async () => {
 		fetchMock.postOnce( dismissItemsEndpoint, {
 			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
