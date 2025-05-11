@@ -45,11 +45,21 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'RRMIntroductoryOverlayNotification', () => {
+	const RRMIntroductoryOverlayNotificationComponent =
+		withNotificationComponentProps( RRM_INTRODUCTORY_OVERLAY_NOTIFICATION )(
+			RRMIntroductoryOverlayNotification
+		);
+
+	const notification = NOTIFICATIONS[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ];
+
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
@@ -76,6 +86,13 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 				publicationID: '123',
 				paymentOption: 'noPayment',
 			} );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
+				notification
+			);
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
