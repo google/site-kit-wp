@@ -35,7 +35,7 @@ export default function UserInputQuestionNotice( { className } ) {
 			) }
 		>
 			{ __(
-				'You can always edit your answers later from Settings',
+				'You can always edit your answers later in Settings',
 				'google-site-kit'
 			) }
 		</p>

@@ -114,9 +114,7 @@ function Template() {
 }
 
 export const DefaultTypeScale = Template.bind( {} );
-DefaultTypeScale.scenario = {
-	label: 'Global/TypeScale/undefined',
-};
+DefaultTypeScale.scenario = {};
 
 export default {
 	title: 'Type Scale',

@@ -24,34 +24,60 @@ import {
 	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
+	freezeFetch,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CATEGORIES,
-	KM_ANALYTICS_TOP_CITIES,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import TopCategoriesWidget from './TopCategoriesWidget';
+import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
-import TopCategoriesWidget from './TopCategoriesWidget';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../../../../util/errors';
+import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 
 describe( 'TopCategoriesWidget', () => {
-	const { Widget } = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
-
 	let registry;
+	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CATEGORIES );
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+	const [ accountID, propertyID, webDataStreamID ] = [
+		'12345',
+		'34567',
+		'56789',
+	];
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		provideKeyMetrics( registry );
+		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideUserAuthentication( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			accountID,
+			propertyID,
+			webDataStreamID,
 			availableCustomDimensions:
 				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
 					.requiredCustomDimensions,
 		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				createTime: '2014-10-02T15:01:23Z',
+			},
+			{ propertyID }
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
@@ -62,20 +88,10 @@ describe( 'TopCategoriesWidget', () => {
 					.requiredCustomDimensions[ 0 ],
 				false
 			);
-
-		provideUserAuthentication( registry );
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideKeyMetrics( registry );
 	} );
 
-	it( 'renders correctly with the expected metrics', async () => {
-		provideAnalytics4MockReport( registry, {
+	it( 'should render correctly with the expected metrics', async () => {
+		const reportOptions = {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} ),
@@ -97,16 +113,151 @@ describe( 'TopCategoriesWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
-		} );
+		};
+
+		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<TopCategoriesWidget
-				widgetSlug={ KM_ANALYTICS_TOP_CATEGORIES }
-				Widget={ Widget }
-			/>,
+			<TopCategoriesWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the loading state while resolving the report', async () => {
+		// Freeze the report fetch to keep the widget in loading state.
+		freezeFetch( reportEndpoint );
+
+		const { container, waitForRegistry } = render(
+			<TopCategoriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		[
+			'.googlesitekit-km-widget-tile__loading',
+			'.googlesitekit-km-widget-tile__loading-header',
+			'.googlesitekit-km-widget-tile__loading-body',
+		].forEach( ( selector ) => {
+			expect( container.querySelector( selector ) ).toBeInTheDocument();
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the generic error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: ERROR_INTERNAL_SERVER_ERROR,
+			message: 'Internal server error',
+			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopCategoriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopCategoriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the missing custom dimension error when the required custom dimension is not available', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID,
+			availableCustomDimensions: [],
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopCategoriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /No data to show/i ) ).toBeInTheDocument();
+		expect(
+			getByText( /Update Analytics to track metric/i )
+		).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the custom dimension error when there is an error creating the custom dimension', async () => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		provideCustomDimensionError( registry, {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions[ 0 ],
+			error,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopCategoriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );

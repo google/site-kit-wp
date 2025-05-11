@@ -59,7 +59,6 @@ import {
 	provideKeyMetrics,
 } from '../../../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
-import { enabledFeatures } from '../../../../features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -80,8 +79,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	);
 
 	beforeEach( () => {
-		enabledFeatures.add( 'conversionReporting' );
-
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -125,10 +122,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		} );
 	} );
 
-	afterAll( () => {
-		enabledFeatures.delete( 'conversionReporting' );
-	} );
-
 	describe( 'Existing users with tailored metrics', () => {
 		beforeEach( () => {
 			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
@@ -158,7 +151,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -180,7 +172,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -209,7 +200,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -240,7 +230,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -262,15 +251,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
 
 			expect(
-				document.querySelector(
-					'.googlesitekit-acr-subtle-notification'
-				)
+				document.querySelector( '.googlesitekit-notice--new' )
 			).toBeInTheDocument();
 		} );
 
@@ -291,7 +277,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -362,7 +347,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -425,7 +409,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -463,7 +446,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -489,7 +471,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -530,7 +511,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -571,7 +551,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				/>,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -622,7 +601,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -702,7 +680,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'conversionReporting' ],
 				}
 			);
 			await waitForRegistry();
@@ -716,7 +693,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					( content, testElement ) =>
 						testElement.tagName.toLowerCase() === 'p' &&
 						testElement.className ===
-							'googlesitekit-subtle-notification__secondary_description' &&
+							'googlesitekit-notice__description' &&
 						content ===
 							'We’ve extended your metrics selection based on your website events'
 				)
@@ -813,7 +790,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -862,7 +838,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -947,7 +922,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1012,7 +986,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1062,7 +1035,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1111,7 +1083,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();
@@ -1167,7 +1138,6 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					/>,
 					{
 						registry,
-						features: [ 'conversionReporting' ],
 					}
 				);
 				await waitForRegistry();

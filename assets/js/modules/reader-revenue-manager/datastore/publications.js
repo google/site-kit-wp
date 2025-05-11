@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies.
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -44,7 +44,7 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
-		API.get(
+		get(
 			'modules',
 			READER_REVENUE_MANAGER_MODULE_SLUG,
 			'publications',
@@ -57,7 +57,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	baseName: 'getSyncPublicationOnboardingState',
 	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
-		API.set(
+		set(
 			'modules',
 			READER_REVENUE_MANAGER_MODULE_SLUG,
 			'sync-publication-onboarding-state',

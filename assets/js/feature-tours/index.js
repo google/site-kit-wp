@@ -16,10 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import dashboardSharing from './dashboard-sharing';
-
 // Ordered tours.
-export default [ dashboardSharing ];
+export default [];

@@ -62,6 +62,8 @@ import {
 import { Cell, Row } from '../../../../material-components';
 import { WooCommerceRedirectModal } from '../common';
 import Link from '../../../../components/Link';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -70,6 +72,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
+	const viewContext = useViewContext();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -146,6 +149,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
+		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
 		setExtCustomerID( customerData.externalCustomerId );
@@ -161,7 +166,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
 		}
-	}, [ setExtCustomerID, setPaxConversionID ] );
+	}, [ setExtCustomerID, setPaxConversionID, viewContext ] );
 
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
@@ -174,8 +179,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
+		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
 		finishSetup( redirectURL );
-	}, [ registry, finishSetup ] );
+	}, [ registry, finishSetup, viewContext ] );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
@@ -193,15 +199,22 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
-	const onLaunch = useCallback( ( app ) => {
-		paxAppRef.current = app;
-	}, [] );
+	const onLaunch = useCallback(
+		( app ) => {
+			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			paxAppRef.current = app;
+		},
+		[ viewContext ]
+	);
 
-	const onSetupCallback = useCallback( () => {
+	const onSetupCallback = useCallback( async () => {
 		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
+
+		// awaiting because `createAccount` may trigger a navigation.
+		await trackEvent( viewContext, 'start_setup_pax' );
 
 		createAccount();
 	}, [
@@ -209,6 +222,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
+		viewContext,
 	] );
 
 	const setupNewAdsAccountSupportURL = useSelect( ( select ) =>

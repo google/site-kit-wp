@@ -21,15 +21,11 @@
  */
 import faker from 'faker';
 import fetchMockJest from 'fetch-mock-jest';
-import { mockAnimationsApi } from 'jsdom-testing-mocks';
 
 /**
  * Internal dependencies
  */
 import { enabledFeatures } from '../../assets/js/features';
-
-// Added to provide support for testing `@material/web` components.
-mockAnimationsApi();
 
 // Set fetchMock global so we don't have to import fetchMock in every test.
 // This global is instantiated in tests/js/setup-globals.js.

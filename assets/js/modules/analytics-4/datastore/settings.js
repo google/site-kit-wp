@@ -25,7 +25,7 @@ import { isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
@@ -173,7 +173,7 @@ export async function submitChanges( { dispatch, select, resolveSelect } ) {
 
 	dispatch( CORE_USER ).resetUserAudienceSettings();
 
-	await API.invalidateCache( 'modules', 'analytics-4' );
+	await invalidateCache( 'modules', 'analytics-4' );
 
 	return {};
 }

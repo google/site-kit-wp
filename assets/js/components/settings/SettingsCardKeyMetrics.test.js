@@ -88,14 +88,13 @@ describe( 'SettingsCardKeyMetrics', () => {
 			<SettingsCardKeyMetrics />,
 			{
 				registry,
-				features: [ 'conversionReporting' ],
 			}
 		);
 
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).toBeInTheDocument();
 	} );
 
@@ -110,14 +109,13 @@ describe( 'SettingsCardKeyMetrics', () => {
 			<SettingsCardKeyMetrics />,
 			{
 				registry,
-				features: [ 'conversionReporting' ],
 			}
 		);
 
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).toBeInTheDocument();
 
 		// Default content should be replaced with ConversionReportingSettingsSubtleNotification,
@@ -136,33 +134,13 @@ describe( 'SettingsCardKeyMetrics', () => {
 			<SettingsCardKeyMetrics />,
 			{
 				registry,
-				features: [ 'conversionReporting' ],
 			}
 		);
 
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'should not show ConversionReportingSettingsSubtleNotification if conversionReporting feature flag is not enabled', async () => {
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( false );
-
-		const { container, waitForRegistry } = render(
-			<SettingsCardKeyMetrics />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).not.toBeInTheDocument();
 	} );
 } );

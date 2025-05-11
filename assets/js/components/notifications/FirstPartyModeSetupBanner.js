@@ -62,7 +62,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const tooltipSettings = {
 		tooltipSlug: id,
 		content: __(
-			'You can always enable First-party mode from Settings later',
+			'You can always enable First-party mode in Settings later',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),

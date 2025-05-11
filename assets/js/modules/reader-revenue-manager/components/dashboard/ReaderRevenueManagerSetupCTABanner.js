@@ -62,7 +62,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const tooltipSettings = {
 		tooltipSlug: 'rrm-setup-notification',
 		content: __(
-			'You can always enable Reader Revenue Manager from Settings later',
+			'You can always enable Reader Revenue Manager in Settings later',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),

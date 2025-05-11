@@ -39,3 +39,14 @@ global.googlesitekit.widgets = Widgets;
 
 // This is only exported for Jest and is not used in production.
 export default Widgets;
+
+export const {
+	WIDGET_WIDTHS,
+	WIDGET_AREA_STYLES,
+	registerWidgetArea,
+	registerWidget,
+	assignWidgetArea,
+	assignWidget,
+	isWidgetAreaRegistered,
+	isWidgetRegistered,
+} = Widgets;

@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -40,7 +40,7 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
 	controlCallback: ( { triggerID, ttl } ) => {
 		const args = ttl ? { ttl } : {};
-		return API.set( 'core', 'user', 'survey-trigger', {
+		return set( 'core', 'user', 'survey-trigger', {
 			triggerID,
 			...args,
 		} );
@@ -60,7 +60,7 @@ const fetchTriggerSurveyStore = createFetchStore( {
 const fetchSendSurveyEventStore = createFetchStore( {
 	baseName: 'sendSurveyEvent',
 	controlCallback: ( { event, session } ) =>
-		API.set( 'core', 'user', 'survey-event', { event, session } ),
+		set( 'core', 'user', 'survey-event', { event, session } ),
 	argsToParams: ( event, session ) => {
 		return { event, session };
 	},
@@ -69,7 +69,7 @@ const fetchSendSurveyEventStore = createFetchStore( {
 const fetchGetSurveyTimeoutsStore = createFetchStore( {
 	baseName: 'getSurveyTimeouts',
 	controlCallback() {
-		return API.get(
+		return get(
 			'core',
 			'user',
 			'survey-timeouts',
@@ -90,7 +90,7 @@ const fetchGetSurveyTimeoutsStore = createFetchStore( {
 const fetchGetSurveyStore = createFetchStore( {
 	baseName: 'getSurvey',
 	controlCallback() {
-		return API.get( 'core', 'user', 'survey', {} );
+		return get( 'core', 'user', 'survey', {} );
 	},
 	reducerCallback: ( state, { survey } ) => {
 		const {

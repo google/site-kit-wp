@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	createRegistryControl,
 	createRegistrySelector,
@@ -48,11 +48,7 @@ const RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
 const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 	baseName: 'syncAdBlockingRecoveryTags',
 	controlCallback: () => {
-		return API.set(
-			'modules',
-			'adsense',
-			'sync-ad-blocking-recovery-tags'
-		);
+		return set( 'modules', 'adsense', 'sync-ad-blocking-recovery-tags' );
 	},
 } );
 

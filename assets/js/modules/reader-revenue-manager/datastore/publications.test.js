@@ -25,7 +25,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -59,7 +59,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {

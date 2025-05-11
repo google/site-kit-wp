@@ -69,7 +69,7 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 	const tooltipSettings = {
 		tooltipSlug: CONSENT_MODE_SETUP_CTA_WIDGET_SLUG,
 		content: __(
-			'You can always enable consent mode from Settings later',
+			'You can always enable consent mode in Settings later',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),

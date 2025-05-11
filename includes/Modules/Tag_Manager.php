@@ -113,7 +113,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Checks if the Tag Manager module is connected and contains an Ads Conversion Tracking (AWCT) tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @return bool Whether or not Ads measurement is connected via this module.
 	 */

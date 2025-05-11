@@ -36,10 +36,7 @@ import KeyMetricsCTAContent from './KeyMetricsCTAContent';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import {
-	KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
-} from './constants';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import whenActive from '../../util/when-active';
 import { useShowTooltip } from '../AdminMenuTooltip';
 import { trackEvent } from '../../util';
@@ -47,11 +44,8 @@ import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { useFeature } from '../../hooks/useFeature';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
 	const viewContext = useViewContext();
 	const displayCTAWidget = useDisplayCTAWidget();
 	const ctaLink = useSelect( ( select ) =>
@@ -64,7 +58,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
 		title: __(
-			'You can always set up goals from Settings later',
+			'You can always set up goals in Settings later',
 			'google-site-kit'
 		),
 		content: __(
@@ -75,7 +69,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 
-	const { setValue } = useDispatch( CORE_UI );
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const dismissCallback = async () => {
@@ -88,24 +81,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const openMetricsSelectionPanel = useCallback( () => {
-		if ( isConversionReportingEnabled ) {
-			navigateTo( fullScreenSelectionLink );
-		} else {
-			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-		}
-
-		trackEvent(
+	const openMetricsSelectionPanel = useCallback( async () => {
+		await trackEvent(
 			`${ viewContext }_kmw-cta-notification`,
 			'confirm_pick_own_metrics'
 		);
-	}, [
-		navigateTo,
-		fullScreenSelectionLink,
-		viewContext,
-		isConversionReportingEnabled,
-		setValue,
-	] );
+
+		navigateTo( fullScreenSelectionLink );
+	}, [ navigateTo, fullScreenSelectionLink, viewContext ] );
 
 	const onGetTailoredMetricsClick = useCallback( () => {
 		trackEvent(

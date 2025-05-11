@@ -79,7 +79,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const tooltipSettings = {
 		tooltipSlug: id,
 		title: __(
-			'You can always enable groups from Settings later',
+			'You can always enable groups in Settings later',
 			'google-site-kit'
 		),
 		content: __(

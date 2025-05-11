@@ -103,7 +103,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 	'customEvent:googlesitekit_post_categories': [
 		'Entertainment; Sports; Media',
 		'Wealth',
-		'Health',
+		'Health &amp; Wellness',
 		'Technology',
 		'Business',
 	],

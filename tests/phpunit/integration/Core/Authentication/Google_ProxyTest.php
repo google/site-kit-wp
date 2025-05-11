@@ -438,7 +438,6 @@ class Google_ProxyTest extends TestCase {
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
-			'gm3Components'    => array( 'enabled' => true ),
 			'test.featureName' => array( 'enabled' => true ),
 		);
 

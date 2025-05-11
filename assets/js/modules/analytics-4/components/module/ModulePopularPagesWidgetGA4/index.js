@@ -52,7 +52,6 @@ import {
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
-import ga4ReportingTour from '../../../../../feature-tours/ga4-reporting';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -126,14 +125,9 @@ function ModulePopularPagesWidgetGA4( props ) {
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
 
-	const isGA4ReportingTourActive = useSelect(
-		( select ) => select( CORE_USER ).getCurrentTour() === ga4ReportingTour
-	);
-
 	const loading = ! loaded || isGatheringData === undefined;
 
-	// Bypass loading state if showing GA4 tour.
-	if ( loading && ! isGA4ReportingTourActive ) {
+	if ( loading ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewTable padding />
@@ -220,22 +214,14 @@ function ModulePopularPagesWidgetGA4( props ) {
 		},
 	];
 
-	let rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
-	let ZeroState = ZeroDataMessage;
-	// Use a custom zero state when the GA4 reporting tour is active
-	// while data is still loading.
-	if ( loading && isGA4ReportingTourActive ) {
-		rows = [];
-		ZeroState = function () {
-			return <PreviewTable rows={ rows.length || 10 } />;
-		};
-	} else {
-		// Combine the titles from the pageTitles with the rows from the metrics report.
-		rows.forEach( ( row ) => {
-			const url = row.dimensionValues[ 0 ].value;
-			row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
-		} );
-	}
+	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	const ZeroState = ZeroDataMessage;
+
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensionValues[ 0 ].value;
+		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
+	} );
 
 	const tabbedLayout =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;

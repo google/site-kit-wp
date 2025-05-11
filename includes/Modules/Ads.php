@@ -128,7 +128,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	/**
 	 * Checks if the Ads module is connected and contributing to Ads measurement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.151.0
 	 *
 	 * @return bool True if the Ads module is connected, false otherwise.
 	 */
@@ -202,7 +202,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.3/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.4/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
