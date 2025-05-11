@@ -30,11 +30,12 @@ import OverlayNotification from '../../../../googlesitekit/notifications/compone
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
 import SupportLink from '../../../../components/SupportLink';
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'rrmIntroductoryOverlayNotification';
@@ -65,6 +66,8 @@ export default function RRMIntroductoryOverlayNotification( {
 			path: '/news/publisher-center/answer/11449914',
 		} )
 	);
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_rrm-introductory-notification`,
@@ -126,6 +129,7 @@ export default function RRMIntroductoryOverlayNotification( {
 							: __( 'Learn more', 'google-site-kit' ),
 					href:
 						paymentOption === 'noPayment' ? serviceURL : supportURL,
+					onClick: () => dismissNotification( id ),
 					target: '_blank',
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
 				} }
@@ -134,6 +138,7 @@ export default function RRMIntroductoryOverlayNotification( {
 					ReaderRevenueManagerIntroductoryGraphicDesktop
 				}
 				GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 			/>
 		</Notification>
 	);
