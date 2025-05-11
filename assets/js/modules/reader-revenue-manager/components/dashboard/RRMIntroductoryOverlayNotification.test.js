@@ -125,7 +125,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 	it( 'should render an introductory overlay notification when the payment option is "noPayment"', async () => {
 		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -145,7 +145,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 			.setPaymentOption( '' );
 
 		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -166,7 +166,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -194,7 +194,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -215,7 +215,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 	it( 'should track an event when the notification is viewed', async () => {
 		const { waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -233,7 +233,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 	it( 'should not track an event when the dashboard is not a main dashboard', async () => {
 		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: 'other-context',
@@ -255,7 +255,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 			] );
 
 		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -276,7 +276,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -315,7 +315,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -347,7 +347,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 	it( 'should track a click event when clicking the "Learn more" link', async () => {
 		const { getByRole, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
