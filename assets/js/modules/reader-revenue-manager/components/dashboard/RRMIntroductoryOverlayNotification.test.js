@@ -101,6 +101,28 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		mockTrackEvent.mockClear();
 	} );
 
+	describe( 'checkRequirements', () => {
+		it( 'is active when the payment option is "noPayment"', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is active when the payment option is empty', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setPaymentOption( '' );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+	} );
+
 	it( 'should render an introductory overlay notification when the payment option is "noPayment"', async () => {
 		const { container, waitForRegistry } = render(
 			<RRMIntroductoryOverlayNotification />,
