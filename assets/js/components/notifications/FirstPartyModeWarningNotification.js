@@ -31,6 +31,7 @@ import { useSelect } from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
+import Notice from '../Notice';
 
 export default function FirstPartyModeWarningNotification( {
 	id,
@@ -48,7 +49,7 @@ export default function FirstPartyModeWarningNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type="warning"
+				type={ Notice.TYPES.WARNING }
 				description={ createInterpolateElement(
 					__(
 						'First-party mode has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
