@@ -167,34 +167,32 @@ const noAMDParserRule = { parser: { amd: false } };
 
 exports.noAMDParserRule = noAMDParserRule;
 
-const svgRules = [
-	{
-		oneOf: [
-			{
-				test: /\.svg$/,
-				resourceQuery: /url/,
-				use: 'url-loader',
-			},
-			{
-				test: /\.svg$/,
-				use: [
-					{
-						loader: '@svgr/webpack',
-						options: {
-							// strip width & height to allow manual override using props
-							dimensions: false,
-						},
+const svgRule = {
+	test: /\.svg$/,
+	oneOf: [
+		{
+			resourceQuery: /url/,
+			use: 'url-loader',
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// strip width & height to allow manual override using props
+						dimensions: false,
 					},
-				],
-			},
-		],
-	},
-];
-exports.svgRules = svgRules;
+				},
+			],
+		},
+	],
+};
+
+exports.svgRule = svgRule;
 
 exports.createRules = ( mode ) => [
 	noAMDParserRule,
-	...svgRules,
+	svgRule,
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,

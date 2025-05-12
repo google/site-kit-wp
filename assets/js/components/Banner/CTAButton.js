@@ -25,6 +25,10 @@ import PropTypes from 'prop-types';
 import { Button } from 'googlesitekit-components';
 
 export default function CTAButton( { label, disabled, onClick, href } ) {
+	if ( ! label || ( ! onClick && ! href ) ) {
+		return null;
+	}
+
 	return (
 		<Button
 			className="googlesitekit-banner__cta"

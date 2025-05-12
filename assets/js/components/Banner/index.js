@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Fragment } from '@wordpress/element';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -62,36 +61,25 @@ export default function Banner( {
 				<Title>{ title }</Title>
 
 				<Description>
-					<Fragment>
-						{ description }
-
-						{ learnMoreLink?.href && (
-							<Fragment>
-								{ ' ' }
-								<LearnMoreLink { ...learnMoreLink } />
-							</Fragment>
-						) }
-					</Fragment>
+					{ description }{ ' ' }
+					{ learnMoreLink?.href && (
+						<LearnMoreLink { ...learnMoreLink } />
+					) }
 				</Description>
 
 				{ helpText && <HelpText>{ helpText }</HelpText> }
 
 				<div className="googlesitekit-notice__action">
-					{ ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) && (
-							<CTAButton { ...ctaButton } />
-						) }
-					{ dismissButton?.onClick && (
-						<DismissButton { ...dismissButton } />
-					) }
+					<CTAButton { ...ctaButton } />
+					<DismissButton { ...dismissButton } />
 				</div>
 			</div>
 
 			<div
-				className={ classnames(
-					'googlesitekit-banner__svg-wrapper',
-					svgMode && `googlesitekit-banner__svg-wrapper--${ svgMode }`
-				) }
+				className={ classnames( 'googlesitekit-banner__svg-wrapper', {
+					[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
+						svgMode,
+				} ) }
 				style={ { backgroundImage: `url(${ SVGData })` } }
 			/>
 
@@ -101,7 +89,6 @@ export default function Banner( {
 }
 
 Banner.propTypes = {
-	className: PropTypes.string,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	helpText: PropTypes.string,
@@ -113,5 +100,4 @@ Banner.propTypes = {
 		mobile: PropTypes.elementType,
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
-	children: PropTypes.node,
 };

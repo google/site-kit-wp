@@ -27,7 +27,7 @@ const { ProvidePlugin } = require( 'webpack' );
 /**
  * Internal dependencies
  */
-const { rootDir, siteKitExternals, svgRules } = require( '../webpack/common' );
+const { rootDir, siteKitExternals, svgRule } = require( '../webpack/common' );
 
 // eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
@@ -106,9 +106,7 @@ module.exports = async ( { config } ) => {
 	);
 	fileLoaderRule.exclude = /\.svg$/;
 
-	for ( const svgRule of svgRules ) {
-		config.module.rules.push( svgRule );
-	}
+	config.module.rules.push( svgRule );
 
 	return config;
 };

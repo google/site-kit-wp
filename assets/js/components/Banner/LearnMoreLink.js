@@ -34,8 +34,12 @@ export default function LearnMoreLink( {
 	className,
 	label = __( 'Learn more', 'google-site-kit' ),
 } ) {
+	if ( ! href ) {
+		return null;
+	}
+
 	return (
-		<Link href={ href } external className={ className }>
+		<Link href={ href } className={ className } external>
 			{ label }
 		</Link>
 	);
