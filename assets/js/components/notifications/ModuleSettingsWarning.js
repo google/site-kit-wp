@@ -23,7 +23,6 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../googlesitekit/datastore/user/constants';
 import AdBlockerWarning from './AdBlockerWarning';
-import { __, sprintf } from '@wordpress/i18n';
 import Notice from '../Notice';
 
 export default function ModuleSettingsWarning( { slug } ) {
@@ -42,13 +41,6 @@ export default function ModuleSettingsWarning( { slug } ) {
 	}
 
 	return (
-		<Notice
-			type={ Notice.TYPES.WARNING }
-			description={ sprintf(
-				/* translators: %s: Erorr message. */
-				__( '%s ', 'google-site-kit' ),
-				error.message
-			) }
-		/>
+		<Notice type={ Notice.TYPES.WARNING } description={ error.message } />
 	);
 }
