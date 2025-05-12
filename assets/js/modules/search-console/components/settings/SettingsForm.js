@@ -55,7 +55,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 			{ hasModuleAccess === false && (
 				<Notice
-					type="warning"
+					type={ Notice.TYPES.WARNING }
 					description={ createInterpolateElement(
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
