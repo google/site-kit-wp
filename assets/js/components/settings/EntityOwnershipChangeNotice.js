@@ -97,7 +97,7 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 
 	return (
 		<Notice
-			type="warning"
+			type={ Notice.TYPES.WARNING }
 			title={ sprintf(
 				/* translators: %s: module name. */
 				__(
