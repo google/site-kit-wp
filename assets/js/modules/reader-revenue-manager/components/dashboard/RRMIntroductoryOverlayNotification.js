@@ -104,9 +104,9 @@ export default function RRMIntroductoryOverlayNotification( {
 						a: (
 							<SupportLink
 								path="/news/publisher-center/answer/11449914"
+								onClick={ handleLearnMoreClick }
 								external
 								hideExternalIndicator
-								onClick={ handleLearnMoreClick }
 							/>
 						),
 					}
