@@ -7,7 +7,7 @@
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
 		"watch": "npm run build:dev -- --watch",
-		"remove-dist": "rimraf ./../dist/"
+		"remove-dist": "rimraf ../dist/"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
@@ -91,6 +91,7 @@
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.3.0",
 		"postcss-preset-env": "^9.5.11",
+		"rimraf": "^6.0.1",
 		"rxjs": "^6.6.7",
 		"sass": "^1.30.0",
 		"sass-loader": "^9.0.3",
