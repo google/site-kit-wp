@@ -29,6 +29,7 @@ export default function NoticeNotification( {
 	children,
 	dismissButton,
 	ctaButton,
+	gaTrackingEventArgs,
 	...props
 } ) {
 	const trackEvents = useNotificationEvents( notificationID );
@@ -38,8 +39,8 @@ export default function NoticeNotification( {
 	const handleDismissWithTrackEvent = async ( event ) => {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
-			props.gaTrackingEventArgs?.label,
-			props.gaTrackingEventArgs?.value
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
 		);
 		dismissNotification( notificationID, {
 			...dismissButton.dismissOptions,
@@ -49,8 +50,8 @@ export default function NoticeNotification( {
 	const handleCTAClickWithTrackEvent = async ( event ) => {
 		await ctaButton?.onClick?.( event );
 		trackEvents.confirm(
-			props.gaTrackingEventArgs?.label,
-			props.gaTrackingEventArgs?.value
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
 		);
 	};
 
@@ -82,4 +83,5 @@ NoticeNotification.propTypes = {
 	children: propTypes.node,
 	dismissButton: propTypes.object,
 	ctaButton: propTypes.object,
+	gaTrackingEventArgs: propTypes.object,
 };
