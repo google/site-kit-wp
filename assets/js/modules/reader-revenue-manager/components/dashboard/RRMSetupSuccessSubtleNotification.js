@@ -48,6 +48,7 @@ import SubtleNotification from '../../../../googlesitekit/notifications/componen
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import Notice from '../../../../components/Notice';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -247,7 +248,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
 			<NoticeNotification
-				type="warning"
+				type={ Notice.TYPES.WARNING }
 				notificationID={ id }
 				{ ...gaTrackingProps }
 				title={ __(
