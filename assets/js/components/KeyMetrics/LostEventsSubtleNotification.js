@@ -41,7 +41,7 @@ export default function LostEventsSubtleNotification( {
 	);
 	return (
 		<Notice
-			type="warning"
+			type={ Notice.TYPES.WARNING }
 			title={ __( 'Unavailable metrics data', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(
