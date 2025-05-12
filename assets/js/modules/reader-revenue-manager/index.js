@@ -58,6 +58,9 @@ import {
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import RRMIntroductoryOverlayNotification, {
+	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
+} from './components/dashboard/RRMIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
 
@@ -235,6 +238,45 @@ export const NOTIFICATIONS = {
 			);
 
 			return isActive;
+		},
+	},
+	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+		Component: RRMIntroductoryOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
+			const { publicationOnboardingState, paymentOption } =
+				( await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings() ) || {};
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const showingSuccessNotification =
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
+			if (
+				publicationOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+				[ 'noPayment', '' ].includes( paymentOption ) &&
+				! showingSuccessNotification
+			) {
+				return true;
+			}
+
+			return false;
 		},
 	},
 };
