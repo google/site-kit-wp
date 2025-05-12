@@ -82,7 +82,7 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 				! isOpenAccessNoticeDismissed && (
 					<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
 						<Notice
-							type="warning"
+							type={ Notice.TYPES.WARNING }
 							description={ __(
 								'Selecting “open access” will allow your reader to access your content without a subscription',
 								'google-site-kit'
