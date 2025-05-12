@@ -151,7 +151,7 @@ export default function FirstPartyModeToggle( { className } ) {
 			</p>
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
-					type="warning"
+					type={ Notice.TYPES.WARNING }
 					title={ createInterpolateElement(
 						__(
 							'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
