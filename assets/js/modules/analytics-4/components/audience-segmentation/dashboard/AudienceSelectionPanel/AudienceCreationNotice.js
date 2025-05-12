@@ -331,7 +331,7 @@ export default function AudienceCreationNotice() {
 			</div>
 			{ ! hasAnalytics4EditScope && ! isEditScopeNoticeDismissed && (
 				<Notice
-					type="warning"
+					type={ Notice.TYPES.WARNING }
 					description={ __(
 						'Creating these groups require more data tracking. You will be directed to update your Analytics property.',
 						'google-site-kit'
