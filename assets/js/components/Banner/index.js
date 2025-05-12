@@ -100,4 +100,5 @@ Banner.propTypes = {
 		mobile: PropTypes.elementType,
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
+	footer: PropTypes.node,
 };
