@@ -41,7 +41,7 @@ export default function AdBlockerWarningMessage( {
 
 	return (
 		<Notice
-			type="warning"
+			type={ Notice.TYPES.WARNING }
 			description={ sprintf(
 				/* translators: 1: The warning message. */
 				__( '%1$s ', 'google-site-kit' ),
