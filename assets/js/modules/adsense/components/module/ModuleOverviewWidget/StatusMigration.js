@@ -101,7 +101,7 @@ export default function StatusMigration() {
 					{ isReady === undefined && <ProgressBar /> }
 					{ isReady === false && (
 						<Notice
-							type="warning"
+							type={ Notice.TYPES.WARNING }
 							description={ __(
 								'You need to redo setup to complete AdSense configuration',
 								'google-site-kit'
