@@ -42,7 +42,7 @@ export default function RegistrationDisabledNotice() {
 
 	return (
 		<Notice
-			type="warning"
+			type={ Notice.TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 				__(
