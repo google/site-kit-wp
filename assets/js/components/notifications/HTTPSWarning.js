@@ -48,7 +48,7 @@ export default function HTTPSWarning( { moduleSlug } ) {
 
 	return (
 		<Notice
-			type="warning"
+			type={ Notice.TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %s: Module name. */
 				__(
