@@ -43,7 +43,7 @@ export default function ModuleSettingsWarning( { slug } ) {
 
 	return (
 		<Notice
-			type="warning"
+			type={ Notice.TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %s: Erorr message. */
 				__( '%s ', 'google-site-kit' ),
