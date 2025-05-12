@@ -53,7 +53,7 @@ const ModuleViewAccess = forwardRef(
 		if ( recoverable ) {
 			return (
 				<Notice
-					type="warning"
+					type={ Notice.TYPES.WARNING }
 					description={ __(
 						'Managing user required to manage view access.',
 						'google-site-kit'
