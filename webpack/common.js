@@ -169,13 +169,21 @@ exports.noAMDParserRule = noAMDParserRule;
 
 const svgRule = {
 	test: /\.svg$/,
-	use: [
+	oneOf: [
 		{
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
+			resourceQuery: /url/,
+			use: 'url-loader',
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// strip width & height to allow manual override using props
+						dimensions: false,
+					},
+				},
+			],
 		},
 	],
 };
