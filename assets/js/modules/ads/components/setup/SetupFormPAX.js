@@ -103,6 +103,7 @@ export default function SetupFormPAX( {
 						'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.',
 						'google-site-kit'
 					) }
+					hideIcon
 				/>
 			) }
 
