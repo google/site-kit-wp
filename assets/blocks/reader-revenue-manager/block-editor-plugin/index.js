@@ -17,5 +17,7 @@
  */
 
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
+import { registerBlockTrackingPlugin } from './block-tracking-plugin';
 
 registerReaderRevenueManagerPlugin();
+registerBlockTrackingPlugin();
