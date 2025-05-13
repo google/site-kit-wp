@@ -1,0 +1,313 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Complete setup" should render the CTA when Analytics is not connected 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-search-console-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Impressions
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="mdc-layout-grid"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell"
+      >
+        <div
+          class="googlesitekit-analytics-cta"
+        >
+          <div
+            class="googlesitekit-analytics-cta__preview-graphs"
+          >
+            <div
+              class="googlesitekit-analytics-cta__preview-graph"
+            >
+              <h3
+                class="googlesitekit-analytics-cta__preview-graph--title"
+              >
+                Unique visitors from Search
+              </h3>
+              <div>
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__preview-graph--icons"
+              >
+                <svg />
+                <span
+                  class="googlesitekit-analytics-cta__preview-graph--bar"
+                />
+              </div>
+            </div>
+            <div
+              class="googlesitekit-analytics-cta__preview-graph"
+            >
+              <h3
+                class="googlesitekit-analytics-cta__preview-graph--title"
+              >
+                Conversions completed
+              </h3>
+              <div>
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__preview-graph--icons"
+              >
+                <svg />
+                <span
+                  class="googlesitekit-analytics-cta__preview-graph--bar"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-analytics-cta__details"
+          >
+            <p
+              class="googlesitekit-analytics-cta--description"
+            >
+              See how many people visit your site from Search and track how you’re achieving your goals
+            </p>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Complete setup
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Set up Google Analytics" should render the CTA when Analytics is not active 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-search-console-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Impressions
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="mdc-layout-grid"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell"
+      >
+        <div
+          class="googlesitekit-analytics-cta"
+        >
+          <div
+            class="googlesitekit-analytics-cta__preview-graphs"
+          >
+            <div
+              class="googlesitekit-analytics-cta__preview-graph"
+            >
+              <h3
+                class="googlesitekit-analytics-cta__preview-graph--title"
+              >
+                Unique visitors from Search
+              </h3>
+              <div>
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__preview-graph--icons"
+              >
+                <svg />
+                <span
+                  class="googlesitekit-analytics-cta__preview-graph--bar"
+                />
+              </div>
+            </div>
+            <div
+              class="googlesitekit-analytics-cta__preview-graph"
+            >
+              <h3
+                class="googlesitekit-analytics-cta__preview-graph--title"
+              >
+                Conversions completed
+              </h3>
+              <div>
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-analytics-cta__preview-graph--icons"
+              >
+                <svg />
+                <span
+                  class="googlesitekit-analytics-cta__preview-graph--bar"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-analytics-cta__details"
+          >
+            <p
+              class="googlesitekit-analytics-cta--description"
+            >
+              See how many people visit your site from Search and track how you’re achieving your goals
+            </p>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Set up Google Analytics
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Analytics Unique Visitors stats when selectedStats is 2 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-analytics-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Unique Visitors
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Console Clicks stats when selectedStats is 1 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-search-console-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Clicks
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Console Impressions stats when selectedStats is 0 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-search-console-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Impressions
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 3 should render the Analytics Conversions stats when canViewSharedAnalytics4 is true 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-analytics-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Conversions
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 4 should render the Analytics Engagement Rate % stats when canViewSharedAnalytics4 is true 1`] = `
+<div>
+  <div
+    class="mdc-layout-grid googlesitekit-analytics-site-stats"
+  >
+    <div
+      class="mdc-layout-grid__inner"
+    >
+      <div
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+      >
+        <div
+          id="google-chart-mock"
+        >
+          Engagement Rate %
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

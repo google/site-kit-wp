@@ -88,15 +88,18 @@ export default function SelectionPanelFooter( {
 			// Close the panel after saving.
 			closePanel();
 
-			// Lock the button label while panel is closing.
-			setFinalButtonText( currentButtonText );
-			setWasSaved( true );
+			if ( ! isFullScreen ) {
+				// Lock the button label while panel is closing.
+				setFinalButtonText( currentButtonText );
+				setWasSaved( true );
+			}
 		}
 	}, [
 		saveSettings,
 		selectedItemSlugs,
 		onSaveSuccess,
 		closePanel,
+		isFullScreen,
 		currentButtonText,
 	] );
 

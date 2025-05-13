@@ -171,6 +171,7 @@
 @import "components/key-metrics/googlesitekit-key-metrics-widgets";
 @import "components/key-metrics/googlesitekit-chip-tab-group";
 @import "components/key-metrics/googlesitekit-key-metrics-selection-panel";
+@import "components/key-metrics/googlesitekit-key-metrics-conversion-reporting-subtle-notification";
 @import "components/key-metrics/googlesitekit-key-metrics-site-purpose-change-modal";
 
 // Setup
@@ -220,6 +221,9 @@
 
 // Overlay Notification
 @import "components/overlay-notification/googlesitekit-overlay-notification";
+
+// Banner
+@import "components/banner/googlesitekit-banner";
 
 // Notice
 @import "components/notice/googlesitekit-notice";
