@@ -63,11 +63,7 @@ LoadingRecoverableModules.args = {
 			.startResolution( 'getRecoverableModules', [] );
 	},
 };
-LoadingRecoverableModules.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
-	delay: 250,
-};
+LoadingRecoverableModules.scenario = {};
 
 export const SingleRecoverableModule = Template.bind( {} );
 SingleRecoverableModule.storyName = 'Single Recoverable Module (with access)';
@@ -82,11 +78,7 @@ SingleRecoverableModule.args = {
 			);
 	},
 };
-SingleRecoverableModule.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (with access)',
-	delay: 250,
-};
+SingleRecoverableModule.scenario = {};
 
 export const MultipleRecoverableModule = Template.bind( {} );
 MultipleRecoverableModule.storyName =
@@ -111,11 +103,7 @@ MultipleRecoverableModule.args = {
 			);
 	},
 };
-MultipleRecoverableModule.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
-	delay: 250,
-};
+MultipleRecoverableModule.scenario = {};
 
 export const SingleRecoverableModuleNoAccess = Template.bind( {} );
 SingleRecoverableModuleNoAccess.storyName =
@@ -131,11 +119,7 @@ SingleRecoverableModuleNoAccess.args = {
 			);
 	},
 };
-SingleRecoverableModuleNoAccess.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (no access)',
-	delay: 250,
-};
+SingleRecoverableModuleNoAccess.scenario = {};
 
 export const MultipleRecoverableModuleNoAccess = Template.bind( {} );
 MultipleRecoverableModuleNoAccess.storyName =
@@ -160,11 +144,7 @@ MultipleRecoverableModuleNoAccess.args = {
 			);
 	},
 };
-MultipleRecoverableModuleNoAccess.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
-	delay: 250,
-};
+MultipleRecoverableModuleNoAccess.scenario = {};
 
 export const SingleRecoverableModuleError = Template.bind( {} );
 SingleRecoverableModuleError.storyName =

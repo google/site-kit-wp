@@ -36,9 +36,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/Default',
-};
+Default.scenario = {};
 
 export const WithSetupCTA = Template.bind( {} );
 WithSetupCTA.storyName = 'With setup CTA';
@@ -50,9 +48,7 @@ WithSetupCTA.args = {
 		} );
 	},
 };
-WithSetupCTA.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/WithSetupCTA',
-};
+WithSetupCTA.scenario = {};
 
 export const WithSetupSuccessNotification = Template.bind( {} );
 WithSetupSuccessNotification.storyName = 'With setup success notification';
@@ -61,9 +57,7 @@ WithSetupSuccessNotification.args = {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	},
 };
-WithSetupSuccessNotification.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups/WithSetupSuccessNotification',
-};
+WithSetupSuccessNotification.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups',

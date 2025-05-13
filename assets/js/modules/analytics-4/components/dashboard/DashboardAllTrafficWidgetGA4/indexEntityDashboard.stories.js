@@ -157,9 +157,7 @@ EntityDashboardLoaded.args = {
 		} );
 	},
 };
-EntityDashboardLoaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loaded',
-};
+EntityDashboardLoaded.scenario = {};
 
 export const EntityDashboardLoading = Template.bind( {} );
 EntityDashboardLoading.storyName = 'Loading';
@@ -183,9 +181,7 @@ EntityDashboardLoading.decorators = [
 		);
 	},
 ];
-EntityDashboardLoading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loading',
-};
+EntityDashboardLoading.scenario = {};
 
 export const EntityDashboardDataUnavailable = Template.bind( {} );
 EntityDashboardDataUnavailable.storyName = 'Data Unavailable';
@@ -216,9 +212,7 @@ EntityDashboardDataUnavailable.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
-};
+EntityDashboardDataUnavailable.scenario = {};
 
 export const EntityDashboardZeroData = Template.bind( {} );
 EntityDashboardZeroData.storyName = 'Zero Data';
@@ -259,9 +253,7 @@ EntityDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
-};
+EntityDashboardZeroData.scenario = {};
 
 export const EntityDashboardError = Template.bind( {} );
 EntityDashboardError.storyName = 'Error';
@@ -283,9 +275,7 @@ EntityDashboardError.args = {
 		} );
 	},
 };
-EntityDashboardError.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Error',
-};
+EntityDashboardError.scenario = {};
 
 export const EntityDashboardOneRowOfData = Template.bind( {} );
 EntityDashboardOneRowOfData.storyName = 'One row of data';
@@ -307,9 +297,7 @@ EntityDashboardOneRowOfData.args = {
 		} );
 	},
 };
-EntityDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/OneRowOfData',
-};
+EntityDashboardOneRowOfData.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',
