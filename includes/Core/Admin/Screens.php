@@ -14,8 +14,10 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -482,9 +484,22 @@ final class Screens {
 		$screens[] = new Screen(
 			self::PREFIX . 'metric-selection',
 			array(
-				'title'       => __( 'Select Key Metrics', 'google-site-kit' ),
-				'capability'  => Permissions::MANAGE_OPTIONS,
-				'parent_slug' => self::PARENT_SLUG_NULL,
+				'title'               => __( 'Select Key Metrics', 'google-site-kit' ),
+				'capability'          => Permissions::MANAGE_OPTIONS,
+				'parent_slug'         => self::PARENT_SLUG_NULL,
+				// This callback will redirect to the dashboard if key metrics is already set up.
+				'initialize_callback' => function ( Context $context ) {
+					$options = new Options( $context );
+					$is_key_metrics_setup = ( new Key_Metrics_Setup_Completed_By( $options ) )->get();
+
+					if ( $is_key_metrics_setup ) {
+						wp_safe_redirect(
+							$context->admin_url( 'dashboard' )
+						);
+
+						exit;
+					}
+				},
 			)
 		);
 

@@ -31,6 +31,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../tests/js/utils/zeroReports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -92,6 +93,79 @@ describe( 'TopTrafficSourceWidget', () => {
 				},
 			],
 		} );
+		const { container, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'renders correctly with no data in comparison date range', async () => {
+		const channelGroupReportOptions = {
+			...dateRangeDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			limit: 1,
+			orderBy: 'totalUsers',
+		};
+		const channelGroupReport = getAnalytics4MockResponse(
+			channelGroupReportOptions
+		);
+
+		const modifiedChannelGroupReport =
+			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+				channelGroupReport,
+				'date_range_1',
+				'remove'
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( modifiedChannelGroupReport, {
+				options: channelGroupReportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ channelGroupReportOptions ] );
+
+		const totalUsersReportOptions = {
+			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+		};
+		const totalUsersReport = getAnalytics4MockResponse(
+			totalUsersReportOptions
+		);
+
+		const modifiedTotalUsersReport =
+			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+				totalUsersReport,
+				'date_range_1',
+				'zero'
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( modifiedTotalUsersReport, {
+				options: totalUsersReportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalUsersReportOptions ] );
+
 		const { container, waitForRegistry } = render(
 			<TopTrafficSourceWidget { ...widgetProps } />,
 			{
