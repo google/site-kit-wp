@@ -99,9 +99,7 @@ Default.args = {
 	},
 };
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/Default',
-};
+Default.scenario = {};
 
 export const ViewOnlyDashboard = Template.bind( {} );
 ViewOnlyDashboard.args = {
@@ -125,9 +123,7 @@ ViewOnlyDashboard.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ViewOnlyDashboard.storyName = 'ViewOnlyDashboard';
-ViewOnlyDashboard.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/ViewOnlyDashboard',
-};
+ViewOnlyDashboard.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.args = {
@@ -157,9 +153,7 @@ DataUnavailable.args = {
 	},
 };
 DataUnavailable.storyName = 'Data Unavailable';
-DataUnavailable.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/DataUnavailable',
-};
+DataUnavailable.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.args = {
@@ -181,9 +175,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.storyName = 'Zero Data';
-ZeroData.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/ZeroData',
-};
+ZeroData.scenario = {};
 
 export const AdSenseNotLinked = Template.bind( {} );
 AdSenseNotLinked.args = {
@@ -195,9 +187,7 @@ AdSenseNotLinked.args = {
 	},
 };
 AdSenseNotLinked.storyName = 'AdSense Not Linked';
-AdSenseNotLinked.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/AdSenseNotLinked',
-};
+AdSenseNotLinked.scenario = {};
 
 export const AdBlockerActive = Template.bind( {} );
 AdBlockerActive.args = {
@@ -206,9 +196,7 @@ AdBlockerActive.args = {
 	},
 };
 AdBlockerActive.storyName = 'Ad Blocker Active';
-AdBlockerActive.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/AdBlockerActive',
-};
+AdBlockerActive.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.args = {
@@ -227,9 +215,7 @@ Error.args = {
 	},
 };
 Error.storyName = 'Error';
-Error.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/Error',
-};
+Error.scenario = {};
 
 export default {
 	title: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4',

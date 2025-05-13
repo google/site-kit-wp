@@ -22,13 +22,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '../../../datastore/ui/constants';
+import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 import useLatestIntersection from '../../../../hooks/useLatestIntersection';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
 
@@ -38,14 +39,46 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 	} );
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { markNotificationSeen } = useDispatch( CORE_NOTIFICATIONS );
 	const isInView = !! intersectionEntry?.isIntersecting;
 	const viewed = useHasBeenViewed( id );
+	const timeoutRef = useRef();
+
+	const clearExistingTimeout = () => {
+		if ( timeoutRef.current ) {
+			clearTimeout( timeoutRef.current );
+		}
+	};
 
 	useEffect( () => {
+		// If notification is not viewed yet and is in view, start the timer.
 		if ( ! viewed && isInView ) {
-			setValue( useHasBeenViewed.getKey( id ), true );
+			clearExistingTimeout();
+
+			// Set a new timeout for 3 seconds.
+			timeoutRef.current = setTimeout( () => {
+				// Only mark as viewed if still in view after 3 seconds.
+				if ( intersectionEntry?.isIntersecting ) {
+					setValue( useHasBeenViewed.getKey( id ), true );
+					markNotificationSeen( id );
+				}
+			}, 3000 );
+		} else if ( ! isInView && timeoutRef.current ) {
+			clearExistingTimeout();
 		}
-	}, [ viewed, isInView, setValue, id ] );
+
+		// Cleanup function to clear timeout on unmount or when dependencies change.
+		return () => {
+			clearExistingTimeout();
+		};
+	}, [
+		viewed,
+		isInView,
+		setValue,
+		markNotificationSeen,
+		id,
+		intersectionEntry,
+	] );
 
 	return null;
 }

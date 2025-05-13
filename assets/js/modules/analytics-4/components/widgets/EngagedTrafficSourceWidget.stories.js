@@ -64,9 +64,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSourceWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -119,7 +117,6 @@ Error.args = {
 // Since the "Error" state is the same for all KMW tiles, this is the sole scenario
 // and should not be added to any other generic `MetricTile___` or KMW component.
 Error.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/Error',
 	delay: 250,
 };
 
@@ -151,7 +148,6 @@ InsufficientPermissions.args = {
 // this is the sole scenario and should not be added to any other generic
 // `MetricTile___` or KMW component.
 InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/InsufficientPermissions',
 	delay: 250,
 };
 
