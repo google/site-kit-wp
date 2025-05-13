@@ -31,7 +31,11 @@ import { createRegistrySelector } from '@wordpress/data';
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -65,15 +69,10 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, property, { propertyID } ) {
-		return {
-			...state,
-			propertiesByID: {
-				...state.propertiesByID,
-				[ propertyID ]: property,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, property, { propertyID } ) => {
+		state.propertiesByID = state.propertiesByID || {};
+		state.propertiesByID[ propertyID ] = property;
+	} ),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -95,22 +94,16 @@ const fetchGetPropertiesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, properties, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: properties,
-			},
-			propertiesByID: properties.reduce(
-				( accum, property ) => ( {
-					...accum,
-					[ property._id ]: property,
-				} ),
-				state.propertiesByID || {}
-			),
-		};
-	},
+	reducerCallback: createReducer( ( state, properties, { accountID } ) => {
+		state.properties = state.properties || {};
+		state.propertiesByID = state.propertiesByID || {};
+
+		state.properties[ accountID ] = properties;
+
+		for ( const property of properties ) {
+			state.propertiesByID[ property._id ] = property;
+		}
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -126,18 +119,15 @@ const fetchCreatePropertyStore = createFetchStore( {
 			accountID,
 		} );
 	},
-	reducerCallback( state, property, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: [
-					...( state.properties[ accountID ] || [] ),
-					property,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, property, { accountID } ) => {
+		state.properties = state.properties || {};
+
+		if ( ! state.properties[ accountID ] ) {
+			state.properties[ accountID ] = [];
+		}
+
+		state.properties[ accountID ].push( property );
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -717,27 +707,28 @@ const baseActions = {
 
 const baseControls = {};
 
-function baseReducer( state, { type, payload } ) {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case MATCHING_ACCOUNT_PROPERTY:
-			return { ...state, ...payload };
-		case SET_HAS_MISMATCHED_TAG:
-			return {
-				...state,
-				moduleData: {
-					...state.moduleData,
-					hasMismatchedTag: payload.hasMismatchedTag,
-				},
-			};
-		case SET_IS_WEBDATASTREAM_AVAILABLE:
-			return {
-				...state,
-				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
-			};
+		case MATCHING_ACCOUNT_PROPERTY: {
+			state.isMatchingAccountProperty = payload.isMatchingAccountProperty;
+			break;
+		}
+
+		case SET_HAS_MISMATCHED_TAG: {
+			state.moduleData = state.moduleData || {};
+			state.moduleData.hasMismatchedTag = payload.hasMismatchedTag;
+			break;
+		}
+
+		case SET_IS_WEBDATASTREAM_AVAILABLE: {
+			state.isWebDataStreamAvailable = payload.isWebDataStreamAvailable;
+			break;
+		}
+
 		default:
-			return state;
+			break;
 	}
-}
+} );
 
 const baseResolvers = {
 	*getProperties( accountID ) {

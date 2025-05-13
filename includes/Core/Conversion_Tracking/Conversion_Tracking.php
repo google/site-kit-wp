@@ -146,8 +146,12 @@ class Conversion_Tracking {
 				}, 5 );
 
 				gtag( "event", name, { ...data, event_source: "site-kit" } );
-			}
+			};
 		';
+
+		if ( function_exists( 'edd_get_currency' ) ) {
+			$gtag_event .= "window._googlesitekit.easyDigitalDownloadsCurrency = '" . edd_get_currency() . "';";
+		}
 
 		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
 	}

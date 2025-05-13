@@ -33,7 +33,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCategoriesWidget from './TopCategoriesWidget';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
@@ -93,10 +93,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopCategoriesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

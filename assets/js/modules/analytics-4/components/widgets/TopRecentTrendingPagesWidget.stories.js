@@ -42,7 +42,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 
 const KM_WIDGET_DEF =
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
@@ -108,9 +108,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

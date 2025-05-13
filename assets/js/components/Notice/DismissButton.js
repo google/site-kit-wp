@@ -32,9 +32,10 @@ import { Button } from 'googlesitekit-components';
 export default function DismissButton( {
 	label = __( 'Got it!', 'google-site-kit' ),
 	onClick,
+	disabled,
 } ) {
 	return (
-		<Button onClick={ onClick } tertiary>
+		<Button onClick={ onClick } tertiary disabled={ disabled }>
 			{ label }
 		</Button>
 	);
@@ -43,4 +44,5 @@ export default function DismissButton( {
 DismissButton.propTypes = {
 	label: PropTypes.string,
 	onClick: PropTypes.func.isRequired,
+	disabled: PropTypes.bool,
 };

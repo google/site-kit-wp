@@ -256,9 +256,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 			await waitForRegistry();
 
 			expect(
-				document.querySelector(
-					'.googlesitekit-acr-subtle-notification'
-				)
+				document.querySelector( '.googlesitekit-notice--new' )
 			).toBeInTheDocument();
 		} );
 
@@ -695,7 +693,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					( content, testElement ) =>
 						testElement.tagName.toLowerCase() === 'p' &&
 						testElement.className ===
-							'googlesitekit-subtle-notification__secondary_description' &&
+							'googlesitekit-notice__description' &&
 						content ===
 							'We’ve extended your metrics selection based on your website events'
 				)

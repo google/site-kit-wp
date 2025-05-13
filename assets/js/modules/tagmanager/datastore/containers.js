@@ -29,6 +29,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
@@ -98,18 +99,12 @@ const fetchCreateContainerStore = createFetchStore( {
 			name,
 		} );
 	},
-	reducerCallback( state, container, { accountID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: [
-					...( state.containers[ accountID ] || [] ),
-					container,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, container, { accountID } ) => {
+		if ( ! state.containers[ accountID ] ) {
+			state.containers[ accountID ] = [];
+		}
+		state.containers[ accountID ].push( container );
+	} ),
 } );
 
 const baseInitialState = {
