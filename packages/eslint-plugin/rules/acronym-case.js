@@ -34,30 +34,40 @@ const { isImported, isFunction } = require( '../utils' );
  * @return {boolean} True if the identifier should be ignored, false otherwise.
  */
 function shouldIgnore( node, name, acronymMatch, acronym, importedNames ) {
+	// The acronym was found in the variable with the correct capitalization
 	if ( acronymMatch === acronym ) {
+		// Catch instances of URL() and JSON() that weren't identified as globals above
 		if ( acronym.length === name.length ) {
 			return true;
 		}
+		// If the acronym is not at the start that's fine, e.g. fooBarID
 		if ( ! name.startsWith( acronym ) ) {
 			return true;
 		}
+		// or if the acronym IS at the start but it is a function, see #2195
 		if ( isFunction( node ) ) {
 			return true;
 		}
+		// Constants in all-caps are fine
 		if ( name === name.toUpperCase() ) {
 			return true;
 		}
 	}
 
+	// If the acronym was found entirely lowercased, skip this check.
+	// Things like `componentDidMount` will set off `ID` otherwise.
 	if ( acronymMatch === acronym.toLowerCase() ) {
 		return true;
 	}
 
+	// Only make the check if the first character is uppercase.
 	const startsWithUppercase = /^[A-Z]/.test( acronymMatch );
 	if ( ! startsWithUppercase ) {
 		return true;
 	}
 
+	// If the name of this variable is the same length as the acronym,
+	// it should be lowercase or uppercase.
 	if (
 		name.length === acronym.length &&
 		( acronymMatch === acronym.toLowerCase() ||
@@ -66,12 +76,16 @@ function shouldIgnore( node, name, acronymMatch, acronym, importedNames ) {
 		return true;
 	}
 
+	// If the character after the matched acronym is lowercase, this isn't
+	// likely to be the acronym, but instead a word like `Idle` matching `Id`.
+	// Best to ignore it so we don't get false positives we need to ignore.
 	const index = name.indexOf( acronymMatch );
 	const nextChar = name[ index + acronym.length ];
 	if ( nextChar && /[a-z]/.test( nextChar ) ) {
 		return true;
 	}
 
+	// Ignore known imported names.
 	return importedNames.includes( name );
 }
 
