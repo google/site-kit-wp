@@ -122,6 +122,27 @@
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
 			padding: 20px 20px 6px;
+
+			.googlesitekit-notice--warning {
+				align-items: center;
+				border-radius: 8px;
+				flex-direction: row;
+				gap: $grid-gap-phone;
+				margin: 18px 0;
+				padding: 8px 16px;
+
+				.googlesitekit-notice__content {
+					flex: 1 1 0;
+					.googlesitekit-notice__description {
+						font-size: $fs-body-sm;
+					}
+				}
+
+				.googlesitekit-notice__action {
+					justify-content: normal;
+					width: auto;
+				}
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
@@ -196,10 +217,6 @@
 				min-height: 32px;
 				padding: 6px 16px;
 			}
-		}
-
-		.googlesitekit-notice--warning {
-			margin: 18px 0;
 		}
 
 		.googlesitekit-audience-creation-error-notice {
