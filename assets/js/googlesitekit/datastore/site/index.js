@@ -27,6 +27,7 @@ import consentMode from './consent-mode';
 import conversionTracking from './conversion-tracking';
 import errors from './errors';
 import firstPartyMode from './first-party-mode';
+import featuresTest from './features-test';
 import html from './html';
 import info from './info';
 import reset from './reset';
@@ -43,6 +44,7 @@ const store = combineStores(
 	consentMode,
 	conversionTracking,
 	errors,
+	featuresTest,
 	firstPartyMode,
 	html,
 	info,
