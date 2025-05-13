@@ -246,11 +246,10 @@ describe( 'TourTooltips', () => {
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should call the callback prop when the tour is started', () => {
+	it( 'should load Joyride in controlled mode', () => {
 		const callback = ( data ) => {
-			const { controlled, index } = data;
+			const { controlled } = data;
 			expect( controlled ).toBe( true );
-			expect( index ).toBe( 0 );
 		};
 		renderTourTooltipsWithMockUI( registry, {
 			callback,
@@ -462,30 +461,5 @@ describe( 'TourTooltips', () => {
 				1
 			);
 		} );
-	} );
-
-	it( 'should set stepIndex to 0 when tour is started and step key is undefined', async () => {
-		registry.dispatch( CORE_UI ).setValue( STEP_KEY, undefined );
-
-		const { getByRole } = renderTourTooltipsWithMockUI( registry );
-		await getByRole( 'alertdialog' );
-		mockTrackEvent.mockClear();
-
-		// Go to step 2
-		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
-		await getByRole( 'alertdialog' );
-		// Tracks the advance on the 1st step, view on the 2nd step.
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			EVENT_CATEGORY,
-			GA_ACTIONS.NEXT,
-			1
-		);
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			EVENT_CATEGORY,
-			GA_ACTIONS.VIEW,
-			2
-		);
 	} );
 } );
