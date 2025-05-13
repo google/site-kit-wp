@@ -41,6 +41,10 @@ export default function ModuleSettingsWarning( { slug } ) {
 	}
 
 	return (
-		<Notice type={ Notice.TYPES.WARNING } description={ error.message } />
+		<Notice
+			type={ Notice.TYPES.WARNING }
+			description={ error.message }
+			hideIcon
+		/>
 	);
 }
