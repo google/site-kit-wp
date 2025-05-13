@@ -8,8 +8,10 @@
 		}
 	},
 	"scripts": {
+		"prebuild": "npm run remove-dist",
 		"build": "build-storybook -c . -o ../dist --quiet --loglevel warn",
-		"start": "start-storybook -p 9001 -c . --no-version-updates"
+		"start": "start-storybook -p 9001 -c . --no-version-updates",
+		"remove-dist": "rimraf ../dist/"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
@@ -19,6 +21,8 @@
 		"mini-css-extract-plugin": "^1.6.2",
 		"postcss-loader": "^4.3.0",
 		"puppeteer": "^10.4.0",
-		"sass-loader": "^9.0.3"
+		"rimraf": "^6.0.1",
+		"sass-loader": "^9.0.3",
+		"url-loader": "^4.1.1"
 	}
 }

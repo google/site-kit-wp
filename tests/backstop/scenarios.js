@@ -105,7 +105,7 @@ storyFiles.forEach( ( storyFile ) => {
 			value.scenario.constructor === Object
 		) {
 			const scenario = {
-				label: `${ defaultTitle }/${ value.storyName }`,
+				label: `${ defaultTitle }/${ value.storyName || key }`,
 				...value.scenario,
 				url: `${ rootURL }${ storyID }`,
 			};

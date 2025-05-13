@@ -55,25 +55,29 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 		} );
 	}, [ setCacheItem ] );
 
-	// The "Keep existing account" button is used as the "CTA" button
-	// because it should look like the "primary" CTA here.
-	// Its purpose, however, is to simply dismiss the notification.
 	const onCTAClick = useCallback( async () => {
+		setIsSaving( true );
+		await dismissNotification( id, { skipHidingFromQueue: true } );
 		await dismissWooCommerceRedirectModal();
-		dismissNotification( id, { skipHidingFromQueue: true } );
-	}, [ dismissWooCommerceRedirectModal, dismissNotification, id ] );
+		await onSetupCallback();
+	}, [
+		setIsSaving,
+		dismissWooCommerceRedirectModal,
+		dismissNotification,
+		id,
+		onSetupCallback,
+	] );
 
-	// The "Create new account" button is used as the "Dismiss" button
-	// because it should look like the "secondary" action here.
-	// Its purpose is to setup a new account AND also dismiss the notification.
-	// The `dismissNotification()` callback is not called additionally here
-	// as it called automatically within the decorated `dismissButton.onClick()`
-	// handler in `<NoticeNotification>`.
 	const onDismissClick = useCallback( async () => {
 		setIsSaving( true );
+		await dismissNotification( id );
 		await dismissWooCommerceRedirectModal();
-		onSetupCallback();
-	}, [ setIsSaving, onSetupCallback, dismissWooCommerceRedirectModal ] );
+	}, [
+		setIsSaving,
+		dismissNotification,
+		dismissWooCommerceRedirectModal,
+		id,
+	] );
 
 	return (
 		<Notification>
@@ -86,12 +90,12 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 				) }
 				dismissButton={ {
 					label: __( 'Create new account', 'google-site-kit' ),
-					onClick: onDismissClick,
+					onClick: onCTAClick,
 					disabled: isSaving,
 				} }
 				ctaButton={ {
 					label: __( 'Keep existing account', 'google-site-kit' ),
-					onClick: onCTAClick,
+					onClick: onDismissClick,
 					disabled: isSaving,
 				} }
 			/>

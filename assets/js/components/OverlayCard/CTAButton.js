@@ -38,5 +38,5 @@ CTAButton.propTypes = {
 	...buttonProps,
 	href: PropTypes.string,
 	target: PropTypes.string,
-	trailingIcon: PropTypes.elementType,
+	trailingIcon: PropTypes.object,
 };
