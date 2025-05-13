@@ -26,18 +26,16 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-
-// Rename Header to avoid conflict with the Header component in the setup folder.
-import Header from '../../Header';
+import MainHeader from '../../Header';
 import HelpMenu from '../../help/HelpMenu';
 import BannerNotification from '../../notifications/BannerNotification';
 
-export default function SetupHeader() {
+export default function Header() {
 	return (
 		<Fragment>
-			<Header>
+			<MainHeader>
 				<HelpMenu />
-			</Header>
+			</MainHeader>
 			{ getQueryArg( location.href, 'notification' ) ===
 				'reset_success' && (
 				<BannerNotification

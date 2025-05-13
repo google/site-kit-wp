@@ -39,7 +39,7 @@ import {
 } from '../constants';
 import { setItem } from '../../../googlesitekit/api/cache';
 import useViewContext from '../../../hooks/useViewContext';
-import SetupHeader from './SetupHeader';
+import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
 
@@ -124,7 +124,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 	return (
 		<Fragment>
-			<SetupHeader />
+			<Header />
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>
