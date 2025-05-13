@@ -246,6 +246,17 @@ describe( 'TourTooltips', () => {
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 
+	it( 'should call the callback prop when the tour is started', () => {
+		const callback = ( data ) => {
+			const { controlled, index } = data;
+			expect( controlled ).toBe( true );
+			expect( index ).toBe( 0 );
+		};
+		renderTourTooltipsWithMockUI( registry, {
+			callback,
+		} );
+	} );
+
 	describe( 'event tracking', () => {
 		beforeEach( () => mockTrackEvent.mockClear() );
 
