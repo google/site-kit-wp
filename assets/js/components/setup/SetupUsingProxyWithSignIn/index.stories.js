@@ -24,24 +24,24 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
-import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
+import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_AUTHENTICATE,
-} from '../../googlesitekit/datastore/user/constants';
+} from '../../../googlesitekit/datastore/user/constants';
 import {
 	provideSiteConnection,
 	provideUserAuthentication,
 	provideModules,
 	provideUserCapabilities,
 	provideSiteInfo,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';
+import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 
 function Template() {
 	return (
