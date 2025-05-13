@@ -8,8 +8,10 @@
 		}
 	},
 	"scripts": {
+		"prebuild": "npm run remove-dist",
 		"build": "storybook build -c . -o ../dist --quiet --loglevel warn",
-		"start": "storybook dev -p 9001 -c . --no-version-updates"
+		"start": "storybook dev -p 9001 -c . --no-version-updates",
+		"remove-dist": "rimraf ../dist/"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
@@ -23,6 +25,7 @@
 		"postcss-loader": "^8.1.1",
 		"sass": "^1.30.0",
 		"sass-loader": "^16.0.5",
+		"url-loader": "^4.1.1",
 		"webpack": "^5.99.7"
 	}
 }

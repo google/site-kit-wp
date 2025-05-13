@@ -1,15 +1,11 @@
 {
 	"scripts": {
 		"build": "npm run -w assets build",
-		"prebuild:dev": "npm run remove-dist",
 		"build:dev": "npm run -w assets build:dev",
-		"prebuild:production": "npm run remove-dist",
 		"build:production": "npm run -w assets build:production",
 		"build:test": "npm run -w assets build:test",
 		"watch": "npm run -w assets watch",
-		"prebuild:storybook": "npm run remove-dist",
 		"build:storybook": "npm run -w storybook build",
-		"remove-dist": "rimraf ./dist",
 		"prezip": "composer run autoload-includes",
 		"zip": "./bin/release",
 		"dev": "npm run build:dev",
@@ -92,7 +88,6 @@
 		"lint-staged": "^10.2.11",
 		"patch-package": "^8.0.0",
 		"prettier": "npm:wp-prettier@2.6.2",
-		"rimraf": "^6.0.1",
 		"sanitize-filename": "^1.6.3",
 		"semver-compare": "^1.0.0",
 		"semver-regex": "^3.1.4",

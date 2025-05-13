@@ -1,10 +1,13 @@
 {
 	"scripts": {
+		"prebuild:dev": "npm run remove-dist",
 		"build": "npm run build:production",
+		"prebuild:production": "npm run remove-dist",
 		"build:dev": "webpack --mode=development --devtool cheap-module-source-map --output-pathinfo",
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
-		"watch": "npm run build:dev -- --watch"
+		"watch": "npm run build:dev -- --watch",
+		"remove-dist": "rimraf ../dist/"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
@@ -86,10 +89,12 @@
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^8.1.1",
 		"postcss-preset-env": "^9.5.11",
+		"rimraf": "^6.0.1",
 		"rxjs": "^6.6.7",
 		"sass": "^1.30.0",
 		"sass-loader": "^16.0.5",
 		"terser-webpack-plugin": "^5.3.14",
+		"url-loader": "^4.1.1",
 		"webpack": "^5.99.7",
 		"webpack-cli": "^6.0.1",
 		"webpack-manifest-plugin": "^5.0.1"
