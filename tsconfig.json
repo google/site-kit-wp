@@ -3,6 +3,7 @@
     "allowJs": true,
     "noEmit": true,
     "paths": {
+      "@/*": [ "./assets/*" ],
       "googlesitekit-data": [
         "./assets/js/googlesitekit/data"
       ],
