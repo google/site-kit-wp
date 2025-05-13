@@ -1,7 +1,7 @@
 /**
  * Actions component for SetupUsingProxyWithSignIn.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,58 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import OptIn from '../../OptIn';
 import ResetButton from '../../ResetButton';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '../constants';
+import useViewContext from '../../../hooks/useViewContext';
+import { trackEvent } from '../../../util';
 
 export default function Actions( {
 	proxySetupURL,
 	onButtonClick,
-	goToSharedDashboard,
-	isSecondAdmin,
-	hasMultipleAdmins,
-	hasViewableModules,
-	isResettable,
 	complete,
 	inProgressFeedback,
 } ) {
+	const viewContext = useViewContext();
+	const { dismissItem } = useDispatch( CORE_USER );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const isSecondAdmin = useSelect( ( select ) =>
+		select( CORE_SITE ).hasConnectedAdmins()
+	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const hasViewableModules = useSelect(
+		( select ) => !! select( CORE_USER ).getViewableModules()?.length
+	);
+	const isResettable = useSelect( ( select ) =>
+		select( CORE_SITE ).isResettable()
+	);
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const goToSharedDashboard = useCallback( () => {
+		Promise.all( [
+			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
+			trackEvent( viewContext, 'skip_setup_to_viewonly' ),
+		] ).finally( () => {
+			navigateTo( dashboardURL );
+		} );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
+
 	return (
 		<Fragment>
 			<OptIn />
