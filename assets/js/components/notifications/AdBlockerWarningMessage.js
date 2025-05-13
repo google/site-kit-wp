@@ -25,10 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Link from '../Link';
+import ExternalIcon from '../../../svg/icons/external-rounded.svg';
 import Notice from '../Notice';
 
 export default function AdBlockerWarningMessage( {
@@ -42,16 +45,31 @@ export default function AdBlockerWarningMessage( {
 	return (
 		<Notice
 			type={ Notice.TYPES.WARNING }
-			description={ sprintf(
-				/* translators: 1: The warning message. */
-				__( '%1$s ', 'google-site-kit' ),
-				warningMessage
+			description={ createInterpolateElement(
+				sprintf(
+					/* translators: 1: The warning message. 2: "Get help" text. */
+					__(
+						'%1$s. <Link><Strong>%2$s</Strong></Link>',
+						'google-site-kit'
+					),
+					warningMessage,
+					__( 'Get help', 'google-site-kit' )
+				),
+				{
+					Link: (
+						<Link
+							href={ getHelpLink }
+							external
+							hideExternalIndicator
+							trailingIcon={
+								<ExternalIcon width={ 15 } height={ 15 } />
+							}
+						/>
+					),
+					Strong: <strong />,
+				}
 			) }
-			ctaButton={ {
-				label: __( 'Get help', 'google-site-kit' ),
-				href: getHelpLink,
-				external: true,
-			} }
+			hideIcon
 		/>
 	);
 }
