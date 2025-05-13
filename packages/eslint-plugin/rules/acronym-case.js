@@ -126,6 +126,7 @@ module.exports = {
 			Identifier( node ) {
 				const name = node.name;
 
+				// Ignore imports, because they may not respect our rules.
 				if ( isImported( node ) ) {
 					importedNames.push( name );
 					return;
@@ -137,6 +138,8 @@ module.exports = {
 					return;
 				}
 
+				// Ignore known, JS globals like `document` and `window`.
+				// `document.getElementById` should not set off this rule.
 				if (
 					node.parent &&
 					node.parent.object &&
