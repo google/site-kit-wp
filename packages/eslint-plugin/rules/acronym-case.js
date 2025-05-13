@@ -1,9 +1,38 @@
 /**
  * ESLint rules: Camelcase acronyms.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 const { isImported, isFunction } = require( '../utils' );
 
+/**
+ * Checks if the identifier should be ignored based on the acronym rules.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        node          The AST node to check.
+ * @param {string}        name          The name of the identifier.
+ * @param {string}        acronymMatch  The matched acronym.
+ * @param {string}        acronym       The acronym to check against.
+ * @param {Array<string>} importedNames The list of imported names.
+ * @return {boolean} True if the identifier should be ignored, false otherwise.
+ */
 function shouldIgnore( node, name, acronymMatch, acronym, importedNames ) {
 	if ( acronymMatch === acronym ) {
 		if ( acronym.length === name.length ) {
@@ -56,6 +85,11 @@ module.exports = {
 			properties = 'always';
 		}
 
+		//--------------------------------------------------------------------------
+		// Helpers
+		//--------------------------------------------------------------------------
+
+		// contains reported nodes to avoid reporting twice on destructuring with shorthand notation
 		const reported = [];
 		const acronyms = [
 			'AMP',
@@ -68,6 +102,15 @@ module.exports = {
 			'URL',
 		];
 
+		/**
+		 * Reports an AST node as a rule violation.
+		 *
+		 * @since 1.18.0
+		 * @private
+		 *
+		 * @param {Object} node The node to report.
+		 * @return {void}
+		 */
 		function report( node ) {
 			if ( ! reported.includes( node ) ) {
 				reported.push( node );
@@ -88,6 +131,8 @@ module.exports = {
 					return;
 				}
 
+				// Ignore identifiers that are a function call or argument, we can assume the identifier will be validated at the point of declaration,
+				// but want to allow those which are exceptions to the rule to be invoked or passed into functions without raising a linting error.
 				if ( node.parent?.type === 'CallExpression' ) {
 					return;
 				}
