@@ -68,10 +68,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/NewVisitors/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

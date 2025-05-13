@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.152.1 =
+
+**Fixed**
+
+* Published a new plugin version after issues with WordPress.org plugin updates not appearing for users.
+
 = 1.152.0 =
 
 **Enhanced**

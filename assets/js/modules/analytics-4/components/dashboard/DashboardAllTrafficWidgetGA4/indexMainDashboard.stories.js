@@ -161,9 +161,7 @@ MainDashboardLoaded.args = {
 		} );
 	},
 };
-MainDashboardLoaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loaded',
-};
+MainDashboardLoaded.scenario = {};
 
 export const MainDashboardLoading = Template.bind( {} );
 MainDashboardLoading.storyName = 'Loading';
@@ -187,9 +185,7 @@ MainDashboardLoading.decorators = [
 		);
 	},
 ];
-MainDashboardLoading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loading',
-};
+MainDashboardLoading.scenario = {};
 
 export const MainDashboardDataUnavailable = Template.bind( {} );
 MainDashboardDataUnavailable.storyName = 'Data Unavailable';
@@ -224,9 +220,7 @@ MainDashboardDataUnavailable.args = {
 		} );
 	},
 };
-MainDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/DataUnavailable',
-};
+MainDashboardDataUnavailable.scenario = {};
 
 export const MainDashboardZeroData = Template.bind( {} );
 MainDashboardZeroData.storyName = 'Zero Data';
@@ -267,9 +261,7 @@ MainDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-MainDashboardZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/ZeroData',
-};
+MainDashboardZeroData.scenario = {};
 
 export const MainDashboardError = Template.bind( {} );
 MainDashboardError.storyName = 'Error';
@@ -291,9 +283,7 @@ MainDashboardError.args = {
 		} );
 	},
 };
-MainDashboardError.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Error',
-};
+MainDashboardError.scenario = {};
 
 export const MainDashboardOneRowOfData = Template.bind( {} );
 MainDashboardOneRowOfData.storyName = 'One row of data';
@@ -315,9 +305,7 @@ MainDashboardOneRowOfData.args = {
 		} );
 	},
 };
-MainDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/OneRowOfData',
-};
+MainDashboardOneRowOfData.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Main Dashboard',
