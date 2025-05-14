@@ -24,7 +24,7 @@
 		products: globalProducts,
 		purchase,
 		add_to_cart: addToCart,
-	} = global._googlesitekit?.wcdata;
+	} = global._googlesitekit?.wcdata || {};
 
 	if ( addToCart ) {
 		const { price } = addToCart;
@@ -49,11 +49,15 @@
 		global._googlesitekit?.gtagEvent?.( 'purchase', eventData );
 	}
 
-	const body = jQuery( 'body' );
+	const $body = jQuery( 'body' );
 
-	// eslint-disable-next-line camelcase
-	body.on( 'added_to_cart', ( event, fragments, cart_hash, $button ) => {
+	$body.on( 'added_to_cart', ( event, fragments, cartHash, $button ) => {
 		const productID = parseInt( $button.data( 'product_id' ), 10 );
+
+		if ( ! productID ) {
+			return;
+		}
+
 		const productData =
 			globalProducts?.find( ( product ) => product?.id === productID ) ||
 			{};
@@ -66,9 +70,9 @@
 	jQuery(
 		'.products-block-post-template .product, .wc-block-product-template .product'
 	).each( function () {
-		const productCard = jQuery( this );
+		const $productCard = jQuery( this );
 		const productID = parseInt(
-			productCard.find( '[data-product_id]' ).attr( 'data-product_id' ),
+			$productCard.find( '[data-product_id]' ).attr( 'data-product_id' ),
 			10
 		);
 
@@ -76,7 +80,7 @@
 			return;
 		}
 
-		productCard.on( 'click', function ( event ) {
+		$productCard.on( 'click', function ( event ) {
 			const $target = jQuery( event.target );
 			const $button = $target.closest(
 				'.wc-block-components-product-button [data-product_id]'
