@@ -271,6 +271,51 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider data_sanitized_base_urls
+	 */
+	public function test_sanitize_base_url( $input, $expected ) {
+		$this->assertEquals(
+			$expected,
+			$this->google_proxy->sanitize_base_url( $input )
+		);
+	}
+
+	public function data_sanitized_base_urls() {
+		yield 'production URL' => array(
+			Google_Proxy::PRODUCTION_BASE_URL,
+			Google_Proxy::PRODUCTION_BASE_URL,
+		);
+		yield 'staging URL' => array(
+			Google_Proxy::STAGING_BASE_URL,
+			Google_Proxy::STAGING_BASE_URL,
+		);
+		yield 'development URL' => array(
+			Google_Proxy::DEVELOPMENT_BASE_URL,
+			Google_Proxy::DEVELOPMENT_BASE_URL,
+		);
+		yield 'invalid URL' => array(
+			'https://example.com',
+			Google_Proxy::PRODUCTION_BASE_URL,
+		);
+		yield 'production instance URL' => array(
+			'https://20191031t123456-dot-site-kit.ue.r.appspot.com/',
+			'https://20191031t123456-dot-site-kit.ue.r.appspot.com/',
+		);
+		yield 'staging instance URL, no region' => array(
+			'https://20191031t123456-dot-site-kit-dev.appspot.com/',
+			'https://20191031t123456-dot-site-kit-dev.appspot.com/',
+		);
+		yield 'development instance URL' => array(
+			'https://20191031t123456-dot-site-kit-local.ue.r.appspot.com/',
+			'https://20191031t123456-dot-site-kit-local.ue.r.appspot.com/',
+		);
+		yield 'invalid instance URL' => array(
+			'https://20191031t123456-dot-site-kit-impersonator.ue.r.appspot.com/',
+			Google_Proxy::PRODUCTION_BASE_URL,
+		);
+	}
+
 	public function test_get_user_fields() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
