@@ -1,5 +1,64 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TopConvertingTrafficSourceWidget renders correctly with no data in the comparison date range 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopConvertingTrafficSource googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-km-widget-tile__title"
+          >
+            Top converting traffic source
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__metric-container"
+          >
+            <div
+              class="googlesitekit-km-widget-tile__metric"
+            >
+              Organic Search
+            </div>
+            <p
+              class="googlesitekit-km-widget-tile__subtext"
+            >
+              54.9% of visits led to conversions
+            </p>
+          </div>
+          <div
+            class="googlesitekit-km-widget-tile__metric-change-container"
+          >
+            <div
+              class="googlesitekit-change-badge"
+            >
+              +54.9%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`TopConvertingTrafficSourceWidget should render correctly with the expected metrics 1`] = `
 <div>
   <div
