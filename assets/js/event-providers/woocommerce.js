@@ -19,22 +19,23 @@
 		return;
 	}
 
-	const currency = global._googlesitekit.wcdata.currency;
+	const {
+		currency: globalCurrency,
+		products: globalProducts,
+		purchase,
+		add_to_cart: addToCart,
+	} = global._googlesitekit?.wcdata;
 
-	if ( global._googlesitekit.wcdata.add_to_cart ) {
-		const { price } = global._googlesitekit.wcdata.add_to_cart;
+	if ( addToCart ) {
+		const { price } = addToCart;
 
-		const eventData = formatEventData(
-			price,
-			currency,
-			global._googlesitekit.wcdata.add_to_cart
-		);
+		const eventData = formatEventData( price, globalCurrency, addToCart );
 
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 	}
 
-	if ( global._googlesitekit.wcdata.purchase ) {
-		const { id, totals, items } = global._googlesitekit.wcdata.purchase;
+	if ( purchase ) {
+		const { id, totals, items } = purchase;
 
 		const eventData = formatEventData(
 			totals.total_price,
@@ -54,136 +55,128 @@
 	body.on( 'added_to_cart', ( event, fragments, cart_hash, $button ) => {
 		const productID = parseInt( $button.data( 'product_id' ), 10 );
 		const productData =
-			global._googlesitekit.wcdata.products?.find(
-				( product ) => product?.id === productID
-			) || {};
+			globalProducts?.find( ( product ) => product?.id === productID ) ||
+			{};
 		const { price } = productData;
 
-		const eventData = formatEventData( price, currency, productData );
+		const eventData = formatEventData( price, globalCurrency, productData );
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 	} );
 
-	document
-		.querySelectorAll(
-			'.products-block-post-template .product, .wc-block-product-template .product'
-		)
-		?.forEach( ( productCard ) => {
-			// Get the Product ID from a child node containing the relevant attribute.
-			const productID = parseInt(
-				productCard
-					.querySelector( '[data-product_id]' )
-					?.getAttribute( 'data-product_id' ),
-				10
+	jQuery(
+		'.products-block-post-template .product, .wc-block-product-template .product'
+	).each( function () {
+		const productCard = jQuery( this );
+		const productID = parseInt(
+			productCard.find( '[data-product_id]' ).attr( 'data-product_id' ),
+			10
+		);
+
+		if ( ! productID ) {
+			return;
+		}
+
+		productCard.on( 'click', function ( event ) {
+			const $target = jQuery( event.target );
+			const $button = $target.closest(
+				'.wc-block-components-product-button [data-product_id]'
 			);
 
-			if ( ! productID ) {
+			const isAddToCartButton =
+				$button.length &&
+				$button.hasClass( 'add_to_cart_button' ) &&
+				! $button.hasClass( 'product_type_variable' );
+
+			if ( ! isAddToCartButton ) {
 				return;
 			}
 
-			productCard.addEventListener( 'click', ( event ) => {
-				const target = event.target;
-				const button = target.closest(
-					'.wc-block-components-product-button [data-product_id]'
-				);
+			const productData =
+				globalProducts?.find(
+					( product ) => product?.id === productID
+				) || {};
+			const { price } = productData;
 
-				const isAddToCartButton =
-					button &&
-					button.classList.contains( 'add_to_cart_button' ) &&
-					! button.classList.contains( 'product_type_variable' );
-
-				if ( isAddToCartButton ) {
-					const productData =
-						global._googlesitekit.wcdata.products?.find(
-							( product ) => product?.id === productID
-						) || {};
-					const { price } = productData;
-
-					const eventData = formatEventData(
-						price,
-						currency,
-						productData
-					);
-					global._googlesitekit?.gtagEvent?.(
-						'add_to_cart',
-						eventData
-					);
-				}
-			} );
+			const eventData = formatEventData(
+				price,
+				globalCurrency,
+				productData
+			);
+			global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 		} );
-} )( global.jQuery );
+	} );
 
-function formatEventData(
-	value,
-	currency,
-	products,
-	transactionID = null,
-	shipping = null,
-	tax = null
-) {
-	const formattedData = {
+	function formatEventData(
 		value,
 		currency,
-		items: [],
-	};
+		products,
+		transactionID = null,
+		shipping = null,
+		tax = null
+	) {
+		const formattedData = {
+			value,
+			currency,
+			items: [],
+		};
 
-	if ( transactionID ) {
-		formattedData.transaction_id = transactionID;
-	}
-
-	// Shipping can be 0, if only check if shipping is not empty value
-	// this will be omitted.
-	if ( typeof shipping === 'number' ) {
-		formattedData.shipping = shipping;
-	}
-
-	// Tax can be 0, if only check if shipping is not empty value
-	// this will be omitted.
-	if ( typeof tax === 'number' ) {
-		formattedData.tax = tax;
-	}
-
-	if ( products && products.length ) {
-		for ( const product of products ) {
-			formattedData.items.push( formatProductData( product ) );
+		if ( transactionID ) {
+			formattedData.transaction_id = transactionID;
 		}
-	}
 
-	if ( products && products.id ) {
-		formattedData.items = [ formatProductData( products ) ];
-	}
-
-	return formattedData;
-}
-
-function formatProductData( product ) {
-	const { id, name, price, variation, quantity, categories } = product;
-
-	const mappedItem = {
-		item_id: id,
-		item_name: name,
-		price,
-	};
-
-	if ( quantity ) {
-		mappedItem.quantity = quantity;
-	}
-
-	if ( variation ) {
-		mappedItem.item_variant = variation;
-	}
-
-	if ( categories && categories?.length ) {
-		let categoryIndex = 1;
-		for ( const category of categories ) {
-			mappedItem[
-				categoryIndex > 1
-					? `item_category${ categoryIndex }`
-					: 'item_category'
-			] = category.name;
-
-			categoryIndex++;
+		// Shipping can be 0, if only check if shipping is not empty value
+		// this will be omitted.
+		if ( typeof shipping === 'number' ) {
+			formattedData.shipping = shipping;
 		}
+
+		// Tax can be 0, if only check if shipping is not empty value
+		// this will be omitted.
+		if ( typeof tax === 'number' ) {
+			formattedData.tax = tax;
+		}
+
+		if ( products && products.length ) {
+			for ( const product of products ) {
+				formattedData.items.push( formatProductData( product ) );
+			}
+		} else if ( products && products.id ) {
+			formattedData.items = [ formatProductData( products ) ];
+		}
+
+		return formattedData;
 	}
 
-	return mappedItem;
-}
+	function formatProductData( product ) {
+		const { id, name, price, variation, quantity, categories } = product;
+
+		const mappedItem = {
+			item_id: id,
+			item_name: name,
+			price,
+		};
+
+		if ( quantity ) {
+			mappedItem.quantity = quantity;
+		}
+
+		if ( variation ) {
+			mappedItem.item_variant = variation;
+		}
+
+		if ( categories && categories?.length ) {
+			let categoryIndex = 1;
+			for ( const category of categories ) {
+				mappedItem[
+					categoryIndex > 1
+						? `item_category${ categoryIndex }`
+						: 'item_category'
+				] = category.name;
+
+				categoryIndex++;
+			}
+		}
+
+		return mappedItem;
+	}
+} )( global.jQuery );
