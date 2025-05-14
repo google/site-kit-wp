@@ -45,25 +45,23 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 
 	if ( ! hasModuleAccess ) {
 		return (
-			<div>
-				<Notice
-					className="googlesitekit-settings-notice"
-					type={ Notice.TYPES.WARNING }
-					description={ createInterpolateElement(
-						sprintf(
-							/* translators: %s: module owner's name */
-							__(
-								'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured property.',
-								'google-site-kit'
-							),
-							formattedOwnerName
+			<Notice
+				className="googlesitekit-settings-notice"
+				type={ Notice.TYPES.WARNING }
+				description={ createInterpolateElement(
+					sprintf(
+						/* translators: %s: module owner's name */
+						__(
+							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured property.',
+							'google-site-kit'
 						),
-						{
-							strong: <strong />,
-						}
-					) }
-				/>
-			</div>
+						formattedOwnerName
+					),
+					{
+						strong: <strong />,
+					}
+				) }
+			/>
 		);
 	}
 
