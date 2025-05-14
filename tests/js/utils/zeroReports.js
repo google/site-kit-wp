@@ -48,7 +48,7 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
  * Returns a copy of the provided Analytics 4 report with values simulating
  * a specified date range with no data either zeroing or removing empty rows.
  *
- * @since n.e.x.t
+ * @since 1.153.0
  *
  * @param {Object} report           Analytics 4 report object.
  * @param {string} dateRangeKey     Date range key to match.
