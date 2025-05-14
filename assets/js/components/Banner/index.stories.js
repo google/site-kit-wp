@@ -161,7 +161,7 @@ function Template() {
 							href: 'https://example.com',
 						} }
 						ctaButton={ {
-							label: 'Setup up Sign in with Google',
+							label: 'Set up Sign in with Google',
 							onClick: () => {},
 						} }
 						dismissButton={ {
