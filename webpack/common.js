@@ -198,15 +198,10 @@ exports.createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [ '@wordpress/babel-preset-default' ],
 				},
 			},
 		],
-	},
-	{
-		test: /\.mjs$/,
-		include: /node_modules/,
-		type: 'javascript/auto',
 	},
 ];
 

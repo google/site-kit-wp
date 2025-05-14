@@ -25,6 +25,7 @@
 		"postcss-loader": "^8.1.1",
 		"sass": "^1.30.0",
 		"sass-loader": "^16.0.5",
+		"storybook": "^8.6.12",
 		"url-loader": "^4.1.1",
 		"webpack": "^5.99.7"
 	}

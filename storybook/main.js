@@ -34,6 +34,12 @@ const { ProvidePlugin } = require( 'webpack' );
  */
 const { rootDir, siteKitExternals, svgRule } = require( '../webpack/common' );
 
+function getModuleAbsolutePath( packageName ) {
+	return path.dirname(
+		require.resolve( path.join( packageName, 'package.json' ) )
+	);
+}
+
 function vrtHead() {
 	return fs.readFileSync(
 		path.resolve( __dirname, 'preview-head-vrt.html' ),
@@ -60,11 +66,11 @@ const siteKitPackageAliases = mapValues(
 );
 
 module.exports = {
-	framework: '@storybook/react-webpack5',
+	framework: getModuleAbsolutePath( '@storybook/react-webpack5' ),
 	stories: [ path.resolve( rootDir, 'assets/js/**/*.stories.js' ) ],
 	addons: [
-		'@storybook/addon-webpack5-compiler-babel',
-		'@storybook/addon-viewport',
+		getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
+		getModuleAbsolutePath( '@storybook/addon-viewport' ),
 	],
 	previewHead( head ) {
 		if ( process.env.VRT === '1' ) {
