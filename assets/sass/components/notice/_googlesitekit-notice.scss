@@ -144,10 +144,6 @@
 			.googlesitekit-icon-wrapper {
 				svg {
 					fill: none;
-
-					path:not([stroke*="currentColor"]) {
-						fill: currentColor;
-					}
 				}
 			}
 		}
