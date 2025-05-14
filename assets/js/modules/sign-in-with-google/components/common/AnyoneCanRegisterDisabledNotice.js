@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, Fragment } from '@wordpress/element';
@@ -23,7 +28,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -34,13 +39,16 @@ import {
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
+import SettingsNotice, {
+	TYPE_INFO,
+} from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
-import Notice from '../../../../components/Notice';
+import InfoIcon from '../../../../../svg/icons/info-circle.svg';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 	'sign-in-with-google-anyone-can-register-notice';
 
-export default function AnyoneCanRegisterDisabledNotice() {
+export default function AnyoneCanRegisterDisabledNotice( { className } ) {
 	const breakpoint = useBreakpoint();
 
 	const canManageOptions = useSelect( ( select ) =>
@@ -53,11 +61,6 @@ export default function AnyoneCanRegisterDisabledNotice() {
 		select( CORE_SITE ).getAdminSettingsURL()
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	const dismissNotice = () =>
-		dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE );
-
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ANYONE_CAN_REGISTER_DISABLED_NOTICE
@@ -69,9 +72,17 @@ export default function AnyoneCanRegisterDisabledNotice() {
 	}
 
 	return (
-		<Notice
-			type={ Notice.TYPES.WARNING }
-			description={ createInterpolateElement(
+		<SettingsNotice
+			className={ classnames(
+				'googlesitekit-registration-disabled-notice',
+				'googlesitekit-anyone-can-register-disabled-notice',
+				className
+			) }
+			type={ TYPE_INFO }
+			Icon={ InfoIcon }
+			dismiss={ ANYONE_CAN_REGISTER_DISABLED_NOTICE }
+			dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+			notice={ createInterpolateElement(
 				sprintf(
 					/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 					__(
@@ -103,10 +114,6 @@ export default function AnyoneCanRegisterDisabledNotice() {
 						),
 				}
 			) }
-			dismissButton={ {
-				label: __( 'Got it', 'google-site-kit' ),
-				onClick: dismissNotice,
-			} }
 		/>
 	);
 }
