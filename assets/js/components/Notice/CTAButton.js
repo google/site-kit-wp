@@ -46,9 +46,9 @@ export default function CTAButton( {
 			onClick={ onClick }
 			href={ href }
 			target={ external ? '_blank' : '_self' }
+			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
-			{ !! trailingIconToUse && trailingIconToUse }
 		</SpinnerButton>
 	);
 }
