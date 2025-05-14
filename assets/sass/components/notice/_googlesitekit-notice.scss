@@ -62,6 +62,14 @@
 			flex: 1;
 		}
 
+		svg {
+			fill: none;
+
+			path:not([stroke*="currentColor"]) {
+				fill: currentColor;
+			}
+		}
+
 		p {
 			margin: 0 0 10px;
 			@media (min-width: $bp-tablet) {
