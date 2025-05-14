@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import ExternalIcon from '../../../svg/icons/external.svg';
-import { Button } from '../../googlesitekit-components';
 
 export default function CTAButton( {
 	label,
@@ -39,34 +38,18 @@ export default function CTAButton( {
 	if ( external && ! hideExternalIndicator ) {
 		trailingIconToUse = <ExternalIcon width={ 14 } height={ 14 } />;
 	}
-
-	if (
-		! href ||
-		( href && ( ! external || ( external && hideExternalIndicator ) ) )
-	) {
-		return (
-			<SpinnerButton
-				className="googlesitekit-notice__cta"
-				disabled={ disabled }
-				isSaving={ inProgress }
-				onClick={ onClick }
-			>
-				{ label }
-			</SpinnerButton>
-		);
-	}
-
 	return (
-		<Button
+		<SpinnerButton
 			className="googlesitekit-notice__cta"
 			disabled={ disabled }
+			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
 			target={ external ? '_blank' : '_self' }
-			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
-		</Button>
+			{ !! trailingIconToUse && trailingIconToUse }
+		</SpinnerButton>
 	);
 }
 
