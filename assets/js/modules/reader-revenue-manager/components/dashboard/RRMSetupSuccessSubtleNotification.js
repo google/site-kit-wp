@@ -125,9 +125,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	}, [ setNotification, setSlug ] );
 
-	const onCTAClick = ( event ) => {
-		event.preventDefault();
-
+	const onCTAClick = () => {
 		// Set publication data to be reset when user re-focuses window.
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
@@ -234,7 +232,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'Check publication status',
 								'google-site-kit'
 							) }
-							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
 							{ ...gaTrackingProps }
@@ -264,7 +261,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 						'Complete publication setup',
 						'google-site-kit'
 					),
-					href: serviceURL,
 					onClick: onCTAClick,
 					external: true,
 				} }
