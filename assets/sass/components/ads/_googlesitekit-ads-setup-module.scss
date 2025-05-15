@@ -124,6 +124,14 @@
 							width: 100%;
 						}
 					}
+
+					.googlesitekit-notice--warning.googlesitekit-ads-setup__ads-id-conflict-warning {
+						.googlesitekit-notice__content {
+							.googlesitekit-notice__description {
+								font-size: $fs-body-sm;
+							}
+						}
+					}
 				}
 
 				.googlesitekit-ads-setup__ads-id-conflict-warning {

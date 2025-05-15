@@ -31,11 +31,10 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Link from '../Link';
-import WarningNotice from '../WarningNotice';
 import ExternalIcon from '../../../svg/icons/external-rounded.svg';
+import Notice from '../Notice';
 
 export default function AdBlockerWarningMessage( {
-	className = '',
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -44,11 +43,15 @@ export default function AdBlockerWarningMessage( {
 	}
 
 	return (
-		<WarningNotice className={ className }>
-			{ createInterpolateElement(
+		<Notice
+			type={ Notice.TYPES.WARNING }
+			description={ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */
-					__( '%1$s. <Link>%2$s</Link>', 'google-site-kit' ),
+					__(
+						'%1$s. <Link><Strong>%2$s</Strong></Link>',
+						'google-site-kit'
+					),
 					warningMessage,
 					__( 'Get help', 'google-site-kit' )
 				),
@@ -63,14 +66,15 @@ export default function AdBlockerWarningMessage( {
 							}
 						/>
 					),
+					Strong: <strong />,
 				}
 			) }
-		</WarningNotice>
+			hideIcon
+		/>
 	);
 }
 
 AdBlockerWarningMessage.propTypes = {
-	className: PropTypes.string,
 	getHelpLink: PropTypes.string,
 	warningMessage: PropTypes.string,
 };

@@ -31,10 +31,8 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { TYPE_INFO } from '../../../../components/SettingsNotice';
-import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import Notice from '../../../../components/Notice';
 
 export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
@@ -47,10 +45,10 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 
 	if ( ! hasModuleAccess ) {
 		return (
-			<SettingsNotice
-				type={ TYPE_INFO }
-				Icon={ WarningIcon }
-				notice={ createInterpolateElement(
+			<Notice
+				className="googlesitekit-settings-notice"
+				type={ Notice.TYPES.WARNING }
+				description={ createInterpolateElement(
 					sprintf(
 						/* translators: %s: module owner's name */
 						__(
