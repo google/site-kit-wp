@@ -35,7 +35,7 @@ import './polyfill-globals';
 import { setUsingCache } from 'googlesitekit-api';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { createWaitForRegistry, WithTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
 import { setEnabledFeatures } from '../tests/js/test-utils';
@@ -78,14 +78,9 @@ export const decorators = [
 			<WithTestRegistry
 				features={ features }
 				route={ route }
-				// Expose registry as global for tinkering.
 				callback={ ( registry ) => {
+					// Expose registry as global for tinkering.
 					global.registry = registry;
-					const { vrt } = global.document.documentElement.dataset;
-					if ( vrt === 'true' ) {
-						global.waitForRegistry =
-							createWaitForRegistry( registry );
-					}
 				} }
 			>
 				<Story />
