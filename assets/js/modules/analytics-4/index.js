@@ -107,9 +107,6 @@ import {
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import AudienceSegmentationSetupSuccessSubtleNotification, {
-	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -716,43 +713,6 @@ export const registerWidgets = ( widgets ) => {
 };
 
 export const ANALYTICS_4_NOTIFICATIONS = {
-	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const analyticsConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
-
-			if ( ! analyticsConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
-			await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-			const currentUserID = select( CORE_USER ).getID();
-
-			const audienceSegmentationSetupCompletedByUserID =
-				select(
-					MODULES_ANALYTICS_4
-				).getAudienceSegmentationSetupCompletedBy();
-
-			if (
-				currentUserID !== audienceSegmentationSetupCompletedByUserID
-			) {
-				return false;
-			}
-
-			const configuredAudiences =
-				select( CORE_USER ).getConfiguredAudiences();
-
-			// Only show this notification if the user has a set of configured audiences.
-			return Array.isArray( configuredAudiences );
-		},
-		isDismissible: true,
-	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
 		priority: PRIORITY.SETUP_CTA_LOW,

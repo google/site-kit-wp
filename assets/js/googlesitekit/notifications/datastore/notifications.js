@@ -74,7 +74,7 @@ export const actions = {
 	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
 	 * @return {Object} Redux-style action.
 	 */
-	registerNotification(
+	*registerNotification(
 		id,
 		{
 			Component,
@@ -111,6 +111,10 @@ export const actions = {
 				', '
 			) }, but "${ viewContexts }" was provided.`
 		);
+
+		for ( const viewContext of viewContexts ) {
+			yield actions.populateQueue( viewContext, groupID );
+		}
 
 		return {
 			payload: {
@@ -355,6 +359,19 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			const { groupID } = payload.notification;
 			state.queuedNotifications[ groupID ] =
 				state.queuedNotifications[ groupID ] || [];
+
+			// If this notification is already in the queue, don't add it again.
+			if (
+				state.queuedNotifications[ groupID ]
+					.map( ( notification ) => {
+						return notification.id;
+					} )
+					.includes( payload.notification.id )
+			) {
+				return;
+			}
+
+			// Add the notification to the queue.
 			state.queuedNotifications[ groupID ].push( payload.notification );
 			break;
 		}
