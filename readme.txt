@@ -130,5 +130,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 * Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
 * Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
+* Update Partner Ads integration. See [#10779](https://github.com/google/site-kit-wp/issues/10779).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
