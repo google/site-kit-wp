@@ -45,7 +45,7 @@ module.exports = {
 		json_report: 'tests/backstop/json_report',
 		ci_report: 'tests/backstop/ci_report',
 	},
-	report: [ 'browser', 'CI', 'json' ],
+	report: [ 'browser', 'json' ],
 	scenarios,
 	viewports,
 	misMatchThreshold: 0,
