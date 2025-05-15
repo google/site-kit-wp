@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <ruleset name="Site Kit by Google Project Rules">
 
+	<!-- Include our custom standard -->
+	<rule ref="SiteKit"/>
+
 	<rule ref="WordPress-Docs">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>

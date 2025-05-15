@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<ruleset name="SiteKit">
+	<description>Custom PHPCS standard for Site Kit by Google</description>
+</ruleset> 

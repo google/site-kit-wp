@@ -1,0 +1,15 @@
+{
+	"name": "google/sitekit-phpcs-standards",
+	"version": "v0.1",
+	"description": "Custom PHPCS standards for Google Site Kit",
+	"type": "phpcodesniffer-standard",
+	"license": "Apache-2.0",
+	"require": {
+		"squizlabs/php_codesniffer": "^3.7"
+	},
+	"autoload": {
+		"psr-4": {
+			"Google\\Site_Kit\\PHPCS\\": "SiteKit/"
+		}
+	}
+}
