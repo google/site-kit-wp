@@ -30,7 +30,11 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { combineStores, createRegistrySelector } from 'googlesitekit-data';
+import {
+	combineStores,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
@@ -42,15 +46,10 @@ const fetchGetReportStore = createFetchStore( {
 			url,
 		} );
 	},
-	reducerCallback: ( state, report, { strategy, url } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ `${ strategy }::${ url }` ]: { ...report },
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { strategy, url } ) => {
+		state.reports = state.reports || {};
+		state.reports[ `${ strategy }::${ url }` ] = report;
+	} ),
 	argsToParams: ( url, strategy ) => {
 		return {
 			strategy,

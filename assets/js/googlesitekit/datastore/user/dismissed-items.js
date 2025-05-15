@@ -29,6 +29,7 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -36,12 +37,11 @@ import { createValidatedAction } from '../../data/utils';
 
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, dismissedItems ) {
-	return {
-		...state,
-		dismissedItems: Array.isArray( dismissedItems ) ? dismissedItems : [],
-	};
-}
+const reducerCallback = createReducer( ( state, dismissedItems ) => {
+	state.dismissedItems = Array.isArray( dismissedItems )
+		? dismissedItems
+		: [];
+} );
 
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',

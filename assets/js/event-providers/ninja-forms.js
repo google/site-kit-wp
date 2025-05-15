@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
+( ( jQuery, Marionette, Backbone ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery || ! Marionette || ! Backbone ) {
 		return;
@@ -39,4 +39,4 @@
 	jQuery( document ).ready( function () {
 		new ninjaFormEventController();
 	} );
-} )( global.jQuery );
+} )( global.jQuery, global.Marionette, global.Backbone );

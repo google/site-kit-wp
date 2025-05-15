@@ -58,9 +58,7 @@ export function VRTStory() {
 }
 
 VRTStory.storyName = 'All Radios VRT';
-VRTStory.scenario = {
-	label: 'Global/Radios',
-};
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/Radio',

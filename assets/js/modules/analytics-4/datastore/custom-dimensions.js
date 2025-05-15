@@ -31,6 +31,7 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
@@ -83,15 +84,10 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
 		set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
-	reducerCallback: ( state, dimensions ) => {
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				availableCustomDimensions: [ ...dimensions ],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, dimensions ) => {
+		state.settings = state.settings || {};
+		state.settings.availableCustomDimensions = dimensions;
+	} ),
 } );
 
 const baseInitialState = {
@@ -262,25 +258,23 @@ export const baseControls = {
 	),
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
+export const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
-			return {
-				...state,
-				customDimensionsBeingCreated: payload.customDimensions,
-			};
+			state.customDimensionsBeingCreated =
+				action.payload.customDimensions;
+			break;
 		}
+
 		case SET_SYNC_TIMEOUT_ID: {
-			return {
-				...state,
-				syncTimeoutID: payload.syncTimeoutID,
-			};
+			state.syncTimeoutID = action.payload.syncTimeoutID;
+			break;
 		}
-		default: {
-			return state;
-		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAvailableCustomDimensions() {

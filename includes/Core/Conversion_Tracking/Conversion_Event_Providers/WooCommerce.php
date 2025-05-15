@@ -26,6 +26,23 @@ class WooCommerce extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
 
 	/**
+	 * Avaialble products on the page.
+	 *
+	 * @var Array
+	 *
+	 * @since 1.153.0
+	 */
+	protected $products = array();
+
+	/**
+	 * Current product added to the cart.
+	 *
+	 * @since 1.153.0
+	 * @var WC_Product
+	 */
+	protected $add_to_cart;
+
+	/**
 	 * Checks if the WooCommerce plugin is active.
 	 *
 	 * @since 1.127.0
@@ -77,6 +94,31 @@ class WooCommerce extends Conversion_Events_Provider {
 	public function register_hooks() {
 		$input = $this->context->input();
 
+		add_filter(
+			'woocommerce_loop_add_to_cart_link',
+			function ( $button, $product ) {
+				$this->products[] = $this->get_formatted_product( $product );
+
+				return $button;
+			},
+			10,
+			2
+		);
+
+		add_action(
+			'woocommerce_add_to_cart',
+			function ( $cart_item_key, $product_id, $quantity, $variation_id, $variation ) {
+				$this->add_to_cart = $this->get_formatted_product(
+					wc_get_product( $product_id ),
+					$variation_id,
+					$variation,
+					$quantity
+				);
+			},
+			10,
+			5
+		);
+
 		add_action(
 			'woocommerce_thankyou',
 			function ( $order_id ) use ( $input ) {
@@ -102,12 +144,168 @@ class WooCommerce extends Conversion_Events_Provider {
 				$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
 				$order->save();
 
+				wp_add_inline_script(
+					'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
+					join(
+						"\n",
+						array(
+							'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
+							sprintf( 'window._googlesitekit.wcdata.purchase = %s;', wp_json_encode( $this->get_formatted_order( $order ) ) ),
+						)
+					),
+					'before'
+				);
+
 				// Output the script tag to track the purchase event in
 				// Analytics.
 				BC_Functions::wp_print_inline_script_tag( "window?._googlesitekit?.gtagEvent?.( 'purchase' );" );
 			},
 			10,
 			1
+		);
+
+		add_action(
+			'wp_footer',
+			function () {
+				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
+
+				$inline_script = join(
+					"\n",
+					array(
+						'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
+						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
+						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
+						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
+					)
+				);
+
+				wp_add_inline_script( $script_slug, $inline_script, 'before' );
+			}
+		);
+	}
+
+	/**
+	 * Returns an array of product data in the required format.
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 *
+	 * @since 1.153.0
+	 *
+	 * @param WC_Product $product The product to format.
+	 * @param int        $variation_id Variation product ID.
+	 * @param array|bool $variation An array containing product variation attributes to include in the product data.
+	 * For the "variation" type products, we'll use product->get_attributes.
+	 * @param bool|int   $quantity Quantity to include in the formatted product object.
+	 *
+	 * @return array
+	 */
+	public function get_formatted_product( $product, $variation_id = 0, $variation = false, $quantity = false ) {
+		$product_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+		$price      = $product->get_price();
+
+		// Get product price from chosen variation if set.
+		if ( $variation_id ) {
+			$variation_product = wc_get_product( $variation_id );
+			if ( $variation_product ) {
+				$price = $variation_product->get_price();
+			}
+		}
+
+		// Integration with Product Bundles.
+		// Get the minimum price, as `get_price` may return 0 if the product is a bundle and the price is potentially a range.
+		// Even a range containing a single value.
+		if ( $product->is_type( 'bundle' ) && is_callable( array( $product, 'get_bundle_price' ) ) ) {
+			$price = $product->get_bundle_price( 'min' );
+		}
+
+		$formatted = array(
+			'id'         => $product_id,
+			'name'       => $product->get_title(),
+			'categories' => array_map(
+				fn( $category ) => array( 'name' => $category->name ),
+				wc_get_product_terms( $product_id, 'product_cat', array( 'number' => 5 ) )
+			),
+			'price'      => $this->get_formatted_price( $price ),
+		);
+
+		if ( $quantity ) {
+			$formatted['quantity'] = (int) $quantity;
+		}
+
+		if ( $product->is_type( 'variation' ) ) {
+			$variation = $product->get_attributes();
+		}
+
+		if ( is_array( $variation ) ) {
+			$formatted['variation'] = implode(
+				', ',
+				array_map(
+					function ( $attribute, $value ) {
+							return sprintf(
+								'%s: %s',
+								str_replace( 'attribute_', '', $attribute ),
+								$value
+							);
+					},
+					array_keys( $variation ),
+					array_values( $variation )
+				)
+			);
+		}
+
+		return $formatted;
+	}
+
+	/**
+	 * Returns an array of order data in the required format.
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 *
+	 * @since 1.153.0
+	 *
+	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
+	 *
+	 * @return array
+	 */
+	public function get_formatted_order( $order ) {
+		return array(
+			'id'          => $order->get_id(),
+			'affiliation' => get_bloginfo( 'name' ),
+			'totals'      => array(
+				'currency_code'  => $order->get_currency(),
+				'tax_total'      => $this->get_formatted_price( $order->get_total_tax() ),
+				'shipping_total' => $this->get_formatted_price( $order->get_total_shipping() ),
+				'total_price'    => $this->get_formatted_price( $order->get_total() ),
+			),
+			'items'       => array_map(
+				function ( $item ) {
+					return array_merge(
+						$this->get_formatted_product( $item->get_product() ),
+						array(
+							'quantity'                    => $item->get_quantity(),
+							'price_after_coupon_discount' => $this->get_formatted_price( $item->get_total() ),
+						)
+					);
+				},
+				array_values( $order->get_items() ),
+			),
+		);
+	}
+
+	/**
+	 * Formats a price the same way WooCommerce Blocks does.
+	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 *
+	 * @since 1.153.0
+	 *
+	 * @param mixed $value The price value for format.
+	 *
+	 * @return int
+	 */
+	public function get_formatted_price( $value ) {
+		return intval(
+			round(
+				( (float) wc_format_decimal( $value ) ) * ( 10 ** absint( wc_get_price_decimals() ) ),
+				0
+			)
 		);
 	}
 }

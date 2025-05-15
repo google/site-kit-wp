@@ -31,12 +31,11 @@ import { useState, useCallback, useRef, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
-import StarFill from '../../../svg/icons/star-fill.svg';
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import Notice from '../../components/Notice';
+import { Grid, Cell, Row } from '../../material-components';
 
 export default function ConversionReportingSettingsSubtleNotification() {
 	const viewContext = useViewContext();
@@ -79,24 +78,32 @@ export default function ConversionReportingSettingsSubtleNotification() {
 	}, [ setIsNavigating, viewContext ] );
 
 	return (
-		<SubtleNotification
-			ref={ notificationRef }
-			className="googlesitekit-acr-subtle-notification"
-			title={ __( 'Personalize your metrics', 'google-site-kit' ) }
-			description={ __(
-				'Set up your goals by answering 3 quick questions to help us show the most relevant data for your site',
-				'google-site-kit'
-			) }
-			additionalCTA={
-				<SpinnerButton
-					onClick={ handleCTAClick }
-					href={ userInputURL }
-					isSaving={ isNavigating }
-				>
-					{ __( 'Get tailored metrics', 'google-site-kit' ) }
-				</SpinnerButton>
-			}
-			icon={ <StarFill width={ 24 } height={ 24 } /> }
-		/>
+		<Grid ref={ notificationRef }>
+			<Row>
+				<Cell alignMiddle size={ 12 }>
+					<Notice
+						type="new"
+						title={ __(
+							'Personalize your metrics',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Set up your goals by answering 3 quick questions to help us show the most relevant data for your site',
+							'google-site-kit'
+						) }
+						ctaButton={ {
+							label: __(
+								'Get tailored metrics',
+								'google-site-kit'
+							),
+							onClick: handleCTAClick,
+							inProgress: isNavigating,
+							disabled: isNavigating,
+							href: userInputURL,
+						} }
+					/>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
