@@ -199,7 +199,6 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -238,7 +237,6 @@ LoadedEntityURL.args = {
 		}
 	},
 };
-LoadedEntityURL.scenario = {};
 
 export const LoadingEntityURL = Template.bind( {} );
 LoadingEntityURL.storyName = 'Loading w/ entity URL';
@@ -265,7 +263,6 @@ LoadingEntityURL.decorators = [
 		);
 	},
 ];
-LoadingEntityURL.scenario = {};
 
 export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable w/ entity URL';
@@ -316,7 +313,6 @@ DataUnavailableEntityURL.args = {
 			);
 	},
 };
-DataUnavailableEntityURL.scenario = {};
 
 export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
@@ -349,7 +345,6 @@ ZeroDataEntityURL.args = {
 		}
 	},
 };
-ZeroDataEntityURL.scenario = {};
 
 export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error w/ entity URL';
@@ -376,7 +371,6 @@ ErrorEntityURL.args = {
 			.finishResolution( 'getReport', [ options ] );
 	},
 };
-ErrorEntityURL.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',
