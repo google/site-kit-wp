@@ -25,7 +25,7 @@ import { calculateChange } from '../../../../../../util';
  * Gets the cell props for responsive grid layout.
  * These props define the cell sizes for different screen breakpoints.
  *
- * @since n.e.x.t
+ * @since 1.153.0
  *
  * @param {boolean} showConversionsCTA Whether to show the conversions CTA.
  * @return {Object} Object with the cell props for the DataBlocks.
@@ -73,7 +73,7 @@ export function getCellProps( showConversionsCTA ) {
 /**
  * Gets the datapoint and change for the given report and selected stat.
  *
- * @since n.e.x.t
+ * @since 1.153.0
  *
  * @param {Object} report       The report object.
  * @param {number} selectedStat The selected stat.
