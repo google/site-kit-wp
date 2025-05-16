@@ -104,12 +104,12 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onSuccess = useCallback( () => {
-		registerNotification( notification );
-
 		dismissNotification( id );
 		// Dismiss success notification in settings.
 		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [ registerNotification, dismissNotification, id, dismissItem ] );
+
+		registerNotification( ...notification );
+	}, [ dismissNotification, id, dismissItem, registerNotification ] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );

@@ -58,8 +58,12 @@ export const actions = {
 	/**
 	 * Registers a notification with a given `id` slug and settings.
 	 *
+	 * After registering, the notification view contexts will be re-populated
+	 * with the registered notification.
+	 *
 	 * @since 1.132.0
 	 * @since 1.146.0 Added `featureFlag` parameter.
+	 * @since n.e.x.t Changed to a generator function that repopulates the relevant notification queues.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
@@ -72,7 +76,6 @@ export const actions = {
 	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
 	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
-	 * @return {Object} Redux-style action.
 	 */
 	*registerNotification(
 		id,
@@ -112,11 +115,7 @@ export const actions = {
 			) }, but "${ viewContexts }" was provided.`
 		);
 
-		for ( const viewContext of viewContexts ) {
-			yield actions.populateQueue( viewContext, groupID );
-		}
-
-		return {
+		yield {
 			payload: {
 				id,
 				settings: {
@@ -133,6 +132,16 @@ export const actions = {
 			},
 			type: REGISTER_NOTIFICATION,
 		};
+
+		for ( const viewContext of viewContexts ) {
+			yield {
+				type: POPULATE_QUEUE,
+				payload: {
+					viewContext,
+					groupID,
+				},
+			};
+		}
 	},
 	receiveQueuedNotifications(
 		queuedNotifications,

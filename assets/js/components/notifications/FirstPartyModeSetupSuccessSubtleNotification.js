@@ -31,9 +31,25 @@ import { __ } from '@wordpress/i18n';
  */
 import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
 import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 
 export const FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-fpm';
+
+export const notification = [
+	FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION,
+	{
+		Component: FirstPartyModeSetupSuccessSubtleNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: () => {
+			return true;
+		},
+		featureFlag: 'firstPartyMode',
+	},
+];
 
 export default function FirstPartyModeSetupSuccessSubtleNotification( {
 	id,

@@ -46,47 +46,18 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/consta
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-audiences';
 
-export const notification = {
-	Component: AudienceSegmentationSetupSuccessSubtleNotification,
-	areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-	viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-	// checkRequirements: async ( { select, resolveSelect } ) => {
-	// 	const analyticsConnected = await resolveSelect(
-	// 		CORE_MODULES
-	// 	).isModuleConnected( 'analytics-4' );
-
-	// 	if ( ! analyticsConnected ) {
-	// 		return false;
-	// 	}
-
-	// 	await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
-	// 	await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-	// 	const currentUserID = select( CORE_USER ).getID();
-
-	// 	const audienceSegmentationSetupCompletedByUserID =
-	// 		select(
-	// 			MODULES_ANALYTICS_4
-	// 		).getAudienceSegmentationSetupCompletedBy();
-
-	// 	if (
-	// 		currentUserID !== audienceSegmentationSetupCompletedByUserID
-	// 	) {
-	// 		return false;
-	// 	}
-
-	// 	const configuredAudiences =
-	// 		select( CORE_USER ).getConfiguredAudiences();
-
-	// 	// Only show this notification if the user has a set of configured audiences.
-	// 	return Array.isArray( configuredAudiences );
-	// },
-	checkRequirements: () => {
-		return true;
+export const notification = [
+	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
+	{
+		Component: AudienceSegmentationSetupSuccessSubtleNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			return true;
+		},
+		isDismissible: true,
 	},
-	isDismissible: true,
-	id: AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-};
+];
 
 export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 	id,
