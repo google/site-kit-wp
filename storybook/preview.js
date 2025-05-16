@@ -80,8 +80,8 @@ export const decorators = [
 			<WithTestRegistry
 				features={ features }
 				route={ route }
-				// Expose registry as global for tinkering.
 				callback={ ( registry ) => {
+					// Expose registry as global for tinkering.
 					global.registry = registry;
 				} }
 			>

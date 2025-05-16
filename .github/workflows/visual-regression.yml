@@ -53,6 +53,8 @@ jobs:
         with:
           name: vrt-report
           path: |
+            tests/backstop/ci_report
             tests/backstop/html_report
+            tests/backstop/json_report
             tests/backstop/reference
             tests/backstop/tests

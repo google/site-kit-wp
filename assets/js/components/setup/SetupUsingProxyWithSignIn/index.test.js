@@ -24,15 +24,15 @@ import {
 	provideUserInfo,
 	provideUserCapabilities,
 	muteFetch,
-} from '../../../../tests/js/test-utils';
-import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
+} from '../../../../../tests/js/test-utils';
+import coreModulesFixture from '../../../googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
+import { VIEW_CONTEXT_SPLASH } from '../../../googlesitekit/constants';
 
 jest.mock(
-	'./CompatibilityChecks',
+	'../CompatibilityChecks',
 	() =>
 		( { children } ) =>
 			children( { complete: true } )
