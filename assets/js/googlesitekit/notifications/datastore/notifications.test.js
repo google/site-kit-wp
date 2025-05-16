@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	provideNotifications,
+	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
@@ -53,6 +54,7 @@ describe( 'core/notifications Notifications', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
 		( { registerNotification } = registry.dispatch( CORE_NOTIFICATIONS ) );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
@@ -710,6 +712,8 @@ describe( 'core/notifications Notifications', () => {
 			beforeEach( () => {
 				( { isNotificationDismissalFinal } =
 					registry.select( CORE_NOTIFICATIONS ) );
+
+				provideUserAuthentication( registry );
 			} );
 
 			it( 'should return undefined if notification is undefined', () => {

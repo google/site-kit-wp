@@ -27,6 +27,9 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 	provideNotifications,
+	provideUserAuthentication,
+	provideModules,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
@@ -53,6 +56,9 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetNonces( { updates: '751b9198d2' } );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		provideUserAuthentication( registry );
 	} );
 
 	afterEach( () => {
@@ -165,6 +171,19 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		} );
 
 		it( 'is not active and dismisses the notification temporarily when Site Kit is set up', async () => {
+			const searchAnalyticsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+			);
+			muteFetch( searchAnalyticsEndpoint );
+
+			const adsMeasurementStatusEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+			);
+			fetchMock.get( adsMeasurementStatusEndpoint, {
+				body: { connected: true },
+				status: 200,
+			} );
+
 			const dismissItemEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismiss-item'
 			);
@@ -172,6 +191,8 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 				body: JSON.stringify( [ ENABLE_AUTO_UPDATES_BANNER_SLUG ] ),
 				status: 200,
 			} );
+
+			provideModules( registry );
 
 			provideSiteInfo( registry, {
 				changePluginAutoUpdatesCapacity: true,
@@ -183,6 +204,17 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			} );
 
 			provideNotifications( registry );
+
+			const consentModeSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/consent-mode'
+			);
+			fetchMock.get( consentModeSettingsEndpoint, {
+				body: {
+					enabled: false,
+					regions: [ 'AT' ],
+				},
+				status: 200,
+			} );
 
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success';

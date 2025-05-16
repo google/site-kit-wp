@@ -64,11 +64,17 @@ describe( 'modules/analytics-4 settings', () => {
 		data: { status: 500 },
 	};
 
+	const consentModeSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/consent-mode'
+	);
 	const createPropertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
 	);
 	const createWebDataStreamsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+	);
+	const permissionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/permissions'
 	);
 	const propertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/property'
@@ -81,6 +87,16 @@ describe( 'modules/analytics-4 settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive() );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		fetchMock.getOnce( consentModeSettingsEndpoint, {
+			body: {
+				enabled: false,
+				regions: [ 'AT' ],
+			},
+			status: 200,
+		} );
+		muteFetch( permissionsEndpoint );
 	} );
 
 	afterAll( () => {
