@@ -31,6 +31,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
@@ -59,6 +60,9 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		registry = createTestRegistry();
 
 		enabledFeatures.add( 'adsPax' );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		registry
 			.dispatch( CORE_NOTIFICATIONS )

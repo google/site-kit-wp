@@ -42,6 +42,18 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 describe( 'ErrorNotifications', () => {
 	let registry;
 
+	const adsMeasurementStatusEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+	);
+
+	const consentModeSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/consent-mode'
+	);
+
+	const getDismissedItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
+
 	const permissionsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/permissions'
 	);
@@ -60,9 +72,23 @@ describe( 'ErrorNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
+		fetchMock.getOnce( getDismissedItemsEndpoint, { body: [] } );
+		fetchMock.getOnce( consentModeSettingsEndpoint, {
+			body: {
+				enabled: false,
+				regions: [ 'AT' ],
+			},
+			status: 200,
+		} );
+		fetchMock.getOnce( adsMeasurementStatusEndpoint, {
+			body: { connected: true },
+			status: 200,
+		} );
+
 		muteFetch( permissionsEndpoint );
 		muteFetch( reportEndpoint );
 		muteFetch( searchAnalyticsEndpoint );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );

@@ -44,6 +44,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -87,6 +88,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
 		],
 	];
+
+	const getDismissedItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
 
 	const publicationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
@@ -179,6 +184,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	it.each( publicationStatesData )(
 		'should dismiss the notification when the onboarding state is %s with CTA text %s and the dismiss CTA %s is clicked',
 		async ( onboardingState, ctaText, dismissText ) => {
+			fetchMock.getOnce( getDismissedItemsEndpoint, { body: [] } );
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.setPublicationOnboardingState( onboardingState );
@@ -482,6 +490,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	describe( 'GA event tracking', () => {
 		beforeEach( async () => {
 			mockTrackEvent.mockClear();
+
+			fetchMock.getOnce( getDismissedItemsEndpoint, { body: [] } );
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 			await registry
 				.dispatch( CORE_NOTIFICATIONS )
