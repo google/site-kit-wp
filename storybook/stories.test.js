@@ -28,12 +28,9 @@ import initStoryshots from '@storybook/addon-storyshots';
 import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
 const customizePage = ( page ) => {
-	page.on( 'console', ( msg ) => {
-		if ( msg.type() === 'error' ) {
-			throw new Error(
-				`Console error detected during story rendering:\n${ msg.text() }`
-			);
-		}
+	page.on( 'console', () => {
+		// Kill the process on console error to fail the test within GH Actions.
+		process.kill( process.pid, 'SIGTERM' );
 	} );
 
 	return page;
