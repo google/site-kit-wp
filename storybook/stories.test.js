@@ -27,53 +27,26 @@ import path from 'path';
 import initStoryshots from '@storybook/addon-storyshots';
 import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
-/**
- * Creates a custom puppeteer test that fails on console errors.
- *
- * @since 1.23.0
- *
- * @param {Object} options Options for puppeteerTest.
- * @return {Function} Test function.
- */
-const puppeteerTestWithErrorHandling = ( options ) => {
-	const originalTest = puppeteerTest( options );
+const customizePage = ( page ) => {
+	page.on( 'console', ( msg ) => {
+		if ( msg.type() === 'error' ) {
+			throw new Error(
+				`Console error detected during story rendering:\n${ msg.text() }`
+			);
+		}
+	} );
 
-	return ( { story, context } ) => {
-		const testFn = originalTest( { story, context } );
-
-		return async () => {
-			const consoleErrors = [];
-
-			const page = options.getPage
-				? await options.getPage()
-				: global.page;
-
-			page.on( 'console', ( msg ) => {
-				if ( msg.type() === 'error' ) {
-					consoleErrors.push( msg.text() );
-				}
-			} );
-
-			await testFn();
-
-			if ( consoleErrors.length > 0 ) {
-				throw new Error(
-					`Console errors detected during story rendering:\n${ consoleErrors.join(
-						'\n'
-					) }`
-				);
-			}
-		};
-	};
+	return page;
 };
 
 initStoryshots( {
 	suite: 'Puppeteer storyshots',
 	configPath: path.resolve( __dirname, '../storybook' ),
-	test: puppeteerTestWithErrorHandling( {
+	test: puppeteerTest( {
 		// eslint-disable-next-line sitekit/acronym-case
 		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
 		setupTimeout: 5000,
 		testTimeout: 5000,
+		customizePage,
 	} ),
 } );
