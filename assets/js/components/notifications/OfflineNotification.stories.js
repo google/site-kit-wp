@@ -32,9 +32,7 @@ function Template() {
 
 export const Site = Template.bind( {} );
 Site.storyName = 'Offline Notification';
-Site.scenario = {
-	label: 'Global/OfflineNotification',
-};
+Site.scenario = {};
 
 export default {
 	title: 'Components/OfflineNotification',

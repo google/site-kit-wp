@@ -70,18 +70,14 @@ function Template( { viewContext } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/Default',
-};
+Default.scenario = {};
 
 export const ViewOnlyUser = Template.bind( {} );
 ViewOnlyUser.storyName = 'View-only user';
 ViewOnlyUser.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ViewOnlyUser.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/ViewOnlyUser',
-};
+ViewOnlyUser.scenario = {};
 
 export const WithSavedItems = Template.bind( {} );
 WithSavedItems.storyName = 'With saved items';
@@ -91,18 +87,14 @@ WithSavedItems.args = {
 		'properties/12345/audiences/4',
 	],
 };
-WithSavedItems.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithSavedItems',
-};
+WithSavedItems.scenario = {};
 
 export const WithOneGroup = Template.bind( {} );
 WithOneGroup.storyName = 'With one group selected';
 WithOneGroup.args = {
 	configuredAudiences: [ 'properties/12345/audiences/3' ],
 };
-WithOneGroup.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithOneGroup',
-};
+WithOneGroup.scenario = {};
 
 export const LoadingNoGroups = Template.bind( {} );
 LoadingNoGroups.storyName = 'Loading state no groups selected';
@@ -154,9 +146,7 @@ WithInsufficientPermissionsError.args = {
 		);
 	},
 };
-WithInsufficientPermissionsError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithInsufficientPermissionsError',
-};
+WithInsufficientPermissionsError.scenario = {};
 
 export const AudienceSyncError = Template.bind( {} );
 AudienceSyncError.storyName = 'Audience sync error';
@@ -180,9 +170,7 @@ AudienceSyncError.args = {
 		);
 	},
 };
-AudienceSyncError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceSyncError',
-};
+AudienceSyncError.scenario = {};
 
 export const UserCountError = Template.bind( {} );
 UserCountError.storyName = 'User count retrieval error';
@@ -208,9 +196,7 @@ UserCountError.args = {
 			.receiveError( error, 'getReport', [ reportOptions ] );
 	},
 };
-UserCountError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/UserCountError',
-};
+UserCountError.scenario = {};
 
 export const AudienceCreationNotice = Template.bind( {} );
 AudienceCreationNotice.storyName = 'Audience creation notice';
@@ -226,9 +212,7 @@ AudienceCreationNotice.args = {
 		( audience ) => audience.audienceType !== 'SITE_KIT_AUDIENCE'
 	),
 };
-AudienceCreationNotice.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNotice',
-};
+AudienceCreationNotice.scenario = {};
 
 export const AudienceCreationNoticeWithMissingScope = Template.bind( {} );
 AudienceCreationNoticeWithMissingScope.storyName =
@@ -273,7 +257,6 @@ AudienceCreationNoticeOneAdded.args = {
 	},
 };
 AudienceCreationNoticeOneAdded.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNoticeOneAdded',
 	delay: 1500, // Delay here is required to prevent inconsistent rendering of the Create button text.
 };
 
@@ -322,9 +305,7 @@ AudienceCreationSuccessNotice.args = {
 			.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 	},
 };
-AudienceCreationSuccessNotice.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationSuccessNotice',
-};
+AudienceCreationSuccessNotice.scenario = {};
 
 export const TemporarilyHiddenBadge = Template.bind( {} );
 TemporarilyHiddenBadge.storyName =
@@ -354,9 +335,7 @@ WithNewBadges.args = {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	},
 };
-WithNewBadges.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithNewBadges',
-};
+WithNewBadges.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',

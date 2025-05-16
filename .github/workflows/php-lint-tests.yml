@@ -8,13 +8,18 @@ on:
     # Only run if PHP-related files changed.
     paths:
       - '.github/workflows/php-lint-tests.yml'
-      - includes/**
-      - tests/phpunit/**
+      - 'includes/**'
+      - 'tests/phpunit/**'
       - '**.php'
       - 'phpcs.xml*'
       - 'phpunit*.xml*'
-      - 'composer.json'
-      - 'composer.lock'
+      - composer.json
+      - composer.lock
+      - feature-flags.json
+      - readme.txt
+      - changelog.txt
+      - assets/js/analytics-advanced-tracking.js
+      - 'assets/**/*.json'
   pull_request:
     branches:
       - develop
@@ -28,8 +33,13 @@ on:
       - '**.php'
       - 'phpcs.xml*'
       - 'phpunit*.xml*'
-      - 'composer.json'
-      - 'composer.lock'
+      - composer.json
+      - composer.lock
+      - feature-flags.json
+      - readme.txt
+      - changelog.txt
+      - assets/js/analytics-advanced-tracking.js
+      - 'assets/**/*.json'
     types:
       - opened
       - reopened

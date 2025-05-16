@@ -57,7 +57,12 @@ class WooCommerceTest extends TestCase {
 
 	public function test_register_hooks() {
 		$this->assertFalse( has_action( 'woocommerce_thankyou' ) );
+		$this->assertFalse( has_action( 'woocommerce_add_to_cart' ) );
+		$this->assertFalse( has_filter( 'woocommerce_loop_add_to_cart_link' ) );
+
 		$this->woocommerce->register_hooks();
 		$this->assertTrue( has_action( 'woocommerce_thankyou' ) );
+		$this->assertTrue( has_action( 'woocommerce_add_to_cart' ) );
+		$this->assertTrue( has_filter( 'woocommerce_loop_add_to_cart_link' ) );
 	}
 }

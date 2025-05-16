@@ -43,9 +43,7 @@ const validSettings = {
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
-Ready.scenario = {
-	label: 'Global/AdBlockingRecoverySetupCTANotice/Ready',
-};
+Ready.scenario = {};
 
 export default {
 	title: ' Modules/AdSense/Settings/AdBlockingRecoverySetupCTANotice',

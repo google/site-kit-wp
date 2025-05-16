@@ -84,9 +84,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopCitiesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
