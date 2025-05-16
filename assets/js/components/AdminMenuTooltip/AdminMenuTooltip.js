@@ -94,7 +94,7 @@ export function AdminMenuTooltip() {
 	return (
 		<JoyrideTooltip
 			// Point to the Site Kit Settings menu item by default.
-			target={ '#adminmenu [href*="page=googlesitekit-settings"]' }
+			target='#adminmenu [href*="page=googlesitekit-settings"]'
 			slug="ga4-activation-banner-admin-menu-tooltip"
 			title={ title }
 			content={ content }

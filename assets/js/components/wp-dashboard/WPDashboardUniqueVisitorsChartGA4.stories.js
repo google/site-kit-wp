@@ -25,7 +25,7 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 
