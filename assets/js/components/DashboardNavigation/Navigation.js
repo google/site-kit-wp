@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 18 ] */
-
 /**
  * External dependencies
  */
@@ -156,6 +154,8 @@ export default function Navigation() {
 			widgetContextOptions
 		)
 	);
+
+	// Helper functions inside the component
 	const getDefaultChipID = useCallback( () => {
 		if ( showKeyMetrics ) {
 			return ANCHOR_ID_KEY_METRICS;
@@ -191,29 +191,38 @@ export default function Navigation() {
 		viewOnlyDashboard,
 	] );
 
-	const isValidChipID = ( chipID ) => {
-		if ( showKeyMetrics && chipID === ANCHOR_ID_KEY_METRICS ) {
-			return true;
-		}
+	const isValidChipID = useCallback(
+		( chipID ) => {
+			if ( showKeyMetrics && chipID === ANCHOR_ID_KEY_METRICS ) {
+				return true;
+			}
 
-		if ( showTraffic && chipID === ANCHOR_ID_TRAFFIC ) {
-			return true;
-		}
+			if ( showTraffic && chipID === ANCHOR_ID_TRAFFIC ) {
+				return true;
+			}
 
-		if ( showContent && chipID === ANCHOR_ID_CONTENT ) {
-			return true;
-		}
+			if ( showContent && chipID === ANCHOR_ID_CONTENT ) {
+				return true;
+			}
 
-		if ( showSpeed && chipID === ANCHOR_ID_SPEED ) {
-			return true;
-		}
+			if ( showSpeed && chipID === ANCHOR_ID_SPEED ) {
+				return true;
+			}
 
-		if ( showMonetization && chipID === ANCHOR_ID_MONETIZATION ) {
-			return true;
-		}
+			if ( showMonetization && chipID === ANCHOR_ID_MONETIZATION ) {
+				return true;
+			}
 
-		return false;
-	};
+			return false;
+		},
+		[
+			showKeyMetrics,
+			showTraffic,
+			showContent,
+			showSpeed,
+			showMonetization,
+		]
+	);
 
 	const handleSelect = useCallback(
 		( { target } ) => {
@@ -237,7 +246,81 @@ export default function Navigation() {
 				setValue( ACTIVE_CONTEXT_ID, chipID );
 			}, 50 );
 		},
-		[ breakpoint, viewContext, setValue, getDefaultChipID ]
+		[ viewContext, getDefaultChipID, breakpoint, setValue ]
+	);
+
+	const calculateClosestAreaID = useCallback(
+		( areas, margin, entityHeader, navigationBottom ) => {
+			let closest;
+			let closestID = getDefaultChipID();
+
+			for ( const areaID of areas ) {
+				const area = document.getElementById( areaID );
+				if ( ! area ) {
+					continue;
+				}
+
+				const top =
+					area.getBoundingClientRect().top -
+					margin -
+					( entityHeader || navigationBottom || 0 );
+
+				if ( top < 0 && ( closest === undefined || closest < top ) ) {
+					closest = top;
+					closestID = areaID;
+				}
+			}
+
+			return closestID;
+		},
+		[ getDefaultChipID ]
+	);
+
+	const handleStickyHeader = useCallback(
+		( yScrollPosition, navigationTop ) => {
+			if ( yScrollPosition === 0 ) {
+				setIsSticky( false );
+			} else {
+				const headerBottom = document
+					.querySelector( '.googlesitekit-header' )
+					?.getBoundingClientRect().bottom;
+				setIsSticky( navigationTop === headerBottom );
+			}
+		},
+		[]
+	);
+
+	const changeSelectedChip = useCallback(
+		( chipID ) => {
+			setValue( ACTIVE_CONTEXT_ID, undefined );
+			setSelectedID( chipID );
+			setIsJumpingTo( undefined );
+		},
+		[ setValue ]
+	);
+
+	const handleHistoryAndTracking = useCallback(
+		( closestID, event ) => {
+			if ( isJumpingTo ) {
+				if ( isJumpingTo === closestID ) {
+					changeSelectedChip( closestID );
+				}
+			} else {
+				const { hash } = global.location;
+				if ( closestID !== hash?.substring( 1 ) ) {
+					if ( event ) {
+						trackEvent(
+							`${ viewContext }_navigation`,
+							'tab_scroll',
+							closestID
+						);
+					}
+					global.history.replaceState( {}, '', `#${ closestID }` );
+					changeSelectedChip( closestID );
+				}
+			}
+		},
+		[ changeSelectedChip, isJumpingTo, viewContext ]
 	);
 
 	useMount( () => {
@@ -248,7 +331,6 @@ export default function Navigation() {
 			setTimeout( () =>
 				global.history.replaceState( {}, '', `#${ defaultChipID }` )
 			);
-
 			return;
 		}
 
@@ -280,12 +362,6 @@ export default function Navigation() {
 	} );
 
 	useEffect( () => {
-		const changeSelectedChip = ( chipID ) => {
-			setValue( ACTIVE_CONTEXT_ID, undefined );
-			setSelectedID( chipID );
-			setIsJumpingTo( undefined );
-		};
-
 		const onScroll = ( event ) => {
 			const yScrollPosition = global.scrollY;
 			const entityHeader = document
@@ -303,53 +379,14 @@ export default function Navigation() {
 				...( showMonetization ? [ ANCHOR_ID_MONETIZATION ] : [] ),
 			];
 
-			let closest;
-			let closestID = getDefaultChipID();
-
-			if ( yScrollPosition === 0 ) {
-				setIsSticky( false );
-			} else {
-				const headerBottom = document
-					.querySelector( '.googlesitekit-header' )
-					?.getBoundingClientRect().bottom;
-				setIsSticky( navigationTop === headerBottom );
-			}
-
-			for ( const areaID of areas ) {
-				const area = document.getElementById( areaID );
-				if ( ! area ) {
-					continue;
-				}
-
-				const top =
-					area.getBoundingClientRect().top -
-					margin -
-					( entityHeader || navigationBottom || 0 );
-
-				if ( top < 0 && ( closest === undefined || closest < top ) ) {
-					closest = top;
-					closestID = areaID;
-				}
-			}
-
-			if ( isJumpingTo ) {
-				if ( isJumpingTo === closestID ) {
-					changeSelectedChip( closestID );
-				}
-			} else {
-				const { hash } = global.location;
-				if ( closestID !== hash?.substring( 1 ) ) {
-					if ( event ) {
-						trackEvent(
-							`${ viewContext }_navigation`,
-							'tab_scroll',
-							closestID
-						);
-					}
-					global.history.replaceState( {}, '', `#${ closestID }` );
-					changeSelectedChip( closestID );
-				}
-			}
+			const closestID = calculateClosestAreaID(
+				areas,
+				margin,
+				entityHeader,
+				navigationBottom
+			);
+			handleStickyHeader( yScrollPosition, navigationTop );
+			handleHistoryAndTracking( closestID, event );
 		};
 
 		const throttledOnScroll = throttle( onScroll, 150 );
@@ -359,15 +396,14 @@ export default function Navigation() {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
 	}, [
-		isJumpingTo,
 		showKeyMetrics,
 		showTraffic,
 		showContent,
 		showSpeed,
 		showMonetization,
-		viewContext,
-		setValue,
-		getDefaultChipID,
+		calculateClosestAreaID,
+		handleStickyHeader,
+		handleHistoryAndTracking,
 	] );
 
 	return (
