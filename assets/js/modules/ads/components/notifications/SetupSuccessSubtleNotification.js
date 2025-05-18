@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -57,3 +62,8 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 		</Notification>
 	);
 }
+
+SetupSuccessSubtleNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};
