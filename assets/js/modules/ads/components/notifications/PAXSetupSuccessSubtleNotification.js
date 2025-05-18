@@ -87,7 +87,7 @@ export default function PAXSetupSuccessSubtleNotification( {
 					onClick: onPrimaryCTAClickCallback,
 					label: __( 'Show me', 'google-site-kit' ),
 					href: accountSelectorWrappedAccountOverviewURL,
-					external,
+					external: true,
 				} }
 			/>
 		</Notification>
