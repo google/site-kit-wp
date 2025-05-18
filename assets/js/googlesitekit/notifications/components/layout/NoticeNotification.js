@@ -74,6 +74,6 @@ export default function NoticeNotification( {
 NoticeNotification.propTypes = {
 	notificationID: propTypes.string.isRequired,
 	children: propTypes.node,
-	dismissButton: propTypes.object,
+	dismissButton: propTypes.oneOfType( [ propTypes.bool, propTypes.object ] ),
 	ctaButton: propTypes.object,
 };
