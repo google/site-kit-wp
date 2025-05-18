@@ -24,9 +24,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../../../../components/Notice/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -46,7 +45,9 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ sprintf(
 					/* translators: %s: Sign in with Google service name */
 					__( 'You successfully set up %s!', 'google-site-kit' ),
@@ -68,24 +69,14 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 						'google-site-kit'
 					)
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __(
-							'Customize settings',
-							'google-site-kit'
-						) }
-						ctaLink={ `${ settingsURL }#connected-services/sign-in-with-google` }
-					/>
-				}
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: onDismiss,
+				} }
+				ctaButton={ {
+					label: __( 'Customize settings', 'google-site-kit' ),
+					href: `${ settingsURL }#connected-services/sign-in-with-google`,
+				} }
 			/>
 		</Notification>
 	);
