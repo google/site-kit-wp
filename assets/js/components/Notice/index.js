@@ -115,7 +115,10 @@ Notice.propTypes = {
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
-	ctaButton: PropTypes.shape( CTAButton.propTypes ),
+	ctaButton: PropTypes.shape( {
+		...CTAButton.propTypes,
+		label: PropTypes.string, // CTAButton label should not be required for this parent component.
+	} ),
 	children: PropTypes.node,
 	hideIcon: PropTypes.bool,
 };
