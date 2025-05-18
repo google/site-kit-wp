@@ -72,7 +72,7 @@ const Notice = forwardRef(
 				<div className="googlesitekit-notice__action">
 					{ children }
 
-					{ dismissButton?.label && dismissButton?.onClick && (
+					{ ( dismissButton?.label || dismissButton?.onClick ) && (
 						<DismissButton
 							label={ dismissButton.label }
 							onClick={ dismissButton.onClick }
