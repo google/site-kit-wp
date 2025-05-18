@@ -20,77 +20,12 @@
  * Internal dependencies
  */
 import SubtleNotification from './SubtleNotification';
-import CustomCheckSVG from '../../../svg/icons/check_circle.svg';
 import CustomWarningSVG from '../../../svg/icons/warning-v2.svg';
 import CustomInfoSVG from '../../../svg/icons/info-icon.svg';
 
 function Template( { ...args } ) {
 	return <SubtleNotification onDismiss={ () => {} } { ...args } />;
 }
-
-export const Success = Template.bind( {} );
-Success.storyName = 'Success';
-Success.args = {
-	title: 'Success! Your Conversion ID was added to your site',
-	dismissLabel: 'Ok, got it',
-};
-Success.scenario = {};
-
-export const SuccessWithDescription = Template.bind( {} );
-SuccessWithDescription.storyName = 'Success With Description';
-SuccessWithDescription.args = {
-	title: 'Success! Your Conversion ID was added to your site',
-	description: 'You can now track conversions for your Ads campaigns',
-	dismissLabel: 'Ok, got it',
-};
-SuccessWithDescription.scenario = {};
-
-export const SuccessWithCTA = Template.bind( {} );
-SuccessWithCTA.storyName = 'Success With CTA';
-SuccessWithCTA.args = {
-	title: 'Success! Your Conversion ID was added to your site',
-	description: 'You can now track conversions for your Ads campaigns',
-	dismissLabel: 'Ok, got it',
-	ctaLabel: 'Learn more',
-};
-SuccessWithCTA.scenario = {};
-
-export const SuccessWithExternalCTA = Template.bind( {} );
-SuccessWithExternalCTA.storyName = 'Success With External CTA';
-SuccessWithExternalCTA.args = {
-	title: 'Success! Your Conversion ID was added to your site',
-	description: 'You can now track conversions for your Ads campaigns',
-	dismissLabel: 'Ok, got it',
-	ctaLabel: 'Learn more',
-	ctaLink: 'https://sitekit.withgoogle.com/documentation',
-	isCTALinkExternal: true,
-};
-SuccessWithExternalCTA.scenario = {};
-
-export const SuccessWithCustomIcon = Template.bind( {} );
-SuccessWithCustomIcon.storyName = 'Success With Custom Icon';
-SuccessWithCustomIcon.args = {
-	title: 'Success! Your Conversion ID was added to your site',
-	description: 'You can now track conversions for your Ads campaigns',
-	dismissLabel: 'Ok, got it',
-	ctaLabel: 'Learn more',
-	ctaLink: 'https://sitekit.withgoogle.com/documentation',
-	isCTALinkExternal: true,
-	Icon: CustomCheckSVG,
-};
-SuccessWithCustomIcon.scenario = {};
-
-export const SuccessWithoutIcon = Template.bind( {} );
-SuccessWithoutIcon.storyName = 'Success Without Icon';
-SuccessWithoutIcon.args = {
-	title: 'Success! Your Conversion ID was added to your site',
-	dismissLabel: 'Ok, got it',
-	ctaLabel: 'Learn more',
-	ctaLink: 'https://sitekit.withgoogle.com/documentation',
-	isCTALinkExternal: true,
-	hideIcon: true,
-};
-SuccessWithoutIcon.scenario = {};
 
 export const Warning = Template.bind( {} );
 Warning.storyName = 'Warning';
