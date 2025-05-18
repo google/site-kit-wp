@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -46,3 +51,9 @@ export default function GA4AdSenseLinkedNotification( { id, Notification } ) {
 		</Notification>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+GA4AdSenseLinkedNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};
