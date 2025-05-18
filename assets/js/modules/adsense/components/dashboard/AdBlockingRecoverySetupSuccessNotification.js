@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
@@ -98,3 +103,8 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 		</Notification>
 	);
 }
+
+AdBlockingRecoverySetupSuccessNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};
