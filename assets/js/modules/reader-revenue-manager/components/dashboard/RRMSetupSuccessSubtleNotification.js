@@ -207,7 +207,10 @@ export default function RRMSetupSuccessSubtleNotification( {
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
 			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-				<SubtleNotification
+				<NoticeNotification
+					notificationID={ id }
+					type={ TYPES.SUCCESS }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
 						'google-site-kit'
@@ -216,28 +219,18 @@ export default function RRMSetupSuccessSubtleNotification( {
 						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
 						'google-site-kit'
 					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							gaTrackingEventArgs={ gaTrackingEventArgs }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Check publication status',
-								'google-site-kit'
-							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							gaTrackingEventArgs={ gaTrackingEventArgs }
-						/>
-					}
+					dismissButton={ {
+						onClick: dismissNotice,
+					} }
+					ctaButton={ {
+						label: __(
+							'Check publication status',
+							'google-site-kit'
+						),
+						href: serviceURL,
+						onClick: onCTAClick,
+						external: true,
+					} }
 				/>
 			</Notification>
 		);
