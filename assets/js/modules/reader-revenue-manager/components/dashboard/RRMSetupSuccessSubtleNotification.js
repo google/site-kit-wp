@@ -47,6 +47,8 @@ import LearnMoreLink from '../../../../googlesitekit/notifications/components/co
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../../../../components/Notice/constants';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -359,36 +361,22 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 		return (
 			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-				<SubtleNotification
+				<NoticeNotification
+					notificationID={ id }
+					type={ TYPES.SUCCESS }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ notificationContent.title }
 					description={ notificationContent.description }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={
-								notificationContent.secondaryButton.text
-							}
-							onDismiss={
-								notificationContent.secondaryButton.onClick
-							}
-							gaTrackingEventArgs={ gaTrackingEventArgs }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ notificationContent.primaryButton.text }
-							ctaLink={
-								notificationContent.primaryButton.ctaLink
-							}
-							isCTALinkExternal={
-								notificationContent.primaryButton
-									.isCTALinkExternal
-							}
-							gaTrackingEventArgs={ gaTrackingEventArgs }
-						/>
-					}
+					dismissButton={ {
+						label: notificationContent.secondaryButton.text,
+						onClick: notificationContent.secondaryButton.onClick,
+					} }
+					ctaButton={ {
+						label: notificationContent.primaryButton.text,
+						href: notificationContent.primaryButton.ctaLink,
+						external:
+							notificationContent.primaryButton.isCTALinkExternal,
+					} }
 				/>
 			</Notification>
 		);
