@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
-use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -61,7 +60,15 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
-		return array( 'add_to_cart', 'purchase' );
+		$analytics_integration_addon_events = new WooCommerceGoogleAnalyticsIntegration( $this->context );
+
+		if ( ! $analytics_integration_addon_events->is_active() ) {
+			return array( 'add_to_cart', 'purchase' );
+		}
+
+		$event_names = array( 'add_to_cart', 'purchase' );
+
+		return array_values( array_diff( $event_names, $analytics_integration_addon_events->get_event_names() ) );
 	}
 
 	/**
@@ -144,6 +151,11 @@ class WooCommerce extends Conversion_Events_Provider {
 				$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
 				$order->save();
 
+				$events_to_track = $this->get_event_names();
+				if ( empty( $events_to_track ) || ! isset( $events_to_track['purchase'] ) ) {
+					return;
+				}
+
 				wp_add_inline_script(
 					'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
 					join(
@@ -165,6 +177,8 @@ class WooCommerce extends Conversion_Events_Provider {
 			function () {
 				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
 
+				$events_to_track = $this->get_event_names();
+
 				$inline_script = join(
 					"\n",
 					array(
@@ -172,6 +186,7 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
 						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
+						sprintf( 'window._googlesitekit.wcdata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
 					)
 				);
 
