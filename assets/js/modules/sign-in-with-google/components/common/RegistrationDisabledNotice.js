@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
@@ -62,7 +57,3 @@ export default function RegistrationDisabledNotice() {
 		/>
 	);
 }
-
-RegistrationDisabledNotice.propTypes = {
-	className: PropTypes.string,
-};
