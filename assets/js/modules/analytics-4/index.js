@@ -115,9 +115,9 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import AudienceSegmentationSetupCTAWidget, {
+import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
@@ -754,7 +754,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		isDismissible: true,
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupCTAWidget,
+		Component: AudienceSegmentationSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,

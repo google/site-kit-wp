@@ -20,20 +20,34 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-export default function Description( { className, children } ) {
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Notice from '../Notice';
+
+export default function Description( { className, children, errorText } ) {
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-banner__description',
-				className
-			) }
-		>
-			{ children }
-		</div>
+		<Fragment>
+			<div
+				className={ classnames(
+					'googlesitekit-banner__description',
+					className
+				) }
+			>
+				{ children }
+			</div>
+			{ errorText && <Notice type="error" title={ errorText } /> }
+		</Fragment>
 	);
 }
 
 Description.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
+	errorText: PropTypes.string,
 };

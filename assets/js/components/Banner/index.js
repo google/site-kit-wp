@@ -40,6 +40,7 @@ export default function Banner( {
 	className,
 	title,
 	description,
+	errorText,
 	helpText,
 	learnMoreLink,
 	dismissButton,
@@ -60,7 +61,7 @@ export default function Banner( {
 			<div className="googlesitekit-banner__content">
 				<Title>{ title }</Title>
 
-				<Description>
+				<Description errorText={ errorText }>
 					{ description }{ ' ' }
 					{ learnMoreLink?.href && (
 						<LearnMoreLink { ...learnMoreLink } />
@@ -91,6 +92,7 @@ export default function Banner( {
 Banner.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
