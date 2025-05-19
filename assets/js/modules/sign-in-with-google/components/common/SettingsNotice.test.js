@@ -67,9 +67,7 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-anyone-can-register-disabled-notice'
-			).textContent
+			container.querySelector( '.googlesitekit-notice--info' ).textContent
 		).toContain( 'to allow your visitors to create an account' );
 	} );
 
@@ -89,9 +87,7 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-anyone-can-register-disabled-notice'
-			).textContent
+			container.querySelector( '.googlesitekit-notice--info' ).textContent
 		).toContain( 'to allow your visitors to create an account' );
 	} );
 
@@ -113,9 +109,7 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-anyone-can-register-disabled-notice'
-			).textContent
+			container.querySelector( '.googlesitekit-notice--info' ).textContent
 		).toContain( 'to allow your visitors to create an account' );
 	} );
 
