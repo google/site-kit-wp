@@ -24,9 +24,10 @@
 		products: globalProducts,
 		purchase,
 		add_to_cart: addToCart,
+		eventsToTrack,
 	} = global._googlesitekit?.wcdata || {};
 
-	if ( addToCart ) {
+	if ( addToCart && eventsToTrack?.[ 'add_to_cart' ] ) {
 		const { price } = addToCart;
 
 		const eventData = formatEventData( price, globalCurrency, addToCart );
@@ -34,7 +35,7 @@
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 	}
 
-	if ( purchase ) {
+	if ( purchase && eventsToTrack?.purchase ) {
 		const { id, totals, items } = purchase;
 
 		const eventData = formatEventData(
@@ -51,47 +52,11 @@
 
 	const $body = jQuery( 'body' );
 
-	$body.on( 'added_to_cart', ( event, fragments, cartHash, $button ) => {
-		const productID = parseInt( $button.data( 'product_id' ), 10 );
+	if ( eventsToTrack?.[ 'add_to_cart' ] ) {
+		$body.on( 'added_to_cart', ( event, fragments, cartHash, $button ) => {
+			const productID = parseInt( $button.data( 'product_id' ), 10 );
 
-		if ( ! productID ) {
-			return;
-		}
-
-		const productData =
-			globalProducts?.find( ( product ) => product?.id === productID ) ||
-			{};
-		const { price } = productData;
-
-		const eventData = formatEventData( price, globalCurrency, productData );
-		global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
-	} );
-
-	jQuery(
-		'.products-block-post-template .product, .wc-block-product-template .product'
-	).each( function () {
-		const $productCard = jQuery( this );
-		const productID = parseInt(
-			$productCard.find( '[data-product_id]' ).attr( 'data-product_id' ),
-			10
-		);
-
-		if ( ! productID ) {
-			return;
-		}
-
-		$productCard.on( 'click', function ( event ) {
-			const $target = jQuery( event.target );
-			const $button = $target.closest(
-				'.wc-block-components-product-button [data-product_id]'
-			);
-
-			const isAddToCartButton =
-				$button.length &&
-				$button.hasClass( 'add_to_cart_button' ) &&
-				! $button.hasClass( 'product_type_variable' );
-
-			if ( ! isAddToCartButton ) {
+			if ( ! productID ) {
 				return;
 			}
 
@@ -108,7 +73,52 @@
 			);
 			global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 		} );
-	} );
+
+		jQuery(
+			'.products-block-post-template .product, .wc-block-product-template .product'
+		).each( function () {
+			const $productCard = jQuery( this );
+			const productID = parseInt(
+				$productCard
+					.find( '[data-product_id]' )
+					.attr( 'data-product_id' ),
+				10
+			);
+
+			if ( ! productID || ! eventsToTrack?.[ 'add_to_cart' ] ) {
+				return;
+			}
+
+			$productCard.on( 'click', function ( event ) {
+				const $target = jQuery( event.target );
+				const $button = $target.closest(
+					'.wc-block-components-product-button [data-product_id]'
+				);
+
+				const isAddToCartButton =
+					$button.length &&
+					$button.hasClass( 'add_to_cart_button' ) &&
+					! $button.hasClass( 'product_type_variable' );
+
+				if ( ! isAddToCartButton ) {
+					return;
+				}
+
+				const productData =
+					globalProducts?.find(
+						( product ) => product?.id === productID
+					) || {};
+				const { price } = productData;
+
+				const eventData = formatEventData(
+					price,
+					globalCurrency,
+					productData
+				);
+				global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
+			} );
+		} );
+	}
 
 	function formatEventData(
 		value,
