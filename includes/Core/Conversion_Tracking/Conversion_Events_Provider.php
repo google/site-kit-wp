@@ -77,7 +77,7 @@ abstract class Conversion_Events_Provider {
 	 *
 	 * @since 1.125.0
 	 *
-	 * @return Script Script instance.
+	 * @return Script|null Script instance, or null if no script is registered.
 	 */
 	abstract public function register_script();
 }
