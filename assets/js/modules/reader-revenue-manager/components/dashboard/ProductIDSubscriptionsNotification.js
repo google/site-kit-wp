@@ -55,9 +55,7 @@ export default function ProductIDSubscriptionsNotification( {
 					label: __( 'Edit settings', 'google-site-kit' ),
 					href: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
 				} }
-				dismissButton={ {
-					label: __( 'Got it', 'google-site-kit' ),
-				} }
+				dismissButton
 			/>
 		</Notification>
 	);
