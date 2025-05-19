@@ -42,6 +42,7 @@ export default function ModuleSettingsWarning( { slug } ) {
 
 	return (
 		<Notice
+			className="googlesitekit-notice--small"
 			type={ Notice.TYPES.WARNING }
 			description={ error.message }
 			hideIcon
