@@ -25,6 +25,11 @@
 		grid-template-columns: 1fr 40%;
 	}
 
+	// On very wide screens limit the size that the SVG column can grow to prevent bad cropping.
+	@media (min-width: $width-xlarge + 1 + px) {
+		grid-template-columns: 1fr 400px;
+	}
+
 	.googlesitekit-banner__content {
 		padding: $grid-gap-phone;
 
@@ -70,16 +75,31 @@
 		}
 	}
 
-	.googlesitekit-banner__description {
-		font-family: $f-primary;
-		font-size: $fs-body-sm;
-
-		margin: 0;
-	}
-
+	.googlesitekit-banner__description,
 	.googlesitekit-banner__description p {
 		font-family: $f-primary;
 		font-size: $fs-body-sm;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+
+		margin: 0;
+
+		@media (min-width: $width-tablet + 1 + px) {
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
+
+		@media (min-width: $width-desktop + 1 + px) {
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
+			line-height: $lh-body-lg;
+		}
+	}
+
+	.googlesitekit-banner__description p {
+		margin-bottom: 10px;
 
 		&:first-child {
 			margin-top: 0;
@@ -97,7 +117,8 @@
 		line-height: $lh-body-sm;
 	}
 
-	.googlesitekit-notice__action {
+	// Setting the margin top on each button so that when they stack on mobile the spacing is consistent.
+	.googlesitekit-notice__action > button {
 		margin-top: 20px;
 	}
 

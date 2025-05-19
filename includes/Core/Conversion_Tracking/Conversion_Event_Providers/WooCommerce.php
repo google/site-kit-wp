@@ -30,14 +30,14 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @var Array
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 */
 	protected $products = array();
 
 	/**
 	 * Current product added to the cart.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 * @var WC_Product
 	 */
 	protected $add_to_cart;
@@ -188,7 +188,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * Returns an array of product data in the required format.
 	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 *
 	 * @param WC_Product $product The product to format.
 	 * @param int        $variation_id Variation product ID.
@@ -259,7 +259,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * Returns an array of order data in the required format.
 	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 *
 	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
 	 *
@@ -294,7 +294,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * Formats a price the same way WooCommerce Blocks does.
 	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 *
 	 * @param mixed $value The price value for format.
 	 *

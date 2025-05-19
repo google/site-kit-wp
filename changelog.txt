@@ -1,5 +1,28 @@
 == Changelog ==
 
+= 1.153.0 =
+
+**Enhanced**
+
+* Add the new Banner component. See [#10703](https://github.com/google/site-kit-wp/issues/10703).
+* Enhance WooCommerce provider to surface additional tracking details. See [#10670](https://github.com/google/site-kit-wp/issues/10670).
+* Add price and item name to Easy Digital Download Analytics events. See [#10644](https://github.com/google/site-kit-wp/issues/10644).
+* Refactor new feature type notices to use the new `<Notice type="new">` component. See [#10484](https://github.com/google/site-kit-wp/issues/10484).
+* Refactor RRMIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10389](https://github.com/google/site-kit-wp/issues/10389).
+* Refactor `AudienceTiles` component to reduce cyclomatic complexity and remove the ESLint override. See [#10358](https://github.com/google/site-kit-wp/issues/10358).
+* Automatically dismiss notifications after they are viewed for three different days. See [#10106](https://github.com/google/site-kit-wp/issues/10106).
+* Rewrite a set of datastore reducers to use Immer. Props juniovitorino. See [#5795](https://github.com/google/site-kit-wp/issues/5795).
+
+**Changed**
+
+* Ensure the pie chart in the Analytics All Traffic widget displays its zero data state when it has no data for the current date range but does for the previous range. See [#10613](https://github.com/google/site-kit-wp/issues/10613).
+
+**Fixed**
+
+* Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
+* Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
+* Update Partner Ads integration. See [#10779](https://github.com/google/site-kit-wp/issues/10779).
+
 = 1.152.1 =
 
 **Fixed**
