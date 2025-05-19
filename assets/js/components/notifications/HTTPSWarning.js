@@ -58,6 +58,7 @@ export default function HTTPSWarning( { moduleSlug } ) {
 				),
 				moduleName
 			) }
+			hideIcon
 		/>
 	);
 }
