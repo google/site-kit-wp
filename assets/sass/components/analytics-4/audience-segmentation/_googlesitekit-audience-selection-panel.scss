@@ -123,6 +123,14 @@
 			margin: 5px $grid-gap-desktop;
 			padding: 20px 20px 6px;
 
+			.googlesitekit-notice__content {
+				flex: 1 1 0;
+			}
+
+			.googlesitekit-notice__description {
+				font-size: $fs-body-sm;
+			}
+
 			.googlesitekit-notice--warning {
 				align-items: center;
 				border-radius: $br-xs;
@@ -130,18 +138,11 @@
 				gap: $grid-gap-phone;
 				margin: 18px 0;
 				padding: $grid-gap-phone / 2 $grid-gap-phone;
+			}
 
-				.googlesitekit-notice__content {
-					flex: 1 1 0;
-					.googlesitekit-notice__description {
-						font-size: $fs-body-sm;
-					}
-				}
-
-				.googlesitekit-notice__action {
-					justify-content: normal;
-					width: auto;
-				}
+			.googlesitekit-notice__action {
+				justify-content: normal;
+				width: auto;
 			}
 		}
 
