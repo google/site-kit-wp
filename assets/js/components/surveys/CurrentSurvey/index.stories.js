@@ -24,20 +24,20 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	provideCurrentSurvey,
 	provideTracking,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import CurrentSurvey from './CurrentSurvey';
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import CurrentSurvey from '.';
 import {
 	multiQuestionConditionalSurvey,
 	multiQuestionSurvey,
 	multiQuestionFakeConditionsSurvey,
 	singleQuestionSurvey,
 	singleQuestionSurveyWithNoFollowUp,
-} from './__fixtures__';
+} from '../__fixtures__';
 
 function Template( { setupRegistry = () => {}, ...args } ) {
 	return (

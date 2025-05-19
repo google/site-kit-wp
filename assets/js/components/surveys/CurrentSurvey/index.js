@@ -34,14 +34,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import SurveyCompletion from './SurveyCompletion';
-import SurveyQuestionRating from './SurveyQuestionRating';
-import SurveyQuestionOpenText from './SurveyQuestionOpenText';
-import SurveyQuestionMultiSelect from './SurveyQuestionMultiSelect';
-import SurveyQuestionSingleSelect from './SurveyQuestionSingleSelect';
-import SurveyTerms from './SurveyTerms';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import SurveyCompletion from '../SurveyCompletion';
+import SurveyQuestionRating from '../SurveyQuestionRating';
+import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
+import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
+import SurveyQuestionSingleSelect from '../SurveyQuestionSingleSelect';
+import SurveyTerms from '../SurveyTerms';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
 
