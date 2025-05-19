@@ -88,7 +88,6 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 								'google-site-kit'
 							) }
 							dismissButton={ {
-								label: __( 'Got it', 'google-site-kit' ),
 								onClick: () =>
 									dismissItem(
 										RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
