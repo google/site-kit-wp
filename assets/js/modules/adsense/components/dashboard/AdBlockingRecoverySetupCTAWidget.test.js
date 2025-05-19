@@ -56,9 +56,20 @@ import {
 	SITE_STATUS_READY,
 } from '../../util';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
+import {
+	dismissedPromptsEndpoint,
+	dismissPromptEndpoint,
+} from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
 
 describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 	let registry;
@@ -252,7 +263,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			}
 		);
 
-		it( 'should render the widget for the existing site without the setup completion time', () => {
+		it( 'should render the widget for the existing site without the setup completion time', async () => {
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
@@ -261,7 +272,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetExistingAdBlockingRecoveryTag( null );
 
-			const { container } = render(
+			const { container, waitForRegistry } = render(
 				<AdBlockingRecoverySetupCTAWidget
 					Widget={ Widget }
 					WidgetNull={ WidgetNull }
@@ -271,6 +282,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
+
+			await waitForRegistry();
+
 			expect( container ).toHaveTextContent(
 				'Recover revenue lost to ad blockers'
 			);
@@ -383,29 +397,19 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 		mockLocation();
 
 		beforeEach( () => {
-			fetchMock.getOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/dismissed-prompts'
-				),
-				{
-					body: {},
-					status: 200,
-				}
-			);
-			fetchMock.postOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-				),
-				{
-					body: {
-						[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
-							expires: 0, // Expiry of 0 permanently dismisses the prompt.
-							count: 3,
-						},
+			fetchMock.getOnce( dismissedPromptsEndpoint, {
+				body: {},
+				status: 200,
+			} );
+			fetchMock.postOnce( dismissPromptEndpoint, {
+				body: {
+					[ AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY ]: {
+						expires: 0, // Expiry of 0 permanently dismisses the prompt.
+						count: 3,
 					},
-					status: 200,
-				}
-			);
+				},
+				status: 200,
+			} );
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( validSettings );
@@ -455,17 +459,10 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 		it( 'should dismiss the CTA and open the tooltip when dismiss button is clicked', async () => {
 			const { container, getByRole } = render(
-				<div>
-					<div id="adminmenu">
-						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-							Settings
-						</a>
-					</div>
-					<AdBlockingRecoverySetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
-				</div>,
+				<AdBlockingRecoverySetupCTAWidget
+					Widget={ Widget }
+					WidgetNull={ WidgetNull }
+				/>,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -488,96 +485,18 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'dismiss_notification'
 			);
 
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).toBeInTheDocument();
+			expect( mockShowTooltip ).toHaveBeenCalled();
 
-			// The tracking event should fire when the tooltip is rendered.
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_adsense-abr',
-				'view_tooltip'
-			);
-		} );
-
-		it( 'should close the tooltip on clicking the `X` button', async () => {
-			const { getByRole } = render(
-				<div>
-					<div id="adminmenu">
-						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-							Settings
-						</a>
-					</div>
-					<AdBlockingRecoverySetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
-				</div>,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					getByRole( 'button', { name: /Maybe later/i } )
-				);
-			} );
-
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /Close/i } ) );
-			} );
-
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
-
-			// The tracking event should fire when the tooltip is rendered.
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_adsense-abr',
-				'dismiss_tooltip'
-			);
-		} );
-
-		it( 'should close the tooltip on clicking the `Got it` button', async () => {
-			const { getByRole } = render(
-				<div>
-					<div id="adminmenu">
-						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
-							Settings
-						</a>
-					</div>
-					<AdBlockingRecoverySetupCTAWidget
-						Widget={ Widget }
-						WidgetNull={ WidgetNull }
-					/>
-				</div>,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					getByRole( 'button', { name: /Maybe later/i } )
-				);
-			} );
-
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
-			} );
-
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
-
-			// The tracking event should fire when the tooltip is rendered.
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_adsense-abr',
-				'dismiss_tooltip'
+			expect( fetchMock ).toHaveFetched(
+				dismissPromptEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: {
+							promptKey:
+								AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+						},
+					},
+				} )
 			);
 		} );
 

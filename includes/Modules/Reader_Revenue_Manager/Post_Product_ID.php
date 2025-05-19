@@ -28,7 +28,7 @@ class Post_Product_ID {
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Settings
 	 */

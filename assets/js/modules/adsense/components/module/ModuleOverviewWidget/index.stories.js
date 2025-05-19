@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import ModuleOverviewWidget from '.';
-import { replaceValuesInAdSenseReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAdSenseReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -97,9 +97,7 @@ Default.args = {
 		provideAdSenseMockReports( registry, storyReportOptions );
 	},
 };
-Default.scenario = {
-	label: 'AdSense Module/Overview Widget',
-};
+Default.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

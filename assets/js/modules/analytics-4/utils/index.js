@@ -22,3 +22,4 @@ export * from './report-normalization';
 export * from './report-validation';
 export * from './report-pivots-validation';
 export * from './extract-dashboard-data';
+export * from './formatting';

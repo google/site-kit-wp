@@ -91,7 +91,7 @@ describe( 'User Input Settings', () => {
 		await step(
 			'wait for a Key Metric tile to successfully appear',
 			page.waitForSelector(
-				'.googlesitekit-widget--kmAnalyticsReturningVisitors'
+				'.googlesitekit-widget--kmAnalyticsTopReturningVisitorPages'
 			)
 		);
 	}
@@ -272,12 +272,10 @@ describe( 'User Input Settings', () => {
 		} );
 
 		await step( 'click on CTA button and wait for navigation', async () => {
-			await page.waitForSelector(
-				'.googlesitekit-user-input__notification'
-			);
+			await page.waitForSelector( '.googlesitekit-notice--new' );
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+					'.googlesitekit-notice--new .googlesitekit-button-icon--spinner'
 				),
 				page.waitForNavigation(),
 			] );

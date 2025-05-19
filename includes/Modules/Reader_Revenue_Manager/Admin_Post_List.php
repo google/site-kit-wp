@@ -15,7 +15,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 /**
  * Class for adding RRM elements to the WP Admin post list.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Admin_Post_List {
 	/**
 	 * Post_Product_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Post_Product_ID
 	 */
@@ -33,7 +33,7 @@ class Admin_Post_List {
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Settings
 	 */
@@ -42,7 +42,7 @@ class Admin_Post_List {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param Settings        $settings        Module settings instance.
 	 * @param Post_Product_ID $post_product_id Post Product ID.
@@ -55,7 +55,7 @@ class Admin_Post_List {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 */
 	public function register() {
 		$post_types = $this->get_post_types();
@@ -87,7 +87,7 @@ class Admin_Post_List {
 	/**
 	 * Adds a custom column to the post list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param array $columns Columns.
 	 * @return array Modified columns.
@@ -100,7 +100,7 @@ class Admin_Post_List {
 	/**
 	 * Fills the custom column with data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param string $column  Column name.
 	 * @param int    $post_id Post ID.
@@ -148,7 +148,7 @@ class Admin_Post_List {
 	/**
 	 * Adds a custom field to the bulk edit form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 */
 	public function bulk_edit_field() {
 		$settings        = $this->settings->get();
@@ -170,7 +170,7 @@ class Admin_Post_List {
 								<?php echo esc_html( $label ); ?>
 							</option>
 						<?php endforeach; ?>
-	
+
 						<?php foreach ( $product_ids as $product_id ) : ?>
 							<?php list( , $label ) = explode( ':', $product_id, 2 ); ?>
 							<option value="<?php echo esc_attr( $product_id ); ?>">
@@ -189,7 +189,7 @@ class Admin_Post_List {
 	/**
 	 * Saves the custom field value from the bulk edit form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param int $post_id Post ID.
 	 */
@@ -223,7 +223,7 @@ class Admin_Post_List {
 	/**
 	 * Retrieves the public post types that support the block editor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return array Array of post types.
 	 */

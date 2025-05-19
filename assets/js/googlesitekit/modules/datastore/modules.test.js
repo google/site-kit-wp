@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import Modules from 'googlesitekit-modules';
 import { combineStores } from 'googlesitekit-data';
 import {
@@ -134,7 +134,7 @@ describe( 'core/modules modules', () => {
 	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
 		// make sure we're opting-out of the cache for the correct requests.
-		await API.invalidateCache();
+		await invalidateCache();
 
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
@@ -1795,6 +1795,90 @@ describe( 'core/modules modules', () => {
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
 					'search-console'
 				);
+			} );
+		} );
+
+		describe( 'hasModuleOwnership', () => {
+			it( 'should return undefined if `getModules` is not resolved yet', async () => {
+				muteFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					[]
+				);
+
+				const moduleStoreName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( 'search-console' );
+
+				expect( moduleStoreName ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+
+			it( 'should return undefined if `moduleOwnerID` is not resolved yet', async () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/settings'
+					),
+					{
+						body: {
+							ownerID: 1,
+						},
+					}
+				);
+
+				const moduleOwnerID = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getOwnerID();
+
+				expect( moduleOwnerID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getSettings();
+			} );
+
+			it( 'should return undefined if `getID` is not resolved yet', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 1 );
+
+				const loggedInUserID = registry.select( CORE_USER ).getID();
+
+				expect( loggedInUserID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+			} );
+
+			it( 'should return true if `moduleOwnerID` and `loggedInUserID` are equal', () => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry, { id: 1 } );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 1 );
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnership( 'search-console' );
+
+				expect( moduleAccess ).toBe( true );
 			} );
 		} );
 

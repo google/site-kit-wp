@@ -30,8 +30,12 @@ import { createRegistrySelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -55,7 +59,7 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'property',
@@ -65,15 +69,10 @@ const fetchGetPropertyStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, property, { propertyID } ) {
-		return {
-			...state,
-			propertiesByID: {
-				...state.propertiesByID,
-				[ propertyID ]: property,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, property, { propertyID } ) => {
+		state.propertiesByID = state.propertiesByID || {};
+		state.propertiesByID[ propertyID ] = property;
+	} ),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -85,7 +84,7 @@ const fetchGetPropertyStore = createFetchStore( {
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'properties',
@@ -95,22 +94,16 @@ const fetchGetPropertiesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, properties, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: properties,
-			},
-			propertiesByID: properties.reduce(
-				( accum, property ) => ( {
-					...accum,
-					[ property._id ]: property,
-				} ),
-				state.propertiesByID || {}
-			),
-		};
-	},
+	reducerCallback: createReducer( ( state, properties, { accountID } ) => {
+		state.properties = state.properties || {};
+		state.propertiesByID = state.propertiesByID || {};
+
+		state.properties[ accountID ] = properties;
+
+		for ( const property of properties ) {
+			state.propertiesByID[ property._id ] = property;
+		}
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -122,22 +115,19 @@ const fetchGetPropertiesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback( { accountID } ) {
-		return API.set( 'modules', 'analytics-4', 'create-property', {
+		return set( 'modules', 'analytics-4', 'create-property', {
 			accountID,
 		} );
 	},
-	reducerCallback( state, property, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: [
-					...( state.properties[ accountID ] || [] ),
-					property,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, property, { accountID } ) => {
+		state.properties = state.properties || {};
+
+		if ( ! state.properties[ accountID ] ) {
+			state.properties[ accountID ] = [];
+		}
+
+		state.properties[ accountID ].push( property );
+	} ),
 	argsToParams( accountID ) {
 		return { accountID };
 	},
@@ -149,14 +139,17 @@ const fetchCreatePropertyStore = createFetchStore( {
 const fetchGetGoogleTagSettingsStore = createFetchStore( {
 	baseName: 'getGoogleTagSettings',
 	controlCallback( { measurementID } ) {
-		return API.get( 'modules', 'analytics-4', 'google-tag-settings', {
+		return get( 'modules', 'analytics-4', 'google-tag-settings', {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings ) {
+	reducerCallback( state, googleTagSettings, { measurementID } ) {
 		return {
 			...state,
-			googleTagSettings,
+			googleTagSettings: {
+				...state.googleTagSettings,
+				[ measurementID ]: googleTagSettings,
+			},
 		};
 	},
 	argsToParams( measurementID ) {
@@ -170,14 +163,9 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	baseName: 'setGoogleTagIDMismatch',
 	controlCallback( { hasMismatchedTag } ) {
-		return API.set(
-			'modules',
-			'analytics-4',
-			'set-google-tag-id-mismatch',
-			{
-				hasMismatchedTag,
-			}
-		);
+		return set( 'modules', 'analytics-4', 'set-google-tag-id-mismatch', {
+			hasMismatchedTag,
+		} );
 	},
 	reducerCallback( state, hasMismatchedTag ) {
 		return {
@@ -543,17 +531,18 @@ const baseActions = {
 			return;
 		}
 
-		const { response, error } =
-			yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		const googleTagSettings = yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getGoogleTagSettings(
 				measurementID
-			);
+			)
+		);
 
-		if ( error ) {
+		if ( ! googleTagSettings ) {
 			return;
 		}
 
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
-			response;
+			googleTagSettings;
 
 		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
 		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
@@ -659,14 +648,18 @@ const baseActions = {
 
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
+		// The "last synced" value should reflect the real time this action
+		// was performed, so we don't use the reference date here.
+		const timestamp = Date.now(); // eslint-disable-line sitekit/no-direct-date
+
 		if (
 			!! googleTagLastSyncedAtMs &&
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000 // eslint-disable-line sitekit/no-direct-date
+			timestamp - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
 		) {
 			return;
 		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs( timestamp );
 
 		const googleTagID = getGoogleTagID();
 
@@ -704,12 +697,9 @@ const baseActions = {
 				( { destinationId } ) => destinationId
 			);
 
-		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			googleTagContainerDestinationIDs,
-			// The "last synced" value should reflect the real time this action
-			// was performed, so we don't use the reference date here.
-			googleTagLastSyncedAtMs: Date.now(), // eslint-disable-line sitekit/no-direct-date
-		} );
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagContainerDestinationIDs(
+			googleTagContainerDestinationIDs
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
@@ -717,27 +707,28 @@ const baseActions = {
 
 const baseControls = {};
 
-function baseReducer( state, { type, payload } ) {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case MATCHING_ACCOUNT_PROPERTY:
-			return { ...state, ...payload };
-		case SET_HAS_MISMATCHED_TAG:
-			return {
-				...state,
-				moduleData: {
-					...state.moduleData,
-					hasMismatchedTag: payload.hasMismatchedTag,
-				},
-			};
-		case SET_IS_WEBDATASTREAM_AVAILABLE:
-			return {
-				...state,
-				isWebDataStreamAvailable: payload.isWebDataStreamAvailable,
-			};
+		case MATCHING_ACCOUNT_PROPERTY: {
+			state.isMatchingAccountProperty = payload.isMatchingAccountProperty;
+			break;
+		}
+
+		case SET_HAS_MISMATCHED_TAG: {
+			state.moduleData = state.moduleData || {};
+			state.moduleData.hasMismatchedTag = payload.hasMismatchedTag;
+			break;
+		}
+
+		case SET_IS_WEBDATASTREAM_AVAILABLE: {
+			state.isWebDataStreamAvailable = payload.isWebDataStreamAvailable;
+			break;
+		}
+
 		default:
-			return state;
+			break;
 	}
-}
+} );
 
 const baseResolvers = {
 	*getProperties( accountID ) {
@@ -829,6 +820,24 @@ const baseResolvers = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( property.createTime );
 	},
+	*getGoogleTagSettings( measurementID ) {
+		if ( ! measurementID ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+		const googleTagSettings = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagSettings( measurementID );
+
+		if ( googleTagSettings !== undefined ) {
+			return googleTagSettings;
+		}
+
+		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+			measurementID
+		);
+	},
 };
 
 const baseSelectors = {
@@ -883,6 +892,19 @@ const baseSelectors = {
 			return account ? account.propertySummaries : [];
 		}
 	),
+
+	/**
+	 * Gets Google tag settings.
+	 *
+	 * @since 1.150.0
+	 *
+	 * @param {Object} state         Data store's state.
+	 * @param {string} measurementID Measurement ID.
+	 * @return {(Object|undefined)} A Google tag settings object; `undefined` if not loaded.
+	 */
+	getGoogleTagSettings( state, measurementID ) {
+		return state.googleTagSettings?.[ measurementID ];
+	},
 
 	/**
 	 * Determines whether we are matching account property or not.

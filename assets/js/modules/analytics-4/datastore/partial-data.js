@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -55,16 +55,11 @@ const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
 	controlCallback: ( { resourceSlug, resourceType, date } ) =>
-		API.set(
-			'modules',
-			'analytics-4',
-			'save-resource-data-availability-date',
-			{
-				resourceSlug,
-				resourceType,
-				date,
-			}
-		),
+		set( 'modules', 'analytics-4', 'save-resource-data-availability-date', {
+			resourceSlug,
+			resourceType,
+			date,
+		} ),
 	argsToParams: ( resourceSlug, resourceType, date ) => ( {
 		resourceSlug,
 		resourceType,
@@ -228,7 +223,10 @@ const baseResolvers = {
 		) {
 			// Ensure the settings are loaded.
 			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+				Promise.all( [
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				] )
 			);
 
 			// Validate if the resourceSlug is a valid resource.
@@ -237,7 +235,7 @@ const baseResolvers = {
 					yield commonActions.await(
 						resolveSelect(
 							MODULES_ANALYTICS_4
-						).getAvailableAudiences()
+						).getOrSyncAvailableAudiences()
 					);
 
 					if (

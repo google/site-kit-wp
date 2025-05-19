@@ -30,7 +30,7 @@ import { createRegistrySelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -87,7 +87,7 @@ const fetchStoreReducerCallback = createReducer(
 const fetchGetEnhancedMeasurementSettingsStore = createFetchStore( {
 	baseName: 'getEnhancedMeasurementSettings',
 	controlCallback( { propertyID, webDataStreamID } ) {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'enhanced-measurement-settings',
@@ -120,7 +120,7 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 		webDataStreamID,
 		enhancedMeasurementSettings,
 	} ) =>
-		API.set( 'modules', 'analytics-4', 'enhanced-measurement-settings', {
+		set( 'modules', 'analytics-4', 'enhanced-measurement-settings', {
 			propertyID,
 			webDataStreamID,
 			enhancedMeasurementSettings,

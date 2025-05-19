@@ -30,8 +30,7 @@ export const KEY_METRICS_SELECTED = 'key-metrics-selected';
 export const EFFECTIVE_SELECTION = 'key-metrics-effective-selection';
 export const UNSTAGED_SELECTION = 'key-metrics-unstaged-selection';
 export const MIN_SELECTED_METRICS_COUNT = 2;
-export const MAX_SELECTED_METRICS_COUNT = 4;
-export const MAX_SELECTED_METRICS_COUNT_WITH_CONVERSION_EVENTS = 8;
+export const MAX_SELECTED_METRICS_COUNT = 8;
 export const KEY_METRICS_GROUP_CURRENT = {
 	SLUG: 'current-selection',
 	LABEL: __( 'Current selection', 'google-site-kit' ),

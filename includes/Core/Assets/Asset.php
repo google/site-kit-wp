@@ -22,10 +22,11 @@ use Google\Site_Kit\Context;
 abstract class Asset {
 
 	// Various page contexts for Site Kit in the WordPress Admin.
-	const CONTEXT_ADMIN_GLOBAL      = 'admin-global';
-	const CONTEXT_ADMIN_POST_EDITOR = 'admin-post-editor';
-	const CONTEXT_ADMIN_POSTS       = 'admin-posts';
-	const CONTEXT_ADMIN_SITEKIT     = 'admin-sitekit';
+	const CONTEXT_ADMIN_GLOBAL       = 'admin-global';
+	const CONTEXT_ADMIN_POST_EDITOR  = 'admin-post-editor';
+	const CONTEXT_ADMIN_BLOCK_EDITOR = 'admin-block-editor';
+	const CONTEXT_ADMIN_POSTS        = 'admin-posts';
+	const CONTEXT_ADMIN_SITEKIT      = 'admin-sitekit';
 
 	/**
 	 * Unique asset handle.

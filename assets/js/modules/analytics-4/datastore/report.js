@@ -29,7 +29,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -47,7 +47,7 @@ import { validateReport } from '../utils/validation';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'report',

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 /**
  * Class for Audience_Settings.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	/**
 	 * Gets the default value for settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return mixed The default value.
 	 */
@@ -45,7 +45,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	/**
 	 * Gets the type of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return string The type of the setting.
 	 */
@@ -56,7 +56,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return callable|null
 	 */
@@ -69,7 +69,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	/**
 	 * Gets the view-only keys for the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return array List of view-only keys.
 	 */
@@ -84,7 +84,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	 * Merges the given settings with the existing ones. It will keep the old settings
 	 * value for the properties that are not present in the given settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param array $settings The settings to merge.
 	 *
@@ -102,7 +102,7 @@ class Audience_Settings extends Setting implements Setting_With_ViewOnly_Keys_In
 	/**
 	 * Sanitizes the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param array $option The option to sanitize.
 	 *

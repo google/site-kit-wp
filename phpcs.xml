@@ -52,6 +52,13 @@
 		<exclude name="Universal.Operators.DisallowShortTernary.Found" />
 	</rule>
 
+	<!-- Set the maximum allowed cyclomatic complexity -->
+	<rule ref="Generic.Metrics.CyclomaticComplexity">
+		<properties>
+			<property name="complexity" value="20"/>
+		</properties>
+	</rule>
+
 	<!-- Show details about violated sniffs -->
 	<arg value="s"/>
 

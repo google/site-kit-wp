@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 
-export function useShowTooltip( tooltipStateKey ) {
+export function useShowTooltip( tooltipSettings ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasMinimumWordPress62 = useSelect( ( select ) =>
@@ -60,15 +60,16 @@ export function useShowTooltip( tooltipStateKey ) {
 			};
 		}
 
-		setValue( tooltipStateKey, {
+		setValue( 'admin-menu-tooltip', {
 			isTooltipVisible: true,
 			rehideAdminMenu: ! isAdminMenuOpen,
 			rehideAdminSubMenu: isAdminSubMenuHidden,
+			...tooltipSettings,
 		} );
 	}, [
 		hasMinimumWordPress62,
 		hasMinimumWordPress64,
 		setValue,
-		tooltipStateKey,
+		tooltipSettings,
 	] );
 }

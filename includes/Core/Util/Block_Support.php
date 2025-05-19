@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Utility class for block support checks.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Block_Support {
 	 * We currently require version WP 5.8 or higher to support blocks, as this is the version
 	 * where the `block.json` configuration format was introduced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return bool True if blocks are supported, false otherwise.
 	 */

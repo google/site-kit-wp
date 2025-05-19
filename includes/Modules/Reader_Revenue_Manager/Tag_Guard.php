@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 
 /**
@@ -27,7 +26,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Post_Product_ID instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Post_Product_ID
 	 */
@@ -36,7 +35,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param Module_Settings $settings Module settings instance.
 	 * @param Post_Product_ID $post_product_id Post_Product_ID instance.
@@ -61,10 +60,6 @@ class Tag_Guard extends Module_Tag_Guard {
 			return false;
 		}
 
-		if ( ! Feature_Flags::enabled( 'rrmModuleV2' ) ) {
-			return true;
-		}
-
 		if ( is_singular() ) {
 			return $this->can_activate_for_singular_post();
 		}
@@ -75,7 +70,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	/**
 	 * Determines whether the guarded tag can be activated for a singular post or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return bool TRUE if guarded tag can be activated for a singular post, otherwise FALSE.
 	 */

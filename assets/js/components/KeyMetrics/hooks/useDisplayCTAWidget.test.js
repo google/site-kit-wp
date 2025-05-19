@@ -97,7 +97,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 	} );
 
 	it( 'should return false if the Analytics data is not available on load', async () => {
-		registry
+		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsDataAvailableOnLoad( false );
 
@@ -115,6 +115,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 		);
 
 		await waitForRegistry();
+
 		expect( result.current ).toBe( false );
 	} );
 

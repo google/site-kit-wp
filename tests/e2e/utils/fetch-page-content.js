@@ -28,7 +28,9 @@
 export async function fetchPageContent( url, options = {} ) {
 	try {
 		// Wait until apiFetch is available on the client.
-		await page.waitForFunction( () => window.fetch !== undefined );
+		await page.waitForFunction( () => window.fetch !== undefined, {
+			timeout: options?.timeout,
+		} );
 	} catch ( e ) {
 		// eslint-disable-next-line no-console
 		console.warn(

@@ -28,7 +28,7 @@ export const GA4_ACTIVATION_BANNER_STATE_KEY = 'ga4-activation-banner-state';
 
 export const ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY =
 	'enhanced-measurement-activation-banner-tooltip-state';
-export const ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY =
+export const LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY =
 	'enhanced-measurement-activation-banner-dismissed-item';
 
 export const REPORT_ARGS_SELECTED_METRIC_KEY = '_r.explorerCard..selmet';

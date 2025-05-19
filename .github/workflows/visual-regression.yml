@@ -13,7 +13,6 @@ on:
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
-      - 'blocks/**'
       - '**.stories.js'
       - 'tests/backstop/**'
       - 'storybook/**'
@@ -21,8 +20,6 @@ on:
       - '.nvmrc'
       - '**/package.json'
       - 'package-lock.json'
-      - 'src/tests/backstop/config.js'
-      - 'src/tests/backstop/Dockerfile'
     types:
       - opened
       - reopened
@@ -63,6 +60,8 @@ jobs:
         with:
           name: vrt-report
           path: |
+            tests/backstop/ci_report
             tests/backstop/html_report
+            tests/backstop/json_report
             tests/backstop/reference
             tests/backstop/tests

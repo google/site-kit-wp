@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -55,7 +55,7 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 	},
 	controlCallback: async ( { accountID, internalContainerID } ) => {
 		try {
-			return await API.get(
+			return await get(
 				'modules',
 				'tagmanager',
 				'live-container-version',

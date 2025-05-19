@@ -60,9 +60,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 			configuredAudiences: null,
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: null,
+		} );
 
 		const { getByRole } = render( <SettingsCardVisitorGroups />, {
 			registry,
@@ -94,7 +94,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( 'We’ve added the audiences section to your dashboard!' )
+			getByText(
+				'We’ve added the visitor groups section to your dashboard!'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -103,9 +105,9 @@ describe( 'SettingsCardVisitorGroups', () => {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
 		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAudienceSegmentationSetupCompletedBy( null );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: null,
+		} );
 
 		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
 			registry,
@@ -121,8 +123,6 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	describe( 'the "Display visitor groups in dashboard" switch', () => {
-		let switchControl;
-
 		const audienceSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/audience-settings'
 		);
@@ -145,10 +145,6 @@ describe( 'SettingsCardVisitorGroups', () => {
 				},
 			];
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setAvailableAudiences( availableAudiences );
-
 			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [ 'audienceA', 'audienceB' ],
 				isAudienceSegmentationWidgetHidden: true,
@@ -156,25 +152,33 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setAudienceSegmentationSetupCompletedBy( null );
+				.receiveGetAudienceSettings( {
+					availableAudiences,
+					audienceSegmentationSetupCompletedBy: null,
+				} );
 
 			fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
 				const { data } = JSON.parse( opts.body );
 				// Return the same settings passed to the API.
 				return { body: data, status: 200 };
 			} );
-
-			const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
-				registry,
-				viewContext: VIEW_CONTEXT_SETTINGS,
-			} );
-
-			switchControl = getByLabelText(
-				'Display visitor groups in dashboard'
-			);
 		} );
 
 		it( 'should toggle on click and save the audience settings', async () => {
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsCardVisitorGroups />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
+
+			const switchControl = getByLabelText(
+				'Display visitor groups in dashboard'
+			);
+
 			expect( switchControl ).not.toBeChecked();
 
 			switchControl.click();
@@ -200,31 +204,43 @@ describe( 'SettingsCardVisitorGroups', () => {
 		} );
 
 		it( 'should track an event when toggled', async () => {
+			const { getByLabelText, waitForRegistry } = render(
+				<SettingsCardVisitorGroups />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
+
+			const switchControl = getByLabelText(
+				'Display visitor groups in dashboard'
+			);
+
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			switchControl.click();
 
 			await waitFor( () => {
 				expect( switchControl ).toBeChecked();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'settings_audiences-settings',
+					'audience_widgets_enable'
+				);
 			} );
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'settings_audiences-settings',
-				'audience_widgets_enable'
-			);
 
 			switchControl.click();
 
 			await waitFor( () => {
 				expect( switchControl ).not.toBeChecked();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+				expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+					'settings_audiences-settings',
+					'audience_widgets_disable'
+				);
 			} );
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-			expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-				'settings_audiences-settings',
-				'audience_widgets_disable'
-			);
 		} );
 	} );
 } );

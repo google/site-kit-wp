@@ -19,17 +19,20 @@
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import SuccessBanner from './SuccessBanner';
 
-function Template( args ) {
-	return <SuccessBanner { ...args } />;
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'enhanced-measurement-notification'
+)( SuccessBanner );
+
+function Template() {
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner/Default',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SuccessBanner',

@@ -25,7 +25,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
+import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MINUTE_IN_SECONDS } from '../../util';
@@ -49,7 +49,7 @@ export default function WebDataStreamNotAvailableNotification( {
 
 	return (
 		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<SimpleNotification
+			<NotificationError
 				title={ __(
 					'Your Analytics configuration has changed',
 					'google-site-kit'

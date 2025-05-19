@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 17 ] */
+
 /**
  * External dependencies
  */
@@ -144,85 +146,51 @@ export function isValidDimensionFilters( filters ) {
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
  */
 export function isValidMetricFilters( filters ) {
-	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	const validType = [ 'string' ];
-	return Object.keys( filters ).every( ( metric ) => {
-		if ( validType.includes( typeof filters[ metric ] ) ) {
+	const allowedFilterTypes = [ 'numericFilter', 'betweenFilter' ];
+
+	return Object.values( filters ).every( ( filter ) => {
+		if ( validType.includes( typeof filter ) ) {
 			return true;
 		}
 
-		if ( Array.isArray( filters[ metric ] ) ) {
-			return filters[ metric ].every( ( param ) =>
+		if ( Array.isArray( filter ) ) {
+			return filter.every( ( param ) =>
 				validType.includes( typeof param )
 			);
 		}
 
-		if ( isPlainObject( filters[ metric ] ) ) {
-			const props = Object.keys( filters[ metric ] );
+		if ( ! isPlainObject( filter ) ) {
+			return false;
+		}
 
-			// Confirm that filter type if present is one of the available/allowed filter types.
-			// If not, bail early.
-			const allowedFilterTypes = [ 'numericFilter', 'betweenFilter' ];
-			if (
-				props.includes( 'filterType' ) &&
-				! allowedFilterTypes.includes( filters[ metric ].filterType )
-			) {
-				return false;
-			}
+		const { filterType, value, fromValue, toValue } = filter;
 
-			// Verify that proper params are used with each filter type.
-			// Numeric filter is used by default if no filterType is provided.
-			if (
-				( props.includes( 'filterType' ) &&
-					filters[ metric ].filterType === 'numericFilter' ) ||
-				! props.includes( 'filterType' )
-			) {
-				// Confirm value is added as proper NumericField
-				if (
-					props.includes( 'value' ) &&
-					isPlainObject( filters[ metric ].value )
-				) {
-					if (
-						! Object.keys( filters[ metric ].value ).includes(
-							'int64Value'
-						)
-					) {
-						return false;
-					}
-				}
+		// Validate filterType if present
+		if ( filterType && ! allowedFilterTypes.includes( filterType ) ) {
+			return false;
+		}
 
-				return (
-					props.includes( 'operation' ) && props.includes( 'value' )
-				);
-			} else if (
-				props.includes( 'filterType' ) &&
-				filters[ metric ].filterType === 'betweenFilter'
-			) {
-				// Confirm values are added as proper NumericField
-				const values = [ 'fromValue', 'toValue' ];
-				const isNumericField = values.every( ( value ) => {
-					if (
-						props.includes( value ) &&
-						isPlainObject( filters[ metric ][ value ] )
-					) {
-						if (
-							! Object.keys(
-								filters[ metric ][ value ]
-							).includes( 'int64Value' )
-						) {
-							return false;
-						}
-					}
+		const props = Object.keys( filter );
 
-					return true;
-				} );
+		// Numeric Filter (default if filterType is missing)
+		if ( ! filterType || filterType === 'numericFilter' ) {
+			return (
+				props.includes( 'operation' ) &&
+				props.includes( 'value' ) &&
+				( ! isPlainObject( value ) || 'int64Value' in value )
+			);
+		}
 
-				return (
-					props.includes( 'fromValue' ) &&
-					props.includes( 'toValue' ) &&
-					isNumericField
-				);
-			}
+		// Between Filter
+		if ( filterType === 'betweenFilter' ) {
+			return (
+				props.includes( 'fromValue' ) &&
+				props.includes( 'toValue' ) &&
+				[ fromValue, toValue ].every(
+					( val ) => ! isPlainObject( val ) || 'int64Value' in val
+				)
+			);
 		}
 
 		return false;

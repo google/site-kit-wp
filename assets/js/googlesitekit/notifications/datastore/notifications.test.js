@@ -35,6 +35,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '../../constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 describe( 'core/notifications Notifications', () => {
 	const fetchGetDismissedItems = new RegExp(
@@ -42,9 +43,6 @@ describe( 'core/notifications Notifications', () => {
 	);
 	const fetchDismissItem = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
-	const fetchGetDismissedPrompts = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-prompts'
 	);
 
 	let registry;
@@ -55,6 +53,7 @@ describe( 'core/notifications Notifications', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
 		( { registerNotification } = registry.dispatch( CORE_NOTIFICATIONS ) );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'actions', () => {
@@ -148,6 +147,81 @@ describe( 'core/notifications Notifications', () => {
 				expect( store.getState().notifications[ id ].Component ).toBe(
 					NotificationOne
 				);
+			} );
+		} );
+
+		describe( 'markNotificationSeen', () => {
+			let markNotificationSeen;
+
+			beforeEach( () => {
+				( { markNotificationSeen } =
+					registry.dispatch( CORE_NOTIFICATIONS ) );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
+
+				function TestNotificationComponent() {
+					return <div>Test notification!</div>;
+				}
+				registerNotification( 'test-notification-id', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				registerNotification( 'test-undismissible-notification-id', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: false,
+				} );
+			} );
+
+			it( 'requires notificationID', () => {
+				expect( () => markNotificationSeen() ).toThrow(
+					'a valid notification ID is required to mark a notification as seen.'
+				);
+			} );
+
+			it( 'should return void if notification is not dismissible', async () => {
+				const result = await markNotificationSeen(
+					'test-undismissible-notification-id'
+				);
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'should mark a notification as seen', async () => {
+				await markNotificationSeen( 'test-notification-id' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'test-notification-id' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29' ] );
+			} );
+
+			it( 'should mark a notification as seen on multiple days', async () => {
+				await markNotificationSeen( 'test-notification-id' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-30' );
+				await markNotificationSeen( 'test-notification-id' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'test-notification-id' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29', '2025-04-30' ] );
+			} );
+
+			it( 'should not mark duplicate seen dates', async () => {
+				await markNotificationSeen( 'test-notification-id' );
+				await markNotificationSeen( 'test-notification-id' );
+				await markNotificationSeen( 'test-notification-id' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'test-notification-id' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29' ] );
 			} );
 		} );
 
@@ -337,6 +411,88 @@ describe( 'core/notifications Notifications', () => {
 		function TestNotificationComponent() {
 			return <div>Test notification!</div>;
 		}
+
+		describe( 'getSeenNotifications', () => {
+			it( 'should return an empty object when no notifications have been seen', () => {
+				const seenNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getSeenNotifications();
+
+				expect( seenNotifications ).toEqual( {} );
+			} );
+
+			it( 'should return seen notifications with their dates viewed as an array', async () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
+				registerNotification( 'notification-1', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				registerNotification( 'notification-2', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-2' );
+
+				// Change the reference date and mark notification-1 as seen again
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-30' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+
+				const seenNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.getSeenNotifications();
+
+				expect( seenNotifications ).toEqual( {
+					'notification-1': [ '2025-04-29', '2025-04-30' ],
+					'notification-2': [ '2025-04-29' ],
+				} );
+			} );
+		} );
+
+		describe( 'getNotificationSeenDates', () => {
+			it( 'should return an empty array for notifications that have not been seen', () => {
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'unseen-notification' );
+
+				expect( seenDates ).toEqual( [] );
+			} );
+
+			it( 'should return an array of dates for seen notifications', async () => {
+				registerNotification( 'notification-1', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					isDismissible: true,
+				} );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-30' );
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.markNotificationSeen( 'notification-1' );
+
+				const seenDates = registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotificationSeenDates( 'notification-1' );
+
+				expect( seenDates ).toEqual( [ '2025-04-29', '2025-04-30' ] );
+			} );
+		} );
 
 		describe( 'getQueuedNotifications', () => {
 			beforeEach( () => {
@@ -625,8 +781,9 @@ describe( 'core/notifications Notifications', () => {
 			describe( 'when using dismissed prompts', () => {
 				let isNotificationDismissed;
 				beforeEach( () => {
-					provideNotifications( registry, {
-						'test-notification-using-prompts': {
+					provideNotifications( registry, [
+						{
+							id: 'test-notification-using-prompts',
 							Component: () => {},
 							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -635,21 +792,44 @@ describe( 'core/notifications Notifications', () => {
 							isDismissible: false,
 							dismissRetries: 1,
 						},
-					} );
+					] );
 
 					( { isNotificationDismissed } =
 						registry.select( CORE_NOTIFICATIONS ) );
 				} );
 
 				it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
-					fetchMock.getOnce( fetchGetDismissedPrompts, { body: [] } );
+					// Create a fresh registry for this test to ensure getDismissedPrompts is not resolved
+					const testRegistry = createTestRegistry();
+
+					// Register the notification on the new registry
+					provideNotifications( testRegistry, [
+						{
+							id: 'test-notification-using-prompts',
+							Component: () => {},
+							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+							priority: 11,
+							checkRequirements: () => true,
+							isDismissible: false,
+							dismissRetries: 1,
+						},
+					] );
+
+					// Get the selector from the new registry
+					const testIsNotificationDismissed =
+						testRegistry.select(
+							CORE_NOTIFICATIONS
+						).isNotificationDismissed;
+
+					fetchMock.getOnce( dismissedPromptsEndpoint, { body: [] } );
 					expect(
-						isNotificationDismissed(
+						testIsNotificationDismissed(
 							'test-notification-using-prompts'
 						)
 					).toBeUndefined();
 					await untilResolved(
-						registry,
+						testRegistry,
 						CORE_USER
 					).getDismissedPrompts();
 				} );
@@ -696,14 +876,15 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'requires notification to be dismissible', () => {
-				provideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						dismissRetries: 1,
 					},
-				} );
+				] );
 
 				expect( () =>
 					isNotificationDismissalFinal( 'test-notification' )
@@ -713,14 +894,15 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns true if notification does not have retries', () => {
-				provideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 					},
-				} );
+				] );
 
 				expect(
 					isNotificationDismissalFinal( 'test-notification' )
@@ -728,15 +910,16 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns true if notification is on the final retry', () => {
-				provideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 2,
 					},
-				} );
+				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 					'test-notification': {
@@ -752,15 +935,16 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns false if notification has never been dismissed', () => {
-				provideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 1,
 					},
-				} );
+				] );
 
 				expect(
 					isNotificationDismissalFinal( 'test-notification' )
@@ -768,15 +952,16 @@ describe( 'core/notifications Notifications', () => {
 			} );
 
 			it( 'returns false if notification is not on the final retry', () => {
-				provideNotifications( registry, {
-					'test-notification': {
+				provideNotifications( registry, [
+					{
+						id: 'test-notification',
 						Component: () => {},
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 2,
 					},
-				} );
+				] );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 					'test-notification': {

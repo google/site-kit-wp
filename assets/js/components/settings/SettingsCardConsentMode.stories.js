@@ -42,9 +42,7 @@ Default.args = {
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
 	},
 };
-Default.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/Default',
-};
+Default.scenario = {};
 
 export const WithAdsConnected = Template.bind( {} );
 WithAdsConnected.storyName = 'WithAdsConnected';
@@ -84,12 +82,13 @@ WithAdsConnected.args = {
 
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetAdsMeasurementStatus( { connected: true } );
+			.receiveGetAdsMeasurementStatus(
+				{ connected: true },
+				{ useCache: false }
+			);
 	},
 };
-WithAdsConnected.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithAdsConnected',
-};
+WithAdsConnected.scenario = {};
 
 export const WithoutConsentAPI = Template.bind( {} );
 WithoutConsentAPI.storyName = 'WithoutConsentAPI';
@@ -107,9 +106,7 @@ WithoutConsentAPI.args = {
 		} );
 	},
 };
-WithoutConsentAPI.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithoutConsentAPI',
-};
+WithoutConsentAPI.scenario = {};
 
 export const WithConsentAPINotActivated = Template.bind( {} );
 WithConsentAPINotActivated.storyName = 'WithConsentAPINotActivated';
@@ -127,9 +124,7 @@ WithConsentAPINotActivated.args = {
 		} );
 	},
 };
-WithConsentAPINotActivated.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithConsentAPINotActivated',
-};
+WithConsentAPINotActivated.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -150,9 +145,7 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/Loading',
-};
+Loading.scenario = {};
 
 export default {
 	title: 'Consent Mode/SettingsCardConsentMode',

@@ -47,10 +47,7 @@ import {
 	AudienceAreaFooter,
 	ChangeGroupsLink,
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
-import { isFeatureEnabled } from '../../features';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import ConversionReportingNotificationCTAWidget from '../../components/KeyMetrics/ConversionReportingNotificationCTAWidget';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -65,10 +62,6 @@ const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
  * @param {Object} widgetsAPI Widgets API.
  */
 export function registerDefaults( widgetsAPI ) {
-	const isConversionReportingEnabled = isFeatureEnabled(
-		'conversionReporting'
-	);
-
 	const {
 		// Main dashboard
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
@@ -149,38 +142,34 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
 
-	if ( isFeatureEnabled( 'audienceSegmentation' ) ) {
-		widgetsAPI.registerWidgetArea(
-			AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-			{
-				subtitle: __(
-					'Understand how different visitor groups interact with your site',
-					'google-site-kit'
-				),
-				hasNewBadge: true,
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 2,
-				CTA: ChangeGroupsLink,
-				Footer: AudienceAreaFooter,
-				filterActiveWidgets( select, areaWidgets ) {
-					const isAudienceSegmentationWidgetHidden =
-						select(
-							CORE_USER
-						).isAudienceSegmentationWidgetHidden();
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		{
+			subtitle: __(
+				'Understand how different visitor groups interact with your site',
+				'google-site-kit'
+			),
+			hasNewBadge: true,
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 2,
+			CTA: ChangeGroupsLink,
+			Footer: AudienceAreaFooter,
+			filterActiveWidgets( select, areaWidgets ) {
+				const isAudienceSegmentationWidgetHidden =
+					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
-					if (
-						isAudienceSegmentationWidgetHidden === undefined ||
-						isAudienceSegmentationWidgetHidden
-					) {
-						return [];
-					}
+				if (
+					isAudienceSegmentationWidgetHidden === undefined ||
+					isAudienceSegmentationWidgetHidden
+				) {
+					return [];
+				}
 
-					return areaWidgets;
-				},
+				return areaWidgets;
 			},
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC
-		);
-	}
+		},
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC
+	);
 
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -306,7 +295,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isAuthenticated() &&
 				select( CORE_SITE ).isKeyMetricsSetupCompleted() === false,
@@ -327,7 +315,6 @@ export function registerDefaults( widgetsAPI ) {
 			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 				const isGA4Connected =
@@ -393,105 +380,65 @@ export function registerDefaults( widgetsAPI ) {
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 
-	if ( isConversionReportingEnabled ) {
-		widgetsAPI.registerWidget(
-			'keyMetricsAddMetricThird',
-			{
-				Component: AddMetricCTATile,
-				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
-				wrapWidget: false,
-				isActive: ( select ) => {
-					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricThird',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if (
-						! Array.isArray( keyMetrics ) ||
-						keyMetrics.length < 5
-					) {
-						return false;
-					}
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 5 ) {
+					return false;
+				}
 
-					return keyMetrics.length < 8;
-				},
+				return keyMetrics.length < 8;
 			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 
-		widgetsAPI.registerWidget(
-			'keyMetricsAddMetricFourth',
-			{
-				Component: AddMetricCTATile,
-				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
-				wrapWidget: false,
-				hideOnBreakpoints: [ BREAKPOINT_SMALL ],
-				isActive: ( select ) => {
-					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricFourth',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			hideOnBreakpoints: [ BREAKPOINT_SMALL ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if (
-						! Array.isArray( keyMetrics ) ||
-						keyMetrics.length < 5
-					) {
-						return false;
-					}
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 5 ) {
+					return false;
+				}
 
-					return keyMetrics.length < 7;
-				},
+				return keyMetrics.length < 7;
 			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 
-		widgetsAPI.registerWidget(
-			'keyMetricsAddMetricFifth',
-			{
-				Component: AddMetricCTATile,
-				width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
-				priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
-				wrapWidget: false,
-				hideOnBreakpoints: [ BREAKPOINT_SMALL ],
-				isActive: ( select ) => {
-					const keyMetrics = select( CORE_USER ).getKeyMetrics();
+	widgetsAPI.registerWidget(
+		'keyMetricsAddMetricFifth',
+		{
+			Component: AddMetricCTATile,
+			width: [ widgetsAPI.WIDGET_WIDTHS.QUARTER ],
+			priority: 3, // GA4 tiles are 1, SC tiles are 2, so these should always be at the end.
+			wrapWidget: false,
+			hideOnBreakpoints: [ BREAKPOINT_SMALL ],
+			isActive: ( select ) => {
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
 
-					if (
-						! Array.isArray( keyMetrics ) ||
-						keyMetrics.length < 5
-					) {
-						return false;
-					}
+				if ( ! Array.isArray( keyMetrics ) || keyMetrics.length < 5 ) {
+					return false;
+				}
 
-					return keyMetrics.length < 6;
-				},
+				return keyMetrics.length < 6;
 			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-
-		widgetsAPI.registerWidget(
-			'keyMetricsEventDetectionCalloutNotification',
-			{
-				Component: ConversionReportingNotificationCTAWidget,
-				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-				priority: 0,
-				modules: [ 'analytics-4' ],
-				isActive: ( select ) => {
-					if ( ! isFeatureEnabled( 'conversionReporting' ) ) {
-						return false;
-					}
-
-					if (
-						! select(
-							MODULES_ANALYTICS_4
-						).hasNewConversionReportingEvents() &&
-						! select(
-							MODULES_ANALYTICS_4
-						).hasLostConversionReportingEvents()
-					) {
-						return false;
-					}
-
-					return true;
-				},
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 }

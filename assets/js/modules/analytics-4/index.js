@@ -96,6 +96,7 @@ import { SetupMain } from './components/setup';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
+	EnhancedMeasurementActivationBanner,
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
@@ -114,13 +115,17 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { isFeatureEnabled } from '../../features';
 import AudienceSegmentationSetupCTAWidget, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
+import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
+import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
+import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
 
 export { registerStore } from './datastore';
 
@@ -697,12 +702,22 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
+
+	widgets.registerWidget(
+		'keyMetricsEventDetectionCalloutNotification',
+		{
+			Component: ConversionReportingNotificationCTAWidget,
+			width: [ widgets.WIDGET_WIDTHS.FULL ],
+			priority: 0,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 };
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -710,14 +725,26 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				CORE_MODULES
 			).isModuleConnected( 'analytics-4' );
 
+			if ( ! analyticsConnected ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
+			await resolveSelect( CORE_USER ).getUserAudienceSettings();
+
+			const currentUserID = select( CORE_USER ).getID();
+
+			const audienceSegmentationSetupCompletedByUserID =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+
 			if (
-				! analyticsConnected ||
-				! isFeatureEnabled( 'audienceSegmentation' )
+				currentUserID !== audienceSegmentationSetupCompletedByUserID
 			) {
 				return false;
 			}
 
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 			const configuredAudiences =
 				select( CORE_USER ).getConfiguredAudiences();
 
@@ -725,11 +752,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			return Array.isArray( configuredAudiences );
 		},
 		isDismissible: true,
-		featureFlag: 'audienceSegmentation',
 	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTAWidget,
-		priority: 10,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -749,7 +775,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
 			] );
 
 			const isDismissed = select( CORE_USER ).isPromptDismissed(
@@ -781,7 +807,159 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
-		featureFlag: 'audienceSegmentation',
+	},
+	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
+		Component: WebDataStreamNotAvailableNotification,
+		priority: PRIORITY.ERROR_LOW,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isWebDataStreamAvailable property is set within the
+				// syncGoogleTagSettings() action.
+				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const isWebDataStreamAvailable =
+				select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				! isWebDataStreamAvailable
+			);
+		},
+	},
+	'google-tag-id-mismatch': {
+		Component: GoogleTagIDMismatchNotification,
+		priority: PRIORITY.ERROR_LOW,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasScope() selector relies on the resolution of
+				// the getAuthentication() resolver.
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The getOwnerID() selector relies on the resolution
+				// of the getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+			const isGA4ModuleOwner =
+				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
+
+			const hasMismatchedGoogleTagID =
+				select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID();
+
+			return (
+				ga4ModuleConnected &&
+				hasGTMScope &&
+				isGA4ModuleOwner &&
+				hasMismatchedGoogleTagID
+			);
+		},
+	},
+	'enhanced-measurement-notification': {
+		Component: EnhancedMeasurementActivationBanner,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+				// The hasModuleOwnershipOrAccess() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The hasModuleOwnershipOrAccess(), getPropertyID() and
+				// getWebDataStreamID() selectors rely on the resolution of the
+				// getSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// The isItemDismissed() selector relies on the resolution
+				// of the getDismissedItems() resolver.
+				resolveSelect( CORE_USER ).getDismissedItems(),
+			] );
+
+			const ga4ModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			const webDataStreamID =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+			const hasModuleAccess =
+				ga4ModuleConnected &&
+				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+					'analytics-4'
+				);
+
+			// Check if the prompt with the legacy key used before the banner was refactored
+			// to use the `notification ID` as the dismissal key, is dismissed.
+			const isLegacyDismissed = select( CORE_USER ).isItemDismissed(
+				LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY
+			);
+
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID ) ||
+				! hasModuleAccess ||
+				isLegacyDismissed
+			) {
+				return false;
+			}
+
+			// The isEnhancedMeasurementStreamEnabled() selector relies on
+			// the resolution of the getEnhancedMeasurementSettings() resolver.
+			await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getEnhancedMeasurementSettings( propertyID, webDataStreamID );
+			const isEnhancedMeasurementStreamEnabled = select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
+
+			return isEnhancedMeasurementStreamEnabled === false;
+		},
 	},
 };
 
@@ -792,57 +970,4 @@ export const registerNotifications = ( notifications ) => {
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
 	}
-
-	notifications.registerNotification(
-		WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
-		{
-			Component: WebDataStreamNotAvailableNotification,
-			priority: 290,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
-			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-			isDismissible: true,
-			checkRequirements: async ( {
-				select,
-				resolveSelect,
-				dispatch,
-			} ) => {
-				await Promise.all( [
-					// The hasScope() selector relies on the resolution of
-					// the getAuthentication() resolver.
-					resolveSelect( CORE_USER ).getAuthentication(),
-					// The isModuleConnected() selector relies on the resolution
-					// of the getModules() resolver.
-					resolveSelect( CORE_MODULES ).getModules(),
-					// The getID() selector relies on the resolution
-					// of the getUser() resolver.
-					resolveSelect( CORE_USER ).getUser(),
-					// The getOwnerID() selector relies on the resolution
-					// of the getSettings() resolver.
-					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-					// The isWebDataStreamAvailable property is set within the
-					// syncGoogleTagSettings() action.
-					dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
-				] );
-
-				const ga4ModuleConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
-				const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
-
-				const loggedInUserID = select( CORE_USER ).getID();
-				const ga4OwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-				const isGA4ModuleOwner =
-					ga4ModuleConnected && ga4OwnerID === loggedInUserID;
-
-				const isWebDataStreamAvailable =
-					select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
-
-				return (
-					ga4ModuleConnected &&
-					hasGTMScope &&
-					isGA4ModuleOwner &&
-					! isWebDataStreamAvailable
-				);
-			},
-		}
-	);
 };

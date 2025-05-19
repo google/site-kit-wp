@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_ANALYTICS_4 } from './constants';
@@ -30,7 +30,7 @@ import { validatePivotReport } from '../utils/validation';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getPivotReport',
 	controlCallback: ( { options } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'analytics-4',
 			'pivot-report',

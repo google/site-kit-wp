@@ -61,7 +61,7 @@
     "no-useless-escape": "error",
     "complexity": [
       "error",
-      20
+      15
     ],
     "no-restricted-globals": [
       "error",

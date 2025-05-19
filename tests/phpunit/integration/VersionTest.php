@@ -22,7 +22,7 @@ class VersionTest extends TestCase {
 
 		$version_occurrences = array(
 			array(
-				'file'    => 'blocks/sign-in-with-google/block.json',
+				'file'    => 'assets/blocks/sign-in-with-google/block.json',
 				'pattern' => "/\"version\":[ ]+\"$semver_group_pattern\"/",
 			),
 			array(

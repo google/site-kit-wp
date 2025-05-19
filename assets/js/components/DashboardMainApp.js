@@ -69,7 +69,6 @@ import OfflineNotification from './notifications/OfflineNotification';
 import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useBreakpoint } from '../hooks/useBreakpoint';
-import { useFeature } from '../hooks/useFeature';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
 import useQueryArg from '../hooks/useQueryArg';
 import { getNavigationalScrollTop } from '../util/scroll';
@@ -80,10 +79,9 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '../googlesitekit/notifications/datastore/constants';
+import { AdminMenuTooltip } from './AdminMenuTooltip';
 
 export default function DashboardMainApp() {
-	const audienceSegmentationEnabled = useFeature( 'audienceSegmentation' );
-
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 	const currentSurvey = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy() &&
@@ -115,10 +113,8 @@ export default function DashboardMainApp() {
 			grantedScopes.includes( scope )
 		);
 
-	const configuredAudiences = useSelect(
-		( select ) =>
-			audienceSegmentationEnabled &&
-			select( CORE_USER ).getConfiguredAudiences()
+	const configuredAudiences = useSelect( ( select ) =>
+		select( CORE_USER ).getConfiguredAudiences()
 	);
 
 	useMount( () => {
@@ -260,6 +256,8 @@ export default function DashboardMainApp() {
 			<ScrollEffect />
 			<ModuleDashboardEffects />
 
+			<AdminMenuTooltip />
+
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
@@ -275,6 +273,11 @@ export default function DashboardMainApp() {
 
 				<OverlayNotificationsRenderer />
 
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
+
 				{ isKeyMetricsWidgetHidden !== true && (
 					<WidgetContextRenderer
 						id={ ANCHOR_ID_KEY_METRICS }
@@ -285,6 +288,7 @@ export default function DashboardMainApp() {
 						} ) }
 					/>
 				) }
+
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_TRAFFIC }
 					slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
@@ -330,9 +334,9 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ audienceSegmentationEnabled && configuredAudiences && (
-				<AudienceSelectionPanel />
-			) }
+			{ configuredAudiences && <AudienceSelectionPanel /> }
+
+			<OfflineNotification />
 		</Fragment>
 	);
 }

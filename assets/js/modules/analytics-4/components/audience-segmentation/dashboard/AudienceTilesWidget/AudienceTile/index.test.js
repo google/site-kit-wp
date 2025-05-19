@@ -182,6 +182,8 @@ describe( 'AudienceTile', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions: [],
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -592,7 +594,7 @@ describe( 'AudienceTile', () => {
 					);
 
 					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
-					await waitForDefaultTimeouts();
+					await waitForTimeouts( 10 );
 				} );
 			} );
 

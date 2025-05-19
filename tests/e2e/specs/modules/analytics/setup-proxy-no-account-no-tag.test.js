@@ -129,9 +129,14 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toClick(
 			'.googlesitekit-analytics__select-country'
 		);
+
+		await page.waitForTimeout( 10 );
+
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
 			text: /united kingdom/i,
 		} );
+
+		await page.waitForTimeout( 10 );
 
 		await expect( page ).toMatchElement( 'p', {
 			text: /need to give Site Kit permission to create an Analytics account/i,
@@ -142,6 +147,8 @@ describe( 'setting up the Analytics module with no existing account and no exist
 				text: /create account/i,
 			} ),
 		] );
+
+		await page.waitForTimeout( 10 );
 
 		// When returning from OAuth, the form will resubmit automatically, so we won't be able to see the form to verify the values there.
 		// Instead, we can ensure that they were passed in the request to `create-account-ticket`

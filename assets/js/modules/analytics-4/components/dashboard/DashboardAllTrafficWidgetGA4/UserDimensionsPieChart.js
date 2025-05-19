@@ -171,15 +171,15 @@ export default function UserDimensionsPieChart( props ) {
 		maxSlices: 5,
 		withOthers: true,
 		tooltipCallback: ( row, previousDateRangeRow, rowData ) => {
+			const absValue = row?.metricValues?.[ 0 ]?.value || 0;
 			const difference =
-				previousDateRangeRow.metricValues?.[ 0 ].value > 0
-					? ( row.metricValues?.[ 0 ].value * 100 ) /
-							previousDateRangeRow.metricValues?.[ 0 ].value -
+				previousDateRangeRow?.metricValues?.[ 0 ]?.value > 0
+					? ( absValue * 100 ) /
+							previousDateRangeRow.metricValues[ 0 ].value -
 					  100
 					: 100;
 
 			const svgArrow = getChartDifferenceArrow( difference );
-			const absValue = row.metricValues[ 0 ].value;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
 				_x(
@@ -353,6 +353,7 @@ export default function UserDimensionsPieChart( props ) {
 		const { row } = chart.getSelection()?.[ 0 ] || {};
 
 		if ( row === null || row === undefined ) {
+			setIsTooltipOpen( false );
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
 				[ UI_DIMENSION_COLOR ]: '',
@@ -492,7 +493,7 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
-	const showZeroDataChart = hasZeroData;
+	const showZeroDataChart = hasZeroData || dataMap.length < 2;
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">

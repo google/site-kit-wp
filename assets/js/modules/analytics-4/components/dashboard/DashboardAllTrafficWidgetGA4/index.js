@@ -19,9 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
-import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -34,18 +32,18 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
+import { DAY_IN_SECONDS } from '../../../../../util';
 import { isZeroReport } from '../../../utils';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { DAY_IN_SECONDS, getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
-import SourceLink from '../../../../../components/SourceLink';
+import DataSourceLink from './DataSourceLink';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
+import useAllTrafficWidgetReport from '../../../hooks/useAllTrafficWidgetReport';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 
@@ -53,6 +51,9 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
 
 	const viewOnly = useViewOnly();
+
+	const [ firstLoad, setFirstLoad ] = useState( true );
+	const [ currentRange, setCurrentRange ] = useState( '' );
 
 	const canViewSharedAnalytics4 = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
@@ -67,42 +68,31 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			canViewSharedAnalytics4 &&
 			select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
-	const gatheringDataLoaded = isGatheringData !== undefined;
-
-	const [ firstLoad, setFirstLoad ] = useState( true );
-	const [ currentRange, setCurrentRange ] = useState( '' );
 
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
+
 	const dimensionName = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( UI_DIMENSION_NAME ) ||
 			'sessionDefaultChannelGrouping'
 	);
+
 	const dimensionValue = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_DIMENSION_VALUE )
 	);
-	const entityURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
+
+	const { compareStartDate, compareEndDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
 	);
 
-	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
-		( select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				compare: true,
-				offsetDays: DATE_RANGE_OFFSET,
-			} )
-	);
-
-	const baseArgs = {
-		startDate,
-		endDate,
-		metrics: [ { name: 'totalUsers' } ],
-	};
+	const { setValue } = useDispatch( CORE_UI );
 
 	const pieArgs = {
-		...baseArgs,
 		compareStartDate,
 		compareEndDate,
 		dimensions: [ dimensionName ],
@@ -117,7 +107,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	};
 
 	const graphArgs = {
-		...baseArgs,
 		dimensions: [ 'date' ],
 		orderby: [
 			{
@@ -129,141 +118,32 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	};
 
 	const totalsArgs = {
-		...baseArgs,
 		compareStartDate,
 		compareEndDate,
 	};
-
-	if ( entityURL ) {
-		pieArgs.url = entityURL;
-		graphArgs.url = entityURL;
-		totalsArgs.url = entityURL;
-	}
 
 	if ( dimensionName && dimensionValue ) {
 		graphArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 	}
 
-	const pieChartLoaded = useSelect(
-		( select ) =>
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				pieArgs,
-			] )
-	);
-	const pieChartError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			pieArgs,
-		] )
-	);
-	const pieChartReport = useInViewSelect(
-		( select ) => {
-			return (
-				canViewSharedAnalytics4 &&
-				select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
-			);
-		},
-		[ canViewSharedAnalytics4, pieArgs ]
-	);
+	const {
+		loaded: pieChartLoaded,
+		error: pieChartError,
+		report: pieChartReport,
+	} = useAllTrafficWidgetReport( pieArgs );
 
-	const userCountGraphLoaded = useSelect(
-		( select ) =>
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				graphArgs,
-			] )
-	);
-	const userCountGraphError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			graphArgs,
-		] )
-	);
-	const userCountGraphReport = useInViewSelect(
-		( select ) => {
-			return (
-				canViewSharedAnalytics4 &&
-				select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
-			);
-		},
-		[ canViewSharedAnalytics4, graphArgs ]
-	);
+	const {
+		loaded: userCountGraphLoaded,
+		error: userCountGraphError,
+		report: userCountGraphReport,
+	} = useAllTrafficWidgetReport( graphArgs );
 
-	const totalUsersLoaded = useSelect(
-		( select ) =>
-			canViewSharedAnalytics4 &&
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				totalsArgs,
-			] )
-	);
-	const totalUsersError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			totalsArgs,
-		] )
-	);
-	const totalUsersReport = useInViewSelect(
-		( select ) => {
-			return (
-				canViewSharedAnalytics4 &&
-				select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
-			);
-		},
-		[ canViewSharedAnalytics4, totalsArgs ]
-	);
-
-	const reportArgs = {
-		dates: {
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-		},
-	};
-
-	let reportType;
-	switch ( dimensionName ) {
-		case 'country':
-			reportType = 'user-demographics-detail';
-			reportArgs.details = {
-				metric: 'activeUsers',
-				dimension: 'country',
-			};
-			// eslint-disable-next-line sitekit/acronym-case
-			reportArgs.otherArgs = { collectionId: 'user' };
-			break;
-		case 'deviceCategory':
-			reportType = 'user-technology-detail';
-			reportArgs.details = {
-				metric: 'activeUsers',
-				dimension: 'deviceCategory',
-			};
-			// eslint-disable-next-line sitekit/acronym-case
-			reportArgs.otherArgs = { collectionId: 'user' };
-			break;
-		case 'sessionDefaultChannelGrouping':
-		default:
-			reportType = 'lifecycle-traffic-acquisition-v2';
-			// eslint-disable-next-line sitekit/acronym-case
-			reportArgs.otherArgs = { collectionId: 'life-cycle' };
-			break;
-	}
-
-	if ( isURL( entityURL ) ) {
-		reportArgs.filters = {
-			unifiedPagePathScreen: getURLPath( entityURL ),
-		};
-	}
-
-	const serviceReportURL = useSelect( ( select ) => {
-		if ( viewOnly ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
-			reportType,
-			reportArgs
-		);
-	} );
+	const {
+		loaded: totalUsersLoaded,
+		error: totalUsersError,
+		report: totalUsersReport,
+	} = useAllTrafficWidgetReport( totalsArgs );
 
 	useEffect( () => {
 		if ( dateRange !== currentRange ) {
@@ -287,7 +167,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	// Set a flag in the core/ui store when all data is loaded.
 	// Currently only used by the feature tour to delay showing
 	// while the widget is in a loading state.
-	const { setValue } = useDispatch( CORE_UI );
 	useEffect( () => {
 		if (
 			firstLoad &&
@@ -334,21 +213,12 @@ function DashboardAllTrafficWidgetGA4( props ) {
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
 
+	const gatheringDataLoaded = isGatheringData !== undefined;
+
 	return (
 		<Widget
 			className="googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"
-			Footer={ () => (
-				<SourceLink
-					className="googlesitekit-data-block__source"
-					name={ _x(
-						'Analytics',
-						'Service name',
-						'google-site-kit'
-					) }
-					href={ serviceReportURL }
-					external
-				/>
-			) }
+			Footer={ () => <DataSourceLink /> }
 			noPadding
 		>
 			<Grid>

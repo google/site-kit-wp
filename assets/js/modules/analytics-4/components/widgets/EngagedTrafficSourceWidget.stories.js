@@ -31,7 +31,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
 const reportOptions = {
@@ -64,9 +64,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSourceWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -118,10 +116,7 @@ Error.args = {
 };
 // Since the "Error" state is the same for all KMW tiles, this is the sole scenario
 // and should not be added to any other generic `MetricTile___` or KMW component.
-Error.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/Error',
-	delay: 250,
-};
+Error.scenario = {};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -150,10 +145,7 @@ InsufficientPermissions.args = {
 // Since the "Insufficient Permissions Error" state is the same for all KMW tiles,
 // this is the sole scenario and should not be added to any other generic
 // `MetricTile___` or KMW component.
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/InsufficientPermissions',
-	delay: 250,
-};
+InsufficientPermissions.scenario = {};
 
 export default {
 	title: 'Key Metrics/EngagedTrafficSourceWidget',

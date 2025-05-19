@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -62,16 +61,12 @@ class REST_Conversion_Reporting_Controller {
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
 			function ( $paths ) {
-				if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-					return array_merge(
-						$paths,
-						array(
-							'/' . REST_Routes::REST_ROOT . '/core/user/data/conversion-reporting-settings',
-						)
-					);
-				}
-
-				return $paths;
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/conversion-reporting-settings',
+					)
+				);
 			}
 		);
 	}
@@ -87,10 +82,6 @@ class REST_Conversion_Reporting_Controller {
 		$can_view_dashboard = function () {
 			return current_user_can( Permissions::VIEW_DASHBOARD );
 		};
-
-		if ( ! Feature_Flags::enabled( 'conversionReporting' ) ) {
-			return array();
-		}
 
 		return array(
 			new REST_Route(

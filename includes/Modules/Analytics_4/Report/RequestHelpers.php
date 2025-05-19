@@ -65,7 +65,9 @@ class RequestHelpers {
 	 * @return Google_Service_AnalyticsData_RunPivotReportRequest|Google_Service_AnalyticsData_RunReportRequest The report request object.
 	 */
 	public function shared_create_request( Data_Request $data, $request, $is_shared_request = false ) {
-		$request->setKeepEmptyRows( true );
+		$keep_empty_rows = is_array( $data->data ) && array_key_exists( 'keepEmptyRows', $data->data ) ? filter_var( $data->data['keepEmptyRows'], FILTER_VALIDATE_BOOLEAN ) : true;
+
+		$request->setKeepEmptyRows( $keep_empty_rows );
 
 		$dimension_filters = $this->parse_dimension_filters( $data );
 		$request->setDimensionFilter( $dimension_filters );

@@ -145,7 +145,7 @@ export const selectors = {
 	/**
 	 * Gets plugins data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} Plugins data array.
@@ -155,7 +155,7 @@ export const selectors = {
 	/**
 	 * Determines whether the WooCommerce plugin is installed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
@@ -168,7 +168,7 @@ export const selectors = {
 	/**
 	 * Determines whether the WooCommerce plugin is activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
@@ -181,7 +181,7 @@ export const selectors = {
 	/**
 	 * Determines whether the Google for WooCommerce plugin is installed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if the plugin is installed, false if it is not, and undefined if data is being resolved.
@@ -194,7 +194,7 @@ export const selectors = {
 	/**
 	 * Determines whether the Google for WooCommerce plugin is activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if the plugin is activated, false if it is not, and undefined if data is being resolved.
@@ -207,7 +207,7 @@ export const selectors = {
 	/**
 	 * Determines whether the Google for WooCommerce plugin has the linked Ads account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if the plugin has linked Ads account, false if it doesn't have it, and undefined if data is being resolved.
@@ -220,7 +220,7 @@ export const selectors = {
 	/**
 	 * Gets Google for WooCommerce Ads connected conversion ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string|undefined} Ads conversion ID value if present, empty string if not present, and undefined if data is being resolved.

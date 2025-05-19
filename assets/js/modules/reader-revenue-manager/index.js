@@ -57,6 +57,10 @@ import {
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import RRMIntroductoryOverlayNotification, {
+	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
+} from './components/dashboard/RRMIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
 
@@ -73,6 +77,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			// Ensure the site info is resolved to get the home URL.
 			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
@@ -128,7 +133,7 @@ async function checkRequirementsForProductIDNotification(
 export const NOTIFICATIONS = {
 	[ RRM_SETUP_NOTIFICATION_ID ]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
-		priority: 50,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -174,7 +179,6 @@ export const NOTIFICATIONS = {
 	},
 	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -220,7 +224,6 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
-		featureFlag: 'rrmModuleV2',
 	},
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
@@ -236,7 +239,45 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
-		featureFlag: 'rrmModuleV2',
+	},
+	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+		Component: RRMIntroductoryOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
+			const { publicationOnboardingState, paymentOption } =
+				( await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings() ) || {};
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const showingSuccessNotification =
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
+			if (
+				publicationOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+				[ 'noPayment', '' ].includes( paymentOption ) &&
+				! showingSuccessNotification
+			) {
+				return true;
+			}
+
+			return false;
+		},
 	},
 };
 

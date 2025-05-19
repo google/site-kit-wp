@@ -34,7 +34,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	createRegistryControl,
@@ -133,7 +133,7 @@ const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
-		return API.get( 'core', 'modules', 'list', null, {
+		return get( 'core', 'modules', 'list', null, {
 			useCache: false,
 		} );
 	},
@@ -151,7 +151,7 @@ const fetchGetModulesStore = createFetchStore( {
 const fetchSetModuleActivationStore = createFetchStore( {
 	baseName: 'setModuleActivation',
 	controlCallback: ( { slug, active } ) => {
-		return API.set( 'core', 'modules', 'activation', {
+		return set( 'core', 'modules', 'activation', {
 			slug,
 			active,
 		} );
@@ -179,7 +179,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 const fetchCheckModuleAccessStore = createFetchStore( {
 	baseName: 'checkModuleAccess',
 	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'check-access', { slug } );
+		return set( 'core', 'modules', 'check-access', { slug } );
 	},
 	reducerCallback: ( state, { access }, { slug } ) => {
 		return {
@@ -201,7 +201,7 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 const fetchRecoverModulesStore = createFetchStore( {
 	baseName: 'recoverModules',
 	controlCallback: ( { slugs } ) => {
-		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
+		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
 	reducerCallback: ( state, recoveredModules ) => {
 		return {
@@ -345,6 +345,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
@@ -366,10 +367,11 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
 				SettingsSetupIncompleteComponent,
-				checkRequirements,
+				SetupComponent,
+				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
+				checkRequirements,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
 			} = {}
@@ -384,9 +386,10 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
-				onCompleteSetup,
 				SettingsSetupIncompleteComponent,
+				SetupComponent,
+				overrideSetupSuccessNotification,
+				onCompleteSetup,
 				checkRequirements,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
@@ -1262,17 +1265,18 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if current user has ownership or access to the given module.
+	 * Checks if current user has ownership of the given module.
 	 *
-	 * @since 1.92.0
+	 * @since 1.148.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
-	 *                               `false` if the user doesn't have ownership or access.
-	 *                               `undefined` If the state is still being resolved,
+	 * @return {(boolean|null|undefined)} `true` if the user has ownership.
+	 *                               	    `false` if the user doesn't have ownership.
+	 *                               	    `null` if the module doesn't exist.
+	 *                               	    `undefined` If the state is still being resolved.
 	 */
-	hasModuleOwnershipOrAccess: createRegistrySelector(
+	hasModuleOwnership: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
 			const moduleStoreName =
 				select( CORE_MODULES ).getModuleStoreName( moduleSlug );
@@ -1285,7 +1289,7 @@ const baseSelectors = {
 			// This is either caused by a module not being loaded or an incorrect module
 			// name being used.
 			if ( select( moduleStoreName ) === null ) {
-				return false;
+				return null;
 			}
 
 			const moduleOwnerID = select( moduleStoreName ).getOwnerID();
@@ -1298,6 +1302,39 @@ const baseSelectors = {
 
 			if ( moduleOwnerID === loggedInUserID ) {
 				return true;
+			}
+
+			return false;
+		}
+	),
+
+	/**
+	 * Checks if current user has ownership or access to the given module.
+	 *
+	 * @since 1.92.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
+	 *                               `false` if the user doesn't have ownership or access.
+	 *                               `undefined` If the state is still being resolved.
+	 */
+	hasModuleOwnershipOrAccess: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			const hasOwnership =
+				select( CORE_MODULES ).hasModuleOwnership( moduleSlug );
+
+			if ( hasOwnership === true ) {
+				return true;
+			}
+
+			if ( hasOwnership === undefined ) {
+				return undefined;
+			}
+
+			// If the module doesn't exist, the user can't have ownership or access.
+			if ( hasOwnership === null ) {
+				return false;
 			}
 
 			return select( CORE_MODULES ).hasModuleAccess( moduleSlug );

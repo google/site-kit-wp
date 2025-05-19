@@ -27,6 +27,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -215,16 +216,18 @@ class Search_ConsoleTest extends TestCase {
 			$search_console->get_client(),
 			function ( Request $request ) use ( $sites ) {
 				if ( $request->getUri()->getHost() !== 'searchconsole.googleapis.com' ) {
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 				}
 
 				$sites_response = new SitesListResponse();
 				$sites_response->setSiteEntry( $sites );
 
-				return new Response(
-					200,
-					array(),
-					json_encode( $sites_response )
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode( $sites_response )
+					)
 				);
 			}
 		);

@@ -22,6 +22,7 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -29,7 +30,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 describe( 'ConsentModeSetupCTAWidget', () => {
 	let registry;
@@ -49,7 +49,10 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetAdsMeasurementStatus( { connected: true } );
+			.receiveGetAdsMeasurementStatus(
+				{ connected: true },
+				{ useCache: true }
+			);
 
 		registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
 			enabled: false,
@@ -76,23 +79,6 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should not render the widget when it is being dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.setIsPromptDimissing( CONSENT_MODE_SETUP_CTA_WIDGET_SLUG, true );
-
-		const { container, waitForRegistry } = render(
-			<ConsentModeSetupCTAWidgetComponent />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	describe( 'checkRequirements', () => {
@@ -130,7 +116,10 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetAdsMeasurementStatus( { connected: false } );
+				.receiveGetAdsMeasurementStatus(
+					{ connected: false },
+					{ useCache: true }
+				);
 
 			const isActive = await notification.checkRequirements(
 				registry,

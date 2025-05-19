@@ -43,8 +43,18 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 describe( 'RRMIntroductoryOverlayNotification', () => {
+	const RRMIntroductoryOverlayNotificationComponent =
+		withNotificationComponentProps( RRM_INTRODUCTORY_OVERLAY_NOTIFICATION )(
+			RRMIntroductoryOverlayNotification
+		);
+
+	const notification = NOTIFICATIONS[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ];
+
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
@@ -70,12 +80,41 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 				paymentOption: 'noPayment',
 			} );
 
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
+				notification
+			);
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
-	it( 'should render an introductory overlay notification when payment option is noPayment', async () => {
+	describe( 'checkRequirements', () => {
+		it( 'is active when the payment option is "noPayment"', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is active when the payment option is empty', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setPaymentOption( '' );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+	} );
+
+	it( 'should render an introductory overlay notification when the payment option is "noPayment"', async () => {
 		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -89,13 +128,13 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		);
 	} );
 
-	it( 'should render an introductory overlay notification when payment option is empty', async () => {
+	it( 'should render an introductory overlay notification when the payment option is empty', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( '' );
 
 		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -109,53 +148,14 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 		);
 	} );
 
-	it( 'should return null when dashboard is not main dashboard', async () => {
-		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
-			{
-				registry,
-				viewContext: 'other-context',
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should return null when notification is dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should get dismissed when "Explore features" CTA is clicked', async () => {
+	it( 'should dismiss the notification when the "Explore features" CTA is clicked', async () => {
 		fetchMock.postOnce( dismissItemsEndpoint, {
-			body: {
-				data: {
-					slug: RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
-					expiration: 0,
-				},
-			},
+			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
 			status: 200,
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<RRMIntroductoryOverlayNotification />,
+			<RRMIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -169,6 +169,32 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 			fireEvent.click(
 				getByRole( 'button', { name: /Explore features/i } )
 			);
+		} );
+
+		waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
+		} );
+	} );
+
+	it( 'should dismiss the notification when the "Maybe later" button is clicked', async () => {
+		fetchMock.postOnce( dismissItemsEndpoint, {
+			body: [ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ],
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<RRMIntroductoryOverlayNotificationComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
 		} );
 
 		waitFor( () => {

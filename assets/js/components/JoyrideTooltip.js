@@ -161,7 +161,7 @@ export default function JoyrideTooltip( props ) {
 }
 
 JoyrideTooltip.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.node,
 	content: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,

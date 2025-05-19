@@ -25,7 +25,7 @@ import { isEqual, isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -69,7 +69,7 @@ const fetchStoreReducerCallback = createReducer(
 const fetchGetUserAudienceSettingsStore = createFetchStore( {
 	baseName: 'getUserAudienceSettings',
 	controlCallback() {
-		return API.get(
+		return get(
 			'core',
 			'user',
 			'audience-settings',
@@ -85,7 +85,7 @@ const fetchGetUserAudienceSettingsStore = createFetchStore( {
 const fetchSaveUserAudienceSettingsStore = createFetchStore( {
 	baseName: 'saveUserAudienceSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'audience-settings', { settings } ),
+		set( 'core', 'user', 'audience-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateUserAudienceSettings,
@@ -132,7 +132,7 @@ const baseActions = {
 			const availableAudiences = yield commonActions.await(
 				registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences()
+					.getOrSyncAvailableAudiences()
 			);
 
 			const sortedConfiguredAudiences = [

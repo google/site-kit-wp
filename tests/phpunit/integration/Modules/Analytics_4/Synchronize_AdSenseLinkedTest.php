@@ -23,6 +23,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink;
@@ -135,16 +136,18 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 
 					$response = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse();
 					$response->setAdsenseLinks( array( $mock_adSenseLink ) );
-					return new Response(
-						200,
-						array(),
-						json_encode(
-							$response
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								$response
+							)
 						)
 					);
 				}
 
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 	}

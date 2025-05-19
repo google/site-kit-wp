@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -42,7 +43,10 @@ import {
 } from './components/dashboard';
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/graphics/adsense.svg';
-import { MODULES_ADSENSE } from './datastore/constants';
+import {
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from './datastore/constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
@@ -50,6 +54,10 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -192,4 +200,47 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
+};
+
+export const ADSENSE_NOTIFICATIONS = {
+	'adsense-abr-success-notification': {
+		Component: AdBlockingRecoverySetupSuccessNotification,
+		priority: 10,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// Check the query arg first as the simplest condition using global location.
+			const notification = getQueryArg( location.href, 'notification' );
+			if ( notification !== 'ad_blocking_recovery_setup_success' ) {
+				return false;
+			}
+
+			const { isModuleConnected } = resolveSelect( CORE_MODULES );
+			if ( ! ( await isModuleConnected( 'adsense' ) ) ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_ADSENSE ).getSettings();
+			const adBlockingRecoverySetupStatus =
+				select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
+
+			if (
+				adBlockingRecoverySetupStatus ===
+				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
+			) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+};
+
+export const registerNotifications = ( notifications ) => {
+	for ( const notificationID in ADSENSE_NOTIFICATIONS ) {
+		notifications.registerNotification(
+			notificationID,
+			ADSENSE_NOTIFICATIONS[ notificationID ]
+		);
+	}
 };

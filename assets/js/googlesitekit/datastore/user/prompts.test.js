@@ -26,15 +26,12 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import {
+	dismissedPromptsEndpoint,
+	dismissPromptEndpoint,
+} from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 describe( 'core/user dismissed-prompts', () => {
-	const fetchGetDismissedPrompts = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-prompts'
-	);
-	const fetchDismissPrompt = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-	);
-
 	let registry;
 
 	beforeEach( () => {
@@ -44,7 +41,7 @@ describe( 'core/user dismissed-prompts', () => {
 	describe( 'actions', () => {
 		describe( 'dismissPrompt', () => {
 			it( 'should save settings and return new dismissed prompts', async () => {
-				fetchMock.postOnce( fetchDismissPrompt, {
+				fetchMock.postOnce( dismissPromptEndpoint, {
 					body: {
 						foo: { expires: 0, count: 1 },
 						bar: { expires: 0, count: 1 },
@@ -56,7 +53,7 @@ describe( 'core/user dismissed-prompts', () => {
 					.dismissPrompt( 'baz', { expiresInSeconds: 3 } );
 
 				// Ensure the proper body parameters were sent.
-				expect( fetchMock ).toHaveFetched( fetchDismissPrompt, {
+				expect( fetchMock ).toHaveFetched( dismissPromptEndpoint, {
 					body: {
 						data: {
 							slug: 'baz',
@@ -79,7 +76,7 @@ describe( 'core/user dismissed-prompts', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.post( fetchDismissPrompt, {
+				fetchMock.post( dismissPromptEndpoint, {
 					body: response,
 					status: 500,
 				} );
@@ -135,7 +132,7 @@ describe( 'core/user dismissed-prompts', () => {
 		it( 'should set dismissing state to true while dismissing prompt', () => {
 			const slug = 'foo-bar';
 
-			freezeFetch( fetchDismissPrompt );
+			freezeFetch( dismissPromptEndpoint );
 
 			expect(
 				registry.select( CORE_USER ).isDismissingPrompt( slug )
@@ -151,7 +148,7 @@ describe( 'core/user dismissed-prompts', () => {
 		it( 'should set dismissing state to false after dismissing prompt', async () => {
 			const slug = 'foo-bar';
 
-			fetchMock.postOnce( fetchDismissPrompt, {
+			fetchMock.postOnce( dismissPromptEndpoint, {
 				body: [ slug ],
 				status: 200,
 			} );
@@ -170,7 +167,7 @@ describe( 'core/user dismissed-prompts', () => {
 	describe( 'selectors', () => {
 		describe( 'getDismissedPrompts', () => {
 			it( 'should return undefined until resolved', async () => {
-				muteFetch( fetchGetDismissedPrompts, { body: {} } );
+				muteFetch( dismissedPromptsEndpoint, { body: {} } );
 				expect(
 					registry.select( CORE_USER ).getDismissedPrompts()
 				).toBeUndefined();
@@ -181,7 +178,7 @@ describe( 'core/user dismissed-prompts', () => {
 			} );
 
 			it( 'should return dismissed prompts received from API', async () => {
-				fetchMock.getOnce( fetchGetDismissedPrompts, {
+				fetchMock.getOnce( dismissedPromptsEndpoint, {
 					body: {
 						foo: { expires: 0, count: 1 },
 						bar: { expires: 0, count: 1 },
@@ -207,7 +204,7 @@ describe( 'core/user dismissed-prompts', () => {
 			it( 'should not return dismissed prompts once they have expired', async () => {
 				const currentTimeInSeconds = Math.floor( Date.now() / 1000 );
 
-				fetchMock.getOnce( fetchGetDismissedPrompts, {
+				fetchMock.getOnce( dismissedPromptsEndpoint, {
 					body: {
 						foo: { expires: 0, count: 1 },
 						bar: { expires: currentTimeInSeconds + 2000, count: 1 },
@@ -238,7 +235,7 @@ describe( 'core/user dismissed-prompts', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce( fetchGetDismissedPrompts, {
+				fetchMock.getOnce( dismissedPromptsEndpoint, {
 					body: response,
 					status: 500,
 				} );
@@ -267,7 +264,7 @@ describe( 'core/user dismissed-prompts', () => {
 
 		describe( 'getPromptDismissCount', () => {
 			it( 'should return undefined until resolved', () => {
-				fetchMock.getOnce( fetchGetDismissedPrompts, { body: {} } );
+				fetchMock.getOnce( dismissedPromptsEndpoint, { body: {} } );
 				expect(
 					registry.select( CORE_USER ).getPromptDismissCount( 'foo' )
 				).toBeUndefined();
@@ -289,7 +286,7 @@ describe( 'core/user dismissed-prompts', () => {
 
 		describe( 'isPromptDismissed', () => {
 			it( 'should return undefined if getDismissedPrompts selector is not resolved yet', async () => {
-				fetchMock.getOnce( fetchGetDismissedPrompts, { body: {} } );
+				fetchMock.getOnce( dismissedPromptsEndpoint, { body: {} } );
 				expect(
 					registry.select( CORE_USER ).isPromptDismissed( 'foo' )
 				).toBeUndefined();
@@ -324,7 +321,7 @@ describe( 'core/user dismissed-prompts', () => {
 			it( 'returns true while prompt dismissal is in progress', () => {
 				const slug = 'foo-bar';
 
-				muteFetch( fetchDismissPrompt );
+				muteFetch( dismissPromptEndpoint );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingPrompt( slug )
@@ -340,7 +337,7 @@ describe( 'core/user dismissed-prompts', () => {
 			it( 'returns false while prompt dismissal is over', async () => {
 				const slug = 'foo-bar';
 
-				fetchMock.postOnce( fetchDismissPrompt, { body: [ slug ] } );
+				fetchMock.postOnce( dismissPromptEndpoint, { body: [ slug ] } );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingPrompt( slug )

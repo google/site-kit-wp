@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
@@ -102,7 +102,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
-		API.set( 'modules', 'analytics-4', 'create-audience', {
+		set( 'modules', 'analytics-4', 'create-audience', {
 			audience,
 		} ),
 	argsToParams: ( audience ) => ( {
@@ -113,25 +113,10 @@ const fetchCreateAudienceStore = createFetchStore( {
 	},
 } );
 
-const fetchSyncAvailableAudiencesStore = createFetchStore( {
-	baseName: 'syncAvailableAudiences',
-	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-audiences' ),
-	reducerCallback: ( state, audiences ) => {
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				availableAudiences: [ ...audiences ],
-			},
-		};
-	},
-} );
-
 /**
  * Retrieves the initial set of selected audiences from the existing audiences.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  *
  * @param {Object} registry Registry object.
  * @return {Object} Object with `configuredAudiences` or `error`.
@@ -140,7 +125,7 @@ async function getConfiguredAudiencesFromExistingAudiences( registry ) {
 	const { resolveSelect, select } = registry;
 
 	const availableAudiences =
-		select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+		select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 	const { error, configuredAudiences } = await getInitialConfiguredAudiences(
 		registry,
@@ -178,7 +163,7 @@ async function getConfiguredAudiencesFromExistingAudiences( registry ) {
  * Retrives the initial set of audiences for selection.
  *
  * @since 1.136.0
- * @since n.e.x.t Extracted to a helper function. Renamed from `retrieveInitialAudienceSelection` to `getInitialConfiguredAudiences`.
+ * @since 1.148.0 Extracted to a helper function. Renamed from `retrieveInitialAudienceSelection` to `getInitialConfiguredAudiences`.
  *
  * @param {Object} registry           Registry object.
  * @param {Array}  availableAudiences List of available audiences.
@@ -309,13 +294,15 @@ const baseActions = {
 
 		if ( ! isAuthenticated ) {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			return { response: availableAudiences ?? [] };
 		}
 
 		const { response: availableAudiences, error } =
-			yield fetchSyncAvailableAudiencesStore.actions.fetchSyncAvailableAudiences();
+			yield commonActions.await(
+				dispatch( MODULES_ANALYTICS_4 ).fetchSyncAvailableAudiences()
+			);
 
 		if ( error ) {
 			return { response: availableAudiences, error };
@@ -366,7 +353,7 @@ const baseActions = {
 		}
 
 		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
 		);
 
 		const availableAudiencesLastSyncedAt =
@@ -413,7 +400,7 @@ const baseActions = {
 	/**
 	 * Checks if the user needs to grant the Analytics 4 edit scope to create audiences or custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return {Object} Object with `needsScope` or `error`.
 	 */
@@ -621,8 +608,13 @@ const baseActions = {
 			userID
 		);
 
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings();
+
 		const { saveSettingsError } = yield commonActions.await(
-			dispatch( MODULES_ANALYTICS_4 ).saveSettings()
+			dispatch( MODULES_ANALYTICS_4 ).saveAudienceSettings(
+				audienceSettings
+			)
 		);
 
 		if ( saveSettingsError ) {
@@ -669,9 +661,7 @@ const baseActions = {
 		const { dispatch, resolveSelect } = registry;
 
 		const { response: availableAudiences, error: syncError } =
-			yield commonActions.await(
-				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
-			);
+			yield baseActions.syncAvailableAudiences();
 
 		if ( syncError ) {
 			return { error: syncError };
@@ -757,19 +747,7 @@ const baseReducer = ( state, { type } ) => {
 	}
 };
 
-const baseResolvers = {
-	*getAvailableAudiences() {
-		const registry = yield commonActions.getRegistry();
-		const { select } = registry;
-
-		const audiences = select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-		// If available audiences not present, sync the audience in state.
-		if ( audiences === null ) {
-			yield baseActions.syncAvailableAudiences();
-		}
-	},
-};
+const baseResolvers = {};
 
 const baseSelectors = {
 	/**
@@ -794,7 +772,7 @@ const baseSelectors = {
 	isDefaultAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -820,7 +798,7 @@ const baseSelectors = {
 	isSiteKitAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -846,7 +824,7 @@ const baseSelectors = {
 	isUserAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -876,7 +854,7 @@ const baseSelectors = {
 				: [ audienceResourceNames ];
 
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -904,10 +882,10 @@ const baseSelectors = {
 	 * @return {(Array|undefined)} Array of configurable audiences. Undefined if available audiences are not loaded yet.
 	 */
 	getConfigurableAudiences: createRegistrySelector( ( select ) => () => {
-		const { getAvailableAudiences, getResourceDataAvailabilityDate } =
+		const { getOrSyncAvailableAudiences, getResourceDataAvailabilityDate } =
 			select( MODULES_ANALYTICS_4 );
 
-		const availableAudiences = getAvailableAudiences();
+		const availableAudiences = getOrSyncAvailableAudiences();
 
 		if ( availableAudiences === undefined ) {
 			return undefined;
@@ -1096,7 +1074,7 @@ const baseSelectors = {
 	getPartialDataSiteKitAudience: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if ( availableAudiences === undefined ) {
 				return undefined;
@@ -1171,7 +1149,7 @@ const baseSelectors = {
 			const configuredAudiences =
 				select( CORE_USER ).getConfiguredAudiences();
 			const availableAudiences =
-				select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
 
 			if (
 				undefined === configuredAudiences ||
@@ -1206,18 +1184,14 @@ const baseSelectors = {
 	),
 };
 
-const store = combineStores(
-	fetchCreateAudienceStore,
-	fetchSyncAvailableAudiencesStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: {},
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchCreateAudienceStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: {},
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

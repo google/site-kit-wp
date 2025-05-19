@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase_Context_Trait;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 trait Module_With_Service_Entity_ContractTests {
@@ -87,7 +88,7 @@ trait Module_With_Service_Entity_ContractTests {
 		FakeHttp::fake_google_http_handler(
 			$module->get_client(),
 			function () use ( $status_code ) {
-				return new Response( $status_code );
+				return new FulfilledPromise( new Response( $status_code ) );
 			}
 		);
 	}

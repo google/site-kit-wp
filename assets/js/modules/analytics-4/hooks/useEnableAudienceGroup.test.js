@@ -35,7 +35,6 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
-	waitForTimeouts,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
 import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
@@ -44,11 +43,11 @@ describe( 'useEnableAudienceGroup', () => {
 	let registry;
 	let enableAudienceGroupSpy;
 
-	const audienceSettingsEndpoint = new RegExp(
+	const audienceUserSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
-	const analyticsSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -72,7 +71,7 @@ describe( 'useEnableAudienceGroup', () => {
 			'enableAudienceGroup'
 		);
 
-		fetchMock.postOnce( analyticsSettingsEndpoint, ( url, opts ) => {
+		fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
 			const { data } = JSON.parse( opts.body );
 			// Return the same settings passed to the API.
 			return { body: data, status: 200 };
@@ -224,7 +223,7 @@ describe( 'useEnableAudienceGroup', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
+		fetchMock.postOnce( audienceUserSettingsEndpoint, {
 			status: 200,
 			body: {
 				configuredAudiences: [
@@ -268,7 +267,7 @@ describe( 'useEnableAudienceGroup', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
+		fetchMock.postOnce( audienceUserSettingsEndpoint, {
 			status: 200,
 			body: {
 				configuredAudiences: [
@@ -290,17 +289,16 @@ describe( 'useEnableAudienceGroup', () => {
 			.setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
-
-		// eslint-disable-next-line require-await
-		await actHook( async () => {
-			renderHook( () => useEnableAudienceGroup(), {
+		const { waitForRegistry } = renderHook(
+			() => useEnableAudienceGroup(),
+			{
 				registry,
-			} );
-		} );
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
-
-		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 
 	it( 'should dispatch the `enableAudienceGroup` action when `onEnableGroups` is called', async () => {
@@ -314,7 +312,7 @@ describe( 'useEnableAudienceGroup', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
+		fetchMock.postOnce( audienceUserSettingsEndpoint, {
 			status: 200,
 			body: {
 				configuredAudiences: [
@@ -330,9 +328,14 @@ describe( 'useEnableAudienceGroup', () => {
 
 		mockSurveyEndpoints();
 
-		const { result } = renderHook( () => useEnableAudienceGroup(), {
-			registry,
-		} );
+		const { result, waitForRegistry } = renderHook(
+			() => useEnableAudienceGroup(),
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		const { onEnableGroups } = result.current;
 
@@ -341,7 +344,5 @@ describe( 'useEnableAudienceGroup', () => {
 		} );
 
 		expect( enableAudienceGroupSpy ).toHaveBeenCalledTimes( 1 );
-
-		await actHook( () => waitForTimeouts( 30 ) );
 	} );
 } );

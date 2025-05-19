@@ -21,7 +21,7 @@ module.exports = {
 	'jsdoc-capitalization': require( './jsdoc-capitalization' ),
 	'jsdoc-fullstop': require( './jsdoc-fullstop' ),
 	'jsdoc-newlines': require( './jsdoc-newlines' ),
-	'jsdoc-requires-since': require( './jsdoc-requires-since.js' ),
+	'jsdoc-requires-since': require( './jsdoc-requires-since' ),
 	'jsdoc-tag-grouping': require( './jsdoc-tag-grouping' ),
 	'jsdoc-tag-order': require( './jsdoc-tag-order' ),
 	'jsdoc-third-person': require( './jsdoc-third-person' ),

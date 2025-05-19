@@ -18,7 +18,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { debounce, mapValues } from 'lodash';
+import { debounce, keyBy, mapValues } from 'lodash';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 
@@ -64,7 +64,6 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import InViewProvider from '../../assets/js/components/InViewProvider';
-import { DEFAULT_NOTIFICATIONS } from '../../assets/js/googlesitekit/notifications/register-defaults';
 
 const allCoreStores = [
 	coreForms,
@@ -466,34 +465,35 @@ export const provideKeyMetricsUserInputSettings = (
 /**
  * Provides notifications data to the given registry.
  *
- * @since 1.140.0
- * @since 1.142.0 Updated the `overwrite` option to be a named parameter.
+ * @since 1.149.0
  *
- * @param {Object}  registry            The registry to set up.
- * @param {Object}  [extraData]         Extra data to merge with the default settings.
- * @param {Object}  [options]           Options object.
- * @param {boolean} [options.overwrite] Merges extra data with default notifications when false, else overwrites default notifications.
+ * @param {Object}   registry    The registry to set up.
+ * @param {Object[]} [extraData] List of notification objects to be merged with defaults. Default empty array.
  */
-export const provideNotifications = (
-	registry,
-	extraData,
-	{ overwrite = false } = {}
-) => {
-	const notificationsAPI = coreNotifications.createNotifications( registry );
+export const provideNotifications = ( registry, extraData ) => {
+	const { registerNotification: realRegisterNotification, ...Notifications } =
+		coreNotifications.createNotifications( registry );
 
-	let notifications = {};
-	if ( overwrite === false ) {
-		notifications[ 'gathering-data-notification' ] =
-			DEFAULT_NOTIFICATIONS[ 'gathering-data-notification' ];
-	}
-	notifications = { ...notifications, ...extraData };
+	const extraDataByID = keyBy( extraData, 'id' );
+	// Decorate `Notifications.registerNotification` with a function to apply extra data.
+	const registeredNotifications = new Set();
+	const testRegisterNotification = ( id, settings ) => {
+		registeredNotifications.add( id );
+		return realRegisterNotification( id, {
+			...settings,
+			...extraDataByID[ id ],
+		} );
+	};
+	Notifications.registerNotification = testRegisterNotification;
+	// Register defaults with any potential overrides via extraData.
+	coreNotifications.registerNotifications( Notifications );
 
-	for ( const notificationID in notifications ) {
-		notificationsAPI.registerNotification(
-			notificationID,
-			notifications[ notificationID ]
+	// Register any additional notifications provided.
+	Object.entries( extraDataByID )
+		.filter( ( [ id ] ) => ! registeredNotifications.has( id ) )
+		.forEach( ( [ id, settings ] ) =>
+			realRegisterNotification( id, settings )
 		);
-	}
 };
 
 /**
@@ -649,7 +649,10 @@ export const waitForTimeouts = ( timeout ) => {
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
-	if ( jest.isMockFunction( setTimeout ) ) {
+	if (
+		process.env.NODE_ENV === 'test' &&
+		jest.isMockFunction( setTimeout )
+	) {
 		// Fail if attempted to use.
 		return () => {
 			throw new Error(

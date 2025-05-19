@@ -37,7 +37,10 @@ export default function CTALinkSubtle( {
 	tertiary = false,
 	isSaving = false,
 } ) {
-	const trackEvents = useNotificationEvents( id );
+	const trackEvents = useNotificationEvents(
+		id,
+		gaTrackingEventArgs?.category
+	);
 
 	const handleCTAClick = async ( event ) => {
 		await onCTAClick?.( event );

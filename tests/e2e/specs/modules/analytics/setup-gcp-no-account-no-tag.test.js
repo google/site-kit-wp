@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint complexity: [ "error", 16 ] */
+
 /**
  * WordPress dependencies
  */
@@ -231,11 +233,9 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
+		await page.waitForSelector( '.googlesitekit-subtle-notification' );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}

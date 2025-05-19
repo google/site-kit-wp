@@ -174,6 +174,42 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output );
 	}
 
+	public function test_render_button_in_wp_login_form() {
+		$reset_site_url = site_url();
+		update_option( 'home', 'http://example.com/' );
+		update_option( 'siteurl', 'http://example.com/' );
+
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		// Does not render the if the site is not https.
+		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
+		$output = apply_filters( 'login_form_top', '' );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
+
+		// Update site URL to https.
+		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
+		update_option( 'siteurl', 'https://example.com/' );
+		update_option( 'home', 'https://example.com/' );
+
+		// Does not render if clientID is not set.
+		$this->module->get_settings()->set( array( 'clientID' => '' ) );
+		$output = apply_filters( 'login_form_top', '' );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
+
+		$this->module->get_settings()->set( array( 'clientID' => null ) );
+		$output = apply_filters( 'login_form_top', '' );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
+
+		// Renders the button with the correct clientID and redirect_uri.
+		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
+
+		// Render the button.
+		$output = apply_filters( 'login_form_top', '' );
+		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
+	}
+
 	public function test_handle_disconnect_user__bad_nonce() {
 		$this->module->register();
 

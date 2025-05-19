@@ -12,10 +12,10 @@ on:
       - synchronize
     paths:
       - '.github/workflows/compressed-size.yml'
-      - 'assets/js/**.js'
-      - '!assets/js/**.test.js'
-      - '!assets/js/**/test/**'
-      - 'assets/sass/**/*.scss'
+      - 'assets/**/*.js'
+      - '!assets/**/*.test.js'
+      - '!assets/**/test/**'
+      - 'assets/**/*.scss'
       - 'assets/svg/**/*.svg'
       - './*.config.js'
       - './package-lock.json'
@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event.pull_request.draft == false
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +41,12 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      # nvm@7 is the minimum version required for npm workspace support.
+      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
+      # This can be removed once our node base version comes with nvm@7 or greater.
+      - name: Install npm Globally
+        run: npm run install-global-npm
+
       - uses: preactjs/compressed-size-action@v2
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
@@ -46,3 +54,4 @@ jobs:
           # The sub-match below will be replaced by asterisks.
           # The length of 20 corresponds to webpack's `output.hashDigestLength`.
           strip-hash: "([a-f0-9]{20})(?:\\.min)?\\.(?:css|js)$"
+          minimum-change-threshold: 1000 # 1KB

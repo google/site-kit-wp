@@ -22,6 +22,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -279,20 +280,22 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 			switch ( $url['path'] ) {
 				case "/v1beta/properties/$property_id:runReport":
 					// Return a mock report.
-					return new Response(
-						200,
-						array(),
-						json_encode(
-							array(
-								'kind'     => 'analyticsData#runReport',
-								'rowCount' => 1,
-								'rows'     => $report_rows,
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'kind'     => 'analyticsData#runReport',
+									'rowCount' => 1,
+									'rows'     => $report_rows,
+								)
 							)
 						)
 					);
 
 				default:
-					return new Response( 200 );
+					return new FulfilledPromise( new Response( 200 ) );
 			}
 		};
 	}

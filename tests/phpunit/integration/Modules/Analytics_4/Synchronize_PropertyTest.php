@@ -19,6 +19,7 @@ use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
@@ -115,16 +116,18 @@ class Synchronize_PropertyTest extends TestCase {
 				$property->setCreateTime( $create_time );
 
 				if ( "/v1beta/properties/{$property_id}" === $url['path'] ) {
-					return new Response(
-						200,
-						array(),
-						json_encode(
-							$property
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								$property
+							)
 						)
 					);
 				}
 
-				return new Response( 200 );
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 	}

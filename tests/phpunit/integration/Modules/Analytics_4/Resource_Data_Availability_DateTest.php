@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -27,6 +28,11 @@ class Resource_Data_Availability_DateTest extends TestCase {
 	 * @var Settings
 	 */
 	protected $settings;
+
+	/**
+	 * @var Audience_Settings
+	 */
+	protected $audience_settings;
 
 	/**
 	 * @var Resource_Data_Availability_Date
@@ -47,19 +53,27 @@ class Resource_Data_Availability_DateTest extends TestCase {
 		$options                               = new Options( $context );
 		$transients                            = new Transients( $context );
 		$this->settings                        = new Settings( $options );
-		$this->resource_data_availability_date = new Resource_Data_Availability_Date( $transients, $this->settings );
+		$this->audience_settings               = new Audience_Settings( $options );
+		$this->resource_data_availability_date = new Resource_Data_Availability_Date( $transients, $this->settings, $this->audience_settings );
 
 		$this->settings->merge(
 			array(
-				'propertyID'         => $this->test_property_id,
-				'availableAudiences' => array(
-					array(
-						'name' => $this->test_audience_1,
-					),
-					array(
-						'name' => $this->test_audience_2,
-					),
-				),
+				'propertyID' => $this->test_property_id,
+			)
+		);
+
+		$available_audiences = array(
+			array(
+				'name' => $this->test_audience_1,
+			),
+			array(
+				'name' => $this->test_audience_2,
+			),
+		);
+
+		$this->audience_settings->set(
+			array(
+				'availableAudiences' => $available_audiences,
 			)
 		);
 	}

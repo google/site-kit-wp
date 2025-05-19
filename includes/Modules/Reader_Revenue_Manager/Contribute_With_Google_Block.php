@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 /**
  * Contribute with Google Gutenberg block.
  *
- * @since n.e.x.t
+ * @since 1.148.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Contribute_With_Google_Block {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Context
 	 */
@@ -34,7 +34,7 @@ class Contribute_With_Google_Block {
 	/**
 	 * Tag_Guard instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Tag_Guard
 	 */
@@ -43,7 +43,7 @@ class Contribute_With_Google_Block {
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @var Module_Settings
 	 */
@@ -52,7 +52,7 @@ class Contribute_With_Google_Block {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @param Context         $context   Plugin context.
 	 * @param Tag_Guard       $tag_guard Tag_Guard instance.
@@ -67,7 +67,7 @@ class Contribute_With_Google_Block {
 	/**
 	 * Register this block.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 */
 	public function register() {
 		add_action(
@@ -87,7 +87,7 @@ class Contribute_With_Google_Block {
 	/**
 	 * Render callback for the block.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.148.0
 	 *
 	 * @return string Rendered block.
 	 */

@@ -503,7 +503,8 @@ final class Authentication {
 				$this->credentials,
 				$this->google_proxy,
 				$this->profile,
-				$this->token
+				$this->token,
+				$this->transients
 			);
 		}
 		return $this->auth_client;

@@ -31,3 +31,5 @@ if ( global.googlesitekit.api === undefined ) {
 
 // This is only exported for Jest and is not used in production.
 export default API;
+
+export * from './googlesitekit/api';
