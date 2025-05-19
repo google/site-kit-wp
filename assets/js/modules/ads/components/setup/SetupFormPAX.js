@@ -97,7 +97,7 @@ export default function SetupFormPAX( {
 
 			{ isDuplicateAdsIDDetected && (
 				<Notice
-					className="googlesitekit-ads-setup__ads-id-conflict-warning"
+					className="googlesitekit-notice--small googlesitekit-ads-setup__ads-id-conflict-warning"
 					type={ Notice.TYPES.WARNING }
 					description={ __(
 						'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.',
