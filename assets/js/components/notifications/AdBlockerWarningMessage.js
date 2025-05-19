@@ -44,6 +44,7 @@ export default function AdBlockerWarningMessage( {
 
 	return (
 		<Notice
+			className="googlesitekit-notice--small"
 			type={ Notice.TYPES.WARNING }
 			description={ createInterpolateElement(
 				sprintf(
