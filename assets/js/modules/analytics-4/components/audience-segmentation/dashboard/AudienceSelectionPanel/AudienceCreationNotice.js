@@ -337,7 +337,6 @@ export default function AudienceCreationNotice() {
 						'google-site-kit'
 					) }
 					dismissButton={ {
-						label: __( 'Got it', 'google-site-kit' ),
 						onClick: handleDismissEditScopeNotice,
 					} }
 					hideIcon
