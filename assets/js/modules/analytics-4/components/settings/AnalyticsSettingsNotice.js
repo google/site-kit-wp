@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,14 +46,20 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	if ( ! hasModuleAccess ) {
 		return (
 			<Notice
-				type={ Notice.TYPES.INFO }
-				description={ sprintf(
-					/* translators: %s: module owner's name */
-					__(
-						'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured property.',
-						'google-site-kit'
+				className="googlesitekit-settings-notice"
+				type={ Notice.TYPES.WARNING }
+				description={ createInterpolateElement(
+					sprintf(
+						/* translators: %s: module owner's name */
+						__(
+							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured property.',
+							'google-site-kit'
+						),
+						formattedOwnerName
 					),
-					formattedOwnerName
+					{
+						strong: <strong />,
+					}
 				) }
 			/>
 		);
