@@ -253,7 +253,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 					'google-site-kit'
 				) }
 				dismissButton={ {
-					label: __( 'Got it', 'google-site-kit' ),
 					onClick: dismissNotice,
 				} }
 				ctaButton={ {
