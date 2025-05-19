@@ -87,6 +87,12 @@
 		}
 	}
 
+	&.googlesitekit-notice--small {
+		.googlesitekit-notice__content p {
+			font-size: $fs-body-sm;
+		}
+	}
+
 	.mdc-button {
 		font-weight: $fw-medium;
 		margin: 0 auto;
