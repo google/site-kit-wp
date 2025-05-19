@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 19 ] */
-
 /**
  * External dependencies
  */
@@ -28,7 +26,6 @@ import { Slide } from '@material-ui/core';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,11 +34,8 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from '../SurveyCompletion';
-import SurveyQuestionRating from '../SurveyQuestionRating';
-import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
-import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
-import SurveyQuestionSingleSelect from '../SurveyQuestionSingleSelect';
 import SurveyTerms from '../SurveyTerms';
+import SurveyQuestion from './SurveyQuestion';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
 
@@ -318,16 +312,6 @@ export default function CurrentSurvey() {
 			);
 		} ) === false;
 
-	const commonProps = {
-		key: currentQuestion.question_text,
-		answerQuestion,
-		dismissSurvey,
-		question: currentQuestion.question_text,
-		submitButtonText: isTheLastQuestion
-			? __( 'Submit', 'google-site-kit' )
-			: __( 'Next', 'google-site-kit' ),
-	};
-
 	return (
 		<Slide
 			direction="up"
@@ -335,34 +319,12 @@ export default function CurrentSurvey() {
 			onExited={ handleAnimationOnExited }
 		>
 			<div className="googlesitekit-survey">
-				{ currentQuestion.question_type === TYPE_MULTI_SELECT && (
-					<SurveyQuestionMultiSelect
-						{ ...commonProps }
-						choices={ currentQuestion.question.answer_choice }
-						minChoices={ currentQuestion.question.min_choices }
-						maxChoices={ currentQuestion.question.max_choices }
-					/>
-				) }
-				{ currentQuestion.question_type === TYPE_OPEN_TEXT && (
-					<SurveyQuestionOpenText
-						{ ...commonProps }
-						subtitle={ currentQuestion.question.subtitle }
-						placeholder={ currentQuestion.question.placeholder }
-					/>
-				) }
-				{ currentQuestion.question_type === TYPE_RATING && (
-					<SurveyQuestionRating
-						{ ...commonProps }
-						choices={ currentQuestion.question.answer_choice }
-					/>
-				) }
-				{ currentQuestion.question_type === TYPE_SINGLE_SELECT && (
-					<SurveyQuestionSingleSelect
-						{ ...commonProps }
-						choices={ currentQuestion.question.answer_choice }
-					/>
-				) }
-
+				<SurveyQuestion
+					currentQuestion={ currentQuestion }
+					answerQuestion={ answerQuestion }
+					dismissSurvey={ dismissSurvey }
+					isTheLastQuestion={ isTheLastQuestion }
+				/>
 				{ isTrackingEnabled === false &&
 					currentQuestion?.question_ordinal === 1 && ( // eslint-disable-line camelcase
 						<div className="googlesitekit-survey__footer">

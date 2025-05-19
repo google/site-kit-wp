@@ -1,0 +1,94 @@
+/**
+ * SurveyQuestion component.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+import SurveyQuestionRating from '../SurveyQuestionRating';
+import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
+import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
+import SurveyQuestionSingleSelect from '../SurveyQuestionSingleSelect';
+
+const TYPE_MULTI_SELECT = 'multi_select';
+const TYPE_OPEN_TEXT = 'open_text';
+const TYPE_RATING = 'rating';
+const TYPE_SINGLE_SELECT = 'single_select';
+
+export default function SurveyQuestion( {
+	currentQuestion,
+	answerQuestion,
+	dismissSurvey,
+	isTheLastQuestion,
+} ) {
+	const commonProps = {
+		key: currentQuestion.question_text,
+		answerQuestion,
+		dismissSurvey,
+		question: currentQuestion.question_text,
+		submitButtonText: isTheLastQuestion
+			? __( 'Submit', 'google-site-kit' )
+			: __( 'Next', 'google-site-kit' ),
+	};
+
+	return (
+		<Fragment>
+			{ currentQuestion.question_type === TYPE_MULTI_SELECT && (
+				<SurveyQuestionMultiSelect
+					{ ...commonProps }
+					choices={ currentQuestion.question.answer_choice }
+					minChoices={ currentQuestion.question.min_choices }
+					maxChoices={ currentQuestion.question.max_choices }
+				/>
+			) }
+			{ currentQuestion.question_type === TYPE_OPEN_TEXT && (
+				<SurveyQuestionOpenText
+					{ ...commonProps }
+					subtitle={ currentQuestion.question.subtitle }
+					placeholder={ currentQuestion.question.placeholder }
+				/>
+			) }
+			{ currentQuestion.question_type === TYPE_RATING && (
+				<SurveyQuestionRating
+					{ ...commonProps }
+					choices={ currentQuestion.question.answer_choice }
+				/>
+			) }
+			{ currentQuestion.question_type === TYPE_SINGLE_SELECT && (
+				<SurveyQuestionSingleSelect
+					{ ...commonProps }
+					choices={ currentQuestion.question.answer_choice }
+				/>
+			) }
+		</Fragment>
+	);
+}
+
+SurveyQuestion.propTypes = {
+	currentQuestion: PropTypes.object.isRequired,
+	answerQuestion: PropTypes.func.isRequired,
+	dismissSurvey: PropTypes.func.isRequired,
+	isTheLastQuestion: PropTypes.bool.isRequired,
+};
