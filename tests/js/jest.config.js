@@ -45,7 +45,6 @@ module.exports = {
 		'<rootDir>/packages/**/?(*.)test.js',
 		'<rootDir>/tests/js/**/?(*.)test.js',
 	],
-	testEnvironment: 'jsdom',
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',
 		'<rootDir>/node_modules',
