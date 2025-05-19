@@ -42,7 +42,7 @@
 /**
  * Parses the provided cart item HTML to extract product details.
  *
- * @since n.e.x.t
+ * @since 1.153.0
  *
  * @param {string} cartItemHTML The HTML string for the cart item.
  * @return {Object} `title` and `value` keys.

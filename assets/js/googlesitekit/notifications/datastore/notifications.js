@@ -204,7 +204,7 @@ export const actions = {
 	/**
 	 * Marks a notification as seen on the current date.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 *
 	 * @param {string} notificationID Notification ID.
 	 * @return {Object} Redux-style action.
@@ -493,7 +493,7 @@ export const selectors = {
 	/**
 	 * Gets all view dates for each notification, keyed by notification ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Object with notification IDs as keys and array of dates viewed as the value.
@@ -505,7 +505,7 @@ export const selectors = {
 	/**
 	 * Gets the dates when a specific notification was seen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.153.0
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} notificationID Notification ID.
