@@ -66,7 +66,9 @@ const Notice = forwardRef(
 
 				<div className="googlesitekit-notice__content">
 					{ title && <Title>{ title }</Title> }
-					<Description>{ description }</Description>
+					{ description && (
+						<Description>{ description }</Description>
+					) }
 				</div>
 
 				{ ( dismissButton?.label ||
