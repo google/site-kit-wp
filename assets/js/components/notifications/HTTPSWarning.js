@@ -48,6 +48,7 @@ export default function HTTPSWarning( { moduleSlug } ) {
 
 	return (
 		<Notice
+			className="googlesitekit-notice--small"
 			type={ Notice.TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %s: Module name. */
@@ -57,6 +58,7 @@ export default function HTTPSWarning( { moduleSlug } ) {
 				),
 				moduleName
 			) }
+			hideIcon
 		/>
 	);
 }
