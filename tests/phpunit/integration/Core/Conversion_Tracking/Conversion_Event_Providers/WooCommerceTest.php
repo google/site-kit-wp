@@ -39,6 +39,36 @@ class WooCommerceTest extends TestCase {
 		$this->assertTrue( $this->woocommerce->is_active() );
 	}
 
+	public function test_get_event_names__when_analytics_integration_addon_is_active() {
+		class_alias( __CLASS__, 'WC_Google_Analytics_Integration' );
+
+		// If the WooCommerce Google Analytics Integration is active, and has add to cart event enabled,
+		// WooCommerce provider should track only purchase event.
+		update_option( 'woocommerce_google_analytics_settings', array( 'ga_event_tracking_enabled' => 'yes' ) );
+		$events = $this->woocommerce->get_event_names();
+		$this->assertCount( 1, $events );
+		$this->assertEquals( 'purchase', $events[0] );
+
+		// If purchase event is enabled, WooCommerce provider should track only add to cart event.
+		update_option( 'woocommerce_google_analytics_settings', array( 'ga_ecommerce_tracking_enabled' => 'yes' ) );
+		$events = $this->woocommerce->get_event_names();
+		$this->assertCount( 1, $events, 'Expected 1 event, got ' . count( $events ) );
+		$this->assertEquals( 'add_to_cart', $events[0], 'Expected add_to_cart event, got ' . $events[0] );
+
+		// If purchase and add to cart events are enabled, WooCommerce provider should no track any event.
+		update_option(
+			'woocommerce_google_analytics_settings',
+			array(
+				'ga_ecommerce_tracking_enabled' => 'yes',
+				'ga_event_tracking_enabled'     => 'yes',
+			)
+		);
+		$events = $this->woocommerce->get_event_names();
+		$this->assertCount( 0, $events, 'Expected 0 events, got ' . count( $events ) );
+
+		delete_option( 'woocommerce_google_analytics_settings' );
+	}
+
 	public function test_get_event_names() {
 		$events = $this->woocommerce->get_event_names();
 		$this->assertCount( 2, $events );
