@@ -92,8 +92,6 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @since 1.129.0
 	 */
 	public function register_hooks() {
-		$input = $this->context->input();
-
 		add_filter(
 			'woocommerce_loop_add_to_cart_link',
 			function ( $button, $product ) {
@@ -120,42 +118,23 @@ class WooCommerce extends Conversion_Events_Provider {
 		);
 
 		add_action(
+			'wp_head',
+			function () {
+				if ( is_wc_endpoint_url( 'order-received' ) ) {
+					$order_id = absint( get_query_var( 'order-received' ) );
+
+					if ( ! wp_is_block_theme() ) {
+						return;
+					}
+
+					$this->maybe_add_purchase_inline_script( $order_id );
+				}
+			}
+		);
+
+		add_action(
 			'woocommerce_thankyou',
-			function ( $order_id ) use ( $input ) {
-				$order = wc_get_order( $order_id );
-
-				// If there isn't a valid order for this ID, or if this order
-				// already has a purchase event tracked for it, return early
-				// and don't output the script tag to track the purchase event.
-				if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
-					return;
-				}
-
-				// Ensure the order key in the query param is valid for this
-				// order.
-				$order_key = $input->filter( INPUT_GET, 'key' );
-
-				// Don't output the script tag if the order key is invalid.
-				if ( ! $order->key_is_valid( (string) $order_key ) ) {
-					return;
-				}
-
-				// Mark the order as tracked by Site Kit.
-				$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
-				$order->save();
-
-				wp_add_inline_script(
-					'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
-					join(
-						"\n",
-						array(
-							'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
-							sprintf( 'window._googlesitekit.wcdata.purchase = %s;', wp_json_encode( $this->get_formatted_order( $order ) ) ),
-						)
-					),
-					'before'
-				);
-			},
+			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id ),
 			10,
 			1
 		);
@@ -302,6 +281,50 @@ class WooCommerce extends Conversion_Events_Provider {
 				( (float) wc_format_decimal( $value ) ) * ( 10 ** absint( wc_get_price_decimals() ) ),
 				0
 			)
+		);
+	}
+
+	/**
+	 * Prints the purchase event details.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $order_id The order ID.
+	 */
+	protected function maybe_add_purchase_inline_script( $order_id ) {
+		$input = $this->context->input();
+		$order = wc_get_order( $order_id );
+
+		// If there isn't a valid order for this ID, or if this order
+		// already has a purchase event tracked for it, return early
+		// and don't output the script tag to track the purchase event.
+		if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
+			return;
+		}
+
+		// Ensure the order key in the query param is valid for this
+		// order.
+		$order_key = $input->filter( INPUT_GET, 'key' );
+
+		// Don't output the script tag if the order key is invalid.
+		if ( ! $order->key_is_valid( (string) $order_key ) ) {
+			return;
+		}
+
+		// Mark the order as tracked by Site Kit.
+		$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
+		$order->save();
+
+		wp_add_inline_script(
+			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
+			join(
+				"\n",
+				array(
+					'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
+					sprintf( 'window._googlesitekit.wcdata.purchase = %s;', wp_json_encode( $this->get_formatted_order( $order ) ) ),
+				)
+			),
+			'before'
 		);
 	}
 }
