@@ -17,13 +17,17 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -35,7 +39,6 @@ import {
 	useBreakpoint,
 } from '../../../../hooks/useBreakpoint';
 import Link from '../../../../components/Link';
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 import Notice from '../../../../components/Notice';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
@@ -54,6 +57,12 @@ export default function AnyoneCanRegisterDisabledNotice() {
 		select( CORE_SITE ).getAdminSettingsURL()
 	);
 
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const dismissNotice = useCallback( () => {
+		dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE );
+	} );
+
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
 			ANYONE_CAN_REGISTER_DISABLED_NOTICE
@@ -66,8 +75,7 @@ export default function AnyoneCanRegisterDisabledNotice() {
 
 	return (
 		<div className="googlesitekit-registration-disabled-notice">
-			<NoticeNotification
-				notificationID={ ANYONE_CAN_REGISTER_DISABLED_NOTICE }
+			<Notice
 				type={ Notice.TYPES.INFO }
 				description={ createInterpolateElement(
 					sprintf(
@@ -104,6 +112,10 @@ export default function AnyoneCanRegisterDisabledNotice() {
 							),
 					}
 				) }
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+					onClick: dismissNotice,
+				} }
 			/>
 		</div>
 	);
