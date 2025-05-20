@@ -134,9 +134,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 		add_action(
 			'woocommerce_thankyou',
-			function ( $order_id ) {
-				$this->maybe_add_purchase_inline_script( $order_id );
-			},
+			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id ),
 			10,
 			1
 		);
@@ -328,9 +326,5 @@ class WooCommerce extends Conversion_Events_Provider {
 			),
 			'before'
 		);
-
-		// Output the script tag to track the purchase event in
-		// Analytics.
-		BC_Functions::wp_print_inline_script_tag( "window?._googlesitekit?.gtagEvent?.( 'purchase' );" );
 	}
 }
