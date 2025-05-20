@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerceGoogleAnalyticsIntegration
  *
  * @package   Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers
- * @copyright 2024 Google LLC
+ * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -14,9 +14,9 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 
 /**
- * Class for handling PopupMaker conversion events.
+ * Class for handling Google Analytics for WooCommerce conversion events.
  *
- * @since 1.127.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -25,11 +25,11 @@ class WooCommerceGoogleAnalyticsIntegration extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce-google-analytics-integration';
 
 	/**
-	 * Checks if the WooCommerceGoogleAnalyticsIntegration plugin is active.
+	 * Checks if the Google Analytics for WooCommerce plugin is active.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool True if WooCommerceGoogleAnalyticsIntegration is active, false otherwise.
+	 * @return bool True if Google Analytics for WooCommerce is active, false otherwise.
 	 */
 	public function is_active() {
 		return class_exists( 'WC_Google_Analytics_Integration' );
