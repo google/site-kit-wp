@@ -18,17 +18,42 @@
  * WordPress dependencies
  */
 import { registerBlockType } from '@wordpress-core/blocks';
+import { useEffect } from '@wordpress-core/element';
 
 /**
  * Internal dependencies
  */
-import { select, resolveSelect } from 'googlesitekit-data';
+import { dispatch, select, resolveSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
 import Edit from './Edit';
 import metadata from './block.json';
+import { trackEvent } from '../../../js/util/tracking';
+
+export function withBlockTracking( BlockComponent ) {
+	return function WrappedBlockComponent( props ) {
+		useEffect( () => {
+			const canTrackBlock = select(
+				MODULES_READER_REVENUE_MANAGER
+			).canTrackBlock( props.blockID );
+
+			if ( canTrackBlock ) {
+				trackEvent( 'insert_block', {
+					blockID: props.blockID,
+				} );
+
+				dispatch( MODULES_READER_REVENUE_MANAGER ).setSeenBlockID(
+					props.blockID
+				);
+			}
+		}, [ props.blockID ] );
+		return <BlockComponent { ...props } />;
+	};
+}
+
+const EditWithTracking = withBlockTracking( Edit );
 
 async function registerBlock() {
 	// Since we aren't currently able to use the Site Kit `useSelect()` in the components,
@@ -43,13 +68,15 @@ async function registerBlock() {
 	const isSiteEditor = !! select( CORE_EDIT_SITE );
 
 	registerBlockType( metadata.name, {
-		edit() {
+		// eslint-disable-next-line sitekit/acronym-case
+		edit( { clientId } ) {
 			// Don't render the block in the site editor. Site editor support will be added in a future issue.
 			if ( isSiteEditor ) {
 				return null;
 			}
 
-			return <Edit />;
+			// eslint-disable-next-line sitekit/acronym-case
+			return <EditWithTracking blockID={ clientId } />;
 		},
 		supports: {
 			// Don't allow the block to be inserted in the site editor.

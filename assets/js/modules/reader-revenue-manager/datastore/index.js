@@ -19,13 +19,77 @@
 /**
  * Internal dependencies
  */
-import { combineStores } from 'googlesitekit-data';
+import { combineStores, dispatch, select, subscribe } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import baseModuleStore from './base';
 import publications from './publications';
 import service from './service';
 
-const store = combineStores( baseModuleStore, publications, service );
+const blockTrackingStore = {
+	initialState: {
+		isEditorReady: false,
+		seenBlockIDs: [],
+	},
+	actions: {
+		setSeenBlockIDs: ( blockIDs ) => {
+			return {
+				type: 'SET_SEEN_BLOCK_IDS',
+				payload: blockIDs,
+			};
+		},
+		setSeenBlockID: ( blockID ) => {
+			return {
+				type: 'SET_SEEN_BLOCK_ID',
+				payload: blockID,
+			};
+		},
+	},
+	reducer: ( state, { type, payload } ) => {
+		switch ( type ) {
+			case 'SET_SEEN_BLOCK_IDS':
+				return {
+					...state,
+					isEditorReady: true,
+					seenBlockIDs: payload,
+				};
+			case 'SET_SEEN_BLOCK_ID':
+				return {
+					...state,
+					seenBlockIDs: [ ...state.seenBlockIDs, payload ],
+				};
+			default:
+				return state;
+		}
+	},
+	selectors: {
+		isEditorReady: ( state ) => state.isEditorReady,
+		canTrackBlock: ( state, blockID ) =>
+			state.isEditorReady && ! state.seenBlockIDs.includes( blockID ),
+	},
+};
+
+const unsubscribe = subscribe( () => {
+	const blocks = select( 'core/block-editor' ).getBlocks();
+
+	if (
+		blocks.length &&
+		! select( MODULES_READER_REVENUE_MANAGER ).isEditorReady()
+	) {
+		dispatch( MODULES_READER_REVENUE_MANAGER ).setSeenBlockIDs(
+			// eslint-disable-next-line sitekit/acronym-case
+			blocks.map( ( block ) => block.clientId )
+		);
+
+		unsubscribe();
+	}
+} );
+
+const store = combineStores(
+	baseModuleStore,
+	publications,
+	service,
+	blockTrackingStore
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
