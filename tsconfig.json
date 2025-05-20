@@ -2,11 +2,15 @@
   "compilerOptions": {
     "allowJs": true,
     "noEmit": true,
+    "resolveJsonModule": true,
     "paths": {
       "@/*": [ "./assets/*" ],
-      "googlesitekit-data": [
-        "./assets/js/googlesitekit/data"
-      ],
+      "googlesitekit-api": ["./assets/js/googlesitekit-api"],
+      "googlesitekit-components": ["./assets/js/googlesitekit-components"],
+      "googlesitekit-data": ["./assets/js/googlesitekit-data"],
+      "googlesitekit-modules": ["./assets/js/googlesitekit-modules"],
+      "googlesitekit-notifications": ["./assets/js/googlesitekit-notifications"],
+      "googlesitekit-widgets": ["./assets/js/googlesitekit-widgets"],
     }
   },
   "exclude": [
@@ -15,6 +19,6 @@
     "node_modules",
     "php-scoper",
     "third-party",
-    "vendor",
+    "vendor"
   ]
 }
