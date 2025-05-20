@@ -140,11 +140,11 @@ describe( 'SettingsEdit', () => {
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
-					container.querySelector( '.googlesitekit-settings-notice' )
+					container.querySelector( '.googlesitekit-notice--info' )
 				).toBeInTheDocument();
 				expect(
 					container.querySelector(
-						'.googlesitekit-settings-notice__text'
+						'.googlesitekit-notice--info .googlesitekit-notice__content'
 					)
 				).toHaveTextContent(
 					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
@@ -244,11 +244,11 @@ describe( 'SettingsEdit', () => {
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
-					container.querySelector( '.googlesitekit-settings-notice' )
+					container.querySelector( '.googlesitekit-notice--info' )
 				).toBeInTheDocument();
 				expect(
 					container.querySelector(
-						'.googlesitekit-settings-notice__text'
+						'.googlesitekit-notice--info .googlesitekit-notice__content'
 					)
 				).toHaveTextContent(
 					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
@@ -361,11 +361,11 @@ describe( 'SettingsEdit', () => {
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
-					container.querySelector( '.googlesitekit-settings-notice' )
+					container.querySelector( '.googlesitekit-notice--info' )
 				).toBeInTheDocument();
 				expect(
 					container.querySelector(
-						'.googlesitekit-settings-notice__text'
+						'.googlesitekit-notice--info .googlesitekit-notice__content'
 					)
 				).toHaveTextContent(
 					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
