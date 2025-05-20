@@ -87,7 +87,7 @@
 		}
 	}
 
-	.googlesitekit-notice__content :not(:has(+ .googlesitekit-notice__action)) .googlesitekit-notice__description {
+	.googlesitekit-notice__content:not(:has(+ .googlesitekit-notice__action)) .googlesitekit-notice__description {
 		margin: 0;
 	}
 
