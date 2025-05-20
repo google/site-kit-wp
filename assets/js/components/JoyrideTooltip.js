@@ -40,11 +40,13 @@ export default function JoyrideTooltip( props ) {
 		title,
 		content,
 		dismissLabel,
+		disableOverlay = true,
 		target,
 		cta = false,
 		className,
 		styles = {},
 		slug = '',
+		placement = 'auto',
 		onDismiss = () => {},
 		onView = () => {},
 		onTourStart = () => {},
@@ -93,7 +95,7 @@ export default function JoyrideTooltip( props ) {
 			content,
 			disableBeacon: true,
 			isFixed: true,
-			placement: 'auto',
+			placement,
 			cta,
 			className,
 		},
@@ -135,7 +137,7 @@ export default function JoyrideTooltip( props ) {
 		<Portal slug={ slug }>
 			<Joyride
 				callback={ callback }
-				disableOverlay
+				disableOverlay={ disableOverlay }
 				disableScrolling
 				spotlightPadding={ 0 }
 				floaterProps={ floaterProps }
@@ -163,6 +165,7 @@ export default function JoyrideTooltip( props ) {
 JoyrideTooltip.propTypes = {
 	title: PropTypes.node,
 	content: PropTypes.string,
+	disableOverlay: PropTypes.bool,
 	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,
 	onDismiss: PropTypes.func,
@@ -170,5 +173,6 @@ JoyrideTooltip.propTypes = {
 	className: PropTypes.string,
 	styles: PropTypes.object,
 	slug: PropTypes.string,
+	placement: PropTypes.string,
 	onView: PropTypes.func,
 };
