@@ -44,7 +44,8 @@ module.exports = {
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 		// Necessary mock to prevent test failures caused by SVGR
-		'\\.svg(\\?url)?$': '<rootDir>/tests/js/svgrMock.js',
+		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
+		'\\.svg(\\?url)?$': '<rootDir>/tests/js/svgStringMock.js',
 		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
 			'<rootDir>/tests/js/fileMock.js',
 		'^@/(.+)$': '<rootDir>assets/$1',
