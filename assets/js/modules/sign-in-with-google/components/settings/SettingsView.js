@@ -178,7 +178,7 @@ export default function SettingsView() {
 					) }
 				</div>
 			</div>
-			<SettingsNotice className="googlesitekit-margin-top-0" />
+			<SettingsNotice />
 		</div>
 	);
 }
