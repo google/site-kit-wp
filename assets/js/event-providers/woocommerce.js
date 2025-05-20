@@ -26,8 +26,10 @@
 		add_to_cart: addToCart,
 		eventsToTrack,
 	} = global._googlesitekit?.wcdata || {};
+	const { add_to_cart: canTrackAddToCart, purchase: canTrackPurchase } =
+		eventsToTrack || {};
 
-	if ( addToCart && eventsToTrack?.[ 'add_to_cart' ] ) {
+	if ( addToCart && canTrackAddToCart ) {
 		const { price } = addToCart;
 
 		const eventData = formatEventData( price, globalCurrency, addToCart );
@@ -35,7 +37,7 @@
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 	}
 
-	if ( purchase && eventsToTrack?.purchase ) {
+	if ( purchase && canTrackPurchase ) {
 		const { id, totals, items } = purchase;
 
 		const eventData = formatEventData(
@@ -52,7 +54,7 @@
 
 	const $body = jQuery( 'body' );
 
-	if ( eventsToTrack?.[ 'add_to_cart' ] ) {
+	if ( canTrackAddToCart ) {
 		$body.on( 'added_to_cart', ( event, fragments, cartHash, $button ) => {
 			const productID = parseInt( $button.data( 'product_id' ), 10 );
 
@@ -85,7 +87,7 @@
 				10
 			);
 
-			if ( ! productID || ! eventsToTrack?.[ 'add_to_cart' ] ) {
+			if ( ! productID ) {
 				return;
 			}
 
@@ -115,6 +117,7 @@
 					globalCurrency,
 					productData
 				);
+
 				global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 			} );
 		} );
