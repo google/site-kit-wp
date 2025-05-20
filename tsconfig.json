@@ -4,6 +4,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "paths": {
+      "@/*": [ "./assets/*" ],
       "googlesitekit-api": ["./assets/js/googlesitekit-api"],
       "googlesitekit-components": ["./assets/js/googlesitekit-components"],
       "googlesitekit-data": ["./assets/js/googlesitekit-data"],
