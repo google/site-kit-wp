@@ -65,7 +65,7 @@ const Notice = forwardRef(
 				) }
 
 				<div className="googlesitekit-notice__content">
-					<Title>{ title }</Title>
+					{ title && <Title>{ title }</Title> }
 					<Description>{ description }</Description>
 				</div>
 
