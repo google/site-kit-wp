@@ -127,7 +127,7 @@ class WooCommerce extends Conversion_Events_Provider {
 						return;
 					}
 
-					$this->maybe_print_purchase_event_details( $order_id );
+					$this->maybe_add_purchase_inline_script( $order_id );
 				}
 			}
 		);
@@ -135,7 +135,7 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_action(
 			'woocommerce_thankyou',
 			function ( $order_id ) {
-				$this->maybe_print_purchase_event_details( $order_id );
+				$this->maybe_add_purchase_inline_script( $order_id );
 			},
 			10,
 			1
@@ -293,7 +293,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @param int $order_id The order ID.
 	 */
-	protected function maybe_print_purchase_event_details( $order_id ) {
+	protected function maybe_add_purchase_inline_script( $order_id ) {
 		$input = $this->context->input();
 		$order = wc_get_order( $order_id );
 
