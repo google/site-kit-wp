@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ErrorText from '../ErrorText';
+import Notice from '@/js/components/Notice';
 
 class MediaErrorHandler extends Component {
 	constructor( props ) {
@@ -56,7 +56,9 @@ class MediaErrorHandler extends Component {
 			return children;
 		}
 
-		return <ErrorText message={ errorMessage } />;
+		return (
+			<Notice type={ Notice.TYPES.ERROR } description={ errorMessage } />
+		);
 	}
 }
 
