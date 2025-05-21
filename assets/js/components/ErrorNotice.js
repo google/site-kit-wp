@@ -24,16 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import ErrorText from './ErrorText';
+import Notice from '@/js/components/Notice';
 
 export default function ErrorNotice( {
 	error,
@@ -42,7 +42,6 @@ export default function ErrorNotice( {
 	message = error.message,
 	noPrefix = false,
 	skipRetryMessage,
-	Icon,
 } ) {
 	const dispatch = useDispatch();
 
@@ -80,26 +79,24 @@ export default function ErrorNotice( {
 	}
 
 	return (
-		<Fragment>
-			{ Icon && (
-				<div className="googlesitekit-error-notice__icon">
-					<Icon width="24" height="24" />
-				</div>
-			) }
-			<ErrorText
-				message={ message }
-				reconnectURL={ error.data?.reconnectURL }
-				noPrefix={ noPrefix }
-			/>
-			{ shouldDisplayRetry && (
-				<Button
-					className="googlesitekit-error-notice__retry-button"
-					onClick={ handleRetry }
-				>
-					{ __( 'Retry', 'google-site-kit' ) }
-				</Button>
-			) }
-		</Fragment>
+		<Notice
+			type={ Notice.TYPES.ERROR }
+			description={
+				<ErrorText
+					message={ message }
+					reconnectURL={ error.data?.reconnectURL }
+					noPrefix={ noPrefix }
+				/>
+			}
+			{ ...( shouldDisplayRetry
+				? {
+						ctaButton: {
+							label: __( 'Retry', 'google-site-kit' ),
+							onClick: handleRetry,
+						},
+				  }
+				: null ) }
+		/>
 	);
 }
 
