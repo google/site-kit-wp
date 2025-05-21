@@ -27,6 +27,9 @@ import PropTypes from 'prop-types';
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
 import SurveyQuestionRating from '../SurveyQuestionRating';
 import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
 import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
