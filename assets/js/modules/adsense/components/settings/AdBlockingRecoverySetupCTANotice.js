@@ -103,45 +103,43 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	}
 
 	return (
-		<div>
-			<Notice
-				type={ Notice.TYPES.INFO }
-				title={
-					<Fragment>
-						{ __( 'Ad blocking recovery', 'google-site-kit' ) }
-						<Badge
-							className="googlesitekit-new-badge"
-							label={ __( 'New', 'google-site-kit' ) }
+		<Notice
+			type={ Notice.TYPES.INFO }
+			title={
+				<Fragment>
+					{ __( 'Ad blocking recovery', 'google-site-kit' ) }
+					<Badge
+						className="googlesitekit-new-badge"
+						label={ __( 'New', 'google-site-kit' ) }
+					/>
+				</Fragment>
+			}
+			description={ createInterpolateElement(
+				__(
+					'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<SupportLink
+							path="/adsense/answer/11576589"
+							external
+							onClick={ handleLearnMoreClick }
 						/>
-					</Fragment>
-				}
-				description={ createInterpolateElement(
-					__(
-						'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit. <a>Learn more</a>',
-						'google-site-kit'
 					),
-					{
-						a: (
-							<SupportLink
-								path="/adsense/answer/11576589"
-								external
-								onClick={ handleLearnMoreClick }
-							/>
-						),
-					}
-				) }
-				ctaButton={ {
-					label: __( 'Set up now', 'google-site-kit' ),
-					onClick: handleCTAClick,
-					isSaving: isNavigatingToRecoveryPageURL,
-					disabled: isNavigatingToRecoveryPageURL,
-				} }
-			>
-				<SurveyViewTrigger
-					triggerID="view_abr_setup_cta"
-					ttl={ DAY_IN_SECONDS }
-				/>
-			</Notice>
-		</div>
+				}
+			) }
+			ctaButton={ {
+				label: __( 'Set up now', 'google-site-kit' ),
+				onClick: handleCTAClick,
+				isSaving: isNavigatingToRecoveryPageURL,
+				disabled: isNavigatingToRecoveryPageURL,
+			} }
+		>
+			<SurveyViewTrigger
+				triggerID="view_abr_setup_cta"
+				ttl={ DAY_IN_SECONDS }
+			/>
+		</Notice>
 	);
 }
