@@ -28,7 +28,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { sanitizeHTML } from '../../../../util';
-import ErrorText from '../../../../components/ErrorText';
+import Notice from '@/js/components/Notice';
 
 export default function Description( {
 	className = 'googlesitekit-publisher-win__desc',
@@ -50,7 +50,9 @@ export default function Description( {
 					{ learnMoreLink }
 				</p>
 			</div>
-			{ errorText && <ErrorText message={ errorText } /> }
+			{ errorText && (
+				<Notice type={ Notice.TYPES.ERROR } description={ errorText } />
+			) }
 			{ children }
 		</Fragment>
 	);
