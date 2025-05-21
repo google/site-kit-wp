@@ -37,7 +37,7 @@ import INPLearnMoreLink from './INPLearnMoreLink';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
-import Notice from '@/js/components/Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -52,10 +52,7 @@ export default function FieldReportMetrics( { data, error } ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
-					<Notice
-						type={ Notice.TYPES.ERROR }
-						description={ errorMessage }
-					/>
+					<ErrorNotice message={ errorMessage } />
 
 					<ReportErrorActions
 						moduleSlug="pagespeed-insights"
