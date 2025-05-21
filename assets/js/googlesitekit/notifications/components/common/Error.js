@@ -29,7 +29,7 @@ import { useEffect } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../datastore/site/constants';
-import ErrorText from '../../../../components/ErrorText';
+import Notice from '@/js/components/Notice';
 
 export default function Error( { id } ) {
 	const ctaError = useSelect( ( select ) => {
@@ -44,7 +44,9 @@ export default function Error( { id } ) {
 		};
 	}, [ clearError, id ] );
 
-	return ctaError ? <ErrorText message={ ctaError.message } /> : null;
+	return ctaError ? (
+		<Notice type={ Notice.TYPES.ERROR } description={ ctaError.message } />
+	) : null;
 }
 
 // eslint-disable-next-line sitekit/acronym-case
