@@ -222,8 +222,6 @@ describe( 'core/user surveys', () => {
 						},
 					},
 				} );
-
-				jest.useRealTimers();
 			} );
 		} );
 

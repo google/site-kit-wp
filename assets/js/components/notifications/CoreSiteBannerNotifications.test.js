@@ -60,10 +60,6 @@ describe( 'CoreSiteBannerNotifications', () => {
 			.receiveGetNotifications( [ notification1 ], {} );
 	} );
 
-	afterEach( () => {
-		jest.useRealTimers();
-	} );
-
 	it( 'does render notification after timeout', () => {
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );

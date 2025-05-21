@@ -146,8 +146,6 @@ describe( 'useMonitorInternetConnection', () => {
 
 		// The first fetch will happen after 120000ms.
 		expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-		jest.useRealTimers();
 	} );
 
 	it( 'should check online status in correct interval when offline', async () => {
@@ -178,8 +176,6 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-		jest.useRealTimers();
 	} );
 
 	it( 'should set offline status when a fetch_error occurs', async () => {

@@ -440,8 +440,6 @@ describe( 'modules/tagmanager versions', () => {
 							internalContainerID
 						)
 				).toBe( false );
-
-				jest.useRealTimers();
 			} );
 		} );
 

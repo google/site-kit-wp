@@ -31,10 +31,6 @@ describe( 'Footer', () => {
 		jest.useFakeTimers();
 	} );
 
-	afterEach( () => {
-		jest.useRealTimers();
-	} );
-
 	it( 'should not make a adsense settings requests when the view context is "view only"', () => {
 		const { container } = render( <Footer />, {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

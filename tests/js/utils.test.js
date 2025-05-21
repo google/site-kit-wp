@@ -156,8 +156,6 @@ describe( 'test utilities', () => {
 			expect( waitForRegistry ).toThrow(
 				/cannot be used with fake timers/i
 			);
-
-			jest.useRealTimers();
 		} );
 
 		it( 'resolves 50ms after state changes', async () => {

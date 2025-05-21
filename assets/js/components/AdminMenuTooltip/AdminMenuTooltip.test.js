@@ -47,10 +47,6 @@ describe( 'AdminMenuTooltip', () => {
 		jest.useFakeTimers();
 	} );
 
-	afterEach( () => {
-		jest.useRealTimers();
-	} );
-
 	it( 'should not render when isTooltipVisible is false', async () => {
 		registry.dispatch( CORE_UI ).setValue( 'admin-menu-tooltip', {
 			isTooltipVisible: false,

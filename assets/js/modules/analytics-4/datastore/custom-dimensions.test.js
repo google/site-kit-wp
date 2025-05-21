@@ -283,10 +283,6 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				jest.useFakeTimers();
 			} );
 
-			afterEach( () => {
-				jest.useRealTimers();
-			} );
-
 			it( 'schedules a sync request to run after two seconds', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,

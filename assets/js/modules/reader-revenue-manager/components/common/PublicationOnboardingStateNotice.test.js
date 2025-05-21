@@ -213,7 +213,5 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 		// Restore Date.now method.
 		Date.now = originalDateNow;
-
-		jest.useRealTimers();
 	} );
 } );

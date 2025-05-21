@@ -23,7 +23,6 @@ const fakeTimeouts = ( func ) => {
 	jest.useFakeTimers();
 	const promise = func();
 	jest.runAllTimers();
-	jest.useRealTimers();
 	return promise;
 };
 

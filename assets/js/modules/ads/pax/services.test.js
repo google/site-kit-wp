@@ -139,8 +139,6 @@ describe( 'PAX partner services', () => {
 					await services.authenticationService.get();
 
 					expect( fetchMock ).toHaveFetchedTimes( 2 );
-
-					jest.useRealTimers();
 				} );
 			} );
 

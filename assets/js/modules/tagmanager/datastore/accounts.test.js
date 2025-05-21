@@ -802,8 +802,6 @@ describe( 'modules/tagmanager accounts', () => {
 				expect(
 					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()
 				).toBe( false );
-
-				jest.useRealTimers();
 			} );
 		} );
 	} );

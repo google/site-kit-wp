@@ -28,10 +28,6 @@ describe( 'useChecks', () => {
 		jest.useFakeTimers();
 	} );
 
-	afterEach( () => {
-		jest.useRealTimers();
-	} );
-
 	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {
 		const checks = [ () => Promise.resolve() ];
 		let result;
