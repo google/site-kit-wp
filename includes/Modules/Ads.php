@@ -157,6 +157,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',

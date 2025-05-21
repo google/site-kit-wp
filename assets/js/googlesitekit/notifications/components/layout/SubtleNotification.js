@@ -30,7 +30,6 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import WarningSVG from '../../../../../svg/icons/warning.svg';
 import StarFill from '../../../../../svg/icons/star-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
@@ -56,18 +55,11 @@ const SubtleNotification = forwardRef(
 						size={ 12 }
 						className={ classnames(
 							'googlesitekit-subtle-notification',
-							className,
-							{
-								'googlesitekit-subtle-notification--warning':
-									type === 'warning',
-							}
+							className
 						) }
 					>
 						<div className="googlesitekit-subtle-notification__icon">
 							{ icon }
-							{ type === 'warning' && ! icon && (
-								<WarningSVG width={ 24 } height={ 24 } />
-							) }
 							{ type === 'new-feature' && ! icon && (
 								<StarFill width={ 24 } height={ 24 } />
 							) }

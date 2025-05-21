@@ -24,7 +24,7 @@ import LostEventsSubtleNotification from './LostEventsSubtleNotification';
 function Template( {} ) {
 	return (
 		<LostEventsSubtleNotification
-			onDismiss={ () => {} }
+			onDismissCallback={ () => {} }
 			onSelectMetricsCallback={ () => {} }
 		/>
 	);
