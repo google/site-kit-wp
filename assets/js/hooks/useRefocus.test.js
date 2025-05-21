@@ -27,10 +27,6 @@ describe( 'useRefocus', () => {
 		jest.useFakeTimers();
 	} );
 
-	afterEach( () => {
-		jest.useRealTimers();
-	} );
-
 	it( 'should invoke the reset handler when the window is blurred and then refocused after the specified delay', () => {
 		const resetSpy = jest.fn();
 
