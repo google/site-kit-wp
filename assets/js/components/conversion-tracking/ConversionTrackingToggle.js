@@ -31,7 +31,7 @@ import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTr
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
-import Notice from '@/js/components/Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();
@@ -78,12 +78,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 					/>
 				</div>
 			</LoadingWrapper>
-			{ !! saveError && (
-				<Notice
-					type={ Notice.TYPES.ERROR }
-					description={ saveError.message }
-				/>
-			) }
+			{ !! saveError && <ErrorNotice message={ saveError.message } /> }
 			<LoadingWrapper
 				className="googlesitekit-settings-conversion-tracking-switch-description--loading"
 				loading={ loading }
