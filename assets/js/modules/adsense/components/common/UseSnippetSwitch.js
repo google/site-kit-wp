@@ -33,11 +33,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import SettingsNotice from '../../../../components/SettingsNotice';
 import { trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import useViewContext from '../../../../hooks/useViewContext';
 import Badge from '../../../../components/Badge';
+import Notice from '../../../../components/Notice';
 
 export default function UseSnippetSwitch( props ) {
 	const {
@@ -92,10 +92,16 @@ export default function UseSnippetSwitch( props ) {
 				/>
 			</div>
 			{ useSnippet && checkedMessage && (
-				<SettingsNotice notice={ checkedMessage } />
+				<Notice
+					type={ Notice.TYPES.INFO }
+					description={ checkedMessage }
+				/>
 			) }
 			{ ! useSnippet && uncheckedMessage && (
-				<SettingsNotice notice={ uncheckedMessage } />
+				<Notice
+					type={ Notice.TYPES.INFO }
+					description={ uncheckedMessage }
+				/>
 			) }
 		</Fragment>
 	);
