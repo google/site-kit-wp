@@ -33,12 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
-import {
-	TYPE_WARNING,
-	TYPE_INFO,
-	TYPE_SUGGESTION,
-	getIconFromType,
-} from './utils';
+import { TYPE_INFO, TYPE_SUGGESTION, getIconFromType } from './utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 import { forwardRef } from 'react';
@@ -117,7 +112,7 @@ SettingsNotice.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ TYPE_INFO, TYPE_WARNING, TYPE_SUGGESTION ] ),
+	type: PropTypes.oneOf( [ TYPE_INFO, TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,

@@ -90,6 +90,7 @@ module.exports = {
 		config.resolve = {
 			...config.resolve,
 			alias: {
+				'@': path.resolve( rootDir, 'assets' ),
 				...config.resolve.alias,
 				...siteKitPackageAliases,
 			},
