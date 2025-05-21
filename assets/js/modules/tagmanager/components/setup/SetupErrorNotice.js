@@ -54,21 +54,19 @@ export default function SetupErrorNotice() {
 	].filter( Boolean );
 
 	if ( analyticsErrors.length ) {
-		return analyticsErrors.map( ( { message, reconnectURL } ) => {
-			return (
-				<Notice
-					key={ message }
-					type={ Notice.TYPES.ERROR }
-					description={
-						<ErrorText
-							key={ message }
-							message={ message }
-							reconnectURL={ reconnectURL }
-						/>
-					}
-				/>
-			);
-		} );
+		return analyticsErrors.map( ( { message, reconnectURL } ) => (
+			<Notice
+				key={ message }
+				type={ Notice.TYPES.ERROR }
+				description={
+					<ErrorText
+						key={ message }
+						message={ message }
+						reconnectURL={ reconnectURL }
+					/>
+				}
+			/>
+		) );
 	}
 
 	return (
