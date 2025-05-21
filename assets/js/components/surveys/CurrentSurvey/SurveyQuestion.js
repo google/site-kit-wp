@@ -31,11 +31,12 @@ import SurveyQuestionRating from '../SurveyQuestionRating';
 import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
 import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
 import SurveyQuestionSingleSelect from '../SurveyQuestionSingleSelect';
-
-const TYPE_MULTI_SELECT = 'multi_select';
-const TYPE_OPEN_TEXT = 'open_text';
-const TYPE_RATING = 'rating';
-const TYPE_SINGLE_SELECT = 'single_select';
+import {
+	TYPE_MULTI_SELECT,
+	TYPE_OPEN_TEXT,
+	TYPE_RATING,
+	TYPE_SINGLE_SELECT,
+} from './constants';
 
 export default function SurveyQuestion( {
 	currentQuestion,

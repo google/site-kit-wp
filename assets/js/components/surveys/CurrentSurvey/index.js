@@ -36,13 +36,19 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from '../SurveyCompletion';
 import SurveyTerms from '../SurveyTerms';
 import SurveyQuestion from './SurveyQuestion';
+import {
+	getCurrentQuestionAndOrdinal,
+	getTriggeredCompletion,
+	isLastQuestion,
+} from './utils';
+import {
+	TYPE_MULTI_SELECT,
+	TYPE_OPEN_TEXT,
+	TYPE_RATING,
+	TYPE_SINGLE_SELECT,
+} from './constants';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
-
-const TYPE_MULTI_SELECT = 'multi_select';
-const TYPE_OPEN_TEXT = 'open_text';
-const TYPE_RATING = 'rating';
-const TYPE_SINGLE_SELECT = 'single_select';
 
 const KNOWN_QUESTION_TYPES = [
 	TYPE_MULTI_SELECT,
@@ -90,74 +96,8 @@ export default function CurrentSurvey() {
 		}
 	}, [ questions, sentSurveyShownEvent, sendSurveyEvent ] );
 
-	// We only have trigger conditions for questions that are answered with
-	// ordinal values right now.
-	const ordinalAnswerMap = answers.reduce(
-		( acc, { question_ordinal: ordinal, answer } ) => ( {
-			...acc,
-			[ ordinal ]: answer.answer.answer_ordinal || answer.answer,
-		} ),
-		{}
-	);
-
-	let currentQuestionOrdinal =
-		Math.max( 0, ...answers.map( ( answer ) => answer.question_ordinal ) ) +
-		1;
-
-	const currentQuestion = questions?.find( ( question ) => {
-		const {
-			question_ordinal: questionOrdinal,
-			trigger_condition: conditions,
-		} = question;
-
-		// Ignore questions that have ordinal lower than the current one.
-		if ( questionOrdinal < currentQuestionOrdinal ) {
-			return false;
-		}
-
-		if ( Array.isArray( conditions ) && conditions.length > 0 ) {
-			for ( const condition of conditions ) {
-				// Get the answer for the question in the condition and return
-				// early if there is no answer for that question yet.
-				const answer = ordinalAnswerMap[ condition.question_ordinal ];
-				if ( ! answer ) {
-					currentQuestionOrdinal++;
-					return false;
-				}
-
-				// If we have the answer, check if it is one of the expected answers
-				// for the condition.
-				const allowedAnswers = condition.answer_ordinal || [];
-
-				// If the answer is a single number, we check whether it is in the
-				// allowed answers and return early if it is not.
-				if (
-					! Array.isArray( answer ) &&
-					! allowedAnswers.includes( answer )
-				) {
-					currentQuestionOrdinal++;
-					return false;
-				}
-
-				// If the answer is multiple-choice, check whether any of its values
-				// is in the allowed answers and return early if none of answer values
-				// are included in the allowed answers list.
-				if ( Array.isArray( answer ) ) {
-					const hasAnswers = answer.some(
-						( { answer_ordinal: answerOrdinal } ) =>
-							allowedAnswers.includes( answerOrdinal )
-					);
-
-					if ( ! hasAnswers ) {
-						currentQuestionOrdinal++;
-						break;
-					}
-				}
-			}
-		}
-
-		return questionOrdinal === currentQuestionOrdinal;
-	} );
+	const { currentQuestion, currentQuestionOrdinal } =
+		getCurrentQuestionAndOrdinal( questions, answers );
 
 	const answerQuestion = useCallback(
 		( answer ) => {
@@ -197,36 +137,12 @@ export default function CurrentSurvey() {
 		]
 	);
 
-	// Check to see if a completion trigger has been met.
-	let triggeredCompletion;
-	if ( questions?.length && currentQuestionOrdinal > questions.length ) {
-		triggeredCompletion = ( completions || [] ).find( ( completion ) => {
-			const conditions = completion.trigger_condition || [];
-
-			for ( const condition of conditions ) {
-				// If a question was answered with the appropriate value, a completion
-				// trigger has been fulfilled and we should treat this survey as
-				// complete.
-				if (
-					condition.answer_ordinal.includes(
-						ordinalAnswerMap[ condition.question_ordinal ]
-					)
-				) {
-					// eslint-disable-line camelcase
-					triggeredCompletion = completion;
-					return true;
-				}
-			}
-
-			return false;
-		} );
-
-		// If no specific trigger has been found but all questions are answered, use
-		// the first available trigger.
-		if ( ! triggeredCompletion ) {
-			triggeredCompletion = completions[ 0 ];
-		}
-	}
+	const triggeredCompletion = getTriggeredCompletion(
+		questions,
+		answers,
+		completions,
+		currentQuestionOrdinal
+	);
 
 	const ctaOnClick = useCallback( () => {
 		sendSurveyEvent( 'follow_up_link_clicked', {
@@ -294,24 +210,6 @@ export default function CurrentSurvey() {
 		return null;
 	}
 
-	// To properly determine the submit button label, we need to check if the current
-	// question is the last question in the survey. This is done by checking if
-	// there are any trigger conditions that reference the current question. If
-	// there are no trigger conditions, it means that the current question is the
-	// last question in the survey.
-	const isTheLastQuestion =
-		questions.some( ( { trigger_condition: conditions } ) => {
-			if ( ! Array.isArray( conditions ) || conditions.length === 0 ) {
-				return false;
-			}
-
-			return conditions.some(
-				( condition ) =>
-					condition.question_ordinal ===
-					currentQuestion.question_ordinal
-			);
-		} ) === false;
-
 	return (
 		<Slide
 			direction="up"
@@ -323,7 +221,10 @@ export default function CurrentSurvey() {
 					currentQuestion={ currentQuestion }
 					answerQuestion={ answerQuestion }
 					dismissSurvey={ dismissSurvey }
-					isTheLastQuestion={ isTheLastQuestion }
+					isTheLastQuestion={ isLastQuestion(
+						questions,
+						currentQuestion
+					) }
 				/>
 				{ isTrackingEnabled === false &&
 					currentQuestion?.question_ordinal === 1 && ( // eslint-disable-line camelcase
