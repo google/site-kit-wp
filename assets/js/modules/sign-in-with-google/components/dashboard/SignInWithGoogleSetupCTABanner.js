@@ -36,10 +36,8 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
-/* eslint-disable import/no-unresolved */
-import BannerSVGDesktop from '../../../../../svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
-import BannerSVGMobile from '../../../../../svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
-/* eslint-enable import/no-unresolved */
+import BannerSVGDesktop from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
 
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const learnMoreURL = useSelect( ( select ) => {

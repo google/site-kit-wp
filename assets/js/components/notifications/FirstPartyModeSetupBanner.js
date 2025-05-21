@@ -42,10 +42,8 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
 import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS } from '../../util';
-/* eslint-disable import/no-unresolved */
-import BannerSVGDesktop from '../../../svg/graphics/banner-first-party-mode-setup-cta.svg?url';
-import BannerSVGMobile from '../../../svg/graphics/banner-first-party-mode-setup-cta-mobile.svg?url';
-/* eslint-enable import/no-unresolved */
+import BannerSVGDesktop from '@/svg/graphics/banner-first-party-mode-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-first-party-mode-setup-cta-mobile.svg?url';
 
 export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
 	'fpm-show-setup-success-notification';

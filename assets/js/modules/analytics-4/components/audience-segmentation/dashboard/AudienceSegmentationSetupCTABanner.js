@@ -46,10 +46,8 @@ import { WEEK_IN_SECONDS } from '../../../../../util';
 import useEnableAudienceGroup from '../../../../../modules/analytics-4/hooks/useEnableAudienceGroup';
 import AudienceErrorModal from '../../../../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
 import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
-/* eslint-disable import/no-unresolved */
-import BannerSVGDesktop from '../../../../../../svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
-import BannerSVGMobile from '../../../../../../svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
-/* eslint-enable import/no-unresolved */
+import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
