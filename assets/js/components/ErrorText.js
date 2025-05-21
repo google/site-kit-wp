@@ -67,11 +67,7 @@ function ErrorText( { message, reconnectURL, noPrefix = false } ) {
 	};
 
 	return (
-		<div className="googlesitekit-error-text">
-			<p
-				dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) }
-			/>
-		</div>
+		<p dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) } />
 	);
 }
 
