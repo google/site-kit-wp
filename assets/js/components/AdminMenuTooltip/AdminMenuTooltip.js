@@ -29,15 +29,19 @@ import JoyrideTooltip from '../JoyrideTooltip';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../../hooks/useBreakpoint';
 
 export function AdminMenuTooltip() {
 	const viewContext = useViewContext();
 	const { setValue } = useDispatch( CORE_UI );
+	const breakpoint = useBreakpoint();
 
 	const {
 		isTooltipVisible = false,
-		rehideAdminMenu = false,
-		rehideAdminSubMenu = false,
 		tooltipSlug,
 		title,
 		content,
@@ -54,22 +58,6 @@ export function AdminMenuTooltip() {
 	};
 
 	const handleDismissTooltip = useCallback( () => {
-		// If the WordPress admin menu was closed, re-close it.
-		if ( rehideAdminMenu ) {
-			const isAdminMenuOpen =
-				document.querySelector( '#adminmenu' ).offsetHeight > 0;
-
-			if ( isAdminMenuOpen ) {
-				document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
-			}
-		}
-
-		// If the Site Kit admin submenu was hidden, re-hide it.
-		if ( rehideAdminSubMenu ) {
-			// Click on the body to close the submenu.
-			document.querySelector( 'body' ).click();
-		}
-
 		// Track dismiss event.
 		if ( tooltipSlug ) {
 			trackEvent(
@@ -79,22 +67,24 @@ export function AdminMenuTooltip() {
 		}
 
 		setValue( 'admin-menu-tooltip', undefined );
-	}, [
-		rehideAdminMenu,
-		rehideAdminSubMenu,
-		setValue,
-		tooltipSlug,
-		viewContext,
-	] );
+	}, [ setValue, tooltipSlug, viewContext ] );
 
 	if ( ! isTooltipVisible ) {
 		return null;
 	}
 
+	const defaultTarget = '#adminmenu [href*="page=googlesitekit-settings"]';
+	const isMobileTablet =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
 	return (
 		<JoyrideTooltip
-			// Point to the Site Kit Settings menu item by default.
-			target='#adminmenu [href*="page=googlesitekit-settings"]'
+			target={ isMobileTablet ? 'body' : defaultTarget }
+			placement={ isMobileTablet ? 'center' : 'auto' }
+			className={
+				isMobileTablet ? 'googlesitekit-tour-tooltip__modal_step' : ''
+			}
+			disableOverlay={ ! isMobileTablet }
 			slug="ga4-activation-banner-admin-menu-tooltip"
 			title={ title }
 			content={ content }
