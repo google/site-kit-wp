@@ -49,7 +49,7 @@ import NeedsAttention from './NeedsAttention';
 import GettingReady from './GettingReady';
 import RequiresReview from './RequiresReview';
 import Ready from './Ready';
-import ErrorText from '../../../../../components/ErrorText';
+import Notice from '@/js/components/Notice';
 
 export default function SetupAccountSite( { site, finishSetup } ) {
 	const { autoAdsEnabled, state } = site;
@@ -91,8 +91,9 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 			return <Ready site={ site } finishSetup={ finishSetup } />;
 		default:
 			return (
-				<ErrorText
-					message={ sprintf(
+				<Notice
+					type={ Notice.TYPES.ERROR }
+					description={ sprintf(
 						/* translators: %s: invalid site state identifier */
 						__( 'Invalid site state %s', 'google-site-kit' ),
 						state
