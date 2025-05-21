@@ -380,7 +380,10 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @param int $order_id The order ID.
 	 */
 	protected function maybe_add_purchase_inline_script( $order_id ) {
-		if ( isset( $this->get_wgai_event_names()['purchase'] ) ) {
+		$wgai_event_names = $this->get_wgai_event_names();
+		// If purchase event is tracked by the Google Analytics for WooCommerce addon,
+		// don't output the script tag to track the purchase event.
+		if ( isset( $wgai_event_names['purchase'] ) ) {
 			return;
 		}
 
