@@ -842,6 +842,7 @@ describe( 'CurrentSurvey', () => {
 		}, 1000 );
 
 		jest.runAllTimers();
+		jest.useRealTimers();
 	} );
 
 	it( 'should render the completed survey component if all questions have been answered', () => {

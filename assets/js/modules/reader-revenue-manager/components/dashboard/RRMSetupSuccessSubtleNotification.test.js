@@ -334,6 +334,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.'
 			)
 		).not.toBeInTheDocument();
+
+		jest.useRealTimers();
 	} );
 
 	const notificationContent = [

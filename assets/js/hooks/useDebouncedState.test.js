@@ -27,6 +27,10 @@ describe( 'useDebouncedState', () => {
 		jest.useFakeTimers();
 	} );
 
+	afterEach( () => {
+		jest.useRealTimers();
+	} );
+
 	it( 'should return initial value by default and should not change it after delay is expired', () => {
 		const { result } = renderHook(
 			( { value, delay } ) => useDebouncedState( value, delay ),

@@ -171,6 +171,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				// No webdatastreams should have been added yet, as the property creation failed.
 				expect( webdatastreams ).toBeUndefined();
 				expect( console ).toHaveErrored();
+
+				jest.useRealTimers();
 			} );
 		} );
 
@@ -446,6 +448,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getMatchingWebDataStreamByPropertyID( propertyID );
 				expect( datastream ).toBeUndefined();
+
+				jest.useRealTimers();
 			} );
 
 			it( 'should return NULL when no datastreams are matched', () => {
@@ -995,6 +999,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					);
 
 				expect( webDataStreamAlreadyExist ).toBeUndefined();
+
+				jest.useRealTimers();
 			} );
 
 			it( 'should return false if the web data stream does not exist', () => {

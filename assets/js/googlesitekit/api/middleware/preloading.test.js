@@ -40,6 +40,10 @@ describe( 'Preloading Middleware', () => {
 		jest.useFakeTimers();
 	} );
 
+	afterEach( () => {
+		jest.useRealTimers();
+	} );
+
 	it( 'returns a preloaded response when present', async () => {
 		const requestURI = 'test/path/a';
 		const preloadingMiddleware =
