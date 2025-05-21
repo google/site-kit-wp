@@ -41,7 +41,7 @@ export default function Description( { className, children, errorText } ) {
 			>
 				{ children }
 			</div>
-			{ errorText && <Notice type="error" title={ errorText } /> }
+			{ errorText && <Notice type="error" description={ errorText } /> }
 		</Fragment>
 	);
 }
