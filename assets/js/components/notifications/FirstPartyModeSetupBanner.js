@@ -78,7 +78,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		);
 	} );
 
-	const { clearError } = useDispatch( CORE_SITE );
+	const { clearError, receiveError } = useDispatch( CORE_SITE );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onCTAClick = async () => {
@@ -88,7 +88,8 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		const { error } = await saveFirstPartyModeSettings();
 
 		if ( error ) {
-			return { error };
+			receiveError( error, 'notificationAction', [ id ] );
+			return;
 		}
 
 		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );

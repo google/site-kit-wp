@@ -72,6 +72,7 @@ import {
 	dismissedPromptsEndpoint,
 	dismissPromptEndpoint,
 } from '../../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-item-endpoints';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -623,6 +624,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 
 			muteFetch( reportEndpoint );
 			muteFetch( expirableItemEndpoint );
+			muteFetch( dismissItemEndpoint );
 
 			const { getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAComponent />,
@@ -650,7 +652,9 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-setup-cta-dashboard',
-				'confirm_notification'
+				'confirm_notification',
+				undefined,
+				undefined
 			);
 		} );
 

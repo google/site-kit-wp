@@ -272,7 +272,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 		} );
 
-		expect( getByText( 'Error: Test Error' ) ).toBeInTheDocument();
+		expect( getByText( 'Test Error' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should set FPM_SHOW_SETUP_SUCCESS_NOTIFICATION to true and invalidate the notifications queue resolution when the CTA button is clicked', async () => {
