@@ -62,6 +62,14 @@
 			flex: 1;
 		}
 
+		svg {
+			fill: none;
+
+			path:not([stroke*="currentColor"]) {
+				fill: currentColor;
+			}
+		}
+
 		p {
 			margin: 0 0 10px;
 			@media (min-width: $bp-tablet) {
@@ -76,6 +84,15 @@
 
 		.googlesitekit-notice__title {
 			font-weight: $fw-medium;
+		}
+	}
+
+	&.googlesitekit-notice--small {
+		border-radius: $br-xs;
+		padding: $grid-gap-phone / 2 $grid-gap-phone;
+
+		.googlesitekit-notice__content p {
+			font-size: $fs-body-sm;
 		}
 	}
 

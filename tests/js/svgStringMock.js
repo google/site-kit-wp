@@ -1,7 +1,7 @@
 /**
- * WarningNotice component.
+ * Test SVG string mock.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-export default function WarningNotice( { children, className } ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-warning-notice',
-				className
-			) }
-		>
-			{ children }
-		</div>
-	);
-}
-
-WarningNotice.propTypes = {
-	children: PropTypes.node.isRequired,
-	className: PropTypes.string,
-};
+// The following represents a minimal SVG encoded as a data URI.
+export default 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';
