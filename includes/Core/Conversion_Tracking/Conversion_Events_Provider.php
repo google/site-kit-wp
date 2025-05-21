@@ -54,6 +54,17 @@ abstract class Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		return implode( ', ', $this->get_event_names() );
+	}
+
+	/**
 	 * Gets the event names.
 	 *
 	 * @since 1.125.0
