@@ -32,7 +32,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { isValidPropertyID } from '../../utils/validation';
-import Notice from '@/js/components/Notice';
 import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
@@ -121,9 +120,8 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 
 	if ( ! propertyAvailable && ! getPropertiesError ) {
 		return (
-			<Notice
-				type={ Notice.TYPES.ERROR }
-				description={ sprintf(
+			<ErrorNotice
+				message={ sprintf(
 					/* translators: 1: Google Analytics Property ID. */
 					__(
 						'The previously selected property with ID %1$s is no longer available. Please select a new property to continue collecting data with Google Analytics.',
