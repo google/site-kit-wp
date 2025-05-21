@@ -280,7 +280,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param int  $order_id              The order ID.
+	 * @param int  $order_id             The order ID.
 	 * @param bool $skip_meta_value_save Whether to skip saving the _googlesitekit_ga_purchase_event_tracked meta value.
 	 */
 	protected function maybe_add_purchase_inline_script( $order_id, $skip_meta_value_save = false ) {
