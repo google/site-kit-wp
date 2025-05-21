@@ -47,9 +47,13 @@ export default function ActivateAnalyticsCTA( { children } ) {
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
-	);
+	const analyticsModuleAvailable = useSelect( ( select ) => {
+		const { isModuleAvailable } = select( CORE_MODULES );
+		return (
+			isModuleAvailable( 'analytics-4' ) &&
+			!! select( MODULES_ANALYTICS_4 )
+		);
+	} );
 	const [ inProgress, setInProgress ] = useState( false );
 
 	const isNavigatingToReauthURL = useSelect( ( select ) => {

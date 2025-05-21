@@ -68,9 +68,9 @@ describe( 'SettingsNotice', () => {
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
+				'.googlesitekit-anyone-can-register-disabled-notice'
+			).textContent
+		).toContain( 'to allow your visitors to create an account' );
 	} );
 
 	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is active but isWooCommerceRegistrationEnabled is true', () => {
@@ -90,9 +90,9 @@ describe( 'SettingsNotice', () => {
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
+				'.googlesitekit-anyone-can-register-disabled-notice'
+			).textContent
+		).toContain( 'to allow your visitors to create an account' );
 	} );
 
 	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active but isWooCommerceRegistrationEnabled is already true', async () => {
@@ -114,9 +114,9 @@ describe( 'SettingsNotice', () => {
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
+				'.googlesitekit-anyone-can-register-disabled-notice'
+			).textContent
+		).toContain( 'to allow your visitors to create an account' );
 	} );
 
 	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is not active', () => {
@@ -130,12 +130,9 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).not.toHaveClass(
-			'googlesitekit-anyone-can-register-disabled-notice'
-		);
+			container.querySelector( '.googlesitekit-notice--warning' )
+				.textContent
+		).toContain( 'One Tap sign in on all pages' );
 	} );
 
 	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active and isWooCommerceRegistrationEnabled is false', async () => {
@@ -156,11 +153,8 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).not.toHaveClass(
-			'googlesitekit-anyone-can-register-disabled-notice'
-		);
+			container.querySelector( '.googlesitekit-notice--warning' )
+				.textContent
+		).toContain( 'One Tap sign in on all pages' );
 	} );
 } );

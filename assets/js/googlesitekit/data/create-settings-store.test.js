@@ -24,7 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	muteFetch,
 	subscribeUntil,
@@ -43,7 +43,7 @@ describe( 'createSettingsStore store', () => {
 	let store;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -60,7 +60,7 @@ describe( 'createSettingsStore store', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'name', () => {

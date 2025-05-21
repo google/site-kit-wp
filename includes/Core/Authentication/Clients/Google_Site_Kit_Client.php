@@ -128,7 +128,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Ported from Google_Site_Kit_Proxy_Client.
-	 * @since n.e.x.t Added $code_verifier param for client v2.15.0 compatibility. (@link https://github.com/googleapis/google-api-php-client/commit/bded223ece445a6130cde82417b20180b1d6698a)
+	 * @since 1.149.0 Added $code_verifier param for client v2.15.0 compatibility. (@link https://github.com/googleapis/google-api-php-client/commit/bded223ece445a6130cde82417b20180b1d6698a)
 	 *
 	 * @param string $code          Temporary authorization code, or undelegated token code.
 	 * @param string $code_verifier The code verifier used for PKCE (if applicable).

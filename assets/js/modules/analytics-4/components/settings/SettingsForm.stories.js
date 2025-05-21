@@ -69,10 +69,7 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsEdit/Default',
-	delay: 250,
-};
+Default.scenario = {};
 
 export const EnhancedMeasurementSwitch = Template.bind( null );
 EnhancedMeasurementSwitch.storyName = 'With enhanced measurement switch';
@@ -178,24 +175,12 @@ WithoutModuleAccess.args = {
 
 export const PropertyNotAvailable = Template.bind( null );
 PropertyNotAvailable.storyName = 'Property not available';
-PropertyNotAvailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-				accountSummaries.map( ( acct ) => ( {
-					...acct,
-					propertySummaries: [],
-				} ) )
-			);
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+PropertyNotAvailable.parameters = {
+	accountSummaries: accounts.map( ( acct ) => ( {
+		...acct,
+		propertySummaries: [],
+	} ) ),
+};
 
 export const WebDataStreamNotAvailable = Template.bind( null );
 WebDataStreamNotAvailable.storyName = 'Web data stream not available';
@@ -258,10 +243,7 @@ WithExistingTagNoMatch.decorators = [
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
-IceEnabled.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsEdit/ICE',
-	delay: 250,
-};
+IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -341,7 +323,9 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accountSummaries );
+					.receiveGetAccountSummaries(
+						parameters.accountSummaries || accountSummaries
+					);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID,

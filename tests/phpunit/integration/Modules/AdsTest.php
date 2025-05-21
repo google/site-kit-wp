@@ -12,12 +12,9 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
-use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
@@ -62,11 +59,26 @@ class AdsTest extends TestCase {
 	public function test_register() {
 		remove_all_actions( 'template_redirect' );
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
 		$this->ads->register();
 
 		$this->assertTrue( has_action( 'template_redirect' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ) );
+	}
+
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$this->ads->register();
+
+		$this->assertEquals(
+			array(
+				array( $this->ads, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
 	}
 
 	public function test_is_connected__when_ads_conversion_id_is_set() {
@@ -119,8 +131,8 @@ class AdsTest extends TestCase {
 		$this->assertFalse( $this->ads->is_connected() );
 	}
 
-
 	public function test_inline_modules_data__module_not_connected__with_pax() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		self::enable_feature( 'adsPax' );
 
 		$this->ads->register();
@@ -136,6 +148,7 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_inline_modules_data__module_not_connected__without_pax() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		$this->ads->register();
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
@@ -144,6 +157,7 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_inline_modules_data__module_connected() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		self::enable_feature( 'adsPax' );
 
 		$this->ads->register();
@@ -286,8 +300,6 @@ class AdsTest extends TestCase {
 			self::enable_feature( $feature_flag );
 		}
 
-		$ads = new Ads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
 
@@ -299,8 +311,8 @@ class AdsTest extends TestCase {
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
 		remove_all_actions( 'template_redirect' );
-		$ads->register();
-		$ads->get_settings()->set( $settings );
+		$this->ads->register();
+		$this->ads->get_settings()->set( $settings );
 
 		do_action( 'template_redirect' );
 
@@ -320,6 +332,53 @@ class AdsTest extends TestCase {
 				$head_html
 			);
 		}
+	}
+
+	/**
+	 * @dataProvider data_ads_measurement_connection_settings
+	 */
+	public function test_check_ads_measurement_connection( $settings_input, $pax_enabled, $expected ) {
+		if ( $pax_enabled ) {
+			$this->enable_feature( 'adsPax' );
+		}
+
+		$this->ads->get_settings()->merge( $settings_input );
+
+		$this->assertSame( $expected, $this->ads->check_ads_measurement_connection() );
+	}
+
+	public function data_ads_measurement_connection_settings() {
+		return array(
+			'connected manually'                 => array(
+				array( 'conversionID' => 'AW-123456789' ),
+				false,
+				true,
+			),
+			'not connected'                      => array(
+				array( 'conversionID' => '' ),
+				false,
+				false,
+			),
+			'connected manually, adsPax enabled' => array(
+				array( 'conversionID' => 'AW-123456789' ),
+				true,
+				true,
+			),
+			'connected via PAX, adsPax enabled'  => array(
+				array( 'paxConversionID' => 'AW-987654321' ),
+				true,
+				true,
+			),
+			'not connected, adsPax enabled'      => array(
+				array(
+					'conversionID'    => '',
+					'paxConversionID' => '',
+					'extCustomerID'   => '',
+				),
+				true,
+				false,
+			),
+		);
 	}
 
 	public function template_redirect_data_provider() {

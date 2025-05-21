@@ -21,6 +21,7 @@
  */
 import ProductIDSelect from './ProductIDSelect';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { publications } from '../../datastore/__fixtures__';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -40,6 +41,10 @@ describe( 'ProductIDSelect', () => {
 				productID: 'product-1',
 				productIDs,
 			} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
 	} );
 
 	it( 'should render a select field', async () => {

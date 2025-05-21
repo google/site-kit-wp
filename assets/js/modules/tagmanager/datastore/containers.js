@@ -24,11 +24,12 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
@@ -53,7 +54,7 @@ const fetchGetContainersStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
 			'tagmanager',
 			'containers',
@@ -92,24 +93,18 @@ const fetchCreateContainerStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', {
+		return set( 'modules', 'tagmanager', 'create-container', {
 			accountID,
 			usageContext,
 			name,
 		} );
 	},
-	reducerCallback( state, container, { accountID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: [
-					...( state.containers[ accountID ] || [] ),
-					container,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, container, { accountID } ) => {
+		if ( ! state.containers[ accountID ] ) {
+			state.containers[ accountID ] = [];
+		}
+		state.containers[ accountID ].push( container );
+	} ),
 } );
 
 const baseInitialState = {

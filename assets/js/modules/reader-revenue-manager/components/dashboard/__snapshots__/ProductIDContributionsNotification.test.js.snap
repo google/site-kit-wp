@@ -12,48 +12,54 @@ exports[`ProductIDContributionsNotification should render correctly 1`] = `
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-subtle-notification googlesitekit-subtle-notification--new-feature mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
         >
           <div
-            class="googlesitekit-subtle-notification__icon"
+            class="googlesitekit-notice googlesitekit-notice--new"
           >
-            <svg />
-          </div>
-          <div
-            class="googlesitekit-subtle-notification__content"
-          >
-            <p />
-            <p
-              class="googlesitekit-subtle-notification__secondary_description"
+            <div
+              class="googlesitekit-notice__icon"
             >
-              New! You can now select product IDs to use with your Reader Revenue Manager snippet
-            </p>
-          </div>
-          <div
-            class="googlesitekit-subtle-notification__action"
-          >
-            <button
-              class="mdc-button mdc-button--tertiary"
-              target="_self"
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-notice__content"
             >
-              <span
-                class="mdc-button__label"
+              <p
+                class="googlesitekit-notice__title"
+              />
+              <p
+                class="googlesitekit-notice__description"
               >
-                Got it
-              </span>
-            </button>
-            <a
-              class="mdc-button googlesitekit-subtle-notification__cta mdc-button--raised"
-              href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/reader-revenue-manager/edit"
-              role="button"
-              target="_self"
+                New! You can now select product IDs to use with your Reader Revenue Manager snippet
+              </p>
+            </div>
+            <div
+              class="googlesitekit-notice__action"
             >
-              <span
-                class="mdc-button__label"
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
               >
-                Edit settings
-              </span>
-            </a>
+                <span
+                  class="mdc-button__label"
+                >
+                  Got it
+                </span>
+              </button>
+              <a
+                class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/reader-revenue-manager/edit"
+                role="button"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Edit settings
+                </span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

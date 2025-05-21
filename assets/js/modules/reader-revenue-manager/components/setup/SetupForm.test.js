@@ -43,7 +43,10 @@ describe( 'SetupForm', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
+			.receiveGetSettings( {
+				snippetMode: 'post_types',
+				postTypes: [ 'post' ],
+			} );
 	} );
 
 	it( 'should render the form correctly', async () => {
@@ -64,7 +67,9 @@ describe( 'SetupForm', () => {
 
 		expect( getByText( 'Publication' ) ).toBeInTheDocument();
 		expect(
-			getByRole( 'button', { name: /create new publication/i } )
+			getByRole( 'button', {
+				name: /Manage publications in Publisher Center/i,
+			} )
 		).toBeInTheDocument();
 	} );
 
@@ -176,7 +181,6 @@ describe( 'SetupForm', () => {
 			<SetupForm onCompleteSetup={ onCompleteSetup } />,
 			{
 				registry,
-				features: [ 'rrmModuleV2' ],
 			}
 		);
 

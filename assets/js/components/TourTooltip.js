@@ -128,7 +128,7 @@ TourTooltip.propTypes = {
 	size: PropTypes.number.isRequired,
 	step: PropTypes.shape( {
 		content: PropTypes.node,
-		title: PropTypes.node.isRequired,
+		title: PropTypes.node,
 		cta: PropTypes.oneOfType( [ PropTypes.element, PropTypes.bool ] ),
 		className: PropTypes.string,
 	} ).isRequired,

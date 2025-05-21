@@ -50,13 +50,18 @@
 
 		.mdc-dialog__title {
 			font-size: $fs-headline-md;
-			font-weight: $fw-medium;
+			font-weight: $fw-normal;
 			line-height: $lh-headline-md;
 			padding: 0 0 10px;
 		}
 
 		.mdc-dialog__actions {
+			gap: 5px;
 			justify-content: center;
+
+			@media (min-width: 880px) {
+				gap: 10px;
+			}
 
 			@media (min-width: $bp-desktop) {
 				justify-content: flex-end;
@@ -71,10 +76,6 @@
 
 			button {
 
-				&:last-child {
-					margin-top: 5px;
-				}
-
 				.MuiCircularProgress-colorPrimary {
 					color: $c-white;
 					margin-right: 5px;
@@ -88,6 +89,29 @@
 					.MuiCircularProgress-colorPrimary {
 						color: $c-neutral-n-500;
 					}
+				}
+			}
+
+			a,
+			button {
+
+				&.mdc-button--tertiary {
+					border-radius: 100px;
+
+					> svg {
+						margin-left: 5px;
+					}
+				}
+			}
+
+			a.mdc-button--tertiary {
+				@media (max-width: $bp-mobileOnly) {
+					padding: 8px 5px;
+					text-align: center;
+				}
+
+				@media (min-width: 389px) and (max-width: $bp-mobileOnly) {
+					padding: 8px 10px;
 				}
 			}
 		}

@@ -45,7 +45,7 @@ export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
 
 	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
+		select( CORE_SITE ).isAdsConnectedUncached()
 	);
 
 	const isConsentModeEnabled = useSelect( ( select ) =>

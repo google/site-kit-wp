@@ -254,50 +254,18 @@ class REST_Consent_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$ads_connected = apply_filters( 'googlesitekit_is_module_connected', false, Ads::MODULE_SLUG );
+							$checks = apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() );
 
-							if ( $ads_connected ) {
-								return new WP_REST_Response( array( 'connected' => true ) );
+							if ( ! is_array( $checks ) ) {
+								return new WP_REST_Response( array( 'connected' => false ) );
 							}
 
-							$analytics_connected = apply_filters( 'googlesitekit_is_module_connected', false, Analytics_4::MODULE_SLUG );
-							if ( $analytics_connected ) {
-								$analytics_settings = ( new Analytics_Settings( $this->options ) )->get();
-								$adsense_linked     = $analytics_settings['adSenseLinked'] ?? false;
-
-								if ( $adsense_linked ) {
-									return new WP_REST_Response( array( 'connected' => true ) );
+							foreach ( $checks as $check ) {
+								if ( ! is_callable( $check ) ) {
+									continue;
 								}
 
-								$container_destination_ids = $analytics_settings['googleTagContainerDestinationIDs'] ?? false;
-								if ( is_array( $container_destination_ids ) ) {
-									foreach ( $container_destination_ids as $destination_id ) {
-										if ( substr( $destination_id, 0, 3 ) === 'AW-' ) {
-											return new WP_REST_Response( array( 'connected' => true ) );
-										}
-									}
-								}
-							}
-
-							$tag_manager_connected = apply_filters( 'googlesitekit_is_module_connected', false, Tag_Manager::MODULE_SLUG );
-							if ( $tag_manager_connected ) {
-								$tag_manager          = $this->modules->get_module( Tag_Manager::MODULE_SLUG );
-								$tag_manager_settings = ( new Tag_Manager_Settings( $this->options ) )->get();
-
-								if ( ! $tag_manager || ! $tag_manager instanceof Tag_Manager ) {
-									return new WP_REST_Response( array( 'connected' => false ) );
-								}
-
-								$live_containers_versions = $tag_manager->get_tagmanager_service()->accounts_containers_versions->live(
-									"accounts/{$tag_manager_settings['accountID']}/containers/{$tag_manager_settings['internalContainerID']}"
-								);
-
-								if ( empty( $live_containers_versions->tag ) ) {
-									return new WP_REST_Response( array( 'connected' => false ) );
-								}
-
-								$has_ads_tag = array_search( 'awct', array_column( $live_containers_versions->tag, 'type' ), true );
-								if ( false !== $has_ads_tag ) {
+								if ( $check() ) {
 									return new WP_REST_Response( array( 'connected' => true ) );
 								}
 							}

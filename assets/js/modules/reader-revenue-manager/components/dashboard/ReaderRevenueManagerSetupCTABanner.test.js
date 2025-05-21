@@ -51,6 +51,7 @@ import {
 } from '../../../../../../tests/js/mock-survey-endpoints';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { NOTIFICATIONS } from '../..';
+import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
@@ -111,13 +112,10 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
-			{
-				body: JSON.stringify( [ 'rrm-setup-notification' ] ),
-				status: 200,
-			}
-		);
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: JSON.stringify( [ 'rrm-setup-notification' ] ),
+			status: 200,
+		} );
 
 		registry
 			.dispatch( CORE_MODULES )
@@ -151,13 +149,10 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
 		mockSurveyEndpoints();
 
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
-			{
-				body: JSON.stringify( [ 'rrm-setup-notification' ] ),
-				status: 200,
-			}
-		);
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: JSON.stringify( [ 'rrm-setup-notification' ] ),
+			status: 200,
+		} );
 
 		const { getByRole, waitForRegistry } = render(
 			<div>
@@ -206,57 +201,18 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 	} );
 
-	it( 'should not render the Reader Revenue Manager setup CTA banner when dismissed', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-			'rrm-setup-notification': {
-				expires: Date.now() / 1000 + WEEK_IN_SECONDS,
-				count: 1,
-			},
-		} );
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABannerComponent />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'should not render the banner when the dismissed prompts selector is not resolved', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.startResolution( 'getDismissedPrompts', [] );
-
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABannerComponent />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should call dismiss prompt with the correct expiration time when dismissed once', async () => {
 		mockSurveyEndpoints();
 
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
-			{
-				body: {
-					'rrm-setup-notification': {
-						expires: 2 * WEEK_IN_SECONDS,
-						count: 1,
-					},
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': {
+					expires: 2 * WEEK_IN_SECONDS,
+					count: 1,
 				},
-				status: 200,
-			}
-		);
+			},
+			status: 200,
+		} );
 
 		const { getByText, waitForRegistry } = render(
 			<div>
@@ -274,10 +230,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
-		const dismissPromptEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-		);
-
 		act( () => {
 			fireEvent.click( getByText( /Maybe later/i ) );
 		} );
@@ -292,30 +244,21 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 				},
 				method: 'POST',
 			} );
-
-			expect(
-				getByText(
-					/You can always enable Reader Revenue Manager from Settings later/
-				)
-			).toBeInTheDocument();
 		} );
 	} );
 
 	it( 'should dismiss the prompt permanently when dismissed for the second time', async () => {
 		mockSurveyEndpoints();
 
-		fetchMock.postOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/dismiss-prompt' ),
-			{
-				body: {
-					'rrm-setup-notification': {
-						expires: 0, // Expiry of 0 permanently dismisses the prompt.
-						count: 2,
-					},
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': {
+					expires: 0, // Expiry of 0 permanently dismisses the prompt.
+					count: 2,
 				},
-				status: 200,
-			}
-		);
+			},
+			status: 200,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
 			'rrm-setup-notification': {
@@ -339,10 +282,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		await waitForRegistry();
-
-		const dismissPromptEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-prompt'
-		);
 
 		act( () => {
 			fireEvent.click( getByText( /Don’t show again/i ) );

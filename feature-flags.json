@@ -1,9 +1,6 @@
 [
   "adsPax",
-  "conversionReporting",
   "firstPartyMode",
-  "gm3Components",
   "privacySandboxModule",
-  "rrmModule",
-  "rrmModuleV2"
+  "rrmModule"
 ]

@@ -20,3 +20,12 @@ export const FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
 	'warning-notification-fpm';
 
 export const FPM_SETUP_CTA_BANNER_NOTIFICATION = 'fpm-setup-cta';
+
+export const PRIORITY = {
+	ERROR_HIGH: 30,
+	ERROR_LOW: 60,
+	WARNING: 100,
+	INFO: 150,
+	SETUP_CTA_HIGH: 150,
+	SETUP_CTA_LOW: 200,
+};

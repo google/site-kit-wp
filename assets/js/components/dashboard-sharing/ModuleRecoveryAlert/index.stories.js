@@ -24,26 +24,23 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModuleRegistrations,
-	provideModules,
-	provideSiteConnection,
-	provideSiteInfo,
-	provideUserAuthentication,
-	WithTestRegistry,
-} from '../../../../../tests/js/utils';
+import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
 import ModuleRecoveryAlert from '.';
 
-function Template( { setupRegistry = () => {}, ...args } ) {
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'module-recovery-alert'
+)( ModuleRecoveryAlert );
+
+function Template( { setupRegistry = () => {} } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<ModuleRecoveryAlert { ...args } />
+				<NotificationWithComponentProps />
 			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
@@ -60,13 +57,13 @@ export const LoadingRecoverableModules = Template.bind( {} );
 LoadingRecoverableModules.storyName = 'Loading Recoverable Modules';
 LoadingRecoverableModules.args = {
 	setupRegistry: ( registry ) => {
-		provideModulesWithRecoverable( registry, [ 'search-console' ] );
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+		registry
+			.dispatch( CORE_MODULES )
+			.startResolution( 'getRecoverableModules', [] );
 	},
 };
-LoadingRecoverableModules.scenario = {
-	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
-	delay: 250,
-};
+LoadingRecoverableModules.scenario = {};
 
 export const SingleRecoverableModule = Template.bind( {} );
 SingleRecoverableModule.storyName = 'Single Recoverable Module (with access)';
@@ -81,10 +78,7 @@ SingleRecoverableModule.args = {
 			);
 	},
 };
-SingleRecoverableModule.scenario = {
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (with access)',
-	delay: 250,
-};
+SingleRecoverableModule.scenario = {};
 
 export const MultipleRecoverableModule = Template.bind( {} );
 MultipleRecoverableModule.storyName =
@@ -109,10 +103,7 @@ MultipleRecoverableModule.args = {
 			);
 	},
 };
-MultipleRecoverableModule.scenario = {
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
-	delay: 250,
-};
+MultipleRecoverableModule.scenario = {};
 
 export const SingleRecoverableModuleNoAccess = Template.bind( {} );
 SingleRecoverableModuleNoAccess.storyName =
@@ -128,10 +119,7 @@ SingleRecoverableModuleNoAccess.args = {
 			);
 	},
 };
-SingleRecoverableModuleNoAccess.scenario = {
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (no access)',
-	delay: 250,
-};
+SingleRecoverableModuleNoAccess.scenario = {};
 
 export const MultipleRecoverableModuleNoAccess = Template.bind( {} );
 MultipleRecoverableModuleNoAccess.storyName =
@@ -156,10 +144,7 @@ MultipleRecoverableModuleNoAccess.args = {
 			);
 	},
 };
-MultipleRecoverableModuleNoAccess.scenario = {
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
-	delay: 250,
-};
+MultipleRecoverableModuleNoAccess.scenario = {};
 
 export const SingleRecoverableModuleError = Template.bind( {} );
 SingleRecoverableModuleError.storyName =
@@ -255,19 +240,4 @@ MultipleRecoverableModuleErrors.args = {
 export default {
 	title: 'Components/ModuleRecoveryAlert',
 	component: ModuleRecoveryAlert,
-	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideUserAuthentication( registry );
-			provideSiteInfo( registry );
-			provideSiteConnection( registry );
-			provideModuleRegistrations( registry );
-
-			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
 };

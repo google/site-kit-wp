@@ -40,6 +40,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		add_filter(
 			'default_option_' . self::OPTION,
 			function ( $default_option ) {
+				if ( ! is_array( $default_option ) ) {
+					$default_option = $this->get_default();
+				}
 				$default_option['propertyID'] = $this->options->get( 'googlesitekit_search_console_property' ) ?: '';
 
 				return $default_option;

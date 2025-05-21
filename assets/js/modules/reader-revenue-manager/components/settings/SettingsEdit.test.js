@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
@@ -27,6 +28,7 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import * as tracking from '../../../../util/tracking';
 import {
 	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
 	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
@@ -39,9 +41,17 @@ import {
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsEdit', () => {
 	let registry;
+
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+	);
 
 	const publication = publications[ 2 ];
 	const {
@@ -84,18 +94,19 @@ describe( 'SettingsEdit', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	it( 'should render the "SettingsEdit" component', async () => {
-		const { getByRole, getByText, waitForRegistry } = render(
-			<SettingsEdit />,
-			{
-				registry,
-			}
-		);
+		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
 		// Ensure publication select is rendered.
-		expect( getByRole( 'menu', { hidden: true } ) ).toBeInTheDocument();
+		expect( getByText( 'Publication' ) ).toBeInTheDocument();
 
 		// Ensure the publication onboarding state notice is displayed.
 		getByText(
@@ -226,171 +237,228 @@ describe( 'SettingsEdit', () => {
 		).toBeInTheDocument();
 	} );
 
-	describe( 'with the rrmModuleV2 feature flag enabled', () => {
-		describe( 'with the product ID setting', () => {
-			it( 'should render the product ID setting', async () => {
-				const { container, getByText, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-						features: [ 'rrmModuleV2' ],
-					}
-				);
-
-				await waitForRegistry();
-
-				expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
-
-				// Ensure the info notice is rendered.
-				expect(
-					container.querySelector(
-						'.googlesitekit-rrm-settings-edit__product-id-info-notice'
-					)
-				).toBeInTheDocument();
-			} );
-
-			it( 'should render the warning notice when the product ID is "openaccess" and the payment option is "subscriptions"', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setProductID( 'openaccess' );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setPaymentOption( 'subscriptions' );
-
-				const { container, getByText, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-						features: [ 'rrmModuleV2' ],
-					}
-				);
-
-				await waitForRegistry();
-
-				expect(
-					container.querySelector(
-						'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
-					)
-				).toBeInTheDocument();
-
-				expect(
-					getByText(
-						'Selecting “open access” will allow your reader to access your content without a subscription'
-					)
-				).toBeInTheDocument();
-			} );
-
-			it( 'should not render the warning notice when the product ID is "openaccess" and the payment option is not "subscriptions"', async () => {
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-						features: [ 'rrmModuleV2' ],
-					}
-				);
-
-				await waitForRegistry();
-
-				expect(
-					container.querySelector(
-						'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
-					)
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should not render the product ID warning and info notices if they were dismissed', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
-						RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
-					] );
-
-				const { container, getByText, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-						features: [ 'rrmModuleV2' ],
-					}
-				);
-
-				await waitForRegistry();
-
-				expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
-
-				expect(
-					container.querySelector(
-						'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
-					)
-				).not.toBeInTheDocument();
-
-				expect(
-					container.querySelector(
-						'.googlesitekit-rrm-settings-edit__product-id-info-notice'
-					)
-				).not.toBeInTheDocument();
-			} );
-		} );
-
-		it( 'should display CTA placement settings', async () => {
-			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
-				registry,
-				features: [ 'rrmModuleV2' ],
-			} );
+	describe( 'with the product ID setting', () => {
+		it( 'should render the product ID setting', async () => {
+			const { container, getByText, waitForRegistry } = render(
+				<SettingsEdit />,
+				{
+					registry,
+				}
+			);
 
 			await waitForRegistry();
 
-			expect( getByText( 'CTA Placement' ) ).toBeInTheDocument();
-		} );
+			expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
 
-		it( 'should display the snippet mode setting', async () => {
-			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
-				registry,
-				features: [ 'rrmModuleV2' ],
-			} );
-
-			await waitForRegistry();
-
-			expect( getByText( 'Display CTAs' ) ).toBeInTheDocument();
-		} );
-
-		it( 'should display the post types setting if snippet mode is set to post_types', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.setSnippetMode( 'post_types' );
-
-			const { getByText, waitForRegistry } = render( <SettingsEdit />, {
-				registry,
-				features: [ 'rrmModuleV2' ],
-			} );
-
-			await waitForRegistry();
-
+			// Ensure the info notice is rendered.
 			expect(
-				getByText(
-					'Select the content types where you want your CTAs to appear:'
+				container.querySelector(
+					'.googlesitekit-rrm-settings-edit__product-id-info-notice'
 				)
 			).toBeInTheDocument();
 		} );
 
-		it( 'should not display the post types setting if snippet mode is not set to post_types', async () => {
+		it( 'should render the warning notice when the product ID is "openaccess" and the payment option is "subscriptions"', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.setSnippetMode( 'per_post' );
+				.setProductID( 'openaccess' );
 
-			const { queryByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setPaymentOption( 'subscriptions' );
+
+			const { container, getByText, waitForRegistry } = render(
+				<SettingsEdit />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
+				)
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					'Selecting “open access” will allow your reader to access your content without a subscription'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not render the warning notice when the product ID is "openaccess" and the payment option is not "subscriptions"', async () => {
+			const { container, waitForRegistry } = render( <SettingsEdit />, {
 				registry,
-				features: [ 'rrmModuleV2' ],
 			} );
 
 			await waitForRegistry();
 
 			expect(
-				queryByText(
-					'Select the content types where you want your CTAs to appear:'
+				container.querySelector(
+					'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
 				)
 			).not.toBeInTheDocument();
 		} );
+
+		it( 'should not render the product ID warning and info notices if they were dismissed', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+					RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
+				] );
+
+			const { container, getByText, waitForRegistry } = render(
+				<SettingsEdit />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( 'Default Product ID' ) ).toBeInTheDocument();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-rrm-settings-edit__product-id-warning-notice'
+				)
+			).not.toBeInTheDocument();
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-rrm-settings-edit__product-id-info-notice'
+				)
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should display CTA placement settings', async () => {
+		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( getByText( 'CTA Placement' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should display the snippet mode setting', async () => {
+		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( getByText( 'Display CTAs' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should display the post types setting if snippet mode is set to post_types', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setSnippetMode( 'post_types' );
+
+		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Select the content types where you want your CTAs to appear:'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should not display the post types setting if snippet mode is not set to post_types', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setSnippetMode( 'per_post' );
+
+		const { queryByText, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			queryByText(
+				'Select the content types where you want your CTAs to appear:'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should track an event if snippet mode was changed', async () => {
+		fetchMock.postOnce( settingsEndpoint, {
+			body: {
+				...settings,
+				snippetMode: 'per_post',
+			},
+			status: 200,
+		} );
+
+		const { unmount, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		await waitForRegistry();
+
+		await act( async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSnippetMode( 'per_post' );
+
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
+		} );
+
+		unmount();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_rrm-settings',
+			'change_snippet_mode',
+			'Specified pages'
+		);
+	} );
+
+	it( 'should track an event if post types were changed', async () => {
+		fetchMock.postOnce( settingsEndpoint, {
+			body: {
+				...settings,
+				postTypes: [ 'post', 'page' ],
+			},
+			status: 200,
+		} );
+
+		const { unmount, waitForRegistry } = render( <SettingsEdit />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		await waitForRegistry();
+
+		await act( async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setPostTypes( [ 'post', 'page' ] );
+
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
+		} );
+
+		unmount();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_rrm-settings',
+			'change_post_types',
+			'Posts, Pages'
+		);
 	} );
 } );

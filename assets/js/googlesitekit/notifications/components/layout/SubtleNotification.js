@@ -31,7 +31,6 @@ import { forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import CheckFill from '../../../../../svg/icons/check-fill.svg';
-import WarningSVG from '../../../../../svg/icons/warning.svg';
 import StarFill from '../../../../../svg/icons/star-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
@@ -61,10 +60,6 @@ const SubtleNotification = forwardRef(
 							{
 								'googlesitekit-subtle-notification--success':
 									type === 'success',
-								'googlesitekit-subtle-notification--warning':
-									type === 'warning',
-								'googlesitekit-subtle-notification--new-feature':
-									type === 'new-feature',
 							}
 						) }
 					>
@@ -72,9 +67,6 @@ const SubtleNotification = forwardRef(
 							{ icon }
 							{ type === 'success' && ! icon && (
 								<CheckFill width={ 24 } height={ 24 } />
-							) }
-							{ type === 'warning' && ! icon && (
-								<WarningSVG width={ 24 } height={ 24 } />
 							) }
 							{ type === 'new-feature' && ! icon && (
 								<StarFill width={ 24 } height={ 24 } />

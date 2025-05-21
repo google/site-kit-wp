@@ -51,6 +51,46 @@ exports[`SetupForm should render the form correctly 1`] = `
           />
         </div>
       </div>
+      <div
+        class="mdc-select mdc-select--outlined"
+      >
+        <i
+          class="mdc-select__dropdown-icon"
+        />
+        <input
+          name="enhanced-select"
+          type="hidden"
+          value="premium"
+        />
+        <div
+          aria-disabled="false"
+          class="mdc-select__selected-text"
+          tabindex="0"
+        >
+          premium
+        </div>
+        <div
+          class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+        >
+          <div
+            class="mdc-notched-outline__leading"
+          />
+          <div
+            class="mdc-notched-outline__notch"
+          >
+            <label
+              class="mdc-floating-label mdc-floating-label--float-above"
+              for="googlesitekit-select-1"
+              style=""
+            >
+              Default Product ID
+            </label>
+          </div>
+          <div
+            class="mdc-notched-outline__trailing"
+          />
+        </div>
+      </div>
     </div>
     <button
       class="googlesitekit-cta-link"
@@ -58,7 +98,7 @@ exports[`SetupForm should render the form correctly 1`] = `
       <span
         class="googlesitekit-cta-link__contents"
       >
-        Create new publication
+        Manage publications in Publisher Center
       </span>
       <span
         class="googlesitekit-icon-wrapper"

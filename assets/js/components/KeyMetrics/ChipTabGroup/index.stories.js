@@ -116,12 +116,8 @@ Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 	},
-	features: [ 'conversionReporting' ],
 };
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Components/KeyMetrics/ChipTabGroup/default',
-};
+Default.scenario = {};
 
 export const WithError = Template.bind( {} );
 WithError.storyName = 'With Error';
@@ -148,12 +144,8 @@ WithError.args = {
 			newBadgeEvents: [],
 		} );
 	},
-	features: [ 'conversionReporting' ],
 };
-WithError.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Components/KeyMetrics/ChipTabGroup/WithError',
-};
+WithError.scenario = {};
 
 export const WithSuggestedGroup = Template.bind( {} );
 WithSuggestedGroup.storyName = 'With Suggested Group';
@@ -167,12 +159,8 @@ WithSuggestedGroup.args = {
 			},
 		} );
 	},
-	features: [ 'conversionReporting' ],
 };
-WithSuggestedGroup.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Components/KeyMetrics/ChipTabGroup/WithSuggestedGroup',
-};
+WithSuggestedGroup.scenario = {};
 
 export default {
 	title: 'Key Metrics/ChipTabGroup',

@@ -18,4 +18,3 @@
 
 export { default as DashboardPageSpeed } from './DashboardPageSpeed';
 export { default as DashboardPageSpeedWidget } from './DashboardPageSpeedWidget';
-export { default as DashboardPageSpeedLoading } from './DashboardPageSpeedLoading';

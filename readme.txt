@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.7
+Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.148.0
+Stable tag:        1.153.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -36,6 +36,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Tag Manager:** Use Site Kit to easily set up Tag Manager- no code editing required. Then, manage your tags in Tag Manager.
 
 == Installation ==
+
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
@@ -45,7 +46,6 @@ However, if you have a staging environment in addition to your production site, 
 2. Search for **Site Kit by Google**.
 3. Install and activate the Site Kit by Google plugin.
 4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
-
 
 = Manual installation =
 
@@ -109,43 +109,27 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.148.0 =
-
-**Added**
-
-* Unregister the `PartnerAdsPAXWidget` widget. See [#10219](https://github.com/google/site-kit-wp/issues/10219).
+= 1.153.0 =
 
 **Enhanced**
 
-* Update the Ads setup CTA banner to appear before the Audience Segmentation banner. See [#10290](https://github.com/google/site-kit-wp/issues/10290).
-* Update the "Learn more" link in the Ads Module Setup banner. See [#10278](https://github.com/google/site-kit-wp/issues/10278).
-* Show warning when Google for WooCommerce ads account is enabled. See [#10257](https://github.com/google/site-kit-wp/issues/10257).
-* Add WordPress post list bulk edit setting for Reader Revenue Manager. See [#10248](https://github.com/google/site-kit-wp/issues/10248).
-* Update the Ads module setup layout. See [#10193](https://github.com/google/site-kit-wp/issues/10193).
-* Fix bug that could cause console errors when answering tailored metrics questions. See [#10182](https://github.com/google/site-kit-wp/issues/10182).
-* Add the subtle notification component for existing Google for WooCommerce Ads users. See [#10176](https://github.com/google/site-kit-wp/issues/10176).
-* Update Ads Setup CTA to add support for WooCommerce plugins. See [#10175](https://github.com/google/site-kit-wp/issues/10175).
-* Add the `WooCommerceRedirectModal` component. See [#10172](https://github.com/google/site-kit-wp/issues/10172).
-* Add plugin detection selectors to the core/site datastore. See [#10170](https://github.com/google/site-kit-wp/issues/10170).
-* Add support for detecting WooCommerce and Google for Woo plugins. See [#10169](https://github.com/google/site-kit-wp/issues/10169).
-* Handle the error case where the saved product ID is no longer available in the current Reader Revenue Manager publication. See [#10131](https://github.com/google/site-kit-wp/issues/10131).
-* Display context-aware messaging based on the publication’s monetization mode in the Reader Revenue Manager module's the setup success notification. See [#10068](https://github.com/google/site-kit-wp/issues/10068).
-* Add a dropdown and associated informational elements to the Reader Revenue Manager setup and settings screens, to aid the selection of a product ID. See [#10065](https://github.com/google/site-kit-wp/issues/10065).
-* Enable conditional and context-aware placement of the Reader Revenue Manager code snippet. See [#9973](https://github.com/google/site-kit-wp/issues/9973).
-* Add WordPress editor blocks for Reader Revenue Manager inline CTA buttons. See [#9963](https://github.com/google/site-kit-wp/issues/9963).
-* Add a panel to the WordPress post editor to users to override the Reader Revenue Manager snippet configuration at the post level. See [#9962](https://github.com/google/site-kit-wp/issues/9962).
-* When enabling groups, ensure Analytics scope is only requested when needed. See [#9595](https://github.com/google/site-kit-wp/issues/9595).
-* Rework the Auto Update banner to use the new notification infrastructure. See [#9295](https://github.com/google/site-kit-wp/issues/9295).
+* Add the new Banner component. See [#10703](https://github.com/google/site-kit-wp/issues/10703).
+* Enhance WooCommerce provider to surface additional tracking details. See [#10670](https://github.com/google/site-kit-wp/issues/10670).
+* Add price and item name to Easy Digital Download Analytics events. See [#10644](https://github.com/google/site-kit-wp/issues/10644).
+* Refactor new feature type notices to use the new `<Notice type="new">` component. See [#10484](https://github.com/google/site-kit-wp/issues/10484).
+* Refactor RRMIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10389](https://github.com/google/site-kit-wp/issues/10389).
+* Refactor `AudienceTiles` component to reduce cyclomatic complexity and remove the ESLint override. See [#10358](https://github.com/google/site-kit-wp/issues/10358).
+* Automatically dismiss notifications after they are viewed for three different days. See [#10106](https://github.com/google/site-kit-wp/issues/10106).
+* Rewrite a set of datastore reducers to use Immer. Props juniovitorino. See [#5795](https://github.com/google/site-kit-wp/issues/5795).
 
 **Changed**
 
-* Ensure that client-side filtering of unset Analytics report values filters out empty strings as well as '(not set)', to align with changes to the Analytics Data API. See [#10143](https://github.com/google/site-kit-wp/issues/10143).
+* Ensure the pie chart in the Analytics All Traffic widget displays its zero data state when it has no data for the current date range but does for the previous range. See [#10613](https://github.com/google/site-kit-wp/issues/10613).
 
 **Fixed**
 
-* Fix the console error that appears when the `conversionReporting` flag is enabled and the Analytics module is not connected. See [#10289](https://github.com/google/site-kit-wp/issues/10289).
-* Add a datastore slice with actions and selectors for retrieving and updating the new set of audience settings. See [#10154](https://github.com/google/site-kit-wp/issues/10154).
-* Add a new option for audience settings, with REST endpoints to retrieve and update it. See [#10153](https://github.com/google/site-kit-wp/issues/10153).
-* Hide the new badge in the key metrics settings when they have been configured in the full screen editing for the first time. See [#10083](https://github.com/google/site-kit-wp/issues/10083).
+* Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
+* Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
+* Update Partner Ads integration. See [#10779](https://github.com/google/site-kit-wp/issues/10779).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

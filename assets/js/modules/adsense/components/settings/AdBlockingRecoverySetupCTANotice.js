@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import Badge from '../../../../components/Badge';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
@@ -61,6 +61,9 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	);
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
+	);
+	const isNavigatingToRecoveryPageURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -113,9 +116,13 @@ export default function AdBlockingRecoverySetupCTANotice() {
 			}
 			className="googlesitekit-settings-notice-ad-blocking-recovery-cta"
 			OuterCTA={ () => (
-				<Button onClick={ handleCTAClick }>
+				<SpinnerButton
+					onClick={ handleCTAClick }
+					isSaving={ isNavigatingToRecoveryPageURL }
+					disabled={ isNavigatingToRecoveryPageURL }
+				>
 					{ __( 'Set up now', 'google-site-kit' ) }
-				</Button>
+				</SpinnerButton>
 			) }
 		>
 			{ createInterpolateElement(

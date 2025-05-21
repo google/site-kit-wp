@@ -342,25 +342,28 @@ describe( 'Analytics write scope requests', () => {
 
 		interceptCreatePropertyRequest = true;
 
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-			text: /proceed/i,
-		} );
-
-		// expect( console ).toHaveErrored(); // Permission scope error.
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-property' )
-		);
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: /proceed/i,
+			} ),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-property' )
+			),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForSelector( '.googlesitekit-publisher-win__title', {
-			timeout: 5_000,
-		} );
+		await page.waitForSelector(
+			'.googlesitekit-subtle-notification__content p',
+			{
+				timeout: 5_000,
+			}
+		);
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}
@@ -412,13 +415,15 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new web data stream/i,
 		} );
 
-		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /complete setup/i,
-		} );
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-button--raised', {
+				text: /complete setup/i,
+			} ),
 
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
@@ -439,7 +444,7 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForNavigation();
 		await page.waitForTimeout( 5000 );
 		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
+			'.googlesitekit-subtle-notification__content p',
 			{
 				text: /Congrats on completing the setup for Analytics!/i,
 			}

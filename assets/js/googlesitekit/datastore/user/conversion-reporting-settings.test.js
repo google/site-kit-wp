@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
@@ -41,7 +41,7 @@ describe( 'core/user conversion reporting settings', () => {
 	let conversionReportingSettingsResponse;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -56,7 +56,7 @@ describe( 'core/user conversion reporting settings', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {

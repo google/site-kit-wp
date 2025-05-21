@@ -24,8 +24,8 @@ import {
 	createTestRegistry,
 	provideKeyMetrics,
 	provideModules,
+	freezeFetch,
 } from '../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '../../utils/data-mock';
 import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	CORE_USER,
@@ -34,15 +34,27 @@ import {
 import TopCountriesWidget from './TopCountriesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../../../../util/errors';
+import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
 
 describe( 'TopCountriesWidget', () => {
-	const { Widget } = getWidgetComponentProps( KM_ANALYTICS_TOP_COUNTRIES );
+	let registry;
+	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_COUNTRIES );
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
 
-	it( 'renders correctly with the expected metrics', async () => {
-		const registry = createTestRegistry();
+	beforeEach( () => {
+		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( 'analytics-4' ) );
+	} );
+
+	it( 'should render correctly with the expected metrics', async () => {
 		provideAnalytics4MockReport( registry, {
 			...registry
 				.select( CORE_USER )
@@ -59,11 +71,93 @@ describe( 'TopCountriesWidget', () => {
 			],
 			limit: 4,
 		} );
+
 		const { container, waitForRegistry } = render(
-			<TopCountriesWidget Widget={ Widget } />,
+			<TopCountriesWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the loading state while resolving the report', async () => {
+		// Freeze the report fetch to keep the widget in loading state.
+		freezeFetch( reportEndpoint );
+
+		const { container, waitForRegistry } = render(
+			<TopCountriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		[
+			'.googlesitekit-km-widget-tile__loading',
+			'.googlesitekit-km-widget-tile__loading-header',
+			'.googlesitekit-km-widget-tile__loading-body',
+		].forEach( ( selector ) => {
+			expect( container.querySelector( selector ) ).toBeInTheDocument();
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the generic error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: ERROR_INTERNAL_SERVER_ERROR,
+			message: 'Internal server error',
+			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopCountriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.get( reportEndpoint, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TopCountriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+		).toBeInTheDocument();
+
+		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );

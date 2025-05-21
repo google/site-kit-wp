@@ -17,21 +17,10 @@ use Google\Site_Kit\Core\Consent_Mode\REST_Consent_Mode_Controller;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Ads;
-use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
-use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Modules\Tag_Manager\Settings as Tag_Manager_Settings;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ContainerVersion;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Tag;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_REST_Request;
 
 class REST_Consent_Mode_ControllerTest extends TestCase {
@@ -321,96 +310,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->assertFalse( $response_data['connected'] );
 	}
 
-	public function test_get_ads_measurement_status__ads_module_connected() {
-		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
-		$this->grant_manage_options_permission();
-
-		$this->force_module_connection( Ads::MODULE_SLUG );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertTrue( $response_data['connected'] );
-	}
-
-	public function test_get_ads_measurement_status__ga4_module_connected__ads_connected_setting_is_true() {
-		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
-		$this->grant_manage_options_permission();
-
-		$this->force_module_connection( Analytics_4::MODULE_SLUG );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertFalse( $response_data['connected'] );
-
-		// Set adSenseLinked setting to true, which should mark connection as true.
-		update_option( Analytics_4_Settings::OPTION, array( 'adSenseLinked' => true ) );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertTrue( $response_data['connected'] );
-	}
-
-	public function test_get_ads_measurement_status__ga4_module_connected__destinationIds_setting_contains_ads_related_tag() {
-		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
-		$this->grant_manage_options_permission();
-
-		$this->force_module_connection( Analytics_4::MODULE_SLUG );
-		update_option( Analytics_4_Settings::OPTION, array( 'googleTagContainerDestinationIDs' => array( 'G-1234', 'AW-12345' ) ) );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertTrue( $response_data['connected'] );
-	}
-
-	/**
-	 * @dataProvider data_container_checks
-	 */
-	public function test_get_ads_measurement_status__tag_manager_module_connected__live_container_checks( $container_version, $expected_connection_value ) {
-		$this->setup_rest();
-		// Setup the site and admin user to make a successful REST request.
-		$this->grant_manage_options_permission();
-
-		$this->force_module_connection( Tag_Manager::MODULE_SLUG );
-
-		$account_id          = '1234';
-		$internalContainerID = '123456';
-		update_option(
-			Tag_Manager_Settings::OPTION,
-			array(
-				'accountID'           => $account_id,
-				'internalContainerID' => $internalContainerID,
-			)
-		);
-
-		$this->fake_tag_manager_http_handler(
-			$container_version,
-			$account_id,
-			$internalContainerID
-		);
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$response_data = $response->get_data();
-
-		$this->assertEquals( $response_data['connected'], $expected_connection_value );
-	}
-
 	private function grant_manage_options_permission() {
 		// Setup SiteKit.
 		$this->fake_proxy_site_connection();
@@ -433,106 +332,132 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 	}
 
-	private function force_module_connection( $module_slug ) {
+	public function test_get_ads_measurement_status__requires_authenticated_admin() {
+		$this->setup_rest();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	public function test_get_ads_measurement_status__early_return_on_first_passing_check() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$check_calls = array(
+			'first'  => 0,
+			'second' => 0,
+			'third'  => 0,
+		);
+
 		add_filter(
-			'googlesitekit_is_module_connected',
-			function ( $connected, $slug ) use ( $module_slug ) {
-				if ( $module_slug === $slug ) {
-					return true;
-				}
-				return $connected;
-			},
-			10,
-			2
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( &$check_calls ) {
+				return array(
+					function () use ( &$check_calls ) {
+						$check_calls['first']++;
+						return false;
+					},
+					function () use ( &$check_calls ) {
+						$check_calls['second']++;
+						return true;
+					},
+					function () use ( &$check_calls ) {
+						$check_calls['third']++;
+						return false;
+					},
+				);
+			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertTrue( $response_data['connected'] );
+		$this->assertEquals( 1, $check_calls['first'] );
+		$this->assertEquals( 1, $check_calls['second'] );
+		$this->assertEquals( 0, $check_calls['third'] );
+	}
+
+	public function test_get_ads_measurement_status__handles_empty_checks_array() {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		add_filter( 'googlesitekit_ads_measurement_connection_checks', '__return_empty_array' );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
+	}
+
+	public function data_non_callable_checks_provider() {
+		return array(
+			'numeric literal'        => array( 42 ),
+			'incorrect array format' => array( array( 'too', 'many', 'args' ) ),
+			'null value'             => array( null ),
 		);
 	}
 
 	/**
-	 * @param ContainerVersion $container_version ContainerVersion instance.
-	 * @param string $account_id                  Tag manager account ID.
-	 * @param string $container_id                Tag manager container ID.
+	 * @dataProvider data_non_callable_checks_provider
 	 */
-	private function fake_tag_manager_http_handler( ContainerVersion $container_version, $account_id, $container_id ) {
-		FakeHttp::fake_google_http_handler(
-			$this->modules->get_module( Tag_Manager::MODULE_SLUG )->get_client(),
-			function ( Request $request ) use ( $container_version, $account_id, $container_id ) {
-				$url = parse_url( $request->getUri() );
+	public function test_get_ads_measurement_status__handles_non_callable_checks( $non_callable_check ) {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
-				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
-					return new FulfilledPromise( new Response( 200 ) );
-				}
-
-				switch ( $url['path'] ) {
-					case "/tagmanager/v2/accounts/{$account_id}/containers/{$container_id}/versions:live":
-						return new FulfilledPromise(
-							new Response(
-								200,
-								array(),
-								json_encode(
-									$container_version->toSimpleObject()
-								)
-							)
-						);
-
-					default:
-						return new FulfilledPromise( new Response( 200 ) );
-				}
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( $non_callable_check ) {
+				return array( $non_callable_check );
 			}
+		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
+	}
+
+	public function data_non_array_filter_result_provider() {
+		return array(
+			'empty string' => array( '' ),
+			'boolean true' => array( true ),
+			'null'         => array( null ),
 		);
 	}
 
-	public function data_container_checks() {
-		$has_awct_tag = function () {
-			$tag1 = new Tag();
-			$tag1->setTagId( '324234' );
-			$tag1->setType( 'awct' );
+	/**
+	 * @dataProvider data_non_array_filter_result_provider
+	 */
+	public function test_get_ads_measurement_status__handles_non_array_filter_result( $non_array_value ) {
+		$this->setup_rest();
+		$this->grant_manage_options_permission();
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 
-			$tag2 = new Tag();
-			$tag2->setTagId( '23425' );
-			$tag2->setType( 'exampletype' );
-
-			$container_version = new ContainerVersion();
-			$container_version->setAccountId( '1231' );
-			$container_version->setContainerId( '123456' );
-			$container_version->setTag( array( $tag1, $tag2 ) );
-
-			return $container_version;
-		};
-
-		$no_tag = function () {
-			$container_version = new ContainerVersion();
-			$container_version->setAccountId( '1231' );
-			$container_version->setContainerId( '123456' );
-
-			return $container_version;
-		};
-
-		$no_awct_tag = function () {
-			$tag = new Tag();
-			$tag->setTagId( '324234' );
-			$tag->setType( 'exampletype' );
-
-			$container_version = new ContainerVersion();
-			$container_version->setAccountId( '1231' );
-			$container_version->setContainerId( '123456' );
-			$container_version->setTag( array( $tag ) );
-
-			return $container_version;
-		};
-
-		return array(
-			'has awct type tag'    => array(
-				$has_awct_tag(),
-				true,
-			),
-			'has no awct type tag' => array(
-				$no_awct_tag(),
-				false,
-			),
-			'has no tag'           => array(
-				$no_tag(),
-				false,
-			),
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function () use ( $non_array_value ) {
+				return $non_array_value;
+			}
 		);
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$response_data = $response->get_data();
+
+		$this->assertFalse( $response_data['connected'] );
 	}
 }

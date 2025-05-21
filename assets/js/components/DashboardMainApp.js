@@ -79,6 +79,7 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '../googlesitekit/notifications/datastore/constants';
+import { AdminMenuTooltip } from './AdminMenuTooltip';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -249,6 +250,8 @@ export default function DashboardMainApp() {
 			<ScrollEffect />
 			<ModuleDashboardEffects />
 
+			<AdminMenuTooltip />
+
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
@@ -262,6 +265,11 @@ export default function DashboardMainApp() {
 			/>
 
 			<OverlayNotificationsRenderer />
+
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>
 
 			{ isKeyMetricsWidgetHidden !== true && (
 				<WidgetContextRenderer

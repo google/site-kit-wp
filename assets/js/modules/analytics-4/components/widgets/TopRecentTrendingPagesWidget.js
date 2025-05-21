@@ -46,6 +46,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from '../../../../googlesitekit/datastore/user/constants';
+import { decodeAmpersand } from '../../utils';
 
 /**
  * Returns the date range (eg. the `startDate` and `endDate`) for this widget's
@@ -177,7 +178,7 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ];
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,

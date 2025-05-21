@@ -23,7 +23,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -51,7 +51,7 @@ const settingsReducerCallback = createReducer( ( state, settings ) => {
 const fetchGetConsentModeSettingsStore = createFetchStore( {
 	baseName: 'getConsentModeSettings',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'consent-mode', null, {
+		return get( 'core', 'site', 'consent-mode', null, {
 			useCache: false,
 		} );
 	},
@@ -61,7 +61,7 @@ const fetchGetConsentModeSettingsStore = createFetchStore( {
 const fetchSaveConsentModeSettingsStore = createFetchStore( {
 	baseName: 'saveConsentModeSettings',
 	controlCallback: ( { settings } ) => {
-		return API.set( 'core', 'site', 'consent-mode', { settings } );
+		return set( 'core', 'site', 'consent-mode', { settings } );
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
@@ -78,7 +78,7 @@ const fetchSaveConsentModeSettingsStore = createFetchStore( {
 const fetchGetConsentAPIInfoStore = createFetchStore( {
 	baseName: 'getConsentAPIInfo',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'consent-api-info', null, {
+		return get( 'core', 'site', 'consent-api-info', null, {
 			useCache: false,
 		} );
 	},
@@ -121,7 +121,7 @@ const fetchInstallActivateWPConsentAPI = createFetchStore( {
 const fetchActivateConsentAPI = createFetchStore( {
 	baseName: 'activateConsentAPI',
 	controlCallback: () => {
-		return API.set( 'core', 'site', 'consent-api-activate', null, {
+		return set( 'core', 'site', 'consent-api-activate', null, {
 			useCache: false,
 		} );
 	},
@@ -129,14 +129,25 @@ const fetchActivateConsentAPI = createFetchStore( {
 
 const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 	baseName: 'getAdsMeasurementStatus',
-	controlCallback: () => {
-		return API.get( 'core', 'site', 'ads-measurement-status', null, {
-			useCache: false,
+	controlCallback: ( { useCache } ) => {
+		return get( 'core', 'site', 'ads-measurement-status', null, {
+			useCache,
 		} );
 	},
-	reducerCallback: createReducer( ( state, response ) => {
+	reducerCallback: createReducer( ( state, response, { useCache } ) => {
 		state.consentMode.adsConnected = response.connected;
+
+		if ( ! useCache ) {
+			state.consentMode.adsConnectedUncached = response.connected;
+		}
 	} ),
+	argsToParams: ( { useCache } = {} ) => ( { useCache } ),
+	validateParams: ( { useCache } ) => {
+		invariant(
+			typeof useCache === 'boolean',
+			'useCache must be a boolean.'
+		);
+	},
 } );
 
 const baseInitialState = {
@@ -146,6 +157,7 @@ const baseInitialState = {
 		apiInstallResponse: undefined,
 		isApiFetching: undefined,
 		adsConnected: undefined,
+		adsConnectedUncached: undefined,
 	},
 };
 
@@ -356,6 +368,18 @@ const baseSelectors = {
 	isAdsConnected: ( state ) => {
 		return state.consentMode.adsConnected;
 	},
+
+	/**
+	 * Returns true if Google Ads is in use, but ensures fresh data is fetched.
+	 *
+	 * @since 1.151.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if Google Ads is in use, false otherwise. Undefined if the selectors have not loaded.
+	 */
+	isAdsConnectedUncached: ( state ) => {
+		return state.consentMode.adsConnectedUncached;
+	},
 };
 
 const baseResolvers = {
@@ -386,7 +410,21 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus();
+		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus(
+			{ useCache: true }
+		);
+	},
+
+	*isAdsConnectedUncached() {
+		const { select } = yield getRegistry();
+
+		if ( select( CORE_SITE ).isAdsConnectedUncached() !== undefined ) {
+			return;
+		}
+
+		yield fetchGetAdsMeasurementStatusStore.actions.fetchGetAdsMeasurementStatus(
+			{ useCache: false }
+		);
 	},
 };
 

@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -150,7 +150,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'tagmanager' );
+	await invalidateCache( 'modules', 'tagmanager' );
 
 	return {};
 }

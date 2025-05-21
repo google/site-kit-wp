@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -47,12 +47,7 @@ const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
 	controlCallback: ( { options } ) => {
-		return API.get(
-			'modules',
-			'search-console',
-			'searchanalytics',
-			options
-		);
+		return get( 'modules', 'search-console', 'searchanalytics', options );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {

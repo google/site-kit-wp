@@ -59,7 +59,7 @@ class Ninja_Forms extends Conversion_Events_Provider {
 			array(
 				'src'          => $this->context->url( 'dist/assets/js/googlesitekit-events-provider-ninja-forms.js' ),
 				'execution'    => 'defer',
-				'dependencies' => array( 'nf-front-end-deps' ),
+				'dependencies' => array( 'backbone' ),
 			)
 		);
 

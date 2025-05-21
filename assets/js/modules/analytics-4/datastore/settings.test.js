@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	deprecatedProvideNotifications,
+	provideNotifications,
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -35,7 +35,6 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -53,7 +52,8 @@ import {
 	INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
 } from './settings';
 import * as fixtures from './__fixtures__';
-import { ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../constants';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '..';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
@@ -75,7 +75,7 @@ describe( 'modules/analytics-4 settings', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -84,7 +84,7 @@ describe( 'modules/analytics-4 settings', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -378,6 +378,16 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				it( 'should dismiss the activation banner when the required form setting is set', async () => {
+					const notification =
+						ANALYTICS_4_NOTIFICATIONS[
+							'enhanced-measurement-notification'
+						];
+					registry
+						.dispatch( CORE_NOTIFICATIONS )
+						.registerNotification(
+							'enhanced-measurement-notification',
+							notification
+						);
 					registry
 						.dispatch( CORE_FORMS )
 						.setValues( ENHANCED_MEASUREMENT_FORM, {
@@ -386,7 +396,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 					fetchMock.postOnce( dismissItemEndpoint, {
 						body: JSON.stringify( [
-							ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+							'enhanced-measurement-notification',
 						] ),
 						status: 200,
 					} );
@@ -398,7 +408,7 @@ describe( 'modules/analytics-4 settings', () => {
 					expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 						body: {
 							data: {
-								slug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+								slug: 'enhanced-measurement-notification',
 								expiration: 0,
 							},
 						},
@@ -527,16 +537,7 @@ describe( 'modules/analytics-4 settings', () => {
 						FPM_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -660,16 +661,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
@@ -739,16 +731,7 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
@@ -809,16 +792,7 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )

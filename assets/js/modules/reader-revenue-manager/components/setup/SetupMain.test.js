@@ -62,7 +62,10 @@ describe( 'SetupMain', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
+			.receiveGetSettings( {
+				snippetMode: 'post_types',
+				postTypes: [ 'post' ],
+			} );
 	} );
 
 	it( 'should render the loading state when publications are being loaded', () => {

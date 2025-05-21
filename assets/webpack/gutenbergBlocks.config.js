@@ -48,8 +48,12 @@ module.exports = ( mode ) => ( {
 		// Reader Revenue Manager blocks.
 		'reader-revenue-manager/contribute-with-google/index':
 			'./blocks/reader-revenue-manager/contribute-with-google/index.js',
+		'reader-revenue-manager/contribute-with-google/non-site-kit-user':
+			'./blocks/reader-revenue-manager/contribute-with-google/non-site-kit-user.js',
 		'reader-revenue-manager/subscribe-with-google/index':
 			'./blocks/reader-revenue-manager/subscribe-with-google/index.js',
+		'reader-revenue-manager/subscribe-with-google/non-site-kit-user':
+			'./blocks/reader-revenue-manager/subscribe-with-google/non-site-kit-user.js',
 		'reader-revenue-manager/common/editor-styles':
 			'./blocks/reader-revenue-manager/common/editor-styles.scss',
 		// Sign in with Google block.
@@ -71,7 +75,14 @@ module.exports = ( mode ) => ( {
 				use: [
 					MiniCssExtractPlugin.loader,
 					'css-loader',
-					'postcss-loader',
+					{
+						loader: 'postcss-loader',
+						options: {
+							postcssOptions: {
+								config: rootDir + '/assets/postcss.config.js',
+							},
+						},
+					},
 					{
 						loader: 'sass-loader',
 						options: {

@@ -50,6 +50,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -70,6 +71,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
 				.resolveSelect( CORE_USER )
@@ -97,7 +99,6 @@ export const registerWidgets = () => {};
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
 		Component: SetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -116,7 +117,6 @@ export const ADS_NOTIFICATIONS = {
 	},
 	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -134,13 +134,15 @@ export const ADS_NOTIFICATIONS = {
 	},
 	'account-linked-via-google-for-woocommerce': {
 		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
-		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
 			// on the data being resolved in getModuleData() selector.
-			await resolveSelect( MODULES_ADS ).getModuleData();
+			const [ , isModuleConnected ] = await Promise.all( [
+				resolveSelect( MODULES_ADS ).getModuleData(),
+				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+			] );
 
 			const {
 				isWooCommerceActivated,
@@ -149,6 +151,7 @@ export const ADS_NOTIFICATIONS = {
 			} = select( MODULES_ADS );
 
 			return (
+				! isModuleConnected &&
 				isWooCommerceActivated() &&
 				isGoogleForWooCommerceActivated() &&
 				hasGoogleForWooCommerceAdsAccount()
@@ -160,8 +163,8 @@ export const ADS_NOTIFICATIONS = {
 	'ads-setup-cta': {
 		Component: AdsModuleSetupCTABanner,
 		// This notification should be displayed before audience segmentation one,
-		// which has priority of 10
-		priority: 9,
+		// which has priority of PRIORITY.SETUP_CTA_LOW
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],

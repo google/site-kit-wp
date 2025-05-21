@@ -30,11 +30,11 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
+import { set } from 'googlesitekit-api';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
 import { formatPaxDate } from './utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import API from 'googlesitekit-api';
 
 const restFetchWpPages = async () => {
 	try {
@@ -57,9 +57,7 @@ function createMemoizedGetToken() {
 	const maxAgeSeconds = 4 * 60; // 4 min in seconds
 	const clearAfterSeconds = 30;
 
-	const memoizedGetToken = memize( () =>
-		API.set( 'core', 'user', 'get-token' )
-	);
+	const memoizedGetToken = memize( () => set( 'core', 'user', 'get-token' ) );
 
 	const debouncedClear = debounce(
 		memoizedGetToken.clear,

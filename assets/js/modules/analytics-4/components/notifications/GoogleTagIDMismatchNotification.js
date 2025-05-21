@@ -31,6 +31,7 @@ import { isValidMeasurementID } from '../../utils/validation';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { getBestTagID } from '../../utils/google-tag';
 import SimpleNotification from '../../../../googlesitekit/notifications/components/layout/SimpleNotification';
+import NotificationProgressBar from '../../../../googlesitekit/notifications/components/layout/NotificationProgressBar';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
 import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import CTALink from '../../../../googlesitekit/notifications/components/common/CTALink';
@@ -152,6 +153,22 @@ export default function GoogleTagIDMismatchNotification( {
 		newAnalyticsProperty === undefined ||
 		newGoogleTagID === undefined ||
 		currentAnalyticsProperty === undefined
+	) {
+		return <NotificationProgressBar />;
+	}
+
+	// If the current and new properties are the same, don't show the notification.
+	// This can happen momentarily when the banner is actioned and the new property
+	// has been saved, but the notification hasn't been dismissed / removed from the
+	// queue yet. There is also a rare issue reported where hasMismatchedGoogleTagID
+	// is set to true, but the new property is the same as the current one. This will
+	// result in a perpetual loading banner on the screen if we returned the loading
+	// bar. So it is safer to return null, as eventually, the syncGoogleTag action
+	// will be called within an hour and reset this correctly.
+	if (
+		currentAnalyticsProperty?._id &&
+		newAnalyticsProperty?._id &&
+		currentAnalyticsProperty._id === newAnalyticsProperty._id
 	) {
 		return null;
 	}

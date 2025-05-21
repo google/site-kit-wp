@@ -24,7 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { createNotificationsStore } from '../data/create-notifications-store';
 import { createSettingsStore } from '../data/create-settings-store';
 import { createInfoStore } from './create-info-store';
@@ -42,7 +42,7 @@ describe( 'createModuleStore store', () => {
 	let storeDefinition;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -57,7 +57,7 @@ describe( 'createModuleStore store', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'name', () => {

@@ -62,8 +62,13 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      # npm@7 is the minimum version required for c2corg/browserslist-update-action@v2.
+      # TODO: Remove this step once our node base version comes with npm@7 or greater.
+      - name: Install npm globally
+        run: npm run install-global-npm
+
       - name: Update Browserslist database and create PR if applicable
-        uses: c2corg/browserslist-update-action@v1
+        uses: c2corg/browserslist-update-action@v2
         with:
           github_token: ${{ secrets.GH_BOT_TOKEN }}
           branch: ${{ env.branch-name }}
