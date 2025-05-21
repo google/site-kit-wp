@@ -1,7 +1,7 @@
 /**
- * Warning notice styles.
+ * Test SVG string mock.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,5 @@
  * limitations under the License.
  */
 
-.googlesitekit-warning-notice {
-	background-color: $c-utility-warning-container;
-	border-radius: $br-xs;
-	color: $c-utility-on-warning-container;
-	font-size: $fs-label-sm;
-	letter-spacing: $ls-xs;
-	line-height: $lh-label-sm;
-	padding: $grid-gap-phone - 2 $grid-gap-desktop;
-
-	.googlesitekit-cta-link {
-		color: $c-utility-on-warning-container;
-		font-weight: $fw-medium;
-
-		svg {
-			fill: none;
-		}
-	}
-}
+// The following represents a minimal SVG encoded as a data URI.
+export default 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';

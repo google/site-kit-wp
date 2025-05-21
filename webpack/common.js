@@ -43,6 +43,7 @@ exports.projectPath = projectPath;
 
 exports.resolve = {
 	alias: {
+		'@': path.resolve( rootDir, 'assets' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),

@@ -1,7 +1,7 @@
 /**
- * WarningNotice component.
+ * Storybook webpack config.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,22 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
+const path = require( 'path' );
 
-export default function WarningNotice( { children, className } ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-warning-notice',
-				className
-			) }
-		>
-			{ children }
-		</div>
-	);
-}
+/**
+ * Internal dependencies
+ */
+const { rootDir } = require( '../webpack/common' );
 
-WarningNotice.propTypes = {
-	children: PropTypes.node.isRequired,
-	className: PropTypes.string,
+// eslint-disable-next-line require-await
+module.exports = async ( { config } ) => {
+	config.resolve = {
+		...config.resolve,
+		alias: {
+			'@': path.resolve( rootDir, 'assets' ),
+			...config.resolve.alias,
+		},
+	};
+
+	return config;
 };

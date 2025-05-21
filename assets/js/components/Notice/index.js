@@ -45,6 +45,7 @@ const Notice = forwardRef(
 			ctaButton,
 			type = TYPES.INFO,
 			children,
+			hideIcon,
 		},
 		ref
 	) => {
@@ -57,36 +58,48 @@ const Notice = forwardRef(
 					className
 				) }
 			>
-				<div className="googlesitekit-notice__icon">
-					<Icon type={ type } />
-				</div>
+				{ ! hideIcon && (
+					<div className="googlesitekit-notice__icon">
+						<Icon type={ type } />
+					</div>
+				) }
 
 				<div className="googlesitekit-notice__content">
 					<Title>{ title }</Title>
 					<Description>{ description }</Description>
 				</div>
 
-				<div className="googlesitekit-notice__action">
-					{ children }
+				{ ( dismissButton?.label ||
+					dismissButton?.onClick ||
+					( ctaButton?.label &&
+						( ctaButton?.onClick || ctaButton?.href ) ) ) && (
+					<div className="googlesitekit-notice__action">
+						{ children }
 
-					{ dismissButton?.label && dismissButton?.onClick && (
-						<DismissButton
-							label={ dismissButton.label }
-							onClick={ dismissButton.onClick }
-							disabled={ dismissButton.disabled }
-						/>
-					) }
-					{ ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) && (
-							<CTAButton
-								label={ ctaButton.label }
-								onClick={ ctaButton.onClick }
-								inProgress={ ctaButton.inProgress }
-								disabled={ ctaButton.disabled }
-								href={ ctaButton.href }
+						{ ( dismissButton?.label ||
+							dismissButton?.onClick ) && (
+							<DismissButton
+								label={ dismissButton.label }
+								onClick={ dismissButton.onClick }
+								disabled={ dismissButton.disabled }
 							/>
 						) }
-				</div>
+						{ ctaButton?.label &&
+							( ctaButton?.onClick || ctaButton?.href ) && (
+								<CTAButton
+									label={ ctaButton.label }
+									onClick={ ctaButton.onClick }
+									inProgress={ ctaButton.inProgress }
+									disabled={ ctaButton.disabled }
+									href={ ctaButton.href }
+									external={ ctaButton.external }
+									hideExternalIndicator={
+										ctaButton.hideExternalIndicator
+									}
+								/>
+							) }
+					</div>
+				) }
 			</div>
 		);
 	}
@@ -102,6 +115,7 @@ Notice.propTypes = {
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
 	children: PropTypes.node,
+	hideIcon: PropTypes.bool,
 };
 
 export default Notice;
