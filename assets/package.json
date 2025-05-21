@@ -5,7 +5,7 @@
 		"prebuild:production": "npm run remove-dist",
 		"build:dev": "webpack --mode=development --devtool cheap-module-source-map --output-pathinfo",
 		"build:production": "webpack --mode=production",
-		"build:test": "npm run build:production -- --include-tests",
+		"build:test": "SITEKIT_TEST=1 npm run build:production",
 		"watch": "npm run build:dev -- --watch",
 		"remove-dist": "rimraf ../dist/"
 	},
