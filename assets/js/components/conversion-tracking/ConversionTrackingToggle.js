@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import ErrorText from '../../components/ErrorText';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
+import Notice from '@/js/components/Notice';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();
@@ -78,7 +78,12 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 					/>
 				</div>
 			</LoadingWrapper>
-			{ !! saveError && <ErrorText message={ saveError.message } /> }
+			{ !! saveError && (
+				<Notice
+					type={ Notice.TYPES.ERROR }
+					description={ saveError.message }
+				/>
+			) }
 			<LoadingWrapper
 				className="googlesitekit-settings-conversion-tracking-switch-description--loading"
 				loading={ loading }
