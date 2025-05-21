@@ -72,6 +72,21 @@ class WooCommerce extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		if ( empty( $this->get_event_names() ) ) {
+			return esc_html__( 'Events tracked through Analytics integration addon', 'google-site-kit' );
+		}
+
+		return parent::get_debug_data();
+	}
+
+	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.127.0
@@ -152,7 +167,7 @@ class WooCommerce extends Conversion_Events_Provider {
 				$order->save();
 
 				$events_to_track = $this->get_event_names();
-				if ( empty( $events_to_track ) || ! isset( $events_to_track['purchase'] ) ) {
+				if ( ! isset( $events_to_track['purchase'] ) ) {
 					return;
 				}
 
