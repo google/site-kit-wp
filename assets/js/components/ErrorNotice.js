@@ -32,8 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
-import ErrorText from './ErrorText';
 import Notice from '@/js/components/Notice';
+import { isURL } from '@wordpress/url';
 
 export default function ErrorNotice( {
 	error,
@@ -78,16 +78,34 @@ export default function ErrorNotice( {
 		);
 	}
 
+	if ( ! noPrefix ) {
+		message = sprintf(
+			/* translators: $%s: Error message */
+			__( 'Error: %s', 'google-site-kit' ),
+			message
+		);
+	}
+
+	const reconnectURL = error.data?.reconnectURL;
+
+	if ( reconnectURL && isURL( reconnectURL ) ) {
+		message =
+			message +
+			' ' +
+			sprintf(
+				/* translators: %s: Reconnect URL */
+				__(
+					'To fix this, <a href="%s">redo the plugin setup</a>.',
+					'google-site-kit'
+				),
+				reconnectURL
+			);
+	}
+
 	return (
 		<Notice
 			type={ Notice.TYPES.ERROR }
-			description={
-				<ErrorText
-					message={ message }
-					reconnectURL={ error.data?.reconnectURL }
-					noPrefix={ noPrefix }
-				/>
-			}
+			description={ message }
 			{ ...( shouldDisplayRetry
 				? {
 						ctaButton: {
