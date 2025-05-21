@@ -17,11 +17,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	Fragment,
-	useCallback,
-} from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -58,10 +54,6 @@ export default function AnyoneCanRegisterDisabledNotice() {
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
-
-	const dismissNotice = useCallback( () => {
-		dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE );
-	} );
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
@@ -114,7 +106,8 @@ export default function AnyoneCanRegisterDisabledNotice() {
 				) }
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
-					onClick: dismissNotice,
+					onClick: () =>
+						dismissItem( ANYONE_CAN_REGISTER_DISABLED_NOTICE ),
 				} }
 			/>
 		</div>
