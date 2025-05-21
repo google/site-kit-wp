@@ -33,6 +33,7 @@ import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { isValidPropertyID } from '../../utils/validation';
 import Notice from '@/js/components/Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;
@@ -105,9 +106,8 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		)
 	) {
 		return (
-			<Notice
-				type={ Notice.TYPES.ERROR }
-				description={ sprintf(
+			<ErrorNotice
+				message={ sprintf(
 					/* translators: 1: Google Analytics Measurement ID. */
 					__(
 						'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
