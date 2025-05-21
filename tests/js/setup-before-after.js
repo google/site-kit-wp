@@ -64,7 +64,9 @@ afterEach( async () => {
 	// In order to catch (most) unhandled promise rejections
 	// we need to wait at least one more event cycle.
 	// To do this, we need to switch back to real timers if we're currently using fake timers.
-	if ( jest.isMockFunction( setTimeout ) ) {
+	// Check if Jest is using fake timers by looking for timer control functions.
+	const isUsingFakeTimers = typeof jest.getTimerCount === 'function';
+	if ( isUsingFakeTimers ) {
 		jest.useRealTimers();
 	}
 
