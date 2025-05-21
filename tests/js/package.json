@@ -16,7 +16,7 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.7.0",
-		"@wordpress/babel-preset-default": "^4.17.0",
+		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/jest-preset-default": "^12.23.0",
 		"babel-jest": "^29.7.0",
 		"cross-env": "^7.0.3",

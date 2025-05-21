@@ -74,7 +74,7 @@
 		"@storybook/addon-queryparams": "^6.2.9",
 		"@svgr/webpack": "^8.1.0",
 		"@testing-library/react": "^10.4.9",
-		"@wordpress/babel-preset-default": "^4.17.0",
+		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"autoprefixer": "^10.4.21",
 		"copy-webpack-plugin": "^13.0.0",
