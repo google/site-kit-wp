@@ -37,7 +37,7 @@ import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import Notice from '@/js/components/Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();
@@ -136,12 +136,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						/>
 					</LoadingWrapper>
 				}
-				{ saveError && (
-					<Notice
-						type={ Notice.TYPES.ERROR }
-						description={ saveError.message }
-					/>
-				) }
+				{ saveError && <ErrorNotice message={ saveError.message } /> }
 				{ ! loading && isConsentModeEnabled && (
 					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
 						{ __(
