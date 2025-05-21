@@ -31,13 +31,13 @@ import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
+import Notice from '@/js/components/Notice';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();
@@ -136,7 +136,12 @@ export default function ConsentModeSwitch( { loading } ) {
 						/>
 					</LoadingWrapper>
 				}
-				{ saveError && <ErrorText message={ saveError.message } /> }
+				{ saveError && (
+					<Notice
+						type={ Notice.TYPES.ERROR }
+						description={ saveError.message }
+					/>
+				) }
 				{ ! loading && isConsentModeEnabled && (
 					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
 						{ __(
