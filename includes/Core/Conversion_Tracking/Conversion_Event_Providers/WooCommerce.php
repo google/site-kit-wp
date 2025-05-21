@@ -63,7 +63,7 @@ class WooCommerce extends Conversion_Events_Provider {
 		$wgai_event_names = $this->get_wgai_event_names();
 		$events_to_track  = $this->events_to_track();
 
-		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
+		return array_unique( array_merge( $events_to_track, (array) $wgai_event_names ) );
 	}
 
 	/**
