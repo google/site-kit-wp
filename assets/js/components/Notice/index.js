@@ -65,8 +65,10 @@ const Notice = forwardRef(
 				) }
 
 				<div className="googlesitekit-notice__content">
-					<Title>{ title }</Title>
-					<Description>{ description }</Description>
+					{ title && <Title>{ title }</Title> }
+					{ description && (
+						<Description>{ description }</Description>
+					) }
 				</div>
 
 				{ ( dismissButton?.label ||
@@ -109,7 +111,7 @@ Notice.TYPES = TYPES;
 
 Notice.propTypes = {
 	className: PropTypes.string,
-	title: PropTypes.string,
+	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),

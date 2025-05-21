@@ -153,7 +153,7 @@ describe( 'AdBlockingRecoverySetupCTANotice', () => {
 
 		expect(
 			container.querySelector(
-				'.googlesitekit-settings-notice-ad-blocking-recovery-cta'
+				'.googlesitekit-notice--info .googlesitekit-notice__title'
 			)
 		).not.toBeNull();
 
