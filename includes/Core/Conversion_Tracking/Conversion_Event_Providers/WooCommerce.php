@@ -118,23 +118,8 @@ class WooCommerce extends Conversion_Events_Provider {
 		);
 
 		add_action(
-			'wp_head',
-			function () {
-				if ( is_wc_endpoint_url( 'order-received' ) ) {
-					$order_id = absint( get_query_var( 'order-received' ) );
-
-					if ( ! wp_is_block_theme() ) {
-						return;
-					}
-
-					$this->maybe_add_purchase_inline_script( $order_id );
-				}
-			}
-		);
-
-		add_action(
 			'woocommerce_thankyou',
-			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id ),
+			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id, wp_is_block_theme() ),
 			10,
 			1
 		);
@@ -153,6 +138,12 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
 					)
 				);
+
+				if ( is_wc_endpoint_url( 'order-received' ) && wp_is_block_theme() ) {
+					$order_id = absint( get_query_var( 'order-received' ) );
+
+					$this->maybe_add_purchase_inline_script( $order_id );
+				}
 
 				wp_add_inline_script( $script_slug, $inline_script, 'before' );
 			}
@@ -289,9 +280,10 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param int $order_id The order ID.
+	 * @param int  $order_id              The order ID.
+	 * @param bool $skip_meta_value_save Whether to skip saving the _googlesitekit_ga_purchase_event_tracked meta value.
 	 */
-	protected function maybe_add_purchase_inline_script( $order_id ) {
+	protected function maybe_add_purchase_inline_script( $order_id, $skip_meta_value_save = false ) {
 		$input = $this->context->input();
 		$order = wc_get_order( $order_id );
 
@@ -311,9 +303,13 @@ class WooCommerce extends Conversion_Events_Provider {
 			return;
 		}
 
-		// Mark the order as tracked by Site Kit.
-		$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
-		$order->save();
+		// In case we are on block theme, this hook running on thank you page will not attach the script.
+		// So we need to skip it, and apply this on the later hook.
+		if ( ! $skip_meta_value_save ) {
+			// Mark the order as tracked by Site Kit.
+			$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
+			$order->save();
+		}
 
 		wp_add_inline_script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
