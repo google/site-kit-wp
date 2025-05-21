@@ -46,77 +46,102 @@ async function assertSetupSuccessful() {
 	} );
 }
 
+function getRequestResponseMappings() {
+	const measurementID = 'G-500';
+	const containerMock = fixtures.containerE2E[ measurementID ];
+
+	// Analytics 4 responses.
+	const analyticsResponses = {
+		'analytics-4/data/report': {
+			status: 200,
+			body: JSON.stringify( {} ),
+		},
+		'analytics-4/data/conversion-events': {
+			status: 200,
+			body: JSON.stringify( [] ),
+		},
+		'analytics-4/data/create-property': {
+			status: 200,
+			body: JSON.stringify( fixtures.createProperty ),
+		},
+		'analytics-4/data/create-webdatastream': {
+			status: 200,
+			body: JSON.stringify( fixtures.createWebDataStream ),
+		},
+		'analytics-4/data/enhanced-measurement-settings': {
+			status: 200,
+			body: JSON.stringify( fixtures.defaultEnhancedMeasurementSettings ),
+		},
+		'analytics-4/data/google-tag-settings': {
+			status: 200,
+			body: JSON.stringify( fixtures.googleTagSettings ),
+		},
+		'analytics-4/data/container-lookup': {
+			status: 200,
+			body: JSON.stringify( containerMock ),
+		},
+		'analytics-4/data/property': {
+			status: 200,
+			body: JSON.stringify( fixtures.properties[ 0 ] ),
+		},
+		'analytics-4/data/sync-custom-dimensions': {
+			status: 200,
+			body: '[]',
+		},
+		'analytics-4/data/properties': {
+			status: 200,
+			body: JSON.stringify( fixtures.properties ),
+		},
+	};
+
+	// Search Console responses.
+	const searchConsoleResponses = {
+		'google-site-kit/v1/modules/search-console/data/searchanalytics': {
+			status: 200,
+			body: JSON.stringify( [] ),
+		},
+	};
+
+	// PageSpeed Insights responses.
+	const pageSpeedResponses = {
+		'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed': {
+			status: 200,
+			body: JSON.stringify( {} ),
+		},
+	};
+
+	// Audience settings responses.
+	const audienceSettingsResponses = {
+		'user/data/audience-settings': {
+			status: 200,
+			body: JSON.stringify( {
+				configuredAudiences: [ fixtures.availableAudiences[ 2 ].name ],
+				isAudienceSegmentationWidgetHidden: false,
+			} ),
+		},
+	};
+
+	// Legacy Analytics responses.
+	const legacyAnalyticsResponses = {
+		'google-site-kit/v1/modules/analytics/data/goals': {
+			status: 200,
+			body: JSON.stringify( {} ),
+		},
+	};
+
+	return {
+		...analyticsResponses,
+		...searchConsoleResponses,
+		...pageSpeedResponses,
+		...audienceSettingsResponses,
+		...legacyAnalyticsResponses,
+	};
+}
+
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		const measurementID = 'G-500';
-		const containerMock = fixtures.containerE2E[ measurementID ];
-
-		useRequestInterception( {
-			'google-site-kit/v1/modules/search-console/data/searchanalytics': {
-				status: 200,
-				body: JSON.stringify( [] ),
-			},
-			'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed': {
-				status: 200,
-				body: JSON.stringify( {} ),
-			},
-			'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?': {
-				status: 200,
-				body: JSON.stringify( {} ),
-			},
-			'analytics-4/data/conversion-events': {
-				status: 200,
-				body: JSON.stringify( [] ),
-			},
-			'google-site-kit/v1/modules/analytics-4/data/create-property': {
-				status: 200,
-				body: JSON.stringify( fixtures.createProperty ),
-			},
-			'analytics-4/data/create-webdatastream': {
-				status: 200,
-				body: JSON.stringify( fixtures.createWebDataStream ),
-			},
-			'analytics-4/data/enhanced-measurement-settings': {
-				status: 200,
-				body: JSON.stringify(
-					fixtures.defaultEnhancedMeasurementSettings
-				),
-			},
-			'analytics-4/data/google-tag-settings': {
-				status: 200,
-				body: JSON.stringify( fixtures.googleTagSettings ),
-			},
-			'analytics-4/data/container-lookup': {
-				status: 200,
-				body: JSON.stringify( containerMock ),
-			},
-			'analytics-4/data/property': {
-				status: 200,
-				body: JSON.stringify( fixtures.properties[ 0 ] ),
-			},
-			'analytics-4/data/sync-custom-dimensions': {
-				status: 200,
-				body: '[]',
-			},
-			'google-site-kit/v1/modules/analytics/data/goals': {
-				status: 200,
-				body: JSON.stringify( {} ),
-			},
-			'user/data/audience-settings': {
-				status: 200,
-				body: JSON.stringify( {
-					configuredAudiences: [
-						fixtures.availableAudiences[ 2 ].name,
-					],
-					isAudienceSegmentationWidgetHidden: false,
-				} ),
-			},
-			'analytics-4/data/properties': {
-				status: 200,
-				body: JSON.stringify( fixtures.properties ),
-			},
-		} );
+		useRequestInterception( getRequestResponseMappings() );
 	} );
 
 	beforeEach( async () => {
