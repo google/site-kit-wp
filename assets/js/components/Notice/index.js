@@ -75,6 +75,7 @@ const Notice = forwardRef(
 						( ctaButton?.onClick || ctaButton?.href ) ) ) && (
 					<div className="googlesitekit-notice__action">
 						{ children }
+
 						{ ( dismissButton?.label ||
 							dismissButton?.onClick ) && (
 							<DismissButton
