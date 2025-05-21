@@ -209,12 +209,10 @@ export default function AdBlockingRecoveryToggle() {
 				) }
 			</div>
 			{ existingAdBlockingRecoveryTag && (
-				<div>
-					<Notice
-						type={ Notice.TYPES.INFO }
-						description={ existingAdBlockingRecoveryTagMessage }
-					/>
-				</div>
+				<Notice
+					type={ Notice.TYPES.INFO }
+					description={ existingAdBlockingRecoveryTagMessage }
+				/>
 			) }
 		</fieldset>
 	);
