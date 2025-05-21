@@ -632,12 +632,7 @@ class Debug_Data {
 		$active_providers    = $conversion_tracking->get_active_providers();
 
 		foreach ( $active_providers as $active_provider_slug => $active_provider ) {
-			if ( $active_provider instanceof WooCommerce && empty( $active_provider->get_event_names() ) ) {
-				$value[ $active_provider_slug ] = esc_html__( 'Events tracked through Analytics integration addon', 'google-site-kit' );
-				continue;
-			}
-
-			$value[ $active_provider_slug ] = implode( ', ', $active_provider->get_event_names() );
+			$value[ $active_provider_slug ] = $active_provider->get_debug_data();
 		}
 
 		return array(
