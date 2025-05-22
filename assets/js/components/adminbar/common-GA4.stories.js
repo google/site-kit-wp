@@ -28,7 +28,10 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
-import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
+import {
+	getAnalytics4MockResponse,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '../../modules/analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
@@ -180,6 +183,17 @@ export const setupAnalytics4MockReports = (
 				options,
 			} );
 	} );
+};
+
+export const setupAnalytics4MockReportsWithNoDataInComparisonDateRange = (
+	registry,
+	mockOptions = adminbarAnalytics4OptionSets
+) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
+	mockOptions.forEach( ( options ) =>
+		provideAnalyticsReportWithoutDateRangeData( registry, options )
+	);
 };
 
 export const setupSearchConsoleGatheringData = ( registry ) => {
