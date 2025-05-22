@@ -62,8 +62,9 @@ export default function SelectionPanelError( {
 	}
 
 	return (
-		<div className="googlesitekit-selection-panel-error" ref={ noticeRef }>
+		<div ref={ noticeRef }>
 			<ErrorNotice
+				className="googlesitekit-notice--square googlesitekit-selection-panel-error"
 				error={ error }
 				noPrefix={ noPrefix }
 				skipRetryMessage={ skipRetryMessage }
