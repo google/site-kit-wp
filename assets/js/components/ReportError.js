@@ -39,10 +39,10 @@ import {
 } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
-import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 import useViewOnly from '../hooks/useViewOnly';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function ReportError( { moduleSlug, error } ) {
 	const isViewOnly = useViewOnly();
@@ -120,12 +120,12 @@ export default function ReportError( { moduleSlug, error } ) {
 	const description = (
 		<Fragment>
 			{ uniqueErrors.map( ( err ) => {
-				const reconnectURL = error?.data?.reconnectURL;
+				const reconnectURL = err?.data?.reconnectURL;
 				return reconnectURL ? (
-					<ErrorText
+					<ErrorNotice
 						key={ err.message }
+						error={ err }
 						message={ err.message }
-						reconnectURL={ reconnectURL }
 					/>
 				) : (
 					<p key={ err.message }>
