@@ -233,12 +233,9 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			text: /complete setup/i,
 		} );
 
-		await page.waitForSelector( '.googlesitekit-subtle-notification' );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-subtle-notification__content p',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await page.waitForSelector( '.googlesitekit-notice__title' );
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /Congrats on completing the setup for Analytics!/i,
+		} );
 	} );
 } );

@@ -29,8 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../Notice/constants';
 
 export const FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-fpm';
@@ -41,7 +41,9 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 } ) {
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'You successfully enabled First-party mode!',
 					'google-site-kit'
@@ -50,13 +52,7 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 					'You can always disable it in Analytics or Ads settings',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					/>
-				}
+				dismissButton
 			/>
 		</Notification>
 	);
