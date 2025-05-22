@@ -101,6 +101,10 @@
 		}
 	}
 
+	&.googlesitekit-notice--square {
+		border-radius: 0;
+	}
+
 	.mdc-button {
 		font-weight: $fw-medium;
 		margin: 0 auto;
