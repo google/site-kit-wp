@@ -752,7 +752,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel .googlesitekit-notice-error .googlesitekit-notice__content'
+					'.googlesitekit-km-selection-panel .googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
 				).textContent
 			).toBe( 'Select at least 2 metrics (1 selected)' );
 
