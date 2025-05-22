@@ -30,6 +30,7 @@ import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/registe
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import getMultiDimensionalObjectFromParams from '../../../../tests/e2e/utils/get-multi-dimensional-object-from-params';
 import { withConnected } from '../../googlesitekit/modules/datastore/__fixtures__';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'top-earning-pages-success-notification';
@@ -50,6 +51,10 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
 		// All the below conditions will trigger a successful notification.
 		// So each individual failing test case further below will overwrite one
 		// of the success criteria.
@@ -128,7 +133,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 					),
 				};
 			} );
-			fetchMock.postOnce( fetchDismissItem, {
+			fetchMock.post( fetchDismissItem, {
 				status: 200,
 				body: [],
 			} );
