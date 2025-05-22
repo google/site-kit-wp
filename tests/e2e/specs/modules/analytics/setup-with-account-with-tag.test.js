@@ -34,15 +34,12 @@ async function proceedToSetUpAnalytics() {
 async function assertSetupSuccessful() {
 	await step( 'see setup success notification', async () => {
 		// While a 10s wait has not been observed, the default 5s timeout often failed here.
-		await page.waitForSelector( '.googlesitekit-subtle-notification', {
+		await page.waitForSelector( '.googlesitekit-notice__title', {
 			timeout: 10_000,
 		} );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-subtle-notification__content p',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /Congrats on completing the setup for Analytics!/i,
+		} );
 	} );
 }
 
