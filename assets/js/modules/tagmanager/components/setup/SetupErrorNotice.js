@@ -24,8 +24,7 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import ErrorText from '../../../../components/ErrorText';
-import Notice from '@/js/components/Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function SetupErrorNotice() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
@@ -54,18 +53,8 @@ export default function SetupErrorNotice() {
 	].filter( Boolean );
 
 	if ( analyticsErrors.length ) {
-		return analyticsErrors.map( ( { message, reconnectURL } ) => (
-			<Notice
-				key={ message }
-				type={ Notice.TYPES.ERROR }
-				description={
-					<ErrorText
-						key={ message }
-						message={ message }
-						reconnectURL={ reconnectURL }
-					/>
-				}
-			/>
+		return analyticsErrors.map( ( error ) => (
+			<ErrorNotice key={ error?.message } error={ error } />
 		) );
 	}
 
