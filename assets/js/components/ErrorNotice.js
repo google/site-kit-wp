@@ -44,6 +44,7 @@ export default function ErrorNotice( {
 	message = error.message,
 	noPrefix = false,
 	skipRetryMessage,
+	hideIcon = false,
 } ) {
 	const dispatch = useDispatch();
 
@@ -137,6 +138,7 @@ export default function ErrorNotice( {
 						},
 				  }
 				: null ) }
+			hideIcon={ hideIcon }
 		/>
 	);
 }
@@ -151,5 +153,5 @@ ErrorNotice.propTypes = {
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
 	skipRetryMessage: PropTypes.bool,
-	Icon: PropTypes.elementType,
+	hideIcon: PropTypes.bool,
 };
