@@ -40,7 +40,7 @@ Thumbs.db
 Desktop.ini
 
 # Backstop
-tests/backstop/html_report/
+tests/backstop/*_report/
 tests/backstop/tests/
 
 # Jest

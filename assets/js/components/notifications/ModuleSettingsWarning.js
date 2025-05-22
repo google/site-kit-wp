@@ -22,8 +22,8 @@
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../googlesitekit/datastore/user/constants';
-import WarningNotice from '../WarningNotice';
 import AdBlockerWarning from './AdBlockerWarning';
+import Notice from '../Notice';
 
 export default function ModuleSettingsWarning( { slug } ) {
 	const error = useSelect( ( select ) =>
@@ -40,5 +40,12 @@ export default function ModuleSettingsWarning( { slug } ) {
 		return <AdBlockerWarning moduleSlug={ slug } />;
 	}
 
-	return <WarningNotice>{ error.message }</WarningNotice>;
+	return (
+		<Notice
+			className="googlesitekit-notice--small"
+			type={ Notice.TYPES.WARNING }
+			description={ error.message }
+			hideIcon
+		/>
+	);
 }

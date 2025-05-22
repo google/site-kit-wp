@@ -175,24 +175,12 @@ WithoutModuleAccess.args = {
 
 export const PropertyNotAvailable = Template.bind( null );
 PropertyNotAvailable.storyName = 'Property not available';
-PropertyNotAvailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-				accountSummaries.map( ( acct ) => ( {
-					...acct,
-					propertySummaries: [],
-				} ) )
-			);
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+PropertyNotAvailable.parameters = {
+	accountSummaries: accounts.map( ( acct ) => ( {
+		...acct,
+		propertySummaries: [],
+	} ) ),
+};
 
 export const WebDataStreamNotAvailable = Template.bind( null );
 WebDataStreamNotAvailable.storyName = 'Web data stream not available';
@@ -335,7 +323,9 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accountSummaries );
+					.receiveGetAccountSummaries(
+						parameters.accountSummaries || accountSummaries
+					);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID,

@@ -143,8 +143,12 @@
 		padding: 6px 16px;
 	}
 
-	.googlesitekit-settings-consent-mode-requirement__consent-management-plugin-notice {
+	.googlesitekit-notice.googlesitekit-settings-consent-mode-requirement__consent-management-plugin-notice {
 		margin-bottom: 0;
 		padding: 10px $grid-gap-phone;
+
+		.googlesitekit-notice__description {
+			font-size: $fs-body-sm;
+		}
 	}
 }

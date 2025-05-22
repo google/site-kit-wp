@@ -164,16 +164,6 @@
 			display: flex;
 			flex: 1 1 45%;
 		}
-
-		.googlesitekit-warning-notice {
-			margin-right: $grid-gap-desktop;
-			padding: $grid-gap-phone / 2 $grid-gap-phone;
-
-			.googlesitekit-cta-link {
-				font-weight: $fw-normal;
-				text-decoration: underline;
-			}
-		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__row {

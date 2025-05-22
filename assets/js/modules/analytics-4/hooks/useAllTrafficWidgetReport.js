@@ -28,7 +28,7 @@ import useViewOnly from '../../../hooks/useViewOnly';
 /**
  * Gets report information for the Dashboard All Traffic GA4 widget.
  *
- * @since n.e.x.t
+ * @since 1.153.0
  *
  * @param {Object} reportOptions Report options.
  * @return {Object} Report data.

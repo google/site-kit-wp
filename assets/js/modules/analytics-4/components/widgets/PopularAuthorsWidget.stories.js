@@ -134,9 +134,7 @@ ErrorMissingCustomDimensions.args = {
 // Since the "Error Missing Custom Dimensions" state is the same for all KMW tiles
 // that require custom dimensions, this is the sole scenario and should not be
 // added to any other generic `MetricTile___` or KMW component.
-ErrorMissingCustomDimensions.scenario = {
-	delay: 250,
-};
+ErrorMissingCustomDimensions.scenario = {};
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
 ErrorCustomDimensionsInsufficientPermissions.storyName =
@@ -162,9 +160,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 // Since the "Error Custom Dimensions Insufficient Permissions" state is the same for
 // all KMW tiles that require custom dimensions,, this is the sole scenario and should
 // not be added to any other generic `MetricTile___` or KMW component.
-ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	delay: 250,
-};
+ErrorCustomDimensionsInsufficientPermissions.scenario = {};
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
 ErrorCustomDimensionsGeneric.storyName =
@@ -190,9 +186,7 @@ ErrorCustomDimensionsGeneric.args = {
 // Since the "Error Custom Dimensions Generic" state is the same for all KMW tiles
 // that require custom dimensions, this is the sole scenario and should not be added
 // to any other generic `MetricTile___` or KMW component.
-ErrorCustomDimensionsGeneric.scenario = {
-	delay: 250,
-};
+ErrorCustomDimensionsGeneric.scenario = {};
 
 export default {
 	title: 'Key Metrics/PopularAuthorsWidget',

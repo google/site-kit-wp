@@ -115,6 +115,37 @@ storyFiles.forEach( ( storyFile ) => {
 	}
 } );
 
+// Adding Support for array-based selectors from BackstopJS 6.3.25
+const processSelectors = ( scenarioObj ) => {
+	const processedScenario = { ...scenarioObj };
+
+	if (
+		processedScenario.clickSelector &&
+		! processedScenario.clickSelectors
+	) {
+		processedScenario.clickSelectors = [ processedScenario.clickSelector ];
+		delete processedScenario.clickSelector;
+	}
+
+	if (
+		processedScenario.hoverSelector &&
+		! processedScenario.hoverSelectors
+	) {
+		processedScenario.hoverSelectors = [ processedScenario.hoverSelector ];
+		delete processedScenario.hoverSelector;
+	}
+
+	if (
+		( processedScenario.clickSelectors ||
+			processedScenario.hoverSelectors ) &&
+		! processedScenario.postInteractionWait
+	) {
+		processedScenario.postInteractionWait = 1000;
+	}
+
+	return processedScenario;
+};
+
 module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';
 
@@ -123,7 +154,7 @@ module.exports = csfScenarios.map( ( scenario ) => {
 		: backstopReadySelector;
 
 	return {
-		...scenario,
+		...processSelectors( scenario ),
 		readySelector,
 	};
 } );

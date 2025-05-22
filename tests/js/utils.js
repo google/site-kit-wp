@@ -649,7 +649,10 @@ export const waitForTimeouts = ( timeout ) => {
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
-	if ( jest.isMockFunction( setTimeout ) ) {
+	if (
+		process.env.NODE_ENV === 'test' &&
+		jest.isMockFunction( setTimeout )
+	) {
 		// Fail if attempted to use.
 		return () => {
 			throw new Error(

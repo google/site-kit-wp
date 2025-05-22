@@ -47,6 +47,8 @@ import LearnMoreLink from '../../../../googlesitekit/notifications/components/co
 import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
 import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import Notice from '../../../../components/Notice';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -123,9 +125,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	}, [ setNotification, setSlug ] );
 
-	const onCTAClick = ( event ) => {
-		event.preventDefault();
-
+	const onCTAClick = () => {
 		// Set publication data to be reset when user re-focuses window.
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
@@ -232,7 +232,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 								'Check publication status',
 								'google-site-kit'
 							) }
-							ctaLink={ serviceURL }
 							onCTAClick={ onCTAClick }
 							isCTALinkExternal
 							{ ...gaTrackingProps }
@@ -245,37 +244,26 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
+			<NoticeNotification
+				type={ Notice.TYPES.WARNING }
+				notificationID={ id }
+				{ ...gaTrackingProps }
+				title={ __(
+					'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
+					'google-site-kit'
+				) }
+				dismissButton={ {
+					onClick: dismissNotice,
+				} }
+				ctaButton={ {
+					label: __(
+						'Complete publication setup',
 						'google-site-kit'
-					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Complete publication setup',
-								'google-site-kit'
-							) }
-							ctaLink={ serviceURL }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							{ ...gaTrackingProps }
-						/>
-					}
-					type="warning"
-				/>
-			</Notification>
+					),
+					onClick: onCTAClick,
+					external: true,
+				} }
+			/>
 		);
 	}
 

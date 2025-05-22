@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 16 ] */
-
 /**
  * External dependencies
  */
@@ -33,11 +31,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
-import { numFmt } from '../../util';
-import Sparkline from './Sparkline';
-import Badge from '../Badge';
-import Change from './Change';
-import SourceLink from '../SourceLink';
+import Content from './Content';
 
 function DataBlock( {
 	stat = null,
@@ -74,11 +68,6 @@ function DataBlock( {
 		[ handleClick ]
 	);
 
-	const datapointFormatted =
-		datapoint === undefined
-			? datapoint
-			: numFmt( datapoint, datapointUnit );
-
 	const isButtonContext = 'button' === context;
 	const role = isButtonContext ? 'button' : '';
 
@@ -102,60 +91,19 @@ function DataBlock( {
 			aria-label={ handleStatSelection && title }
 			aria-pressed={ handleStatSelection && selected }
 		>
-			<div className="googlesitekit-data-block__title-datapoint-wrapper">
-				<h3
-					className="
-						googlesitekit-subheading-1
-						googlesitekit-data-block__title
-					"
-				>
-					{ badge === true ? (
-						<Badge
-							aria-hidden="true"
-							className="googlesitekit-badge--hidden"
-							label="X" // This is a minimal placeholder value to provide the correct height without too much width.
-						/>
-					) : (
-						badge
-					) }
-					<span className="googlesitekit-data-block__title-inner">
-						{ title }
-					</span>
-				</h3>
-
-				{ ! gatheringData && (
-					<div className="googlesitekit-data-block__datapoint">
-						{ datapointFormatted }
-					</div>
-				) }
-			</div>
-
-			{ ! gatheringData && sparkline && (
-				<Sparkline
-					sparkline={ sparkline }
-					invertChangeColor={ invertChangeColor }
-				/>
-			) }
-
-			{ ! gatheringData && (
-				<div className="googlesitekit-data-block__change-source-wrapper">
-					<Change
-						change={ change }
-						changeDataUnit={ changeDataUnit }
-						period={ period }
-						invertChangeColor={ invertChangeColor }
-					/>
-					{ source && (
-						<SourceLink
-							className="googlesitekit-data-block__source"
-							name={ source.name }
-							href={ source.link }
-							external={ source?.external }
-						/>
-					) }
-				</div>
-			) }
-
+			<Content
+				title={ title }
+				datapoint={ datapoint }
+				datapointUnit={ datapointUnit }
+				change={ change }
+				changeDataUnit={ changeDataUnit }
+				period={ period }
+				source={ source }
+				sparkline={ sparkline }
+				invertChangeColor={ invertChangeColor }
+				gatheringData={ gatheringData }
+				badge={ badge }
+			/>
 			{ gatheringData && (
 				<GatheringDataNotice style={ gatheringDataNoticeStyle } />
 			) }
@@ -174,6 +122,8 @@ DataBlock.propTypes = {
 	context: PropTypes.string,
 	period: PropTypes.string,
 	selected: PropTypes.bool,
+	source: PropTypes.object,
+	sparkline: PropTypes.element,
 	handleStatSelection: PropTypes.func,
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,

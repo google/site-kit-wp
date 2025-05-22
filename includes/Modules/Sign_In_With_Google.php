@@ -300,6 +300,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',

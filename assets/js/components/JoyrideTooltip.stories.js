@@ -36,7 +36,36 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	delay: 1000,
+	delay: 300,
+};
+
+export const PlacementTooltip = Template.bind( {} );
+PlacementTooltip.storyName = 'Tooltip with Custom Placement';
+PlacementTooltip.args = {
+	title: 'Tooltip with Top Placement',
+	content: 'This tooltip is positioned at the top of the target element.',
+	dismissLabel: 'Got it',
+	target: '.target',
+	placement: 'top',
+};
+PlacementTooltip.scenario = {
+	delay: 300,
+};
+
+export const MobileModalTooltip = Template.bind( {} );
+MobileModalTooltip.storyName = 'Mobile Modal Tooltip';
+MobileModalTooltip.args = {
+	title: 'Mobile Modal Style Tooltip',
+	content:
+		'This tooltip is displayed as modals are displayed on mobile and tablet viewports targeting the body element with a visible overlay.',
+	dismissLabel: 'Got it',
+	target: 'body',
+	placement: 'center',
+	className: 'googlesitekit-tour-tooltip__modal_step',
+	disableOverlay: false,
+};
+MobileModalTooltip.scenario = {
+	delay: 300,
 };
 
 export default {
@@ -52,4 +81,7 @@ export default {
 			);
 		},
 	],
+	parameters: {
+		padding: 'calc((100vh - 40px) / 2) calc((100vw - 88px) / 2)',
+	},
 };

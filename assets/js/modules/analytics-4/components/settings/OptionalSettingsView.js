@@ -27,7 +27,6 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import AdsConversionIDSettingsNotice from './AdsConversionIDSettingsNotice';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 
@@ -95,8 +94,6 @@ export default function OptionalSettingsView() {
 						</div>
 					</div>
 				) }
-
-			<AdsConversionIDSettingsNotice />
 		</Fragment>
 	);
 }

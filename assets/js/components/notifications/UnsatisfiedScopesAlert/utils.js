@@ -76,7 +76,7 @@ export function mapScopesToModuleNames( scopes, modules ) {
 /**
  * Gets the appropriate message for unsatisfied scopes.
  *
- * @since n.e.x.t
+ * @since 1.153.0
  *
  * @param {Array}  unsatisfiedScopes                  Array of unsatisfied scopes.
  * @param {Object} modules                            Object of all modules.

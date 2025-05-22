@@ -122,6 +122,28 @@
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
 			padding: 20px 20px 6px;
+
+			.googlesitekit-notice__content {
+				flex: 1 1 0;
+			}
+
+			.googlesitekit-notice__description {
+				font-size: $fs-body-sm;
+			}
+
+			.googlesitekit-notice--warning {
+				align-items: center;
+				border-radius: $br-xs;
+				flex-direction: row;
+				gap: $grid-gap-phone;
+				margin: 18px 0;
+				padding: $grid-gap-phone / 2 $grid-gap-phone;
+			}
+
+			.googlesitekit-notice__action {
+				justify-content: normal;
+				width: auto;
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
@@ -195,32 +217,6 @@
 				background-color: $c-surfaces-inverse-surface;
 				min-height: 32px;
 				padding: 6px 16px;
-			}
-		}
-
-		.googlesitekit-audience-selection-panel__audience-creation-notice-info {
-
-			.googlesitekit-subtle-notification {
-				align-items: center;
-				border-radius: 8px;
-				flex-direction: row;
-				gap: $grid-gap-phone;
-				margin: 18px 0;
-				padding: $grid-gap-phone / 2 $grid-gap-phone;
-			}
-
-			.googlesitekit-subtle-notification__content {
-				flex: 1;
-
-				p {
-					font-size: $fs-body-sm;
-					font-weight: $fw-normal;
-				}
-			}
-
-			.googlesitekit-subtle-notification__action {
-				justify-content: initial;
-				width: initial;
 			}
 		}
 

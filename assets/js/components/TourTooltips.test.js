@@ -246,6 +246,16 @@ describe( 'TourTooltips', () => {
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 
+	it( 'should load Joyride in controlled mode', () => {
+		const callback = ( data ) => {
+			const { controlled } = data;
+			expect( controlled ).toBe( true );
+		};
+		renderTourTooltipsWithMockUI( registry, {
+			callback,
+		} );
+	} );
+
 	describe( 'event tracking', () => {
 		beforeEach( () => mockTrackEvent.mockClear() );
 
@@ -313,7 +323,7 @@ describe( 'TourTooltips', () => {
 				GA_ACTIONS.DISMISS,
 				3
 			);
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 		} );
 
 		it( 'tracks all events for a dismissed tour', async () => {

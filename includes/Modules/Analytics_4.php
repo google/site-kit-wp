@@ -2023,6 +2023,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
