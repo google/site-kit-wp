@@ -62,7 +62,8 @@ export default function ErrorNotice( {
 	}, [ dispatch, selectorData ] );
 
 	// Do not display if there is no error, or if the error is for missing scopes.
-	if ( ! error || isPermissionScopeError( error ) ) {
+	// This only applies when no message prop is directly passed.
+	if ( ! message && ( ! error || isPermissionScopeError( error ) ) ) {
 		return null;
 	}
 
@@ -87,7 +88,7 @@ export default function ErrorNotice( {
 		);
 	}
 
-	const reconnectURL = error.data?.reconnectURL;
+	const reconnectURL = error?.data?.reconnectURL;
 
 	let hasReconnectLink = false;
 
