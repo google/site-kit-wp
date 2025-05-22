@@ -34,6 +34,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import Notice from '@/js/components/Notice';
 import { isURL } from '@wordpress/url';
+import { sanitizeHTML } from '@/js/util';
 
 export default function ErrorNotice( {
 	error,
@@ -88,12 +89,15 @@ export default function ErrorNotice( {
 
 	const reconnectURL = error.data?.reconnectURL;
 
+	let hasReconnectLink = false;
+
 	if ( reconnectURL && isURL( reconnectURL ) ) {
+		hasReconnectLink = true;
 		message =
 			message +
 			' ' +
 			sprintf(
-				/* translators: %s: Reconnect URL */
+				/* translators: $%s: Reconnect URL */
 				__(
 					'To fix this, <a href="%s">redo the plugin setup</a>.',
 					'google-site-kit'
@@ -102,10 +106,26 @@ export default function ErrorNotice( {
 			);
 	}
 
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href' ],
+	};
+
 	return (
 		<Notice
 			type={ Notice.TYPES.ERROR }
-			description={ message }
+			description={
+				hasReconnectLink ? (
+					<span
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							message,
+							sanitizeArgs
+						) }
+					/>
+				) : (
+					message
+				)
+			}
 			{ ...( shouldDisplayRetry
 				? {
 						ctaButton: {
