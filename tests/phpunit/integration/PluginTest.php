@@ -153,4 +153,9 @@ class PluginTest extends TestCase {
 		// Instance returns the same instance every time.
 		$this->assertSame( $plugin, Plugin::instance() );
 	}
+
+	// Example of a deprecated function for testing ExampleSniff.
+	public function example_deprecated_function() {
+		return 'example_deprecated_function';
+	}
 }
