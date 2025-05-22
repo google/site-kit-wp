@@ -63,7 +63,7 @@ class WooCommerce extends Conversion_Events_Provider {
 		$wgai_event_names = $this->get_wgai_event_names();
 		$events_to_track  = $this->events_to_track();
 
-		return array_unique( array_merge( $events_to_track, (array) $wgai_event_names ) );
+		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
 	}
 
 	/**
@@ -75,7 +75,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 */
 	protected function get_wgai_event_names() {
 		if ( ! class_exists( 'WC_Google_Analytics_Integration' ) ) {
-			return null;
+			return array();
 		}
 
 		$settings    = get_option( 'woocommerce_google_analytics_settings' );
@@ -383,7 +383,7 @@ class WooCommerce extends Conversion_Events_Provider {
 		$wgai_event_names = $this->get_wgai_event_names();
 		// If purchase event is tracked by the Google Analytics for WooCommerce addon,
 		// don't output the script tag to track the purchase event.
-		if ( isset( $wgai_event_names['purchase'] ) ) {
+		if ( in_array( 'purchase', $wgai_event_names, true ) ) {
 			return;
 		}
 
