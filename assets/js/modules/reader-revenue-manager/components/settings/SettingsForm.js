@@ -31,7 +31,6 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
-import ErrorText from '../../../../components/ErrorText';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
@@ -140,7 +139,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 
 				{ hasModuleAccess && publicationAvailable && missingProductID && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Product ID. */
 							__(
