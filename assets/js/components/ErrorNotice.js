@@ -37,6 +37,7 @@ import { isURL } from '@wordpress/url';
 import { sanitizeHTML } from '@/js/util';
 
 export default function ErrorNotice( {
+	className,
 	error,
 	hasButton = false,
 	storeName,
@@ -114,6 +115,7 @@ export default function ErrorNotice( {
 
 	return (
 		<Notice
+			className={ className }
 			type={ Notice.TYPES.ERROR }
 			description={
 				hasReconnectLink ? (
@@ -140,6 +142,7 @@ export default function ErrorNotice( {
 }
 
 ErrorNotice.propTypes = {
+	className: PropTypes.string,
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
