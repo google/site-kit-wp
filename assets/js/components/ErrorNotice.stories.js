@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import ErrorNotice from './ErrorNotice';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 function Template( args ) {
 	return <ErrorNotice { ...args } />;
@@ -42,7 +41,6 @@ WithNoPrefix.args = {
 export const WithReconnectURL = Template.bind( {} );
 WithReconnectURL.storyName = 'With Reconnect URL';
 WithReconnectURL.args = {
-	storeName: MODULES_ANALYTICS_4,
 	error: {
 		type: 'error',
 		message: 'Foo error message.',
