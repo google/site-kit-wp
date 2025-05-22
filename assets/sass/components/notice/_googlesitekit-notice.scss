@@ -76,7 +76,8 @@
 				margin: 0;
 			}
 
-			& > a {
+			& > a,
+			& > span > a {
 				color: inherit;
 				text-decoration: underline;
 			}
