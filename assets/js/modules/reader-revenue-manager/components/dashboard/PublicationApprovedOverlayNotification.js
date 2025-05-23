@@ -28,7 +28,6 @@ import { __ } from '@wordpress/i18n';
 import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
-import useDashboardType from '../../../../hooks/useDashboardType';
 import useViewContext from '../../../../hooks/useViewContext';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
@@ -37,7 +36,6 @@ import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -55,7 +53,6 @@ function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
-	const dashboardType = useDashboardType();
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
@@ -109,7 +106,6 @@ function PublicationApprovedOverlayNotification() {
 	const shouldShowNotification =
 		isDismissed === false &&
 		! isViewOnly &&
-		dashboardType === VIEW_CONTEXT_MAIN_DASHBOARD &&
 		( showApprovedNotificationUI === true ||
 			( initialPublicationOnboardingStateChanged.current === true &&
 				publicationOnboardingState === ONBOARDING_COMPLETE ) );
