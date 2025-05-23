@@ -58,6 +58,9 @@ import {
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import PublicationApprovedOverlayNotification, {
+	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
+} from './components/dashboard/PublicationApprovedOverlayNotification';
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './components/dashboard/RRMIntroductoryOverlayNotification';
@@ -239,6 +242,14 @@ export const NOTIFICATIONS = {
 
 			return isActive;
 		},
+	},
+	[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]: {
+		Component: PublicationApprovedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
 		Component: RRMIntroductoryOverlayNotification,
