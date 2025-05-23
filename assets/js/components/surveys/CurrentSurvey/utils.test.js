@@ -62,10 +62,13 @@ describe( 'CurrentSurvey utils', () => {
 		it( 'should handle conditional questions based on trigger conditions', () => {
 			const questions =
 				multiQuestionConditionalSurvey.survey_payload.question;
+
+			// Answer ordinal 4 should trigger question 3 (ordinal 3),
+			// based on question 3's trigger_condition: [{ question_ordinal: 1, answer_ordinal: [4, 5] }].
 			const answers = [
 				{
 					question_ordinal: 1,
-					answer: { answer: { answer_ordinal: 4 } },
+					answer: { answer: { answer_ordinal: 4 } }, // This matches the trigger condition for question 3.
 				},
 			];
 
@@ -99,12 +102,15 @@ describe( 'CurrentSurvey utils', () => {
 		it( 'should handle multiple-choice answers in trigger conditions', () => {
 			const questions =
 				multiQuestionConditionalSurvey.survey_payload.question;
+
+			// Answer ordinals 1 and 2 should trigger question 2 (ordinal 2),
+			// based on question 2's trigger_condition: [{ question_ordinal: 1, answer_ordinal: [1, 2] }].
 			const answers = [
 				{
 					question_ordinal: 1,
 					answer: {
 						answer: [
-							{ answer_ordinal: 1 },
+							{ answer_ordinal: 1 }, // These multiple-choice answers match the trigger condition for question 2
 							{ answer_ordinal: 2 },
 						],
 					},
