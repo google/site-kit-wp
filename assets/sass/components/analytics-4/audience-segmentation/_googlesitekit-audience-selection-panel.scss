@@ -41,7 +41,9 @@
 		}
 
 		.googlesitekit-audience-selection-panel__error-notice {
+			align-items: anchor-center;
 			display: flex;
+			flex-direction: row;
 			justify-content: space-between;
 			padding: 10px $grid-gap-desktop;
 
