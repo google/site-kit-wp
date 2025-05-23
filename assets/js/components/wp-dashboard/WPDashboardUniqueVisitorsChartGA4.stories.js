@@ -25,6 +25,7 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
 	widgetDecorators,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
@@ -70,6 +71,13 @@ Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: setupAnalytics4Error,
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsChartGA4',
