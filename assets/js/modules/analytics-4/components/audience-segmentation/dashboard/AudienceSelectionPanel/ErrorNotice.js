@@ -141,9 +141,6 @@ export default function ErrorNotice() {
 					  )
 					: __( 'Data loading failed', 'google-site-kit' )
 			}
-			ctaButton={ {
-				label: 'Foo',
-			} }
 			hideIcon
 		>
 			{ hasInsufficientPermissionsError || userCountError ? (
