@@ -213,7 +213,7 @@ export default function CurrentSurvey() {
 					currentQuestion={ currentQuestion }
 					answerQuestion={ answerQuestion }
 					dismissSurvey={ dismissSurvey }
-					isTheLastQuestion={ isLastQuestion(
+					isLastQuestion={ isLastQuestion(
 						questions,
 						currentQuestion
 					) }

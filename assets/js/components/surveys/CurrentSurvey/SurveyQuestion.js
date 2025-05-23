@@ -40,14 +40,14 @@ export default function SurveyQuestion( {
 	currentQuestion,
 	answerQuestion,
 	dismissSurvey,
-	isTheLastQuestion,
+	isLastQuestion,
 } ) {
 	const commonProps = {
 		key: currentQuestion.question_text,
 		answerQuestion,
 		dismissSurvey,
 		question: currentQuestion.question_text,
-		submitButtonText: isTheLastQuestion
+		submitButtonText: isLastQuestion
 			? __( 'Submit', 'google-site-kit' )
 			: __( 'Next', 'google-site-kit' ),
 	};
@@ -92,5 +92,5 @@ SurveyQuestion.propTypes = {
 	currentQuestion: PropTypes.object.isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
-	isTheLastQuestion: PropTypes.bool.isRequired,
+	isLastQuestion: PropTypes.bool.isRequired,
 };

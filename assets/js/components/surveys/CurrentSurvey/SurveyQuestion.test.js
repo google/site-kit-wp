@@ -32,7 +32,7 @@ describe( 'SurveyQuestion', () => {
 	const defaultProps = {
 		answerQuestion: jest.fn(),
 		dismissSurvey: jest.fn(),
-		isTheLastQuestion: true,
+		isLastQuestion: true,
 	};
 
 	it( 'should render a multi select question correctly', () => {
@@ -137,7 +137,7 @@ describe( 'SurveyQuestion', () => {
 			<SurveyQuestion
 				{ ...defaultProps }
 				currentQuestion={ currentQuestion }
-				isTheLastQuestion={ false }
+				isLastQuestion={ false }
 			/>
 		);
 
