@@ -71,12 +71,6 @@ function PublicationApprovedOverlayNotification() {
 
 	const initialPublicationOnboardingStateChanged = useRef();
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
-		)
-	);
-
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
 			path: 'reader-revenue-manager',
@@ -102,10 +96,9 @@ function PublicationApprovedOverlayNotification() {
 	 * - The publication onboarding state is complete.
 	 */
 	const shouldShowNotification =
-		isDismissed === false &&
-		( showApprovedNotificationUI === true ||
-			( initialPublicationOnboardingStateChanged.current === true &&
-				publicationOnboardingState === ONBOARDING_COMPLETE ) );
+		showApprovedNotificationUI === true ||
+		( initialPublicationOnboardingStateChanged.current === true &&
+			publicationOnboardingState === ONBOARDING_COMPLETE );
 
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
