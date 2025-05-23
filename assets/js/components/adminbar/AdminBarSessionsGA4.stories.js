@@ -27,6 +27,7 @@ import {
 	setupAnalytics4Error,
 	setupAnalytics4MockReports,
 	widgetDecorators,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
@@ -71,6 +72,13 @@ Error.storyName = 'Error Data';
 Error.args = {
 	setupRegistry: setupAnalytics4Error,
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarSessionsGA4',

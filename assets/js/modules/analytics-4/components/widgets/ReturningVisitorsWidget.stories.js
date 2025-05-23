@@ -30,6 +30,7 @@ import ReturningVisitorsWidget from './ReturningVisitorsWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
@@ -141,6 +142,17 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions, {
+			emptyRowBehavior: 'remove',
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Key Metrics/ReturningVisitors',
