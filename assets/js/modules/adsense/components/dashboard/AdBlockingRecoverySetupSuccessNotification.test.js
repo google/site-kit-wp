@@ -145,7 +145,7 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: /Ok, got it!/i } ) );
+			fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 		} );
 
 		// The tracking event should fire when the notification is confirmed.

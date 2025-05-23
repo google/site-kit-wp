@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Easy_Digital_Downloads;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
@@ -127,7 +128,9 @@ class Conversion_Tracking {
 			$active_providers,
 			function ( Conversion_Events_Provider $active_provider ) {
 				$script_asset = $active_provider->register_script();
-				$script_asset->enqueue();
+				if ( $script_asset instanceof Script ) {
+					$script_asset->enqueue();
+				}
 			}
 		);
 
