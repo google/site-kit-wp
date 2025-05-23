@@ -1,5 +1,5 @@
 /**
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-first-party-mode-setup-cta-banner";
+export const dismissItemEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
+);
