@@ -29,7 +29,6 @@ import OverlayNotification from '../../../../components/OverlayNotification/Over
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
 import useViewContext from '../../../../hooks/useViewContext';
-import useViewOnly from '../../../../hooks/useViewOnly';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import { trackEvent } from '../../../../util';
 import { Button } from 'googlesitekit-components';
@@ -51,7 +50,6 @@ export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 
 function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
-	const isViewOnly = useViewOnly();
 
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
@@ -105,7 +103,6 @@ function PublicationApprovedOverlayNotification() {
 	 */
 	const shouldShowNotification =
 		isDismissed === false &&
-		! isViewOnly &&
 		( showApprovedNotificationUI === true ||
 			( initialPublicationOnboardingStateChanged.current === true &&
 				publicationOnboardingState === ONBOARDING_COMPLETE ) );
