@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -24,9 +29,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 import useQueryArg from '../../../../hooks/useQueryArg';
+import { TYPES } from '../../../../components/Notice/constants';
 
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -39,7 +44,9 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'Success! Your Conversion ID was added to your site',
 					'google-site-kit'
@@ -48,15 +55,15 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 					'You can now track conversions for your Ads campaigns',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
-					/>
-				}
+				dismissButton={ {
+					onClick: onDismiss,
+				} }
 			/>
 		</Notification>
 	);
 }
+
+SetupSuccessSubtleNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};

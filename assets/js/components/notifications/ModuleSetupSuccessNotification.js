@@ -32,9 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
-import CTALinkSubtle from '../../googlesitekit/notifications/components/common/CTALinkSubtle';
-import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../Notice/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -65,7 +64,10 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ sprintf(
 					/* translators: %s: module name */
 					__(
@@ -78,23 +80,13 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 					'Connect more services to see more stats.',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
-						gaTrackingEventArgs={ gaTrackingEventArgs }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Go to Settings', 'google-site-kit' ) }
-						ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
-						gaTrackingEventArgs={ gaTrackingEventArgs }
-					/>
-				}
+				dismissButton={ {
+					onClick: onDismiss,
+				} }
+				ctaButton={ {
+					label: __( 'Go to Settings', 'google-site-kit' ),
+					href: `${ settingsAdminURL }#/connect-more-services`,
+				} }
 			/>
 		</Notification>
 	);

@@ -44,11 +44,8 @@ import {
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import Notice from '../../../../components/Notice';
+import { TYPES } from '../../../../components/Notice/constants';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -196,18 +193,19 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const hasCustomProductID = !! productID && productID !== 'openaccess';
 
-	const gaTrackingProps = {
-		gaTrackingEventArgs: {
-			label: `${ publicationOnboardingState }:${ paymentOption }:${
-				hasCustomProductID ? 'yes' : 'no'
-			}`,
-		},
+	const gaTrackingEventArgs = {
+		label: `${ publicationOnboardingState }:${ paymentOption }:${
+			hasCustomProductID ? 'yes' : 'no'
+		}`,
 	};
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
+			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+				<NoticeNotification
+					notificationID={ id }
+					type={ TYPES.SUCCESS }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ __(
 						'Your Reader Revenue Manager account was successfully set up!',
 						'google-site-kit'
@@ -216,27 +214,17 @@ export default function RRMSetupSuccessSubtleNotification( {
 						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
 						'google-site-kit'
 					) }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-							onDismiss={ dismissNotice }
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ __(
-								'Check publication status',
-								'google-site-kit'
-							) }
-							onCTAClick={ onCTAClick }
-							isCTALinkExternal
-							{ ...gaTrackingProps }
-						/>
-					}
+					dismissButton={ {
+						onClick: dismissNotice,
+					} }
+					ctaButton={ {
+						label: __(
+							'Check publication status',
+							'google-site-kit'
+						),
+						onClick: onCTAClick,
+						external: true,
+					} }
 				/>
 			</Notification>
 		);
@@ -244,26 +232,28 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<NoticeNotification
-				type={ Notice.TYPES.WARNING }
-				notificationID={ id }
-				{ ...gaTrackingProps }
-				title={ __(
-					'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
-					'google-site-kit'
-				) }
-				dismissButton={ {
-					onClick: dismissNotice,
-				} }
-				ctaButton={ {
-					label: __(
-						'Complete publication setup',
+			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+				<NoticeNotification
+					type={ TYPES.WARNING }
+					notificationID={ id }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
+					title={ __(
+						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
 						'google-site-kit'
-					),
-					onClick: onCTAClick,
-					external: true,
-				} }
-			/>
+					) }
+					dismissButton={ {
+						onClick: dismissNotice,
+					} }
+					ctaButton={ {
+						label: __(
+							'Complete publication setup',
+							'google-site-kit'
+						),
+						onClick: onCTAClick,
+						external: true,
+					} }
+				/>
+			</Notification>
 		);
 	}
 
@@ -334,7 +324,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 								label={ __( 'Learn more', 'google-site-kit' ) }
 								url="https://support.google.com/news/publisher-center/answer/12813936"
 								hideExternalIndicator
-								{ ...gaTrackingProps }
+								gaTrackingEventArgs={ gaTrackingEventArgs }
 							/>
 						),
 					}
@@ -348,37 +338,23 @@ export default function RRMSetupSuccessSubtleNotification( {
 		}
 
 		return (
-			<Notification { ...gaTrackingProps }>
-				<SubtleNotification
+			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+				<NoticeNotification
+					notificationID={ id }
+					type={ TYPES.SUCCESS }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ notificationContent.title }
 					description={ notificationContent.description }
-					dismissCTA={
-						<Dismiss
-							id={ id }
-							primary={ false }
-							dismissLabel={
-								notificationContent.secondaryButton.text
-							}
-							onDismiss={
-								notificationContent.secondaryButton.onClick
-							}
-							{ ...gaTrackingProps }
-						/>
-					}
-					additionalCTA={
-						<CTALinkSubtle
-							id={ id }
-							ctaLabel={ notificationContent.primaryButton.text }
-							ctaLink={
-								notificationContent.primaryButton.ctaLink
-							}
-							isCTALinkExternal={
-								notificationContent.primaryButton
-									.isCTALinkExternal
-							}
-							{ ...gaTrackingProps }
-						/>
-					}
+					dismissButton={ {
+						label: notificationContent.secondaryButton.text,
+						onClick: notificationContent.secondaryButton.onClick,
+					} }
+					ctaButton={ {
+						label: notificationContent.primaryButton.text,
+						href: notificationContent.primaryButton.ctaLink,
+						external:
+							notificationContent.primaryButton.isCTALinkExternal,
+					} }
 				/>
 			</Notification>
 		);
