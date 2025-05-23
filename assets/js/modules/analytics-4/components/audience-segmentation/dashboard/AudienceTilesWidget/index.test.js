@@ -534,6 +534,8 @@ describe( 'AudienceTilesWidget', () => {
 			.select( MODULES_ANALYTICS_4 )
 			.hasAudiencePartialData( siteKitAudiences );
 
+		await act( waitForDefaultTimeouts );
+
 		await waitFor( () => {
 			expect( isSiteKitAudiencePartialData ).toBe( true );
 		} );

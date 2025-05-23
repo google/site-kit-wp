@@ -76,7 +76,8 @@
 				margin: 0;
 			}
 
-			& > a {
+			& > a,
+			& > span > a {
 				color: inherit;
 				text-decoration: underline;
 			}
@@ -100,7 +101,12 @@
 		}
 	}
 
+	&.googlesitekit-notice--square {
+		border-radius: 0;
+	}
+
 	.mdc-button {
+		border-radius: $br-lg;
 		font-weight: $fw-medium;
 		margin: 0 auto;
 		min-height: 32px;

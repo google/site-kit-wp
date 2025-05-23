@@ -226,5 +226,9 @@
 			flex-wrap: wrap;
 			gap: 10px 12px;
 		}
+
+		.googlesitekit-notice--error:first-child {
+			margin-bottom: 1rem;
+		}
 	}
 }

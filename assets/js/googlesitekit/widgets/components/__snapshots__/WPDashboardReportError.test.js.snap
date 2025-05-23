@@ -19,11 +19,22 @@ exports[`WPDashboardReportError should only render one error per module when the
           class="googlesitekit-cta__description"
         >
           <div
-            class="googlesitekit-error-text"
+            class="googlesitekit-notice googlesitekit-notice--error"
           >
-            <p>
-              Error: Test error message
-            </p>
+            <div
+              class="googlesitekit-notice__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-notice__content"
+            >
+              <p
+                class="googlesitekit-notice__description"
+              >
+                Error: Test error message. Please try again.
+              </p>
+            </div>
           </div>
         </div>
         
@@ -65,11 +76,22 @@ exports[`WPDashboardReportError should only render one error per module when the
           class="googlesitekit-cta__description"
         >
           <div
-            class="googlesitekit-error-text"
+            class="googlesitekit-notice googlesitekit-notice--error"
           >
-            <p>
-              Error: Test error message
-            </p>
+            <div
+              class="googlesitekit-notice__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-notice__content"
+            >
+              <p
+                class="googlesitekit-notice__description"
+              >
+                Error: Test error message. Please try again.
+              </p>
+            </div>
           </div>
         </div>
         

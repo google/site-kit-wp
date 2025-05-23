@@ -74,7 +74,8 @@ const Notice = forwardRef(
 				{ ( dismissButton?.label ||
 					dismissButton?.onClick ||
 					( ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) ) ) && (
+						( ctaButton?.onClick || ctaButton?.href ) ) ||
+					children ) && (
 					<div className="googlesitekit-notice__action">
 						{ children }
 

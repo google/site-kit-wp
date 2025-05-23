@@ -35,7 +35,7 @@ import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
 import { getReportErrorMessage } from '../../../../util/errors';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
-import ErrorText from '../../../../components/ErrorText';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =
@@ -51,7 +51,7 @@ export default function LabReportMetrics( { data, error } ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
-					<ErrorText message={ errorMessage } />
+					<ErrorNotice message={ errorMessage } />
 
 					<ReportErrorActions
 						moduleSlug="pagespeed-insights"

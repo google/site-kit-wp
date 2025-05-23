@@ -24,25 +24,27 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
-import ErrorText from './ErrorText';
+import Notice from '@/js/components/Notice';
+import { isURL } from '@wordpress/url';
+import { sanitizeHTML } from '@/js/util';
 
 export default function ErrorNotice( {
+	className,
 	error,
 	hasButton = false,
 	storeName,
 	message = error.message,
 	noPrefix = false,
 	skipRetryMessage,
-	Icon,
+	hideIcon = false,
 } ) {
 	const dispatch = useDispatch();
 
@@ -62,7 +64,8 @@ export default function ErrorNotice( {
 	}, [ dispatch, selectorData ] );
 
 	// Do not display if there is no error, or if the error is for missing scopes.
-	if ( ! error || isPermissionScopeError( error ) ) {
+	// This only applies when no message prop is directly passed.
+	if ( ! message && ( ! error || isPermissionScopeError( error ) ) ) {
 		return null;
 	}
 
@@ -79,31 +82,69 @@ export default function ErrorNotice( {
 		);
 	}
 
+	if ( ! noPrefix ) {
+		message = sprintf(
+			/* translators: $%s: Error message */
+			__( 'Error: %s', 'google-site-kit' ),
+			message
+		);
+	}
+
+	const reconnectURL = error?.data?.reconnectURL;
+
+	let hasReconnectLink = false;
+
+	if ( reconnectURL && isURL( reconnectURL ) ) {
+		hasReconnectLink = true;
+		message =
+			message +
+			' ' +
+			sprintf(
+				/* translators: $%s: Reconnect URL */
+				__(
+					'To fix this, <a href="%s">redo the plugin setup</a>.',
+					'google-site-kit'
+				),
+				reconnectURL
+			);
+	}
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href' ],
+	};
+
 	return (
-		<Fragment>
-			{ Icon && (
-				<div className="googlesitekit-error-notice__icon">
-					<Icon width="24" height="24" />
-				</div>
-			) }
-			<ErrorText
-				message={ message }
-				reconnectURL={ error.data?.reconnectURL }
-				noPrefix={ noPrefix }
-			/>
-			{ shouldDisplayRetry && (
-				<Button
-					className="googlesitekit-error-notice__retry-button"
-					onClick={ handleRetry }
-				>
-					{ __( 'Retry', 'google-site-kit' ) }
-				</Button>
-			) }
-		</Fragment>
+		<Notice
+			className={ className }
+			type={ Notice.TYPES.ERROR }
+			description={
+				hasReconnectLink ? (
+					<span
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							message,
+							sanitizeArgs
+						) }
+					/>
+				) : (
+					message
+				)
+			}
+			{ ...( shouldDisplayRetry
+				? {
+						ctaButton: {
+							label: __( 'Retry', 'google-site-kit' ),
+							onClick: handleRetry,
+						},
+				  }
+				: null ) }
+			hideIcon={ hideIcon }
+		/>
 	);
 }
 
 ErrorNotice.propTypes = {
+	className: PropTypes.string,
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
@@ -112,5 +153,5 @@ ErrorNotice.propTypes = {
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
 	skipRetryMessage: PropTypes.bool,
-	Icon: PropTypes.elementType,
+	hideIcon: PropTypes.bool,
 };
