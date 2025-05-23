@@ -37,18 +37,16 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
-import whenActive from '../../../../util/when-active';
 
 const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
 
-function PublicationApprovedOverlayNotification() {
+export default function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
@@ -202,7 +200,3 @@ function PublicationApprovedOverlayNotification() {
 		</OverlayNotification>
 	);
 }
-
-export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
-	PublicationApprovedOverlayNotification
-);

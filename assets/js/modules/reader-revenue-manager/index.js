@@ -250,6 +250,17 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
+			return true;
+		},
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
 		Component: RRMIntroductoryOverlayNotification,
