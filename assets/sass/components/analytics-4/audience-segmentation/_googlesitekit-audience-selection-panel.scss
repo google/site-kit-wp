@@ -144,6 +144,10 @@
 				justify-content: normal;
 				width: auto;
 			}
+
+			.googlesitekit-notice--error .googlesitekit-notice__icon {
+				display: none;
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
