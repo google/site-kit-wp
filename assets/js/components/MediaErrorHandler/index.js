@@ -56,7 +56,7 @@ class MediaErrorHandler extends Component {
 			return children;
 		}
 
-		return <ErrorNotice message={ errorMessage } hideIcon />;
+		return <ErrorNotice message={ errorMessage } />;
 	}
 }
 
