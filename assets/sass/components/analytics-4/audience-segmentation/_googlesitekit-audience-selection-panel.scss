@@ -42,18 +42,35 @@
 
 		.googlesitekit-audience-selection-panel__error-notice {
 			align-items: anchor-center;
+			column-gap: $grid-gap-phone;
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
 			padding: 10px $grid-gap-desktop;
 
-			.googlesitekit-audience-selection-panel__error-notice-actions {
+			@media (max-width: $bp-xsmallOnly) {
+				column-gap: 0;
+			}
 
-				.googlesitekit-audience-selection-panel__error-notice-action {
-					border-radius: $br-lg;
-					min-height: 32px;
-					padding: 6px $grid-gap-phone;
-					white-space: nowrap;
+			.googlesitekit-notice__content {
+				@media (max-width: 320px) { // Accommodates for small mobile.
+					width: 100%;
+				}
+				p {
+					margin: 0;
+				}
+			}
+
+			.googlesitekit-report-error-actions {
+				@media (max-width: 320px) { // Accommodates for small mobile.
+					width: 100%;
+				}
+				flex-direction: column;
+			}
+
+			.googlesitekit-notice__action {
+				@media (max-width: $bp-xsmallOnly) {
+					display: inline;
 				}
 			}
 		}
