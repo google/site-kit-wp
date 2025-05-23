@@ -26,7 +26,6 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -52,13 +51,6 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	} );
 
 	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
-
-	// Prevent propType error while onSetupActivate is null.
-	const ctaOnClick = useCallback( () => {
-		if ( onSetupActivate ) {
-			onSetupActivate();
-		}
-	}, [ onSetupActivate ] );
 
 	return (
 		<Notification>
@@ -101,7 +93,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 							'google-site-kit'
 						)
 					),
-					onClick: ctaOnClick,
+					onClick: onSetupActivate,
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),

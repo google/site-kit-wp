@@ -25,12 +25,7 @@ import PropTypes from 'prop-types';
  */
 import { Fragment } from '@wordpress/element';
 
-/**
- * Internal dependencies
- */
-import Notice from '../Notice';
-
-export default function Description( { className, children, errorText } ) {
+export default function Description( { className, children } ) {
 	return (
 		<Fragment>
 			<div
@@ -41,7 +36,6 @@ export default function Description( { className, children, errorText } ) {
 			>
 				{ children }
 			</div>
-			{ errorText && <Notice type="error" description={ errorText } /> }
 		</Fragment>
 	);
 }
@@ -49,5 +43,4 @@ export default function Description( { className, children, errorText } ) {
 Description.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
-	errorText: PropTypes.string,
 };

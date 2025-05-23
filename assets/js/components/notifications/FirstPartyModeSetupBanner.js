@@ -72,23 +72,19 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const learnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
 			'first-party-mode-introduction'
-		);
-	} );
+		)
+	);
 
-	const { clearError, receiveError } = useDispatch( CORE_SITE );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onCTAClick = async () => {
-		clearError( 'notificationAction', [ id ] );
-
 		setFirstPartyModeEnabled( true );
 		const { error } = await saveFirstPartyModeSettings();
 
 		if ( error ) {
-			receiveError( error, 'notificationAction', [ id ] );
 			return;
 		}
 
@@ -102,7 +98,12 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	};
 
 	const ctaError = useSelect( ( select ) => {
-		return select( CORE_SITE ).getError( 'notificationAction', [ id ] );
+		const firstPartyModeSettings =
+			select( CORE_SITE ).getFirstPartyModeSettings();
+		return select( CORE_SITE ).getErrorForAction(
+			'saveFirstPartyModeSettings',
+			[ firstPartyModeSettings ]
+		);
 	} );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );

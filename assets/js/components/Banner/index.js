@@ -35,6 +35,7 @@ import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
+import Notice from '../Notice';
 
 export default function Banner( {
 	className,
@@ -69,6 +70,10 @@ export default function Banner( {
 				</Description>
 
 				{ helpText && <HelpText>{ helpText }</HelpText> }
+
+				{ errorText && (
+					<Notice type="error" description={ errorText } />
+				) }
 
 				<div className="googlesitekit-notice__action">
 					<CTAButton { ...ctaButton } />

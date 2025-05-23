@@ -43,8 +43,8 @@ export default function LearnMoreLink( {
 		<Link
 			href={ href }
 			className={ className }
-			external
 			onClick={ onClick }
+			external
 		>
 			{ label }
 		</Link>

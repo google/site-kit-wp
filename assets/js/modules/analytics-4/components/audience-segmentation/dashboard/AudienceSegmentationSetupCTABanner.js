@@ -38,13 +38,13 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
 } from '../../../../../googlesitekit/notifications/datastore/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../../modules/analytics-4/datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../../../../../modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups/SetupSuccess';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../../audience-segmentation/settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { WEEK_IN_SECONDS } from '../../../../../util';
-import useEnableAudienceGroup from '../../../../../modules/analytics-4/hooks/useEnableAudienceGroup';
-import AudienceErrorModal from '../../../../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
+import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
+import AudienceErrorModal from '../../audience-segmentation/dashboard/AudienceErrorModal';
 import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
