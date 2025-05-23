@@ -35,7 +35,6 @@ import {
 } from '../../constants';
 import { ProductIDSelect } from '../common';
 import Link from '../../../../components/Link';
-import SubtleNotification from '../../../../components/notifications/SubtleNotification';
 import Notice from '../../../../components/Notice';
 
 export default function ProductIDSettings( { hasModuleAccess } ) {
@@ -99,7 +98,8 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 				) }
 			{ ! isInfoNoticeDismissed && (
 				<div className="googlesitekit-rrm-settings-edit__product-id-info-notice">
-					<SubtleNotification
+					<Notice
+						type={ Notice.TYPES.INFO }
 						title={ createInterpolateElement(
 							__(
 								'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. <learnMore>Learn more</learnMore>',
@@ -119,11 +119,10 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 								),
 							}
 						) }
-						variant="info"
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ () =>
-							dismissItem( RRM_PRODUCT_ID_INFO_NOTICE_SLUG )
-						}
+						dismissButton={ {
+							onClick: () =>
+								dismissItem( RRM_PRODUCT_ID_INFO_NOTICE_SLUG ),
+						} }
 					/>
 				</div>
 			) }

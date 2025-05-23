@@ -20,8 +20,7 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SettingsNotice, { TYPE_WARNING, TYPE_INFO, TYPE_SUGGESTION } from './';
-import WarningIcon from '../../../svg/icons/warning-icon.svg';
+import SettingsNotice, { TYPE_WARNING, TYPE_SUGGESTION } from './';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
 
@@ -46,42 +45,6 @@ Warning.args = {
 	type: TYPE_WARNING,
 	LearnMore,
 	notice: 'This is a warning.',
-};
-
-export const Info = Template.bind( {} );
-Info.args = {
-	type: TYPE_INFO,
-	LearnMore,
-	notice: 'This is an information.',
-};
-
-export const LongNotice = Template.bind( {} );
-LongNotice.args = {
-	type: TYPE_INFO,
-	LearnMore,
-	notice: new Array( 10 ).fill( 'This is an information. ' ),
-};
-
-export const NoticeWithChildren = Template.bind( {} );
-NoticeWithChildren.args = {
-	type: TYPE_INFO,
-	LearnMore,
-	notice: new Array( 5 ).fill( 'This is an information. ' ),
-	children: <p>This is more information about the information!</p>,
-};
-
-export const NoticeWithoutLearnMore = Template.bind( {} );
-NoticeWithoutLearnMore.args = {
-	type: TYPE_INFO,
-	notice: 'This is an information.',
-};
-
-export const NoticeWithDifferentIcon = Template.bind( {} );
-NoticeWithDifferentIcon.args = {
-	type: TYPE_INFO,
-	Icon: WarningIcon,
-	LearnMore,
-	notice: 'This is an information.',
 };
 
 export const SuggestionNotice = Template.bind( {} );
