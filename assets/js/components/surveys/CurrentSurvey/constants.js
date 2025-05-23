@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
-export const TYPE_MULTI_SELECT = 'multi_select';
-export const TYPE_OPEN_TEXT = 'open_text';
-export const TYPE_RATING = 'rating';
-export const TYPE_SINGLE_SELECT = 'single_select';
+export const SURVEY_QUESTION_TYPE = {
+	MULTI_SELECT: 'multi_select',
+	OPEN_TEXT: 'open_text',
+	RATING: 'rating',
+	SINGLE_SELECT: 'single_select',
+};

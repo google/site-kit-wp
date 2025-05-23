@@ -41,21 +41,9 @@ import {
 	getTriggeredCompletion,
 	isLastQuestion,
 } from './utils';
-import {
-	TYPE_MULTI_SELECT,
-	TYPE_OPEN_TEXT,
-	TYPE_RATING,
-	TYPE_SINGLE_SELECT,
-} from './constants';
+import { SURVEY_QUESTION_TYPE } from './constants';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
-
-const KNOWN_QUESTION_TYPES = [
-	TYPE_MULTI_SELECT,
-	TYPE_OPEN_TEXT,
-	TYPE_RATING,
-	TYPE_SINGLE_SELECT,
-];
 
 export default function CurrentSurvey() {
 	const [ sentSurveyShownEvent, setSentSurveyShownEvent ] = useState( false );
@@ -206,7 +194,11 @@ export default function CurrentSurvey() {
 	}
 
 	// eslint-disable-next-line camelcase
-	if ( ! KNOWN_QUESTION_TYPES.includes( currentQuestion?.question_type ) ) {
+	if (
+		! Object.values( SURVEY_QUESTION_TYPE ).includes(
+			currentQuestion?.question_type
+		)
+	) {
 		return null;
 	}
 

@@ -34,12 +34,7 @@ import SurveyQuestionRating from '../SurveyQuestionRating';
 import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
 import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
 import SurveyQuestionSingleSelect from '../SurveyQuestionSingleSelect';
-import {
-	TYPE_MULTI_SELECT,
-	TYPE_OPEN_TEXT,
-	TYPE_RATING,
-	TYPE_SINGLE_SELECT,
-} from './constants';
+import { SURVEY_QUESTION_TYPE } from './constants';
 
 export default function SurveyQuestion( {
 	currentQuestion,
@@ -59,7 +54,8 @@ export default function SurveyQuestion( {
 
 	return (
 		<Fragment>
-			{ currentQuestion.question_type === TYPE_MULTI_SELECT && (
+			{ currentQuestion.question_type ===
+				SURVEY_QUESTION_TYPE.MULTI_SELECT && (
 				<SurveyQuestionMultiSelect
 					{ ...commonProps }
 					choices={ currentQuestion.question.answer_choice }
@@ -67,20 +63,22 @@ export default function SurveyQuestion( {
 					maxChoices={ currentQuestion.question.max_choices }
 				/>
 			) }
-			{ currentQuestion.question_type === TYPE_OPEN_TEXT && (
+			{ currentQuestion.question_type ===
+				SURVEY_QUESTION_TYPE.OPEN_TEXT && (
 				<SurveyQuestionOpenText
 					{ ...commonProps }
 					subtitle={ currentQuestion.question.subtitle }
 					placeholder={ currentQuestion.question.placeholder }
 				/>
 			) }
-			{ currentQuestion.question_type === TYPE_RATING && (
+			{ currentQuestion.question_type === SURVEY_QUESTION_TYPE.RATING && (
 				<SurveyQuestionRating
 					{ ...commonProps }
 					choices={ currentQuestion.question.answer_choice }
 				/>
 			) }
-			{ currentQuestion.question_type === TYPE_SINGLE_SELECT && (
+			{ currentQuestion.question_type ===
+				SURVEY_QUESTION_TYPE.SINGLE_SELECT && (
 				<SurveyQuestionSingleSelect
 					{ ...commonProps }
 					choices={ currentQuestion.question.answer_choice }
