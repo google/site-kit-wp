@@ -70,38 +70,38 @@ const Notice = forwardRef(
 						<Description>{ description }</Description>
 					) }
 				</div>
+				{ children ||
+					( ( dismissButton?.label ||
+						dismissButton?.onClick ||
+						( ctaButton?.label &&
+							( ctaButton?.onClick || ctaButton?.href ) ) ) && (
+						<div className="googlesitekit-notice__action">
+							{ children }
 
-				{ ( dismissButton?.label ||
-					dismissButton?.onClick ||
-					( ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) ) ) && (
-					<div className="googlesitekit-notice__action">
-						{ children }
-
-						{ ( dismissButton?.label ||
-							dismissButton?.onClick ) && (
-							<DismissButton
-								label={ dismissButton.label }
-								onClick={ dismissButton.onClick }
-								disabled={ dismissButton.disabled }
-							/>
-						) }
-						{ ctaButton?.label &&
-							( ctaButton?.onClick || ctaButton?.href ) && (
-								<CTAButton
-									label={ ctaButton.label }
-									onClick={ ctaButton.onClick }
-									inProgress={ ctaButton.inProgress }
-									disabled={ ctaButton.disabled }
-									href={ ctaButton.href }
-									external={ ctaButton.external }
-									hideExternalIndicator={
-										ctaButton.hideExternalIndicator
-									}
+							{ ( dismissButton?.label ||
+								dismissButton?.onClick ) && (
+								<DismissButton
+									label={ dismissButton.label }
+									onClick={ dismissButton.onClick }
+									disabled={ dismissButton.disabled }
 								/>
 							) }
-					</div>
-				) }
+							{ ctaButton?.label &&
+								( ctaButton?.onClick || ctaButton?.href ) && (
+									<CTAButton
+										label={ ctaButton.label }
+										onClick={ ctaButton.onClick }
+										inProgress={ ctaButton.inProgress }
+										disabled={ ctaButton.disabled }
+										href={ ctaButton.href }
+										external={ ctaButton.external }
+										hideExternalIndicator={
+											ctaButton.hideExternalIndicator
+										}
+									/>
+								) }
+						</div>
+					) ) }
 			</div>
 		);
 	}
