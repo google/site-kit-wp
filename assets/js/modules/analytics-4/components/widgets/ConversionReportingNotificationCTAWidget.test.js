@@ -117,9 +117,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	} );
 
 	afterEach( () => {
-		afterEach( () => {
-			jest.clearAllMocks();
-		} );
+		jest.clearAllMocks();
 	} );
 
 	describe( 'Existing users with tailored metrics', () => {

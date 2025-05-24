@@ -27,7 +27,7 @@ import {
 	setupAnalytics4Error,
 	setupAnalytics4MockReports,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 

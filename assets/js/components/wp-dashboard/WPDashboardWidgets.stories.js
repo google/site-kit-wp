@@ -39,7 +39,7 @@ import {
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 
 function Template( { setupRegistry, viewContext } ) {
@@ -105,7 +105,9 @@ ReadyWithActivateAnalyticsCTA.args = {
 	},
 };
 
-ReadyWithActivateAnalyticsCTA.scenario = {};
+ReadyWithActivateAnalyticsCTA.scenario = {
+	delay: 6000, // This extra delay is required to fix unstable VRTs.
+};
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
 ReadyWithCompleteAnalyticsActivationCTA.storyName =

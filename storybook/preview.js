@@ -38,7 +38,6 @@ import { bootstrapFetchMocks } from './fetch-mocks';
 import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
-import { setEnabledFeatures } from '../tests/js/test-utils';
 
 setUsingCache( false );
 
@@ -71,7 +70,10 @@ export const decorators = [
 		useUnmount( () => enabledFeatures.clear() );
 
 		if ( isFirstMount ) {
-			setEnabledFeatures( features );
+			enabledFeatures.clear();
+			for ( const feature of features ) {
+				enabledFeatures.add( feature );
+			}
 		}
 
 		return (
