@@ -114,7 +114,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/conversion-events'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/key-events'
 					)
 			) {
 				request.respond( {

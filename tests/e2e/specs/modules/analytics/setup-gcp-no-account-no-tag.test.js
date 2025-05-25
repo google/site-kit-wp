@@ -66,7 +66,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 				} );
 			} else if (
 				url.match( 'analytics-4/data/properties' ) ||
-				url.match( 'analytics-4/data/conversion-events' ) ||
+				url.match( 'analytics-4/data/key-events' ) ||
 				url.match( 'user/data/survey-timeouts' ) ||
 				url.match( 'search-console/data/searchanalytics' )
 			) {
