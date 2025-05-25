@@ -1,5 +1,5 @@
 /**
- * CreateConversionCTA component for SearchFunnelWidgetGA4.
+ * CreateKeyEventCTA component for SearchFunnelWidgetGA4.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -33,50 +33,50 @@ import { useCallback } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import PreviewGraph from '../../../../../components/PreviewGraph';
-import ConversionsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
+import KeyEventsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 
-export default function CreateConversionCTA() {
+export default function CreateKeyEventCTA() {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_search-traffic-widget`;
 
-	const createConversionEventsSupportURL = useSelect( ( select ) =>
+	const createKeyEventsSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/12844695',
 		} )
 	);
 
 	const handleOnClick = useCallback( () => {
-		trackEvent( eventCategory, 'click_ga4_conversions_cta' );
+		trackEvent( eventCategory, 'click_ga4_keyEvents_cta' );
 	}, [ eventCategory ] );
 
 	useMount( () => {
-		trackEvent( eventCategory, 'view_ga4_conversions_cta' );
+		trackEvent( eventCategory, 'view_ga4_keyEvents_cta' );
 	} );
 
 	return (
-		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--setup-conversions">
+		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--setup-key-events">
 			<div className="googlesitekit-analytics-cta__preview-graphs">
 				<PreviewGraph
-					title={ __( 'Conversions completed', 'google-site-kit' ) }
-					GraphSVG={ ConversionsGraphIcon }
+					title={ __( 'Key Events completed', 'google-site-kit' ) }
+					GraphSVG={ KeyEventsGraphIcon }
 				/>
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
 					{ __(
-						'Set up conversion events to track how well your site fulfills your business objectives',
+						'Set up key events to track how well your site fulfills your business objectives',
 						'google-site-kit'
 					) }
 				</p>
 				<Button
-					href={ createConversionEventsSupportURL }
+					href={ createKeyEventsSupportURL }
 					target="_blank"
 					onClick={ handleOnClick }
 				>
-					{ __( 'Set up conversions', 'google-site-kit' ) }
+					{ __( 'Set up key events', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</div>

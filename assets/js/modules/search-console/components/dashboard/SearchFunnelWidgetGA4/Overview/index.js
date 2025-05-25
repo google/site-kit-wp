@@ -46,7 +46,7 @@ import DataBlocks from './DataBlocks';
 export default function Overview( props ) {
 	const {
 		ga4Data,
-		ga4ConversionsData,
+		ga4KeyEventsData,
 		ga4VisitorsData,
 		searchConsoleData,
 		selectedStats,
@@ -101,15 +101,15 @@ export default function Overview( props ) {
 		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
 	}, [ viewContext ] );
 
-	const showConversionsCTA =
+	const showKeyEventsCTA =
 		isAuthenticated &&
 		showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		( ! ga4ConversionsData?.length ||
-			// Show the CTA if the sole conversion set up is the
-			// GA4 default "purchase" conversion event with no data value.
-			( ga4ConversionsData?.length === 1 &&
-				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
+		( ! ga4KeyEventsData?.length ||
+			// Show the CTA if the sole key event set up is the
+			// GA4 default "purchase" key event event with no data value.
+			( ga4KeyEventsData?.length === 1 &&
+				ga4KeyEventsData[ 0 ].eventName === 'purchase' &&
 				ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value === '0' ) );
 
 	return (
@@ -124,7 +124,7 @@ export default function Overview( props ) {
 					dateRangeLength={ dateRangeLength }
 					showGA4={ showGA4 }
 					dashboardType={ dashboardType }
-					showConversionsCTA={ showConversionsCTA }
+					showKeyEventsCTA={ showKeyEventsCTA }
 					engagementRateLearnMoreURL={ engagementRateLearnMoreURL }
 					onGA4NewBadgeLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 				/>
@@ -133,7 +133,7 @@ export default function Overview( props ) {
 					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
 					error={ error }
 					showGA4={ showGA4 }
-					showConversionsCTA={ showConversionsCTA }
+					showKeyEventsCTA={ showKeyEventsCTA }
 					showRecoverableAnalytics={ showRecoverableAnalytics }
 					WidgetReportError={ WidgetReportError }
 				/>
@@ -144,7 +144,7 @@ export default function Overview( props ) {
 
 Overview.propTypes = {
 	ga4Data: PropTypes.object,
-	ga4ConversionsData: PropTypes.arrayOf( PropTypes.object ),
+	ga4KeyEventsData: PropTypes.arrayOf( PropTypes.object ),
 	ga4VisitorsData: PropTypes.object,
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,

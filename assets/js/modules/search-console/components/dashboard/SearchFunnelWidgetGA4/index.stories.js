@@ -74,7 +74,7 @@ const ga4ReportArgs = [
 		compareEndDate: '2021-09-14',
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -96,7 +96,7 @@ const ga4ReportArgs = [
 		],
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -315,15 +315,13 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 	},
 };
 
-export const ReadyWithCreateConversionCTA = Template.bind( {} );
-ReadyWithCreateConversionCTA.storyName = 'Ready with Set up Conversions CTA';
-ReadyWithCreateConversionCTA.args = {
+export const ReadyWithCreateKeyEventCTA = Template.bind( {} );
+ReadyWithCreateKeyEventCTA.storyName = 'Ready with Set up Key Events CTA';
+ReadyWithCreateKeyEventCTA.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetConversionEvents( [], {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetKeyEvents( [], {} );
 
 		for ( const options of ga4ReportArgs ) {
 			provideAnalytics4MockReport( registry, options );
@@ -331,7 +329,7 @@ ReadyWithCreateConversionCTA.args = {
 	},
 };
 
-ReadyWithCreateConversionCTA.scenario = {
+ReadyWithCreateKeyEventCTA.scenario = {
 	delay: 3000,
 };
 
@@ -517,7 +515,7 @@ export default {
 				.setPropertyID( propertyID );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetConversionEvents( fixtures.conversionEvents, {} );
+				.receiveGetKeyEvents( fixtures.conversionEvents, {} );
 
 			return (
 				<WithTestRegistry registry={ registry }>
