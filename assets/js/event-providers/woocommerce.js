@@ -26,8 +26,8 @@
 		add_to_cart: addToCart,
 		eventsToTrack,
 	} = global._googlesitekit?.wcdata || {};
-	const { add_to_cart: canTrackAddToCart, purchase: canTrackPurchase } =
-		eventsToTrack || {};
+	const canTrackAddToCart = eventsToTrack?.includes( 'add_to_cart' );
+	const canTrackPurchase = eventsToTrack?.includes( 'purchase' );
 
 	if ( addToCart && canTrackAddToCart ) {
 		const { price } = addToCart;
