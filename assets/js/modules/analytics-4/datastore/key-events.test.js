@@ -49,7 +49,7 @@ describe( 'modules/analytics-4 key-events', () => {
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/key-events'
 					),
-					{ body: fixtures.conversionEvents }
+					{ body: fixtures.keyEvents }
 				);
 
 				const initialKeyEvents = registry
@@ -63,7 +63,7 @@ describe( 'modules/analytics-4 key-events', () => {
 					.getKeyEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( keyEvents ).toEqual( fixtures.conversionEvents );
+				expect( keyEvents ).toEqual( fixtures.keyEvents );
 			} );
 
 			it( 'does not make a network request if key events are already present', async () => {
@@ -71,7 +71,7 @@ describe( 'modules/analytics-4 key-events', () => {
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetKeyEvents( fixtures.conversionEvents, {} );
+					.receiveGetKeyEvents( fixtures.keyEvents, {} );
 
 				const keyEvents = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -84,7 +84,7 @@ describe( 'modules/analytics-4 key-events', () => {
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( keyEvents ).toEqual( fixtures.conversionEvents );
+				expect( keyEvents ).toEqual( fixtures.keyEvents );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

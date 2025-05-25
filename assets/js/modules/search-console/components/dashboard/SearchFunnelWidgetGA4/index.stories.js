@@ -515,7 +515,7 @@ export default {
 				.setPropertyID( propertyID );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetKeyEvents( fixtures.conversionEvents, {} );
+				.receiveGetKeyEvents( fixtures.keyEvents, {} );
 
 			return (
 				<WithTestRegistry registry={ registry }>
