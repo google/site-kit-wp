@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: coversion events tests.
+ * `modules/analytics-4` data store: key events tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -27,7 +27,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
-describe( 'modules/analytics-4 conversion-events', () => {
+describe( 'modules/analytics-4 key-events', () => {
 	let registry;
 
 	beforeAll( () => {
@@ -43,51 +43,48 @@ describe( 'modules/analytics-4 conversion-events', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getConversionEvents', () => {
+		describe( 'getKeyEvents', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/conversion-events'
+						'^/google-site-kit/v1/modules/analytics-4/data/key-events'
 					),
 					{ body: fixtures.conversionEvents }
 				);
 
-				const initialConversionEvents = registry
+				const initialKeyEvents = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getConversionEvents();
+					.getKeyEvents();
 
-				expect( initialConversionEvents ).toBeUndefined();
+				expect( initialKeyEvents ).toBeUndefined();
 
-				const conversionEvents = await registry
+				const keyEvents = await registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getConversionEvents();
+					.getKeyEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( conversionEvents ).toEqual( fixtures.conversionEvents );
+				expect( keyEvents ).toEqual( fixtures.conversionEvents );
 			} );
 
-			it( 'does not make a network request if conversion events are already present', async () => {
+			it( 'does not make a network request if key events are already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetConversionEvents(
-						fixtures.conversionEvents,
-						{}
-					);
+					.receiveGetKeyEvents( fixtures.conversionEvents, {} );
 
-				const conversionEvents = registry
+				const keyEvents = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getConversionEvents();
+					.getKeyEvents();
 
 				await subscribeUntil( registry, () =>
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.hasFinishedResolution( 'getConversionEvents', [] )
+						.hasFinishedResolution( 'getKeyEvents', [] )
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( conversionEvents ).toEqual( fixtures.conversionEvents );
+				expect( keyEvents ).toEqual( fixtures.conversionEvents );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -99,21 +96,21 @@ describe( 'modules/analytics-4 conversion-events', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/conversion-events'
+						'^/google-site-kit/v1/modules/analytics-4/data/key-events'
 					),
 					{ body: response, status: 500 }
 				);
 
 				await registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getConversionEvents();
+					.getKeyEvents();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const conversionEvents = registry
+				const keyEvents = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getConversionEvents();
-				expect( conversionEvents ).toBeUndefined();
+					.getKeyEvents();
+				expect( keyEvents ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
