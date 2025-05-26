@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Tooltip from '../Tooltip';
@@ -49,26 +44,6 @@ const MaybeTooltip = ( {
 	}
 
 	return children;
-};
-
-MaybeTooltip.propTypes = {
-	children: PropTypes.node.isRequired,
-	disabled: PropTypes.bool,
-	tooltip: PropTypes.bool,
-	tooltipTitle: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.element,
-	] ),
-	hasIconOnly: PropTypes.bool,
-	tooltipEnterDelayInMS: PropTypes.number,
-};
-
-MaybeTooltip.defaultProps = {
-	disabled: false,
-	tooltip: false,
-	tooltipTitle: null,
-	hasIconOnly: false,
-	tooltipEnterDelayInMS: 100,
 };
 
 export default MaybeTooltip;
