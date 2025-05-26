@@ -259,7 +259,34 @@ export const NOTIFICATIONS = {
 				return false;
 			}
 
-			return true;
+			const {
+				publicationOnboardingState,
+				paymentOption,
+				publicationOnboardingStateChanged,
+			} =
+				( await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings() ) || {};
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const showingSuccessNotification =
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
+			// Show the overlay if the publication onboarding state is complete, and if either
+			// setup has just been completed but there is no paymentOption selected, or if the
+			// publication onboarding state has just changed.
+			if (
+				publicationOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+				( ( showingSuccessNotification && paymentOption === '' ) ||
+					publicationOnboardingStateChanged === true )
+			) {
+				return true;
+			}
+
+			return false;
 		},
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
