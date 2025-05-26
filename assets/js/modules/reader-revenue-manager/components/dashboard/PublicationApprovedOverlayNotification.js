@@ -35,13 +35,7 @@ import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-
-const { ONBOARDING_COMPLETE } = PUBLICATION_ONBOARDING_STATES;
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
@@ -52,11 +46,7 @@ export default function PublicationApprovedOverlayNotification() {
 	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
-	const {
-		publicationID,
-		publicationOnboardingState,
-		publicationOnboardingStateChanged,
-	} = useSelect(
+	const { publicationID, publicationOnboardingStateChanged } = useSelect(
 		( select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
 	);
@@ -77,26 +67,6 @@ export default function PublicationApprovedOverlayNotification() {
 			},
 		} )
 	);
-
-	const showApprovedNotificationUI = useSelect( ( select ) =>
-		select( CORE_UI ).getValue(
-			UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-		)
-	);
-
-	/**
-	 * Determines whether the publication approved notification should be shown when the following conditions are met.
-	 * - The notification has not been dismissed.
-	 * - The notification UI is enabled.
-	 * - The user is not in view-only mode.
-	 * - The user is on the main dashboard.
-	 * - The publication onboarding state has changed.
-	 * - The publication onboarding state is complete.
-	 */
-	const shouldShowNotification =
-		showApprovedNotificationUI === true ||
-		( initialPublicationOnboardingStateChanged.current === true &&
-			publicationOnboardingState === ONBOARDING_COMPLETE );
 
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
@@ -154,7 +124,7 @@ export default function PublicationApprovedOverlayNotification() {
 					'view_notification'
 				);
 			} }
-			shouldShowNotification={ shouldShowNotification }
+			shouldShowNotification
 			notificationID={ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION }
 		>
 			<div className="googlesitekit-overlay-notification__body">
