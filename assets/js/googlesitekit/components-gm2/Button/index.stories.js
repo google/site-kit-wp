@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import Button from './Button';
-import HelpIcon from '../../../svg/icons/help.svg';
+import Button from '../Button';
+import HelpIcon from '../../../../svg/icons/help.svg';
 
 function Template( args ) {
 	return <Button { ...args } />;
