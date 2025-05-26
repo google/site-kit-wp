@@ -51,8 +51,11 @@ export default function LabReportMetrics( { data, error } ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
-					<ErrorNotice message={ errorMessage } />
-
+					<ErrorNotice
+						error={ error }
+						message={ errorMessage }
+						hasButton
+					/>
 					<ReportErrorActions
 						moduleSlug="pagespeed-insights"
 						error={ error }

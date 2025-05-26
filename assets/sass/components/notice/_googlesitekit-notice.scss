@@ -218,7 +218,8 @@
 		background-color: $c-utility-error-container;
 
 		.googlesitekit-notice__icon,
-		.googlesitekit-notice__content {
+		.googlesitekit-notice__content,
+		.googlesitekit-notice__content p {
 			color: $c-utility-on-error-container;
 		}
 
