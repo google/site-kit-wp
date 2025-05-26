@@ -48,30 +48,16 @@
 			justify-content: space-between;
 			padding: 10px $grid-gap-desktop;
 
-			@media (max-width: $bp-xsmallOnly) {
-				column-gap: 0;
-			}
-
 			.googlesitekit-notice__content {
-				@media (max-width: 320px) { // Accommodates for small mobile.
-					width: 100%;
-				}
+				width: 100%;
 				p {
 					margin: 0;
 				}
 			}
 
 			.googlesitekit-report-error-actions {
-				@media (max-width: 320px) { // Accommodates for small mobile.
-					width: 100%;
-				}
+				align-items: end;
 				flex-direction: column;
-			}
-
-			.googlesitekit-notice__action {
-				@media (max-width: $bp-xsmallOnly) {
-					display: inline;
-				}
 			}
 		}
 
