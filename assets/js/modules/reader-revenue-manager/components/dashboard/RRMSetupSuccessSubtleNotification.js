@@ -169,18 +169,14 @@ export default function RRMSetupSuccessSubtleNotification( {
 		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
 
 	// On successful module setup, if the payment option is not set,
-	// show the publication approved overlay notification.
+	// the "Publication approved" Overlay Notification will be triggered
+	// instead of this notice, so we can dismiss this notice.
 	useEffect( () => {
 		if (
 			showingSuccessNotification &&
 			publicationOnboardingState === ONBOARDING_COMPLETE &&
 			paymentOption === ''
 		) {
-			setValue(
-				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-				true
-			);
-
 			dismissNotice();
 		}
 	}, [
