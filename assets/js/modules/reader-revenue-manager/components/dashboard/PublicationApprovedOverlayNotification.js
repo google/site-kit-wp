@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -43,21 +42,10 @@ export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 export default function PublicationApprovedOverlayNotification() {
 	const viewContext = useViewContext();
 
-	const { saveSettings, setPublicationOnboardingStateChanged } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
-	const { publicationID, publicationOnboardingStateChanged } = useSelect(
+	const { publicationID } = useSelect(
 		( select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {}
 	);
-
-	const hasResolvedSettings = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
-			'getSettings'
-		)
-	);
-
-	const initialPublicationOnboardingStateChanged = useRef();
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
@@ -91,27 +79,6 @@ export default function PublicationApprovedOverlayNotification() {
 			dismissNotice();
 		} );
 	};
-
-	// In useEffect, set publicationOnboardingStateChanged to false using setPublicationOnboardingStateChanged method and save the setting using saveSettings action. This effect should be run only once when component is mounted.
-	useEffect( () => {
-		if (
-			hasResolvedSettings &&
-			initialPublicationOnboardingStateChanged.current === undefined
-		) {
-			initialPublicationOnboardingStateChanged.current =
-				publicationOnboardingStateChanged;
-
-			if ( publicationOnboardingStateChanged === true ) {
-				setPublicationOnboardingStateChanged( false );
-				saveSettings();
-			}
-		}
-	}, [
-		publicationOnboardingStateChanged,
-		saveSettings,
-		setPublicationOnboardingStateChanged,
-		hasResolvedSettings,
-	] );
 
 	return (
 		<OverlayNotification

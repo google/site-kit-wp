@@ -250,7 +250,7 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect } ) => {
+		checkRequirements: async ( { resolveSelect, dispatch } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
 			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
@@ -283,6 +283,18 @@ export const NOTIFICATIONS = {
 				( ( showingSuccessNotification && paymentOption === '' ) ||
 					publicationOnboardingStateChanged === true )
 			) {
+				// If the publication onboarding state has changed, reset it to false and save the settings.
+				// This is to ensure that the overlay is not shown again for this reason.
+				if ( publicationOnboardingStateChanged === true ) {
+					const {
+						saveSettings,
+						setPublicationOnboardingStateChanged,
+					} = dispatch( MODULES_READER_REVENUE_MANAGER );
+
+					setPublicationOnboardingStateChanged( false );
+					saveSettings();
+				}
+
 				return true;
 			}
 
