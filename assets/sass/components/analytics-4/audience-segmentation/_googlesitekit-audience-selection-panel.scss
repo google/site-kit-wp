@@ -46,7 +46,7 @@
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
-			padding: 10px $grid-gap-desktop;
+			padding: $cta-gap-tablet $grid-gap-desktop;
 
 			.googlesitekit-notice__content {
 				width: 100%;
@@ -63,8 +63,8 @@
 
 		.googlesitekit-audience-selection-panel__add-group-notice {
 			background-color: $c-surfaces-background;
-			margin: 5px $grid-gap-desktop;
-			padding: $grid-gap-phone 20px;
+			margin: $cta-gap-tablet / 2 $grid-gap-desktop;
+			padding: $grid-gap-phone $cta-gap-tablet * 2;
 
 			@media (max-width: $bp-xsmallOnly) {
 				padding: $grid-gap-phone;
