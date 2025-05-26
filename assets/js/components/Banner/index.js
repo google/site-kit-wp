@@ -62,7 +62,7 @@ export default function Banner( {
 			<div className="googlesitekit-banner__content">
 				<Title>{ title }</Title>
 
-				<Description errorText={ errorText }>
+				<Description>
 					{ description }{ ' ' }
 					{ learnMoreLink?.href && (
 						<LearnMoreLink { ...learnMoreLink } />
