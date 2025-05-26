@@ -52,9 +52,6 @@ export const notification = [
 		Component: AudienceSegmentationSetupSuccessSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
-			return true;
-		},
 		isDismissible: true,
 	},
 ];

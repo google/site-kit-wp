@@ -44,9 +44,6 @@ export const notification = [
 		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
-		checkRequirements: () => {
-			return true;
-		},
 		featureFlag: 'firstPartyMode',
 	},
 ];
