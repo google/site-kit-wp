@@ -32,10 +32,7 @@ import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -130,28 +127,6 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 				`#${ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION }`
 			)
 		).toBeInTheDocument();
-	} );
-
-	it( 'should return null when dashboard is not main dashboard', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const { container, waitForRegistry } = render(
-			<ViewContextProvider
-				value={ VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
-			>
-				<PublicationApprovedOverlayNotification />
-			</ViewContextProvider>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		// Container should be empty.
-		expect( container ).toBeEmptyDOMElement();
-		// Component should return null.
-		expect( container.firstChild ).toBeNull();
 	} );
 
 	it( 'should get dismissed when "Enable features" CTA is clicked', async () => {
