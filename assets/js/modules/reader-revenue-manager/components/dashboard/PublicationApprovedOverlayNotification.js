@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -24,22 +29,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import OverlayNotification from '../../../../components/OverlayNotification/OverlayNotification';
+import OverlayNotification from '../../../../googlesitekit/notifications/components/layout/OverlayNotification';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
 import useViewContext from '../../../../hooks/useViewContext';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
-import { trackEvent } from '../../../../util';
-import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';
 
-export default function PublicationApprovedOverlayNotification() {
+export default function PublicationApprovedOverlayNotification( {
+	id,
+	Notification,
+} ) {
 	const viewContext = useViewContext();
 
 	const { publicationID } = useSelect(
@@ -56,84 +61,43 @@ export default function PublicationApprovedOverlayNotification() {
 		} )
 	);
 
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem(
-			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
-		)
-	);
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-	const dismissNotice = () => {
-		dismissOverlayNotification(
-			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
-		);
-	};
-
-	const dismissNotification = () => {
-		trackEvent(
-			`${ viewContext }_rrm-publication-approved-notification`,
-			'dismiss_notification'
-		).finally( () => {
-			// Dismiss the notification, which also dismisses it from
-			// the current user's profile with the `dismissItem` action.
-			dismissNotice();
-		} );
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_rrm-publication-approved-notification`,
 	};
 
 	return (
-		<OverlayNotification
-			className="googlesitekit-reader-revenue-manager-overlay-notification googlesitekit-reader-revenue-manager-publication-approved-notification"
-			GraphicDesktop={ ReaderRevenueManagerIntroductoryGraphicDesktop }
-			GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
-			onShow={ () => {
-				trackEvent(
-					`${ viewContext }_rrm-publication-approved-notification`,
-					'view_notification'
-				);
-			} }
-			shouldShowNotification
-			notificationID={ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION }
-		>
-			<div className="googlesitekit-overlay-notification__body">
-				<h3>
-					{ __(
-						'Your Reader Revenue Manager publication is approved',
-						'google-site-kit'
-					) }
-				</h3>
-				<p>
-					{ __(
-						'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups.',
-						'google-site-kit'
-					) }
-				</p>
-			</div>
-			<div className="googlesitekit-overlay-notification__actions">
-				<Button
-					tertiary
-					disabled={ isDismissing }
-					onClick={ dismissNotification }
-				>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
-
-				<Button
-					disabled={ isDismissing }
-					href={ serviceURL }
-					onClick={ () => {
-						trackEvent(
-							`${ viewContext }_rrm-publication-approved-notification`,
-							'confirm_notification'
-						).finally( () => {
-							dismissNotice();
-						} );
-					} }
-					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
-					target="_blank"
-				>
-					{ __( 'Enable features', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</OverlayNotification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+			<OverlayNotification
+				notificationID={ id }
+				title={ __(
+					'Your Reader Revenue Manager publication is approved',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Unlock your full reader opportunity by enabling features like paywall, subscriptions, contributions and newsletter sign ups.',
+					'google-site-kit'
+				) }
+				ctaButton={ {
+					label: __( 'Enable features', 'google-site-kit' ),
+					href: serviceURL,
+					onClick: () => dismissNotification( id ),
+					target: '_blank',
+					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
+				} }
+				dismissButton
+				GraphicDesktop={
+					ReaderRevenueManagerIntroductoryGraphicDesktop
+				}
+				GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+			/>
+		</Notification>
 	);
 }
+
+PublicationApprovedOverlayNotification.propTypes = {
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
+};
