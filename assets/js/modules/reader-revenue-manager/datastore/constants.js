@@ -22,6 +22,8 @@ export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
 
 export const READER_REVENUE_MANAGER_MODULE_SLUG = 'reader-revenue-manager';
 
+export const MODULE_SLUG_READER_REVENUE_MANAGER = 'reader-revenue-manager';
+
 export const PUBLICATION_ONBOARDING_STATES = {
 	ONBOARDING_COMPLETE: 'ONBOARDING_COMPLETE',
 	ONBOARDING_ACTION_REQUIRED: 'ONBOARDING_ACTION_REQUIRED',
