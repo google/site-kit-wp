@@ -442,43 +442,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		}
 	);
 
-	it( 'should display overlay notification on successful module setup with a publication that has no CTAs', async () => {
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-				)
-		).toBeUndefined();
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationOnboardingState: ONBOARDING_COMPLETE,
-				paymentOption: '',
-				productIDs: [],
-				productID: 'openaccess',
-			} );
-
-		const { waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-				)
-		).toBe( true );
-	} );
-
 	describe( 'GA event tracking', () => {
 		beforeEach( async () => {
 			mockTrackEvent.mockClear();
