@@ -204,6 +204,29 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
+		it( 'is not active when the RRM module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					active: false,
+					connected: false,
+				},
+			] );
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					publicationOnboardingStateChanged: true,
+				} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'is not active when the onboarding is not complete but other settings could trigger the overlay', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
