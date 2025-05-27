@@ -245,7 +245,7 @@ export const NOTIFICATIONS = {
 	},
 	[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]: {
 		Component: PublicationApprovedOverlayNotification,
-		priority: PRIORITY.SETUP_CTA_LOW,
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
