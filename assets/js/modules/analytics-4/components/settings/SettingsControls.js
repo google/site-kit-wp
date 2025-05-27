@@ -80,7 +80,10 @@ export default function SettingsControls( props ) {
 				</div>
 			) }
 
-			<AnalyticsSettingsNotice hasModuleAccess={ hasModuleAccess } />
+			<AnalyticsSettingsNotice
+				hasModuleAccess={ hasModuleAccess }
+				className="googlesitekit-margin-top-0"
+			/>
 
 			{ propertyID && (
 				<div className="googlesitekit-settings-module__meta-item">
