@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 import {
@@ -101,7 +101,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	const formattedOwnerName = useSelect( ( select ) => {
 		const module = select( CORE_MODULES ).getModule(
-			READER_REVENUE_MANAGER_MODULE_SLUG
+			MODULE_SLUG_READER_REVENUE_MANAGER
 		);
 
 		return module?.owner?.login
@@ -121,7 +121,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 		<Fragment>
 			<div className="googlesitekit-settings-module__fields-group">
 				<StoreErrorNotices
-					moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 					storeName={ MODULES_READER_REVENUE_MANAGER }
 				/>
 

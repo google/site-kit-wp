@@ -23,7 +23,10 @@ import {
 	provideModules,
 	provideUserInfo,
 } from '../../../../../../tests/js/utils';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	MODULES_READER_REVENUE_MANAGER,
+} from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import RRMIntroductoryOverlayNotification, {
@@ -62,7 +65,7 @@ export default {
 				provideUserInfo( registry );
 				provideModules( registry, [
 					{
-						slug: 'reader-revenue-manager',
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},

@@ -31,6 +31,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import * as tracking from '../../../../util/tracking';
 import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
@@ -117,7 +118,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			const expectedServiceURL = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getServiceURL( {
-					path: 'reader-revenue-manager',
+					path: MODULE_SLUG_READER_REVENUE_MANAGER,
 					query: {
 						publication: 'ABCDEFGH',
 					},

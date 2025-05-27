@@ -40,7 +40,7 @@ import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
@@ -84,7 +84,7 @@ function PublicationApprovedOverlayNotification() {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: 'reader-revenue-manager',
+			path: MODULE_SLUG_READER_REVENUE_MANAGER,
 			query: {
 				publication: publicationID,
 			},
@@ -217,6 +217,6 @@ function PublicationApprovedOverlayNotification() {
 	);
 }
 
-export default whenActive( { moduleName: READER_REVENUE_MANAGER_MODULE_SLUG } )(
+export default whenActive( { moduleName: MODULE_SLUG_READER_REVENUE_MANAGER } )(
 	PublicationApprovedOverlayNotification
 );

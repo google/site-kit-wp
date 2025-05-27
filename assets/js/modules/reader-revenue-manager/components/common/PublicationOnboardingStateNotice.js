@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
@@ -58,7 +59,7 @@ export default function PublicationOnboardingStateNotice() {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: 'reader-revenue-manager',
+			path: MODULE_SLUG_READER_REVENUE_MANAGER,
 			query: {
 				publication: publicationID,
 			},

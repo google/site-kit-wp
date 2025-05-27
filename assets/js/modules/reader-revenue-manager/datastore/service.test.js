@@ -21,7 +21,10 @@
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	MODULES_READER_REVENUE_MANAGER,
+} from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
@@ -73,7 +76,7 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				const serviceURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getServiceURL( {
-						path: 'reader-revenue-manager',
+						path: MODULE_SLUG_READER_REVENUE_MANAGER,
 					} );
 
 				expect(
@@ -120,7 +123,7 @@ describe( 'modules/reader-revenue-manager service store', () => {
 				const expectedURL = registry
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getServiceURL( {
-						path: 'reader-revenue-manager',
+						path: MODULE_SLUG_READER_REVENUE_MANAGER,
 						query: {
 							publication: publicationID,
 						},

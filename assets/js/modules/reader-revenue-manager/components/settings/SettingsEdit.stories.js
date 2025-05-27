@@ -30,7 +30,7 @@ import { publications } from '../../datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { cloneDeep } from 'lodash';
@@ -143,7 +143,7 @@ WithoutModuleAccess.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		registry
@@ -222,7 +222,7 @@ export default {
 
 				const extraData = [
 					{
-						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},

@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
@@ -52,7 +52,7 @@ describe( 'SettingsView', () => {
 
 		const moduleData = [
 			{
-				slug: 'reader-revenue-manager',
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},
@@ -133,7 +133,7 @@ describe( 'SettingsView', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		const { queryByText, waitForRegistry } = render( <SettingsView />, {

@@ -38,7 +38,7 @@ import { publications } from '../../datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
@@ -135,7 +135,7 @@ describe( 'SettingsEdit', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		const { queryByText, waitForRegistry } = render( <SettingsEdit />, {
@@ -194,7 +194,7 @@ describe( 'SettingsEdit', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		registry
@@ -221,7 +221,7 @@ describe( 'SettingsEdit', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		const { getByText, waitForRegistry } = render( <SettingsEdit />, {

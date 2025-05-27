@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { SNIPPET_MODES } from '../../constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
@@ -67,7 +67,7 @@ export default function SettingsView() {
 			select( CORE_MODULES );
 
 		const hasAccess = hasModuleOwnershipOrAccess(
-			READER_REVENUE_MANAGER_MODULE_SLUG
+			MODULE_SLUG_READER_REVENUE_MANAGER
 		);
 
 		if ( hasAccess ) {
@@ -75,7 +75,7 @@ export default function SettingsView() {
 		}
 
 		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 		] );
 
 		// Return early if request is not completed yet.

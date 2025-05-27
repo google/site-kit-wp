@@ -31,7 +31,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { publications } from '../../datastore/__fixtures__';
@@ -50,7 +50,7 @@ describe( 'SetupMain', () => {
 		registry = createTestRegistry();
 		const extraData = [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},

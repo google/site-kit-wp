@@ -38,7 +38,7 @@ import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
@@ -75,7 +75,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: 'reader-revenue-manager',
+			path: MODULE_SLUG_READER_REVENUE_MANAGER,
 			query: {
 				publication: publicationID,
 			},
@@ -166,7 +166,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const showingSuccessNotification =
 		notification === 'authentication_success' &&
-		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+		slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 	// On successful module setup, if the payment option is not set,
 	// show the publication approved overlay notification.

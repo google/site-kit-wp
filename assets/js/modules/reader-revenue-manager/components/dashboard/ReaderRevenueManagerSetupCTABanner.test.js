@@ -39,7 +39,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
@@ -80,7 +80,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: false,
 			},
 		] );
@@ -120,7 +120,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckRequirementsSuccess(
-				READER_REVENUE_MANAGER_MODULE_SLUG
+				MODULE_SLUG_READER_REVENUE_MANAGER
 			);
 
 		const { container, getByRole, waitForRegistry } = render(
@@ -330,7 +330,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			// Throw error from checkRequirements to simulate non-HTTPS site error.
 			provideModules( registry, [
 				{
-					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 					active: false,
 					checkRequirements: () => {
 						throw {

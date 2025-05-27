@@ -29,7 +29,7 @@ import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotificati
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
@@ -46,7 +46,7 @@ PendingVerification.storyName = 'Pending Verification';
 PendingVerification.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
@@ -58,7 +58,7 @@ OnboardingActionRequired.storyName = 'Onboarding Action Required';
 OnboardingActionRequired.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED,
@@ -73,7 +73,7 @@ OnboardingCompleteWithSubscriptionAndProductID.storyName =
 OnboardingCompleteWithSubscriptionAndProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
@@ -98,7 +98,7 @@ OnboardingCompleteWithSubscriptionAndNoProductID.storyName =
 OnboardingCompleteWithSubscriptionAndNoProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
@@ -123,7 +123,7 @@ OnboardingCompleteWithContributionAndProductID.storyName =
 OnboardingCompleteWithContributionAndProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
@@ -148,7 +148,7 @@ OnboardingCompleteWithContributionAndNoProductID.storyName =
 OnboardingCompleteWithContributionAndNoProductID.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
@@ -171,7 +171,7 @@ OnboardingCompleteWithNoMonetization.storyName =
 OnboardingCompleteWithNoMonetization.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 	},
 	publicationOnboardingState:
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
@@ -194,7 +194,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},

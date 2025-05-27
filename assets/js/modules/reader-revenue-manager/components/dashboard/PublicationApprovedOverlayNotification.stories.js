@@ -24,7 +24,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
@@ -50,7 +50,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},

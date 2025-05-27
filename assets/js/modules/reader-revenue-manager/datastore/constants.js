@@ -20,8 +20,6 @@ export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
 
 export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
 
-export const READER_REVENUE_MANAGER_MODULE_SLUG = 'reader-revenue-manager';
-
 export const MODULE_SLUG_READER_REVENUE_MANAGER = 'reader-revenue-manager';
 
 export const PUBLICATION_ONBOARDING_STATES = {

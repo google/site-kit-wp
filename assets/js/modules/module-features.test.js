@@ -28,6 +28,7 @@ import {
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { enabledFeatures } from '../features';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/datastore/constants';
 
 describe( 'Module Features', () => {
 	let registry;
@@ -70,7 +71,7 @@ describe( 'Module Features', () => {
 			],
 		],
 		[
-			'reader-revenue-manager',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			[ 'Reader Revenue Manager publication tracking will be disabled' ],
 		],
 		[ 'search-console', [] ],

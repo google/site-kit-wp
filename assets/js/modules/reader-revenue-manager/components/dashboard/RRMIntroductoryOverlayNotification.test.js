@@ -37,7 +37,7 @@ import {
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import RRMIntroductoryOverlayNotification, {
@@ -66,7 +66,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},
