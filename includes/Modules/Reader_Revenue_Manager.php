@@ -539,6 +539,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -563,6 +564,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -578,6 +580,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',

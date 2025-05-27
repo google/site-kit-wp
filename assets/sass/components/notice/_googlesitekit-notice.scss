@@ -87,13 +87,20 @@
 		}
 	}
 
+	.googlesitekit-notice__content:not(:has(+ .googlesitekit-notice__action)) .googlesitekit-notice__description {
+		margin: 0;
+	}
+
 	&.googlesitekit-notice--small {
-		border-radius: $br-xs;
 		padding: $grid-gap-phone / 2 $grid-gap-phone;
 
 		.googlesitekit-notice__content p {
 			font-size: $fs-body-sm;
 		}
+	}
+
+	&.googlesitekit-notice--bottom-margin {
+		margin-bottom: $grid-gap-desktop;
 	}
 
 	.mdc-button {

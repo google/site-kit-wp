@@ -30,7 +30,6 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import CheckFill from '../../../../../svg/icons/check-fill.svg';
 import StarFill from '../../../../../svg/icons/star-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
 
@@ -43,7 +42,7 @@ const SubtleNotification = forwardRef(
 			dismissCTA,
 			additionalCTA,
 			reverseCTAs = false,
-			type = 'success',
+			type,
 			icon,
 		},
 		ref
@@ -56,18 +55,11 @@ const SubtleNotification = forwardRef(
 						size={ 12 }
 						className={ classnames(
 							'googlesitekit-subtle-notification',
-							className,
-							{
-								'googlesitekit-subtle-notification--success':
-									type === 'success',
-							}
+							className
 						) }
 					>
 						<div className="googlesitekit-subtle-notification__icon">
 							{ icon }
-							{ type === 'success' && ! icon && (
-								<CheckFill width={ 24 } height={ 24 } />
-							) }
 							{ type === 'new-feature' && ! icon && (
 								<StarFill width={ 24 } height={ 24 } />
 							) }
@@ -100,7 +92,7 @@ SubtleNotification.propTypes = {
 	dismissCTA: PropTypes.node,
 	additionalCTA: PropTypes.node,
 	reverseCTAs: PropTypes.bool,
-	type: PropTypes.oneOf( [ 'success', 'warning', 'new-feature' ] ),
+	type: PropTypes.oneOf( [ 'warning', 'new-feature' ] ),
 	icon: PropTypes.object,
 };
 
