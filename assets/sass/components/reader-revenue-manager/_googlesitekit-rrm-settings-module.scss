@@ -71,7 +71,10 @@
 
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
 				@media (min-width: $bp-wpAdminBarTablet) {
+					left: 220px;
 					max-width: 442px;
+					position: absolute;
+					top: -10px;
 				}
 			}
 		}
