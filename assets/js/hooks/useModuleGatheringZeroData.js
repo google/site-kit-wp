@@ -22,7 +22,10 @@
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../modules/analytics-4/datastore/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	MODULE_SLUG_SEARCH_CONSOLE,
@@ -40,7 +43,7 @@ export default function useModuleGatheringZeroData() {
 	const viewOnly = useViewOnly();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics = useSelect( ( select ) => {
@@ -48,7 +51,9 @@ export default function useModuleGatheringZeroData() {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 	const canViewSharedSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
@@ -72,7 +77,9 @@ export default function useModuleGatheringZeroData() {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics-4' );
+		return Object.keys( recoverableModules ).includes(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 	const showRecoverableSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {

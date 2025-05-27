@@ -54,7 +54,10 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../analytics-4/datastore/constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
@@ -128,7 +131,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ MODULE_SLUG_ADSENSE, 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
@@ -197,7 +200,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
-			modules: [ MODULE_SLUG_ADSENSE, 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);

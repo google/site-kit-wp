@@ -30,7 +30,10 @@ import {
 	MODULES_ADSENSE,
 	MODULE_SLUG_ADSENSE,
 } from '../../modules/adsense/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '../../modules/analytics-4/utils/data-mock';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
@@ -73,7 +76,7 @@ export default {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

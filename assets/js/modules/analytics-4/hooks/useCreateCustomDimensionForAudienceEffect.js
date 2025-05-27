@@ -30,12 +30,13 @@ import {
 	EDIT_SCOPE,
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 } from '../datastore/constants';
 
 export default function useCreateCustomDimensionForAudienceEffect() {
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const propertyID = useSelect( ( select ) =>

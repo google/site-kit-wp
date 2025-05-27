@@ -25,7 +25,10 @@ import { provideModules } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 const WidgetWithComponentProps =
@@ -139,7 +142,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 				registry

@@ -27,7 +27,10 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../datastore/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -337,7 +340,7 @@ export default {
 				provideKeyMetrics( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

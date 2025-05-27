@@ -25,7 +25,10 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
@@ -53,7 +56,7 @@ export default {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

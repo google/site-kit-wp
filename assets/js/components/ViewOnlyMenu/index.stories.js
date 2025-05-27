@@ -39,6 +39,7 @@ import {
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
@@ -75,7 +76,7 @@ const commonModuleCapabilities = {
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'analytics-4'
+		MODULE_SLUG_ANALYTICS_4
 	) ]: true,
 };
 

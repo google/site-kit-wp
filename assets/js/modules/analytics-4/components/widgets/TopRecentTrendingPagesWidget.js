@@ -31,7 +31,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../datastore/constants';
 import Link from '../../../../components/Link';
 import { getPreviousDate, numFmt } from '../../../../util';
 import {
@@ -242,7 +245,7 @@ TopRecentTrendingPagesWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

@@ -47,6 +47,7 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import {
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics-4/datastore/constants';
 import Chart from './Chart';
@@ -57,7 +58,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const viewOnly = useViewOnly();
 
 	const isAnalytics4Available = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics4 = useSelect( ( select ) => {
@@ -69,11 +70,13 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
@@ -107,7 +110,9 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics-4' );
+		return Object.keys( recoverableModules ).includes(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const ga4ConversionsData = useInViewSelect(
@@ -407,19 +412,19 @@ SearchFunnelWidgetGA4.metrics = [
 		id: 'users',
 		color: '#3c7251',
 		label: __( 'Users', 'google-site-kit' ),
-		service: 'analytics-4',
+		service: MODULE_SLUG_ANALYTICS_4,
 	},
 	{
 		id: 'conversions',
 		color: '#8e68cb',
 		label: __( 'Conversions', 'google-site-kit' ),
-		service: 'analytics-4',
+		service: MODULE_SLUG_ANALYTICS_4,
 	},
 	{
 		id: 'engagement-rate',
 		color: '#8e68cb',
 		label: __( 'Engagement Rate', 'google-site-kit' ),
-		service: 'analytics-4',
+		service: MODULE_SLUG_ANALYTICS_4,
 	},
 ];
 

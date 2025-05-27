@@ -21,14 +21,19 @@
  */
 import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, MODULE_SLUG_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 const fetchGetConversionEventsStore = createFetchStore( {
 	baseName: 'getConversionEvents',
 	controlCallback: () => {
-		return get( 'modules', 'analytics-4', 'conversion-events', {} );
+		return get(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'conversion-events',
+			{}
+		);
 	},
 	reducerCallback: createReducer( ( state, conversionEvents ) => {
 		state.conversionEvents = conversionEvents;

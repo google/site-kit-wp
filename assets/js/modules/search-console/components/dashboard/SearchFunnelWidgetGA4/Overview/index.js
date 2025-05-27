@@ -38,6 +38,7 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../../hooks/useDashboardType';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../../../../modules/analytics-4/datastore/constants';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
@@ -63,7 +64,7 @@ export default function Overview( props ) {
 	const viewContext = useViewContext();
 
 	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics4 = useSelect( ( select ) => {
@@ -75,11 +76,13 @@ export default function Overview( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()

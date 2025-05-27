@@ -37,7 +37,10 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../analytics-4/datastore/constants';
 import {
 	MODULES_ADSENSE,
 	MODULE_SLUG_ADSENSE,
@@ -232,7 +235,7 @@ export default {
 						connected: true,
 					},
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

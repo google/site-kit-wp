@@ -31,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { listFormat } from '../../../util';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
@@ -54,7 +55,7 @@ export function mapScopesToModuleNames( scopes, modules ) {
 	const scopeIDToSlug = {
 		siteverification: 'site-verification',
 		webmasters: MODULE_SLUG_SEARCH_CONSOLE,
-		analytics: 'analytics-4',
+		analytics: MODULE_SLUG_ANALYTICS_4,
 	};
 
 	return (

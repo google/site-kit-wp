@@ -21,7 +21,10 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import AudienceTileError from '.';
-import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../../../datastore/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -86,7 +89,7 @@ InsufficientPermissions.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 

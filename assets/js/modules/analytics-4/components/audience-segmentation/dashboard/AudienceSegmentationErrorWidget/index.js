@@ -39,6 +39,7 @@ import ErrorWidgetContent from './ErrorWidgetContent';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import { trackEvent } from '../../../../../../util';
 import useViewContext from '../../../../../../hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../../datastore/constants';
 
 const ErrorWidgetContentWithIntersectionObserver =
 	withIntersectionObserver( ErrorWidgetContent );
@@ -107,6 +108,6 @@ AudienceSegmentationErrorWidget.propTypes = {
 	showRetryButton: PropTypes.bool,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	AudienceSegmentationErrorWidget
 );

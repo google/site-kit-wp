@@ -41,6 +41,7 @@ import {
 	widgetDecorators,
 } from './common-GA4.stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 function Template( { setupRegistry, viewContext } ) {
 	return (
@@ -71,7 +72,7 @@ ReadyWithActivateModuleCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -92,7 +93,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -116,7 +117,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -135,7 +136,7 @@ ViewOnlyAnalyticsAndSearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -158,7 +159,7 @@ ViewOnlyAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -180,7 +181,7 @@ ViewOnlySearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

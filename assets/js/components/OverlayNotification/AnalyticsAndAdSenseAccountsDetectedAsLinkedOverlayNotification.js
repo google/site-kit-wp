@@ -45,6 +45,7 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
@@ -80,7 +81,9 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
-		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+		return select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
@@ -94,7 +97,9 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
-		return select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' );
+		return select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 	const canViewSharedAdSense = useSelect( ( select ) => {
 		if ( ! isMainDashboard || isDismissed ) {
@@ -260,6 +265,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 }
 
 export default compose(
-	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
 	whenActive( { moduleName: MODULE_SLUG_ADSENSE } )
 )( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );

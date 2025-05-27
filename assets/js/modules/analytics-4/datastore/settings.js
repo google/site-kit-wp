@@ -47,6 +47,7 @@ import {
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
@@ -173,7 +174,7 @@ export async function submitChanges( { dispatch, select, resolveSelect } ) {
 
 	dispatch( CORE_USER ).resetUserAudienceSettings();
 
-	await invalidateCache( 'modules', 'analytics-4' );
+	await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
 
 	return {};
 }

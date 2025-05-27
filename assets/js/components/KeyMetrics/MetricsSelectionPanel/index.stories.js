@@ -38,6 +38,7 @@ import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import MetricsSelectionPanel from './';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 function Template( { viewContext } ) {
 	return (
@@ -71,7 +72,7 @@ export default {
 				} );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -90,7 +91,7 @@ export default {
 							[ widget ]: {
 								modules: [
 									MODULE_SLUG_SEARCH_CONSOLE,
-									'analytics-4',
+									MODULE_SLUG_ANALYTICS_4,
 									MODULE_SLUG_ADSENSE,
 								],
 							},

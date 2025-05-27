@@ -33,7 +33,11 @@ import {
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from './constants';
 import { getDateString } from '../../../util';
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
@@ -42,9 +46,14 @@ const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	baseName: 'saveCustomDimensionDataAvailableState',
 	controlCallback: ( { customDimension } ) =>
-		set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
-			customDimension,
-		} ),
+		set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'custom-dimension-data-available',
+			{
+				customDimension,
+			}
+		),
 	argsToParams: ( customDimension ) => ( { customDimension } ),
 	validateParams: ( { customDimension } ) => {
 		invariant(
@@ -217,7 +226,7 @@ const baseResolvers = {
 		}
 
 		const dataAvailableOnLoad =
-			global._googlesitekitModulesData?.[ 'analytics-4' ]
+			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ]
 				?.customDimensionsDataAvailable?.[ customDimension ];
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.

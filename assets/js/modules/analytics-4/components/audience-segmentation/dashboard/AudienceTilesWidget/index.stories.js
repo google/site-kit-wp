@@ -29,6 +29,7 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -733,7 +734,7 @@ export default {
 				} );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

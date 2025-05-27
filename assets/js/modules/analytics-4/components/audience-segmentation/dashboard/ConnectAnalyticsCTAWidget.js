@@ -35,6 +35,7 @@ import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/a
 import AudienceConnectAnalyticsCTAGraphicTablet from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
 import Link from '../../../../../components/Link';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
 import {
 	BREAKPOINT_TABLET,
@@ -47,10 +48,12 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
-	const handleConnectModule = useActivateModuleCallback( 'analytics-4' );
+	const handleConnectModule = useActivateModuleCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
 
 	const Icon = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
+		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const content = isTabletBreakpoint ? (

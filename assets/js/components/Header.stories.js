@@ -62,6 +62,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 
 function SubHeaderBannerNotification() {
 	return (
@@ -243,7 +244,7 @@ HeaderViewOnly.args = {
 				},
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				owner: {
 					id: '3',
 					login: 'Admin 3',
@@ -264,7 +265,7 @@ HeaderViewOnly.args = {
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
 		} );
 

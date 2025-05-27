@@ -33,6 +33,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
@@ -75,11 +76,13 @@ const WPDashboardUniqueVisitorsChartGA4Widget =
 
 export default function WPDashboardWidgets() {
 	const analyticsModule = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics-4' )
+		select( CORE_MODULES ).getModule( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ANALYTICS_4
+		)
 	);
 	const canViewSharedSearchConsole = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToShareableModule(

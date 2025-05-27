@@ -35,7 +35,11 @@ import {
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from './constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -54,7 +58,7 @@ const customDimensionFields = [
 const fetchCreateCustomDimensionStore = createFetchStore( {
 	baseName: 'createCustomDimension',
 	controlCallback: ( { propertyID, customDimension } ) =>
-		set( 'modules', 'analytics-4', 'create-custom-dimension', {
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'create-custom-dimension', {
 			propertyID,
 			customDimension,
 		} ),
@@ -83,7 +87,7 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
-		set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'sync-custom-dimensions' ),
 	reducerCallback: createReducer( ( state, dimensions ) => {
 		state.settings = state.settings || {};
 		state.settings.availableCustomDimensions = dimensions;
@@ -282,7 +286,9 @@ const baseResolvers = {
 		const { isAuthenticated, hasCapability } = select( CORE_USER );
 
 		const isGA4Connected = yield commonActions.await(
-			resolveSelect( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+			resolveSelect( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			)
 		);
 
 		if ( ! isGA4Connected ) {

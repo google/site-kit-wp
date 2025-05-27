@@ -29,7 +29,10 @@ import {
 } from '../../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import AudienceSegmentationErrorWidget from '.';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 
@@ -51,7 +54,7 @@ function Template( { setupRegistry = async () => {}, ...args } ) {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );

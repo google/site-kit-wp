@@ -31,9 +31,10 @@ import {
 	CORE_USER,
 	keyMetricsGA4Widgets,
 } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
 import Null from '../../../../components/Null';
 
-const metadata = { moduleSlug: 'analytics-4' };
+const metadata = { moduleSlug: MODULE_SLUG_ANALYTICS_4 };
 
 export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {

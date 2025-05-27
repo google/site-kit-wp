@@ -42,6 +42,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
@@ -61,7 +62,7 @@ const fetchGetPropertyStore = createFetchStore( {
 	controlCallback( { propertyID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'property',
 			{ propertyID },
 			{
@@ -86,7 +87,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 	controlCallback( { accountID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'properties',
 			{ accountID },
 			{
@@ -115,7 +116,7 @@ const fetchGetPropertiesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback( { accountID } ) {
-		return set( 'modules', 'analytics-4', 'create-property', {
+		return set( 'modules', MODULE_SLUG_ANALYTICS_4, 'create-property', {
 			accountID,
 		} );
 	},
@@ -139,7 +140,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 const fetchGetGoogleTagSettingsStore = createFetchStore( {
 	baseName: 'getGoogleTagSettings',
 	controlCallback( { measurementID } ) {
-		return get( 'modules', 'analytics-4', 'google-tag-settings', {
+		return get( 'modules', MODULE_SLUG_ANALYTICS_4, 'google-tag-settings', {
 			measurementID,
 		} );
 	},
@@ -163,9 +164,14 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	baseName: 'setGoogleTagIDMismatch',
 	controlCallback( { hasMismatchedTag } ) {
-		return set( 'modules', 'analytics-4', 'set-google-tag-id-mismatch', {
-			hasMismatchedTag,
-		} );
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'set-google-tag-id-mismatch',
+			{
+				hasMismatchedTag,
+			}
+		);
 	},
 	reducerCallback( state, hasMismatchedTag ) {
 		return {
@@ -623,7 +629,7 @@ const baseActions = {
 
 		const { isModuleConnected } = select( CORE_MODULES );
 
-		if ( ! isModuleConnected( 'analytics-4' ) ) {
+		if ( ! isModuleConnected( MODULE_SLUG_ANALYTICS_4 ) ) {
 			return;
 		}
 

@@ -31,6 +31,7 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 	EDIT_SCOPE,
 } from '../../../modules/analytics-4/datastore/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
@@ -122,6 +123,6 @@ function CustomDimensionsNotice() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	CustomDimensionsNotice
 );

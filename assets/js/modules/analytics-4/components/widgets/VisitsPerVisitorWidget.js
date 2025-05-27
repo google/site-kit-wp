@@ -38,6 +38,7 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../datastore/constants';
 import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import whenActive from '../../../../util/when-active';
@@ -118,6 +119,6 @@ VisitsPerVisitorWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( VisitsPerVisitorWidget );

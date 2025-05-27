@@ -37,7 +37,10 @@ import DataBlock from '../../../../../../components/DataBlock';
 import DataBlockGroup from '../../../../../../components/DataBlockGroup';
 import NewBadge from '../../../../../../components/NewBadge';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../../analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
 import {
 	DASHBOARD_TYPE_ENTITY,
@@ -59,10 +62,10 @@ export default function DataBlocks( {
 	onGA4NewBadgeLearnMoreClick,
 } ) {
 	const ga4ModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const ga4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isGA4GatheringData = useInViewSelect(
 		( select ) =>

@@ -22,6 +22,7 @@
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { widgetDecorators } from './common-GA4.stories';
 import {
 	provideModules,
@@ -46,7 +47,7 @@ Ready.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -64,7 +65,7 @@ CompleteActivation.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {

@@ -22,7 +22,10 @@
 import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	MODULE_SLUG_SEARCH_CONSOLE,
@@ -303,7 +306,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 			connected: true,
 		},
 		{
-			slug: 'analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
 			active: true,
 			connected: true,
 		},

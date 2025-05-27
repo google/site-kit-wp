@@ -33,6 +33,7 @@ import {
 	EDIT_SCOPE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -108,7 +109,7 @@ export default function AccountCreate() {
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await invalidateCache( 'modules', 'analytics-4' );
+				await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}

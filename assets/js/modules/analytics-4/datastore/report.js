@@ -39,7 +39,11 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from './constants';
 import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
 import { normalizeReportOptions, isZeroReport } from '../utils';
 import { validateReport } from '../utils/validation';
@@ -49,7 +53,7 @@ const fetchGetReportStore = createFetchStore( {
 	controlCallback: ( { options } ) => {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'report',
 			normalizeReportOptions( options )
 		);
@@ -69,7 +73,7 @@ const fetchGetReportStore = createFetchStore( {
 	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
 
-const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+const gatheringDataStore = createGatheringDataStore( MODULE_SLUG_ANALYTICS_4, {
 	storeName: MODULES_ANALYTICS_4,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],

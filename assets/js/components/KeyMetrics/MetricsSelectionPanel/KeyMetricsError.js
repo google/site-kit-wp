@@ -39,6 +39,7 @@ import {
 	MAX_SELECTED_METRICS_COUNT,
 	MIN_SELECTED_METRICS_COUNT,
 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import SelectionPanelError from '../../SelectionPanel/SelectionPanelError';
 import { safelySort } from '../../../util';
 import whenActive from '../../../util/when-active';
@@ -111,4 +112,6 @@ function KeyMetricsError( { savedMetrics } ) {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )( KeyMetricsError );
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
+	KeyMetricsError
+);

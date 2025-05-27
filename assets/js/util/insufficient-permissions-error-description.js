@@ -25,6 +25,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 
 /**
  * Gets a description for an insufficient permissions error.
@@ -53,7 +54,7 @@ export function getInsufficientPermissionsErrorDescription(
 	let message = '';
 	let userInfo = '';
 
-	if ( 'analytics-4' === slug ) {
+	if ( MODULE_SLUG_ANALYTICS_4 === slug ) {
 		if ( error.match( /account/i ) ) {
 			message = __(
 				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard.',

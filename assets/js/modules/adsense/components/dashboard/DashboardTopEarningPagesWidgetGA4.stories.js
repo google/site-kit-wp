@@ -28,7 +28,10 @@ import {
 	MODULES_ADSENSE,
 	MODULE_SLUG_ADSENSE,
 } from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../analytics-4/datastore/constants';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 import {
 	STRATEGY_ZIP,
@@ -234,7 +237,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 

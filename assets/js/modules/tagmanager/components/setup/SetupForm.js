@@ -54,6 +54,7 @@ import {
 } from '../common';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -63,10 +64,10 @@ export default function SetupForm( { finishSetup } ) {
 		select( MODULES_TAGMANAGER ).getCurrentGTMGoogleTagID()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -125,13 +126,13 @@ export default function SetupForm( { finishSetup } ) {
 					! analyticsModuleActive
 				) {
 					const { response, error } = await activateModule(
-						'analytics-4'
+						MODULE_SLUG_ANALYTICS_4
 					);
 					if ( error ) {
 						throw error;
 					}
 
-					await setItem( 'module_setup', 'analytics-4', {
+					await setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4, {
 						ttl: 300,
 					} );
 

@@ -30,7 +30,10 @@ import {
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -120,13 +123,13 @@ export const ReportErrorWithInsufficientPermissionsWithRequestAccess =
 ReportErrorWithInsufficientPermissionsWithRequestAccess.storyName =
 	'ReportError with insufficient permissions with request access';
 ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
-	moduleSlug: 'analytics-4',
+	moduleSlug: MODULE_SLUG_ANALYTICS_4,
 	setupRegistry: async ( registry ) => {
 		provideModules( registry, [
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 

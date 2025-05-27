@@ -38,6 +38,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
 import {
 	MODULES_ADSENSE,
@@ -322,5 +323,5 @@ DashboardTopEarningPagesWidgetGA4.propTypes = {
 
 export default compose(
 	whenActive( { moduleName: MODULE_SLUG_ADSENSE } ),
-	whenActive( { moduleName: 'analytics-4' } )
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )
 )( DashboardTopEarningPagesWidgetGA4 );

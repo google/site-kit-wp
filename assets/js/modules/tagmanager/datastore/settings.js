@@ -51,7 +51,10 @@ import {
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../analytics-4/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -144,8 +147,9 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Fetch the latest settings in the Analytics store so that we can update
 		// the filtered value of canUseSnippet.
-		const analyticsModuleConnected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+		const analyticsModuleConnected = select(
+			CORE_MODULES
+		).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS_4 ).fetchGetSettings();
 		}

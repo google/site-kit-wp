@@ -33,7 +33,11 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+	MAX_WEBDATASTREAMS_PER_BATCH,
+} from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -46,7 +50,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 	controlCallback( { propertyID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams',
 			{ propertyID },
 			{
@@ -81,7 +85,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	controlCallback( { propertyIDs } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams-batch',
 			{ propertyIDs },
 			{
@@ -118,10 +122,15 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
 	controlCallback( { propertyID, displayName } ) {
-		return set( 'modules', 'analytics-4', 'create-webdatastream', {
-			propertyID,
-			displayName,
-		} );
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'create-webdatastream',
+			{
+				propertyID,
+				displayName,
+			}
+		);
 	},
 	reducerCallback: createReducer(
 		( state, webDataStream, { propertyID } ) => {

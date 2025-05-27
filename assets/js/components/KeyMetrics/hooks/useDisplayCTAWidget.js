@@ -23,7 +23,10 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	MODULE_SLUG_SEARCH_CONSOLE,
@@ -58,7 +61,7 @@ export default function useDisplayCTAWidget() {
 		);
 		const analyticsDataAvailableOnLoad = isModuleDataAvailableOnLoad(
 			select,
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			MODULES_ANALYTICS_4
 		);
 

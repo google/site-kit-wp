@@ -40,7 +40,10 @@ import {
 	AUDIENCE_INFO_NOTICE_HIDE_UI,
 	AUDIENCE_INFO_NOTICE_SLUG,
 } from './constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import useViewContext from '../../../../../../hooks/useViewContext';
@@ -143,4 +146,6 @@ InfoNoticeWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )( InfoNoticeWidget );
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
+	InfoNoticeWidget
+);

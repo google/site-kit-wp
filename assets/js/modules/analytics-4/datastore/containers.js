@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, MODULE_SLUG_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
@@ -35,7 +35,7 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 	controlCallback( { measurementID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'container-lookup',
 			{ destinationID: measurementID },
 			{
@@ -59,7 +59,7 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 	controlCallback( { gtmAccountID, gtmContainerID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'container-destinations',
 			{ accountID: gtmAccountID, containerID: gtmContainerID },
 			{

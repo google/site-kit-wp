@@ -26,7 +26,10 @@ import PropTypes from 'prop-types';
  */
 import { useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import NoAudienceBanner from './NoAudienceBanner';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
@@ -87,6 +90,6 @@ NoAudienceBannerWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	NoAudienceBannerWidget
 );

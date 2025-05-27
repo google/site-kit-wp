@@ -28,7 +28,10 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
@@ -45,7 +48,7 @@ export default function SettingsAdmin() {
 		select( CORE_USER ).getConfiguredAudiences()
 	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isSearchConsoleGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
@@ -67,7 +70,7 @@ export default function SettingsAdmin() {
 		if (
 			! select( CORE_MODULES ).hasFinishedResolution(
 				'isModuleConnected',
-				[ 'analytics-4' ]
+				[ MODULE_SLUG_ANALYTICS_4 ]
 			)
 		) {
 			return true;

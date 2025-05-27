@@ -39,6 +39,7 @@ import {
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
@@ -63,7 +64,7 @@ Default.args = {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -78,7 +79,7 @@ DefaultWithStagingEnvironmentWarning.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -150,7 +151,7 @@ Connected.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -185,7 +186,7 @@ RevokedAccess.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -209,7 +210,7 @@ ResetSuccess.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},

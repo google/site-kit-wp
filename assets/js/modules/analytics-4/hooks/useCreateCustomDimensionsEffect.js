@@ -31,6 +31,7 @@ import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../datastore/constants';
 
 export default function useCreateCustomDimensionsEffect() {
@@ -39,7 +40,7 @@ export default function useCreateCustomDimensionsEffect() {
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const hasAnalyticsEditScope = useSelect( ( select ) =>

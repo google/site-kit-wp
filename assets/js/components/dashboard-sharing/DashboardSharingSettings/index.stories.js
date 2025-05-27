@@ -33,7 +33,10 @@ import {
 	MODULE_SLUG_SEARCH_CONSOLE,
 } from '../../../modules/search-console/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../../modules/adsense/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Dialog, DialogContent } from '../../../material-components';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -65,7 +68,7 @@ SingleAdminWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -142,7 +145,7 @@ MultiAdminsWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -219,7 +222,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -244,7 +247,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 			.dispatch( CORE_MODULES )
 			.receiveSharedOwnershipModules( [
 				MODULE_SLUG_SEARCH_CONSOLE,
-				'analytics-4',
+				MODULE_SLUG_ANALYTICS_4,
 				MODULE_SLUG_ADSENSE,
 				'pagespeed-insights',
 			] );

@@ -31,6 +31,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import ModuleRecoveryAlert from '.';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -90,7 +91,7 @@ MultipleRecoverableModule.args = {
 	setupRegistry: ( registry ) => {
 		provideModulesWithRecoverable( registry, [
 			MODULE_SLUG_SEARCH_CONSOLE,
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 		registry
 			.dispatch( CORE_MODULES )
@@ -102,7 +103,7 @@ MultipleRecoverableModule.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'analytics-4' }
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
 	},
 };
@@ -133,7 +134,7 @@ MultipleRecoverableModuleNoAccess.args = {
 	setupRegistry: ( registry ) => {
 		provideModulesWithRecoverable( registry, [
 			MODULE_SLUG_SEARCH_CONSOLE,
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 		registry
 			.dispatch( CORE_MODULES )
@@ -145,7 +146,7 @@ MultipleRecoverableModuleNoAccess.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'analytics-4' }
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
 	},
 };
@@ -224,7 +225,7 @@ MultipleRecoverableModuleErrors.args = {
 
 		provideModulesWithRecoverable( registry, [
 			MODULE_SLUG_SEARCH_CONSOLE,
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 		registry
 			.dispatch( CORE_MODULES )
@@ -236,11 +237,14 @@ MultipleRecoverableModuleErrors.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'analytics-4' }
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
 		registry
 			.dispatch( CORE_MODULES )
-			.recoverModules( [ MODULE_SLUG_SEARCH_CONSOLE, 'analytics-4' ] );
+			.recoverModules( [
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_ANALYTICS_4,
+			] );
 	},
 };
 

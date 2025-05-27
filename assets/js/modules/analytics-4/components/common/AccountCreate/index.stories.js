@@ -30,6 +30,7 @@ import {
 	ACCOUNT_CREATE,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../datastore/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
@@ -68,7 +69,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						owner: { login: 'analytics_4-owner-username' },

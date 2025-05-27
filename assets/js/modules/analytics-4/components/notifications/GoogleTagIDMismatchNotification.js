@@ -26,7 +26,10 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../datastore/constants';
 import { isValidMeasurementID } from '../../utils/validation';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { getBestTagID } from '../../utils/google-tag';
@@ -106,7 +109,7 @@ export default function GoogleTagIDMismatchNotification( {
 	} );
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( CORE_MODULES ).isDoingSubmitChanges( 'analytics-4' )
+		select( CORE_MODULES ).isDoingSubmitChanges( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const {

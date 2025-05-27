@@ -26,7 +26,10 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { getDateString } from '../../util';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
@@ -75,7 +78,7 @@ Default.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

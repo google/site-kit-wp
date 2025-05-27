@@ -22,7 +22,11 @@
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../datastore/constants';
 import useViewOnly from '../../../hooks/useViewOnly';
 
 /**
@@ -41,7 +45,9 @@ export default function useAllTrafficWidgetReport( reportOptions = {} ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const { startDate, endDate } = useSelect( ( select ) =>

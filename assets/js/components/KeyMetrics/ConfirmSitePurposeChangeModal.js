@@ -49,7 +49,10 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '../user-input/util/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
@@ -125,8 +128,9 @@ function ConfirmSitePurposeChangeModal( {
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
-		const isGA4Connected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+		const isGA4Connected = select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
 
 		if ( ! isGA4Connected ) {
 			return [];

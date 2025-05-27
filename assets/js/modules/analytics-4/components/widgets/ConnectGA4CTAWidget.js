@@ -33,7 +33,10 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
@@ -54,11 +57,12 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 		return widgets.filter(
 			( { slug, modules } ) =>
-				keyMetrics.includes( slug ) && modules.includes( 'analytics-4' )
+				keyMetrics.includes( slug ) &&
+				modules.includes( MODULE_SLUG_ANALYTICS_4 )
 		);
 	} );
 	const isAnalyticsActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
 		const adminReauthURL =
@@ -72,7 +76,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	} );
 	const isActivatingAnalytics = useSelect( ( select ) =>
 		select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			true
 		)
 	);
@@ -89,9 +93,12 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const activateAnalytics = useActivateModuleCallback( 'analytics-4' );
-	const completeAnalyticsActivation =
-		useCompleteModuleActivationCallback( 'analytics-4' );
+	const activateAnalytics = useActivateModuleCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
+	const completeAnalyticsActivation = useCompleteModuleActivationCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
 
 	const handleCTAClick = useCallback( () => {
 		if ( isAnalyticsActive ) {

@@ -41,7 +41,10 @@ import {
 } from '../../../../../googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../../analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import {
@@ -260,7 +263,7 @@ ReadyWithAnalyticsNotActive.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -281,7 +284,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -308,7 +311,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -450,7 +453,7 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: false,
 			},
 		] );
@@ -461,7 +464,7 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: false,
 		} );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -499,7 +502,7 @@ export default {
 				{
 					active: true,
 					connected: true,
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 				},
 			] );
 			provideUserAuthentication( registry );

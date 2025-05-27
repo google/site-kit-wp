@@ -37,7 +37,10 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import useViewContext from '../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../../datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../hooks/useDashboardType';
@@ -67,12 +70,15 @@ function AudienceSegmentationIntroductoryOverlayNotification() {
 			const isAudienceSegmentationWidgetHidden =
 				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
-			const isModuleActive =
-				select( CORE_MODULES ).isModuleActive( 'analytics-4' );
+			const isModuleActive = select( CORE_MODULES ).isModuleActive(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
 			const canViewModule =
 				! isViewOnly ||
-				select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+				select( CORE_USER ).canViewSharedModule(
+					MODULE_SLUG_ANALYTICS_4
+				);
 
 			const audienceSegmentationSetupCompletedBy =
 				select(
@@ -180,6 +186,6 @@ function AudienceSegmentationIntroductoryOverlayNotification() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	AudienceSegmentationIntroductoryOverlayNotification
 );
