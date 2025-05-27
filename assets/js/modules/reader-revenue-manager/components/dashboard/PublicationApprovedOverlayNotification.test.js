@@ -32,7 +32,6 @@ import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -42,14 +41,24 @@ import { Provider as ViewContextProvider } from '../../../../components/Root/Vie
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'PublicationApprovedOverlayNotification', () => {
+	const PublicationApprovedOverlayNotificationComponent =
+		withNotificationComponentProps(
+			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
+		)( PublicationApprovedOverlayNotification );
+
+	const notification =
+		NOTIFICATIONS[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ];
+
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
@@ -73,18 +82,20 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		] );
 
 		registry
-			.dispatch( CORE_UI )
-			.setValue(
-				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-				true
-			);
-
-		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
 				publicationOnboardingState: 'ONBOARDING_COMPLETE',
 				publicationOnboardingStateChanged: true,
 			} );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
+				notification
+			);
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
 			const { data } = JSON.parse( opts.body );
@@ -95,12 +106,9 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	} );
 
 	it( 'should render the component with correct title and description', async () => {
-		// No items are dismissed.
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
 		const { getByText, waitForRegistry } = render(
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<PublicationApprovedOverlayNotification />
+				<PublicationApprovedOverlayNotificationComponent />
 			</ViewContextProvider>,
 			{
 				registry,
@@ -121,10 +129,10 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			)
 		).toBeInTheDocument();
 
-		// Make sure that `googlesitekit-reader-revenue-manager-publication-approved-notification` class is present for the component wrapper.
+		// Make sure that the notificationID is present for the component wrapper.
 		expect(
 			document.querySelector(
-				'.googlesitekit-reader-revenue-manager-publication-approved-notification'
+				`#${ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION }`
 			)
 		).toBeInTheDocument();
 
