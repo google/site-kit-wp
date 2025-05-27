@@ -203,5 +203,23 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( true );
 		} );
+
+		it( 'is not active when the onboarding is not complete but other settings could trigger the overlay', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'PENDING_VERIFICATION',
+					paymentOption: '',
+					publicationOnboardingStateChanged: true,
+				} );
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ READER_REVENUE_MANAGER_MODULE_SLUG }`;
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
