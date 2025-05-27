@@ -763,6 +763,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
 
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
 				return $asset->get_handle();
@@ -790,6 +797,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) === false ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 <.' );
 		}
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
 
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
