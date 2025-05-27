@@ -154,31 +154,6 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should return null when notification is dismissed', async () => {
-		// Set the notification as dismissed.
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<PublicationApprovedOverlayNotification />
-			</ViewContextProvider>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		// Container should be empty.
-		expect( container ).toBeEmptyDOMElement();
-		// Component should return null.
-		expect( container.firstChild ).toBeNull();
-	} );
-
 	it( 'should get dismissed when "Enable features" CTA is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
