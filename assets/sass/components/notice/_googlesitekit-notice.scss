@@ -99,6 +99,10 @@
 		}
 	}
 
+	&.googlesitekit-notice--bottom-margin {
+		margin-bottom: $grid-gap-desktop;
+	}
+
 	.mdc-button {
 		font-weight: $fw-medium;
 		margin: 0 auto;
