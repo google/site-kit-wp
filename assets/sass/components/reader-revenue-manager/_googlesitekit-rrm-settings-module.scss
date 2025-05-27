@@ -70,7 +70,9 @@
 			}
 
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
-				max-width: 550px;
+				@media (min-width: $bp-wpAdminBarTablet) {
+					max-width: 442px;
+				}
 			}
 		}
 
