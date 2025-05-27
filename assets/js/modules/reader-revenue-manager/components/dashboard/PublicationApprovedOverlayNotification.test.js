@@ -194,7 +194,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<PublicationApprovedOverlayNotification />
+				<PublicationApprovedOverlayNotificationComponent />
 			</ViewContextProvider>,
 			{
 				registry,
