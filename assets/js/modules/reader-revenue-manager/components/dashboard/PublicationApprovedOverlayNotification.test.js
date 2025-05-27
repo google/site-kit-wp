@@ -42,8 +42,10 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { NOTIFICATIONS } from '../..';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 
 describe( 'PublicationApprovedOverlayNotification', () => {
+	mockLocation();
 	const PublicationApprovedOverlayNotificationComponent =
 		withNotificationComponentProps(
 			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
@@ -76,6 +78,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
+				publicationID: '12345',
 				publicationOnboardingState: 'ONBOARDING_COMPLETE',
 				publicationOnboardingStateChanged: true,
 			} );
@@ -165,6 +168,24 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'is active when the onboarding is complete and the onboarding state was just changed', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is active when the onboarding is complete and the setup success notification is showing but payment option is empty', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					paymentOption: '',
+					publicationOnboardingStateChanged: false,
+				} );
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ READER_REVENUE_MANAGER_MODULE_SLUG }`;
+
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD
