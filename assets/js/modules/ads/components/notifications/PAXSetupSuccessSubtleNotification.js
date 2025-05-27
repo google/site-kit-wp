@@ -35,10 +35,9 @@ import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../../../../components/Notice/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 
 export default function PAXSetupSuccessSubtleNotification( {
 	id,
@@ -70,7 +69,9 @@ export default function PAXSetupSuccessSubtleNotification( {
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'Your Ads campaign was successfully set up!',
 					'google-site-kit'
@@ -79,23 +80,15 @@ export default function PAXSetupSuccessSubtleNotification( {
 					'Track your conversions, measure your campaign results and make the most of your ad spend',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ dismissNotice }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
-						ctaLink={ accountSelectorWrappedAccountOverviewURL }
-						onCTAClick={ onPrimaryCTAClickCallback }
-						isCTALinkExternal
-					/>
-				}
+				dismissButton={ {
+					onClick: dismissNotice,
+				} }
+				ctaButton={ {
+					onClick: onPrimaryCTAClickCallback,
+					label: __( 'Show me', 'google-site-kit' ),
+					href: accountSelectorWrappedAccountOverviewURL,
+					external: true,
+				} }
 			/>
 		</Notification>
 	);

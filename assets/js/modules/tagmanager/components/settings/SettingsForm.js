@@ -43,9 +43,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { TYPE_INFO } from '../../../../components/SettingsNotice';
-import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import Notice from '../../../../components/Notice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
@@ -75,10 +73,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			</div>
 
 			{ hasModuleAccess === false && (
-				<SettingsNotice
-					type={ TYPE_INFO }
-					Icon={ WarningIcon }
-					notice={ createInterpolateElement(
+				<Notice
+					className="googlesitekit-notice--bottom-margin"
+					type={ Notice.TYPES.INFO }
+					description={ createInterpolateElement(
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(

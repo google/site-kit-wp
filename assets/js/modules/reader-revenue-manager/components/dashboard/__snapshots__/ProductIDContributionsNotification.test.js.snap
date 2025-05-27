@@ -26,9 +26,6 @@ exports[`ProductIDContributionsNotification should render correctly 1`] = `
               class="googlesitekit-notice__content"
             >
               <p
-                class="googlesitekit-notice__title"
-              />
-              <p
                 class="googlesitekit-notice__description"
               >
                 New! You can now select product IDs to use with your Reader Revenue Manager snippet

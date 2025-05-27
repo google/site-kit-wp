@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Assets\Stylesheet;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
@@ -113,6 +114,11 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	private $tag_guard;
 
+	const PRODUCT_ID_NOTIFICATIONS = array(
+		'rrm-product-id-contributions-notification',
+		'rrm-product-id-subscriptions-notification',
+	);
+
 	/**
 	 * Constructor.
 	 *
@@ -192,6 +198,19 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+
+		// If the publication ID changes, clear the dismissed state for product ID notifications.
+		$this->get_settings()->on_change(
+			function ( $old_value, $new_value ) {
+				if ( $old_value['publicationID'] !== $new_value['publicationID'] ) {
+					$dismissed_items = new Dismissed_Items( $this->user_options );
+
+					foreach ( self::PRODUCT_ID_NOTIFICATIONS as $notification ) {
+						$dismissed_items->remove( $notification );
+					}
+				}
+			}
+		);
 	}
 
 	/**
@@ -520,6 +539,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -544,6 +564,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -559,6 +580,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
