@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
 import SettingsEdit from './SettingsEdit';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../datastore/constants';
+import { MODULES_ADS, MODULE_SLUG_ADS } from '../../datastore/constants';
 import {
 	provideModules,
 	WithTestRegistry,
@@ -80,7 +80,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},

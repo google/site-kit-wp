@@ -57,7 +57,11 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
 import { isZeroReport } from '../../modules/analytics-4/utils';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
@@ -275,7 +279,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			const adSenseModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'adsense' );
+			).isModuleConnected( MODULE_SLUG_ADSENSE );
 
 			const analyticsModuleConnected = await resolveSelect(
 				CORE_MODULES
@@ -472,7 +476,9 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			const canViewSharedSearchConsole = ! viewOnly
 				? true
-				: select( CORE_USER ).canViewSharedModule( 'search-console' );
+				: select( CORE_USER ).canViewSharedModule(
+						MODULE_SLUG_SEARCH_CONSOLE
+				  );
 
 			const showRecoverableAnalytics = await ( () => {
 				if ( ! viewOnly ) {
@@ -495,7 +501,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 			} )();
 
@@ -593,7 +599,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 
 			const searchConsoleState = await getModuleState(
-				'search-console',
+				MODULE_SLUG_SEARCH_CONSOLE,
 				MODULES_SEARCH_CONSOLE
 			);
 

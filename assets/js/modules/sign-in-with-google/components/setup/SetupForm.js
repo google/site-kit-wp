@@ -38,7 +38,10 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { useRegistry, useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_SIGN_IN_WITH_GOOGLE,
+	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
+} from '../../datastore/constants';
 import ClientIDTextField from '../common/ClientIDTextField';
 import { Button } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
@@ -55,7 +58,7 @@ export default function SetupForm() {
 
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'sign-in-with-google'
+			MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 		);
 	} );
 
@@ -81,12 +84,14 @@ export default function SetupForm() {
 
 		if (
 			currentClientID === '' &&
-			global._googlesitekitModulesData?.[ 'sign-in-with-google' ]
-				?.existingClientID
+			global._googlesitekitModulesData?.[
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+			]?.existingClientID
 		) {
 			setExistingClientID(
-				global._googlesitekitModulesData[ 'sign-in-with-google' ]
-					.existingClientID
+				global._googlesitekitModulesData[
+					MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+				].existingClientID
 			);
 		}
 	} );

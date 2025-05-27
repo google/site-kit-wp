@@ -38,6 +38,7 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
@@ -98,7 +99,7 @@ DefaultWithDashboardSharing.args = {
 		const commonModuleCapabilities = {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 		};
 		provideUserCapabilities( registry, {
@@ -107,7 +108,7 @@ DefaultWithDashboardSharing.args = {
 		} );
 
 		provideModules( registry, [
-			{ slug: 'search-console', active: true, connected: true },
+			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
 		] );
 	},
 };
@@ -125,7 +126,7 @@ DefaultWithDashboardSharingOneAdmin.args = {
 		const commonModuleCapabilities = {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 		};
 		provideUserCapabilities( registry, {
@@ -134,7 +135,7 @@ DefaultWithDashboardSharingOneAdmin.args = {
 		} );
 
 		provideModules( registry, [
-			{ slug: 'search-console', active: true, connected: true },
+			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
 		] );
 	},
 };

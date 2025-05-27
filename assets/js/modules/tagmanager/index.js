@@ -27,12 +27,15 @@ import { __ } from '@wordpress/i18n';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '../../../svg/graphics/tagmanager.svg';
-import { MODULES_TAGMANAGER } from './datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	MODULE_SLUG_TAGMANAGER,
+} from './datastore/constants';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'tagmanager', {
+	modules.registerModule( MODULE_SLUG_TAGMANAGER, {
 		storeName: MODULES_TAGMANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,

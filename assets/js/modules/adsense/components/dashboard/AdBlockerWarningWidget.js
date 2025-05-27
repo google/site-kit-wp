@@ -28,6 +28,7 @@ import { useSelect } from 'googlesitekit-data';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import whenActive from '../../../../util/when-active';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '../../datastore/constants';
 
 function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -49,6 +50,6 @@ AdBlockerWarningWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'adsense' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ADSENSE } )(
 	AdBlockerWarningWidget
 );

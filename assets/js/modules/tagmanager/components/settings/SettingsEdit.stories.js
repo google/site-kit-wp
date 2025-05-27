@@ -26,6 +26,7 @@ import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
+	MODULE_SLUG_TAGMANAGER,
 } from '../../datastore/constants';
 import {
 	provideModuleRegistrations,
@@ -221,7 +222,7 @@ NoModuleAccess.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'tagmanager' }
+				{ slug: MODULE_SLUG_TAGMANAGER }
 			);
 
 		registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 2 );
@@ -429,7 +430,7 @@ export default {
 				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 1 );
 				provideModules( registry, [
 					{
-						slug: 'tagmanager',
+						slug: MODULE_SLUG_TAGMANAGER,
 						active: true,
 						connected: true,
 					},

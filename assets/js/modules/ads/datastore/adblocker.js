@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from './constants';
 
 export const selectors = {
 	/**
@@ -51,7 +52,7 @@ export const selectors = {
 		}
 
 		const isModuleConnected =
-			select( CORE_MODULES ).isModuleConnected( 'ads' );
+			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADS );
 
 		if ( isModuleConnected ) {
 			return __(

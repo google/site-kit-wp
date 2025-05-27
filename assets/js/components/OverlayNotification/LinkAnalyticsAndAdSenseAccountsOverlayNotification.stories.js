@@ -26,6 +26,7 @@ import {
 } from '../../../../tests/js/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
@@ -57,7 +58,7 @@ export default {
 						connected: true,
 					},
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},

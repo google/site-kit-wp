@@ -22,7 +22,10 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	MODULE_SLUG_TAGMANAGER,
+} from '../../datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -104,7 +107,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'tagmanager',
+						slug: MODULE_SLUG_TAGMANAGER,
 						active: true,
 						connected: true,
 					},

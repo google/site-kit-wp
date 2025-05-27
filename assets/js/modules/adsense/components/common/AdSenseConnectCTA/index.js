@@ -39,7 +39,10 @@ import {
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
+} from '../../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -74,15 +77,15 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		select( MODULES_ADSENSE ).getAdminReauthURL()
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'adsense' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
 	);
 	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
 
 	const isConnectingAdSense = useSelect( ( select ) => {
 		const isFetching = select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			true
 		);
 
@@ -98,7 +101,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 	} );
 
 	const handleConnect = useCallback( async () => {
-		const { response, error } = await activateModule( 'adsense' );
+		const { response, error } = await activateModule( MODULE_SLUG_ADSENSE );
 
 		if ( error ) {
 			setInternalServerError( {
@@ -111,10 +114,10 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		await trackEvent(
 			`${ viewContext }_adsense-cta-widget`,
 			'activate_module',
-			'adsense'
+			MODULE_SLUG_ADSENSE
 		);
 
-		await setItem( 'module_setup', 'adsense', { ttl: 300 } );
+		await setItem( 'module_setup', MODULE_SLUG_ADSENSE, { ttl: 300 } );
 
 		navigateTo( response.moduleReauthURL );
 	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );

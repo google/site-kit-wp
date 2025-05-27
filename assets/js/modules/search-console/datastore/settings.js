@@ -29,7 +29,10 @@ import { createRegistrySelector } from 'googlesitekit-data';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID } from '../util';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
-import { MODULES_SEARCH_CONSOLE } from './constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -59,7 +62,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await invalidateCache( 'modules', 'search-console' );
+	await invalidateCache( 'modules', MODULE_SLUG_SEARCH_CONSOLE );
 
 	return {};
 }

@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_SIGN_IN_WITH_GOOGLE,
+	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
+} from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	provideModules,
@@ -123,7 +126,7 @@ export default {
 				provideSiteInfo( registry, { anyoneCanRegister: true } );
 				provideModules( registry, [
 					{
-						slug: 'sign-in-with-google',
+						slug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 						active: true,
 						connected: true,
 					},

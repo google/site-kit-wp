@@ -30,7 +30,7 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
+import { MODULES_ADSENSE, MODULE_SLUG_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetAdUnitsStore = createFetchStore( {
@@ -38,7 +38,7 @@ const fetchGetAdUnitsStore = createFetchStore( {
 	controlCallback: ( { accountID, clientID } ) => {
 		return get(
 			'modules',
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			'adunits',
 			{ accountID, clientID },
 			{

@@ -44,7 +44,10 @@ import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/u
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from '../../../datastore/constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
@@ -252,7 +255,7 @@ ReadyWithAnalyticsNotActive.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
@@ -273,7 +276,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
@@ -300,7 +303,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: true,
@@ -441,7 +444,7 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 			},
 			{
@@ -454,7 +457,7 @@ ViewOnlySearchConsoleOnlyReady.args = {
 		provideUserCapabilities( registry, {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
@@ -491,7 +494,7 @@ export default {
 				{
 					active: true,
 					connected: true,
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 				},
 				{
 					active: true,

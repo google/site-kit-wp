@@ -28,6 +28,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
+	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 } from './datastore/constants';
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
@@ -46,7 +47,7 @@ import { PRIORITY } from '../../googlesitekit/notifications/constants';
 export { registerStore } from './datastore';
 
 export function registerModule( modules ) {
-	modules.registerModule( 'sign-in-with-google', {
+	modules.registerModule( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -115,7 +116,7 @@ export const registerNotifications = ( notifications ) => {
 			] );
 
 			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				'sign-in-with-google'
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			);
 			if ( isConnected ) {
 				return false;
@@ -140,7 +141,7 @@ export const registerNotifications = ( notifications ) => {
 
 			if (
 				'authentication_success' === notification &&
-				slug === 'sign-in-with-google'
+				slug === MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			) {
 				return true;
 			}

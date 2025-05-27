@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_TAGMANAGER } from './constants';
+import { MODULES_TAGMANAGER, MODULE_SLUG_TAGMANAGER } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
-let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
+let baseModuleStore = Modules.createModuleStore( MODULE_SLUG_TAGMANAGER, {
 	ownedSettingsSlugs: [
 		'accountID',
 		'ampContainerID',

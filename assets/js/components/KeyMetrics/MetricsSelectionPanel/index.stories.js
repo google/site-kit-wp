@@ -36,6 +36,8 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import MetricsSelectionPanel from './';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../modules/adsense/datastore/constants';
 
 function Template( { viewContext } ) {
 	return (
@@ -74,7 +76,7 @@ export default {
 						connected: true,
 					},
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},
@@ -87,9 +89,9 @@ export default {
 							...acc,
 							[ widget ]: {
 								modules: [
-									'search-console',
+									MODULE_SLUG_SEARCH_CONSOLE,
 									'analytics-4',
-									'adsense',
+									MODULE_SLUG_ADSENSE,
 								],
 							},
 						} ),

@@ -30,7 +30,10 @@ import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
-import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from './datastore/constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import {
 	CORE_USER,
@@ -40,7 +43,7 @@ import {
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'search-console', {
+	modules.registerModule( MODULE_SLUG_SEARCH_CONSOLE, {
 		storeName: MODULES_SEARCH_CONSOLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -56,7 +59,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
+			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 		},
 		[
 			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -72,7 +75,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
+			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -90,7 +93,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'search-console' ],
+			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS

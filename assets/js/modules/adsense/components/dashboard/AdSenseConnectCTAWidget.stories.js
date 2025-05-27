@@ -32,6 +32,7 @@ import {
 	useBreakpoint,
 	BREAKPOINT_SMALL,
 } from '../../../../hooks/useBreakpoint';
+import { MODULE_SLUG_ADSENSE } from '../../../adsense/datastore/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adSenseConnectCTA'
@@ -53,7 +54,7 @@ ReadyNotConnected.decorators = [
 				{
 					active: true,
 					connected: false,
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 				},
 			] );
 		};
@@ -76,7 +77,7 @@ export default {
 					{
 						active: false,
 						connected: false,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 			};

@@ -28,7 +28,7 @@ import { getQueryArg } from '@wordpress/url';
 import AdsIcon from '../../../svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
-import { MODULES_ADS } from './datastore/constants';
+import { MODULES_ADS, MODULE_SLUG_ADS } from './datastore/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
@@ -55,7 +55,7 @@ import { PRIORITY } from '../../googlesitekit/notifications/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'ads', {
+	modules.registerModule( MODULE_SLUG_ADS, {
 		storeName: MODULES_ADS,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -108,7 +108,10 @@ export const ADS_NOTIFICATIONS = {
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 
-			if ( 'authentication_success' === notification && slug === 'ads' ) {
+			if (
+				'authentication_success' === notification &&
+				slug === MODULE_SLUG_ADS
+			) {
 				return true;
 			}
 
@@ -141,7 +144,9 @@ export const ADS_NOTIFICATIONS = {
 			// on the data being resolved in getModuleData() selector.
 			const [ , isModuleConnected ] = await Promise.all( [
 				resolveSelect( MODULES_ADS ).getModuleData(),
-				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					MODULE_SLUG_ADS
+				),
 			] );
 
 			const {
@@ -176,15 +181,19 @@ export const ADS_NOTIFICATIONS = {
 				// isGoogleForWooCommerceLinked is relying
 				// on the data being resolved in getModuleData() selector.
 				resolveSelect( MODULES_ADS ).getModuleData(),
-				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
-				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					MODULE_SLUG_ADS
+				),
+				resolveSelect( CORE_MODULES ).canActivateModule(
+					MODULE_SLUG_ADS
+				),
 			] );
 
 			const { isModuleConnected } = select( CORE_MODULES );
 			const { isPromptDismissed } = select( CORE_USER );
 			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
-			const isAdsConnected = isModuleConnected( 'ads' );
+			const isAdsConnected = isModuleConnected( MODULE_SLUG_ADS );
 			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
 
 			return (

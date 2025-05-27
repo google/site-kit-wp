@@ -31,6 +31,7 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
 import Notifications from './Notifications';
 
 export default function BannerNotifications() {
@@ -40,7 +41,7 @@ export default function BannerNotifications() {
 		select( CORE_USER ).isAuthenticated()
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'adsense' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
 	);
 
 	if ( viewOnly ) {

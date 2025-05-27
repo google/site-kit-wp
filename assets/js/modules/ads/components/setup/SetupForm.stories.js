@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS } from '../../datastore/constants';
+import { MODULES_ADS, MODULE_SLUG_ADS } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
@@ -52,7 +52,7 @@ AdBlocker.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -68,7 +68,7 @@ Empty.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -88,7 +88,7 @@ Invalid.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -113,7 +113,7 @@ Initial.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -133,7 +133,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},

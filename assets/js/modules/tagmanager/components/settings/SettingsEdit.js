@@ -22,7 +22,11 @@
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	MODULE_SLUG_TAGMANAGER,
+	ACCOUNT_CREATE,
+} from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate } from '../common';
 import SettingsForm from './SettingsForm';
@@ -45,7 +49,9 @@ export default function SettingsEdit() {
 	);
 
 	const hasTagManagerAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'tagmanager' )
+		select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+			MODULE_SLUG_TAGMANAGER
+		)
 	);
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;

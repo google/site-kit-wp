@@ -27,6 +27,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { getDateString } from '../../util';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
@@ -79,7 +80,7 @@ Default.args = {
 				connected: true,
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},

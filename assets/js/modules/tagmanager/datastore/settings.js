@@ -38,6 +38,7 @@ import {
 } from '../util';
 import {
 	MODULES_TAGMANAGER,
+	MODULE_SLUG_TAGMANAGER,
 	CONTAINER_CREATE,
 	CONTEXT_WEB,
 	CONTEXT_AMP,
@@ -150,7 +151,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await invalidateCache( 'modules', 'tagmanager' );
+	await invalidateCache( 'modules', MODULE_SLUG_TAGMANAGER );
 
 	return {};
 }

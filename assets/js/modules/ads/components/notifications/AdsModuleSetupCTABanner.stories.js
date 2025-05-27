@@ -26,6 +26,7 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from '../../datastore/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -62,7 +63,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: false,
 					},
 				] );

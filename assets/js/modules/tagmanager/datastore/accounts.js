@@ -32,7 +32,11 @@ import {
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
+import {
+	MODULES_TAGMANAGER,
+	MODULE_SLUG_TAGMANAGER,
+	CONTAINER_CREATE,
+} from './constants';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics-4/datastore/constants';
@@ -43,7 +47,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
 	controlCallback: () =>
-		get( 'modules', 'tagmanager', 'accounts', null, {
+		get( 'modules', MODULE_SLUG_TAGMANAGER, 'accounts', null, {
 			useCache: false,
 		} ),
 	reducerCallback: ( state, accounts ) => {

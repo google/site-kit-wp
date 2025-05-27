@@ -39,7 +39,10 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
+} from '../../datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -318,6 +321,6 @@ DashboardTopEarningPagesWidgetGA4.propTypes = {
 };
 
 export default compose(
-	whenActive( { moduleName: 'adsense' } ),
+	whenActive( { moduleName: MODULE_SLUG_ADSENSE } ),
 	whenActive( { moduleName: 'analytics-4' } )
 )( DashboardTopEarningPagesWidgetGA4 );

@@ -29,7 +29,10 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const defaultSettings = {
@@ -264,7 +267,7 @@ export default {
 
 			provideModules( registry, [
 				{
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 					storeName: MODULES_ADSENSE,
 					active: true,
 					connected: true,

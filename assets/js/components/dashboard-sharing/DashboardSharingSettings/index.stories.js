@@ -28,7 +28,11 @@ import {
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import DashboardSharingSettings from './index';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Dialog, DialogContent } from '../../../material-components';
@@ -69,7 +73,7 @@ SingleAdminWithOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -95,7 +99,7 @@ SingleAdminWithNonOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -146,7 +150,7 @@ MultiAdminsWithOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -180,7 +184,7 @@ MultiAdminsWithNonOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -223,7 +227,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 				},
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -239,9 +243,9 @@ MultiAdminsWithSharedOwnershipModules.args = {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveSharedOwnershipModules( [
-				'search-console',
+				MODULE_SLUG_SEARCH_CONSOLE,
 				'analytics-4',
-				'adsense',
+				MODULE_SLUG_ADSENSE,
 				'pagespeed-insights',
 			] );
 

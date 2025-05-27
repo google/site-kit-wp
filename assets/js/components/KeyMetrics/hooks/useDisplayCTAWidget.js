@@ -24,7 +24,10 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from '../../../modules/search-console/datastore/constants';
 
 /**
  * Determines whether the CTA widget should be displayed.
@@ -50,7 +53,7 @@ export default function useDisplayCTAWidget() {
 
 		const searchConsoleDataAvailableOnLoad = isModuleDataAvailableOnLoad(
 			select,
-			'search-console',
+			MODULE_SLUG_SEARCH_CONSOLE,
 			MODULES_SEARCH_CONSOLE
 		);
 		const analyticsDataAvailableOnLoad = isModuleDataAvailableOnLoad(

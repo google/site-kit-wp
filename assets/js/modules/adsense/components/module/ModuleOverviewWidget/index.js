@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -205,5 +206,5 @@ ModuleOverviewWidget.metrics = {
 };
 
 export default whenActive( {
-	moduleName: 'adsense',
+	moduleName: MODULE_SLUG_ADSENSE,
 } )( ModuleOverviewWidget );

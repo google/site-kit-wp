@@ -21,6 +21,7 @@
  */
 import {
 	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 } from '../../datastore/constants';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
@@ -51,7 +52,7 @@ export default {
 			provideSiteInfo( registry );
 			provideModules( registry, [
 				{
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 					active: true,
 					connected: true,
 				},

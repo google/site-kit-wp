@@ -34,6 +34,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'adminBarImpressions';
@@ -68,7 +69,9 @@ export default function AdminBarWidgets() {
 		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
 	);
 	const canViewSharedSearchConsole = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'search-console' )
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_SEARCH_CONSOLE
+		)
 	);
 
 	const searchConsoleSize = canViewSharedAnalytics

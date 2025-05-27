@@ -38,7 +38,10 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
+} from '../../datastore/constants';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -224,7 +227,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},

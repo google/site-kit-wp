@@ -38,6 +38,7 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
@@ -66,7 +67,7 @@ function Template() {
 const commonModuleCapabilities = {
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'search-console'
+		MODULE_SLUG_SEARCH_CONSOLE
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
@@ -123,7 +124,7 @@ export default {
 			provideSiteConnection( registry );
 			provideModules( registry, [
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					owner: {
 						id: '1',
 						login: 'Admin 1',

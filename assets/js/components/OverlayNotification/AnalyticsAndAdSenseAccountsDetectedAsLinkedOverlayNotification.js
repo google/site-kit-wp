@@ -38,7 +38,10 @@ import { useBreakpoint } from '../../hooks/useBreakpoint';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import {
+	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
+} from '../../modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -84,7 +87,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
-		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
+		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
 	} );
 
 	const canViewSharedAnalytics = useSelect( ( select ) => {
@@ -97,7 +100,9 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		if ( ! isMainDashboard || isDismissed ) {
 			return null;
 		}
-		return select( CORE_USER ).hasAccessToShareableModule( 'adsense' );
+		return select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ADSENSE
+		);
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
@@ -256,5 +261,5 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 export default compose(
 	whenActive( { moduleName: 'analytics-4' } ),
-	whenActive( { moduleName: 'adsense' } )
+	whenActive( { moduleName: MODULE_SLUG_ADSENSE } )
 )( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );

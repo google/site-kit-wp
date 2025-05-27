@@ -46,6 +46,7 @@ import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
 } from './datastore/constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
@@ -61,7 +62,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'adsense', {
+	modules.registerModule( MODULE_SLUG_ADSENSE, {
 		storeName: MODULES_ADSENSE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -112,7 +113,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -127,7 +128,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, 'analytics-4' ],
 			isActive: ( select ) => {
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
@@ -159,7 +160,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -171,7 +172,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -183,7 +184,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -196,7 +197,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, 'analytics-4' ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -216,7 +217,7 @@ export const ADSENSE_NOTIFICATIONS = {
 			}
 
 			const { isModuleConnected } = resolveSelect( CORE_MODULES );
-			if ( ! ( await isModuleConnected( 'adsense' ) ) ) {
+			if ( ! ( await isModuleConnected( MODULE_SLUG_ADSENSE ) ) ) {
 				return false;
 			}
 

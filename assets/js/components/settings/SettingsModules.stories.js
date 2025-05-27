@@ -26,6 +26,12 @@ import { MemoryRouter } from 'react-router-dom';
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADS } from '../../modules/ads/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../modules/sign-in-with-google/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -49,12 +55,12 @@ ConnectedServices.args = {
 		provideModules(
 			registry,
 			[
-				'ads',
-				'adsense',
-				'analytics-4',
-				'pagespeed-insights',
-				'search-console',
-				'sign-in-with-google',
+				MODULE_SLUG_ADS,
+				MODULE_SLUG_ADSENSE,
+				MODULE_SLUG_ANALYTICS_4,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 			].map( ( slug ) => ( {
 				slug,
 				active: true,
@@ -71,16 +77,19 @@ ConnectMoreServices.args = {
 	setupRegistry: async ( registry ) => {
 		provideModules(
 			registry,
-			[ 'ads', 'adsense', 'pagespeed-insights', 'search-console' ].map(
-				( slug ) => ( {
-					slug,
-					active: true,
-					connected: true,
-				} )
-			)
+			[
+				MODULE_SLUG_ADS,
+				MODULE_SLUG_ADSENSE,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+				MODULE_SLUG_SEARCH_CONSOLE,
+			].map( ( slug ) => ( {
+				slug,
+				active: true,
+				connected: true,
+			} ) )
 		);
 		provideModuleRegistrations( registry );
-		registry.select( CORE_MODULES ).getModule( 'adsense' );
+		registry.select( CORE_MODULES ).getModule( MODULE_SLUG_ADSENSE );
 		await untilResolved( registry, CORE_MODULES ).getModules();
 	},
 	route: '/connect-more-services',

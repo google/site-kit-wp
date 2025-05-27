@@ -25,7 +25,10 @@ import {
 	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	MODULE_SLUG_ADSENSE,
+} from '../../../datastore/constants';
 import * as fixtures from '../../../datastore/__fixtures__';
 
 function Template() {
@@ -45,7 +48,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 				provideSiteInfo( registry );

@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_ADSENSE } from './constants';
+import { MODULES_ADSENSE, MODULE_SLUG_ADSENSE } from './constants';
 import { validateCanSubmitChanges } from './settings';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
-const baseModuleStore = Modules.createModuleStore( 'adsense', {
+const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ADSENSE, {
 	ownedSettingsSlugs: [ 'accountID', 'clientID' ],
 	storeName: MODULES_ADSENSE,
 	settingSlugs: [

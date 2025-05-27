@@ -23,8 +23,14 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../modules/ads/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULES_ADS,
+	MODULE_SLUG_ADS,
+} from '../../modules/ads/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 import { freezeFetch, provideModules } from '../../../../tests/js/utils';
@@ -52,12 +58,12 @@ WithAdsConnected.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 			{
 				active: true,
 				connected: true,
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 			},
 		] );
 
@@ -156,12 +162,12 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 					{
 						active: false,
 						connected: false,
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 					},
 				] );
 

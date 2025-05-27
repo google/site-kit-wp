@@ -20,10 +20,13 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import {
+	MODULES_SIGN_IN_WITH_GOOGLE,
+	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
+} from './constants';
 import { validateCanSubmitChanges } from './settings';
 
-export default Modules.createModuleStore( 'sign-in-with-google', {
+export default Modules.createModuleStore( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {
 	storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 	validateCanSubmitChanges,
 	ownedSettingsSlugs: [],

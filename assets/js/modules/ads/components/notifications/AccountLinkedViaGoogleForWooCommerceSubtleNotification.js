@@ -33,7 +33,10 @@ import { useCallback, useState } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
+	MODULE_SLUG_ADS,
+} from '../../datastore/constants';
 import { MINUTE_IN_SECONDS } from '../../../../util';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
@@ -43,7 +46,7 @@ export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( 
 	Notification,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
-	const onSetupCallback = useActivateModuleCallback( 'ads' );
+	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 

@@ -26,7 +26,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
+} from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { PropertySelect } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -35,7 +38,7 @@ import Notice from '../../../../components/Notice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'search-console' )
+		select( CORE_MODULES ).getModule( MODULE_SLUG_SEARCH_CONSOLE )
 	);
 
 	const formattedOwnerName = module?.owner?.login

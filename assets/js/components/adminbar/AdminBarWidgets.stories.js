@@ -38,6 +38,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (
@@ -67,7 +68,7 @@ AnalyticsInactive.args = {
 		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},

@@ -30,7 +30,7 @@ import {
 	combineStores,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER } from './constants';
+import { MODULES_TAGMANAGER, MODULE_SLUG_TAGMANAGER } from './constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,
@@ -57,7 +57,7 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 		try {
 			return await get(
 				'modules',
-				'tagmanager',
+				MODULE_SLUG_TAGMANAGER,
 				'live-container-version',
 				{ accountID, internalContainerID },
 				{ useCache: false }

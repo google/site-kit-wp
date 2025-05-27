@@ -61,6 +61,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
 
 function SubHeaderBannerNotification() {
 	return (
@@ -228,7 +229,7 @@ HeaderViewOnly.args = {
 		provideSiteConnection( registry );
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				owner: {
 					id: '1',
 					login: 'Admin 1',
@@ -255,7 +256,7 @@ HeaderViewOnly.args = {
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,

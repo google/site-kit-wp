@@ -34,6 +34,7 @@ import { isURL } from '@wordpress/url';
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -393,14 +394,14 @@ SearchFunnelWidgetGA4.metrics = [
 		color: '#6380b8',
 		label: __( 'Impressions', 'google-site-kit' ),
 		metric: 'impressions',
-		service: 'search-console',
+		service: MODULE_SLUG_SEARCH_CONSOLE,
 	},
 	{
 		id: 'clicks',
 		color: '#4bbbbb',
 		label: __( 'Clicks', 'google-site-kit' ),
 		metric: 'clicks',
-		service: 'search-console',
+		service: MODULE_SLUG_SEARCH_CONSOLE,
 	},
 	{
 		id: 'users',

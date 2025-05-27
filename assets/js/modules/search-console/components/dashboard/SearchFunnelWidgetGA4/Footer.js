@@ -32,6 +32,7 @@ import { _x } from '@wordpress/i18n';
  */
 import {
 	MODULES_SEARCH_CONSOLE,
+	MODULE_SLUG_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -141,7 +142,7 @@ function Footer( { metrics, selectedStats } ) {
 	}
 	const { service, metric } = metrics[ selectedStats ];
 
-	if ( service === 'search-console' ) {
+	if ( service === MODULE_SLUG_SEARCH_CONSOLE ) {
 		return <SourceLinkSearch metric={ metric } />;
 	}
 

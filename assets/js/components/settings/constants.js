@@ -16,12 +16,16 @@
  * limitations under the License.
  */
 
+import { MODULE_SLUG_ADS } from '../../modules/ads/datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../modules/sign-in-with-google/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../modules/reader-revenue-manager/datastore/constants';
+
 export const NEW_MODULES = [
-	'ads',
-	'reader-revenue-manager',
-	'sign-in-with-google',
+	MODULE_SLUG_ADS,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 ];
 
-export const BETA_MODULES = [ 'sign-in-with-google' ];
+export const BETA_MODULES = [ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ];
 
 export const EXPERIMENTAL_MODULES = [];

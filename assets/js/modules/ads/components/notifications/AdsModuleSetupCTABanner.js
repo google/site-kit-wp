@@ -38,6 +38,7 @@ import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
+	MODULE_SLUG_ADS,
 } from '../../datastore/constants';
 import AdsSetupSVG from '../../../../../svg/graphics/ads-setup.svg';
 import AdsSetupTabletSVG from '../../../../../svg/graphics/ads-setup-tablet.svg';
@@ -114,7 +115,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		} );
 	}, [ setCacheItem ] );
 
-	const activateModule = useActivateModuleCallback( 'ads' );
+	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
 
 	const onSetupCallback = useCallback( () => {
 		if (

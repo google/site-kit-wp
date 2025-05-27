@@ -22,6 +22,7 @@
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '../../datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdBlockerWarningWidget from './AdBlockerWarningWidget';
 
@@ -45,7 +46,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 

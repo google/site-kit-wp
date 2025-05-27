@@ -20,12 +20,13 @@
  * Internal dependencies
  */
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import UserRoleSelect from './UserRoleSelect';
 
 const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 const sharingSettings = {
-	'search-console': {
+	[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 		sharedRoles: [ 'editor', 'administrator' ],
 		management: 'all_admins',
 	},
@@ -66,7 +67,7 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 export const DefaultUserRoleSelect = Template.bind( {} );
 DefaultUserRoleSelect.storyName = 'Default';
 DefaultUserRoleSelect.args = {
-	moduleSlug: 'search-console',
+	moduleSlug: MODULE_SLUG_SEARCH_CONSOLE,
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( CORE_MODULES )

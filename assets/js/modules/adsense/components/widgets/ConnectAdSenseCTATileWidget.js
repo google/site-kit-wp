@@ -26,9 +26,10 @@ import PropTypes from 'prop-types';
  */
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
+import { MODULE_SLUG_ADSENSE } from '../../datastore/constants';
 
 // Ensure the metadata instance is static when rerendering.
-const metadata = { moduleSlug: 'adsense' };
+const metadata = { moduleSlug: MODULE_SLUG_ADSENSE };
 
 export default function ConnectAdSenseCTATileWidget( { Widget, widgetSlug } ) {
 	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );

@@ -21,7 +21,7 @@
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ADS } from './constants';
+import { MODULES_ADS, MODULE_SLUG_ADS } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const selectors = {
@@ -42,7 +42,7 @@ const selectors = {
 			);
 		}
 
-		const module = select( CORE_MODULES ).getModule( 'ads' );
+		const module = select( CORE_MODULES ).getModule( MODULE_SLUG_ADS );
 
 		if ( module === undefined ) {
 			return undefined;

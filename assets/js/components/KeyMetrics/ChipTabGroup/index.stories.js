@@ -50,8 +50,10 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
+	MODULE_SLUG_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
 
 function Template() {
@@ -186,7 +188,10 @@ export default {
 						( acc, widget ) => ( {
 							...acc,
 							[ widget ]: {
-								modules: [ 'search-console', 'analytics-4' ],
+								modules: [
+									MODULE_SLUG_SEARCH_CONSOLE,
+									MODULE_SLUG_ANALYTICS_4,
+								],
 							},
 						} ),
 						{}

@@ -37,6 +37,7 @@ import {
 	Select,
 	TextField,
 } from 'googlesitekit-components';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { trackEvent } from '../../util';
 
 class SearchConsole extends Component {
@@ -81,7 +82,7 @@ class SearchConsole extends Component {
 			try {
 				const properties = await get(
 					'modules',
-					'search-console',
+					MODULE_SLUG_SEARCH_CONSOLE,
 					'matched-sites',
 					undefined,
 					{ useCache: false }
@@ -145,7 +146,7 @@ class SearchConsole extends Component {
 	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */
 	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
-		await set( 'modules', 'search-console', 'site', { siteURL } );
+		await set( 'modules', MODULE_SLUG_SEARCH_CONSOLE, 'site', { siteURL } );
 
 		if ( isNew ) {
 			await trackEvent( 'search_console_setup', 'add_new_sc_property' );

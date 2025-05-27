@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_ADS } from './constants';
+import { MODULES_ADS, MODULE_SLUG_ADS } from './constants';
 import {
 	submitChanges,
 	rollbackChanges,
@@ -28,7 +28,7 @@ import {
 	validateHaveSettingsChanged,
 } from './settings';
 
-const baseModuleStore = Modules.createModuleStore( 'ads', {
+const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ADS, {
 	ownedSettingsSlugs: [
 		'conversionID',
 		'paxConversionID',

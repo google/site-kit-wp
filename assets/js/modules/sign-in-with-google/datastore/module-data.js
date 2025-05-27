@@ -25,7 +25,10 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import {
+	MODULES_SIGN_IN_WITH_GOOGLE,
+	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
+} from './constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -91,7 +94,9 @@ export const reducer = createReducer( ( state, action ) => {
 export const resolvers = {
 	*getModuleData() {
 		const moduleData =
-			global._googlesitekitModulesData?.[ 'sign-in-with-google' ];
+			global._googlesitekitModulesData?.[
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+			];
 
 		if ( ! moduleData ) {
 			return;

@@ -22,6 +22,11 @@
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
+ * Internal dependencies
+ */
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
+
+/**
  * Gets a description for an insufficient permissions error.
  *
  * @since 1.16.0
@@ -65,7 +70,7 @@ export function getInsufficientPermissionsErrorDescription(
 				'google-site-kit'
 			);
 		}
-	} else if ( 'search-console' === slug ) {
+	} else if ( MODULE_SLUG_SEARCH_CONSOLE === slug ) {
 		message = __(
 			'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard.',
 			'google-site-kit'
