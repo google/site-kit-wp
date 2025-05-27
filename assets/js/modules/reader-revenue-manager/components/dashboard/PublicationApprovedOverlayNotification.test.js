@@ -162,4 +162,14 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
 	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when the onboarding is complete and the onboarding state was just changed', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+	} );
 } );
