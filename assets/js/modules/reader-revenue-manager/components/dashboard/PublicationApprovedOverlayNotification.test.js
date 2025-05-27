@@ -221,5 +221,23 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when the publication onboarding state is complete but the paymentOption is valid and the publication state is not changed', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					paymentOption: 'validPaymentOption',
+					publicationOnboardingStateChanged: false,
+				} );
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ READER_REVENUE_MANAGER_MODULE_SLUG }`;
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
