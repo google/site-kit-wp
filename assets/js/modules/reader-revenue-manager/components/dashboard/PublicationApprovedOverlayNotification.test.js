@@ -262,5 +262,22 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when the publication onboarding state is complete, the paymentOption is valid but the success notification is not showing', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					paymentOption: 'validPaymentOption',
+					publicationOnboardingStateChanged: false,
+				} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
