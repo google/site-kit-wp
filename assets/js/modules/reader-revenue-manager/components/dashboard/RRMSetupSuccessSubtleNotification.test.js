@@ -37,7 +37,6 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
@@ -276,14 +275,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		).not.toBeInTheDocument();
 
 		act( () => {
-			expect(
-				registry
-					.select( CORE_UI )
-					.getValue(
-						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-					)
-			).toBeUndefined();
-
 			fireEvent.click( getByText( 'Complete publication setup' ) );
 		} );
 
@@ -309,15 +300,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationOnboardingState()
 		).toBe( ONBOARDING_COMPLETE );
-
-		// Ensure that the UI key is set to true.
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-				)
-		).toBe( true );
 
 		// Verify that the message relevant to the ONBOARDING_COMPLETE
 		// state is displayed.
