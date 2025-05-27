@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -143,3 +148,8 @@ export default function RRMIntroductoryOverlayNotification( {
 		</Notification>
 	);
 }
+
+RRMIntroductoryOverlayNotification.propTypes = {
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
+};
