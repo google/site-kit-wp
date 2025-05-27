@@ -27,7 +27,10 @@ import {
 } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import DashboardSharingSettings from './index';
-import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import {
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
+	MODULES_PAGESPEED_INSIGHTS,
+} from '../../../modules/pagespeed-insights/datastore/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	MODULE_SLUG_SEARCH_CONSOLE,
@@ -110,7 +113,7 @@ SingleAdminWithNonOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -195,7 +198,7 @@ MultiAdminsWithNonOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -249,7 +252,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 				MODULE_SLUG_SEARCH_CONSOLE,
 				MODULE_SLUG_ANALYTICS_4,
 				MODULE_SLUG_ADSENSE,
-				'pagespeed-insights',
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
 			] );
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -278,7 +281,9 @@ export default {
 					.receiveShareableRoles( roles );
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+					.receiveSharedOwnershipModules( [
+						MODULE_SLUG_PAGESPEED_INSIGHTS,
+					] );
 
 				provideModules( registry, modules );
 				provideModuleRegistrations( registry );

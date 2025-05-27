@@ -29,6 +29,7 @@ import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -356,7 +357,7 @@ describe( 'core/user authentication', () => {
 
 				expect( viewableModules ).toEqual( [
 					'search-console',
-					'pagespeed-insights',
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
 				] );
 			} );
 		} );

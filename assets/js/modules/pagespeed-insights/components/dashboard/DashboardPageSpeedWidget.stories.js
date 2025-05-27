@@ -29,6 +29,7 @@ import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
 } from '../../datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardPageSpeedWidget from './DashboardPageSpeedWidget';
@@ -289,7 +290,7 @@ export default {
 				} );
 				provideModules( registry, [
 					{
-						slug: 'pagespeed-insights',
+						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 						active: true,
 						connected: true,
 					},

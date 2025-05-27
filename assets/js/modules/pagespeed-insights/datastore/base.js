@@ -20,12 +20,18 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+import {
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
+	MODULES_PAGESPEED_INSIGHTS,
+} from './constants';
 
-const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
-	storeName: MODULES_PAGESPEED_INSIGHTS,
-	requiresSetup: false,
-	settingSlugs: [ 'ownerID' ],
-} );
+const baseModuleStore = Modules.createModuleStore(
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
+	{
+		storeName: MODULES_PAGESPEED_INSIGHTS,
+		requiresSetup: false,
+		settingSlugs: [ 'ownerID' ],
+	}
+);
 
 export default baseModuleStore;

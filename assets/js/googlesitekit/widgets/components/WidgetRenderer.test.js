@@ -30,6 +30,7 @@ import {
 	provideModules,
 	render,
 } from '../../../../../tests/js/test-utils';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'WidgetRenderer', () => {
 	let registry;
@@ -64,7 +65,7 @@ describe( 'WidgetRenderer', () => {
 			Component,
 			wrapWidget,
 			isPreloaded: () => preloadWidget,
-			modules: [ 'search-console', 'pagespeed-insights' ],
+			modules: [ 'search-console', MODULE_SLUG_PAGESPEED_INSIGHTS ],
 		} );
 		registry
 			.dispatch( CORE_WIDGETS )
@@ -165,7 +166,10 @@ describe( 'WidgetRenderer', () => {
 
 	it( 'should output the recoverable modules component when the widget depends on multiple recoverable modules in view-only mode', async () => {
 		setupRegistry( {
-			recoverableModules: [ 'search-console', 'pagespeed-insights' ],
+			recoverableModules: [
+				'search-console',
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+			],
 		} );
 
 		const { getByText, waitForRegistry } = render(

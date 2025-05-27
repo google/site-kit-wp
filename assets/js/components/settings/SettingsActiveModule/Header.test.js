@@ -40,6 +40,7 @@ import {
 	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -67,7 +68,7 @@ describe( 'Header', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				active: true,
 				connected: true,
 			},

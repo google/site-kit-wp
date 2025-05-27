@@ -27,6 +27,7 @@ import {
 } from '../../../tests/js/utils';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { enabledFeatures } from '../features';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/datastore/constants';
 
 describe( 'Module Features', () => {
 	let registry;
@@ -63,7 +64,7 @@ describe( 'Module Features', () => {
 			],
 		],
 		[
-			'pagespeed-insights',
+			MODULE_SLUG_PAGESPEED_INSIGHTS,
 			[
 				'Website performance reports for mobile and desktop will be disabled',
 			],

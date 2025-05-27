@@ -63,6 +63,7 @@ import {
 } from '../googlesitekit/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../modules/pagespeed-insights/datastore/constants';
 
 function SubHeaderBannerNotification() {
 	return (
@@ -237,7 +238,7 @@ HeaderViewOnly.args = {
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				owner: {
 					id: '2',
 					login: 'Admin 2',
@@ -261,7 +262,7 @@ HeaderViewOnly.args = {
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'pagespeed-insights'
+				MODULE_SLUG_PAGESPEED_INSIGHTS
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,

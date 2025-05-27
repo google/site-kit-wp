@@ -35,13 +35,16 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+import {
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
+	MODULES_PAGESPEED_INSIGHTS,
+} from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { strategy, url } ) => {
-		return get( 'modules', 'pagespeed-insights', 'pagespeed', {
+		return get( 'modules', MODULE_SLUG_PAGESPEED_INSIGHTS, 'pagespeed', {
 			strategy,
 			url,
 		} );

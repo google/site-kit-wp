@@ -32,7 +32,10 @@ import {
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
-import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
+import {
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
+	MODULES_PAGESPEED_INSIGHTS,
+} from './datastore/constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';
@@ -40,7 +43,7 @@ import SetupSuccessNotification from './components/notifications/SetupSuccessNot
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'pagespeed-insights', {
+	modules.registerModule( MODULE_SLUG_PAGESPEED_INSIGHTS, {
 		storeName: MODULES_PAGESPEED_INSIGHTS,
 		SettingsViewComponent: SettingsView,
 		Icon: PageSpeedInsightsIcon,
@@ -61,7 +64,7 @@ export const registerWidgets = ( widgets ) => {
 			Component: DashboardPageSpeedWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			wrapWidget: false,
-			modules: [ 'pagespeed-insights' ],
+			modules: [ MODULE_SLUG_PAGESPEED_INSIGHTS ],
 		},
 		[
 			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
@@ -81,7 +84,7 @@ export const NOTIFICATIONS = {
 
 			if (
 				'authentication_success' === notification &&
-				slug === 'pagespeed-insights'
+				slug === MODULE_SLUG_PAGESPEED_INSIGHTS
 			) {
 				return true;
 			}

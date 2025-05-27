@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
@@ -106,7 +107,7 @@ describe( 'Dashboard Navigation', () => {
 				shareable: true,
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				name: 'PageSpeed Insights',
 				shareable: true,
 			},
@@ -144,7 +145,7 @@ describe( 'Dashboard Navigation', () => {
 				shareable: true,
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				name: 'PageSpeed Insights',
 				shareable: true,
 			},
@@ -179,7 +180,7 @@ describe( 'Dashboard Navigation', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				name: 'PageSpeed Insights',
 				shareable: true,
 			},

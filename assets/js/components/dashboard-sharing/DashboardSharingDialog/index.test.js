@@ -46,6 +46,7 @@ import {
 } from './../DashboardSharingSettings/__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'DashboardSharingDialog', () => {
 	let registry;
@@ -66,7 +67,9 @@ describe( 'DashboardSharingDialog', () => {
 		registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+			.receiveSharedOwnershipModules( [
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+			] );
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,

@@ -34,6 +34,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { sharingSettings, modules, roles } from './__fixtures__';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'DashboardSharingSettings', () => {
 	let registry;
@@ -57,7 +58,9 @@ describe( 'DashboardSharingSettings', () => {
 			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 			registry
 				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+				.receiveSharedOwnershipModules( [
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
+				] );
 
 			registry.dispatch( CORE_USER ).receiveCapabilities( {
 				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
@@ -92,7 +95,9 @@ describe( 'DashboardSharingSettings', () => {
 			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 			registry
 				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+				.receiveSharedOwnershipModules( [
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
+				] );
 
 			registry.dispatch( CORE_USER ).receiveCapabilities( {
 				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
@@ -131,7 +136,9 @@ describe( 'DashboardSharingSettings', () => {
 			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 			registry
 				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+				.receiveSharedOwnershipModules( [
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
+				] );
 
 			registry.dispatch( CORE_USER ).receiveCapabilities( {
 				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
@@ -175,7 +182,9 @@ describe( 'DashboardSharingSettings', () => {
 			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 			registry
 				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+				.receiveSharedOwnershipModules( [
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
+				] );
 
 			registry.dispatch( CORE_USER ).receiveCapabilities( {
 				'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
@@ -216,7 +225,9 @@ describe( 'DashboardSharingSettings', () => {
 			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 			registry
 				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+				.receiveSharedOwnershipModules( [
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
+				] );
 
 			registry.dispatch( CORE_USER ).receiveCapabilities( {
 				'googlesitekit_delegate_module_sharing_management::["search-console"]': true,

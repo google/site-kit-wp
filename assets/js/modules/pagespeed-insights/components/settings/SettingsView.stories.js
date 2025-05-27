@@ -26,6 +26,7 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 
 function Template() {
 	return (
@@ -55,7 +56,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'pagespeed-insights',
+						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 						active: true,
 						connected: true,
 					},

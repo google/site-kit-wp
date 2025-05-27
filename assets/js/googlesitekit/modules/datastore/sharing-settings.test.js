@@ -27,7 +27,10 @@ import {
 	provideModules,
 } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
-import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import {
+	MODULE_SLUG_PAGESPEED_INSIGHTS,
+	MODULES_PAGESPEED_INSIGHTS,
+} from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -40,7 +43,7 @@ describe( 'core/modules sharing-settings', () => {
 			sharedRoles: [ 'editor' ],
 			management: 'owner',
 		},
-		'pagespeed-insights': {
+		[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
 			sharedRoles: [ 'editor' ],
 			management: 'all_admins',
 		},
@@ -72,7 +75,7 @@ describe( 'core/modules sharing-settings', () => {
 		roles: shareableRoles,
 	};
 	const defaultSharedOwnershipModuleSettings = {
-		'pagespeed-insights': {
+		[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
 			sharedRoles: [],
 			management: 'all_admins',
 		},
@@ -104,7 +107,7 @@ describe( 'core/modules sharing-settings', () => {
 				'analytics-4': {
 					sharedRoles: [ 'editor' ],
 				},
-				'pagespeed-insights': {
+				[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
 					sharedRoles: [ 'editor' ],
 				},
 			};
@@ -153,7 +156,7 @@ describe( 'core/modules sharing-settings', () => {
 				'analytics-4': {
 					management: 'owner',
 				},
-				'pagespeed-insights': {
+				[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
 					management: 'all_admins',
 				},
 			};
@@ -204,7 +207,7 @@ describe( 'core/modules sharing-settings', () => {
 					'should',
 					{
 						'search-console': 2,
-						'pagespeed-insights': 2,
+						[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: 2,
 					},
 					2,
 				],

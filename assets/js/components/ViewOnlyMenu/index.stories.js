@@ -43,6 +43,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/con
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
 
 function Template() {
 	return (
@@ -72,7 +73,7 @@ const commonModuleCapabilities = {
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'pagespeed-insights'
+		MODULE_SLUG_PAGESPEED_INSIGHTS
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
@@ -132,7 +133,7 @@ export default {
 					},
 				},
 				{
-					slug: 'pagespeed-insights',
+					slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 					owner: {
 						id: '2',
 						login: 'Admin 2',

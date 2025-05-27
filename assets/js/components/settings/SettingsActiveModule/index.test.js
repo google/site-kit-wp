@@ -37,6 +37,7 @@ import {
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'SettingsModule', () => {
 	function SettingsModuleWithWrapper( { slug = 'analytics-4' } ) {
@@ -77,7 +78,7 @@ describe( 'SettingsModule', () => {
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				active: true,
 				connected: true,
 				SettingsViewComponent() {
