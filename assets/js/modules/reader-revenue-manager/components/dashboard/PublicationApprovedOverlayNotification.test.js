@@ -76,14 +76,6 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		] );
 
 		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationID: '12345',
-				publicationOnboardingState: 'ONBOARDING_COMPLETE',
-				publicationOnboardingStateChanged: true,
-			} );
-
-		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
 				RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
@@ -101,6 +93,12 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	} );
 
 	it( 'should render the component with correct title and description', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: '12345',
+			} );
+
 		const { getByText, waitForRegistry } = render(
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
 				<PublicationApprovedOverlayNotificationComponent />
@@ -133,6 +131,11 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	} );
 
 	it( 'should get dismissed when "Enable features" CTA is clicked', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: '12345',
+			} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.postOnce( dismissItemsEndpoint, {
@@ -168,6 +171,14 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'is active when the onboarding is complete and the onboarding state was just changed', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					publicationOnboardingStateChanged: true,
+				} );
+
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD
