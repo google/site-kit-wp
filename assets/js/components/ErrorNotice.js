@@ -72,21 +72,23 @@ export default function ErrorNotice( {
 	const shouldDisplayRetry =
 		hasButton && isErrorRetryable( error, selectorData );
 
+	let finalMessage = message;
+
 	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton && ! skipRetryMessage ) {
-		message = sprintf(
+		finalMessage = sprintf(
 			/* translators: %1$s: Error message from Google API. */
 			__( '%1$s%2$s Please try again.', 'google-site-kit' ),
-			message,
-			message.endsWith( '.' ) ? '' : '.'
+			finalMessage,
+			finalMessage.endsWith( '.' ) ? '' : '.'
 		);
 	}
 
 	if ( ! noPrefix ) {
-		message = sprintf(
+		finalMessage = sprintf(
 			/* translators: $%s: Error message */
 			__( 'Error: %s', 'google-site-kit' ),
-			message
+			finalMessage
 		);
 	}
 
@@ -96,17 +98,15 @@ export default function ErrorNotice( {
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
 		hasReconnectLink = true;
-		message =
-			message +
-			' ' +
-			sprintf(
-				/* translators: $%s: Reconnect URL */
-				__(
-					'To fix this, <a href="%s">redo the plugin setup</a>.',
-					'google-site-kit'
-				),
-				reconnectURL
-			);
+		finalMessage = sprintf(
+			/* translators: %1$s: Original error message, %2$s: Reconnect URL */
+			__(
+				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
+				'google-site-kit'
+			),
+			finalMessage,
+			reconnectURL
+		);
 	}
 
 	const sanitizeArgs = {
@@ -122,22 +122,22 @@ export default function ErrorNotice( {
 				hasReconnectLink ? (
 					<span
 						dangerouslySetInnerHTML={ sanitizeHTML(
-							message,
+							finalMessage,
 							sanitizeArgs
 						) }
 					/>
 				) : (
-					message
+					finalMessage
 				)
 			}
-			{ ...( shouldDisplayRetry
-				? {
-						ctaButton: {
+			ctaButton={
+				shouldDisplayRetry
+					? {
 							label: __( 'Retry', 'google-site-kit' ),
 							onClick: handleRetry,
-						},
-				  }
-				: null ) }
+					  }
+					: undefined
+			}
 			hideIcon={ hideIcon }
 		/>
 	);

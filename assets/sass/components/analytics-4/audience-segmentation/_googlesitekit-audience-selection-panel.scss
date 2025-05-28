@@ -50,6 +50,11 @@
 
 			.googlesitekit-notice__content {
 				width: 100%;
+
+				@media (max-width: $bp-tablet) {
+					width: 150%;
+				}
+
 				p {
 					margin: 0;
 				}

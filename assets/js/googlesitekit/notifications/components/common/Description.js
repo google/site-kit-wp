@@ -28,7 +28,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { sanitizeHTML } from '../../../../util';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function Description( {
 	className = 'googlesitekit-publisher-win__desc',

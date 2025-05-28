@@ -119,17 +119,19 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const description = (
 		<Fragment>
-			{ uniqueErrors.map( ( err ) => {
-				const reconnectURL = err?.data?.reconnectURL;
+			{ uniqueErrors.map( ( errorForNotice ) => {
+				const reconnectURL = errorForNotice?.data?.reconnectURL;
 				return reconnectURL ? (
 					<ErrorNotice
-						key={ err.message }
-						error={ err }
-						message={ err.message }
+						key={ errorForNotice.message }
+						error={ errorForNotice }
+						message={ errorForNotice.message }
 					/>
 				) : (
-					<p key={ err.message }>
-						{ purify.sanitize( err.message, { ALLOWED_TAGS: [] } ) }
+					<p key={ errorForNotice.message }>
+						{ purify.sanitize( errorForNotice.message, {
+							ALLOWED_TAGS: [],
+						} ) }
 					</p>
 				);
 			} ) }
