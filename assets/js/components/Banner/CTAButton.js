@@ -45,6 +45,6 @@ export default function CTAButton( { label, disabled, onClick, href } ) {
 CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
 	disabled: PropTypes.bool,
-	onClick: PropTypes.func.isRequired,
+	onClick: PropTypes.func,
 	href: PropTypes.string,
 };

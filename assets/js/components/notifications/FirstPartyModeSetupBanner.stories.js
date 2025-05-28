@@ -61,8 +61,8 @@ ErrorOnCTAClick.args = {
 				message: 'Test Error',
 				data: {},
 			},
-			'notificationAction',
-			[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]
+			'saveFirstPartyModeSettings',
+			[ {} ]
 		);
 	},
 };

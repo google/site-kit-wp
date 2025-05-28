@@ -35,11 +35,13 @@ import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
+import Notice from '../Notice';
 
 export default function Banner( {
 	className,
 	title,
 	description,
+	errorText,
 	helpText,
 	learnMoreLink,
 	dismissButton,
@@ -69,6 +71,10 @@ export default function Banner( {
 
 				{ helpText && <HelpText>{ helpText }</HelpText> }
 
+				{ errorText && (
+					<Notice type="error" description={ errorText } />
+				) }
+
 				<div className="googlesitekit-notice__action">
 					<CTAButton { ...ctaButton } />
 					<DismissButton { ...dismissButton } />
@@ -91,6 +97,7 @@ export default function Banner( {
 Banner.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
