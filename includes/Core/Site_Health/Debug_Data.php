@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
@@ -631,7 +632,7 @@ class Debug_Data {
 		$active_providers    = $conversion_tracking->get_active_providers();
 
 		foreach ( $active_providers as $active_provider_slug => $active_provider ) {
-			$value[ $active_provider_slug ] = implode( ', ', $active_provider->get_event_names() );
+			$value[ $active_provider_slug ] = $active_provider->get_debug_data();
 		}
 
 		return array(
