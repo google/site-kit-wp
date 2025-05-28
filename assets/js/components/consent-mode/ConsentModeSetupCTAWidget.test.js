@@ -82,36 +82,6 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'is not active when notification is dismissed using prompts', async () => {
-			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-				[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
-					expires: 0,
-					count: 1,
-				},
-			} );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'is not active when widget is being dismissed using prompts', async () => {
-			registry
-				.dispatch( CORE_USER )
-				.setIsPromptDimissing(
-					CONSENT_MODE_SETUP_CTA_WIDGET_SLUG,
-					true
-				);
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-			expect( isActive ).toBe( false );
-		} );
-
 		it( 'is active when consent mode is not enabled and ads is connected', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetConsentModeSettings( {
 				enabled: false,

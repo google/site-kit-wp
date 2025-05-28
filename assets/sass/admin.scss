@@ -66,9 +66,6 @@
 @import "vendor/mdc-text-field";
 @import "vendor/mui-circular-progress";
 
-// GM3 Components
-@import "components-gm3";
-
 /*
  * Top-level Cascade Items
  */
@@ -146,7 +143,6 @@
 @import "components/global/googlesitekit-use-snippet-switch";
 @import "components/global/googlesitekit-user-menu";
 @import "components/global/googlesitekit-view-only-menu";
-@import "components/global/googlesitekit-warning-notice";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -225,6 +221,12 @@
 
 // Overlay Notification
 @import "components/overlay-notification/googlesitekit-overlay-notification";
+
+// Banner
+@import "components/banner/googlesitekit-banner";
+
+// Notice
+@import "components/notice/googlesitekit-notice";
 
 // Overlay Card
 @import "components/overlay-card/googlesitekit-overlay-card";

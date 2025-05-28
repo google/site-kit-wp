@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 function getModuleDataProperty( propName ) {
@@ -70,28 +70,23 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { payload, type } ) => {
-	switch ( type ) {
+export const reducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RECEIVE_MODULE_DATA: {
 			const { isWooCommerceActive, isWooCommerceRegistrationEnabled } =
-				payload;
+				action.payload;
 
-			const moduleData = {
+			state.moduleData = {
 				isWooCommerceActive,
 				isWooCommerceRegistrationEnabled,
 			};
-
-			return {
-				...state,
-				moduleData,
-			};
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {
 	*getModuleData() {

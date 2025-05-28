@@ -23,7 +23,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -51,7 +51,7 @@ const settingsReducerCallback = createReducer( ( state, settings ) => {
 const fetchGetConsentModeSettingsStore = createFetchStore( {
 	baseName: 'getConsentModeSettings',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'consent-mode', null, {
+		return get( 'core', 'site', 'consent-mode', null, {
 			useCache: false,
 		} );
 	},
@@ -61,7 +61,7 @@ const fetchGetConsentModeSettingsStore = createFetchStore( {
 const fetchSaveConsentModeSettingsStore = createFetchStore( {
 	baseName: 'saveConsentModeSettings',
 	controlCallback: ( { settings } ) => {
-		return API.set( 'core', 'site', 'consent-mode', { settings } );
+		return set( 'core', 'site', 'consent-mode', { settings } );
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
@@ -78,7 +78,7 @@ const fetchSaveConsentModeSettingsStore = createFetchStore( {
 const fetchGetConsentAPIInfoStore = createFetchStore( {
 	baseName: 'getConsentAPIInfo',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'consent-api-info', null, {
+		return get( 'core', 'site', 'consent-api-info', null, {
 			useCache: false,
 		} );
 	},
@@ -121,7 +121,7 @@ const fetchInstallActivateWPConsentAPI = createFetchStore( {
 const fetchActivateConsentAPI = createFetchStore( {
 	baseName: 'activateConsentAPI',
 	controlCallback: () => {
-		return API.set( 'core', 'site', 'consent-api-activate', null, {
+		return set( 'core', 'site', 'consent-api-activate', null, {
 			useCache: false,
 		} );
 	},
@@ -130,7 +130,7 @@ const fetchActivateConsentAPI = createFetchStore( {
 const fetchGetAdsMeasurementStatusStore = createFetchStore( {
 	baseName: 'getAdsMeasurementStatus',
 	controlCallback: ( { useCache } ) => {
-		return API.get( 'core', 'site', 'ads-measurement-status', null, {
+		return get( 'core', 'site', 'ads-measurement-status', null, {
 			useCache,
 		} );
 	},

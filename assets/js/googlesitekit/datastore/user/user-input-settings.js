@@ -25,11 +25,12 @@ import { isPlainObject, isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -43,7 +44,7 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'user-input-settings', undefined, {
+		get( 'core', 'user', 'user-input-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -52,7 +53,7 @@ const fetchGetUserInputSettingsStore = createFetchStore( {
 const fetchSaveUserInputSettingsStore = createFetchStore( {
 	baseName: 'saveUserInputSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'user-input-settings', { settings } ),
+		set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
@@ -191,39 +192,35 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
+
 	switch ( type ) {
 		case SET_USER_INPUT_SETTING: {
-			return {
-				...state,
-				inputSettings: {
-					...state.inputSettings,
-					[ payload.settingID ]: {
-						...( ( state.inputSettings || {} )[
-							payload.settingID
-						] || {} ),
-						values: payload.values,
-					},
-				},
-			};
+			state.inputSettings = state.inputSettings || {};
+
+			if ( ! state.inputSettings[ payload.settingID ] ) {
+				state.inputSettings[ payload.settingID ] = {};
+			}
+
+			state.inputSettings[ payload.settingID ].values = payload.values;
+			break;
 		}
+
 		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
-			return {
-				...state,
-				isSavingInputSettings: payload.isSaving,
-			};
+			state.isSavingInputSettings = payload.isSaving;
+			break;
 		}
+
 		case RESET_USER_INPUT_SETTINGS: {
-			return {
-				...state,
-				inputSettings: state.savedInputSettings,
-			};
+			state.inputSettings = state.savedInputSettings;
+			break;
 		}
-		default: {
-			return state;
-		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getUserInputSettings() {

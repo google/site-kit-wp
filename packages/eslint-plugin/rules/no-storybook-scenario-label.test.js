@@ -52,7 +52,7 @@ ruleTester.run( 'no-storybook-scenario-label', rule, {
 		{
 			code: `
                 TestStory.scenario = {
-                    delay: 250
+                    delay: 2500
                 };
             `,
 			filename: 'test.stories.js',

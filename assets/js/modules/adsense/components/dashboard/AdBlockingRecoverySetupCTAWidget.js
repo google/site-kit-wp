@@ -169,7 +169,11 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
 		);
-		return navigateTo( recoveryPageURL );
+		navigateTo( recoveryPageURL );
+
+		return new Promise( () => {
+			// We are intentionally letting this promise unresolved.
+		} );
 	};
 
 	const handleDismissClick = async () => {
@@ -247,10 +251,10 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 					</div>
 
 					<BannerActions
-						ctaLink="#"
 						ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 						ctaCallback={ handleCTAClick }
 						dismissCallback={ handleDismissClick }
+						dismissIsTertiary
 						dismissLabel={
 							dismissCount < 2
 								? __( 'Maybe later', 'google-site-kit' )

@@ -30,7 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	Button,
 	ProgressBar,
@@ -79,7 +79,7 @@ class SearchConsole extends Component {
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const properties = await API.get(
+				const properties = await get(
 					'modules',
 					'search-console',
 					'matched-sites',
@@ -145,7 +145,7 @@ class SearchConsole extends Component {
 	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */
 	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
-		await API.set( 'modules', 'search-console', 'site', { siteURL } );
+		await set( 'modules', 'search-console', 'site', { siteURL } );
 
 		if ( isNew ) {
 			await trackEvent( 'search_console_setup', 'add_new_sc_property' );

@@ -27,9 +27,11 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import ViewedStateObserver from './ViewedStateObserver';
 import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
+import { CORE_NOTIFICATIONS } from '../../datastore/constants';
 
 export default function Notification( {
 	id,
@@ -47,7 +49,13 @@ export default function Notification( {
 
 	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
 
-	// Track view once.
+	const viewedDates = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).getNotificationSeenDates( id )
+	);
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	// Track view once and check if notification should be dismissed.
 	useEffect( () => {
 		if ( ! isViewedOnce && viewed ) {
 			trackEvents.view(
@@ -59,7 +67,21 @@ export default function Notification( {
 
 			setIsViewedOnce( true );
 		}
-	}, [ viewed, trackEvents, isViewedOnce, gaTrackingEventArgs, onView ] );
+
+		// If the notification has been viewed on 3 distinct days, dismiss it permanently for the next view.
+		if ( viewedDates?.length >= 3 ) {
+			dismissNotification( id, { skipHidingFromQueue: true } );
+		}
+	}, [
+		viewed,
+		trackEvents,
+		isViewedOnce,
+		gaTrackingEventArgs,
+		onView,
+		viewedDates,
+		dismissNotification,
+		id,
+	] );
 
 	return (
 		<section id={ id } ref={ ref } className={ className }>

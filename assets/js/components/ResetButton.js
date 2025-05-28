@@ -107,12 +107,12 @@ function ResetButton( { children } ) {
 		navigateTo( postResetURL );
 	}, [ navigateTo, postResetURL, reset, viewContext ] );
 
-	const toggleDialogActive = useCallback( () => {
-		setDialogActive( ! dialogActive );
-	}, [ dialogActive ] );
-
 	const openDialog = useCallback( () => {
 		setDialogActive( true );
+	}, [] );
+
+	const closeDialog = useCallback( () => {
+		setDialogActive( false );
 	}, [] );
 
 	return (
@@ -124,7 +124,8 @@ function ResetButton( { children } ) {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ toggleDialogActive }
+					handleDialog={ closeDialog }
+					onClose={ closeDialog }
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
 					subtitle={ createInterpolateElement(
 						__(

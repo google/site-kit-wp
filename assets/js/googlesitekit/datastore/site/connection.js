@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -31,7 +31,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'connection', undefined, {
+		return get( 'core', 'site', 'connection', undefined, {
 			useCache: false,
 		} );
 	},

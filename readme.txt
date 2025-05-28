@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.151.0
+Stable tag:        1.153.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,26 +109,27 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.151.0 =
+= 1.153.0 =
 
 **Enhanced**
 
-* Remove old feature tours. See [#10574](https://github.com/google/site-kit-wp/issues/10574).
-* Remove the `conversionReporting` feature flag. See [#10552](https://github.com/google/site-kit-wp/issues/10552).
-* Update the WooCommerce modal to deactivate the Google For WooCommerce linked account notification when the user selects to install that plugin. See [#10542](https://github.com/google/site-kit-wp/issues/10542).
-* Add OverlayCard components to use for overlay notifications. See [#10532](https://github.com/google/site-kit-wp/issues/10532).
-* Remove the ESLint complexity override from the Reader Revenue Manager `SettingsEdit` component. See [#10363](https://github.com/google/site-kit-wp/issues/10363).
-* Enhance Ads measurement checks to avoid extra requests on dashboard. See [#10190](https://github.com/google/site-kit-wp/issues/10190).
-* Limit display of Visitor groups setup success notice to user who set up the feature. See [#10089](https://github.com/google/site-kit-wp/issues/10089).
-* Improve language intended to direct users to Site Kit settings. Props mxbclang. See [#7756](https://github.com/google/site-kit-wp/issues/7756).
+* Add the new Banner component. See [#10703](https://github.com/google/site-kit-wp/issues/10703).
+* Enhance WooCommerce provider to surface additional tracking details. See [#10670](https://github.com/google/site-kit-wp/issues/10670).
+* Add price and item name to Easy Digital Download Analytics events. See [#10644](https://github.com/google/site-kit-wp/issues/10644).
+* Refactor new feature type notices to use the new `<Notice type="new">` component. See [#10484](https://github.com/google/site-kit-wp/issues/10484).
+* Refactor RRMIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10389](https://github.com/google/site-kit-wp/issues/10389).
+* Refactor `AudienceTiles` component to reduce cyclomatic complexity and remove the ESLint override. See [#10358](https://github.com/google/site-kit-wp/issues/10358).
+* Automatically dismiss notifications after they are viewed for three different days. See [#10106](https://github.com/google/site-kit-wp/issues/10106).
+* Rewrite a set of datastore reducers to use Immer. Props juniovitorino. See [#5795](https://github.com/google/site-kit-wp/issues/5795).
 
 **Changed**
 
-* Update PAX SDK version to 1.1.4. See [#10614](https://github.com/google/site-kit-wp/issues/10614).
-* Replace all usage of `deprecatedProvideNotifications` with the updated `provideNotifications` utility and remove the deprecated utility. See [#10465](https://github.com/google/site-kit-wp/issues/10465).
+* Ensure the pie chart in the Analytics All Traffic widget displays its zero data state when it has no data for the current date range but does for the previous range. See [#10613](https://github.com/google/site-kit-wp/issues/10613).
 
 **Fixed**
 
-* Fix issue where syncing audiences and custom dimensions in parallel could result in the cached audiences not being persisted. See [#8888](https://github.com/google/site-kit-wp/issues/8888).
+* Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
+* Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
+* Update Partner Ads integration. See [#10779](https://github.com/google/site-kit-wp/issues/10779).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

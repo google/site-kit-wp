@@ -1,4 +1,17 @@
-<!-- This file is loaded after preview-head.html for VRT builds only -->
+<script>
+	// Flag the document as in VRT mode.
+	document.documentElement.dataset.vrt = true;
+
+	window.addEventListener( 'load', async () => {
+		// Wait for all web fonts to be loaded.
+		const readyPromises = [ ...document.fonts.values() ].map( ( font ) => font.load() );
+
+		await Promise.allSettled( readyPromises );
+
+		// Signal Backstop that the environment is ready to go.
+		document.body.classList.add( 'backstopjs-ready' );
+	} );
+</script>
 <style>
 	#root *,
 	#root *::before,

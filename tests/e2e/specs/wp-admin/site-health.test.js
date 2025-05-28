@@ -44,9 +44,8 @@ describe( 'Site Health', () => {
 			text: /site kit by google/i,
 		} );
 
-		page.waitForNetworkIdle();
-
-		await expect( page ).toMatchElement( 'td', {
+		// The element is a `td` on older verisons of WP and `th` on more recent versions.
+		await expect( page ).toMatchElement( 'th,td', {
 			text: /Search Console: Shared Roles/i,
 		} );
 	} );

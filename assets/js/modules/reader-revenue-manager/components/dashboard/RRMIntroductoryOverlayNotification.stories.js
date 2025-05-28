@@ -26,11 +26,18 @@ import {
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import RRMIntroductoryOverlayNotification from './RRMIntroductoryOverlayNotification';
+import RRMIntroductoryOverlayNotification, {
+	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
+} from './RRMIntroductoryOverlayNotification';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION
+)( RRMIntroductoryOverlayNotification );
 
 function Template() {
-	return <RRMIntroductoryOverlayNotification />;
+	return <NotificationWithComponentProps />;
 }
 
 export const NoPayment = Template.bind( {} );

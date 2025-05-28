@@ -25,7 +25,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -35,7 +35,6 @@ import {
 	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { enabledFeatures } from '../../../features';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
@@ -59,11 +58,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
-		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
 		provideUserInfo( registry );
 	} );

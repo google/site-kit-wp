@@ -19,7 +19,7 @@
 /**
  * Converts ampersand HTML entities into characters.
  *
- * @since n.e.x.t
+ * @since 1.152.0
  *
  * @param {string} input Input string.
  * @return {string} String with ampersand converted to char, if present.
@@ -32,7 +32,7 @@ export function decodeAmpersand( input ) {
  * Splits a string of categories separated by ; and returns an array of categories.
  * Decodes ampersands before doing so.
  *
- * @since n.e.x.t
+ * @since 1.152.0
  *
  * @param {string} input Input string containing categories separated by ;.
  * @return {Array.<string>} Array of categories.

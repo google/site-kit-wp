@@ -29,9 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button, SpinnerButton } from 'googlesitekit-components';
-import StarFill from '../../../svg/icons/star-fill.svg';
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
+import Notice from '../../components/Notice';
 
 export default function ConversionReportingDashboardSubtleNotification( {
 	description,
@@ -42,21 +40,20 @@ export default function ConversionReportingDashboardSubtleNotification( {
 	dismissCTALabel = __( 'Maybe later', 'google-site-kit' ),
 } ) {
 	return (
-		<SubtleNotification
-			className="googlesitekit-acr-subtle-notification"
+		<Notice
+			type="new"
 			title={ __( 'New key metrics were added!', 'google-site-kit' ) }
 			description={ description }
-			dismissCTA={
-				<Button tertiary onClick={ onDismiss }>
-					{ dismissCTALabel }
-				</Button>
-			}
-			additionalCTA={
-				<SpinnerButton onClick={ handleCTAClick } isSaving={ isSaving }>
-					{ ctaLabel }
-				</SpinnerButton>
-			}
-			icon={ <StarFill width={ 24 } height={ 24 } /> }
+			dismissButton={ {
+				label: dismissCTALabel,
+				onClick: onDismiss,
+			} }
+			ctaButton={ {
+				label: ctaLabel,
+				onClick: handleCTAClick,
+				inProgress: isSaving,
+				disabled: isSaving,
+			} }
 		/>
 	);
 }

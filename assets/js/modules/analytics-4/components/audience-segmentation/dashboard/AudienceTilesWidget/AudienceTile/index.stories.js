@@ -152,9 +152,7 @@ const readyProps = {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = readyProps;
-Ready.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/Ready',
-};
+Ready.scenario = {};
 
 export const ReadyWithToolTip = Template.bind( {} );
 ReadyWithToolTip.storyName = 'ReadyWithToolTip';
@@ -162,9 +160,7 @@ ReadyWithToolTip.args = {
 	...readyProps,
 	infoTooltip: 'This is a tooltip',
 };
-ReadyWithToolTip.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyWithToolTip',
-};
+ReadyWithToolTip.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'ReadyViewOnly';
@@ -172,9 +168,7 @@ ReadyViewOnly.args = {
 	...readyProps,
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyViewOnly',
-};
+ReadyViewOnly.scenario = {};
 
 export const ReadyLongCityNames = Template.bind( {} );
 ReadyLongCityNames.storyName = 'ReadyLongCityNames';
@@ -206,9 +200,7 @@ ReadyLongCityNames.args = {
 		total: 0.608,
 	},
 };
-ReadyLongCityNames.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyLongCityNames',
-};
+ReadyLongCityNames.scenario = {};
 
 export const NoData = Template.bind( {} );
 NoData.storyName = 'NoData';
@@ -217,9 +209,7 @@ NoData.args = {
 	topCities: null,
 	topContent: null,
 };
-NoData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/NoData',
-};
+NoData.scenario = {};
 
 export const MissingCustomDimension = Template.bind( {} );
 MissingCustomDimension.storyName = 'MissingCustomDimension';
@@ -231,9 +221,7 @@ MissingCustomDimension.args = {
 		} );
 	},
 };
-MissingCustomDimension.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/MissingCustomDimension',
-};
+MissingCustomDimension.scenario = {};
 
 export const AudiencePartialData = Template.bind( {} );
 AudiencePartialData.storyName = 'Audience partial data';
@@ -271,9 +259,7 @@ AudiencePartialData.args = {
 			} );
 	},
 };
-AudiencePartialData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/AudiencePartialData',
-};
+AudiencePartialData.scenario = {};
 
 export const TopContentPartialData = Template.bind( {} );
 TopContentPartialData.storyName = 'Top content partial data';
@@ -311,9 +297,7 @@ TopContentPartialData.args = {
 			} );
 	},
 };
-TopContentPartialData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
-};
+TopContentPartialData.scenario = {};
 
 export const ViewOnlyNoDimensions = Template.bind( {} );
 ViewOnlyNoDimensions.storyName =
@@ -342,9 +326,7 @@ ZeroDataHideable.args = {
 	isTileHideable: true,
 	onHideTile: () => {},
 };
-ZeroDataHideable.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ZeroDataHideable',
-};
+ZeroDataHideable.scenario = {};
 
 export const ZeroDataNonHideable = Template.bind( {} );
 ZeroDataNonHideable.storyName = 'ZeroDataNonHideable';
@@ -355,9 +337,7 @@ ZeroDataNonHideable.args = {
 	isZeroData: true,
 	isPartialData: true,
 };
-ZeroDataNonHideable.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ZeroDataNonHideable',
-};
+ZeroDataNonHideable.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile',
