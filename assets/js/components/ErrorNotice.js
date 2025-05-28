@@ -26,15 +26,15 @@ import PropTypes from 'prop-types';
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
-import Notice from '@/js/components/Notice';
-import { isURL } from '@wordpress/url';
-import Link from '@/js/components/Link';
+import Notice from './Notice';
+import Link from './Link';
 
 export default function ErrorNotice( {
 	className,

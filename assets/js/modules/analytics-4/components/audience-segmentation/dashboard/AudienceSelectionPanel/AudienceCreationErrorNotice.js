@@ -166,7 +166,7 @@ export default function AudienceCreationErrorNotice( {
 								);
 							},
 					  }
-					: null
+					: undefined
 			}
 			hideIcon
 		/>
