@@ -32,7 +32,7 @@ exports[`WPDashboardReportError should only render one error per module when the
               <p
                 class="googlesitekit-notice__description"
               >
-                Error: Test error message. Please try again.
+                Error: Test error message (Please try again.)
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ exports[`WPDashboardReportError should only render one error per module when the
               <p
                 class="googlesitekit-notice__description"
               >
-                Error: Test error message. Please try again.
+                Error: Test error message (Please try again.)
               </p>
             </div>
           </div>
