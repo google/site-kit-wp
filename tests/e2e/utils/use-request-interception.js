@@ -5,7 +5,7 @@
  * or a path:response mapping object.
  *
  * @since 1.0.0
- * @since n.e.x.t Added support for path:response mapping object to simplify request handling.
+ * @since 1.154.0 Added support for path:response mapping object to simplify request handling.
  *
  * @param {Function|Object} config Either a callback function or a path:response mapping object.
  * @return {Function} Function that can be called to remove the added handler function from the page.

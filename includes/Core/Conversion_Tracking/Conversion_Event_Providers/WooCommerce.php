@@ -69,7 +69,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Gets the conversion event names that are tracked by Google Analytics for WooCommerce provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -119,7 +119,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Gets the conversion event names that should be tracked by this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -137,7 +137,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Gets the conversion event names that are tracked by this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
 	 * @return string Comma separated list of event names.
 	 */
@@ -366,7 +366,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Prints the purchase event details.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
 	 * @param int  $order_id             The order ID.
 	 * @param bool $skip_meta_value_save Whether to skip saving the _googlesitekit_ga_purchase_event_tracked meta value.
