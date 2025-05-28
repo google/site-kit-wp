@@ -28,13 +28,13 @@ function Template( args ) {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
-	message: 'Foo error message',
+	message: 'An error occurred',
 };
 
 export const WithNoPrefix = Template.bind( {} );
 WithNoPrefix.storyName = 'No Prefix';
 WithNoPrefix.args = {
-	message: 'Foo error message',
+	message: 'Could not load data',
 	noPrefix: true,
 };
 
@@ -43,7 +43,7 @@ WithReconnectURL.storyName = 'With Reconnect URL';
 WithReconnectURL.args = {
 	error: {
 		type: 'error',
-		message: 'Foo error message.',
+		message: 'Authorization expired.',
 		data: {
 			reconnectURL: 'http://localhost:3000/',
 		},
