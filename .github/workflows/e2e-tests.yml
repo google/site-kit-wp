@@ -139,7 +139,25 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
-      - name: Run the tests
+      - name: Run the tests (1/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (2/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (3/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (4/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (5/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (6/10)      
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (7/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (8/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (9/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (10/10)
         run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
 
       - name: Upload artifacts
