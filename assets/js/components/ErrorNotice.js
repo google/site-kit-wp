@@ -72,37 +72,40 @@ export default function ErrorNotice( {
 	const shouldDisplayRetry =
 		hasButton && isErrorRetryable( error, selectorData );
 
-	let finalMessage = message;
+	/**
+	 * Error message to display to the user. Sometimes we append a retry message
+	 * or a reconnect URL, so we create a new variable for the message to display.
+	 */
+	let errorMessageWithModifications = message;
 
 	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton && ! skipRetryMessage ) {
-		finalMessage = sprintf(
-			/* translators: %1$s: Error message from Google API. */
-			__( '%1$s%2$s Please try again.', 'google-site-kit' ),
-			finalMessage,
-			finalMessage.endsWith( '.' ) ? '' : '.'
+		errorMessageWithModifications = sprintf(
+			/* translators: %s: Error message from Google API. */
+			__( '%s Please try again.', 'google-site-kit' ),
+			errorMessageWithModifications
 		);
 	}
 
 	if ( ! noPrefix ) {
-		finalMessage = sprintf(
+		errorMessageWithModifications = sprintf(
 			/* translators: $%s: Error message */
 			__( 'Error: %s', 'google-site-kit' ),
-			finalMessage
+			errorMessageWithModifications
 		);
 	}
 
 	const reconnectURL = error?.data?.reconnectURL;
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
-		finalMessage = createInterpolateElement(
+		errorMessageWithModifications = createInterpolateElement(
 			sprintf(
 				/* translators: %1$s: Original error message */
 				__(
 					'%1$s To fix this, <a>redo the plugin setup</a>.',
 					'google-site-kit'
 				),
-				finalMessage
+				errorMessageWithModifications
 			),
 			{
 				a: <Link href={ reconnectURL } />,
@@ -114,7 +117,7 @@ export default function ErrorNotice( {
 		<Notice
 			className={ className }
 			type={ Notice.TYPES.ERROR }
-			description={ finalMessage }
+			description={ errorMessageWithModifications }
 			ctaButton={
 				shouldDisplayRetry
 					? {
