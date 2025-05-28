@@ -130,6 +130,8 @@ export default function ReportError( { moduleSlug, error } ) {
 				) : (
 					<p key={ errorForNotice.message }>
 						{ purify.sanitize( errorForNotice.message, {
+							// Ensures no HTML tags are passed as they would be
+							// escaped by React and appear as strings.
 							ALLOWED_TAGS: [],
 						} ) }
 					</p>
