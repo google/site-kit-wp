@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { isValidPropertyID } from '../../utils/validation';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;

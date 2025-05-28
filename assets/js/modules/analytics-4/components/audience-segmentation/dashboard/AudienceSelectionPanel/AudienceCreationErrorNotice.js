@@ -39,7 +39,7 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import Link from '../../../../../../components/Link';
-import Notice from '@/js/components/Notice';
+import Notice from '../../../../../../components/Notice';
 
 export default function AudienceCreationErrorNotice( {
 	apiErrors,

@@ -24,7 +24,7 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function SetupErrorNotice() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>

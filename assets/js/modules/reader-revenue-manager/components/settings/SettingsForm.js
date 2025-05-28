@@ -41,7 +41,7 @@ import ProductIDSettings from './ProductIDSettings';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
 import Notice from '../../../../components/Notice';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>

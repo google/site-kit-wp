@@ -35,7 +35,7 @@ import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
 import { getReportErrorMessage } from '../../../../util/errors';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =

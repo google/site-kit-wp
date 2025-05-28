@@ -31,7 +31,7 @@ import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTr
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../components/ErrorNotice';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();

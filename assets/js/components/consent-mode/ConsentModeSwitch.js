@@ -37,7 +37,7 @@ import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../ErrorNotice';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();

@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../ErrorNotice';
 
 class MediaErrorHandler extends Component {
 	constructor( props ) {

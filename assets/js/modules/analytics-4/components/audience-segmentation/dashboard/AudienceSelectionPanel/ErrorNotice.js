@@ -41,7 +41,7 @@ import Link from '../../../../../../components/Link';
 import ReportErrorActions from '../../../../../../components/ReportErrorActions';
 import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
-import Notice from '@/js/components/Notice';
+import Notice from '../../../../../../components/Notice';
 
 export default function ErrorNotice() {
 	const viewContext = useViewContext();

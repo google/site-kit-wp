@@ -43,7 +43,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import Link from '../../../Link';
 import Notice from './Notice';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../ErrorNotice';
 
 export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();

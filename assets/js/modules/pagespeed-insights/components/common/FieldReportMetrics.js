@@ -37,7 +37,7 @@ import INPLearnMoreLink from './INPLearnMoreLink';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {

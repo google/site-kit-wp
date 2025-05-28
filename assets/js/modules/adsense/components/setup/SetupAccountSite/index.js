@@ -49,7 +49,7 @@ import NeedsAttention from './NeedsAttention';
 import GettingReady from './GettingReady';
 import RequiresReview from './RequiresReview';
 import Ready from './Ready';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../../components/ErrorNotice';
 
 export default function SetupAccountSite( { site, finishSetup } ) {
 	const { autoAdsEnabled, state } = site;

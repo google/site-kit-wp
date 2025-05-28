@@ -36,7 +36,7 @@ import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../ErrorNotice';
 import Notice from '../Notice';
 
 export default function WPConsentAPIRequirements() {

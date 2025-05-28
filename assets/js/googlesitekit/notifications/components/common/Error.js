@@ -29,7 +29,7 @@ import { useEffect } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../datastore/site/constants';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function Error( { id } ) {
 	const ctaError = useSelect( ( select ) => {

@@ -82,7 +82,7 @@ export default function ErrorNotice( {
 	if ( ! hasButton && ! skipRetryMessage ) {
 		errorMessageWithModifications = sprintf(
 			/* translators: %s: Error message from Google API. */
-			__( '%s Please try again.', 'google-site-kit' ),
+			__( '%s (Please try again.)', 'google-site-kit' ),
 			errorMessageWithModifications
 		);
 	}

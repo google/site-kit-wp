@@ -42,7 +42,7 @@ import { purify } from '../util/purify';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 import useViewOnly from '../hooks/useViewOnly';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ErrorNotice from './ErrorNotice';
 
 export default function ReportError( { moduleSlug, error } ) {
 	const isViewOnly = useViewOnly();

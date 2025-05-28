@@ -43,7 +43,7 @@ import ErrorNotice from '../ErrorNotice';
 import { safelySort } from '../../util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import PreviewBlock from '../PreviewBlock';
-import Notice from '@/js/components/Notice';
+import Notice from '../Notice';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
