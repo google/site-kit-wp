@@ -29,7 +29,10 @@ import {
 	withActive,
 	withConnected,
 } from '../../../../../googlesitekit/modules/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../../../analytics-4/datastore/constants';
 import SearchFunnelWidgetGA4 from '.';
 import Chart from './Chart';
 import {
@@ -87,7 +90,10 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 
 	describe( 'stats rendering', () => {
 		beforeEach( () => {
-			provideModules( registry, withConnected( 'analytics-4' ) );
+			provideModules(
+				registry,
+				withConnected( MODULE_SLUG_ANALYTICS_4 )
+			);
 		} );
 
 		it( 'should render Search Console Impressions stats when selectedStats is 0', () => {
@@ -204,7 +210,9 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 			beforeEach( () => {
 				provideModules(
 					registry,
-					isGA4Active ? withActive( 'analytics-4' ) : undefined
+					isGA4Active
+						? withActive( MODULE_SLUG_ANALYTICS_4 )
+						: undefined
 				);
 			} );
 

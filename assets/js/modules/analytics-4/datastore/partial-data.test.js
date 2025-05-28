@@ -28,7 +28,11 @@ import {
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate, stringToDate } from '../../../util';
 import { properties } from './__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from './constants';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const testAudience1 = {
@@ -75,7 +79,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -196,7 +200,7 @@ describe( 'modules/analytics-4 partial data', () => {
 		describe( 'getResourceDataAvailabilityDates', () => {
 			it( 'uses a resolver to read data from _googlesitekitModulesData', async () => {
 				global._googlesitekitModulesData = {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						resourceAvailabilityDates,
 					},
 				};

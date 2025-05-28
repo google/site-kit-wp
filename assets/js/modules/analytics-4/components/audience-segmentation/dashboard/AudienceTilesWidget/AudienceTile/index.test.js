@@ -49,6 +49,7 @@ import * as tracking from '../../../../../../../util/tracking';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../../../datastore/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
@@ -173,7 +174,7 @@ describe( 'AudienceTile', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );

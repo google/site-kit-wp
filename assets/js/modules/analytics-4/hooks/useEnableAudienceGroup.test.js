@@ -22,6 +22,7 @@
 import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
@@ -85,7 +86,7 @@ describe( 'useEnableAudienceGroup', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

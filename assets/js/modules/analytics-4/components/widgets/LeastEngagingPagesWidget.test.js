@@ -39,6 +39,7 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import {
@@ -60,7 +61,7 @@ describe( 'LeastEngagingPagesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 	} );
 

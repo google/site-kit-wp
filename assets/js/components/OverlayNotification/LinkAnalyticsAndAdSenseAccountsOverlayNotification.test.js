@@ -31,7 +31,10 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -57,7 +60,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -76,7 +79,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
 			},
@@ -101,7 +104,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 				connected: false,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

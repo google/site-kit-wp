@@ -39,7 +39,10 @@ import { withWidgetComponentProps } from '../../../../../../googlesitekit/widget
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import * as tracking from '../../../../../../util/tracking';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../../../datastore/constants';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 jest.mock( 'react-use', () => ( {
@@ -66,7 +69,7 @@ describe( 'InfoNoticeWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );

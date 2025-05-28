@@ -53,6 +53,7 @@ import {
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../datastore/constants';
 import {
 	availableAudiences as audiencesFixture,
@@ -133,7 +134,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

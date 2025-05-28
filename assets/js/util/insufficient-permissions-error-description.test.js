@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import { getInsufficientPermissionsErrorDescription } from './insufficient-permissions-error-description';
 
 describe( 'getInsufficientPermissionsErrorDescription', () => {
@@ -38,7 +39,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			[
 				'when the module only have a `slug` property',
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 				},
 			],
 			[
@@ -118,7 +119,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 	describe( 'google analytics error', () => {
 		const analytics = {
-			slug: 'analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
 			name: 'Analytics',
 		};
 

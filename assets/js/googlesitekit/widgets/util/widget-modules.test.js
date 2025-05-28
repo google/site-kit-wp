@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { normalizeWidgetModules } from './widget-modules';
 
 describe( 'normalizeWidgetModules', () => {
@@ -36,20 +37,20 @@ describe( 'normalizeWidgetModules', () => {
 	} );
 
 	it( 'should return an array of strings when a single string is provided', () => {
-		const modules = normalizeWidgetModules( 'analytics-4' );
+		const modules = normalizeWidgetModules( MODULE_SLUG_ANALYTICS_4 );
 		expect( modules ).toHaveLength( 1 );
-		expect( modules[ 0 ] ).toBe( 'analytics-4' );
+		expect( modules[ 0 ] ).toBe( MODULE_SLUG_ANALYTICS_4 );
 	} );
 
 	it( 'should return an array with non empty modules', () => {
 		const modules = normalizeWidgetModules( [
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'',
 			false,
 			'tag-manager',
 		] );
 		expect( modules ).toHaveLength( 2 );
-		expect( modules[ 0 ] ).toBe( 'analytics-4' );
+		expect( modules[ 0 ] ).toBe( MODULE_SLUG_ANALYTICS_4 );
 		expect( modules[ 1 ] ).toBe( 'tag-manager' );
 	} );
 } );

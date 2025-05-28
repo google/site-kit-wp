@@ -35,6 +35,7 @@ import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instan
 import {
 	EDIT_SCOPE,
 	GTM_SCOPE,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 	PROVISIONING_SCOPE,
 } from '../../../datastore/constants';
@@ -58,7 +59,7 @@ describe( 'AccountCreate', () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -149,7 +150,7 @@ describe( 'AccountCreate', () => {
 			await setItem(
 				createCacheKey(
 					'modules',
-					'analytics-4',
+					MODULE_SLUG_ANALYTICS_4,
 					'analytics-datapoint'
 				),
 				'analytics-value'

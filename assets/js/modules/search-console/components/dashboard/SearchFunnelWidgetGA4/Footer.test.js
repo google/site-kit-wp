@@ -32,7 +32,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../../../analytics-4/datastore/constants';
 import * as analytics4fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
 describe( 'Footer', () => {
@@ -50,7 +53,7 @@ describe( 'Footer', () => {
 			id: 'users',
 			color: '#5c9271',
 			label: 'Users',
-			service: 'analytics-4',
+			service: MODULE_SLUG_ANALYTICS_4,
 		},
 	];
 

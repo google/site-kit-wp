@@ -25,6 +25,7 @@ import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
 import Null from '../../../components/Null';
 import RecoverableModules from '../../../components/RecoverableModules';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'combineWidgets', () => {
 	const getQuarterWidget = ( slug ) => ( {
@@ -53,14 +54,16 @@ describe( 'combineWidgets', () => {
 			getFullWidget( 'test4' ),
 		];
 		const widgetStates = {
-			test1: getReportZeroState( 'analytics-4' ),
-			test2: getReportZeroState( 'analytics-4' ),
-			test3: getReportZeroState( 'analytics-4' ),
-			test4: getReportZeroState( 'analytics-4' ),
+			test1: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			test2: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			test3: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			test4: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
 		};
 
 		const expected = {
-			overrideComponents: [ getReportZeroState( 'analytics-4' ) ],
+			overrideComponents: [
+				getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			],
 			gridColumnWidths: [ 12, 0, 0, 0 ],
 		};
 
@@ -80,9 +83,9 @@ describe( 'combineWidgets', () => {
 		const widgetStates = {
 			// The following widgets should be combined as they are all from the same
 			// module and in the same state.
-			test1: getReportZeroState( 'analytics-4' ),
-			test2: getReportZeroState( 'analytics-4' ),
-			test3: getReportZeroState( 'analytics-4' ),
+			test1: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			test2: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			test3: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
 			// This widget should not be combined even though it is in the same
 			// special state as the others.
 			test4: getReportZeroState( 'search-console' ),
@@ -92,7 +95,7 @@ describe( 'combineWidgets', () => {
 			overrideComponents: [
 				null,
 				null,
-				getReportZeroState( 'analytics-4' ),
+				getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
 				null,
 			],
 			gridColumnWidths: [ 0, 0, 9, 3 ],
@@ -117,7 +120,7 @@ describe( 'combineWidgets', () => {
 			// Every widget here is in a different state than the adjacent ones, so there is nothing to combine.
 			test1: getRegularState(),
 			test2: getReportZeroState( 'search-console' ),
-			test3: getReportZeroState( 'analytics-4' ),
+			test3: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
 		};
 		const expected = {
 			gridColumnWidths: [ 3, 3, 3, 3 ],
@@ -142,8 +145,8 @@ describe( 'combineWidgets', () => {
 			// widgets in each group have matching state.
 			test1: getReportZeroState( 'search-console' ),
 			test2: getReportZeroState( 'search-console' ),
-			test3: getReportZeroState( 'analytics-4' ),
-			test4: getReportZeroState( 'analytics-4' ),
+			test3: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
+			test4: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
 		};
 		const expected = {
 			gridColumnWidths: [ 0, 6, 0, 6 ],
@@ -172,9 +175,9 @@ describe( 'combineWidgets', () => {
 			// Only test3 and test4 will be combined. While test2 is adjacent and has matching state, it is within
 			// the previous row, so should not be included in the combination.
 			test1: getReportZeroState( 'search-console' ),
-			test2: getRecoverableModulesState( [ 'analytics-4' ] ),
-			test3: getRecoverableModulesState( [ 'analytics-4' ] ),
-			test4: getRecoverableModulesState( [ 'analytics-4' ] ),
+			test2: getRecoverableModulesState( [ MODULE_SLUG_ANALYTICS_4 ] ),
+			test3: getRecoverableModulesState( [ MODULE_SLUG_ANALYTICS_4 ] ),
+			test4: getRecoverableModulesState( [ MODULE_SLUG_ANALYTICS_4 ] ),
 		};
 		const expected = {
 			gridColumnWidths: [ 6, 6, 0, 12 ],
@@ -203,10 +206,10 @@ describe( 'combineWidgets', () => {
 			test1: getRecoverableModulesState( [ 'search-console' ] ),
 			test2: getRecoverableModulesState( [ 'search-console' ] ),
 			test3: getRecoverableModulesState( [ 'search-console' ] ),
-			test4: getRecoverableModulesState( [ 'analytics-4' ] ),
+			test4: getRecoverableModulesState( [ MODULE_SLUG_ANALYTICS_4 ] ),
 			test5: getRegularState(),
-			test6: getRecoverableModulesState( [ 'analytics-4' ] ),
-			test7: getNullState( 'analytics-4' ),
+			test6: getRecoverableModulesState( [ MODULE_SLUG_ANALYTICS_4 ] ),
+			test7: getNullState( MODULE_SLUG_ANALYTICS_4 ),
 		};
 		const expected = {
 			gridColumnWidths: [ 0, 12, 3, 3, 3, 3, 0 ],

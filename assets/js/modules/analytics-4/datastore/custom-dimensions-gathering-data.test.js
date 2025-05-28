@@ -21,7 +21,7 @@
  */
 import { properties } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4, MODULES_ANALYTICS_4 } from './constants';
 import { getPreviousDate, stringToDate } from '../../../util';
 
 let {
@@ -40,7 +40,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -225,7 +225,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			jest.resetModules();
 
 			global._googlesitekitModulesData = {
-				'analytics-4': {
+				[ MODULE_SLUG_ANALYTICS_4 ]: {
 					customDimensionsDataAvailable: {
 						[ customDimension ]: dataAvailable,
 					},

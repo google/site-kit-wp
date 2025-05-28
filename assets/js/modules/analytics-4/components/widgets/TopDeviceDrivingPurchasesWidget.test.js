@@ -35,6 +35,7 @@ import { withConnected } from '../../../../googlesitekit/modules/datastore/__fix
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import {
@@ -56,7 +57,7 @@ describe( 'TopDeviceDrivingPurchasesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );

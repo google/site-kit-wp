@@ -37,7 +37,10 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -76,7 +79,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -101,7 +104,7 @@ describe( 'ErrorNotifications', () => {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -154,7 +157,7 @@ describe( 'ErrorNotifications', () => {
 	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -182,7 +185,7 @@ describe( 'ErrorNotifications', () => {
 	it( 'does not render the GTE message if there are multiple unsatisfied scopes', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -211,7 +214,7 @@ describe( 'ErrorNotifications', () => {
 	it( 'does render the redo setup CTA if initial Site Kit setup authentication is not granted', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -244,7 +247,7 @@ describe( 'ErrorNotifications', () => {
 	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

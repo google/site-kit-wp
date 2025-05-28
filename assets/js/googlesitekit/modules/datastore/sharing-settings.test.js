@@ -31,6 +31,7 @@ import {
 	MODULE_SLUG_PAGESPEED_INSIGHTS,
 	MODULES_PAGESPEED_INSIGHTS,
 } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -39,7 +40,7 @@ describe( 'core/modules sharing-settings', () => {
 			sharedRoles: [ 'editor', 'subscriber' ],
 			management: 'all_admins',
 		},
-		'analytics-4': {
+		[ MODULE_SLUG_ANALYTICS_4 ]: {
 			sharedRoles: [ 'editor' ],
 			management: 'owner',
 		},
@@ -81,7 +82,7 @@ describe( 'core/modules sharing-settings', () => {
 		},
 	};
 	const sharedOwnershipModules = [
-		'analytics-4',
+		MODULE_SLUG_ANALYTICS_4,
 		'search-console',
 		'tagmanager',
 	];
@@ -104,7 +105,7 @@ describe( 'core/modules sharing-settings', () => {
 				'search-console': {
 					sharedRoles: [ 'editor', 'subscriber' ],
 				},
-				'analytics-4': {
+				[ MODULE_SLUG_ANALYTICS_4 ]: {
 					sharedRoles: [ 'editor' ],
 				},
 				[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
@@ -122,7 +123,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_MODULES )
-						.setSharingManagement( 'analytics-4' );
+						.setSharingManagement( MODULE_SLUG_ANALYTICS_4 );
 				} ).toThrow( 'management must be one of: all_admins, owner.' );
 			} );
 
@@ -136,10 +137,11 @@ describe( 'core/modules sharing-settings', () => {
 					.setSharingManagement( 'search-console', 'all_admins' );
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharingManagement( 'analytics-4', 'owner' );
+					.setSharingManagement( MODULE_SLUG_ANALYTICS_4, 'owner' );
 
 				expect(
-					store.getState().sharingSettings[ 'analytics-4' ].management
+					store.getState().sharingSettings[ MODULE_SLUG_ANALYTICS_4 ]
+						.management
 				).toBe( 'owner' );
 				expect(
 					store.getState().sharingSettings[ 'search-console' ]
@@ -153,7 +155,7 @@ describe( 'core/modules sharing-settings', () => {
 				'search-console': {
 					management: 'all_admins',
 				},
-				'analytics-4': {
+				[ MODULE_SLUG_ANALYTICS_4 ]: {
 					management: 'owner',
 				},
 				[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
@@ -171,7 +173,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_MODULES )
-						.setSharedRoles( 'analytics-4' );
+						.setSharedRoles( MODULE_SLUG_ANALYTICS_4 );
 				} ).toThrow( 'roles must be an array of strings.' );
 			} );
 
@@ -182,7 +184,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'analytics-4', [
+					.setSharedRoles( MODULE_SLUG_ANALYTICS_4, [
 						'editor',
 						'subscriber',
 					] );
@@ -191,7 +193,7 @@ describe( 'core/modules sharing-settings', () => {
 					.setSharedRoles( 'search-console', [ 'subscriber' ] );
 
 				expect(
-					store.getState().sharingSettings[ 'analytics-4' ]
+					store.getState().sharingSettings[ MODULE_SLUG_ANALYTICS_4 ]
 						.sharedRoles
 				).toEqual( [ 'editor', 'subscriber' ] );
 				expect(
@@ -319,7 +321,7 @@ describe( 'core/modules sharing-settings', () => {
 				// Make changes to the shared settings to verify the rollback.
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'analytics-4', [
+					.setSharedRoles( MODULE_SLUG_ANALYTICS_4, [
 						'editor',
 						'subscriber',
 					] );
@@ -624,7 +626,9 @@ describe( 'core/modules sharing-settings', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.haveSharingSettingsChanged( [ 'analytics-4' ] )
+						.haveSharingSettingsChanged( [
+							MODULE_SLUG_ANALYTICS_4,
+						] )
 				).toBe( false );
 
 				// Checking all values should be possible.
@@ -633,7 +637,7 @@ describe( 'core/modules sharing-settings', () => {
 						.select( CORE_MODULES )
 						.haveSharingSettingsChanged( [
 							'search-console',
-							'analytics-4',
+							MODULE_SLUG_ANALYTICS_4,
 						] )
 				).toBe( true );
 
@@ -777,7 +781,10 @@ describe( 'core/modules sharing-settings', () => {
 				// True after updating module's `management` from `owner` to `all_admins` on the client.
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharingManagement( 'analytics-4', 'all_admins' );
+					.setSharingManagement(
+						MODULE_SLUG_ANALYTICS_4,
+						'all_admins'
+					);
 				expect(
 					registry
 						.select( CORE_MODULES )
@@ -787,7 +794,7 @@ describe( 'core/modules sharing-settings', () => {
 				// False after updating module's `management` back to original server value on client.
 				registry
 					.dispatch( CORE_MODULES )
-					.setSharingManagement( 'analytics-4', 'owner' );
+					.setSharingManagement( MODULE_SLUG_ANALYTICS_4, 'owner' );
 				expect(
 					registry
 						.select( CORE_MODULES )
@@ -1062,7 +1069,7 @@ describe( 'core/modules sharing-settings', () => {
 					registry
 						.select( CORE_MODULES )
 						.haveModuleSharingSettingsChanged(
-							'analytics-4',
+							MODULE_SLUG_ANALYTICS_4,
 							'management'
 						)
 				).toBe( false );
@@ -1079,10 +1086,10 @@ describe( 'core/modules sharing-settings', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.haveModuleSharingSettingsChanged( 'analytics-4', [
-							'management',
-							'sharedRoles',
-						] )
+						.haveModuleSharingSettingsChanged(
+							MODULE_SLUG_ANALYTICS_4,
+							[ 'management', 'sharedRoles' ]
+						)
 				).toBe( false );
 
 				// Checking no values should be possible, and should not be treated as
@@ -1168,7 +1175,7 @@ describe( 'core/modules sharing-settings', () => {
 					.receiveSharedOwnershipModules( sharedOwnershipModules );
 
 				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						sharedRoles: [],
 						management: 'all_admins',
 					},

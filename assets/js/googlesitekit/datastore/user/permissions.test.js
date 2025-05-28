@@ -30,6 +30,7 @@ import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -488,7 +489,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.hasAccessToShareableModule( 'analytics-4' );
+					.hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( canViewSharedModule ).toBeUndefined();
 
@@ -504,7 +505,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.hasAccessToShareableModule( 'analytics-4' );
+					.hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( canViewSharedModule ).toBe( false );
 			} );

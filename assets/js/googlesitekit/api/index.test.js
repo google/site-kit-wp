@@ -35,6 +35,7 @@ import {
 } from './index';
 import { DATA_LAYER } from '../../util/tracking/constants';
 import { enableTracking } from '../../util/tracking';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
@@ -702,7 +703,11 @@ describe( 'googlesitekit.api', () => {
 				'data'
 			);
 			await setItem(
-				createCacheKey( 'modules', 'analytics-4', 'something' ),
+				createCacheKey(
+					'modules',
+					MODULE_SLUG_ANALYTICS_4,
+					'something'
+				),
 				'other-data'
 			);
 

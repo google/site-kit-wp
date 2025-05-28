@@ -41,6 +41,7 @@ import {
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../datastore/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
@@ -86,7 +87,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		provideKeyMetricsUserInputSettings( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -311,7 +312,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},

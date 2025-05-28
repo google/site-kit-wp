@@ -37,7 +37,10 @@ import TopRecentTrendingPagesWidget, {
 	getReportOptions,
 } from './TopRecentTrendingPagesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../datastore/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -65,7 +68,7 @@ describe( 'TopRecentTrendingPagesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID,

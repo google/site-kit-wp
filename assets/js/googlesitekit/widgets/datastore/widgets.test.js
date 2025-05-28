@@ -23,6 +23,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_WIDGETS } from './constants';
 import Null from '../../../components/Null';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'core/widgets Widgets', () => {
 	let registry;
@@ -195,7 +196,7 @@ describe( 'core/widgets Widgets', () => {
 				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 					Component: WidgetComponent,
 					priority: 11,
-					modules: [ 'analytics-4', 'tag-manager' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4, 'tag-manager' ],
 				} );
 
 				const { widgets } = store.getState();
@@ -203,7 +204,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets[ slug ].Component ).toEqual( WidgetComponent );
 				expect( widgets[ slug ].priority ).toBe( 11 );
 				expect( widgets[ slug ].modules ).toEqual( [
-					'analytics-4',
+					MODULE_SLUG_ANALYTICS_4,
 					'tag-manager',
 				] );
 
@@ -396,7 +397,7 @@ describe( 'core/widgets Widgets', () => {
 				[
 					{
 						Component,
-						modules: [ 'analytics-4', 'tag-manager' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4, 'tag-manager' ],
 					},
 					{
 						Component,
@@ -404,7 +405,7 @@ describe( 'core/widgets Widgets', () => {
 					},
 					{
 						Component,
-						modules: [ 'analytics-4', 'search-console' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4, 'search-console' ],
 					},
 					{
 						Component,
@@ -427,7 +428,7 @@ describe( 'core/widgets Widgets', () => {
 				const widgets = registry
 					.select( CORE_WIDGETS )
 					.getWidgets( 'dashboard-header', {
-						modules: [ 'analytics-4', 'tag-manager' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4, 'tag-manager' ],
 					} );
 
 				expect( widgets ).toHaveLength( 3 );

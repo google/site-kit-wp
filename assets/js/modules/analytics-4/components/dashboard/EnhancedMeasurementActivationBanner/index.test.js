@@ -36,6 +36,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';
@@ -104,7 +105,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -349,7 +350,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 				.dispatch( CORE_MODULES )
 				.receiveCheckModuleAccess(
 					{ access: false },
-					{ slug: 'analytics-4' }
+					{ slug: MODULE_SLUG_ANALYTICS_4 }
 				);
 
 			const isActive = await notification.checkRequirements(

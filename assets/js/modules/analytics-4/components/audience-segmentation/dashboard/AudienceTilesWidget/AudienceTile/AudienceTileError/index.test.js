@@ -39,7 +39,10 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../../../../../tests/js/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../../googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../../../../../datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../../util/errors';
 import * as tracking from '../../../../../../../../util/tracking';
 
@@ -98,7 +101,7 @@ describe( 'AudienceTileError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );

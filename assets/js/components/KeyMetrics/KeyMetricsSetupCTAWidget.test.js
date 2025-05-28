@@ -26,7 +26,10 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
@@ -89,7 +92,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	it( 'does not render when GA4 is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
 			},
@@ -125,7 +128,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -133,7 +136,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideGatheringDataState( registry, {
 			'search-console': true,
-			'analytics-4': false,
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -165,7 +168,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -221,7 +224,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

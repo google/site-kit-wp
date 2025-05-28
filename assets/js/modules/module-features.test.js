@@ -29,6 +29,7 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { enabledFeatures } from '../features';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/datastore/constants';
 
 describe( 'Module Features', () => {
 	let registry;
@@ -58,7 +59,7 @@ describe( 'Module Features', () => {
 			],
 		],
 		[
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			[
 				'Your site will no longer send data to Google Analytics',
 				'Analytics reports in Site Kit will be disabled',

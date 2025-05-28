@@ -42,14 +42,17 @@ import {
 import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 	const sharedOwnershipModulesList = {
 		sharedOwnershipModules: [
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'search-console',
 			'tagmanager',
 		],
@@ -57,8 +60,8 @@ describe( 'core/modules modules', () => {
 
 	const allModules = [
 		{
-			slug: 'analytics-4',
-			name: 'Analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
+			name: MODULE_SLUG_ANALYTICS_4,
 			active: true,
 			connected: true,
 			shareable: true,
@@ -236,12 +239,12 @@ describe( 'core/modules modules', () => {
 				);
 				fetchMock.get(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{ body: withActive( 'analytics-4' ) }
+					{ body: withActive( MODULE_SLUG_ANALYTICS_4 ) }
 				);
 
 				const { response } = await registry
 					.dispatch( CORE_MODULES )
-					.activateModule( 'analytics-4' );
+					.activateModule( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( response.moduleReauthURL ).toContain( connectURL );
 				expect(
@@ -307,11 +310,11 @@ describe( 'core/modules modules', () => {
 		describe( 'recoverModules', () => {
 			it( 'dispatches requests to recover modules', async () => {
 				provideModuleRegistrations( registry );
-				const slugs = [ 'analytics-4', 'tagmanager' ];
+				const slugs = [ MODULE_SLUG_ANALYTICS_4, 'tagmanager' ];
 
 				const recoverModulesResponse = {
 					success: {
-						'analytics-4': true,
+						[ MODULE_SLUG_ANALYTICS_4 ]: true,
 						tagmanager: true,
 					},
 					error: {},
@@ -375,7 +378,7 @@ describe( 'core/modules modules', () => {
 						body: [
 							...FIXTURES,
 							{
-								slug: 'analytics-4',
+								slug: MODULE_SLUG_ANALYTICS_4,
 								name: 'Analytics',
 								active: true,
 								connected: true,
@@ -411,7 +414,7 @@ describe( 'core/modules modules', () => {
 					.recoverModules( slugs );
 
 				expect( response.success ).toStrictEqual( {
-					'analytics-4': true,
+					[ MODULE_SLUG_ANALYTICS_4 ]: true,
 					tagmanager: true,
 				} );
 
@@ -425,7 +428,10 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slugs: [ 'analytics-4', 'tagmanager' ],
+								slugs: [
+									MODULE_SLUG_ANALYTICS_4,
+									'tagmanager',
+								],
 							},
 						},
 					}
@@ -439,7 +445,7 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slug: 'analytics-4',
+								slug: MODULE_SLUG_ANALYTICS_4,
 							},
 						},
 					}
@@ -492,11 +498,11 @@ describe( 'core/modules modules', () => {
 
 			it( 'encounters an error if the any module is not recoverable', async () => {
 				provideModuleRegistrations( registry );
-				const slugs = [ 'analytics-4', 'tagmanager' ];
+				const slugs = [ MODULE_SLUG_ANALYTICS_4, 'tagmanager' ];
 
 				const recoverModulesResponse = {
 					success: {
-						'analytics-4': true,
+						[ MODULE_SLUG_ANALYTICS_4 ]: true,
 						tagmanager: false,
 					},
 					error: {
@@ -557,7 +563,7 @@ describe( 'core/modules modules', () => {
 						body: [
 							...FIXTURES,
 							{
-								slug: 'analytics-4',
+								slug: MODULE_SLUG_ANALYTICS_4,
 								name: 'Analytics',
 								active: true,
 								connected: true,
@@ -593,7 +599,7 @@ describe( 'core/modules modules', () => {
 					.recoverModules( slugs );
 
 				expect( response.success ).toStrictEqual( {
-					'analytics-4': true,
+					[ MODULE_SLUG_ANALYTICS_4 ]: true,
 					tagmanager: false,
 				} );
 				expect( response.error.tagmanager.message ).toBe(
@@ -610,7 +616,10 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slugs: [ 'analytics-4', 'tagmanager' ],
+								slugs: [
+									MODULE_SLUG_ANALYTICS_4,
+									'tagmanager',
+								],
 							},
 						},
 					}
@@ -624,7 +633,7 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slug: 'analytics-4',
+								slug: MODULE_SLUG_ANALYTICS_4,
 							},
 						},
 					}
@@ -674,7 +683,7 @@ describe( 'core/modules modules', () => {
 		describe( 'deactivateModule', () => {
 			it( 'dispatches a request to deactivate this module', async () => {
 				// In our fixtures, analytics is off by default.
-				const slug = 'analytics-4';
+				const slug = MODULE_SLUG_ANALYTICS_4;
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( withActive( slug ) );
@@ -727,7 +736,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, analytics is off by default.
-				const slug = 'analytics-4';
+				const slug = MODULE_SLUG_ANALYTICS_4;
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( withActive( slug ) );
@@ -1235,7 +1244,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'analytics-4';
+				const slug = MODULE_SLUG_ANALYTICS_4;
 				const module = registry
 					.select( CORE_MODULES )
 					.getModule( slug );
@@ -1262,7 +1271,7 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				const slug = 'analytics-4';
+				const slug = MODULE_SLUG_ANALYTICS_4;
 
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
@@ -1291,7 +1300,7 @@ describe( 'core/modules modules', () => {
 
 				const module = registry
 					.select( CORE_MODULES )
-					.getModule( 'analytics-4' );
+					.getModule( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( module ).toBeUndefined();
 
@@ -1304,7 +1313,7 @@ describe( 'core/modules modules', () => {
 					{ body: FIXTURES, status: 200 }
 				);
 
-				const slug = 'analytics-4';
+				const slug = MODULE_SLUG_ANALYTICS_4;
 				const module = registry
 					.select( CORE_MODULES )
 					.getModule( slug );
@@ -1452,7 +1461,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: FIXTURES.filter(
-							( { slug } ) => slug !== 'analytics-4'
+							( { slug } ) => slug !== MODULE_SLUG_ANALYTICS_4
 						),
 						status: 200,
 					}
@@ -1480,7 +1489,7 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns false if a module is not available', async () => {
-				const slug = 'analytics-4';
+				const slug = MODULE_SLUG_ANALYTICS_4;
 				const isAvailable = registry
 					.select( CORE_MODULES )
 					.isModuleAvailable( slug );
@@ -1506,7 +1515,7 @@ describe( 'core/modules modules', () => {
 
 				const isAvailable = registry
 					.select( CORE_MODULES )
-					.isModuleAvailable( 'analytics-4' );
+					.isModuleAvailable( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( isAvailable ).toBeUndefined();
 
@@ -1588,7 +1597,7 @@ describe( 'core/modules modules', () => {
 
 				const isActive = registry
 					.select( CORE_MODULES )
-					.isModuleActive( 'analytics-4' );
+					.isModuleActive( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( isActive ).toBeUndefined();
 
@@ -1600,7 +1609,7 @@ describe( 'core/modules modules', () => {
 			it.each( [
 				[
 					'true if a module is connected',
-					'analytics-4',
+					MODULE_SLUG_ANALYTICS_4,
 					true,
 					{ connected: true },
 				],
@@ -1663,7 +1672,7 @@ describe( 'core/modules modules', () => {
 
 				const isConnected = registry
 					.select( CORE_MODULES )
-					.isModuleConnected( 'analytics-4' );
+					.isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( isConnected ).toBeUndefined();
 
@@ -1679,7 +1688,7 @@ describe( 'core/modules modules', () => {
 				);
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
-					.getModuleFeatures( 'analytics-4' );
+					.getModuleFeatures( MODULE_SLUG_ANALYTICS_4 );
 
 				// The modules will be undefined whilst loading.
 				expect( featuresLoaded ).toBeUndefined();
@@ -1691,14 +1700,14 @@ describe( 'core/modules modules', () => {
 				provideModules( registry );
 				provideModuleRegistrations( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						features: [ 'feature one', 'feature two' ],
 					},
 				] );
 
 				const featuresLoaded = registry
 					.select( CORE_MODULES )
-					.getModuleFeatures( 'analytics-4' );
+					.getModuleFeatures( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( featuresLoaded ).toStrictEqual( [
 					'feature one',

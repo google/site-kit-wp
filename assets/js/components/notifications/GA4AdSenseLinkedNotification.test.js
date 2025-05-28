@@ -24,7 +24,10 @@ import {
 	provideModules,
 } from '../../../../tests/js/test-utils';
 import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	MODULES_ANALYTICS_4,
+} from '../../modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
@@ -53,7 +56,10 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		// All the below conditions will trigger a successful notification.
 		// So each individual failing test case further below will overwrite one
 		// of the success criteria.
-		provideModules( registry, withConnected( 'analytics-4', 'adsense' ) );
+		provideModules(
+			registry,
+			withConnected( MODULE_SLUG_ANALYTICS_4, 'adsense' )
+		);
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
@@ -84,7 +90,11 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 
 		it( 'is not active if AdSense module is not connected', async () => {
 			provideModules( registry, [
-				{ active: true, connected: true, slug: 'analytics-4' },
+				{
+					active: true,
+					connected: true,
+					slug: MODULE_SLUG_ANALYTICS_4,
+				},
 				{
 					active: true,
 					connected: false,

@@ -47,6 +47,7 @@ import {
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
 import * as tracking from '../../../../../../util/tracking';
@@ -283,7 +284,7 @@ describe( 'AudienceTilesWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );

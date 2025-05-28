@@ -62,6 +62,7 @@ import { CORE_SITE } from '../site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
+	MODULE_SLUG_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 
@@ -336,7 +337,7 @@ describe( 'core/user key metrics', () => {
 						{
 							active: true,
 							connected: true,
-							slug: 'analytics-4',
+							slug: MODULE_SLUG_ANALYTICS_4,
 						},
 					] );
 
@@ -488,7 +489,7 @@ describe( 'core/user key metrics', () => {
 						{
 							active: true,
 							connected: true,
-							slug: 'analytics-4',
+							slug: MODULE_SLUG_ANALYTICS_4,
 						},
 					] );
 
@@ -1032,7 +1033,7 @@ describe( 'core/user key metrics', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: false,
 						connected: false,
 					},
@@ -1040,7 +1041,7 @@ describe( 'core/user key metrics', () => {
 
 				provideKeyMetricsWidgetRegistrations( registry, {
 					metricA: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} );
 
@@ -1062,7 +1063,7 @@ describe( 'core/user key metrics', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						shareable: true,
@@ -1071,7 +1072,7 @@ describe( 'core/user key metrics', () => {
 
 				provideKeyMetricsWidgetRegistrations( registry, {
 					metricA: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} );
 
@@ -1092,7 +1093,7 @@ describe( 'core/user key metrics', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1100,7 +1101,7 @@ describe( 'core/user key metrics', () => {
 
 				provideKeyMetricsWidgetRegistrations( registry, {
 					metricA: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} );
 

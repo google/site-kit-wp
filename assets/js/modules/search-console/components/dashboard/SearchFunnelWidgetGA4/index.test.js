@@ -36,6 +36,7 @@ import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	let registry;
@@ -106,7 +107,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			.dispatch( CORE_MODULES )
 			.receiveGetModules(
 				coreModulesFixture.filter(
-					( { slug } ) => slug !== 'analytics-4'
+					( { slug } ) => slug !== MODULE_SLUG_ANALYTICS_4
 				)
 			);
 

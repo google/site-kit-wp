@@ -33,6 +33,7 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	FORM_SETUP,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -74,7 +75,9 @@ describe( 'SetupForm', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-		provideModules( registry, [ { slug: 'analytics-4', active: true } ] );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true },
+		] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {

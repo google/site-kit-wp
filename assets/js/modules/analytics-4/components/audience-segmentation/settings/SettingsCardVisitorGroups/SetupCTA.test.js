@@ -38,6 +38,7 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
+	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
@@ -73,7 +74,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

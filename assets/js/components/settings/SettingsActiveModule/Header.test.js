@@ -41,6 +41,7 @@ import {
 } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -79,7 +80,7 @@ describe( 'Header', () => {
 				connected: false,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,

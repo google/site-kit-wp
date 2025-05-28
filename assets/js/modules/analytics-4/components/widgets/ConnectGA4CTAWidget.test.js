@@ -40,6 +40,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
@@ -57,7 +58,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -66,8 +67,12 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 	it( 'should not render unless at least 3 analytics dependant metrics are chosen to be displayed', async () => {
 		const keyMetricWidgets = {
-			[ KM_ANALYTICS_RETURNING_VISITORS ]: { modules: [ 'analytics-4' ] },
-			[ KM_ANALYTICS_NEW_VISITORS ]: { modules: [ 'analytics-4' ] },
+			[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
+			[ KM_ANALYTICS_NEW_VISITORS ]: {
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
 				modules: [ 'adsense' ],
 			},
@@ -115,7 +120,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 			keyMetricWidgets.reduce(
 				( acc, widget ) => ( {
 					...acc,
-					[ widget ]: { modules: [ 'analytics-4' ] },
+					[ widget ]: { modules: [ MODULE_SLUG_ANALYTICS_4 ] },
 				} ),
 				{}
 			)

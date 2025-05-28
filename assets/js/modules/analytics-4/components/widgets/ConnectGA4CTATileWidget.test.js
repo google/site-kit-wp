@@ -34,6 +34,7 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 describe( 'ConnectGA4CTATileWidget', () => {
@@ -47,7 +48,7 @@ describe( 'ConnectGA4CTATileWidget', () => {
 		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -63,10 +64,10 @@ describe( 'ConnectGA4CTATileWidget', () => {
 
 		provideKeyMetricsWidgetRegistrations( registry, {
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-				modules: 'analytics-4',
+				modules: MODULE_SLUG_ANALYTICS_4,
 			},
 			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-				modules: 'analytics-4',
+				modules: MODULE_SLUG_ANALYTICS_4,
 			},
 		} );
 
@@ -89,7 +90,7 @@ describe( 'ConnectGA4CTATileWidget', () => {
 		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -108,7 +109,7 @@ describe( 'ConnectGA4CTATileWidget', () => {
 
 		provideKeyMetricsWidgetRegistrations( registry, {
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-				modules: 'analytics-4',
+				modules: MODULE_SLUG_ANALYTICS_4,
 			},
 		} );
 

@@ -30,6 +30,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
 import AdminBarWidgets from './AdminBarWidgets';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../js/modules/analytics-4/datastore/constants';
 
 describe( 'AdminBarWidgets', () => {
 	let registry;
@@ -92,7 +93,7 @@ describe( 'AdminBarWidgets', () => {
 			.dispatch( CORE_MODULES )
 			.receiveGetModules(
 				coreModulesFixture.filter(
-					( { slug } ) => slug !== 'analytics-4'
+					( { slug } ) => slug !== MODULE_SLUG_ANALYTICS_4
 				)
 			);
 
