@@ -1,5 +1,24 @@
 == Changelog ==
 
+= 1.154.0 =
+
+**Enhanced**
+
+* Add the `purchase` event tracking for the WooCommerce conversion tracking provider on block themes. See [#10747](https://github.com/google/site-kit-wp/issues/10747).
+* Add all WooCommerce conversion events to track when WooCommerce Analytics Addon is available. See [#10691](https://github.com/google/site-kit-wp/issues/10691).
+* Update WooCommerce events tracking to include additional information. See [#10672](https://github.com/google/site-kit-wp/issues/10672).
+* Update success subtle notifications to use the new `<Notice type="success">` component. See [#10432](https://github.com/google/site-kit-wp/issues/10432).
+* Refactor the usage of all “info type notice” components to use the new `<Notice type='info'>` component. See [#10430](https://github.com/google/site-kit-wp/issues/10430).
+* Refactor components used for warnings throughout the plugin. See [#10428](https://github.com/google/site-kit-wp/issues/10428).
+* Reset the dismissal state for the Reader Revenue Manager product ID notifications when the connected publication is changed, ensuring they can be shown again. See [#10311](https://github.com/google/site-kit-wp/issues/10311).
+* Fix tooltip issues on mobile/tablet viewports when user clicked outside of the tooltip area. See [#10101](https://github.com/google/site-kit-wp/issues/10101).
+* Add the accepted language information to the remove notifications requests. See [#8813](https://github.com/google/site-kit-wp/issues/8813).
+
+**Fixed**
+
+* Fix error preventing the Reader Revenue Manager block editor plugin and Sign in With Google blocks from loading in the block editor. See [#10822](https://github.com/google/site-kit-wp/issues/10822).
+* Fix incorrect step navigation in feature tours. See [#10590](https://github.com/google/site-kit-wp/issues/10590).
+
 = 1.153.0 =
 
 **Enhanced**

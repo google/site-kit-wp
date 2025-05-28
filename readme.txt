@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.153.0
+Stable tag:        1.154.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,27 +109,23 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.153.0 =
+= 1.154.0 =
 
 **Enhanced**
 
-* Add the new Banner component. See [#10703](https://github.com/google/site-kit-wp/issues/10703).
-* Enhance WooCommerce provider to surface additional tracking details. See [#10670](https://github.com/google/site-kit-wp/issues/10670).
-* Add price and item name to Easy Digital Download Analytics events. See [#10644](https://github.com/google/site-kit-wp/issues/10644).
-* Refactor new feature type notices to use the new `<Notice type="new">` component. See [#10484](https://github.com/google/site-kit-wp/issues/10484).
-* Refactor RRMIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10389](https://github.com/google/site-kit-wp/issues/10389).
-* Refactor `AudienceTiles` component to reduce cyclomatic complexity and remove the ESLint override. See [#10358](https://github.com/google/site-kit-wp/issues/10358).
-* Automatically dismiss notifications after they are viewed for three different days. See [#10106](https://github.com/google/site-kit-wp/issues/10106).
-* Rewrite a set of datastore reducers to use Immer. Props juniovitorino. See [#5795](https://github.com/google/site-kit-wp/issues/5795).
-
-**Changed**
-
-* Ensure the pie chart in the Analytics All Traffic widget displays its zero data state when it has no data for the current date range but does for the previous range. See [#10613](https://github.com/google/site-kit-wp/issues/10613).
+* Add the `purchase` event tracking for the WooCommerce conversion tracking provider on block themes. See [#10747](https://github.com/google/site-kit-wp/issues/10747).
+* Add all WooCommerce conversion events to track when WooCommerce Analytics Addon is available. See [#10691](https://github.com/google/site-kit-wp/issues/10691).
+* Update WooCommerce events tracking to include additional information. See [#10672](https://github.com/google/site-kit-wp/issues/10672).
+* Update success subtle notifications to use the new `<Notice type="success">` component. See [#10432](https://github.com/google/site-kit-wp/issues/10432).
+* Refactor the usage of all “info type notice” components to use the new `<Notice type='info'>` component. See [#10430](https://github.com/google/site-kit-wp/issues/10430).
+* Refactor components used for warnings throughout the plugin. See [#10428](https://github.com/google/site-kit-wp/issues/10428).
+* Reset the dismissal state for the Reader Revenue Manager product ID notifications when the connected publication is changed, ensuring they can be shown again. See [#10311](https://github.com/google/site-kit-wp/issues/10311).
+* Fix tooltip issues on mobile/tablet viewports when user clicked outside of the tooltip area. See [#10101](https://github.com/google/site-kit-wp/issues/10101).
+* Add the accepted language information to the remove notifications requests. See [#8813](https://github.com/google/site-kit-wp/issues/8813).
 
 **Fixed**
 
-* Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
-* Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
-* Update Partner Ads integration. See [#10779](https://github.com/google/site-kit-wp/issues/10779).
+* Fix error preventing the Reader Revenue Manager block editor plugin and Sign in With Google blocks from loading in the block editor. See [#10822](https://github.com/google/site-kit-wp/issues/10822).
+* Fix incorrect step navigation in feature tours. See [#10590](https://github.com/google/site-kit-wp/issues/10590).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
