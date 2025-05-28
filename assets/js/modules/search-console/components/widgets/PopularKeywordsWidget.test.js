@@ -35,6 +35,7 @@ import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
+	MODULE_SLUG_SEARCH_CONSOLE,
 	MODULES_SEARCH_CONSOLE,
 } from '../../datastore/constants';
 import {
@@ -56,7 +57,7 @@ describe( 'PopularKeywordsWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'search-console' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_SEARCH_CONSOLE ) );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com' );

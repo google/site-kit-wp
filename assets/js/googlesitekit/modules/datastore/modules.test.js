@@ -40,7 +40,10 @@ import {
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import {
+	MODULE_SLUG_SEARCH_CONSOLE,
+	MODULES_SEARCH_CONSOLE,
+} from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import {
 	MODULE_SLUG_ANALYTICS_4,
@@ -54,7 +57,7 @@ describe( 'core/modules modules', () => {
 	const sharedOwnershipModulesList = {
 		sharedOwnershipModules: [
 			MODULE_SLUG_ANALYTICS_4,
-			'search-console',
+			MODULE_SLUG_SEARCH_CONSOLE,
 			MODULE_SLUG_TAGMANAGER,
 		],
 	};
@@ -70,7 +73,7 @@ describe( 'core/modules modules', () => {
 			internal: true,
 		},
 		{
-			slug: 'search-console',
+			slug: MODULE_SLUG_SEARCH_CONSOLE,
 			name: 'Search Console',
 			active: true,
 			connected: true,
@@ -91,7 +94,7 @@ describe( 'core/modules modules', () => {
 
 	const expectedRecoverableModules = [
 		{
-			slug: 'search-console',
+			slug: MODULE_SLUG_SEARCH_CONSOLE,
 			name: 'Search Console',
 			active: true,
 			connected: true,
@@ -391,7 +394,7 @@ describe( 'core/modules modules', () => {
 								storeName: 'modules/analytics-4',
 							},
 							{
-								slug: 'search-console',
+								slug: MODULE_SLUG_SEARCH_CONSOLE,
 								name: 'Search Console',
 								active: true,
 								connected: true,
@@ -496,7 +499,7 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				expect( Object.keys( recoverableModules ) ).toEqual( [
-					'search-console',
+					MODULE_SLUG_SEARCH_CONSOLE,
 				] );
 			} );
 
@@ -579,7 +582,7 @@ describe( 'core/modules modules', () => {
 								storeName: 'modules/analytics-4',
 							},
 							{
-								slug: 'search-console',
+								slug: MODULE_SLUG_SEARCH_CONSOLE,
 								name: 'Search Console',
 								active: true,
 								connected: true,
@@ -681,7 +684,7 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				expect( Object.keys( recoverableModules ) ).toEqual( [
-					'search-console',
+					MODULE_SLUG_SEARCH_CONSOLE,
 					MODULE_SLUG_TAGMANAGER,
 				] );
 			} );
@@ -1000,13 +1003,13 @@ describe( 'core/modules modules', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: true },
-						{ slug: 'search-console' }
+						{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 					);
 
 				const state = store.getState();
 
 				expect( state.moduleAccess ).toMatchObject( {
-					'search-console': true,
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
 				} );
 			} );
 		} );
@@ -1477,7 +1480,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns true if a module is available', async () => {
 				// Search console is available in our fixtures.
-				const slug = 'search-console';
+				const slug = MODULE_SLUG_SEARCH_CONSOLE;
 				const isAvailable = registry
 					.select( CORE_MODULES )
 					.isModuleAvailable( slug );
@@ -1540,7 +1543,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns true if a module is active', async () => {
 				// Search console is active in our fixtures.
-				const slug = 'search-console';
+				const slug = MODULE_SLUG_SEARCH_CONSOLE;
 				const isActive = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -1747,17 +1750,17 @@ describe( 'core/modules modules', () => {
 
 				moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleAccess( 'search-console' );
+					.hasModuleAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				// The modules info will be its initial value while the modules info is fetched.
 				expect( moduleAccess ).toBeUndefined();
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 
 				moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleAccess( 'search-console' );
+					.hasModuleAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleAccess ).toBe( true );
@@ -1779,15 +1782,15 @@ describe( 'core/modules modules', () => {
 
 				registry
 					.select( CORE_MODULES )
-					.hasModuleAccess( 'search-console' );
+					.hasModuleAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleAccess( 'search-console' );
+					.hasModuleAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( moduleAccess ).toEqual( undefined );
@@ -1804,12 +1807,12 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleAccess( 'search-console' );
+					.hasModuleAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 			} );
 		} );
@@ -1823,13 +1826,13 @@ describe( 'core/modules modules', () => {
 
 				const moduleStoreName = registry
 					.select( CORE_MODULES )
-					.getModuleStoreName( 'search-console' );
+					.getModuleStoreName( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleStoreName ).toBeUndefined();
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnership( 'search-console' );
+					.hasModuleOwnership( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 
@@ -1858,7 +1861,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnership( 'search-console' );
+					.hasModuleOwnership( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 
@@ -1879,7 +1882,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnership( 'search-console' );
+					.hasModuleOwnership( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 			} );
@@ -1892,7 +1895,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnership( 'search-console' );
+					.hasModuleOwnership( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBe( true );
 			} );
@@ -1907,13 +1910,13 @@ describe( 'core/modules modules', () => {
 
 				const moduleStoreName = registry
 					.select( CORE_MODULES )
-					.getModuleStoreName( 'search-console' );
+					.getModuleStoreName( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleStoreName ).toBeUndefined();
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 
@@ -1942,7 +1945,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 
@@ -1963,7 +1966,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBeUndefined();
 			} );
@@ -1976,7 +1979,7 @@ describe( 'core/modules modules', () => {
 
 				const moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBe( true );
 			} );
@@ -1995,17 +1998,17 @@ describe( 'core/modules modules', () => {
 
 				let moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBe( undefined );
 
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 
 				moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBe( false );
 			} );
@@ -2037,19 +2040,19 @@ describe( 'core/modules modules', () => {
 				// `hasModuleAccess` not resolved yet.
 				let moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBe( undefined );
 
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// `hasModuleAccess` resolved.
 				moduleAccess = registry
 					.select( CORE_MODULES )
-					.hasModuleOwnershipOrAccess( 'search-console' );
+					.hasModuleOwnershipOrAccess( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( moduleAccess ).toBe( true );
 			} );
@@ -2303,7 +2306,7 @@ describe( 'core/modules modules', () => {
 			it( 'should return null if module does not define homepage', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						active: true,
 						connected: true,
@@ -2313,14 +2316,14 @@ describe( 'core/modules modules', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.getDetailsLinkURL( 'search-console' )
+						.getDetailsLinkURL( MODULE_SLUG_SEARCH_CONSOLE )
 				).toBeNull();
 			} );
 
 			it( 'should return module homepage', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						homepage: 'https://example.com',
 						active: true,
@@ -2334,7 +2337,7 @@ describe( 'core/modules modules', () => {
 				expect(
 					registry
 						.select( CORE_MODULES )
-						.getDetailsLinkURL( 'search-console' )
+						.getDetailsLinkURL( MODULE_SLUG_SEARCH_CONSOLE )
 				).toBe(
 					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com&Email=test%40example.com'
 				);

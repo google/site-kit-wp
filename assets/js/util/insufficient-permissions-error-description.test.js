@@ -17,6 +17,7 @@
  */
 
 import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
 import { getInsufficientPermissionsErrorDescription } from './insufficient-permissions-error-description';
 
 describe( 'getInsufficientPermissionsErrorDescription', () => {
@@ -93,7 +94,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 	describe( 'search console error', () => {
 		const searchConsole = {
-			slug: 'search-console',
+			slug: MODULE_SLUG_SEARCH_CONSOLE,
 			name: 'Search Console',
 		};
 

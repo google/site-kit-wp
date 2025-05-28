@@ -41,6 +41,7 @@ import {
 import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../search-console/datastore/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
@@ -77,7 +78,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 				modules: [ 'adsense' ],
 			},
 			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-				modules: [ 'search-console' ],
+				modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 			},
 		};
 

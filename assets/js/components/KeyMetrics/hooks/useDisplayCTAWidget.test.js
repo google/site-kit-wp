@@ -30,7 +30,10 @@ import {
 	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import {
+	MODULE_SLUG_SEARCH_CONSOLE,
+	MODULES_SEARCH_CONSOLE,
+} from '../../../modules/search-console/datastore/constants';
 
 describe( 'useDisplayCTAWidget hook', () => {
 	let registry;
@@ -40,7 +43,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
@@ -52,7 +55,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
 			[ MODULE_SLUG_ANALYTICS_4 ]: false,
 		} );
 

@@ -26,7 +26,10 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/test-utils';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import {
+	MODULE_SLUG_SEARCH_CONSOLE,
+	MODULES_SEARCH_CONSOLE,
+} from '../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -47,7 +50,7 @@ describe( 'Footer', () => {
 			color: '#4285f4',
 			label: 'Impressions',
 			metric: 'impressions',
-			service: 'search-console',
+			service: MODULE_SLUG_SEARCH_CONSOLE,
 		},
 		{
 			id: 'users',

@@ -39,6 +39,7 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-contexts';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;
@@ -102,7 +103,7 @@ describe( 'Dashboard Navigation', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				name: 'Search Console',
 				shareable: true,
 			},
@@ -140,7 +141,7 @@ describe( 'Dashboard Navigation', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				name: 'Search Console',
 				shareable: true,
 			},

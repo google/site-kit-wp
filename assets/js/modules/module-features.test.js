@@ -32,6 +32,7 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/dat
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/datastore/constants';
 import { MODULE_SLUG_TAGMANAGER } from './tagmanager/datastore/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './sign-in-with-google/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from './search-console/datastore/constants';
 
 describe( 'Module Features', () => {
 	let registry;
@@ -77,7 +78,7 @@ describe( 'Module Features', () => {
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			[ 'Reader Revenue Manager publication tracking will be disabled' ],
 		],
-		[ 'search-console', [] ],
+		[ MODULE_SLUG_SEARCH_CONSOLE, [] ],
 		[
 			MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 			[

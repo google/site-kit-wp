@@ -43,6 +43,7 @@ import { createCacheKey } from '../../../../../googlesitekit/api';
 import { getKeys, setItem } from '../../../../../googlesitekit/api/cache';
 import AccountCreate from '.';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../../search-console/datastore/constants';
 
 const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
 	'^/google-site-kit/v1/core/site/data/conversion-tracking'
@@ -158,7 +159,7 @@ describe( 'AccountCreate', () => {
 
 			const searchConsoleItemCacheKey = createCacheKey(
 				'modules',
-				'search-console',
+				MODULE_SLUG_SEARCH_CONSOLE,
 				'search-console-datapoint'
 			);
 

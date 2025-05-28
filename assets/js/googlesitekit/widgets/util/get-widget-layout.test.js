@@ -25,6 +25,7 @@ import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
 import RecoverableModules from '../../../components/RecoverableModules';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };
@@ -75,7 +76,7 @@ describe( 'getWidgetLayout', () => {
 		];
 		const widgetStates = {
 			test1: getRegularState(),
-			test2: getReportZeroState( 'search-console' ),
+			test2: getReportZeroState( MODULE_SLUG_SEARCH_CONSOLE ),
 			test3: getReportZeroState( MODULE_SLUG_ANALYTICS_4 ),
 			test4: getRecoverableModulesState( [ 'adsense' ] ),
 			test5: getRecoverableModulesState( [ 'adsense' ] ),

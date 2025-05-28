@@ -68,6 +68,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -122,7 +123,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],
@@ -193,7 +194,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],
@@ -228,7 +229,7 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: false,
 					connected: false,
 				},
@@ -236,7 +237,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],
@@ -270,7 +271,7 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: false,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: false,
 					connected: false,
 				},
@@ -278,10 +279,13 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ MODULE_SLUG_ANALYTICS_4, 'search-console' ],
+					modules: [
+						MODULE_SLUG_ANALYTICS_4,
+						MODULE_SLUG_SEARCH_CONSOLE,
+					],
 				},
 			} );
 
@@ -375,7 +379,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],
@@ -535,7 +539,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],
@@ -587,7 +591,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],

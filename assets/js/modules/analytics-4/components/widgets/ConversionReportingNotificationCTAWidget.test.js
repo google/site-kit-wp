@@ -61,6 +61,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../search-console/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -317,7 +318,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 					connected: true,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: true,
 					connected: true,
 				},
