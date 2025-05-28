@@ -32,6 +32,7 @@ import {
 	MODULES_PAGESPEED_INSIGHTS,
 } from '../../../modules/pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -84,7 +85,7 @@ describe( 'core/modules sharing-settings', () => {
 	const sharedOwnershipModules = [
 		MODULE_SLUG_ANALYTICS_4,
 		'search-console',
-		'tagmanager',
+		MODULE_SLUG_TAGMANAGER,
 	];
 
 	let registry;
@@ -467,7 +468,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharingManagement = registry
 					.select( CORE_MODULES )
-					.getSharingManagement( 'tagmanager' );
+					.getSharingManagement( MODULE_SLUG_TAGMANAGER );
 				expect( sharingManagement ).toBeNull();
 			} );
 
@@ -517,7 +518,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharedRoles = registry
 					.select( CORE_MODULES )
-					.getSharedRoles( 'tagmanager' );
+					.getSharedRoles( MODULE_SLUG_TAGMANAGER );
 				expect( sharedRoles ).toBeNull();
 			} );
 

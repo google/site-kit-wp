@@ -30,6 +30,7 @@ import { enabledFeatures } from '../features';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from './tagmanager/datastore/constants';
 
 describe( 'Module Features', () => {
 	let registry;
@@ -85,7 +86,7 @@ describe( 'Module Features', () => {
 			],
 		],
 		[
-			'tagmanager',
+			MODULE_SLUG_TAGMANAGER,
 			[ 'You will not be able to create tags without updating code' ],
 		],
 	] )(

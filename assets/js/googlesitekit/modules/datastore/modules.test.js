@@ -47,6 +47,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import { MODULE_SLUG_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -54,7 +55,7 @@ describe( 'core/modules modules', () => {
 		sharedOwnershipModules: [
 			MODULE_SLUG_ANALYTICS_4,
 			'search-console',
-			'tagmanager',
+			MODULE_SLUG_TAGMANAGER,
 		],
 	};
 
@@ -78,7 +79,7 @@ describe( 'core/modules modules', () => {
 			internal: false,
 		},
 		{
-			slug: 'tagmanager',
+			slug: MODULE_SLUG_TAGMANAGER,
 			name: 'Tag Manager',
 			active: true,
 			connected: true,
@@ -99,7 +100,7 @@ describe( 'core/modules modules', () => {
 			internal: false,
 		},
 		{
-			slug: 'tagmanager',
+			slug: MODULE_SLUG_TAGMANAGER,
 			name: 'Tag Manager',
 			active: true,
 			connected: true,
@@ -151,7 +152,7 @@ describe( 'core/modules modules', () => {
 		describe( 'activateModule', () => {
 			it( 'dispatches a request to activate this module', async () => {
 				// In our fixtures, tag manager is off by default.
-				const slug = 'tagmanager';
+				const slug = MODULE_SLUG_TAGMANAGER;
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES }
@@ -254,7 +255,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, tag manager is off by default.
-				const slug = 'tagmanager';
+				const slug = MODULE_SLUG_TAGMANAGER;
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const isActiveBefore = registry
@@ -310,7 +311,10 @@ describe( 'core/modules modules', () => {
 		describe( 'recoverModules', () => {
 			it( 'dispatches requests to recover modules', async () => {
 				provideModuleRegistrations( registry );
-				const slugs = [ MODULE_SLUG_ANALYTICS_4, 'tagmanager' ];
+				const slugs = [
+					MODULE_SLUG_ANALYTICS_4,
+					MODULE_SLUG_TAGMANAGER,
+				];
 
 				const recoverModulesResponse = {
 					success: {
@@ -396,7 +400,7 @@ describe( 'core/modules modules', () => {
 								storeName: 'modules/search-console',
 							},
 							{
-								slug: 'tagmanager',
+								slug: MODULE_SLUG_TAGMANAGER,
 								name: 'Tag Manager',
 								active: true,
 								connected: true,
@@ -430,7 +434,7 @@ describe( 'core/modules modules', () => {
 							data: {
 								slugs: [
 									MODULE_SLUG_ANALYTICS_4,
-									'tagmanager',
+									MODULE_SLUG_TAGMANAGER,
 								],
 							},
 						},
@@ -458,7 +462,7 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slug: 'tagmanager',
+								slug: MODULE_SLUG_TAGMANAGER,
 							},
 						},
 					}
@@ -498,7 +502,10 @@ describe( 'core/modules modules', () => {
 
 			it( 'encounters an error if the any module is not recoverable', async () => {
 				provideModuleRegistrations( registry );
-				const slugs = [ MODULE_SLUG_ANALYTICS_4, 'tagmanager' ];
+				const slugs = [
+					MODULE_SLUG_ANALYTICS_4,
+					MODULE_SLUG_TAGMANAGER,
+				];
 
 				const recoverModulesResponse = {
 					success: {
@@ -581,7 +588,7 @@ describe( 'core/modules modules', () => {
 								storeName: 'modules/search-console',
 							},
 							{
-								slug: 'tagmanager',
+								slug: MODULE_SLUG_TAGMANAGER,
 								name: 'Tag Manager',
 								active: true,
 								connected: true,
@@ -618,7 +625,7 @@ describe( 'core/modules modules', () => {
 							data: {
 								slugs: [
 									MODULE_SLUG_ANALYTICS_4,
-									'tagmanager',
+									MODULE_SLUG_TAGMANAGER,
 								],
 							},
 						},
@@ -647,7 +654,7 @@ describe( 'core/modules modules', () => {
 					{
 						body: {
 							data: {
-								slug: 'tagmanager',
+								slug: MODULE_SLUG_TAGMANAGER,
 							},
 						},
 					}
@@ -675,7 +682,7 @@ describe( 'core/modules modules', () => {
 
 				expect( Object.keys( recoverableModules ) ).toEqual( [
 					'search-console',
-					'tagmanager',
+					MODULE_SLUG_TAGMANAGER,
 				] );
 			} );
 		} );
@@ -1401,7 +1408,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'tagmanager';
+				const slug = MODULE_SLUG_TAGMANAGER;
 				const namesLoaded = registry
 					.select( CORE_MODULES )
 					[ selector ]( slug );
@@ -1417,7 +1424,7 @@ describe( 'core/modules modules', () => {
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
-				const slug = 'tagmanager';
+				const slug = MODULE_SLUG_TAGMANAGER;
 				registry.select( CORE_MODULES )[ selector ]( slug );
 
 				// Wait for loading to complete.
@@ -1552,7 +1559,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns false if a module is not active', async () => {
 				// Tag manager in our fixtures is not active.
-				const slug = 'tagmanager';
+				const slug = MODULE_SLUG_TAGMANAGER;
 				const isActive = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
@@ -1615,7 +1622,7 @@ describe( 'core/modules modules', () => {
 				],
 				[
 					'false if a module is not active',
-					'tagmanager',
+					MODULE_SLUG_TAGMANAGER,
 					false,
 					{ active: false },
 				],

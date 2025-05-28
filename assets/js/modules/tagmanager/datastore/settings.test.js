@@ -27,6 +27,7 @@ import {
 	CONTEXT_WEB,
 	CONTEXT_AMP,
 	FORM_SETUP,
+	MODULE_SLUG_TAGMANAGER,
 } from './constants';
 import {
 	CORE_SITE,
@@ -320,7 +321,7 @@ describe( 'modules/tagmanager settings', () => {
 					);
 					const cacheKey = createCacheKey(
 						'modules',
-						'tagmanager',
+						MODULE_SLUG_TAGMANAGER,
 						'arbitrary-datapoint'
 					);
 					expect( await setItem( cacheKey, 'test-value' ) ).toBe(

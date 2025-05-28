@@ -41,6 +41,7 @@ import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	CONTEXT_AMP,
+	MODULE_SLUG_TAGMANAGER,
 } from '../../datastore/constants';
 import { buildAccountWithContainers } from '../../datastore/__factories__';
 import SettingsEdit from './SettingsEdit';
@@ -74,7 +75,9 @@ describe( 'SettingsEdit', () => {
 		provideSiteInfo( registry, { siteName } );
 		provideUserInfo( registry );
 
-		provideModules( registry, [ { slug: 'tagmanager', active: true } ] );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_TAGMANAGER, active: true },
+		] );
 		provideModuleRegistrations( registry );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -119,7 +122,7 @@ describe( 'SettingsEdit', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: false },
-						{ slug: 'tagmanager' }
+						{ slug: MODULE_SLUG_TAGMANAGER }
 					);
 
 				const { container, waitForRegistry } = render(
@@ -223,7 +226,7 @@ describe( 'SettingsEdit', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: false },
-						{ slug: 'tagmanager' }
+						{ slug: MODULE_SLUG_TAGMANAGER }
 					);
 
 				const { container, waitForRegistry } = render(
@@ -337,7 +340,7 @@ describe( 'SettingsEdit', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: false },
-						{ slug: 'tagmanager' }
+						{ slug: MODULE_SLUG_TAGMANAGER }
 					);
 
 				const { container, waitForRegistry } = render(

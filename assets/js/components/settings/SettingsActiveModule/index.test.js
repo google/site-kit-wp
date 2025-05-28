@@ -35,7 +35,10 @@ import {
 	provideUserAuthentication,
 } from '../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
+import {
+	MODULE_SLUG_TAGMANAGER,
+	MODULES_TAGMANAGER,
+} from '../../../modules/tagmanager/datastore/constants';
 import {
 	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
@@ -91,7 +94,7 @@ describe( 'SettingsModule', () => {
 				SettingsEditComponent: null,
 			},
 			{
-				slug: 'tagmanager',
+				slug: MODULE_SLUG_TAGMANAGER,
 				active: true,
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,
@@ -252,7 +255,7 @@ describe( 'SettingsModule', () => {
 		await act( () =>
 			registry
 				.resolveSelect( CORE_MODULES )
-				.canActivateModule( 'tagmanager' )
+				.canActivateModule( MODULE_SLUG_TAGMANAGER )
 		);
 
 		const { queryByRole } = render(
