@@ -73,6 +73,9 @@ export const actions = {
 	 * Adds a notification to the queue of notifications, used when the queue
 	 * is already resolved.
 	 *
+	 * This action is internal and should not be used directly outside of the
+	 * `registerNotification()` action.
+	 *
 	 * @since n.e.x.t
 	 * @private
 	 *
@@ -182,6 +185,15 @@ export const actions = {
 			return;
 		}
 
+		// If view contexts were provided, we need to repopulate the queues because
+		// because the data store doesn’t know the current `viewContext` and thus
+		// can’t figure out if the ones specified are valid/active.
+		//
+		// This has the unfortunate side effect of causing rotation of the
+		// notifications in the queue, so specifying `viewContexts` should
+		// be avoided when registering "ad-hoc" notifications that aren't
+		// registered on initialization.
+		//
 		// For each view context, check to see if the notifications have
 		// finished resolution for the `getQueuedNotifications` selector.
 		//
