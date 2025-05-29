@@ -35,11 +35,25 @@ import { TYPES } from '../../../../../components/Notice/constants';
 import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import {
+	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
+} from '../../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-audiences';
+
+export const notification = [
+	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
+	{
+		Component: AudienceSegmentationSetupSuccessSubtleNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+	},
+];
 
 export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 	id,

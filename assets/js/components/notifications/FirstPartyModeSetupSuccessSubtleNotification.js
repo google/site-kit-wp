@@ -29,11 +29,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '../Notice/constants';
 
 export const FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-fpm';
+
+export const notification = [
+	FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION,
+	{
+		Component: FirstPartyModeSetupSuccessSubtleNotification,
+		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: false,
+		featureFlag: 'firstPartyMode',
+	},
+];
 
 export default function FirstPartyModeSetupSuccessSubtleNotification( {
 	id,

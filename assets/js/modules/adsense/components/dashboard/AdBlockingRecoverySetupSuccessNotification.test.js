@@ -43,6 +43,7 @@ import { withNotificationComponentProps } from '../../../../googlesitekit/notifi
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { ADSENSE_NOTIFICATIONS } from '../..';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -76,6 +77,8 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
 			accountID: 'pub-123456',
 		} );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	it( 'should render notification and trigger tracking events and ACR survey', async () => {
