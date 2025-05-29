@@ -97,8 +97,9 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 
 	return (
 		<Notice
+			className="googlesitekit-notice--bottom-margin"
 			type={ Notice.TYPES.WARNING }
-			title={ sprintf(
+			description={ sprintf(
 				/* translators: %s: module name. */
 				__(
 					'By clicking confirm changes, you’re granting other users view-only access to data from %s via your Google account. You can always manage this later in the dashboard sharing settings.',
