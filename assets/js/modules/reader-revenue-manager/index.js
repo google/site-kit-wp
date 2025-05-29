@@ -47,7 +47,6 @@ import {
 } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { isFeatureEnabled } from '../../features';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
 import {
@@ -282,12 +281,10 @@ export const NOTIFICATIONS = {
 };
 
 export const registerNotifications = ( notificationsAPI ) => {
-	if ( isFeatureEnabled( 'rrmModule' ) ) {
-		for ( const notificationID in NOTIFICATIONS ) {
-			notificationsAPI.registerNotification(
-				notificationID,
-				NOTIFICATIONS[ notificationID ]
-			);
-		}
+	for ( const notificationID in NOTIFICATIONS ) {
+		notificationsAPI.registerNotification(
+			notificationID,
+			NOTIFICATIONS[ notificationID ]
+		);
 	}
 };

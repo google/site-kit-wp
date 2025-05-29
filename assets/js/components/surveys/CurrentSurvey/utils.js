@@ -19,7 +19,7 @@
 /**
  * Gets the current question and its ordinal.
  *
- * @since n.e.x.t
+ * @since 1.154.0
  *
  * @param {Object[]} questions The questions in the survey.
  * @param {Object[]} answers   The answers to the questions.
@@ -93,7 +93,7 @@ export function getCurrentQuestionAndOrdinal( questions, answers ) {
 /**
  * Gets the triggered completion.
  *
- * @since n.e.x.t
+ * @since 1.154.0
  *
  * @param {Object[]} questions              The questions in the survey.
  * @param {Object[]} answers                The answers to the questions.
@@ -146,7 +146,7 @@ export function getTriggeredCompletion(
 /**
  * Checks if the current question is the last question in the survey.
  *
- * @since n.e.x.t
+ * @since 1.154.0
  *
  * @param {Object[]} questions       The questions in the survey.
  * @param {Object}   currentQuestion The current question.
@@ -176,7 +176,7 @@ export function isLastQuestion( questions, currentQuestion ) {
 /**
  * Creates a map of question ordinals to answers.
  *
- * @since n.e.x.t
+ * @since 1.154.0
  *
  * @param {Object[]} answers The answers to the questions.
  * @return {Object} The map of question ordinals to answers.

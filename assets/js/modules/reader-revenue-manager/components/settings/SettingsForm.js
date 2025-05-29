@@ -31,7 +31,6 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
-import ErrorText from '../../../../components/ErrorText';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
@@ -42,6 +41,7 @@ import ProductIDSettings from './ProductIDSettings';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
 import Notice from '../../../../components/Notice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
@@ -126,7 +126,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				/>
 
 				{ hasModuleAccess && false === publicationAvailable && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Publication ID. */
 							__(
@@ -139,7 +139,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 
 				{ hasModuleAccess && publicationAvailable && missingProductID && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Product ID. */
 							__(
