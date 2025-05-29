@@ -91,13 +91,13 @@ describe( 'core/user dismissed-prompts', () => {
 			} );
 		} );
 
-		describe( 'setIsPromptDimissing', () => {
+		describe( 'setIsPromptDismissing', () => {
 			it( 'should set the dismissing state for a prompt', () => {
 				const slug = 'foo-bar';
 
 				registry
 					.dispatch( CORE_USER )
-					.setIsPromptDimissing( slug, true );
+					.setIsPromptDismissing( slug, true );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingPrompt( slug )
@@ -105,7 +105,7 @@ describe( 'core/user dismissed-prompts', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.setIsPromptDimissing( slug, false );
+					.setIsPromptDismissing( slug, false );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingPrompt( slug )
@@ -115,13 +115,13 @@ describe( 'core/user dismissed-prompts', () => {
 			it( 'should always set the boolean value', () => {
 				const slug = 'foo-bar';
 
-				registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, 1 );
+				registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, 1 );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingPrompt( slug )
 				).toBe( true );
 
-				registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, 0 );
+				registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, 0 );
 
 				expect(
 					registry.select( CORE_USER ).isDismissingPrompt( slug )
@@ -154,7 +154,7 @@ describe( 'core/user dismissed-prompts', () => {
 			} );
 
 			// Explicitly set dismissing state to true.
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, true );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, true );
 
 			await registry.dispatch( CORE_USER ).dismissPrompt( slug );
 
