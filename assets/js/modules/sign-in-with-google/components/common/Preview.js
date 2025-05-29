@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { getLocale } from '../../../../util';
 
 export default function Preview() {
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
@@ -54,7 +55,7 @@ export default function Preview() {
 			} );
 		};
 
-		script.src = 'https://accounts.google.com/gsi/client';
+		script.src = `https://accounts.google.com/gsi/client?hl=${ getLocale() }`;
 		script.addEventListener( 'load', onLoad );
 
 		document.body.appendChild( script );

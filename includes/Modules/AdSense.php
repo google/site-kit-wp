@@ -804,6 +804,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',

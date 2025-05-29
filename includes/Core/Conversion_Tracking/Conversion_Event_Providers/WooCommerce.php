@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
-use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -54,14 +53,100 @@ class WooCommerce extends Conversion_Events_Provider {
 	}
 
 	/**
-	 * Gets the conversion event names that are tracked by this provider.
+	 * Gets the conversion event names that are tracked by this provider, and Google Analytics for WooCommerce addon when active.
 	 *
 	 * @since 1.127.0
 	 *
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
-		return array( 'add_to_cart', 'purchase' );
+		$wgai_event_names = $this->get_wgai_event_names();
+		$events_to_track  = $this->events_to_track();
+
+		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
+	}
+
+	/**
+	 * Gets the conversion event names that are tracked by Google Analytics for WooCommerce provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return array List of event names.
+	 */
+	protected function get_wgai_event_names() {
+		if ( ! class_exists( 'WC_Google_Analytics_Integration' ) ) {
+			return array();
+		}
+
+		$settings    = get_option( 'woocommerce_google_analytics_settings' );
+		$event_names = array();
+
+		// If only product identifier is availabe in the saved settings, it means default options are used.
+		// And by default all events are tracked.
+		if ( isset( $settings['ga_product_identifier'] ) && count( $settings ) === 1 ) {
+			return array(
+				'purchase',
+				'add_to_cart',
+				'remove_from_cart',
+				'view_item_list',
+				'select_content',
+				'view_item',
+				'begin_checkout',
+			);
+		}
+
+		$event_mapping = array(
+			'ga_ecommerce_tracking_enabled'           => 'purchase',
+			'ga_event_tracking_enabled'               => 'add_to_cart',
+			'ga_enhanced_remove_from_cart_enabled'    => 'remove_from_cart',
+			'ga_enhanced_product_impression_enabled'  => 'view_item_list',
+			'ga_enhanced_product_click_enabled'       => 'select_content',
+			'ga_enhanced_product_detail_view_enabled' => 'view_item',
+			'ga_enhanced_checkout_process_enabled'    => 'begin_checkout',
+		);
+
+		$event_names = array();
+
+		foreach ( $event_mapping as $setting_key => $event_name ) {
+			if ( isset( $settings[ $setting_key ] ) && 'yes' === $settings[ $setting_key ] ) {
+				$event_names[] = $event_name;
+			}
+		}
+
+		return $event_names;
+	}
+
+	/**
+	 * Gets the conversion event names that should be tracked by this provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return array List of event names.
+	 */
+	protected function events_to_track() {
+		$event_names     = array( 'add_to_cart', 'purchase' );
+		$wgai_event_name = $this->get_wgai_event_names();
+
+		if ( ! empty( $wgai_event_name ) ) {
+			return array_values( array_diff( $event_names, $wgai_event_name ) );
+		}
+
+		return $event_names;
+	}
+
+	/**
+	 * Gets the conversion event names that are tracked by this provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		if ( empty( $this->events_to_track() ) ) {
+			return esc_html__( 'Events tracked through Analytics integration addon', 'google-site-kit' );
+		}
+
+		return parent::get_debug_data();
 	}
 
 	/**
@@ -92,8 +177,6 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @since 1.129.0
 	 */
 	public function register_hooks() {
-		$input = $this->context->input();
-
 		add_filter(
 			'woocommerce_loop_add_to_cart_link',
 			function ( $button, $product ) {
@@ -121,45 +204,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 		add_action(
 			'woocommerce_thankyou',
-			function ( $order_id ) use ( $input ) {
-				$order = wc_get_order( $order_id );
-
-				// If there isn't a valid order for this ID, or if this order
-				// already has a purchase event tracked for it, return early
-				// and don't output the script tag to track the purchase event.
-				if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
-					return;
-				}
-
-				// Ensure the order key in the query param is valid for this
-				// order.
-				$order_key = $input->filter( INPUT_GET, 'key' );
-
-				// Don't output the script tag if the order key is invalid.
-				if ( ! $order->key_is_valid( (string) $order_key ) ) {
-					return;
-				}
-
-				// Mark the order as tracked by Site Kit.
-				$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
-				$order->save();
-
-				wp_add_inline_script(
-					'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
-					join(
-						"\n",
-						array(
-							'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
-							sprintf( 'window._googlesitekit.wcdata.purchase = %s;', wp_json_encode( $this->get_formatted_order( $order ) ) ),
-						)
-					),
-					'before'
-				);
-
-				// Output the script tag to track the purchase event in
-				// Analytics.
-				BC_Functions::wp_print_inline_script_tag( "window?._googlesitekit?.gtagEvent?.( 'purchase' );" );
-			},
+			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id, wp_is_block_theme() ),
 			10,
 			1
 		);
@@ -169,6 +214,8 @@ class WooCommerce extends Conversion_Events_Provider {
 			function () {
 				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
 
+				$events_to_track = $this->events_to_track();
+
 				$inline_script = join(
 					"\n",
 					array(
@@ -176,8 +223,15 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
 						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
+						sprintf( 'window._googlesitekit.wcdata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
 					)
 				);
+
+				if ( is_wc_endpoint_url( 'order-received' ) && wp_is_block_theme() ) {
+					$order_id = absint( get_query_var( 'order-received' ) );
+
+					$this->maybe_add_purchase_inline_script( $order_id );
+				}
 
 				wp_add_inline_script( $script_slug, $inline_script, 'before' );
 			}
@@ -306,6 +360,62 @@ class WooCommerce extends Conversion_Events_Provider {
 				( (float) wc_format_decimal( $value ) ) * ( 10 ** absint( wc_get_price_decimals() ) ),
 				0
 			)
+		);
+	}
+
+	/**
+	 * Prints the purchase event details.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @param int  $order_id             The order ID.
+	 * @param bool $skip_meta_value_save Whether to skip saving the _googlesitekit_ga_purchase_event_tracked meta value.
+	 */
+	protected function maybe_add_purchase_inline_script( $order_id, $skip_meta_value_save = false ) {
+		$wgai_event_names = $this->get_wgai_event_names();
+		// If purchase event is tracked by the Google Analytics for WooCommerce addon,
+		// don't output the script tag to track the purchase event.
+		if ( in_array( 'purchase', $wgai_event_names, true ) ) {
+			return;
+		}
+
+		$input = $this->context->input();
+		$order = wc_get_order( $order_id );
+
+		// If there isn't a valid order for this ID, or if this order
+		// already has a purchase event tracked for it, return early
+		// and don't output the script tag to track the purchase event.
+		if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
+			return;
+		}
+
+		// Ensure the order key in the query param is valid for this
+		// order.
+		$order_key = $input->filter( INPUT_GET, 'key' );
+
+		// Don't output the script tag if the order key is invalid.
+		if ( ! $order->key_is_valid( (string) $order_key ) ) {
+			return;
+		}
+
+		// In case we are on block theme, this hook running on thank you page will not attach the script.
+		// So we need to skip it, and apply this on the later hook.
+		if ( ! $skip_meta_value_save ) {
+			// Mark the order as tracked by Site Kit.
+			$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
+			$order->save();
+		}
+
+		wp_add_inline_script(
+			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
+			join(
+				"\n",
+				array(
+					'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
+					sprintf( 'window._googlesitekit.wcdata.purchase = %s;', wp_json_encode( $this->get_formatted_order( $order ) ) ),
+				)
+			),
+			'before'
 		);
 	}
 }

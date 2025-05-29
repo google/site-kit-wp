@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
@@ -30,8 +35,8 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { DAY_IN_SECONDS } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../../../../components/Notice/constants';
 import Link from '../../../../components/Link';
 import useQueryArg from '../../../../hooks/useQueryArg';
 
@@ -69,7 +74,9 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 
 	return (
 		<Notification onView={ handleView }>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'You successfully enabled the ad blocking recovery message',
 					'google-site-kit'
@@ -89,8 +96,15 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 						),
 					}
 				) }
-				dismissCTA={ <Dismiss onDismiss={ dismissNotice } id={ id } /> }
+				dismissButton={ {
+					onClick: dismissNotice,
+				} }
 			/>
 		</Notification>
 	);
 }
+
+AdBlockingRecoverySetupSuccessNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};

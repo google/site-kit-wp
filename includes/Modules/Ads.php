@@ -157,6 +157,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
@@ -202,7 +203,7 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.4/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.6/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
