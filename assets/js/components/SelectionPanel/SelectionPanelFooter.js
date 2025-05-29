@@ -43,7 +43,7 @@ import ErrorNotice from '../ErrorNotice';
 import { safelySort } from '../../util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import PreviewBlock from '../PreviewBlock';
-import ErrorText from '../ErrorText';
+import Notice from '../Notice';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
@@ -154,7 +154,10 @@ export default function SelectionPanelFooter( {
 			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-selection-panel-footer__content">
 				{ haveSettingsChanged && itemLimitError ? (
-					<ErrorText noPrefix message={ itemLimitError } />
+					<Notice
+						type={ Notice.TYPES.ERROR }
+						description={ itemLimitError }
+					/>
 				) : (
 					itemCountElement
 				) }
