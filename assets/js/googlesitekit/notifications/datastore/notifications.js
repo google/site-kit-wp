@@ -42,6 +42,7 @@ import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';
 import { isFeatureEnabled } from '../../../features';
 
+const ADD_NOTIFICATION_TO_QUEUE = 'ADD_NOTIFICATION_TO_QUEUE';
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
@@ -69,10 +70,27 @@ export const initialState = {
 
 export const actions = {
 	/**
+	 * Adds a notification to the queue of notifications, used when the queue
+	 * is already resolved.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} id Notification's slug/ID.
+	 * @return {Object} Redux-style action.
+	 */
+	addNotificationToQueue( id ) {
+		return {
+			payload: { id },
+			type: ADD_NOTIFICATION_TO_QUEUE,
+		};
+	},
+	/**
 	 * Registers a notification with a given `id` slug and settings.
 	 *
 	 * @since 1.132.0
 	 * @since 1.146.0 Added `featureFlag` parameter.
+	 * @since n.e.x.t Changed to a generator function to allow for state interaction.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.
@@ -80,14 +98,13 @@ export const actions = {
 	 * @param {number}         [settings.priority]          Notification's priority for ordering (lower number is higher priority, like WordPress hooks). Ideally in increments of 10. Default 10.
 	 * @param {string}         [settings.areaSlug]          The slug of the area where the notification should be rendered, e.g. notification-area-banners-above-nav.
 	 * @param {string}         [settings.groupID]           Optional. The ID of the group of notifications that should be rendered in their own individual queue. Default 'default'.
-	 * @param {Array.<string>} [settings.viewContexts]      Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
+	 * @param {Array.<string>} [settings.viewContexts]      Optional. Array of Site Kit contexts, e.g. VIEW_CONTEXT_MAIN_DASHBOARD.
 	 * @param {Function}       [settings.checkRequirements] Optional. Callback function to determine if the notification should be queued.
 	 * @param {boolean}        [settings.isDismissible]     Optional. Flag to check if the notification should be queued and is not dismissed.
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
 	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
-	 * @return {Object} Redux-style action.
 	 */
-	registerNotification(
+	*registerNotification(
 		id,
 		{
 			Component,
@@ -115,17 +132,19 @@ export const actions = {
 		);
 
 		invariant(
-			Array.isArray( viewContexts ) &&
-				viewContexts.some(
-					NOTIFICATION_VIEW_CONTEXTS.includes,
-					NOTIFICATION_VIEW_CONTEXTS
-				),
+			viewContexts === undefined ||
+				( Array.isArray( viewContexts ) &&
+					viewContexts.some(
+						NOTIFICATION_VIEW_CONTEXTS.includes,
+						NOTIFICATION_VIEW_CONTEXTS
+					) ),
 			`Notification view context should be one of: ${ NOTIFICATION_VIEW_CONTEXTS.join(
 				', '
 			) }, but "${ viewContexts }" was provided.`
 		);
 
-		return {
+		// First, we register the notification with the given id and settings.
+		yield {
 			payload: {
 				id,
 				settings: {
@@ -142,6 +161,65 @@ export const actions = {
 			},
 			type: REGISTER_NOTIFICATION,
 		};
+
+		const registry = yield commonActions.getRegistry();
+
+		// If no view contexts were provided, we should instead do a comparison
+		// with the "top"/"visible" notification in the queue for this
+		// notification's `groupID` to see if the newly-registered notification
+		// should be added to the "top"/"visible position" in the queue.
+		//
+		// This is the usual route for "ad-hoc" notifications that are registered
+		// after initial page load, such as Setup Success notifications.
+		if ( ! viewContexts?.length ) {
+			// To do this, we'll add the notification to the queue immediately, which
+			// will insert it in the right position based on its priority and other
+			// criteria (handled by the reducer for this action).
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.addNotificationToQueue( id );
+
+			return;
+		}
+
+		// For each view context, check to see if the notifications have
+		// finished resolution for the `getQueuedNotifications` selector.
+		//
+		// If they have, we need to invalidate the `getQueuedNotifications`
+		// resolver for that `viewContext` + `groupID` combination, as it's
+		// no longer valid.
+		//
+		// Note that this is an unlikely scenario, as notifications that are
+		// registered after initial page load are usually ad-hoc notifications
+		// that do not specify a `viewContext` (because they're intended to be
+		// immediately visible).
+		//
+		// Still: this code is here to ensure that if a notification _is_ registered
+		// after initial page load, it will be visible in the queue if appropriate.
+		viewContexts.forEach( ( viewContext ) => {
+			const hasResolvedGetQueuedNotifications = registry
+				.select( CORE_NOTIFICATIONS )
+				.hasFinishedResolution( 'getQueuedNotifications', [
+					viewContext,
+					groupID,
+				] );
+
+			// If the notifications have not been resolved yet, we don't need
+			// to do any comparison with the queue, so we can return early.
+			if ( ! hasResolvedGetQueuedNotifications ) {
+				return;
+			}
+
+			// If the notifications have been resolved, we will invalidate
+			// the `getQueuedNotifications` resolver for this `viewContext` +
+			// `groupID` combination.
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.invalidateResolution( 'getQueuedNotifications', [
+					viewContext,
+					groupID,
+				] );
+		} );
 	},
 	receiveQueuedNotifications(
 		queuedNotifications,
@@ -404,6 +482,37 @@ export const controls = {
 
 export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
+		case ADD_NOTIFICATION_TO_QUEUE: {
+			const { id } = payload;
+
+			/**
+			 * The notification we want to add to the already-resolved queue.
+			 */
+			const notification = state.notifications?.[ id ];
+
+			if ( notification === undefined ) {
+				global.console.warn(
+					`Could not add notification with ID "${ id }" to queue. Notification "${ id }" is not registered.`
+				);
+
+				break;
+			}
+
+			state.queuedNotifications[ notification.groupID ] =
+				state.queuedNotifications[ notification.groupID ] || [];
+
+			// Find the next notification in the queue that has a lower priority than
+			// the one we're adding, and add this notification ahead of it.
+			//
+			// TODO: Consolidate the filter/priority logic here and in
+			// `POPULATE_QUEUE`.
+			state.queuedNotifications[ notification.groupID ].unshift(
+				notification
+			);
+
+			break;
+		}
+
 		case REGISTER_NOTIFICATION: {
 			const { id, settings } = payload;
 
