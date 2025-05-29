@@ -57,6 +57,9 @@ import {
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import PublicationApprovedOverlayNotification, {
+	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
+} from './components/dashboard/PublicationApprovedOverlayNotification';
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './components/dashboard/RRMIntroductoryOverlayNotification';
@@ -237,6 +240,64 @@ export const NOTIFICATIONS = {
 			);
 
 			return isActive;
+		},
+	},
+	[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]: {
+		Component: PublicationApprovedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { resolveSelect, dispatch } ) => {
+			const rrmConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+
+			if ( ! rrmConnected ) {
+				return false;
+			}
+
+			const {
+				publicationOnboardingState,
+				paymentOption,
+				publicationOnboardingStateChanged,
+			} =
+				( await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings() ) || {};
+
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+			const showingSuccessNotification =
+				notification === 'authentication_success' &&
+				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+
+			// Show the overlay if the publication onboarding state is complete, and if either
+			// setup has just been completed but there is no paymentOption selected, or if the
+			// publication onboarding state has just changed.
+			if (
+				publicationOnboardingState ===
+					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
+				( ( showingSuccessNotification && paymentOption === '' ) ||
+					publicationOnboardingStateChanged === true )
+			) {
+				// If the publication onboarding state has changed, reset it to false and save the settings.
+				// This is to ensure that the overlay is not shown again for this reason.
+				if ( publicationOnboardingStateChanged === true ) {
+					const {
+						saveSettings,
+						setPublicationOnboardingStateChanged,
+					} = dispatch( MODULES_READER_REVENUE_MANAGER );
+
+					setPublicationOnboardingStateChanged( false );
+					saveSettings();
+				}
+
+				return true;
+			}
+
+			return false;
 		},
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
