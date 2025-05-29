@@ -1,7 +1,5 @@
 /**
- * Storybook webpack config.
- *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +17,8 @@
 /**
  * External dependencies
  */
-const path = require( 'path' );
+const babelJest = require( 'babel-jest' );
 
-/**
- * Internal dependencies
- */
-const { rootDir } = require( '../webpack/common' );
-
-// eslint-disable-next-line require-await
-module.exports = async ( { config } ) => {
-	config.resolve = {
-		...config.resolve,
-		alias: {
-			'@': path.resolve( rootDir, 'assets' ),
-			...config.resolve.alias,
-		},
-	};
-
-	return config;
-};
+module.exports = babelJest.createTransformer( {
+	presets: [ '@wordpress/babel-preset-default' ],
+} );
