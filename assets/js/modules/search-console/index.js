@@ -30,10 +30,8 @@ import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
-import {
-	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
-} from './datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from './constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import {
 	CORE_USER,

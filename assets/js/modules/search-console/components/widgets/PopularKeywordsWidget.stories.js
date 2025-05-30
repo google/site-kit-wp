@@ -26,10 +26,8 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
-} from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import { provideSearchConsoleMockReport } from '../../util/data-mock';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {

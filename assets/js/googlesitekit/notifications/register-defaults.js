@@ -58,10 +58,8 @@ import {
 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isZeroReport } from '../../modules/analytics-4/utils';
-import {
-	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
-} from '../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import AuthError from '../../components/notifications/AuthError';

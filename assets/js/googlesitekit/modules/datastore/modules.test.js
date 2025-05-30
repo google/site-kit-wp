@@ -40,10 +40,8 @@ import {
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
-import {
-	MODULE_SLUG_SEARCH_CONSOLE,
-	MODULES_SEARCH_CONSOLE,
-} from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';

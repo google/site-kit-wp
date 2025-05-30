@@ -32,9 +32,9 @@ import { _x } from '@wordpress/i18n';
  */
 import {
 	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { generateDateRangeArgs } from '../../../util';

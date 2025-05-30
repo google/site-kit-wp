@@ -48,7 +48,7 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../datastore/user/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const createTestRegistryWithArea = (
 	areaName,

@@ -31,7 +31,7 @@ import {
 	createTestRegistry,
 } from '../../../../tests/js/test-utils';
 import UserRoleSelect from './UserRoleSelect';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 const sharingSettings = {

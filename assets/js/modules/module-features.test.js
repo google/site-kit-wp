@@ -31,7 +31,7 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/con
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/constants';
 import { MODULE_SLUG_TAGMANAGER } from './tagmanager/datastore/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './sign-in-with-google/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from './search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from './search-console/constants';
 
 describe( 'Module Features', () => {
 	let registry;

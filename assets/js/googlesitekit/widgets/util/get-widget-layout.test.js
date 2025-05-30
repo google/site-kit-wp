@@ -25,7 +25,7 @@ import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
 import RecoverableModules from '../../../components/RecoverableModules';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };

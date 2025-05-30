@@ -28,10 +28,8 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '../constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	MODULE_SLUG_SEARCH_CONSOLE,
-	MODULES_SEARCH_CONSOLE,
-} from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'useDisplayCTAWidget hook', () => {
 	let registry;

@@ -68,7 +68,7 @@ import {
 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;

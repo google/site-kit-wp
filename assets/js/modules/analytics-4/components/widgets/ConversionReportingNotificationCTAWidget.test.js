@@ -61,7 +61,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

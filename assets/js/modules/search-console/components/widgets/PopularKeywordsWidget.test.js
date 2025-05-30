@@ -35,9 +35,9 @@ import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
-	MODULE_SLUG_SEARCH_CONSOLE,
 	MODULES_SEARCH_CONSOLE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,

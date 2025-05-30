@@ -33,11 +33,8 @@ import {
 } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
-} from './constants';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {

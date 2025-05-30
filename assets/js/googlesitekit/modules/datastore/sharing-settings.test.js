@@ -26,10 +26,8 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../tests/js/utils';
-import {
-	MODULE_SLUG_SEARCH_CONSOLE,
-	MODULES_SEARCH_CONSOLE,
-} from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';

@@ -38,7 +38,7 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';

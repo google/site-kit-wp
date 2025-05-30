@@ -21,10 +21,8 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import {
-	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
-} from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsForm from './SettingsForm';
 

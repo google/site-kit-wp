@@ -38,7 +38,7 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';

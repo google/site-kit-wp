@@ -26,10 +26,8 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/test-utils';
-import {
-	MODULE_SLUG_SEARCH_CONSOLE,
-	MODULES_SEARCH_CONSOLE,
-} from '../../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

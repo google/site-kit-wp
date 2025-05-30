@@ -1,7 +1,7 @@
 /**
- * `modules/search-console` data store constants.
+ * Search Console module constants.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,4 @@
  * limitations under the License.
  */
 
-export const MODULES_SEARCH_CONSOLE = 'modules/search-console';
-
-// Date range offset days for Search Console report requests.
-export const DATE_RANGE_OFFSET = 1;
+export const MODULE_SLUG_SEARCH_CONSOLE = 'search-console';

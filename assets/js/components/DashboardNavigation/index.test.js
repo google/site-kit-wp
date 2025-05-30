@@ -39,7 +39,7 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-contexts';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;

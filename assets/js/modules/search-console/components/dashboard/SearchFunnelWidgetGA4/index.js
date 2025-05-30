@@ -34,9 +34,9 @@ import { isURL } from '@wordpress/url';
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_SEARCH_CONSOLE,
-	MODULE_SLUG_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';

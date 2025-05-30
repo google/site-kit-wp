@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import UserRoleSelect from './UserRoleSelect';
 

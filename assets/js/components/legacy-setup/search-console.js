@@ -37,7 +37,7 @@ import {
 	Select,
 	TextField,
 } from 'googlesitekit-components';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { trackEvent } from '../../util';
 
 class SearchConsole extends Component {

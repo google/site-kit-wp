@@ -43,7 +43,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
