@@ -35,10 +35,10 @@ import AdSenseConnectCTA from '../common/AdSenseConnectCTA';
 import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
+	MODULE_SLUG_ADSENSE,
 } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../datastore/constants';
 
 import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 

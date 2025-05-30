@@ -20,7 +20,8 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_ADSENSE, MODULE_SLUG_ADSENSE } from './constants';
+import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { validateCanSubmitChanges } from './settings';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 

@@ -46,8 +46,8 @@ import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
 } from './datastore/constants';
+import { MODULE_SLUG_ADSENSE } from './constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,

@@ -31,7 +31,8 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE, MODULE_SLUG_ADSENSE } from './constants';
+import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {

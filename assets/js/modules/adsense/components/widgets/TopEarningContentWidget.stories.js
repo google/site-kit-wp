@@ -41,10 +41,8 @@ import {
 	MODULES_ANALYTICS_4,
 	MODULE_SLUG_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
-import {
-	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
-} from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 
 const adSenseAccountID = 'pub-1234567890';
 

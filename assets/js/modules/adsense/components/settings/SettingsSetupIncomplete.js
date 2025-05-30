@@ -28,10 +28,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
-} from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { isPendingAccountStatus } from '../../util/status';
 import ModuleSettingsWarning from '../../../../components/notifications/ModuleSettingsWarning';
 

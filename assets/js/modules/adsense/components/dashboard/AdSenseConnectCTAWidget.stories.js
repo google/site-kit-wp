@@ -32,7 +32,7 @@ import {
 	useBreakpoint,
 	BREAKPOINT_SMALL,
 } from '../../../../hooks/useBreakpoint';
-import { MODULE_SLUG_ADSENSE } from '../../../adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adSenseConnectCTA'

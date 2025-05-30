@@ -35,7 +35,7 @@ import {
 	MODULES_SEARCH_CONSOLE,
 	MODULE_SLUG_SEARCH_CONSOLE,
 } from '../../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	MODULES_ANALYTICS_4,
 	MODULE_SLUG_ANALYTICS_4,

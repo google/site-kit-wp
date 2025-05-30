@@ -20,10 +20,8 @@
  * Internal dependencies
  */
 import AutoAdExclusionSwitches from './AutoAdExclusionSwitches';
-import {
-	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
-} from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,

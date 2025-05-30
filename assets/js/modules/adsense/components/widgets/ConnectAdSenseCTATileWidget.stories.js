@@ -27,7 +27,7 @@ import {
 import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULE_SLUG_ADSENSE } from '../../../adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

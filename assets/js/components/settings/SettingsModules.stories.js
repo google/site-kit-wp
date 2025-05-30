@@ -27,7 +27,7 @@ import { MemoryRouter } from 'react-router-dom';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '../../modules/ads/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';

@@ -62,7 +62,7 @@ import {
 	MODULES_SEARCH_CONSOLE,
 	MODULE_SLUG_SEARCH_CONSOLE,
 } from '../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';

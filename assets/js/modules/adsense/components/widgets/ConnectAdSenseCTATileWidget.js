@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
 import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
-import { MODULE_SLUG_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 
 // Ensure the metadata instance is static when rerendering.
 const metadata = { moduleSlug: MODULE_SLUG_ADSENSE };

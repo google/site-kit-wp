@@ -31,7 +31,7 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import Notifications from './Notifications';
 
 export default function BannerNotifications() {

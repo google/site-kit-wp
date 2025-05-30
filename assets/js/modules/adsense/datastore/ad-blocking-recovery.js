@@ -31,7 +31,8 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE, MODULE_SLUG_ADSENSE } from './constants';
+import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { isValidAccountID } from '../util';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';

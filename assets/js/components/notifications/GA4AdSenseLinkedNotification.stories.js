@@ -30,7 +30,7 @@ import {
 	MODULES_ANALYTICS_4,
 	MODULE_SLUG_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { getDateString } from '../../util';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';

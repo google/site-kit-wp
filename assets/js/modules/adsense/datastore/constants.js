@@ -18,8 +18,6 @@
 
 export const MODULES_ADSENSE = 'modules/adsense';
 
-export const MODULE_SLUG_ADSENSE = 'adsense';
-
 // Date range offset days for AdSense report requests.
 export const DATE_RANGE_OFFSET = 1;
 

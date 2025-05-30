@@ -32,9 +32,9 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { SITE_STATUS_ADDED, legacyAccountStatuses } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';

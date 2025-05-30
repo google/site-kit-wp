@@ -34,11 +34,8 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
-} from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,

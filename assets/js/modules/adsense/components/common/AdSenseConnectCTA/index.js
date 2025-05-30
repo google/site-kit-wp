@@ -39,10 +39,8 @@ import {
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import {
-	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
-} from '../../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';

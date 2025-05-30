@@ -21,9 +21,9 @@
  */
 import {
 	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import {
 	WithTestRegistry,

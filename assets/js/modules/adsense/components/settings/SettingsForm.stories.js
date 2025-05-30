@@ -22,10 +22,8 @@
 import * as fixtures from '../../datastore/__fixtures__';
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
-import {
-	MODULES_ADSENSE,
-	MODULE_SLUG_ADSENSE,
-} from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
