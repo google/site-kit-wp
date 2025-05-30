@@ -25,7 +25,6 @@ import FirstPartyModeSetupBanner from './FirstPartyModeSetupBanner';
 import {
 	createTestRegistry,
 	fireEvent,
-	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserInfo,
@@ -277,11 +276,19 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			features: [ 'firstPartyMode' ],
 		} );
 
 		await waitForRegistry();
 
-		muteFetch( fpmSettingsEndpoint );
+		fetchMock.postOnce( fpmSettingsEndpoint, {
+			body: JSON.stringify( {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} ),
+			status: 200,
+		} );
 
 		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
@@ -303,7 +310,15 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			getByRole( 'button', { name: 'Enable First-party mode' } )
 		);
 
+		await waitForRegistry();
+
 		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getFirstPartyModeSettings()
+					.isEnabled
+			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 
