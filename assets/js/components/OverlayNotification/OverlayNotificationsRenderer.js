@@ -27,7 +27,6 @@ import { Fragment } from '@wordpress/element';
 import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
-import { PublicationApprovedOverlayNotification } from '../../modules/reader-revenue-manager/components/dashboard';
 
 export default function OverlayNotificationsRenderer() {
 	return (
@@ -35,7 +34,6 @@ export default function OverlayNotificationsRenderer() {
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
 			<AudienceSegmentationIntroductoryOverlayNotification />
-			<PublicationApprovedOverlayNotification />
 		</Fragment>
 	);
 }
