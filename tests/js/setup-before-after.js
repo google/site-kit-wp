@@ -20,25 +20,21 @@
  * External dependencies
  */
 import faker from 'faker';
-import createFetchMock from 'vitest-fetch-mock';
 import { vi } from 'vitest';
+// Required to bring matchers like toBeInTheDocument into scope.
+import '@testing-library/jest-dom';
+import fetchMock from '@fetch-mock/vitest';
 
 /**
  * Internal dependencies
  */
 import { enabledFeatures } from '../../assets/js/features';
 
-const fetchMocker = createFetchMock( vi );
-
-// sets globalThis.fetch and globalThis.fetchMock to our mocked version
-fetchMocker.enableMocks();
-
-// // Set fetchMock global so we don't have to import fetchMock in every test.
-// // This global is instantiated in tests/js/setup-globals.js.
-// // It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
-// global.fetchMock = fetchMockJest;
-// // https://www.wheresrhys.co.uk/fetch-mock/docs/legacy-api/Usage/configuration/#overwriteroutes
-// global.fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
+// Set fetchMock global so we don't have to import fetchMock in every test.
+// This global is instantiated in tests/js/setup-globals.js.
+global.fetchMock = fetchMock;
+// And replace the native fetch with fetchMock implementation.
+fetchMock.mockGlobal();
 
 beforeEach( () => {
 	// Use real timers in order to be able to wait for them. This was introduced to support the changes introduced in @wordpress/data 4.23.0
