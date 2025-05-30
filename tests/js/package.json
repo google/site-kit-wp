@@ -1,8 +1,8 @@
 {
 	"scripts": {
 		"test": "npm run test:js:watch",
-		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test jest --config=./jest.config.js --passWithNoTests",
-		"test:js:watch": "npm run test:js -- --watch"
+		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test vitest run --config=./vitest.config.js --passWithNoTests",
+		"test:js:watch": "cross-env BABEL_ENV=test NODE_ENV=test vitest watch"
 	},
 	"dependencies": {
 		"@wordpress/element": "^2.20.3",
@@ -16,6 +16,8 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.7.0",
+		"@vitejs/plugin-react": "^4.5.0",
+		"@vitest/ui": "^3.1.4",
 		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/jest-preset-default": "^12.23.0",
 		"babel-jest": "^29.7.0",
@@ -27,6 +29,7 @@
 		"jest-localstorage-mock": "^2.4.2",
 		"jsdom": "^26.1.0",
 		"react": "^16.14.0",
-		"react-test-renderer": "^16.14.0"
+		"react-test-renderer": "^16.14.0",
+		"vitest": "^3.1.4"
 	}
 }
