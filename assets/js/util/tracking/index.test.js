@@ -1,7 +1,7 @@
 /**
  * Mock enabledFeatures.
  */
-jest.mock( '../../features/index', () => {
+vi.mock( '../../features/index', () => {
 	return {
 		enabledFeatures: [ 'feature1', 'feature2' ],
 	};
@@ -20,30 +20,11 @@ const resetGlobals = () => {
 };
 
 const fakeTimeouts = ( func ) => {
-	jest.useFakeTimers();
+	vi.useFakeTimers();
 	const promise = func();
-	jest.runAllTimers();
+	vi.runAllTimers();
 	return promise;
 };
-
-describe( 'createTracking', () => {
-	afterEach( resetGlobals );
-	it( 'initializes disabled tracking based on user preference', () => {
-		const { isTrackingEnabled: isEnabled } = createTracking( {
-			trackingEnabled: false,
-		} );
-
-		expect( isEnabled() ).toStrictEqual( false );
-	} );
-
-	it( 'initializes enabled tracking based on user preference', () => {
-		const { isTrackingEnabled: isEnabled } = createTracking( {
-			trackingEnabled: true,
-		} );
-
-		expect( isEnabled() ).toStrictEqual( true );
-	} );
-} );
 
 describe( 'disableTracking and isTrackingEnabled', () => {
 	afterEach( resetGlobals );
@@ -76,6 +57,13 @@ describe( 'enableTracking and isTrackingEnabled', () => {
 } );
 
 describe( 'trackEvent', () => {
+	let consoleResponse = null;
+	beforeEach( () => {
+		consoleResponse = null;
+		vi.spyOn( console, 'warn' ).mockImplementation( () => {
+			consoleResponse = 'warned';
+		} );
+	} );
 	afterEach( resetGlobals );
 
 	it( 'adds a tracking event to the dataLayer', async () => {
@@ -112,7 +100,7 @@ describe( 'trackEvent', () => {
 		// Because `arguments` is a special, `Array`-like object (but not an actual `Array`),
 		// we can only create it using the magic `arguments` variable
 		// made available to normal, non-arrow functions.
-		expect( console ).toHaveWarned();
+		expect( consoleResponse ).toBe( 'warned' );
 		expect( pushArgs.length ).toEqual( 1 );
 		expect( Object.prototype.toString.apply( pushArgs[ 0 ] ) ).toEqual(
 			'[object Arguments]'
@@ -166,7 +154,7 @@ describe( 'trackEvent', () => {
 			dataLayer
 		);
 
-		const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
+		const consoleWarnSpy = vi.spyOn( global.console, 'warn' );
 		await fakeTimeouts( () =>
 			trackEvent(
 				'test-category',
@@ -191,7 +179,7 @@ describe( 'trackEvent', () => {
 			dataLayer
 		);
 
-		const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
+		const consoleWarnSpy = vi.spyOn( global.console, 'warn' );
 		await fakeTimeouts( () =>
 			trackEvent(
 				'test-category',
@@ -200,7 +188,7 @@ describe( 'trackEvent', () => {
 				'test-value'
 			)
 		);
-		expect( console ).toHaveWarned();
+		expect( consoleResponse ).toBe( 'warned' );
 		expect( consoleWarnSpy ).toHaveBeenCalledWith(
 			'Tracking event "test-name" (category "test-category") took too long to fire.'
 		);

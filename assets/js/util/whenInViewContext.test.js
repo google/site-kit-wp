@@ -45,7 +45,8 @@ describe( 'whenInViewContext', () => {
 	} );
 
 	it( 'throws an error if both includeList and excludeList props are provided', () => {
-		consoleErrorMock();
+		// Mock console.error to prevent it from being logged and causing the suite level console capture to fail.
+		vi.spyOn( console, 'error' ).mockImplementation( () => {} );
 
 		const WhenInViewComponent = whenInViewContext( {
 			includeList: [ VIEW_CONTEXT_ENTITY_DASHBOARD ],
@@ -59,8 +60,6 @@ describe( 'whenInViewContext', () => {
 				'Do not use both an include and exclude lists for `whenInViewContext`'
 			);
 		}
-
-		removeConsoleErrorMock();
 	} );
 
 	it( 'throws an error if both allViewOnly and allNonViewOnly props are provided', () => {
