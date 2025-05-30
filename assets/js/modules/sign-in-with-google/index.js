@@ -28,8 +28,8 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
-	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 } from './datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';

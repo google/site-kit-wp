@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-import {
-	MODULES_SIGN_IN_WITH_GOOGLE,
-	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
-} from '../../datastore/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	provideModules,

@@ -25,10 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
-import {
-	MODULES_SIGN_IN_WITH_GOOGLE,
-	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
-} from './constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

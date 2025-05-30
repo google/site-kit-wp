@@ -33,7 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';

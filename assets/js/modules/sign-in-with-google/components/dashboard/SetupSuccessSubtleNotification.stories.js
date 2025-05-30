@@ -25,7 +25,7 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
 import { WithTestRegistry } from '../../../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
