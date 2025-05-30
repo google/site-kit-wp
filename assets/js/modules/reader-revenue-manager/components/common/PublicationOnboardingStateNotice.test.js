@@ -34,6 +34,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -117,7 +118,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			const expectedServiceURL = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getServiceURL( {
-					path: 'reader-revenue-manager',
+					path: MODULE_SLUG_READER_REVENUE_MANAGER,
 					query: {
 						publication: 'ABCDEFGH',
 					},

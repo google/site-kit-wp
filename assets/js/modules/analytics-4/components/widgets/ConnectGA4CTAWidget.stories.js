@@ -30,6 +30,7 @@ import { provideKeyMetricsWidgetRegistrations } from '../../../../components/Key
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectGA4CTA'
@@ -70,7 +71,9 @@ export default {
 					keyMetricWidgets.reduce(
 						( acc, widget ) => ( {
 							...acc,
-							[ widget ]: { modules: [ 'analytics-4' ] },
+							[ widget ]: {
+								modules: [ MODULE_SLUG_ANALYTICS_4 ],
+							},
 						} ),
 						{}
 					)

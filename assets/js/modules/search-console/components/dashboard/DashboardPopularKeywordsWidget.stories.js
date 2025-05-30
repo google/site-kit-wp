@@ -23,6 +23,7 @@ import DashboardPopularKeywordsWidget from './DashboardPopularKeywordsWidget';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	getSearchConsoleMockResponse,
@@ -146,7 +147,7 @@ export default {
 				// Activate the module.
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						active: true,
 						connected: true,
 					},

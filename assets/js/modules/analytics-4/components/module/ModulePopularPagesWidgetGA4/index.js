@@ -37,6 +37,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { numFmt } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
@@ -257,6 +258,6 @@ ModulePopularPagesWidgetGA4.propTypes = {
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	ModulePopularPagesWidgetGA4
 );

@@ -36,6 +36,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
@@ -54,7 +55,7 @@ export default function PublicationApprovedOverlayNotification( {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: 'reader-revenue-manager',
+			path: MODULE_SLUG_READER_REVENUE_MANAGER,
 			query: {
 				publication: publicationID,
 			},

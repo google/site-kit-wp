@@ -23,6 +23,7 @@ import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -75,7 +76,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						active: true,
 						connected: true,
 					},

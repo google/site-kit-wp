@@ -35,6 +35,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
@@ -316,7 +317,7 @@ export default {
 			// Activate the module.
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},

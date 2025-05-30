@@ -35,6 +35,7 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SetupForm from './SetupForm';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -74,7 +75,9 @@ describe( 'SetupForm', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-		provideModules( registry, [ { slug: 'analytics-4', active: true } ] );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true },
+		] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {

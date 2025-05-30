@@ -50,6 +50,7 @@ import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
 import {
@@ -173,7 +174,7 @@ describe( 'AudienceTile', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );

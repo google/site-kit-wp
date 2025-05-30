@@ -24,6 +24,7 @@ import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	ACCOUNT_STATUS_PENDING,
@@ -133,7 +134,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},

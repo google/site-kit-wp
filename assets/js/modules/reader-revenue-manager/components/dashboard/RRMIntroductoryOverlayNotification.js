@@ -39,6 +39,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
@@ -59,7 +60,7 @@ export default function RRMIntroductoryOverlayNotification( {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: 'reader-revenue-manager',
+			path: MODULE_SLUG_READER_REVENUE_MANAGER,
 			query: {
 				publication: publicationID,
 			},

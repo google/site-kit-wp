@@ -50,6 +50,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { isValidConversionID } from '../../ads/utils/validation';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
@@ -173,7 +174,7 @@ export async function submitChanges( { dispatch, select, resolveSelect } ) {
 
 	dispatch( CORE_USER ).resetUserAudienceSettings();
 
-	await invalidateCache( 'modules', 'analytics-4' );
+	await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
 
 	return {};
 }

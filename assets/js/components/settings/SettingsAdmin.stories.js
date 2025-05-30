@@ -27,6 +27,7 @@ import {
 	WithTestRegistry,
 } from './../../../../tests/js/utils';
 import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { CORE_SITE } from './../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 
@@ -36,7 +37,7 @@ function Template() {
 	const setupRegistry = ( registry ) => {
 		provideSiteInfo( registry );
 		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
+			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
 		] );
 
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );

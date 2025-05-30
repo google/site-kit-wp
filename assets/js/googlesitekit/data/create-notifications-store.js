@@ -45,7 +45,7 @@ const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
  * @private
  *
  * @param {string}  type              The data to access. One of 'core' or 'modules'.
- * @param {string}  identifier        The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}  identifier        The data identifier, eg. a module slug like search-console.
  * @param {string}  datapoint         The endpoint to request data from, e.g. 'notifications'.
  * @param {Object}  options           Optional. Options to consider for the store.
  * @param {boolean} options.client    Enable client-only notifications. `true` by default.

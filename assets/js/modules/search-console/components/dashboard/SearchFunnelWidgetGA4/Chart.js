@@ -41,6 +41,7 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Chart( {
 	canViewSharedAnalytics4,
@@ -56,10 +57,10 @@ export default function Chart( {
 	const breakpoint = useBreakpoint();
 
 	const isGA4Active = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	return (

@@ -22,6 +22,7 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -76,7 +77,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},

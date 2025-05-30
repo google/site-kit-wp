@@ -28,6 +28,7 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -174,7 +175,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

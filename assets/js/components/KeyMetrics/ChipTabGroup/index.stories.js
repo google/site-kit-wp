@@ -52,6 +52,8 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
 
 function Template() {
@@ -174,7 +176,7 @@ export default {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -186,7 +188,10 @@ export default {
 						( acc, widget ) => ( {
 							...acc,
 							[ widget ]: {
-								modules: [ 'search-console', 'analytics-4' ],
+								modules: [
+									MODULE_SLUG_SEARCH_CONSOLE,
+									MODULE_SLUG_ANALYTICS_4,
+								],
 							},
 						} ),
 						{}

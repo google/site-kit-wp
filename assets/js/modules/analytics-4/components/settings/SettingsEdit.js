@@ -22,6 +22,7 @@
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
@@ -52,14 +53,14 @@ export default function SettingsEdit() {
 		const { hasModuleOwnershipOrAccess, getErrorForAction } =
 			select( CORE_MODULES );
 
-		const hasAccess = hasModuleOwnershipOrAccess( 'analytics-4' );
+		const hasAccess = hasModuleOwnershipOrAccess( MODULE_SLUG_ANALYTICS_4 );
 
 		if ( hasAccess ) {
 			return true;
 		}
 
 		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 
 		// Return early if request is not completed yet.

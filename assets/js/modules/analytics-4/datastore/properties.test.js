@@ -39,6 +39,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
@@ -767,7 +768,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -801,7 +802,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: false,
 					},
@@ -835,7 +836,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -868,7 +869,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -906,7 +907,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -984,7 +985,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1072,7 +1073,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
 				global._googlesitekitModulesData = {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
 					},
 				};
@@ -1083,7 +1084,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1189,7 +1190,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1288,7 +1289,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1869,7 +1870,7 @@ describe( 'modules/analytics-4 properties', () => {
 		describe( 'hasMismatchedGoogleTagID', () => {
 			it( 'should use a resolver to source value from global', async () => {
 				global._googlesitekitModulesData = {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
 					},
 				};

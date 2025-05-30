@@ -48,6 +48,7 @@ import {
 	ChangeGroupsLink,
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -317,8 +318,9 @@ export function registerDefaults( widgetsAPI ) {
 			wrapWidget: false,
 			isActive: ( select ) => {
 				const keyMetrics = select( CORE_USER ).getKeyMetrics();
-				const isGA4Connected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+				const isGA4Connected = select( CORE_MODULES ).isModuleConnected(
+					MODULE_SLUG_ANALYTICS_4
+				);
 
 				if ( isGA4Connected || ! Array.isArray( keyMetrics ) ) {
 					return false;

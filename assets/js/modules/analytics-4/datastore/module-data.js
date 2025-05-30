@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -90,7 +91,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getModuleData() {
-		const moduleData = global._googlesitekitModulesData?.[ 'analytics-4' ];
+		const moduleData =
+			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ];
 
 		if ( ! moduleData ) {
 			return;

@@ -32,6 +32,7 @@ import {
 	combineStores,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { isValidAccountID } from '../util';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';
@@ -48,7 +49,11 @@ const RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
 const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 	baseName: 'syncAdBlockingRecoveryTags',
 	controlCallback: () => {
-		return set( 'modules', 'adsense', 'sync-ad-blocking-recovery-tags' );
+		return set(
+			'modules',
+			MODULE_SLUG_ADSENSE,
+			'sync-ad-blocking-recovery-tags'
+		);
 	},
 } );
 

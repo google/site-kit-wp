@@ -32,6 +32,7 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -56,7 +57,7 @@ const fetchGetContainersStore = createFetchStore( {
 	controlCallback: ( { accountID } ) => {
 		return get(
 			'modules',
-			'tagmanager',
+			MODULE_SLUG_TAGMANAGER,
 			'containers',
 			{ accountID },
 			{ useCache: false }
@@ -93,7 +94,7 @@ const fetchCreateContainerStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return set( 'modules', 'tagmanager', 'create-container', {
+		return set( 'modules', MODULE_SLUG_TAGMANAGER, 'create-container', {
 			accountID,
 			usageContext,
 			name,

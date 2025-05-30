@@ -27,6 +27,7 @@ import {
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	combineStores,
 	createRegistrySelector,
@@ -102,7 +103,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
-		set( 'modules', 'analytics-4', 'create-audience', {
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'create-audience', {
 			audience,
 		} ),
 	argsToParams: ( audience ) => ( {

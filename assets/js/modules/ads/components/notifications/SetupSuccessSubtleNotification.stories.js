@@ -25,6 +25,7 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { WithTestRegistry } from '../../../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
@@ -41,7 +42,7 @@ Ads.storyName = 'SetupSuccessSubtleNotification';
 Ads.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: 'ads',
+		slug: MODULE_SLUG_ADS,
 	},
 };
 Ads.scenario = {};

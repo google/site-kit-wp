@@ -29,7 +29,9 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADS } from '../../modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { WEEK_IN_SECONDS } from '../../util';
 import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
@@ -54,12 +56,12 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},

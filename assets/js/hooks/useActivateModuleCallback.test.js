@@ -38,6 +38,7 @@ import {
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -60,7 +61,7 @@ describe( 'useActivateModuleCallback', () => {
 
 	it( 'should return a callback that activates the specified module', async () => {
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics-4' ),
+			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
 			{ registry }
 		);
 
@@ -78,7 +79,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect(
 			registry
 				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( 'analytics-4' )
+				.isDoingSetModuleActivation( MODULE_SLUG_ANALYTICS_4 )
 		).toBe( false );
 
 		await result.current();
@@ -86,7 +87,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect(
 			registry
 				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( 'analytics-4' )
+				.isDoingSetModuleActivation( MODULE_SLUG_ANALYTICS_4 )
 		).toBe( true );
 	} );
 
@@ -94,7 +95,7 @@ describe( 'useActivateModuleCallback', () => {
 		mockTrackEvent.mockClear();
 
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics-4' ),
+			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
 			{ viewContext: VIEW_CONTEXT_MAIN_DASHBOARD, registry }
 		);
 
@@ -114,7 +115,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_widget-activation-cta',
 			'activate_module',
-			'analytics-4'
+			MODULE_SLUG_ANALYTICS_4
 		);
 
 		const reauthURL = registry
@@ -125,7 +126,7 @@ describe( 'useActivateModuleCallback', () => {
 
 	it( 'should set an item in storage before navigating to the module reauthentication URL', async () => {
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics-4' ),
+			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
 			{ registry }
 		);
 
@@ -152,12 +153,12 @@ describe( 'useActivateModuleCallback', () => {
 
 		storageItem = await getItem( 'module_setup' );
 
-		expect( storageItem.value ).toBe( 'analytics-4' );
+		expect( storageItem.value ).toBe( MODULE_SLUG_ANALYTICS_4 );
 	} );
 
 	it( 'should set internal error state when module activation fails', async () => {
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics-4' ),
+			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
 			{ registry }
 		);
 
@@ -173,7 +174,7 @@ describe( 'useActivateModuleCallback', () => {
 		expect(
 			registry
 				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( 'analytics-4' )
+				.isDoingSetModuleActivation( MODULE_SLUG_ANALYTICS_4 )
 		).toBe( false );
 
 		expect( registry.select( CORE_SITE ).getInternalServerError() ).toEqual(
@@ -208,7 +209,7 @@ describe( 'useActivateModuleCallback', () => {
 		} );
 
 		const { result } = renderHook(
-			() => useActivateModuleCallback( 'analytics-4' ),
+			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
 			{ registry }
 		);
 

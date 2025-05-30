@@ -35,6 +35,8 @@ import {
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { isFeatureEnabled } from '../../../features';
 
@@ -269,7 +271,8 @@ const baseSelectors = {
 			const { isModuleConnected } = select( CORE_MODULES );
 
 			return (
-				isModuleConnected( 'analytics-4' ) || isModuleConnected( 'ads' )
+				isModuleConnected( MODULE_SLUG_ANALYTICS_4 ) ||
+				isModuleConnected( MODULE_SLUG_ADS )
 			);
 		}
 	),

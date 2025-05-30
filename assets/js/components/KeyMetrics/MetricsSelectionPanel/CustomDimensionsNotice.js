@@ -33,6 +33,7 @@ import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { elementsOverlap } from '../../../util/geometry';
@@ -122,6 +123,6 @@ function CustomDimensionsNotice() {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	CustomDimensionsNotice
 );

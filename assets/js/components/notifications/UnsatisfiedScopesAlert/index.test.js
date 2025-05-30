@@ -34,6 +34,7 @@ import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import UnsatisfiedScopesAlert from '.';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'authentication-error'
@@ -111,7 +112,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 			body: { needsReauthentication: false },
 		} );
 
-		setItem( 'module_setup', 'analytics-4' );
+		setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4 );
 
 		const { getByRole, waitForRegistry } = render(
 			<NotificationWithComponentProps />,

@@ -32,6 +32,7 @@ import {
 import Footer from './Footer';
 import * as analytics4fixtures from '../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 
 describe( 'Footer', () => {
 	let registry;
@@ -42,8 +43,8 @@ describe( 'Footer', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
-				name: 'Analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
+				name: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

@@ -37,3 +37,4 @@ export const RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID =
 	'rrm-product-id-contributions-notification';
 export const RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID =
 	'rrm-product-id-subscriptions-notification';
+export const MODULE_SLUG_READER_REVENUE_MANAGER = 'reader-revenue-manager';

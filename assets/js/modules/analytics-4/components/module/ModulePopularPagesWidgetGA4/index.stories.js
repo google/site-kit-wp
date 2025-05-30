@@ -33,6 +33,7 @@ import {
 import { properties } from '../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import ModulePopularPagesWidgetGA4 from '.';
@@ -254,7 +255,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

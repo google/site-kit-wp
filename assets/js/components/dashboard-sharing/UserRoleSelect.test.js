@@ -31,10 +31,11 @@ import {
 	createTestRegistry,
 } from '../../../../tests/js/test-utils';
 import UserRoleSelect from './UserRoleSelect';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 const sharingSettings = {
-	'search-console': {
+	[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 		sharedRoles: [ 'editor', 'administrator' ],
 		management: 'all_admins',
 	},
@@ -113,7 +114,7 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = {
 			settings: {
-				'search-console': {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 					sharedRoles: [],
 				},
 			},
@@ -203,7 +204,7 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = {
 			settings: {
-				'search-console': {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 					sharedRoles: [
 						'administrator',
 						'editor',
@@ -240,7 +241,7 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = {
 			settings: {
-				'search-console': {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 					sharedRoles: [ 'administrator' ],
 				},
 			},
@@ -285,7 +286,7 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = {
 			settings: {
-				'search-console': {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 					sharedRoles: [
 						'administrator',
 						'editor',
@@ -326,7 +327,7 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = {
 			settings: {
-				'search-console': {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 					sharedRoles: [
 						'administrator',
 						'editor',
@@ -364,7 +365,7 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = {
 			settings: {
-				'search-console': {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: {
 					sharedRoles: [
 						'administrator',
 						'editor',

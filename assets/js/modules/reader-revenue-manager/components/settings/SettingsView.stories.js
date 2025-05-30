@@ -26,10 +26,8 @@ import {
 } from '../../../../../../tests/js/utils';
 import { Grid, Row, Cell } from '../../../../material-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
@@ -97,7 +95,7 @@ WithoutModuleAccess.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		registry
@@ -122,7 +120,7 @@ export default {
 
 				provideModuleRegistrations( registry, [
 					{
-						slug: 'reader-revenue-manager',
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},

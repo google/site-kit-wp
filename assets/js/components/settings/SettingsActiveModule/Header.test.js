@@ -40,6 +40,9 @@ import {
 	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -67,18 +70,18 @@ describe( 'Header', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'tagmanager',
+				slug: MODULE_SLUG_TAGMANAGER,
 				active: true,
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,

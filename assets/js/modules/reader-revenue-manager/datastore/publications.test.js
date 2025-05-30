@@ -37,9 +37,9 @@ import {
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
@@ -71,7 +71,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			// Make sure the RRM module is active and connected.
 			const extraData = [
 				{
-					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 					active: true,
 					connected: true,
 				},

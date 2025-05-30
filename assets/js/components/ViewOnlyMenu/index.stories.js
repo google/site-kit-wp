@@ -38,9 +38,12 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 function Template() {
 	return (
@@ -66,15 +69,15 @@ function Template() {
 const commonModuleCapabilities = {
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'search-console'
+		MODULE_SLUG_SEARCH_CONSOLE
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'pagespeed-insights'
+		MODULE_SLUG_PAGESPEED_INSIGHTS
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'analytics-4'
+		MODULE_SLUG_ANALYTICS_4
 	) ]: true,
 };
 
@@ -123,14 +126,14 @@ export default {
 			provideSiteConnection( registry );
 			provideModules( registry, [
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					owner: {
 						id: '1',
 						login: 'Admin 1',
 					},
 				},
 				{
-					slug: 'pagespeed-insights',
+					slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 					owner: {
 						id: '2',
 						login: 'Admin 2',

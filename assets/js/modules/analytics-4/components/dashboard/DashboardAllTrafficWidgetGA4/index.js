@@ -32,6 +32,7 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { isZeroReport } from '../../../utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -60,7 +61,9 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const isGatheringData = useInViewSelect(
@@ -288,6 +291,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	DashboardAllTrafficWidgetGA4
 );
