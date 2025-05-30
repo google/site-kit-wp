@@ -38,7 +38,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
+	NOTIFICATION_AREAS,
 } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
@@ -58,6 +58,9 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import AudienceSegmentationSetupSuccessSubtleNotification, {
+	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
+} from './AudienceSegmentationSetupSuccessSubtleNotification';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -71,7 +74,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { invalidateResolution, dismissNotification } =
+	const { dismissNotification, registerNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -106,20 +109,18 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSuccess = useCallback( () => {
-		invalidateResolution( 'getQueuedNotifications', [
-			viewContext,
-			NOTIFICATION_GROUPS.DEFAULT,
-		] );
+		registerNotification(
+			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
+			{
+				Component: AudienceSegmentationSetupSuccessSubtleNotification,
+				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+				isDismissible: true,
+			}
+		);
 		dismissNotification( id );
 		// Dismiss success notification in settings.
 		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [
-		dismissItem,
-		id,
-		invalidateResolution,
-		dismissNotification,
-		viewContext,
-	] );
+	}, [ registerNotification, dismissNotification, id, dismissItem ] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );

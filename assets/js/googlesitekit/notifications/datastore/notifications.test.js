@@ -63,41 +63,29 @@ describe( 'core/notifications Notifications', () => {
 				return <div>Hello { props.children }!</div>;
 			}
 
-			it( 'should require a Component to be provided', async () => {
-				try {
-					await registerNotification( id, {} );
-				} catch ( error ) {
-					expect( error.message ).toBe(
-						'Component is required to register a notification.'
-					);
-				}
+			it( 'should require a Component to be provided', () => {
+				expect( () => registerNotification( id, {} ) ).toThrow(
+					'Component is required to register a notification.'
+				);
 			} );
 
-			it( 'should require a valid areaSlug to be provided', async () => {
-				try {
-					await registerNotification( id, {
+			it( 'should require a valid areaSlug to be provided', () => {
+				expect( () =>
+					registerNotification( id, {
 						Component: TestNotificationComponent,
 						areaSlug: 'some-random-area',
-					} );
-				} catch ( error ) {
-					expect( error.message ).toContain(
-						'Notification area should be one of:'
-					);
-				}
+					} )
+				).toThrow( 'Notification area should be one of:' );
 			} );
 
-			it( 'should require a valid array of view contexts to be provided', async () => {
-				try {
-					await registerNotification( id, {
+			it( 'should require a valid array of view contexts to be provided', () => {
+				expect( () =>
+					registerNotification( id, {
 						Component: TestNotificationComponent,
 						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
 						viewContexts: [ 'some-random-view-context' ],
-					} );
-				} catch ( error ) {
-					expect( error.message ).toContain(
-						'Notification view context should be one of:'
-					);
-				}
+					} )
+				).toThrow( 'Notification view context should be one of:' );
 			} );
 
 			it( 'should register the notification with the given settings and component', () => {

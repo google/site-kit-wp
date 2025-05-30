@@ -40,9 +40,10 @@ import {
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';
-import { isFeatureEnabled } from '../../../features';
+import { shouldNotificationBeAddedToQueue } from '../util/shouldNotificationBeAddedToQueue';
 
-const ADD_NOTIFICATION_TO_QUEUE = 'ADD_NOTIFICATION_TO_QUEUE';
+const INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE =
+	'INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE';
 const REGISTER_NOTIFICATION = 'REGISTER_NOTIFICATION';
 const RECEIVE_QUEUED_NOTIFICATIONS = 'RECEIVE_QUEUED_NOTIFICATIONS';
 const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
@@ -82,10 +83,10 @@ export const actions = {
 	 * @param {string} id Notification's slug/ID.
 	 * @return {Object} Redux-style action.
 	 */
-	addNotificationToQueue( id ) {
+	insertNotificationIntoResolvedQueue( id ) {
 		return {
 			payload: { id },
-			type: ADD_NOTIFICATION_TO_QUEUE,
+			type: INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE,
 		};
 	},
 	/**
@@ -107,50 +108,81 @@ export const actions = {
 	 * @param {number}         [settings.dismissRetries]    Optional. An integer number denoting how many times a notification should be shown again on dismissal. Default 0.
 	 * @param {string}         [settings.featureFlag]       Optional. Feature flag that must be enabled to register the notification.
 	 */
-	*registerNotification(
-		id,
-		{
-			Component,
-			priority = 10,
-			areaSlug,
-			groupID = NOTIFICATION_GROUPS.DEFAULT,
-			viewContexts,
-			checkRequirements,
-			isDismissible,
-			dismissRetries = 0,
-			featureFlag = '',
-		}
-	) {
-		invariant(
-			Component,
-			'Component is required to register a notification.'
-		);
+	registerNotification: createValidatedAction(
+		( id, { Component, areaSlug, viewContexts } ) => {
+			invariant(
+				Component,
+				'Component is required to register a notification.'
+			);
 
-		const notificationAreas = Object.values( NOTIFICATION_AREAS );
-		invariant(
-			notificationAreas.includes( areaSlug ),
-			`Notification area should be one of: ${ notificationAreas.join(
-				', '
-			) }, but "${ areaSlug }" was provided.`
-		);
+			const notificationAreas = Object.values( NOTIFICATION_AREAS );
+			invariant(
+				notificationAreas.includes( areaSlug ),
+				`Notification area should be one of: ${ notificationAreas.join(
+					', '
+				) }, but "${ areaSlug }" was provided.`
+			);
 
-		invariant(
-			viewContexts === undefined ||
-				( Array.isArray( viewContexts ) &&
-					viewContexts.some(
-						NOTIFICATION_VIEW_CONTEXTS.includes,
-						NOTIFICATION_VIEW_CONTEXTS
-					) ),
-			`Notification view context should be one of: ${ NOTIFICATION_VIEW_CONTEXTS.join(
-				', '
-			) }, but "${ viewContexts }" was provided.`
-		);
+			invariant(
+				viewContexts === undefined ||
+					( Array.isArray( viewContexts ) &&
+						viewContexts.some(
+							NOTIFICATION_VIEW_CONTEXTS.includes,
+							NOTIFICATION_VIEW_CONTEXTS
+						) ),
+				`Notification view context should be one of: ${ NOTIFICATION_VIEW_CONTEXTS.join(
+					', '
+				) }, but "${ viewContexts }" was provided.`
+			);
+		},
+		function* (
+			id,
+			{
+				Component,
+				priority = 10,
+				areaSlug,
+				groupID = NOTIFICATION_GROUPS.DEFAULT,
+				viewContexts,
+				checkRequirements,
+				isDismissible,
+				dismissRetries = 0,
+				featureFlag = '',
+			}
+		) {
+			// First, we register the notification with the given id and settings.
+			yield {
+				payload: {
+					id,
+					settings: {
+						Component,
+						priority,
+						areaSlug,
+						groupID,
+						viewContexts,
+						checkRequirements,
+						isDismissible,
+						dismissRetries,
+						featureFlag,
+					},
+				},
+				type: REGISTER_NOTIFICATION,
+			};
 
-		// First, we register the notification with the given id and settings.
-		yield {
-			payload: {
-				id,
-				settings: {
+			const registry = yield commonActions.getRegistry();
+
+			// If no view contexts were provided, we should instead do a comparison
+			// with the "top"/"visible" notification in the queue for this
+			// notification's `groupID` to see if the newly-registered notification
+			// should be added to the "top"/"visible position" in the queue.
+			//
+			// This is the usual route for "ad-hoc" notifications that are registered
+			// after initial page load, such as Setup Success notifications.
+			if ( ! viewContexts?.length ) {
+				const { isNotificationDismissed } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				const notification = {
+					id,
 					Component,
 					priority,
 					areaSlug,
@@ -160,79 +192,78 @@ export const actions = {
 					isDismissible,
 					dismissRetries,
 					featureFlag,
-				},
-			},
-			type: REGISTER_NOTIFICATION,
-		};
+				};
 
-		const registry = yield commonActions.getRegistry();
+				// Check if the notification should be added to the queue
+				// before inserting it.
+				if (
+					! shouldNotificationBeAddedToQueue(
+						notification,
+						groupID,
+						undefined,
+						isNotificationDismissed
+					)
+				) {
+					return;
+				}
 
-		// If no view contexts were provided, we should instead do a comparison
-		// with the "top"/"visible" notification in the queue for this
-		// notification's `groupID` to see if the newly-registered notification
-		// should be added to the "top"/"visible position" in the queue.
-		//
-		// This is the usual route for "ad-hoc" notifications that are registered
-		// after initial page load, such as Setup Success notifications.
-		if ( ! viewContexts?.length ) {
-			// To do this, we'll add the notification to the queue immediately, which
-			// will insert it in the right position based on its priority and other
-			// criteria (handled by the reducer for this action).
-			registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.addNotificationToQueue( id );
+				// To do this, we'll add the notification to the queue immediately,
+				// which will insert it in the right position based on its priority.
+				yield actions.insertNotificationIntoResolvedQueue( id );
 
-			return;
-		}
-
-		// If view contexts were provided, we need to repopulate the queues because
-		// because the data store doesn’t know the current `viewContext` and thus
-		// can’t figure out if the ones specified are valid/active.
-		//
-		// This has the unfortunate side effect of causing rotation of the
-		// notifications in the queue, so specifying `viewContexts` should
-		// be avoided when registering "ad-hoc" notifications that aren't
-		// registered on initialization.
-		//
-		// For each view context, check to see if the notifications have
-		// finished resolution for the `getQueuedNotifications` selector.
-		//
-		// If they have, we need to invalidate the `getQueuedNotifications`
-		// resolver for that `viewContext` + `groupID` combination, as it's
-		// no longer valid.
-		//
-		// Note that this is an unlikely scenario, as notifications that are
-		// registered after initial page load are usually ad-hoc notifications
-		// that do not specify a `viewContext` (because they're intended to be
-		// immediately visible).
-		//
-		// Still: this code is here to ensure that if a notification _is_ registered
-		// after initial page load, it will be visible in the queue if appropriate.
-		viewContexts.forEach( ( viewContext ) => {
-			const hasResolvedGetQueuedNotifications = registry
-				.select( CORE_NOTIFICATIONS )
-				.hasFinishedResolution( 'getQueuedNotifications', [
-					viewContext,
-					groupID,
-				] );
-
-			// If the notifications have not been resolved yet, we don't need
-			// to do any comparison with the queue, so we can return early.
-			if ( ! hasResolvedGetQueuedNotifications ) {
 				return;
 			}
 
-			// If the notifications have been resolved, we will invalidate
-			// the `getQueuedNotifications` resolver for this `viewContext` +
-			// `groupID` combination.
-			registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.invalidateResolution( 'getQueuedNotifications', [
-					viewContext,
-					groupID,
-				] );
-		} );
-	},
+			// If view contexts were provided, we need to repopulate the queues
+			// because the data store doesn’t know the current `viewContext` and thus
+			// can’t figure out if the ones specified are valid/active.
+			//
+			// This has the unfortunate side effect of causing rotation of the
+			// notifications in the queue, so specifying `viewContexts` should
+			// be avoided when registering "ad-hoc" notifications that aren't
+			// registered on initialization.
+			//
+			// For each view context, check to see if the notifications have
+			// finished resolution for the `getQueuedNotifications` selector.
+			//
+			// If they have, we need to invalidate the `getQueuedNotifications`
+			// resolver for that `viewContext` + `groupID` combination, as it's
+			// no longer valid.
+			//
+			// Note that this is an unlikely scenario, as notifications that are
+			// registered after initial page load are usually ad-hoc notifications
+			// that do not specify a `viewContext` (because they're intended to be
+			// immediately visible).
+			//
+			// Still: this code is here to ensure that if a notification _is_
+			// registered after initial page load, it will be visible in the queue
+			// if appropriate.
+			viewContexts.forEach( ( viewContext ) => {
+				const hasResolvedGetQueuedNotifications = registry
+					.select( CORE_NOTIFICATIONS )
+					.hasFinishedResolution( 'getQueuedNotifications', [
+						viewContext,
+						groupID,
+					] );
+
+				// If the notifications have not been resolved yet, we don't need
+				// to do any comparison with the queue, so we can return early.
+				if ( ! hasResolvedGetQueuedNotifications ) {
+					return;
+				}
+
+				// If the notifications have been resolved, we will invalidate
+				// the `getQueuedNotifications` resolver for this `viewContext` +
+				// `groupID` combination.
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.invalidateResolution( 'getQueuedNotifications', [
+						viewContext,
+						groupID,
+					] );
+			} );
+		}
+	),
 	receiveQueuedNotifications(
 		queuedNotifications,
 		groupID = NOTIFICATION_GROUPS.DEFAULT
@@ -429,20 +460,14 @@ export const controls = {
 					.getSeenNotifications();
 
 				let potentialNotifications = Object.values( notifications )
-					.filter( ( notification ) =>
-						notification?.featureFlag
-							? isFeatureEnabled( notification.featureFlag )
-							: true
-					)
-					.filter(
-						( notification ) => notification.groupID === groupID
-					)
-					.filter( ( notification ) =>
-						notification.viewContexts.includes( viewContext )
-					)
-					.filter( ( { isDismissible, id } ) =>
-						isDismissible ? ! isNotificationDismissed( id ) : true
-					)
+					.filter( ( notification ) => {
+						return shouldNotificationBeAddedToQueue(
+							notification,
+							groupID,
+							viewContext,
+							isNotificationDismissed
+						);
+					} )
 					.map( ( { checkRequirements, ...notification } ) => {
 						const viewCount =
 							seenNotifications[ notification.id ]?.length || 0;
@@ -492,9 +517,10 @@ export const controls = {
 	),
 };
 
+// eslint-disable-next-line complexity
 export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case ADD_NOTIFICATION_TO_QUEUE: {
+		case INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE: {
 			const { id } = payload;
 
 			/**
@@ -513,12 +539,27 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			state.queuedNotifications[ notification.groupID ] =
 				state.queuedNotifications[ notification.groupID ] || [];
 
+			// If the notification is already in the queue, we don't need to add it
+			// again.
+			if (
+				state.queuedNotifications[ notification.groupID ].some(
+					( notificationInQueue ) => notificationInQueue.id === id
+				)
+			) {
+				break;
+			}
+
 			// Find the next notification in the queue that has a lower priority than
 			// the one we're adding, and add this notification ahead of it.
-			//
-			// TODO: Consolidate the filter/priority logic here and in
-			// `POPULATE_QUEUE`.
-			state.queuedNotifications[ notification.groupID ].unshift(
+			const positionForNewNotification = state.queuedNotifications[
+				notification.groupID
+			].findIndex( ( notificationInQueue ) => {
+				return notificationInQueue.priority >= notification.priority;
+			} );
+
+			state.queuedNotifications[ notification.groupID ].splice(
+				positionForNewNotification,
+				0,
 				notification
 			);
 
