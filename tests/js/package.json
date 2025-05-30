@@ -6,6 +6,7 @@
 	},
 	"dependencies": {
 		"@wordpress/element": "^2.20.3",
+		"@wordpress/plugins": "^7.24.0",
 		"intl": "^1.2.5",
 		"intl-locales-supported": "^1.8.12"
 	},
@@ -30,6 +31,7 @@
 		"jsdom": "^26.1.0",
 		"react": "^16.14.0",
 		"react-test-renderer": "^16.14.0",
-		"vitest": "^3.1.4"
+		"vitest": "^3.1.4",
+		"vitest-fetch-mock": "^0.4.5"
 	}
 }

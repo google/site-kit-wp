@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-jest.mock(
+vi.mock(
 	'@wordpress-core/plugins',
 	() => ( {
 		registerPlugin: vi.fn(),
@@ -26,16 +26,16 @@ jest.mock(
 	}
 );
 
-jest.mock( '@wordpress-core/edit-post', () => ( {} ), {
+vi.mock( '@wordpress-core/edit-post', () => ( {} ), {
 	virtual: true,
 } );
-jest.mock( '@wordpress-core/editor', () => ( {} ), {
+vi.mock( '@wordpress-core/editor', () => ( {} ), {
 	virtual: true,
 } );
-jest.mock( '@wordpress-core/components', () => ( {} ), {
+vi.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
-jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
+vi.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
 
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';
@@ -70,7 +70,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should register the plugin if the module is connected and the user has ownership', async () => {

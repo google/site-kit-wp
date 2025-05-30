@@ -20,26 +20,32 @@
  * External dependencies
  */
 import faker from 'faker';
-import fetchMockJest from 'fetch-mock-jest';
+import createFetchMock from 'vitest-fetch-mock';
+import { vi } from 'vitest';
 
 /**
  * Internal dependencies
  */
 import { enabledFeatures } from '../../assets/js/features';
 
-// Set fetchMock global so we don't have to import fetchMock in every test.
-// This global is instantiated in tests/js/setup-globals.js.
-// It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
-global.fetchMock = fetchMockJest;
-// https://www.wheresrhys.co.uk/fetch-mock/docs/legacy-api/Usage/configuration/#overwriteroutes
-global.fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
+const fetchMocker = createFetchMock( vi );
+
+// sets globalThis.fetch and globalThis.fetchMock to our mocked version
+fetchMocker.enableMocks();
+
+// // Set fetchMock global so we don't have to import fetchMock in every test.
+// // This global is instantiated in tests/js/setup-globals.js.
+// // It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
+// global.fetchMock = fetchMockJest;
+// // https://www.wheresrhys.co.uk/fetch-mock/docs/legacy-api/Usage/configuration/#overwriteroutes
+// global.fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
 
 beforeEach( () => {
 	// Use real timers in order to be able to wait for them. This was introduced to support the changes introduced in @wordpress/data 4.23.0
 	// which adds a resolver cache and a related call to setTimeout to each resolver, and these timeouts often need to be waited for in tests.
 	// See https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310.
 	// Using real timers, rather than fake timers here ensures that we don't need to manually advance timers for every resolver call.
-	jest.useRealTimers();
+	vi.useRealTimers();
 
 	localStorage.clear();
 	sessionStorage.clear();
@@ -65,9 +71,9 @@ afterEach( async () => {
 	// we need to wait at least one more event cycle.
 	// To do this, we need to switch back to real timers if we're currently using fake timers.
 	// Check if Jest is using fake timers by looking for timer control functions.
-	const isUsingFakeTimers = typeof jest.getTimerCount === 'function';
+	const isUsingFakeTimers = typeof vi.getTimerCount === 'function';
 	if ( isUsingFakeTimers ) {
-		jest.useRealTimers();
+		vi.useRealTimers();
 	}
 
 	const nextTick = () => new Promise( ( resolve ) => setTimeout( resolve ) );

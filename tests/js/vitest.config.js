@@ -40,11 +40,9 @@ export default defineConfig( {
 		setupFiles: [
 			path.resolve( __dirname, './setup-globals.js' ),
 			path.resolve( __dirname, './vitest-localstorage-mock.js' ),
-		],
-		setupFilesAfterEnv: [
-			path.resolve( __dirname, './jest-matchers.js' ),
 			path.resolve( __dirname, './setup-before-after.js' ),
 		],
+		setupFilesAfterEnv: [ path.resolve( __dirname, './jest-matchers.js' ) ],
 		transformMode: {
 			web: [ /\.[jt]sx?$/ ],
 		},
