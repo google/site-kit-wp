@@ -34,7 +34,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { sharingSettings, modules, roles } from './__fixtures__';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 describe( 'DashboardSharingSettings', () => {
 	let registry;

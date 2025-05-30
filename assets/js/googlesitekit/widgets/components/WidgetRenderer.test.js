@@ -30,7 +30,7 @@ import {
 	provideModules,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 
 describe( 'WidgetRenderer', () => {

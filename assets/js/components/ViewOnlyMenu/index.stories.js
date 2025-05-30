@@ -43,7 +43,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 function Template() {
 	return (

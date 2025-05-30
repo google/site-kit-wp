@@ -42,8 +42,8 @@ import {
 	STRATEGY_DESKTOP,
 	DATA_SRC_LAB,
 	UI_DATA_SOURCE,
-	MODULE_SLUG_PAGESPEED_INSIGHTS,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../constants';
 import Spinner from '../../../../../components/Spinner';
 
 export default function Footer( { isFetching } ) {

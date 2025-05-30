@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import {
 	createTestRegistry,
 	provideUserAuthentication,

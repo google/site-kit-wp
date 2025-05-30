@@ -28,7 +28,7 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SetupSuccessNotification from './SetupSuccessNotification';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-site-kit'

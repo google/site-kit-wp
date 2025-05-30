@@ -38,7 +38,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_TAGMANAGER } from '../../modules/tagmanager/datastore/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(

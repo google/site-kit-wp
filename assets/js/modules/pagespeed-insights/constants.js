@@ -1,7 +1,7 @@
 /**
- * `modules/pagespeed-insights` base data store
+ * Pagespeed Insights module constants.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { MODULES_PAGESPEED_INSIGHTS } from './constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../constants';
-
-const baseModuleStore = Modules.createModuleStore(
-	MODULE_SLUG_PAGESPEED_INSIGHTS,
-	{
-		storeName: MODULES_PAGESPEED_INSIGHTS,
-		requiresSetup: false,
-		settingSlugs: [ 'ownerID' ],
-	}
-);
-
-export default baseModuleStore;
+export const MODULE_SLUG_PAGESPEED_INSIGHTS = 'pagespeed-insights';

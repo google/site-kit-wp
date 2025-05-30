@@ -32,10 +32,8 @@ import {
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
-import {
-	MODULE_SLUG_PAGESPEED_INSIGHTS,
-	MODULES_PAGESPEED_INSIGHTS,
-} from './datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';

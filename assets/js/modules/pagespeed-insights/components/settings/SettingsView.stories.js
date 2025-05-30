@@ -26,7 +26,7 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../constants';
 
 function Template() {
 	return (

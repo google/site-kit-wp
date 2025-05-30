@@ -27,10 +27,8 @@ import {
 } from '../../../../tests/js/utils';
 import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import {
-	MODULE_SLUG_PAGESPEED_INSIGHTS,
-	MODULES_PAGESPEED_INSIGHTS,
-} from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import {

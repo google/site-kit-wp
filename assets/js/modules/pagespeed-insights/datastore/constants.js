@@ -18,8 +18,6 @@
 
 export const MODULES_PAGESPEED_INSIGHTS = 'modules/pagespeed-insights';
 
-export const MODULE_SLUG_PAGESPEED_INSIGHTS = 'pagespeed-insights';
-
 // Report strategies.
 export const STRATEGY_MOBILE = 'mobile';
 export const STRATEGY_DESKTOP = 'desktop';

@@ -26,7 +26,7 @@ import {
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/constants';
 import { MODULE_SLUG_TAGMANAGER } from './tagmanager/datastore/constants';

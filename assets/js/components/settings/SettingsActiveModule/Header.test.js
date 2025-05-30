@@ -40,7 +40,7 @@ import {
 	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 
