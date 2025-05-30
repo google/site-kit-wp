@@ -29,7 +29,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	PUBLICATION_ONBOARDING_STATES,
 } from './datastore/constants';
@@ -54,6 +53,7 @@ import {
 	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';

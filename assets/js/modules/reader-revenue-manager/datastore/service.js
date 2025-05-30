@@ -27,10 +27,8 @@ import { addQueryArgs } from '@wordpress/url';
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-	MODULES_READER_REVENUE_MANAGER,
-} from './constants';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 
 const selectors = {
 	/**

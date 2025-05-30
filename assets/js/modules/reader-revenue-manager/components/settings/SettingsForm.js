@@ -27,10 +27,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,

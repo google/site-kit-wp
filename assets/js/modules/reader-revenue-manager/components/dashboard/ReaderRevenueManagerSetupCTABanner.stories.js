@@ -30,7 +30,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '../../../../util';
 

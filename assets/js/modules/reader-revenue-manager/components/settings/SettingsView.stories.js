@@ -26,10 +26,8 @@ import {
 } from '../../../../../../tests/js/utils';
 import { Grid, Row, Cell } from '../../../../material-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 

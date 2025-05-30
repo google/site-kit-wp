@@ -39,9 +39,9 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '../../../../util';

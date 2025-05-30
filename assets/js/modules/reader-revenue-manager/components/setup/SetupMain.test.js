@@ -30,10 +30,8 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
-import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-	MODULES_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { publications } from '../../datastore/__fixtures__';
 
 describe( 'SetupMain', () => {

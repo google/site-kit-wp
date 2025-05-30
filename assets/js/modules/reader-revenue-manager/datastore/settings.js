@@ -25,10 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-	MODULES_READER_REVENUE_MANAGER,
-} from './constants';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,

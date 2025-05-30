@@ -30,8 +30,8 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 

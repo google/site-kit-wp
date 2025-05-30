@@ -28,12 +28,12 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../hooks/useRefocus';

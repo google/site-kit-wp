@@ -31,10 +31,10 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import * as tracking from '../../../../util/tracking';
 import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

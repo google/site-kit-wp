@@ -36,11 +36,11 @@ import { getPostTypesString } from '../../utils/settings';
 import { trackEvent } from '../../../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import {
-	MODULES_READER_REVENUE_MANAGER,
+	SNIPPET_MODES,
 	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
-import { SNIPPET_MODES } from '../../constants';
+} from '../../constants';
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {

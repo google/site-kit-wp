@@ -37,9 +37,9 @@ import {
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {

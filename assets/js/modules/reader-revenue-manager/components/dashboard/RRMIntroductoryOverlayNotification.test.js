@@ -35,10 +35,8 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,

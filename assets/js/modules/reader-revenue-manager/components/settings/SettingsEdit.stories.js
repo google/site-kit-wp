@@ -28,10 +28,8 @@ import { Grid, Row, Cell } from '../../../../material-components';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { cloneDeep } from 'lodash';
 

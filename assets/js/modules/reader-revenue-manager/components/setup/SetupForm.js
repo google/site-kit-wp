@@ -36,11 +36,11 @@ import Link from '../../../../components/Link';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import {
 	ProductIDSelect,
 	PublicationOnboardingStateNotice,

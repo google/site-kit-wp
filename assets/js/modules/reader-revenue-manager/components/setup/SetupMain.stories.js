@@ -25,11 +25,11 @@ import {
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { publications } from '../../datastore/__fixtures__';

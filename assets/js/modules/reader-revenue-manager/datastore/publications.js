@@ -36,9 +36,9 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 const fetchGetPublicationsStore = createFetchStore( {

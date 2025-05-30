@@ -18,7 +18,7 @@
 
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../modules/sign-in-with-google/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
 export const NEW_MODULES = [
 	MODULE_SLUG_ADS,

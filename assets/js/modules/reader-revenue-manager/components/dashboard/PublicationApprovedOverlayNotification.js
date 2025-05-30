@@ -35,10 +35,8 @@ import ReaderRevenueManagerIntroductoryGraphicMobile from '../../../../../svg/gr
 import useViewContext from '../../../../hooks/useViewContext';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =

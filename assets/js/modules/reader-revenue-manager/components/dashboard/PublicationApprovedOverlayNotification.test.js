@@ -34,10 +34,8 @@ import PublicationApprovedOverlayNotification, {
 } from './PublicationApprovedOverlayNotification';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { NOTIFICATIONS } from '../..';

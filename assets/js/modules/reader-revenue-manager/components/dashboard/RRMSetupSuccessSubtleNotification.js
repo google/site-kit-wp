@@ -38,10 +38,10 @@ import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '../../../../components/Notice/constants';

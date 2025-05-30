@@ -38,7 +38,7 @@ import {
 } from '../../../../hooks/useBreakpoint';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
 import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
 import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';

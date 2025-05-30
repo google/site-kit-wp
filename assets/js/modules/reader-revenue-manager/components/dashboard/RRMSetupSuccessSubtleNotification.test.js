@@ -36,8 +36,8 @@ import {
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
