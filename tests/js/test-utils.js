@@ -205,6 +205,31 @@ const customRenderHook = ( callback, options = {} ) => {
 	};
 };
 
+/**
+ * Captures Console Errors
+ *
+ * The test suite is set up to fail any console error, so if a test
+ * is expected to produce a console error, it should use this mock
+ * to capture console errors.
+ *
+ * @since n.e.x.t
+ */
+export const consoleErrorMock = () => {
+	vi.spyOn( console, 'error' ).mockImplementation( () => undefined );
+};
+
+/**
+ * Removes the Console Error Mock
+ *
+ * This should be called after a test that uses `consoleErrorMock`
+ * to ensure that the mock does not affect other tests.
+ *
+ * @since n.e.x.t
+ */
+export const removeConsoleErrorMock = () => {
+	vi.spyOn( console, 'error' ).mockRestore();
+};
+
 // Export our own test utils from this file.
 export * from './utils';
 export * from './gathering-data-utils';
