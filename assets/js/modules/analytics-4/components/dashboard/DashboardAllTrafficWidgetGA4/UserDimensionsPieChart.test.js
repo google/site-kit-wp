@@ -28,7 +28,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 

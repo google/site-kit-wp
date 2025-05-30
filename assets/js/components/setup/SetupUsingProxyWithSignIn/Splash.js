@@ -44,7 +44,7 @@ import {
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '../../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Splash( { children } ) {
 	const analyticsModuleAvailable = useSelect( ( select ) =>

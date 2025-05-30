@@ -36,7 +36,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import Overview from './Overview';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'Overview', () => {
 	let registry;

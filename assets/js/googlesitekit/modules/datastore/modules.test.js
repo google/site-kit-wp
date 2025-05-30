@@ -45,10 +45,8 @@ import {
 	MODULES_SEARCH_CONSOLE,
 } from '../../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../datastore/user/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
 import { MODULE_SLUG_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 

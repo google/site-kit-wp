@@ -21,7 +21,8 @@
  */
 import { properties } from './__fixtures__';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ANALYTICS_4, MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { getPreviousDate, stringToDate } from '../../../util';
 
 let {

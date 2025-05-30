@@ -24,10 +24,8 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { provideModules } from '../../../../../../tests/js/utils';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';

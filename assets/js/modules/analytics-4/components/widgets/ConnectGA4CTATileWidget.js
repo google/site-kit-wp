@@ -31,7 +31,7 @@ import {
 	CORE_USER,
 	keyMetricsGA4Widgets,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import Null from '../../../../components/Null';
 
 const metadata = { moduleSlug: MODULE_SLUG_ANALYTICS_4 };

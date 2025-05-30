@@ -26,7 +26,7 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'gathering-data-notification'

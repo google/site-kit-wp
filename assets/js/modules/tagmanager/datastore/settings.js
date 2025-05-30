@@ -51,10 +51,8 @@ import {
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =

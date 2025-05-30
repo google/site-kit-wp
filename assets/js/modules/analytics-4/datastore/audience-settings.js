@@ -31,7 +31,8 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4, MODULE_SLUG_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
 	combineStores,

@@ -26,10 +26,8 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 import {
 	STRATEGY_ZIP,

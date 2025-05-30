@@ -41,8 +41,8 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '../../../../util';

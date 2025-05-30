@@ -37,10 +37,8 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import useViewContext from '../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../util';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../hooks/useDashboardType';

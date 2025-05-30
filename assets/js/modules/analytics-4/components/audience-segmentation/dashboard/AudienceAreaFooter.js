@@ -29,8 +29,8 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import useViewOnly from '../../../../../hooks/useViewOnly';

@@ -37,10 +37,8 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

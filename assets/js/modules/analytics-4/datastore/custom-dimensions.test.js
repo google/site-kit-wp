@@ -25,7 +25,8 @@ import { times } from 'lodash';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULE_SLUG_ANALYTICS_4, MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	createTestRegistry,
 	provideModules,

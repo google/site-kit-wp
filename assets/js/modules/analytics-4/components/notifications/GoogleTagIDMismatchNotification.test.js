@@ -23,11 +23,8 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import {
-	GTM_SCOPE,
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+import { GTM_SCOPE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ANALYTICS_4_NOTIFICATIONS } from '../..';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import * as fixtures from '../../datastore/__fixtures__';

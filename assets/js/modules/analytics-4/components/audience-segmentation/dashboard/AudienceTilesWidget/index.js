@@ -27,10 +27,8 @@ import { useEffect, useState } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';

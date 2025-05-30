@@ -53,8 +53,8 @@ import {
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
 	availableAudiences as audiencesFixture,
 	properties as propertiesFixture,

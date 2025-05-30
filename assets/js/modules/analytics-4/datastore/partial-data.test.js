@@ -28,11 +28,8 @@ import {
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate, stringToDate } from '../../../util';
 import { properties } from './__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from './constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const testAudience1 = {

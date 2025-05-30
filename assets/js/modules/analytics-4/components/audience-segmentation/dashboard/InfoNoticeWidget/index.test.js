@@ -39,10 +39,8 @@ import { withWidgetComponentProps } from '../../../../../../googlesitekit/widget
 import { WEEK_IN_SECONDS } from '../../../../../../util';
 import * as tracking from '../../../../../../util/tracking';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 jest.mock( 'react-use', () => ( {

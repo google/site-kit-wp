@@ -24,7 +24,7 @@ import ReportZero from '../../../components/ReportZero';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
 import RecoverableModules from '../../../components/RecoverableModules';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 
 describe( 'getWidgetLayout', () => {

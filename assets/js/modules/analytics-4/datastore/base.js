@@ -20,7 +20,8 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_ANALYTICS_4, MODULE_SLUG_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	submitChanges,
 	validateCanSubmitChanges,

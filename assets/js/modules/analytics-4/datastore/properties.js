@@ -42,11 +42,11 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {

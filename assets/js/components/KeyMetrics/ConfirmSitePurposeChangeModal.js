@@ -49,10 +49,8 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '../user-input/util/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';

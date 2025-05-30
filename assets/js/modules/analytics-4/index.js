@@ -53,11 +53,7 @@ import {
 	TopPagesDrivingLeadsWidget,
 } from './components/widgets';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
-import {
-	GTM_SCOPE,
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from './datastore/constants';
+import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -127,7 +123,10 @@ import WebDataStreamNotAvailableNotification, {
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
-import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
+import {
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from './constants';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
 

@@ -44,7 +44,7 @@ import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();

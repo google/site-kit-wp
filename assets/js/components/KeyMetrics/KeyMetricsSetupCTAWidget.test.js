@@ -26,10 +26,8 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	MODULE_SLUG_SEARCH_CONSOLE,
 	MODULES_SEARCH_CONSOLE,

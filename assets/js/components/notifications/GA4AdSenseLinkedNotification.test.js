@@ -24,10 +24,8 @@ import {
 	provideModules,
 } from '../../../../tests/js/test-utils';
 import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';

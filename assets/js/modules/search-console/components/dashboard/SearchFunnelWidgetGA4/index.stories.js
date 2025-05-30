@@ -41,10 +41,8 @@ import {
 } from '../../../../../googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import {

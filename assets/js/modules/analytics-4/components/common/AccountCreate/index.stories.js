@@ -30,8 +30,8 @@ import {
 	ACCOUNT_CREATE,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import { Cell, Grid, Row } from '../../../../../material-components';

@@ -48,7 +48,7 @@ import {
 	ChangeGroupsLink,
 } from '../../modules/analytics-4/components/audience-segmentation/dashboard';
 import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 

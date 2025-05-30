@@ -39,7 +39,7 @@ import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants'
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (

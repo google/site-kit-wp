@@ -40,10 +40,8 @@ import {
 } from '../../../../../../googlesitekit/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import * as tracking from '../../../../../../util/tracking';

@@ -35,11 +35,8 @@ import {
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
-import {
-	CUSTOM_DIMENSION_DEFINITIONS,
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from './constants';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,

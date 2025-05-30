@@ -31,10 +31,8 @@ import {
 } from '../util/errors';
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
 
 describe( 'ReportError', () => {

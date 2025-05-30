@@ -29,8 +29,8 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

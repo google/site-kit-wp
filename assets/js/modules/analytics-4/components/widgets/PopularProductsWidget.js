@@ -44,8 +44,8 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import {

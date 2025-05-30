@@ -36,10 +36,8 @@ import {
 } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
 import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {

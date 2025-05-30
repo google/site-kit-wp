@@ -39,8 +39,8 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';

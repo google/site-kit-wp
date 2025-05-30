@@ -49,8 +49,8 @@ import * as tracking from '../../../../../../../util/tracking';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
 import {

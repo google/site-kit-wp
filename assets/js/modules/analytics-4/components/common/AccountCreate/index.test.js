@@ -35,10 +35,10 @@ import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instan
 import {
 	EDIT_SCOPE,
 	GTM_SCOPE,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 	PROVISIONING_SCOPE,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { createCacheKey } from '../../../../../googlesitekit/api';
 import { getKeys, setItem } from '../../../../../googlesitekit/api/cache';
 import AccountCreate from '.';

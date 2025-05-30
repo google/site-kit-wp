@@ -35,11 +35,8 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from './constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 export const RESOURCE_TYPE_AUDIENCE = 'audience';
 export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';

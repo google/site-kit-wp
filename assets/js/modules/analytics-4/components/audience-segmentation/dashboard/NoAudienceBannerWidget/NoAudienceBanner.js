@@ -38,7 +38,7 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/c
 import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();

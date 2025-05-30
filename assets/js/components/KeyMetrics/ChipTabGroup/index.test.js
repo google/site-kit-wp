@@ -31,9 +31,9 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withConnected } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	ENUM_CONVERSION_EVENTS,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import ChipTabGroup from './';

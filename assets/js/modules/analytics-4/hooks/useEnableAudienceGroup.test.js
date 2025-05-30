@@ -22,9 +22,9 @@
 import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';

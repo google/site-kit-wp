@@ -35,11 +35,8 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-	MODULE_SLUG_ANALYTICS_4,
-} from './constants';
+import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;

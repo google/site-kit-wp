@@ -31,8 +31,8 @@ import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 export default function useCreateCustomDimensionsEffect() {
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>

@@ -38,8 +38,8 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';

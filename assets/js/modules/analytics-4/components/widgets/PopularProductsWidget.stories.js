@@ -27,10 +27,8 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,

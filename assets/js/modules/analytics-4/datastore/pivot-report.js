@@ -22,7 +22,8 @@
 import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { MODULES_ANALYTICS_4, MODULE_SLUG_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { stringifyObject } from '../../../util';
 import { normalizeReportOptions } from '../utils';
 import { validatePivotReport } from '../utils/validation';

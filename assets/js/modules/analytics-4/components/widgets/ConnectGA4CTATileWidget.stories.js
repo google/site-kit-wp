@@ -34,7 +34,7 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectAdSenseCTATile'

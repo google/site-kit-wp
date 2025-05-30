@@ -52,8 +52,8 @@ import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';

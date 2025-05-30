@@ -19,10 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideModules,
 	provideModuleRegistrations,

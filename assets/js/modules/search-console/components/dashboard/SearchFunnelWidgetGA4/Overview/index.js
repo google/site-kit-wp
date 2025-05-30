@@ -38,7 +38,7 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../../hooks/useDashboardType';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';

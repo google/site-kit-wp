@@ -40,10 +40,8 @@ import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_GROUPS,
 } from '../../../../../googlesitekit/notifications/datastore/constants';
-import {
-	AUDIENCE_SEGMENTATION_SETUP_FORM,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../datastore/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';

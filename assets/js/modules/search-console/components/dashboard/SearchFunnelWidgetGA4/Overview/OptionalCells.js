@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
 import CreateConversionCTA from '../CreateConversionCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';

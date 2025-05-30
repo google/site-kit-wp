@@ -33,7 +33,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { listFormat, trackEvent } from '../../util';
 import { MODULE_SLUG_ADS } from '../../modules/ads/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ModalDialog from '../ModalDialog';
 import useViewContext from '../../hooks/useViewContext';
 

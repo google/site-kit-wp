@@ -47,9 +47,9 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import {
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Chart from './Chart';
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {

@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
 import { VIEW_CONTEXT_SPLASH } from '../../../googlesitekit/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 jest.mock(
 	'../CompatibilityChecks',

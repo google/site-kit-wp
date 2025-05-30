@@ -33,9 +33,9 @@ import {
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';

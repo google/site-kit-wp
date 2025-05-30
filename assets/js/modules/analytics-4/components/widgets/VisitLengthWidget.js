@@ -38,8 +38,8 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util/i18n';
 import whenActive from '../../../../util/when-active';

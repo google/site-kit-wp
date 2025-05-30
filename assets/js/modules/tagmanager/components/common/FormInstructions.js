@@ -33,7 +33,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function FormInstructions( { isSetup } ) {
 	const isSecondaryAMP = useSelect( ( select ) =>

@@ -64,9 +64,9 @@ import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fi
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 

@@ -45,10 +45,8 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import ProgressSegments from '../ProgressSegments';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export default function UserInputQuestionnaire() {

@@ -27,7 +27,7 @@ import {
 import WidgetReportZero from './WidgetReportZero';
 import { CORE_WIDGETS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'WidgetReportZero', () => {
 	let registry;

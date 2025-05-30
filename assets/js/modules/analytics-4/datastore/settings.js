@@ -47,10 +47,10 @@ import {
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { isValidConversionID } from '../../ads/utils/validation';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';

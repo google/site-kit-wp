@@ -31,9 +31,9 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	EDIT_SCOPE,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { elementsOverlap } from '../../../util/geometry';

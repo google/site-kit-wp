@@ -23,11 +23,11 @@ import { set } from 'googlesitekit-api';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	combineStores,
 	createRegistrySelector,

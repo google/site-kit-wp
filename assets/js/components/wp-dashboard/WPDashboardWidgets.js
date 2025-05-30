@@ -33,7 +33,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';

@@ -34,7 +34,7 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 describe( 'ConnectGA4CTATileWidget', () => {

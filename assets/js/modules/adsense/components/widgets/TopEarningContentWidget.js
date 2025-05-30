@@ -47,10 +47,8 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 function TopEarningContentWidget( { Widget } ) {

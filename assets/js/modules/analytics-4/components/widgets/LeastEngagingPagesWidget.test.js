@@ -39,9 +39,9 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,

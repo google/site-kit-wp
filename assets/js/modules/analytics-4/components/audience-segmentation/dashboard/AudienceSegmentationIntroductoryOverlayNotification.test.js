@@ -38,10 +38,8 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 } from './AudienceSegmentationIntroductoryOverlayNotification';
 import * as scrollUtils from '../../../../../util/scroll';
 import * as tracking from '../../../../../util/tracking';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,

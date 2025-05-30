@@ -21,11 +21,8 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import {
-	ACCOUNT_CREATE,
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';

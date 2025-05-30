@@ -27,10 +27,8 @@ import {
 	MODULES_ADS,
 	MODULE_SLUG_ADS,
 } from '../../modules/ads/datastore/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 import { freezeFetch, provideModules } from '../../../../tests/js/utils';

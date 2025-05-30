@@ -27,10 +27,8 @@ import {
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopTrafficSourceDrivingPurchasesWidget from './TopTrafficSourceDrivingPurchasesWidget';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,

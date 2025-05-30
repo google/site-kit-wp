@@ -33,13 +33,13 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitekit/widgets/default-areas';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import {
+	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../../../hooks/useDebounce';

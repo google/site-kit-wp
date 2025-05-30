@@ -33,10 +33,8 @@ import {
 } from '../../../../../tests/js/test-utils';
 import { provideCustomDimensionError } from '../utils/custom-dimensions';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
 import withCustomDimensions from './withCustomDimensions';

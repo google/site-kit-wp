@@ -50,9 +50,9 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
 

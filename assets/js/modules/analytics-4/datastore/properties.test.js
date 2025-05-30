@@ -35,11 +35,11 @@ import {
 } from '../../../../../tests/js/utils';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 

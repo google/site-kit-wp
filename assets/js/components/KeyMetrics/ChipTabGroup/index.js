@@ -58,8 +58,8 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';

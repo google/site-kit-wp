@@ -41,9 +41,9 @@ import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants'
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
 

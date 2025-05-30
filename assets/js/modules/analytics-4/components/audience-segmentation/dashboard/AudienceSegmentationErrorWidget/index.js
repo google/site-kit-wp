@@ -39,7 +39,7 @@ import ErrorWidgetContent from './ErrorWidgetContent';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import { trackEvent } from '../../../../../../util';
 import useViewContext from '../../../../../../hooks/useViewContext';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const ErrorWidgetContentWithIntersectionObserver =
 	withIntersectionObserver( ErrorWidgetContent );

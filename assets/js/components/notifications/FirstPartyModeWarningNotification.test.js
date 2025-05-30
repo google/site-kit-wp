@@ -43,7 +43,7 @@ import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/
 import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
 import * as tracking from '../../util/tracking';
 import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

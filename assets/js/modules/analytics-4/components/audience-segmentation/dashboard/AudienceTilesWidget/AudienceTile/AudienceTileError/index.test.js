@@ -39,10 +39,8 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../../../../../tests/js/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../../googlesitekit/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../../util/errors';
 import * as tracking from '../../../../../../../../util/tracking';
 

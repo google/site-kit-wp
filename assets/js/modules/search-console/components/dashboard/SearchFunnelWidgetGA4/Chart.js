@@ -41,7 +41,7 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Chart( {
 	canViewSharedAnalytics4,

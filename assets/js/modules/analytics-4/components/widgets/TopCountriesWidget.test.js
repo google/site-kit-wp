@@ -33,10 +33,8 @@ import {
 } from '../../../../googlesitekit/datastore/user/constants';
 import TopCountriesWidget from './TopCountriesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,

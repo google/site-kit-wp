@@ -25,10 +25,8 @@ import {
 } from '../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 

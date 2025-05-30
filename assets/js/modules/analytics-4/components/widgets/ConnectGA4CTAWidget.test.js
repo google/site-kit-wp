@@ -29,7 +29,10 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	CORE_USER,
 } from '../../../../googlesitekit/datastore/user/constants';
-import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import {
+	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from '../../constants';
 import {
 	render,
 	createTestRegistry,
@@ -40,7 +43,6 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../search-console/datastore/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {

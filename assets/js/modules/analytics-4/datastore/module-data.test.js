@@ -24,11 +24,8 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from './constants';
+import { ENUM_CONVERSION_EVENTS, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 describe( 'modules/ads module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';

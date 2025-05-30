@@ -33,10 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { TrackingExclusionSwitches } from '../common';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import SettingsControls from './SettingsControls';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';

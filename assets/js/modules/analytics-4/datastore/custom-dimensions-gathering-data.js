@@ -33,11 +33,8 @@ import {
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
-import {
-	CUSTOM_DIMENSION_DEFINITIONS,
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from './constants';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { getDateString } from '../../../util';
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =

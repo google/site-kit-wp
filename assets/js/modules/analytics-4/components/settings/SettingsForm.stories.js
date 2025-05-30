@@ -27,10 +27,8 @@ import fetchMock from 'fetch-mock';
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';

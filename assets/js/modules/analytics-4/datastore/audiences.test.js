@@ -36,10 +36,10 @@ import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import {

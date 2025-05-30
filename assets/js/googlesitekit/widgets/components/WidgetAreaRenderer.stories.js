@@ -30,7 +30,7 @@ import {
 	WIDGET_AREA_STYLES,
 } from '../datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 

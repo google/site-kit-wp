@@ -35,10 +35,8 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
 describe( 'Footer', () => {

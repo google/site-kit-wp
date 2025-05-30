@@ -36,7 +36,6 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
 import * as analytics4Fixtures from '../../../datastore/__fixtures__';
@@ -51,7 +50,10 @@ import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+} from '../../../constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =

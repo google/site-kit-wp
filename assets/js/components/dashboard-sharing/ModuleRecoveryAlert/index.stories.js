@@ -31,7 +31,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ModuleRecoveryAlert from '.';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

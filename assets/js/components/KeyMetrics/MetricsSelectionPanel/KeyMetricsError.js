@@ -39,7 +39,7 @@ import {
 	MAX_SELECTED_METRICS_COUNT,
 	MIN_SELECTED_METRICS_COUNT,
 } from '../constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import SelectionPanelError from '../../SelectionPanel/SelectionPanelError';
 import { safelySort } from '../../../util';
 import whenActive from '../../../util/when-active';

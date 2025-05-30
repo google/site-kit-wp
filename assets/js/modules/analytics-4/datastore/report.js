@@ -39,11 +39,8 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from './constants';
+import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
 import { normalizeReportOptions, isZeroReport } from '../utils';
 import { validateReport } from '../utils/validation';

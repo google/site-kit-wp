@@ -30,10 +30,8 @@ import {
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

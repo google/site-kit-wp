@@ -35,7 +35,7 @@ import {
 } from './index';
 import { DATA_LAYER } from '../../util/tracking/constants';
 import { enableTracking } from '../../util/tracking';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
 describe( 'googlesitekit.api', () => {

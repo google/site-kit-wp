@@ -29,9 +29,9 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopTrafficSourceDrivingLeadsWidget from './TopTrafficSourceDrivingLeadsWidget';
 import {
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,

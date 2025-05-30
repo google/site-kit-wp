@@ -32,7 +32,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import Notice from '../../../../components/Notice';
 
 export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {

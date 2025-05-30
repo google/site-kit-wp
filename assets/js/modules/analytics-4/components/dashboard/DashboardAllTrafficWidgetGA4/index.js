@@ -28,11 +28,11 @@ import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { isZeroReport } from '../../../utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';

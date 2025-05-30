@@ -33,9 +33,9 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	FORM_SETUP,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import SetupForm from './SetupForm';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';

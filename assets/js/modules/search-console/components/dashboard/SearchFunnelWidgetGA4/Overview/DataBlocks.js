@@ -37,10 +37,8 @@ import DataBlock from '../../../../../../components/DataBlock';
 import DataBlockGroup from '../../../../../../components/DataBlockGroup';
 import NewBadge from '../../../../../../components/NewBadge';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
 import {
 	DASHBOARD_TYPE_ENTITY,

@@ -35,7 +35,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'adminBarImpressions';

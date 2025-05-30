@@ -30,7 +30,7 @@ import { provideKeyMetricsWidgetRegistrations } from '../../../../components/Key
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectGA4CTA'

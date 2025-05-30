@@ -32,9 +32,9 @@ import {
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {

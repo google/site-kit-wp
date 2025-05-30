@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { normalizeWidgetModules } from './widget-modules';
 
 describe( 'normalizeWidgetModules', () => {

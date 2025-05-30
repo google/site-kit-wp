@@ -54,10 +54,8 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../analytics-4/constants';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';

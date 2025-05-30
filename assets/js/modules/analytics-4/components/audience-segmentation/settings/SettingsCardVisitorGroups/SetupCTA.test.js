@@ -38,9 +38,9 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 import * as tracking from '../../../../../../util/tracking';

@@ -40,9 +40,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,

@@ -29,10 +29,8 @@ import {
 	withActive,
 	withConnected,
 } from '../../../../../googlesitekit/modules/datastore/__fixtures__';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../../analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import SearchFunnelWidgetGA4 from '.';
 import Chart from './Chart';
 import {

@@ -55,8 +55,8 @@ import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import {
 	MODULES_SEARCH_CONSOLE,

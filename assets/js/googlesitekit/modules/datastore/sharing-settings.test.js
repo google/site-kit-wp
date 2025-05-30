@@ -34,7 +34,7 @@ import {
 	MODULE_SLUG_PAGESPEED_INSIGHTS,
 	MODULES_PAGESPEED_INSIGHTS,
 } from '../../../modules/pagespeed-insights/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {

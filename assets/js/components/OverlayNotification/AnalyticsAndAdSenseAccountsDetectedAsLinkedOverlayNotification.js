@@ -43,8 +43,8 @@ import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';

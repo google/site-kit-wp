@@ -23,7 +23,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_WIDGETS } from './constants';
 import Null from '../../../components/Null';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 
 describe( 'core/widgets Widgets', () => {

@@ -31,10 +31,8 @@ import {
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
 import * as analytics4fixtures from '../../../datastore/__fixtures__';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 
 describe( 'Footer', () => {
 	let registry;

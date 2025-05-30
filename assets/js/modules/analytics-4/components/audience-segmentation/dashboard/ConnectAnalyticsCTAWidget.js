@@ -35,7 +35,7 @@ import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/a
 import AudienceConnectAnalyticsCTAGraphicTablet from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
 import Link from '../../../../../components/Link';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
 import {
 	BREAKPOINT_TABLET,

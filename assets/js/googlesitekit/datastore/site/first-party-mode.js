@@ -36,7 +36,7 @@ import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '../../../modules/ads/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { isFeatureEnabled } from '../../../features';
 

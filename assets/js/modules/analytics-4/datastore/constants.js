@@ -18,8 +18,6 @@
 
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
-export const MODULE_SLUG_ANALYTICS_4 = 'analytics-4';
-
 // A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';
 

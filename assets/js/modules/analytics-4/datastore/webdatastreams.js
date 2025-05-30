@@ -33,11 +33,8 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-	MAX_WEBDATASTREAMS_PER_BATCH,
-} from './constants';
+import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {

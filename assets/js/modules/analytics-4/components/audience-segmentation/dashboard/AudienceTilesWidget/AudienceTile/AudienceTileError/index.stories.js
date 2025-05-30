@@ -21,10 +21,8 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import AudienceTileError from '.';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,

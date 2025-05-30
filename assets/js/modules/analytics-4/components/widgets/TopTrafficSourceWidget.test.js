@@ -44,9 +44,9 @@ import {
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import {
 	DATE_RANGE_OFFSET,
-	MODULE_SLUG_ANALYTICS_4,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,

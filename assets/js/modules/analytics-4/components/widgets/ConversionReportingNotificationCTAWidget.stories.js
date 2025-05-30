@@ -26,10 +26,8 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import {
-	MODULES_ANALYTICS_4,
-	MODULE_SLUG_ANALYTICS_4,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
