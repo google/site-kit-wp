@@ -29,11 +29,10 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '../AdminMenuTooltip';
 import {
 	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
+	NOTIFICATION_AREAS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import Description from '../../googlesitekit/notifications/components/common/Description';
 import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
@@ -46,15 +45,11 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
-import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS } from '../../util';
-
-export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
-	'fpm-show-setup-success-notification';
+import FirstPartyModeSetupSuccessSubtleNotification from './FirstPartyModeSetupSuccessSubtleNotification';
 
 export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
-	const viewContext = useViewContext();
 
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
@@ -73,9 +68,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
-
-	const { setValue } = useDispatch( CORE_UI );
+	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
@@ -91,11 +84,12 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			return { error };
 		}
 
-		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
-		invalidateResolution( 'getQueuedNotifications', [
-			viewContext,
-			NOTIFICATION_GROUPS.DEFAULT,
-		] );
+		registerNotification( 'setup-success-notification-fpm', {
+			Component: FirstPartyModeSetupSuccessSubtleNotification,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			isDismissible: false,
+			featureFlag: 'firstPartyMode',
+		} );
 	};
 
 	const { triggerSurvey } = useDispatch( CORE_USER );

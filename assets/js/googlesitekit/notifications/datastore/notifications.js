@@ -558,7 +558,10 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			} );
 
 			state.queuedNotifications[ notification.groupID ].splice(
-				positionForNewNotification,
+				positionForNewNotification !== -1
+					? positionForNewNotification
+					: state.queuedNotifications[ notification.groupID ].length +
+							1,
 				0,
 				notification
 			);
