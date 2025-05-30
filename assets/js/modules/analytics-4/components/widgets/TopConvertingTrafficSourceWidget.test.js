@@ -72,11 +72,11 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [
 				{
-					name: 'sessionConversionRate',
+					name: 'sessionKeyEventRate',
 				},
 			],
 			limit: 1,
-			orderBy: 'sessionConversionRate',
+			orderBy: 'sessionKeyEventRate',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -99,11 +99,11 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [
 				{
-					name: 'sessionConversionRate',
+					name: 'sessionKeyEventRate',
 				},
 			],
 			limit: 1,
-			orderBy: 'sessionConversionRate',
+			orderBy: 'sessionKeyEventRate',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );

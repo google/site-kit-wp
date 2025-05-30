@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: coversion events.
+ * `modules/analytics-4` data store: key events.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -25,53 +25,54 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
-const fetchGetConversionEventsStore = createFetchStore( {
-	baseName: 'getConversionEvents',
+const fetchGetKeyEventsStore = createFetchStore( {
+	baseName: 'getKeyEvents',
 	controlCallback: () => {
-		return get( 'modules', 'analytics-4', 'conversion-events', {} );
+		return get( 'modules', 'analytics-4', 'key-events', {} );
 	},
-	reducerCallback: createReducer( ( state, conversionEvents ) => {
-		state.conversionEvents = conversionEvents;
+	reducerCallback: createReducer( ( state, keyEvents ) => {
+		state.keyEvents = keyEvents;
 	} ),
 } );
 
 const baseInitialState = {
-	conversionEvents: undefined,
+	keyEvents: undefined,
 };
 
 const baseResolvers = {
-	*getConversionEvents() {
+	*getKeyEvents() {
 		const registry = yield commonActions.getRegistry();
-		const existingConversionEvents = registry
+		const existingKeyEvents = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getConversionEvents();
+			.getKeyEvents();
 
-		// If there are already `conversionEvents` loaded in state, consider it fulfilled
+		// If there are already `keyEvents` loaded in state, consider it fulfilled
 		// and don't make an API request.
-		if ( existingConversionEvents ) {
+		if ( existingKeyEvents ) {
 			return;
 		}
 
-		yield fetchGetConversionEventsStore.actions.fetchGetConversionEvents();
+		yield fetchGetKeyEventsStore.actions.fetchGetKeyEvents();
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets GA4 conversion events.
+	 * Gets GA4 key events.
 	 *
 	 * @since 1.96.0
 	 * @since 1.99.0 Removed the `propertyID` parameter.
+	 * @since n.e.x.t Renamed from `getConversionEvents` to `getKeyEvents`.
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array.<Object>|undefined)} GA4 conversion events; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} GA4 key events; `undefined` if not loaded.
 	 */
-	getConversionEvents( state ) {
-		return state.conversionEvents;
+	getKeyEvents( state ) {
+		return state.keyEvents;
 	},
 };
 
-const store = combineStores( fetchGetConversionEventsStore, {
+const store = combineStores( fetchGetKeyEventsStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

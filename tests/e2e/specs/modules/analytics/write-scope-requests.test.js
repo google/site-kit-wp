@@ -127,7 +127,7 @@ describe( 'Analytics write scope requests', () => {
 					request.continue();
 				}
 			} else if (
-				request.url().match( 'analytics-4/data/conversion-events' ) ||
+				request.url().match( 'analytics-4/data/key-events' ) ||
 				request.url().match( 'search-console/data/searchanalytics' )
 			) {
 				request.respond( {

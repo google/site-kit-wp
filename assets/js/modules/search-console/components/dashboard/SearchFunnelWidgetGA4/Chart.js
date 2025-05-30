@@ -82,7 +82,7 @@ export default function Chart( {
 							<Cell>
 								<ActivateAnalyticsCTA
 									title={ __(
-										'Conversions completed',
+										'Key Events completed',
 										'google-site-kit'
 									) }
 								/>
@@ -118,7 +118,7 @@ export default function Chart( {
 						selectedStats={ selectedStats - 3 }
 						metrics={ metrics }
 						dataLabels={ [
-							__( 'Conversions', 'google-site-kit' ),
+							__( 'Key Events', 'google-site-kit' ),
 							__( 'Engagement Rate %', 'google-site-kit' ),
 						] }
 						tooltipDataFormats={ [

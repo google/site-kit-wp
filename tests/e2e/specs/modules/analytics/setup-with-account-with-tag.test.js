@@ -53,7 +53,7 @@ function getRequestResponseMappings() {
 			status: 200,
 			body: JSON.stringify( {} ),
 		},
-		'analytics-4/data/conversion-events': {
+		'analytics-4/data/key-events': {
 			status: 200,
 			body: JSON.stringify( [] ),
 		},

@@ -44,11 +44,11 @@ const reportOptions = {
 	dimensions: [ 'sessionDefaultChannelGroup' ],
 	metrics: [
 		{
-			name: 'sessionConversionRate',
+			name: 'sessionKeyEventRate',
 		},
 	],
 	limit: 1,
-	orderBy: 'sessionConversionRate',
+	orderBy: 'sessionKeyEventRate',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

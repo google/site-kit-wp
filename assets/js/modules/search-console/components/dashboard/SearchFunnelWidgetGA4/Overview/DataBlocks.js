@@ -54,7 +54,7 @@ export default function DataBlocks( {
 	dateRangeLength,
 	showGA4,
 	dashboardType,
-	showConversionsCTA,
+	showKeyEventsCTA,
 	engagementRateLearnMoreURL,
 	onGA4NewBadgeLearnMoreClick,
 } ) {
@@ -82,8 +82,8 @@ export default function DataBlocks( {
 		totalImpressionsChange,
 	} = extractSearchConsoleDashboardData( searchConsoleData, dateRangeLength );
 
-	let ga4ConversionsChange = null;
-	let ga4ConversionsDatapoint = null;
+	let ga4KeyEventsChange = null;
+	let ga4KeyEventsDatapoint = null;
 	let ga4EngagementRateDatapoint = null;
 	let ga4EngagementRateChange = null;
 	let ga4VisitorsDatapoint = null;
@@ -94,12 +94,12 @@ export default function DataBlocks( {
 		isPlainObject( ga4Data ) &&
 		isPlainObject( ga4VisitorsData )
 	) {
-		( { change: ga4ConversionsChange } = getDatapointAndChange(
+		( { change: ga4KeyEventsChange } = getDatapointAndChange(
 			ga4Data,
 			0,
 			100
 		) );
-		ga4ConversionsDatapoint =
+		ga4KeyEventsDatapoint =
 			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 		( {
@@ -122,7 +122,7 @@ export default function DataBlocks( {
 		oneThirdCellProps,
 		threeQuartersCellProps,
 		fullCellProps,
-	} = getCellProps( showConversionsCTA );
+	} = getCellProps( showKeyEventsCTA );
 
 	// Collection of all the data blocks to be displayed.
 	const dataBlocks = [
@@ -159,14 +159,14 @@ export default function DataBlocks( {
 			: [] ),
 		...( showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		! showConversionsCTA
+		! showKeyEventsCTA
 			? [
 					{
-						id: 'conversions',
+						id: 'keyEvents',
 						stat: 3,
-						title: __( 'Conversions', 'google-site-kit' ),
-						datapoint: ga4ConversionsDatapoint,
-						change: ga4ConversionsChange,
+						title: __( 'Key Events', 'google-site-kit' ),
+						datapoint: ga4KeyEventsDatapoint,
+						change: ga4KeyEventsChange,
 						isGatheringData: isGA4GatheringData,
 					},
 			  ]
@@ -184,7 +184,7 @@ export default function DataBlocks( {
 						badge: (
 							<NewBadge
 								tooltipTitle={ __(
-									'Sessions which lasted 10 seconds or longer, had 1 or more conversion events, or 2 or more page views.',
+									'Sessions which lasted 10 seconds or longer, had 1 or more key events, or 2 or more page views.',
 									'google-site-kit'
 								) }
 								learnMoreLink={ engagementRateLearnMoreURL }
@@ -254,7 +254,7 @@ DataBlocks.propTypes = {
 	dateRangeLength: PropTypes.number.isRequired,
 	showGA4: PropTypes.bool,
 	dashboardType: PropTypes.string,
-	showConversionsCTA: PropTypes.bool,
+	showKeyEventsCTA: PropTypes.bool,
 	isGA4GatheringData: PropTypes.bool,
 	isSearchConsoleGatheringData: PropTypes.bool,
 	engagementRateLearnMoreURL: PropTypes.string,

@@ -688,7 +688,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:conversion-events'                     => array(
+			'GET:key-events'                            => array(
 				'service'   => 'analyticsadmin',
 				'shareable' => true,
 			),
@@ -1749,7 +1749,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
-			case 'GET:conversion-events':
+			case 'GET:key-events':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
@@ -1763,8 +1763,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					->listPropertiesConversionEvents( $property_id );
+				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1839,8 +1839,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				return (array) $response->getDestination();
 			case 'GET:google-tag-settings':
 				return $this->get_google_tag_settings_for_measurement_id( $response, $data['measurementID'] );
-			case 'GET:conversion-events':
-				return (array) $response->getConversionEvents();
+			case 'GET:key-events':
+				return (array) $response->getKeyEvents();
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );

@@ -244,7 +244,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
               <h3
                 class="googlesitekit-analytics-cta__preview-graph--title"
               >
-                Conversions completed
+                Key Events completed
               </h3>
               <div>
                 <svg />
