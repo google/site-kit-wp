@@ -33,7 +33,8 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS, MODULE_SLUG_ADS } from './constants';
+import { MODULES_ADS } from './constants';
+import { MODULE_SLUG_ADS } from '../constants';
 import { isValidConversionID } from '../utils/validation';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 

@@ -19,7 +19,8 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS, MODULE_SLUG_ADS } from '../../datastore/constants';
+import { MODULES_ADS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,

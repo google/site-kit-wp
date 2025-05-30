@@ -18,8 +18,6 @@
 
 export const MODULES_ADS = 'modules/ads';
 
-export const MODULE_SLUG_ADS = 'ads';
-
 export const ADWORDS_SCOPE = 'https://www.googleapis.com/auth/adwords';
 export const SUPPORT_CONTENT_SCOPE =
 	'https://www.googleapis.com/auth/supportcontent';

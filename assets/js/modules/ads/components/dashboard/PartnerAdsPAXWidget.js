@@ -32,11 +32,8 @@ import { compose } from '@wordpress/compose';
 import { useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../util/when-active';
 import whenScopesGranted from '../../../../util/whenScopesGranted';
-import {
-	ADWORDS_SCOPE,
-	MODULES_ADS,
-	MODULE_SLUG_ADS,
-} from '../../datastore/constants';
+import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';

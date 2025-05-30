@@ -28,7 +28,8 @@ import { getQueryArg } from '@wordpress/url';
 import AdsIcon from '../../../svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
-import { MODULES_ADS, MODULE_SLUG_ADS } from './datastore/constants';
+import { MODULES_ADS } from './datastore/constants';
+import { MODULE_SLUG_ADS } from './constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
