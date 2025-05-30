@@ -262,7 +262,7 @@ describe( 'core/widgets Widget areas', () => {
 
 			it( 'should register a widget area with a `filterActiveWidgets` function', () => {
 				const slug = 'filtered-widgets';
-				const filterActiveWidgetsMock = jest.fn();
+				const filterActiveWidgetsMock = vi.fn();
 				const settings = {
 					priority: 10,
 					title: 'Filtered Widgets',

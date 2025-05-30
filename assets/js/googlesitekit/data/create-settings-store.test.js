@@ -425,7 +425,7 @@ describe( 'createSettingsStore store', () => {
 			[ '__dangerousHaveSettingsChanged' ],
 		] )( '%s', ( selector ) => {
 			it( 'should use provided validateHaveSettingsChanged function', () => {
-				const validateHaveSettingsChanged = jest.fn();
+				const validateHaveSettingsChanged = vi.fn();
 
 				storeDefinition = createSettingsStore( ...STORE_ARGS, {
 					settingSlugs: [ 'isSkyBlue' ],

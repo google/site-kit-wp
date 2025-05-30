@@ -70,10 +70,10 @@ describe( 'FeatureTours', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 		registry.dispatch( CORE_USER ).receiveCurrentTour( testTour );
 
-		observeMock = jest.fn();
-		disconnectMock = jest.fn();
+		observeMock = vi.fn();
+		disconnectMock = vi.fn();
 
-		global.ResizeObserver = jest.fn( function () {
+		global.ResizeObserver = vi.fn( function () {
 			this.observe = observeMock;
 			this.disconnect = disconnectMock;
 		} );

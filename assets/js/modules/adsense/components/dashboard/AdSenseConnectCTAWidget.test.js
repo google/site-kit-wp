@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-const mockShowTooltip = jest.fn();
+const mockShowTooltip = vi.fn();
 jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
+	default: vi.fn(),
+	useShowTooltip: vi.fn( () => mockShowTooltip ),
 } ) );
 
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';

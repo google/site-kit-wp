@@ -135,7 +135,7 @@ describe( 'trackEvent', () => {
 	} );
 
 	it( 'does not push to dataLayer when tracking is disabled', async () => {
-		const push = jest.fn();
+		const push = vi.fn();
 		const dataLayer = {
 			[ DATA_LAYER ]: { push },
 		};

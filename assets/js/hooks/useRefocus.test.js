@@ -28,7 +28,7 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should invoke the reset handler when the window is blurred and then refocused after the specified delay', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy, 1000 ) );
 
@@ -47,7 +47,7 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should invoke the reset handler when the window is blurred and then refocused when no delay is specified', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy ) );
 
@@ -68,7 +68,7 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should not invoke the reset handler when the window is blurred and then refocused before the specified delay', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy, 1000 ) );
 
@@ -87,7 +87,7 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should continue to invoke the reset handler as the window is blurred and then refocused repeatedly', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy, 1000 ) );
 

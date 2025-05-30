@@ -49,7 +49,7 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: requestURI,
 		};
-		const next = jest.fn();
+		const next = vi.fn();
 		const firstResponse = await preloadingMiddleware(
 			requestOptions,
 			next
@@ -65,8 +65,8 @@ describe( 'Preloading Middleware', () => {
 		const preloadingMiddleware =
 			createPreloadingMiddleware( preloadedData );
 
-		const firstResponseNext = jest.fn();
-		const secondResponseNext = jest.fn();
+		const firstResponseNext = vi.fn();
+		const secondResponseNext = vi.fn();
 
 		const firstResponse = await preloadingMiddleware(
 			{ method: 'GET', path: firstRequestURI },
@@ -103,7 +103,7 @@ describe( 'Preloading Middleware', () => {
 
 	it( 'does nothing and calls next middleware when no preloaded response exists for the request', async () => {
 		const requestURI = 'test/path/a';
-		const next = jest.fn();
+		const next = vi.fn();
 		const preloadingMiddleware = createPreloadingMiddleware( {} );
 		const requestOptions = {
 			method: 'GET',
@@ -122,7 +122,7 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: requestURI,
 		};
-		const next = jest.fn();
+		const next = vi.fn();
 		const firstResponse = await preloadingMiddleware(
 			requestOptions,
 			next
@@ -149,7 +149,7 @@ describe( 'Preloading Middleware', () => {
 			method: 'GET',
 			path: firstRequestURI,
 		};
-		const next = jest.fn();
+		const next = vi.fn();
 
 		const firstResponse = await preloadingMiddleware(
 			requestOptions,

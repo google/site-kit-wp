@@ -99,7 +99,7 @@ describe( 'EnhancedMeasurementSwitch', () => {
 	} );
 
 	it( 'should invoke the onClick callback when clicked', () => {
-		const onClick = jest.fn();
+		const onClick = vi.fn();
 
 		const { getByLabelText } = render(
 			<EnhancedMeasurementSwitch onClick={ onClick } />

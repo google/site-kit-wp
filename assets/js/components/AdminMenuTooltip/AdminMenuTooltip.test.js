@@ -35,7 +35,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 // Mock useViewContext to return a consistent value
-jest.mock( '../../hooks/useViewContext', () => jest.fn() );
+jest.mock( '../../hooks/useViewContext', () => vi.fn() );
 useViewContext.mockImplementation( () => 'test-context' );
 
 describe( 'AdminMenuTooltip', () => {

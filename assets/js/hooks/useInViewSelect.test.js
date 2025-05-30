@@ -33,7 +33,7 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const mapSelectMock = jest.fn( ( select ) =>
+		const mapSelectMock = vi.fn( ( select ) =>
 			select( CORE_UI ).getValue( 'test' )
 		);
 
@@ -51,7 +51,7 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const mapSelectMock = jest.fn( ( select ) =>
+		const mapSelectMock = vi.fn( ( select ) =>
 			select( CORE_UI ).getValue( 'test' )
 		);
 
@@ -69,7 +69,7 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const mapSelectMock = jest.fn( ( select ) =>
+		const mapSelectMock = vi.fn( ( select ) =>
 			select( CORE_UI ).getValue( 'test' )
 		);
 
@@ -95,7 +95,7 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const mapSelectMock = jest.fn( ( select ) =>
+		const mapSelectMock = vi.fn( ( select ) =>
 			select( CORE_UI ).getValue( 'test' )
 		);
 
@@ -119,7 +119,7 @@ describe( 'useInViewSelect', () => {
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
 
-		const mapSelectMock = jest.fn( ( select ) =>
+		const mapSelectMock = vi.fn( ( select ) =>
 			select( CORE_UI ).getValue( 'test' )
 		);
 

@@ -19,7 +19,7 @@
 jest.mock(
 	'@wordpress-core/plugins',
 	() => ( {
-		registerPlugin: jest.fn(),
+		registerPlugin: vi.fn(),
 	} ),
 	{
 		virtual: true,

@@ -151,7 +151,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 		// Mock the date to be an arbitrary time.
 		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
-		Date.now = jest.fn( () => mockNow );
+		Date.now = vi.fn( () => mockNow );
 
 		jest.useFakeTimers();
 

@@ -38,7 +38,7 @@ function NotificationWrapper() {
 
 // Mock the useLatestIntersection hook to control intersection state.
 jest.mock( '../../../../hooks/useLatestIntersection', () => {
-	return jest.fn().mockImplementation( () => ( {
+	return vi.fn().mockImplementation( () => ( {
 		isIntersecting: true,
 	} ) );
 } );
@@ -46,7 +46,7 @@ jest.mock( '../../../../hooks/useLatestIntersection', () => {
 // Mock the useHasBeenViewed hook to control viewed state.
 jest.mock( '../../hooks/useHasBeenViewed', () => {
 	const originalModule = jest.requireActual( '../../hooks/useHasBeenViewed' );
-	const mockUseHasBeenViewed = jest.fn().mockReturnValue( false );
+	const mockUseHasBeenViewed = vi.fn().mockReturnValue( false );
 	mockUseHasBeenViewed.getKey = originalModule.useHasBeenViewed.getKey;
 
 	return {
@@ -72,9 +72,9 @@ describe( 'Notification', () => {
 		registry = createTestRegistry();
 
 		// Mock the actions.
-		mockMarkNotificationSeen = jest.fn();
-		mockSetValue = jest.fn();
-		mockDismissNotification = jest.fn();
+		mockMarkNotificationSeen = vi.fn();
+		mockSetValue = vi.fn();
+		mockDismissNotification = vi.fn();
 
 		registry.dispatch( CORE_NOTIFICATIONS ).markNotificationSeen =
 			mockMarkNotificationSeen;

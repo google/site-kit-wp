@@ -96,7 +96,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
-	const setValueMock = jest.fn();
+	const setValueMock = vi.fn();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -119,7 +119,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		// Provide fallback for `window.open`.
-		global.open = jest.fn();
+		global.open = vi.fn();
 	} );
 
 	afterEach( () => {

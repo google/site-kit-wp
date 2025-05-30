@@ -35,10 +35,10 @@ import {
 // Mock `@wordpress/url` to return `true` for `isURL` when `#` is passed as a URL.
 jest.mock( '@wordpress/url', () => ( {
 	...jest.requireActual( '@wordpress/url' ),
-	isURL: jest.fn().mockImplementation( ( url ) => url === '#' ),
+	isURL: vi.fn().mockImplementation( ( url ) => url === '#' ),
 } ) );
 // Mock `invariant` to prevent it from throwing errors when `#` is passed as a URL.
-jest.mock( 'invariant', () => jest.fn() );
+jest.mock( 'invariant', () => vi.fn() );
 
 describe( 'BannerNotification', () => {
 	afterAll( () => {
