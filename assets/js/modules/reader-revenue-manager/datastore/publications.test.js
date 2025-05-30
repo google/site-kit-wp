@@ -35,7 +35,6 @@ import {
 	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { enabledFeatures } from '../../../features';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -63,7 +62,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	} );
 
 	beforeEach( () => {
-		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
 		registry = createTestRegistry();
 		provideUserInfo( registry );
 	} );

@@ -247,13 +247,10 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			status: 500,
 		} );
 
-		const { getByRole, getByText, waitForRegistry } = render(
-			<FPMBannerComponent />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
+		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
 
 		await waitForRegistry();
 
@@ -273,7 +270,11 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 		} );
 
-		expect( getByText( 'Error: Test Error' ) ).toBeInTheDocument();
+		expect(
+			document.querySelector(
+				'.googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
+			).textContent
+		).toContain( 'Error: Test Error' );
 	} );
 
 	it( 'should set FPM_SHOW_SETUP_SUCCESS_NOTIFICATION to true and invalidate the notifications queue resolution when the CTA button is clicked', async () => {

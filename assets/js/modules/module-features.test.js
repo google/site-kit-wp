@@ -26,7 +26,6 @@ import {
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { enabledFeatures } from '../features';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/datastore/constants';
@@ -38,8 +37,6 @@ describe( 'Module Features', () => {
 	let registry;
 	beforeAll( () => {
 		registry = createTestRegistry();
-		enabledFeatures.add( 'rrmModule' ); // Enable RRM module to get its features.
-
 		provideUserInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );

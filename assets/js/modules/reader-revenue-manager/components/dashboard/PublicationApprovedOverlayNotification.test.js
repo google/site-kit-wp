@@ -32,24 +32,28 @@ import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
-import * as tracking from '../../../../util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	MODULE_SLUG_READER_REVENUE_MANAGER,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 
 describe( 'PublicationApprovedOverlayNotification', () => {
+	mockLocation();
+	const PublicationApprovedOverlayNotificationComponent =
+		withNotificationComponentProps(
+			RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION
+		)( PublicationApprovedOverlayNotification );
+
+	const notification =
+		NOTIFICATIONS[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ];
+
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
@@ -61,7 +65,6 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	);
 
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 
 		provideModules( registry, [
@@ -73,18 +76,13 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		] );
 
 		registry
-			.dispatch( CORE_UI )
-			.setValue(
-				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-				true
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
+				notification
 			);
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationOnboardingState: 'ONBOARDING_COMPLETE',
-				publicationOnboardingStateChanged: true,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
 			const { data } = JSON.parse( opts.body );
@@ -95,12 +93,15 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	} );
 
 	it( 'should render the component with correct title and description', async () => {
-		// No items are dismissed.
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: '12345',
+			} );
 
 		const { getByText, waitForRegistry } = render(
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<PublicationApprovedOverlayNotification />
+				<PublicationApprovedOverlayNotificationComponent />
 			</ViewContextProvider>,
 			{
 				registry,
@@ -121,72 +122,20 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 			)
 		).toBeInTheDocument();
 
-		// Make sure that `googlesitekit-reader-revenue-manager-publication-approved-notification` class is present for the component wrapper.
+		// Make sure that the notificationID is present for the component wrapper.
 		expect(
 			document.querySelector(
-				'.googlesitekit-reader-revenue-manager-publication-approved-notification'
+				`#${ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION }`
 			)
 		).toBeInTheDocument();
-
-		// Make sure that the component is tracking the view event.
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
-			'view_notification'
-		);
-	} );
-
-	it( 'should return null when dashboard is not main dashboard', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const { container, waitForRegistry } = render(
-			<ViewContextProvider
-				value={ VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
-			>
-				<PublicationApprovedOverlayNotification />
-			</ViewContextProvider>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		// Container should be empty.
-		expect( container ).toBeEmptyDOMElement();
-		// Component should return null.
-		expect( container.firstChild ).toBeNull();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
-	} );
-
-	it( 'should return null when notification is dismissed', async () => {
-		// Set the notification as dismissed.
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<PublicationApprovedOverlayNotification />
-			</ViewContextProvider>,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		// Container should be empty.
-		expect( container ).toBeEmptyDOMElement();
-		// Component should return null.
-		expect( container.firstChild ).toBeNull();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should get dismissed when "Enable features" CTA is clicked', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationID: '12345',
+			} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.postOnce( dismissItemsEndpoint, {
@@ -201,7 +150,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-				<PublicationApprovedOverlayNotification />
+				<PublicationApprovedOverlayNotificationComponent />
 			</ViewContextProvider>,
 			{
 				registry,
@@ -209,12 +158,6 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		);
 
 		await waitForRegistry();
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
-			'view_notification'
-		);
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
@@ -224,11 +167,117 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched( dismissItemsEndpoint );
+	} );
 
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_rrm-publication-approved-notification`,
-			'confirm_notification'
-		);
+	describe( 'checkRequirements', () => {
+		it( 'is active when the onboarding is complete and the onboarding state was just changed', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					publicationOnboardingStateChanged: true,
+				} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is active when the onboarding is complete and the setup success notification is showing but payment option is empty', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					paymentOption: '',
+					publicationOnboardingStateChanged: false,
+				} );
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when the RRM module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULES_READER_REVENUE_MANAGER,
+					active: false,
+					connected: false,
+				},
+			] );
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					publicationOnboardingStateChanged: true,
+				} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the onboarding is not complete but other settings could trigger the overlay', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'PENDING_VERIFICATION',
+					paymentOption: '',
+					publicationOnboardingStateChanged: true,
+				} );
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the publication onboarding state is complete but the paymentOption is valid and the publication state is not changed', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					paymentOption: 'validPaymentOption',
+					publicationOnboardingStateChanged: false,
+				} );
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the publication onboarding state is complete, the paymentOption is valid but the success notification is not showing', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: '12345',
+					publicationOnboardingState: 'ONBOARDING_COMPLETE',
+					paymentOption: 'validPaymentOption',
+					publicationOnboardingStateChanged: false,
+				} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );

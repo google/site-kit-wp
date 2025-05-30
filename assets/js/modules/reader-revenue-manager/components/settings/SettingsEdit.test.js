@@ -174,17 +174,19 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [ publications[ 0 ], publications[ 1 ] ] );
 
-		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+		const { waitForRegistry } = render( <SettingsEdit />, {
 			registry,
 		} );
 
 		await waitForRegistry();
 
 		expect(
-			getByText(
-				`Error: The previously selected publication with ID ${ publicationID } was not found. Please select a new publication.`
-			)
-		).toBeInTheDocument();
+			document.querySelector(
+				'.googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
+			).textContent
+		).toContain(
+			`Error: The previously selected publication with ID ${ publicationID } was not found. Please select a new publication.`
+		);
 	} );
 
 	it( 'should not render an error message if the user does not have module access even if the publication is not available', async () => {
