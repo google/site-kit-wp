@@ -73,7 +73,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should register the plugin if the module is connected and the user has ownership', async () => {
+	it( 'should register the plugin if the user has ownership', async () => {
 		provideModules( Data, [ rrmModuleDefaults ] );
 
 		provideUserInfo( Data );
@@ -88,7 +88,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		);
 	} );
 
-	it( 'should register the plugin if the module is connected and the user has access', async () => {
+	it( 'should register the plugin if the user has access', async () => {
 		provideModules( Data, [ rrmModuleDefaults ] );
 
 		provideUserInfo( Data );
@@ -112,7 +112,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		);
 	} );
 
-	it( 'should not register the plugin if the module is connected and does not have ownership or access', async () => {
+	it( 'should not register the plugin if the user does not have ownership or access', async () => {
 		provideModules( Data, [ rrmModuleDefaults ] );
 
 		provideUserInfo( Data );
@@ -125,19 +125,6 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
 			{ body: { access: false } }
 		);
-
-		await registerReaderRevenueManagerPlugin();
-
-		expect( registerPlugin ).not.toHaveBeenCalled();
-	} );
-
-	it( 'should not register the plugin if the module is not connected', async () => {
-		provideModules( Data, [
-			{
-				...rrmModuleDefaults,
-				connected: false,
-			},
-		] );
 
 		await registerReaderRevenueManagerPlugin();
 

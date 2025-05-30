@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.152.0
+Stable tag:        1.154.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,29 +109,23 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.152.0 =
+= 1.154.0 =
 
 **Enhanced**
 
-* Update the setup success notification copy to consistently refer to "visitor groups" instead of "audiences" in Audience Segmentation settings. See [#10554](https://github.com/google/site-kit-wp/issues/10554).
-* Improve the naming of the available audience selectors. See [#10449](https://github.com/google/site-kit-wp/issues/10449).
-* Add new components for notices. See [#10429](https://github.com/google/site-kit-wp/issues/10429).
-* Refactor `DashboardPageSpeed` component to reduce cyclomatic complexity and remove the ESLint override. See [#10362](https://github.com/google/site-kit-wp/issues/10362).
-* Refactor the `Footer` component in `SettingsActiveModule` to reduce cyclomatic complexity and remove the ESLint override. See [#10353](https://github.com/google/site-kit-wp/issues/10353).
-* Remove the ESLint complexity override from the dashboard sharing settings' `Module` component. See [#10350](https://github.com/google/site-kit-wp/issues/10350).
-* Fix minor visual issues when the Dashbaord Sharing modal is being closed. See [#9138](https://github.com/google/site-kit-wp/issues/9138).
-* Fix bug that could cause an erroneous module link to appear when a module isn't connected. See [#7698](https://github.com/google/site-kit-wp/issues/7698).
-
-**Changed**
-
-* Remove GM3 assets from the codebase. See [#10604](https://github.com/google/site-kit-wp/issues/10604).
+* Add the `purchase` event tracking for the WooCommerce conversion tracking provider on block themes. See [#10747](https://github.com/google/site-kit-wp/issues/10747).
+* Add all WooCommerce conversion events to track when WooCommerce Analytics Addon is available. See [#10691](https://github.com/google/site-kit-wp/issues/10691).
+* Update WooCommerce events tracking to include additional information. See [#10672](https://github.com/google/site-kit-wp/issues/10672).
+* Update success subtle notifications to use the new `<Notice type="success">` component. See [#10432](https://github.com/google/site-kit-wp/issues/10432).
+* Refactor the usage of all “info type notice” components to use the new `<Notice type='info'>` component. See [#10430](https://github.com/google/site-kit-wp/issues/10430).
+* Refactor components used for warnings throughout the plugin. See [#10428](https://github.com/google/site-kit-wp/issues/10428).
+* Reset the dismissal state for the Reader Revenue Manager product ID notifications when the connected publication is changed, ensuring they can be shown again. See [#10311](https://github.com/google/site-kit-wp/issues/10311).
+* Fix tooltip issues on mobile/tablet viewports when user clicked outside of the tooltip area. See [#10101](https://github.com/google/site-kit-wp/issues/10101).
+* Add the accepted language information to the remove notifications requests. See [#8813](https://github.com/google/site-kit-wp/issues/8813).
 
 **Fixed**
 
-* Fix the `&amp;` occurrences issue in KMW widgets. See [#10622](https://github.com/google/site-kit-wp/issues/10622).
-* Fix bug that can occur when AAA Option Optimizer plugin is installed. Props tacoverdo. See [#10573](https://github.com/google/site-kit-wp/issues/10573).
-* Restore loading state for Google tag mismatch notification when actioning. See [#10489](https://github.com/google/site-kit-wp/issues/10489).
-* Fix glitches when closing various modal dialogs. See [#9137](https://github.com/google/site-kit-wp/issues/9137).
-* Update the Ad Blocking Recovery notification to remain visible after clicking on the CTA button. See [#7908](https://github.com/google/site-kit-wp/issues/7908).
+* Fix error preventing the Reader Revenue Manager block editor plugin and Sign in With Google blocks from loading in the block editor. See [#10822](https://github.com/google/site-kit-wp/issues/10822).
+* Fix incorrect step navigation in feature tours. See [#10590](https://github.com/google/site-kit-wp/issues/10590).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

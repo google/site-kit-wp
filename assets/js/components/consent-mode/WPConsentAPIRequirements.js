@@ -31,14 +31,13 @@ import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import InfoCircle from '../../../../assets/svg/icons/info-circle.svg';
 import Link from '../Link';
-import ErrorText from '../ErrorText';
-import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import ErrorNotice from '../ErrorNotice';
+import Notice from '../Notice';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();
@@ -163,11 +162,9 @@ export default function WPConsentAPIRequirements() {
 											{ wpConsentPlugin.installed && (
 												<Fragment>
 													{ !! apiInstallResponse?.error && (
-														<ErrorText
-															message={
-																apiInstallResponse
-																	?.error
-																	?.message
+														<ErrorNotice
+															error={
+																apiInstallResponse?.error
 															}
 														/>
 													) }
@@ -202,8 +199,8 @@ export default function WPConsentAPIRequirements() {
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
 													{ apiInstallHasError && (
-														<ErrorText
-															message={
+														<ErrorNotice
+															error={
 																apiInstallHasError
 															}
 														/>
@@ -275,11 +272,10 @@ export default function WPConsentAPIRequirements() {
 								}
 							) }
 							footer={
-								<SettingsNotice
-									className="googlesitekit-settings-consent-mode-requirement__consent-management-plugin-notice"
-									type={ TYPE_INFO }
-									Icon={ InfoCircle }
-									notice={ __(
+								<Notice
+									type={ Notice.TYPES.INFO }
+									className="googlesitekit-notice--small googlesitekit-settings-notice"
+									description={ __(
 										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
 										'google-site-kit'
 									) }

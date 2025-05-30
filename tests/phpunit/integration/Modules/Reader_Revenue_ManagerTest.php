@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -100,6 +101,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->reader_revenue_manager->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
+	}
+
+	public function test_register__reset_product_id_dismissals_on_publication_change() {
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		// Set dismissals for product ID notifications.
+		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
+			$dismissed_items->add( $notification );
+
+			$this->assertTrue( $dismissed_items->is_dismissed( $notification ) );
+		}
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'A1A2C4D5E6',
+			)
+		);
+
+		// Verify that the product ID notification dismissals are reset.
+		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
+			$this->assertFalse( $dismissed_items->is_dismissed( $notification ) );
+		}
 	}
 
 	public function test_magic_methods() {
@@ -737,6 +763,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
 
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
 				return $asset->get_handle();
@@ -764,6 +797,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) === false ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 <.' );
 		}
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
 
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
@@ -803,8 +843,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->enable_feature( 'rrmModule' );
-
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_editor_assets' );
 
@@ -831,8 +869,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
 
-		$this->enable_feature( 'rrmModule' );
-
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_editor_assets' );
 		$modules = new Modules( $this->context, $this->options, $this->user_options );
@@ -857,8 +893,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
-
-		$this->enable_feature( 'rrmModule' );
 
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_assets' );

@@ -41,54 +41,35 @@
 		}
 
 		.googlesitekit-audience-selection-panel__error-notice {
-			align-items: center;
-			background-color: $c-utility-error-container;
+			align-items: anchor-center;
+			column-gap: $grid-gap-phone;
 			display: flex;
+			flex-direction: row;
 			justify-content: space-between;
-			padding: 10px $grid-gap-desktop;
+			padding: $cta-gap-tablet $grid-gap-desktop;
 
-			p {
-				color: $c-utility-on-error-container;
-				flex-basis: 65%;
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
-				margin: 0;
+			.googlesitekit-notice__content {
+				width: 100%;
 
-				a {
-					color: $c-utility-on-error-container;
-					text-decoration: underline;
+				@media (max-width: $bp-tablet) {
+					width: 150%;
+				}
+
+				p {
+					margin: 0;
 				}
 			}
 
-			.googlesitekit-audience-selection-panel__error-notice-actions {
-
-				.googlesitekit-audience-selection-panel__error-notice-action {
-					border-radius: $br-lg;
-					min-height: 32px;
-					padding: 6px $grid-gap-phone;
-					white-space: nowrap;
-
-					@include mdc-button-ink-color( $c-utility-on-error-container );
-
-					&:hover {
-						@include mdc-button-filled-accessible( rgba($c-red-r-100, 0.6) );
-						@include mdc-button-ink-color( $c-utility-on-error-container );
-					}
-
-					&:active,
-					&:focus {
-						@include mdc-button-filled-accessible( $c-red-r-100 );
-						@include mdc-button-ink-color( $c-utility-on-error-container );
-					}
-				}
+			.googlesitekit-report-error-actions {
+				align-items: end;
+				flex-direction: column;
 			}
 		}
 
 		.googlesitekit-audience-selection-panel__add-group-notice {
 			background-color: $c-surfaces-background;
-			margin: 5px $grid-gap-desktop;
-			padding: $grid-gap-phone 20px;
+			margin: $cta-gap-tablet / 2 $grid-gap-desktop;
+			padding: $grid-gap-phone $cta-gap-tablet * 2;
 
 			@media (max-width: $bp-xsmallOnly) {
 				padding: $grid-gap-phone;
@@ -122,6 +103,32 @@
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
 			padding: 20px 20px 6px;
+
+			.googlesitekit-notice__content {
+				flex: 1 1 0;
+			}
+
+			.googlesitekit-notice__description {
+				font-size: $fs-body-sm;
+			}
+
+			.googlesitekit-notice--warning {
+				align-items: center;
+				border-radius: $br-xs;
+				flex-direction: row;
+				gap: $grid-gap-phone;
+				margin: 18px 0;
+				padding: $grid-gap-phone / 2 $grid-gap-phone;
+			}
+
+			.googlesitekit-notice__action {
+				justify-content: normal;
+				width: auto;
+			}
+
+			.googlesitekit-notice--error .googlesitekit-notice__icon {
+				display: none;
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
@@ -198,89 +205,8 @@
 			}
 		}
 
-		.googlesitekit-audience-selection-panel__audience-creation-notice-info {
-
-			.googlesitekit-subtle-notification {
-				align-items: center;
-				border-radius: 8px;
-				flex-direction: row;
-				gap: $grid-gap-phone;
-				margin: 18px 0;
-				padding: $grid-gap-phone / 2 $grid-gap-phone;
-			}
-
-			.googlesitekit-subtle-notification__content {
-				flex: 1;
-
-				p {
-					font-size: $fs-body-sm;
-					font-weight: $fw-normal;
-				}
-			}
-
-			.googlesitekit-subtle-notification__action {
-				justify-content: initial;
-				width: initial;
-			}
-		}
-
 		.googlesitekit-audience-creation-error-notice {
-			align-items: center;
-			background-color: $c-surfaces-surface;
-			border: 2px solid $c-utility-error;
-			border-radius: $br-xs;
-			display: flex;
-			gap: 16px;
 			margin-bottom: 12px;
-			padding: 14px $grid-gap-phone;
-
-			@media (max-width: $bp-xsmallOnly) {
-				align-items: flex-start;
-				flex-direction: column;
-				gap: 6px;
-			}
-
-			.googlesitekit-audience-creation-error-notice__content {
-				display: flex;
-				flex-direction: column;
-				gap: 4px;
-			}
-
-			svg {
-				color: $c-utility-error;
-				flex-shrink: 0;
-			}
-
-			p.googlesitekit-audience-creation-error-notice__title {
-				color: $c-surfaces-on-surface;
-				font-size: $fs-label-md;
-				font-weight: $fw-medium;
-				line-height: $lh-label-md;
-				margin: 0;
-			}
-
-			p.googlesitekit-audience-creation-error-notice__description {
-				color: $c-surfaces-on-surface;
-				font-size: $fs-body-sm;
-				font-weight: $fw-normal;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
-				margin: 0;
-			}
-
-			.googlesitekit-audience-creation-error-notice__actions {
-				@media (max-width: $bp-xsmallOnly) {
-					align-self: flex-end;
-					margin-top: 10px;
-				}
-
-				.mdc-button {
-					font-weight: $fw-medium;
-					min-height: 32px;
-					padding: 6px $grid-gap-phone;
-					white-space: nowrap;
-				}
-			}
 		}
 	}
 
