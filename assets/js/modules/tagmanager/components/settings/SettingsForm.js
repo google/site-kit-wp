@@ -40,10 +40,8 @@ import {
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import {
-	MODULES_TAGMANAGER,
-	MODULE_SLUG_TAGMANAGER,
-} from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '../../constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 import Notice from '../../../../components/Notice';

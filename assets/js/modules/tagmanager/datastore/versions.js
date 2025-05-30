@@ -30,7 +30,8 @@ import {
 	combineStores,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER, MODULE_SLUG_TAGMANAGER } from './constants';
+import { MODULES_TAGMANAGER } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,

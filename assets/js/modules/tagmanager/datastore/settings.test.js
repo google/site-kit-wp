@@ -27,8 +27,8 @@ import {
 	CONTEXT_WEB,
 	CONTEXT_AMP,
 	FORM_SETUP,
-	MODULE_SLUG_TAGMANAGER,
 } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	CORE_SITE,
 	AMP_MODE_SECONDARY,

@@ -32,11 +32,8 @@ import {
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import {
-	MODULES_TAGMANAGER,
-	MODULE_SLUG_TAGMANAGER,
-	CONTAINER_CREATE,
-} from './constants';
+import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics-4/datastore/constants';

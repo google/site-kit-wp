@@ -26,8 +26,8 @@ import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
-	MODULE_SLUG_TAGMANAGER,
 } from '../../datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '../../constants';
 import {
 	provideModuleRegistrations,
 	provideModules,

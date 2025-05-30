@@ -46,7 +46,7 @@ import { CORE_USER } from '../../datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
-import { MODULE_SLUG_TAGMANAGER } from '../../../modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';

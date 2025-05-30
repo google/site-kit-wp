@@ -31,12 +31,8 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import {
-	MODULES_TAGMANAGER,
-	MODULE_SLUG_TAGMANAGER,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-} from './constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	isValidAccountID,
 	isValidContainerID,

@@ -38,12 +38,12 @@ import {
 } from '../util';
 import {
 	MODULES_TAGMANAGER,
-	MODULE_SLUG_TAGMANAGER,
 	CONTAINER_CREATE,
 	CONTEXT_WEB,
 	CONTEXT_AMP,
 	FORM_SETUP,
 } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,

@@ -22,10 +22,8 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import {
-	MODULES_TAGMANAGER,
-	MODULE_SLUG_TAGMANAGER,
-} from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '../../constants';
 import {
 	provideModuleRegistrations,
 	provideModules,

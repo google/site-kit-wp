@@ -40,8 +40,8 @@ import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	CONTEXT_AMP,
-	MODULE_SLUG_TAGMANAGER,
 } from '../../datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '../../constants';
 import { buildAccountWithContainers } from '../../datastore/__factories__';
 import SetupMain from './SetupMain';
 
