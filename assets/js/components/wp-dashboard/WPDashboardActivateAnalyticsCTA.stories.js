@@ -29,7 +29,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
+import { PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
 
 function Template( { setupRegistry } ) {
 	return (
