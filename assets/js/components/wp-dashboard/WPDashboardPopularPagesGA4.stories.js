@@ -30,6 +30,7 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
 	widgetDecorators,
+	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
 
 const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
@@ -50,6 +51,9 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideAnalytics4ReportTitles( registry );
 		setupAnalytics4MockReports( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
 };
 
@@ -57,14 +61,20 @@ export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+		setupAnalytics4MockReports( registry );
+		setupAnalytics4GatheringData( registry );
 	},
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupAnalytics4ZeroData,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4ZeroData( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export const Loading = Template.bind( {} );
@@ -76,7 +86,12 @@ Loading.args = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: setupAnalytics4Error,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4Error( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export default {
