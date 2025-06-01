@@ -27,7 +27,9 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
 
 function Template( { setupRegistry } ) {
 	return (
@@ -42,6 +44,9 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
 		provideModules( registry, [
 			{
 				active: false,
@@ -60,6 +65,9 @@ CompleteActivation.storyName = 'Complete Activation';
 CompleteActivation.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
 		provideModules( registry, [
 			{
 				active: true,
