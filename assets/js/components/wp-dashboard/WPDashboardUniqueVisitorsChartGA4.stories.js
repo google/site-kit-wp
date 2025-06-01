@@ -26,6 +26,7 @@ import {
 	setupAnalytics4Error,
 	widgetDecorators,
 } from './common-GA4.stories';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 
@@ -44,7 +45,12 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupAnalytics4MockReports,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4MockReports( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export const GatheringData = Template.bind( {} );
@@ -56,7 +62,12 @@ GatheringData.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupAnalytics4ZeroData,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4ZeroData( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export const Loading = Template.bind( {} );
