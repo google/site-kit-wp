@@ -60,10 +60,7 @@ Ready.args = {
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: ( registry ) => {
-		setupAnalytics4MockReports( registry );
-		setupAnalytics4GatheringData( registry );
-	},
+	setupRegistry: setupAnalytics4GatheringData,
 };
 
 export const ZeroData = Template.bind( {} );
