@@ -79,7 +79,12 @@ Loading.args = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: setupAnalytics4Error,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4Error( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export default {
