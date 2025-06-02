@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 20 ] */
-
 /**
  * External dependencies
  */
@@ -65,6 +63,93 @@ const OBSERVED_CONSOLE_MESSAGE_TYPES = {
 	log: 'log',
 	info: 'log',
 };
+
+/**
+ * Array of console messages to ignore.
+ */
+const IGNORE_CONSOLE_MESSAGES = [
+	// An exception is made for _blanket_ deprecation warnings
+	{
+		matcher: 'includes',
+		pattern: 'This is a global warning',
+	},
+	// Viewing posts on the front end can result in this error
+	{
+		matcher: 'includes',
+		pattern: 'net::ERR_UNKNOWN_URL_SCHEME',
+	},
+	// Failed to load resource messages are logged separately
+	{
+		matcher: 'startsWith',
+		pattern:
+			'Failed to load resource: the server responded with a status of',
+	},
+	// WordPress font loading warnings
+	{
+		matcher: 'startsWith',
+		pattern: 'Failed to decode downloaded font:',
+	},
+	{
+		matcher: 'startsWith',
+		pattern: 'OTS parsing error:',
+	},
+	// React development messages
+	{
+		matcher: 'includes',
+		pattern:
+			'Download the React DevTools for a better development experience',
+	},
+	{
+		matcher: 'includes',
+		pattern: "Can't perform a React state update on an unmounted component",
+	},
+	{
+		matcher: 'includes',
+		pattern: 'https://fb.me/react-unsafe-component-lifecycles',
+	},
+	{
+		matcher: 'includes',
+		pattern: 'https://fb.me/react-strict-mode-',
+	},
+	// AMP and analytics messages
+	{
+		matcher: 'startsWith',
+		pattern: 'Powered by AMP',
+	},
+	{
+		matcher: 'startsWith',
+		pattern: 'data_error unknown response key',
+	},
+	{
+		matcher: 'includes',
+		pattern:
+			'No triggers were found in the config. No analytics data will be sent.',
+	},
+	// Offline error messages
+	{
+		matcher: 'includes',
+		pattern: 'You are probably offline.',
+	},
+	// WordPress block editor messages
+	{
+		matcher: 'startsWith',
+		pattern: 'Block successfully updated for',
+	},
+	{
+		matcher: 'includes',
+		pattern: 'elements with non-unique id #_wpnonce',
+	},
+	// WordPress iframe style warnings
+	{
+		matcher: 'match',
+		pattern: /^twenty[a-z-]+ was added to the iframe incorrectly/,
+	},
+	// WordPress React import warnings
+	{
+		matcher: 'startsWith',
+		pattern: 'Warning: You are importing createRoot from',
+	},
+];
 
 /**
  * Array of page event tuples of [ eventName, handler ].
@@ -144,135 +229,36 @@ function observeConsoleLogging() {
 
 		let text = message.text();
 
-		// An exception is made for _blanket_ deprecation warnings: Those
-		// which log regardless of whether a deprecated feature is in use.
-		if ( text.includes( 'This is a global warning' ) ) {
-			return;
-		}
-
-		// Viewing posts on the front end can result in this error, which
-		// has nothing to do with Gutenberg.
-		if ( text.includes( 'net::ERR_UNKNOWN_URL_SCHEME' ) ) {
-			return;
-		}
-
-		// We log this separately now in a way which includes the URL
-		// which is much more useful than this message.
+		// Check if the message should be ignored
 		if (
-			text.startsWith(
-				'Failed to load resource: the server responded with a status of'
-			)
+			IGNORE_CONSOLE_MESSAGES.some( ( { matcher, pattern } ) => {
+				switch ( matcher ) {
+					case 'includes':
+						return text.includes( pattern );
+					case 'startsWith':
+						return text.startsWith( pattern );
+					case 'match':
+						return text.match( pattern );
+					default:
+						return false;
+				}
+			} )
 		) {
-			return;
-		}
-
-		// A bug present in WordPress 5.2 will produce console warnings when
-		// loading the Dashicons font. These can be safely ignored, as they do
-		// not otherwise regress on application behavior. This logic should be
-		// removed once the associated ticket has been closed.
-		//
-		// See: https://core.trac.wordpress.org/ticket/47183
-		if (
-			text.startsWith( 'Failed to decode downloaded font:' ) ||
-			text.startsWith( 'OTS parsing error:' ) ||
-			text.includes(
-				'Download the React DevTools for a better development experience'
-			) ||
-			text.includes(
-				"Can't perform a React state update on an unmounted component"
-			) ||
-			text.includes(
-				'https://fb.me/react-unsafe-component-lifecycles'
-			) ||
-			text.includes( 'https://fb.me/react-strict-mode-' )
-		) {
-			return;
-		}
-
-		// Some error messages which don't impact test results can
-		// be safely ignored.
-		if (
-			text.startsWith( 'Powered by AMP' ) ||
-			text.startsWith( 'data_error unknown response key' ) ||
-			text.includes(
-				'No triggers were found in the config. No analytics data will be sent.'
-			)
-		) {
-			return;
-		}
-
-		// Ignore errors thrown by `@wordpress/api-fetch`. These are actual,
-		// legimate request failures, but they can happen during a navigation
-		// (or when actually offline).
-		//
-		// We ignore them as they are not indicative of a problem with the
-		// test and usually make E2E tests fail erroneously.
-		if ( text.includes( 'You are probably offline.' ) ) {
-			return;
-		}
-
-		// WordPress 5.3 logs when a block is saved and causes console logs
-		// that should not cause failures.
-		if ( text.startsWith( 'Block successfully updated for' ) ) {
-			return;
-		}
-
-		// As of WordPress 5.3.2 in Chrome 79, navigating to the block editor
-		// (Posts > Add New) will display a console warning about
-		// non - unique IDs.
-		// See: https://core.trac.wordpress.org/ticket/23165
-		if ( text.includes( 'elements with non-unique id #_wpnonce' ) ) {
-			return;
-		}
-
-		// WordPress 6.3 moved the editor into an iframe and warns when
-		// when styles are added incorrectly.
-		// See https://github.com/WordPress/gutenberg/blob/5977e3d60b7aea6e22d4a452f7525d3f140c37b6/packages/block-editor/src/components/iframe/index.js#L170
-		// Here we ignore core those from core themes in case we add our own styles
-		// here in the future.
-		if (
-			text.match( /^twenty[a-z-]+ was added to the iframe incorrectly/ )
-		) {
-			return;
-		}
-
-		// WordPress 6.6 logs when loading the block editor which causes console error.
-		if ( text.startsWith( 'Warning: You are importing createRoot from' ) ) {
 			return;
 		}
 
 		let logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
 
-		// At this point, any unexpected message will result in a test failure.
-
-		// Check if it's raised by the AMP plugin.
+		// Check if it's raised by the AMP plugin
 		if ( isPluginConsoleMessage( 'amp', message ) ) {
-			// Convert console messages originating from AMP to debug statements.
-			// This avoids failing tests from console errors we don't have control of.
 			logFunction = 'debug';
 		}
 
-		// As of Puppeteer 1.6.1, `message.text()` wrongly returns an object of
-		// type JSHandle for error logging, instead of the expected string.
-		//
-		// See: https://github.com/GoogleChrome/puppeteer/issues/3397
-		//
-		// The recommendation there to asynchronously resolve the error value
-		// upon a console event may be prone to a race condition with the test
-		// completion, leaving a possibility of an error not being surfaced
-		// correctly. Instead, the logic here synchronously inspects the
-		// internal object shape of the JSHandle to find the error text. If it
-		// cannot be found, the default text value is used instead.
 		text = get(
 			message.args(),
 			[ 0, '_remoteObject', 'description' ],
 			text
 		);
-
-		// Disable reason: We intentionally bubble up the console message
-		// which, unless the test explicitly anticipates the logging via
-		// @wordpress/jest-console matchers, will cause the intended test
-		// failure.
 
 		// eslint-disable-next-line no-console
 		console[ logFunction ]( text );
@@ -364,7 +350,6 @@ async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
 		const data = [ res.status(), res.request().method(), res.url() ];
 
-		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
 			console.debug( ...data ); // eslint-disable-line no-console
@@ -372,17 +357,13 @@ async function observeRestResponse( res ) {
 	}
 }
 
-// Before every test suite run, delete all content created by the test. This ensures
-// other posts/comments/etc. aren't dirtying tests and tests don't depend on
-// each other's side-effects.
+// Before every test suite run, delete all content created by the test.
 beforeAll( async () => {
 	capturePageEventsForTearDown();
 	optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
-	// Log uncaught exceptions on the client.
-	// eslint-disable-next-line no-console
-	page.on( 'pageerror', console.error );
+	page.on( 'pageerror', console.error ); // eslint-disable-line no-console
 
 	if ( '1' === process.env.DEBUG_NAV ) {
 		page.on( 'request', observeNavigationRequest );
@@ -393,14 +374,11 @@ beforeAll( async () => {
 		page.on( 'response', observeRestResponse );
 	}
 
-	// There's no good way to otherwise conditionally enable this logging
-	// since the code needs to be built into the e2e-utilities.js.
 	if ( '1' === process.env.DEBUG_REDUX ) {
 		OBSERVED_CONSOLE_MESSAGE_TYPES.debug = 'debug';
 	}
 
 	await setBrowserViewport( 'large' );
-
 	await deactivateUtilityPlugins();
 	await resetSiteKit( { persistent: true } );
 } );
