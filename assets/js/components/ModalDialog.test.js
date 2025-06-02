@@ -31,7 +31,7 @@ import { Fragment } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 import { waitFor } from '@testing-library/react';
 
-describe( 'ConfirmDisableConsentModeDialog', () => {
+describe( 'ModalDialog', () => {
 	let registry;
 	const onClose = jest.fn();
 	const onHandleConfirm = jest.fn();
