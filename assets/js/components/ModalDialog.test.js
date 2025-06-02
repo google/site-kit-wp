@@ -29,6 +29,7 @@ import ModalDialog from './ModalDialog';
 import { Button } from 'googlesitekit-components';
 import { Fragment } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
+import { waitFor } from '@testing-library/react';
 
 describe( 'ConfirmDisableConsentModeDialog', () => {
 	let registry;
@@ -41,7 +42,7 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 		provideModules( registry );
 	} );
 
-	it( 'should trigger onCancel callback and refocus on the correct element on close.', () => {
+	it( 'should refocus the element assigned to refocusQuerySelector on close.', async () => {
 		let dialogActive = true;
 
 		const handleDialog = jest.fn( () => {
@@ -68,12 +69,14 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 			}
 		);
 
-		fireEvent.keyDown( container, { key: ESCAPE, keyCode: 27 } );
-
-		const refocusTestButton = container.querySelector(
+		const buttonToSetFocusOn = container.querySelector(
 			'button.refocus-test-button'
 		);
 
-		expect( refocusTestButton ).toHaveFocus();
+		fireEvent.keyDown( container, { key: ESCAPE, keyCode: 27 } );
+
+		await waitFor( () => {
+			expect( buttonToSetFocusOn ).toHaveFocus();
+		} );
 	} );
 } );
