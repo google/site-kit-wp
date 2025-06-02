@@ -16,153 +16,98 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 18 ] */
-
-/**
- * External dependencies
- */
 const {
 	default: iterateJsdoc,
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 const semverCompare = require( 'semver-compare' );
 const semverRegex = require( 'semver-regex' );
 
-/**
- * Internal dependencies
- */
-const { NEXT_VERSION } = require( './constants' );
+const SINCE_VALIDATION_RULES = [
+	( { tag } ) => {
+		if ( ! tag.description?.length ) {
+			return 'The @since tag cannot be empty.';
+		}
+	},
+	( { versionString } ) => {
+		const cleaned = versionString.toLowerCase().replace( /[^a-z]/g, '' );
+		if ( cleaned !== 'next' && ! semverRegex().test( versionString ) ) {
+			return 'The @since tag requires a valid semVer value or the "NEXT_VERSION" label.';
+		}
+	},
+	( { index, description } ) => {
+		if ( index > 0 && ! description.trim() ) {
+			return 'All @since tags after the first require a description.';
+		}
+	},
+	( { description } ) => {
+		if ( description && ! /^[A-Z`("']/.test( description.trim() ) ) {
+			return 'All @since tags should have a description starting with a capital letter.';
+		}
+	},
+	( { description } ) => {
+		if ( description && ! /[.]$/.test( description.trim() ) ) {
+			return 'All @since tags should have a description that ends with a period/full-stop.';
+		}
+	},
+	( { versionString, previousVersionString } ) => {
+		const cleaned = ( str ) => str?.toLowerCase().replace( /[^a-z]/g, '' );
+		if (
+			previousVersionString &&
+			cleaned( versionString ) !== 'next' &&
+			cleaned( previousVersionString ) !== 'next' &&
+			semverRegex().test( versionString ) &&
+			semverRegex().test( previousVersionString )
+		) {
+			if ( semverCompare( versionString, previousVersionString ) === 0 ) {
+				return 'Each version should have only one @since tag.';
+			}
+			if ( semverCompare( versionString, previousVersionString ) !== 1 ) {
+				return '@since tags should appear in order of version number.';
+			}
+		}
+	},
+];
 
 module.exports = iterateJsdoc(
 	( { context, jsdoc, jsdocNode, utils } ) => {
-		if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+		if ( ! jsdoc.tags?.length || utils.hasTag( 'ignore' ) ) {
 			return;
 		}
 
-		// If the `@ignore` tag is in this JSDoc block, ignore it and don't require a `@since` tag.
-		if ( utils.hasTag( 'ignore' ) ) {
-			return;
-		}
+		const sinceTags = utils.filterTags( ( { tag } ) => tag === 'since' );
 
-		if ( ! utils.hasTag( 'since' ) ) {
+		if ( ! sinceTags.length ) {
 			context.report( {
 				data: { name: jsdocNode.name },
 				message: 'Missing @since tag in JSDoc.',
 				node: jsdocNode,
 			} );
-
 			return;
 		}
 
-		// Get all @since tags and make sure the format is correct.
-		const sinceTags = utils.filterTags( ( { tag } ) => {
-			return tag === 'since';
-		} );
-
 		sinceTags.forEach( ( tag, index ) => {
-			const previousTag = sinceTags[ index - 1 ] || null;
+			const raw = tag.description?.trim() || '';
+			const [ versionString = '', ...descParts ] = raw.split( /\s+/ );
+			const description = descParts.join( ' ' );
+			const previousTag = sinceTags[ index - 1 ];
+			const prevRaw = previousTag?.description?.trim() || '';
+			const [ previousVersionString = '' ] = prevRaw.split( /\s+/ );
 
-			if ( ! tag.description || ! tag.description.length ) {
-				context.report( {
-					data: { name: jsdocNode.name },
-					message: 'The @since tag cannot be empty.',
-					node: jsdocNode,
+			for ( const rule of SINCE_VALIDATION_RULES ) {
+				const error = rule( {
+					tag,
+					versionString,
+					description,
+					index,
+					previousVersionString,
 				} );
-
-				return;
-			}
-
-			const [ versionString ] = tag.description.split( ' ', 1 );
-
-			if (
-				versionString !== NEXT_VERSION &&
-				! semverRegex().test( versionString )
-			) {
-				context.report( {
-					data: { name: jsdocNode.name },
-					message: `The @since tag requires a valid semVer value or the "${ NEXT_VERSION }" label.`,
-					node: jsdocNode,
-				} );
-
-				return;
-			}
-
-			const description = tag.description.slice( versionString.length );
-
-			if ( ! description || ! description.length ) {
-				// The first since tag doesn't require a description.
-				if ( index === 0 ) {
-					return;
-				}
-
-				context.report( {
-					data: { name: jsdocNode.name },
-					message:
-						'All @since tags after the first require a description.',
-					node: jsdocNode,
-				} );
-
-				return;
-			}
-
-			if (
-				// Ignore if the first character is a backtick; this is often used
-				// when marking return values like `true` or `null`.
-				// Also ignore parens and quotes.
-				! description.trim().match( /^[A-Z`("].*/gm )
-			) {
-				context.report( {
-					data: { name: jsdocNode.name },
-					message:
-						'All @since tags should have a description starting with a capital letter.',
-					node: jsdocNode,
-				} );
-
-				return;
-			}
-
-			if ( ! description.match( /\.$/gm ) ) {
-				context.report( {
-					data: { name: jsdocNode.name },
-					message:
-						'All @since tags should have a description that ends with a period/full-stop.',
-					node: jsdocNode,
-				} );
-
-				return;
-			}
-
-			if ( previousTag ) {
-				const [ previousVersionString ] = previousTag.description.split(
-					' ',
-					1
-				);
-
-				if (
-					semverRegex().test( versionString ) &&
-					semverRegex().test( previousVersionString ) &&
-					semverCompare( versionString, previousVersionString ) === 0
-				) {
+				if ( error ) {
 					context.report( {
 						data: { name: jsdocNode.name },
-						message:
-							'Each version should have only one @since tag.',
+						message: error,
 						node: jsdocNode,
 					} );
-
-					return;
-				}
-
-				if (
-					semverRegex().test( versionString ) &&
-					semverRegex().test( previousVersionString ) &&
-					semverCompare( versionString, previousVersionString ) !== 1
-				) {
-					context.report( {
-						data: { name: jsdocNode.name },
-						message:
-							'@since tags should appear in order of version number.',
-						node: jsdocNode,
-					} );
+					break;
 				}
 			}
 		} );
