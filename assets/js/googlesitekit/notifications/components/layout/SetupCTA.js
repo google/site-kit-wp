@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -97,7 +98,12 @@ export default function SetupCTA( {
 					className="googlesitekit-banner__progress-bar"
 				/>
 			) }
-			<div className="googlesitekit-widget-context">
+			<div
+				className={ classnames( 'googlesitekit-widget-context', {
+					'googlesitekit-widget-context--with-progress-bar':
+						waitingProgress !== false,
+				} ) }
+			>
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>

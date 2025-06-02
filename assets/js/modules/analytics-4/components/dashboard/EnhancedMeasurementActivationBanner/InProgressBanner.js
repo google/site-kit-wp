@@ -79,7 +79,6 @@ export default function InProgressBanner( { id, Notification, onDismiss } ) {
 					onClick: onDismiss,
 				} }
 				waitingProgress={ {
-					height: 7,
 					indeterminate: true,
 				} }
 				helpText={ __(

@@ -73,11 +73,7 @@ export default function ProgressBar( {
 	return (
 		<div
 			role="progressbar"
-			style={ {
-				marginTop: margin,
-				marginBottom: margin,
-				height: progressBarHeight,
-			} }
+			style={ { marginTop: margin, marginBottom: margin } }
 			className={ classnames( 'mdc-linear-progress', className, {
 				'mdc-linear-progress--indeterminate': indeterminate,
 				'mdc-linear-progress--small': small,
