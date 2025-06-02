@@ -59,9 +59,9 @@ module.exports.default = ( env, argv ) => {
 		} );
 	}
 
-	const { includeTests, mode } = argv;
+	const { mode } = argv;
 
-	if ( mode !== 'production' || includeTests ) {
+	if ( mode !== 'production' || process.env.SITEKIT_TEST ) {
 		// Build the test files if we aren't doing a production build.
 		configs.push( {
 			...testBundleConfig(),
