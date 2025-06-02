@@ -125,26 +125,40 @@ const IGNORE_CONSOLE_MESSAGES = [
 		pattern:
 			'No triggers were found in the config. No analytics data will be sent.',
 	},
-	// Offline error messages
+	// Ignore errors thrown by `@wordpress/api-fetch`. These are actual,
+	// legimate request failures, but they can happen during a navigation
+	// (or when actually offline).
+	//
+	// We ignore them as they are not indicative of a problem with the
+	// test and usually make E2E tests fail erroneously.
 	{
 		matcher: 'includes',
 		pattern: 'You are probably offline.',
 	},
-	// WordPress block editor messages
+	// WordPress 5.3 logs when a block is saved and causes console logs
+	// that should not cause failures.
 	{
 		matcher: 'startsWith',
 		pattern: 'Block successfully updated for',
 	},
+	// As of WordPress 5.3.2 in Chrome 79, navigating to the block editor
+	// (Posts > Add New) will display a console warning about
+	// non - unique IDs.
+	// See: https://core.trac.wordpress.org/ticket/23165
 	{
 		matcher: 'includes',
 		pattern: 'elements with non-unique id #_wpnonce',
 	},
-	// WordPress iframe style warnings
+	// WordPress 6.3 moved the editor into an iframe and warns when
+	// when styles are added incorrectly.
+	// See https://github.com/WordPress/gutenberg/blob/5977e3d60b7aea6e22d4a452f7525d3f140c37b6/packages/block-editor/src/components/iframe/index.js#L170
+	// Here we ignore core those from core themes in case we add our own styles
+	// here in the future.
 	{
 		matcher: 'match',
 		pattern: /^twenty[a-z-]+ was added to the iframe incorrectly/,
 	},
-	// WordPress React import warnings
+	// WordPress 6.6 logs when loading the block editor which causes console error.
 	{
 		matcher: 'startsWith',
 		pattern: 'Warning: You are importing createRoot from',
@@ -251,14 +265,32 @@ function observeConsoleLogging() {
 
 		// Check if it's raised by the AMP plugin
 		if ( isPluginConsoleMessage( 'amp', message ) ) {
+			// Convert console messages originating from AMP to debug statements.
+			// This avoids failing tests from console errors we don't have control of.
 			logFunction = 'debug';
 		}
 
+		// As of Puppeteer 1.6.1, `message.text()` wrongly returns an object of
+		// type JSHandle for error logging, instead of the expected string.
+		//
+		// See: https://github.com/GoogleChrome/puppeteer/issues/3397
+		//
+		// The recommendation there to asynchronously resolve the error value
+		// upon a console event may be prone to a race condition with the test
+		// completion, leaving a possibility of an error not being surfaced
+		// correctly. Instead, the logic here synchronously inspects the
+		// internal object shape of the JSHandle to find the error text. If it
+		// cannot be found, the default text value is used instead.
 		text = get(
 			message.args(),
 			[ 0, '_remoteObject', 'description' ],
 			text
 		);
+
+		// Disable reason: We intentionally bubble up the console message
+		// which, unless the test explicitly anticipates the logging via
+		// @wordpress/jest-console matchers, will cause the intended test
+		// failure.
 
 		// eslint-disable-next-line no-console
 		console[ logFunction ]( text );
@@ -363,6 +395,7 @@ beforeAll( async () => {
 	optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
+	// Log uncaught exceptions on the client.
 	page.on( 'pageerror', console.error ); // eslint-disable-line no-console
 
 	if ( '1' === process.env.DEBUG_NAV ) {
@@ -374,6 +407,8 @@ beforeAll( async () => {
 		page.on( 'response', observeRestResponse );
 	}
 
+	// There's no good way to otherwise conditionally enable this logging
+	// since the code needs to be built into the e2e-utilities.js.
 	if ( '1' === process.env.DEBUG_REDUX ) {
 		OBSERVED_CONSOLE_MESSAGE_TYPES.debug = 'debug';
 	}
