@@ -47,14 +47,6 @@ export async function registerReaderRevenueManagerPlugin() {
 		resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 	] );
 
-	const isRRMConnected = select( CORE_MODULES ).isModuleConnected(
-		'reader-revenue-manager'
-	);
-
-	if ( ! isRRMConnected ) {
-		return;
-	}
-
 	let hasModuleOwnershipOrAccess = select( CORE_MODULES ).hasModuleOwnership(
 		'reader-revenue-manager'
 	);
