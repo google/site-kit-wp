@@ -47,7 +47,7 @@ describe( 'createSubmitChangesStore', () => {
 
 		describe( 'submitChanges', () => {
 			it( 'should use provided submitChanges function', async () => {
-				const submitChanges = jest.fn();
+				const submitChanges = vi.fn();
 				submitChanges.mockResolvedValueOnce( {} );
 
 				const registry = createRegistry();
@@ -154,7 +154,7 @@ describe( 'createSubmitChangesStore', () => {
 			[ '__dangerousCanSubmitChanges' ],
 		] )( '%s', ( selector ) => {
 			it( 'should use provided validateCanSubmitChanges function', () => {
-				const validateCanSubmitChanges = jest.fn();
+				const validateCanSubmitChanges = vi.fn();
 				const store = createSubmitChangesStore( {
 					validateCanSubmitChanges,
 				} );

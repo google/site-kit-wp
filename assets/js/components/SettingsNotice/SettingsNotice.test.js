@@ -36,7 +36,7 @@ const fetchDismissItemRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
 );
 
-const mockDismissCallback = jest.fn();
+const mockDismissCallback = vi.fn();
 
 const renderSettingsNoticeWithMockUI = ( registry, overrideProps = {} ) =>
 	render(

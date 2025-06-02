@@ -644,15 +644,13 @@ export const waitForTimeouts = ( timeout ) => {
  *
  * @since 1.39.0
  * @since 1.141.0 Reimplemented using debounced timer for reliability. Not compatible with fake timers.
+ * @deprecated Seems not to be used anywhere and broken with vitest so remove.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
-	if (
-		process.env.NODE_ENV === 'test' &&
-		jest.isMockFunction( setTimeout )
-	) {
+	if ( process.env.NODE_ENV === 'test' && vi.isMockFunction( setTimeout ) ) {
 		// Fail if attempted to use.
 		return () => {
 			throw new Error(

@@ -123,7 +123,7 @@ describe( 'whenHasChangedConversionEvents', () => {
 	it( 'never renders inner component when no changed conversion events', () => {
 		provideNewEvents();
 		provideLostEvents();
-		const InnerComponent = jest.fn();
+		const InnerComponent = vi.fn();
 		const OutterComponent =
 			whenHasChangedConversionEvents()( InnerComponent );
 

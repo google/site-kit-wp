@@ -49,7 +49,7 @@ import { mockLocation } from '../../../../../../../../tests/js/mock-browser-util
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+	useIntersection: vi.fn(),
 } ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

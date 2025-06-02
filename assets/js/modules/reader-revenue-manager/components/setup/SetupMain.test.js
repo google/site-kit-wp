@@ -117,7 +117,7 @@ describe( 'SetupMain', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 
 		const { getByRole, waitForRegistry } = render(
 			<SetupMain finishSetup={ finishSetup } />,

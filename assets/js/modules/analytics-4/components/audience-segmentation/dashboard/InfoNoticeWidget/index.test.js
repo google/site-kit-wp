@@ -44,7 +44,7 @@ import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+	useIntersection: vi.fn(),
 } ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -290,7 +290,7 @@ describe( 'InfoNoticeWidget', () => {
 		} );
 
 		// We do not need to test anything for dismiss prompt handler.
-		dismissPromptSpy.mockImplementation( jest.fn() );
+		dismissPromptSpy.mockImplementation( vi.fn() );
 
 		const { getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -338,7 +338,7 @@ describe( 'InfoNoticeWidget', () => {
 		} );
 
 		// We do not need to test anything for dismiss prompt handler.
-		dismissPromptSpy.mockImplementation( jest.fn() );
+		dismissPromptSpy.mockImplementation( vi.fn() );
 
 		const { getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -430,7 +430,7 @@ describe( 'InfoNoticeWidget', () => {
 
 			it( 'should track an event when the notice is dismissed', async () => {
 				// We do not need to test anything for dismiss prompt handler.
-				dismissPromptSpy.mockImplementation( jest.fn() );
+				dismissPromptSpy.mockImplementation( vi.fn() );
 
 				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 
