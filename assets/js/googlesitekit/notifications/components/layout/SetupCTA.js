@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
@@ -32,6 +37,7 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { ProgressBar } from 'googlesitekit-components';
 
 export default function SetupCTA( {
 	notificationID,
@@ -46,6 +52,7 @@ export default function SetupCTA( {
 	footer,
 	dismissOptions,
 	gaTrackingEventArgs,
+	waitingProgress = false,
 	...props
 } ) {
 	const trackEvents = useNotificationEvents(
@@ -83,42 +90,51 @@ export default function SetupCTA( {
 	};
 
 	return (
-		<div className="googlesitekit-widget-context">
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<Banner
-							className="googlesitekit-banner__setup-cta"
-							title={ title }
-							description={ description }
-							errorText={ errorText }
-							helpText={ helpText }
-							learnMoreLink={
-								learnMoreLink && {
-									...learnMoreLink,
-									onClick: handleLearnMoreClickWithTrackEvent,
+		<Fragment>
+			{ waitingProgress !== false && (
+				<ProgressBar
+					{ ...waitingProgress }
+					className="googlesitekit-banner__progress-bar"
+				/>
+			) }
+			<div className="googlesitekit-widget-context">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<Banner
+								className="googlesitekit-banner__setup-cta"
+								title={ title }
+								description={ description }
+								errorText={ errorText }
+								helpText={ helpText }
+								learnMoreLink={
+									learnMoreLink && {
+										...learnMoreLink,
+										onClick:
+											handleLearnMoreClickWithTrackEvent,
+									}
 								}
-							}
-							dismissButton={
-								dismissButton && {
-									...dismissButton,
-									onClick: handleDismissWithTrackEvent,
+								dismissButton={
+									dismissButton && {
+										...dismissButton,
+										onClick: handleDismissWithTrackEvent,
+									}
 								}
-							}
-							ctaButton={
-								ctaButton && {
-									...ctaButton,
-									onClick: handleCTAClickWithTrackEvent,
+								ctaButton={
+									ctaButton && {
+										...ctaButton,
+										onClick: handleCTAClickWithTrackEvent,
+									}
 								}
-							}
-							svg={ svg }
-							footer={ footer }
-							{ ...props }
-						/>
-					</Cell>
-				</Row>
-			</Grid>
-		</div>
+								svg={ svg }
+								footer={ footer }
+								{ ...props }
+							/>
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
+		</Fragment>
 	);
 }
 
@@ -143,4 +159,8 @@ SetupCTA.propTypes = {
 		label: PropTypes.string,
 		value: PropTypes.number,
 	} ),
+	waitingProgress: PropTypes.oneOfType( [
+		PropTypes.bool,
+		PropTypes.shape( ProgressBar.propTypes ),
+	] ),
 };

@@ -162,3 +162,15 @@
 .googlesitekit-banner__setup-cta {
 	border-radius: $br-md;
 }
+
+.googlesitekit-banner__progress-bar {
+	margin-top: 0 !important; // Important is required here to override the inline style set by the progress bar component.
+
+	.mdc-linear-progress__buffer {
+		background-color: $c-site-kit-sk-50;
+	}
+
+	.mdc-linear-progress__bar-inner {
+		background-color: $c-site-kit-sk-300;
+	}
+}

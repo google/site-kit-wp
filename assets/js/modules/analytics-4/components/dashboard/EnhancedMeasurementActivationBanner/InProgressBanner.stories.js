@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
+import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import { EDIT_SCOPE } from '../../../datastore/constants';
 import InProgressBanner from './InProgressBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -32,8 +35,33 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	grantedScopes: [ EDIT_SCOPE ],
+};
 Default.scenario = {};
+
+export const NoEditScope = Template.bind( {} );
+NoEditScope.storyName = 'No Edit Scope';
+NoEditScope.args = {
+	grantedScopes: [],
+};
+NoEditScope.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/InProgressBanner',
+	decorators: [
+		( Story, { args: { grantedScopes } } ) => {
+			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry, {
+					grantedScopes,
+				} );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

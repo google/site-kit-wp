@@ -131,7 +131,13 @@ export default function EnhancedMeasurementActivationBanner( {
 	}
 
 	if ( step === ACTIVATION_STEP_IN_PROGRESS ) {
-		return <InProgressBanner id={ id } Notification={ Notification } />;
+		return (
+			<InProgressBanner
+				id={ id }
+				Notification={ Notification }
+				onDismiss={ showTooltip }
+			/>
+		);
 	}
 
 	if ( step === ACTIVATION_STEP_SUCCESS ) {

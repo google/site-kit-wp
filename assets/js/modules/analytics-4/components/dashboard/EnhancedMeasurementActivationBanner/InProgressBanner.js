@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -26,41 +31,73 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CircularProgress } from 'googlesitekit-components';
-import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
-import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
-import Description from '../../../../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
+import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { EDIT_SCOPE } from '../../../datastore/constants';
 
-export default function InProgressBanner( { id, Notification } ) {
+export default function InProgressBanner( { id, Notification, onDismiss } ) {
 	const documentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9216061',
 		} )
 	);
 
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const description = hasEditScope
+		? __(
+				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.',
+				'google-site-kit'
+		  )
+		: __(
+				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.',
+				'google-site-kit'
+		  );
+
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner">
-			<NotificationWithSmallRightSVG
-				title={ __( 'Setup in progress', 'google-site-kit' ) }
-				description={
-					<Description
-						text={ __(
-							'Enhanced measurement is being enabled.',
-							'google-site-kit'
-						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ documentationURL }
-							/>
-						}
-					/>
-				}
-				actions={ <CircularProgress size={ 20 } /> }
-				SVG={ SuccessGreenSVG }
+		<Notification>
+			<SetupCTA
+				notificationID={ id }
+				title={ __(
+					'Understand how visitors interact with your content',
+					'google-site-kit'
+				) }
+				description={ description }
+				learnMoreLink={ {
+					href: documentationURL,
+				} }
+				ctaButton={ {
+					label: __( 'Enable now', 'google-site-kit' ),
+					disabled: true,
+				} }
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: onDismiss,
+				} }
+				waitingProgress={ {
+					height: 7,
+					indeterminate: true,
+				} }
+				helpText={ __(
+					'You can always add/edit this in the Site Kit Settings',
+					'google-site-kit'
+				) }
+				svg={ {
+					desktop: BannerSVG,
+					mobile: BannerMobileSVG,
+					verticalPosition: 'center',
+				} }
 			/>
 		</Notification>
 	);
 }
+
+InProgressBanner.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType,
+	onDismiss: PropTypes.func,
+};
