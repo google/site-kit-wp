@@ -109,12 +109,12 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		return Object.keys( recoverableModules ).includes( 'analytics-4' );
 	} );
 
-	const ga4ConversionsData = useInViewSelect(
+	const ga4KeyEventsData = useInViewSelect(
 		( select ) => {
 			return isGA4Connected &&
 				canViewSharedAnalytics4 &&
 				! showRecoverableAnalytics
-				? select( MODULES_ANALYTICS_4 ).getConversionEvents()
+				? select( MODULES_ANALYTICS_4 ).getKeyEvents()
 				: [];
 		},
 		[ isGA4Connected, canViewSharedAnalytics4, showRecoverableAnalytics ]
@@ -130,7 +130,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		...ga4Dates,
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -286,7 +286,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			hasFinishedResolution( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
 			] ) &&
-			hasFinishedResolution( 'getConversionEvents', [] )
+			hasFinishedResolution( 'getKeyEvents', [] )
 		);
 	} );
 
@@ -303,7 +303,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			getErrorForSelector( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
 			] ) ||
-			getErrorForSelector( 'getConversionEvents', [] )
+			getErrorForSelector( 'getKeyEvents', [] )
 		);
 	} );
 
@@ -358,7 +358,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
 			<Overview
 				ga4Data={ ga4OverviewData }
-				ga4ConversionsData={ ga4ConversionsData }
+				ga4KeyEventsData={ ga4KeyEventsData }
 				ga4VisitorsData={ ga4VisitorsOverviewAndStatsData }
 				searchConsoleData={ searchConsoleData }
 				handleStatsSelection={ setSelectedStats }
@@ -409,9 +409,9 @@ SearchFunnelWidgetGA4.metrics = [
 		service: 'analytics-4',
 	},
 	{
-		id: 'conversions',
+		id: 'keyEvents',
 		color: '#8e68cb',
-		label: __( 'Conversions', 'google-site-kit' ),
+		label: __( 'Key Events', 'google-site-kit' ),
 		service: 'analytics-4',
 	},
 	{
