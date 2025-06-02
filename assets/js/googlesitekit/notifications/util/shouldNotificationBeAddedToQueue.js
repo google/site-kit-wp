@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { isFeatureEnabled } from '../../../features';
 
 /**
@@ -22,17 +25,16 @@ import { isFeatureEnabled } from '../../../features';
  *
  * @since n.e.x.t
  *
- * @param {Object}   notification            Notification object.
- * @param {string}   groupID                 Group ID to check against the notification's groupID.
- * @param {string}   viewContext             View context to check against the notification's viewContexts (if present).
- * @param {Function} isNotificationDismissed Function to check if a notification is dismissed.
+ * @param {Object}   notification                   Notification object.
+ * @param {Object}   params                         Parameters.
+ * @param {string}   params.groupID                 Group ID to check against the notification's groupID.
+ * @param {Function} params.isNotificationDismissed Function to check if a notification is dismissed.
+ * @param {string}   params.viewContext             View context to check against the notification's viewContexts (if present).
  * @return {boolean} Returns true if the notification should be added to the queue, false otherwise.
  */
 export function shouldNotificationBeAddedToQueue(
 	notification,
-	groupID,
-	viewContext,
-	isNotificationDismissed = () => false
+	{ groupID, viewContext, isNotificationDismissed = () => false } = {}
 ) {
 	if (
 		notification?.featureFlag &&

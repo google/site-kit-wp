@@ -197,12 +197,10 @@ export const actions = {
 				// Check if the notification should be added to the queue
 				// before inserting it.
 				if (
-					! shouldNotificationBeAddedToQueue(
-						notification,
+					! shouldNotificationBeAddedToQueue( notification, {
 						groupID,
-						undefined,
-						isNotificationDismissed
-					)
+						isNotificationDismissed,
+					} )
 				) {
 					return;
 				}
@@ -238,13 +236,16 @@ export const actions = {
 			// Still: this code is here to ensure that if a notification _is_
 			// registered after initial page load, it will be visible in the queue
 			// if appropriate.
+			const { hasFinishedResolution } =
+				registry.select( CORE_NOTIFICATIONS );
+			const { invalidateResolution } =
+				registry.dispatch( CORE_NOTIFICATIONS );
+
 			viewContexts.forEach( ( viewContext ) => {
-				const hasResolvedGetQueuedNotifications = registry
-					.select( CORE_NOTIFICATIONS )
-					.hasFinishedResolution( 'getQueuedNotifications', [
-						viewContext,
-						groupID,
-					] );
+				const hasResolvedGetQueuedNotifications = hasFinishedResolution(
+					'getQueuedNotifications',
+					[ viewContext, groupID ]
+				);
 
 				// If the notifications have not been resolved yet, we don't need
 				// to do any comparison with the queue, so we can return early.
@@ -255,12 +256,10 @@ export const actions = {
 				// If the notifications have been resolved, we will invalidate
 				// the `getQueuedNotifications` resolver for this `viewContext` +
 				// `groupID` combination.
-				registry
-					.dispatch( CORE_NOTIFICATIONS )
-					.invalidateResolution( 'getQueuedNotifications', [
-						viewContext,
-						groupID,
-					] );
+				invalidateResolution( 'getQueuedNotifications', [
+					viewContext,
+					groupID,
+				] );
 			} );
 		}
 	),
@@ -461,12 +460,11 @@ export const controls = {
 
 				let potentialNotifications = Object.values( notifications )
 					.filter( ( notification ) => {
-						return shouldNotificationBeAddedToQueue(
-							notification,
+						return shouldNotificationBeAddedToQueue( notification, {
 							groupID,
 							viewContext,
-							isNotificationDismissed
-						);
+							isNotificationDismissed,
+						} );
 					} )
 					.map( ( { checkRequirements, ...notification } ) => {
 						const viewCount =
@@ -528,6 +526,7 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			 */
 			const notification = state.notifications?.[ id ];
 
+			// Don't try to add a notification that is not registered.
 			if ( notification === undefined ) {
 				global.console.warn(
 					`Could not add notification with ID "${ id }" to queue. Notification "${ id }" is not registered.`
@@ -536,8 +535,18 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 				break;
 			}
 
-			state.queuedNotifications[ notification.groupID ] =
-				state.queuedNotifications[ notification.groupID ] || [];
+			// If the queue hasn't resolved yet, the queued notifications for this
+			// group will be undefined. In this case we return early because this
+			// notification will be added to the queue once it resolves.
+			if (
+				state.queuedNotifications[ notification.groupID ] === undefined
+			) {
+				global.console.warn(
+					`Could not add notification with ID "${ id }" to queue. Queue is not yet populated/resolved.`
+				);
+
+				break;
+			}
 
 			// If the notification is already in the queue, we don't need to add it
 			// again.
@@ -551,17 +560,27 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 			// Find the next notification in the queue that has a lower priority than
 			// the one we're adding, and add this notification ahead of it.
+			//
+			// The `findIndex` call will return -1 if we can't find a notification
+			// with "lower priority" (eg. has a higher number) than the one we're
+			// adding. In that case, we'll add the notification to the end of the
+			// queue.
+			//
+			// If we do find a notification with a lower priority (or the same
+			// priority), `findIndex` will return its index, which we can use to
+			// insert the new notification after that notification.
 			const positionForNewNotification = state.queuedNotifications[
 				notification.groupID
 			].findIndex( ( notificationInQueue ) => {
 				return notificationInQueue.priority >= notification.priority;
 			} );
 
+			// Insert the new notification at the position we found, or at the end of
+			// the queue if we didn't find any notification with a lower priority.
 			state.queuedNotifications[ notification.groupID ].splice(
 				positionForNewNotification !== -1
 					? positionForNewNotification
-					: state.queuedNotifications[ notification.groupID ].length +
-							1,
+					: state.queuedNotifications[ notification.groupID ].length,
 				0,
 				notification
 			);
