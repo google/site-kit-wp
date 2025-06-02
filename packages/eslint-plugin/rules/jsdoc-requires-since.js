@@ -35,11 +35,15 @@ const SINCE_VALIDATION_RULES = [
 		}
 	},
 	( { index, description } ) => {
+		// The first since tag doesn't require a description.
 		if ( index > 0 && ! description.trim() ) {
 			return 'All @since tags after the first require a description.';
 		}
 	},
 	( { description } ) => {
+		// Ignore if the first character is a backtick; this is often used
+		// when marking return values like `true` or `null`.
+		// Also ignore parens and quotes.
 		if ( description && ! /^[A-Z`("']/.test( description.trim() ) ) {
 			return 'All @since tags should have a description starting with a capital letter.';
 		}
@@ -70,10 +74,12 @@ const SINCE_VALIDATION_RULES = [
 
 module.exports = iterateJsdoc(
 	( { context, jsdoc, jsdocNode, utils } ) => {
+		// If the `@ignore` tag is in this JSDoc block, ignore it and don't require a `@since` tag.
 		if ( ! jsdoc.tags?.length || utils.hasTag( 'ignore' ) ) {
 			return;
 		}
 
+		// Get all @since tags and make sure the format is correct.
 		const sinceTags = utils.filterTags( ( { tag } ) => tag === 'since' );
 
 		if ( ! sinceTags.length ) {
