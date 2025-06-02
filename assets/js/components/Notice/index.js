@@ -74,7 +74,8 @@ const Notice = forwardRef(
 				{ ( dismissButton?.label ||
 					dismissButton?.onClick ||
 					( ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) ) ) && (
+						( ctaButton?.onClick || ctaButton?.href ) ) ||
+					children ) && (
 					<div className="googlesitekit-notice__action">
 						{ children }
 
@@ -112,7 +113,7 @@ Notice.TYPES = TYPES;
 Notice.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
-	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
+	description: PropTypes.node,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( {

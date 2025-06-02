@@ -93,12 +93,14 @@ export default function UseSnippetSwitch( props ) {
 			</div>
 			{ useSnippet && checkedMessage && (
 				<Notice
+					className="googlesitekit-notice--bottom-margin"
 					type={ Notice.TYPES.INFO }
 					description={ checkedMessage }
 				/>
 			) }
 			{ ! useSnippet && uncheckedMessage && (
 				<Notice
+					className="googlesitekit-notice--bottom-margin"
 					type={ Notice.TYPES.INFO }
 					description={ uncheckedMessage }
 				/>
