@@ -74,6 +74,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 			{ hasModuleAccess === false && (
 				<Notice
+					className="googlesitekit-notice--bottom-margin"
 					type={ Notice.TYPES.INFO }
 					description={ createInterpolateElement(
 						sprintf(

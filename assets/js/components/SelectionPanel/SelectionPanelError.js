@@ -31,7 +31,6 @@ import { useEffect, useRef } from '@wordpress/element';
  */
 import { elementsOverlap } from '../../util/geometry';
 import ErrorNotice from '../ErrorNotice';
-import WarningSVG from '../../../svg/icons/warning.svg';
 
 export default function SelectionPanelError( {
 	error,
@@ -63,9 +62,9 @@ export default function SelectionPanelError( {
 	}
 
 	return (
-		<div className="googlesitekit-selection-panel-error" ref={ noticeRef }>
+		<div ref={ noticeRef }>
 			<ErrorNotice
-				Icon={ WarningSVG }
+				className="googlesitekit-notice--square googlesitekit-selection-panel-error"
 				error={ error }
 				noPrefix={ noPrefix }
 				skipRetryMessage={ skipRetryMessage }
