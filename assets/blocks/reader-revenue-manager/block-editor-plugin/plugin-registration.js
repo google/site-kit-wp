@@ -30,6 +30,7 @@ import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
 import SettingPanel from './SettingPanel';
+import withBlockTracking from '../common/withBlockTracking';
 
 const { select, resolveSelect } = Data;
 
@@ -62,6 +63,9 @@ export async function registerReaderRevenueManagerPlugin() {
 	}
 
 	registerPlugin( 'googlesitekit-rrm-plugin', {
-		render: SettingPanel,
+		render: withBlockTracking( SettingPanel, [
+			'google-site-kit/rrm-subscribe-with-google',
+			'google-site-kit/rrm-contribute-with-google',
+		] ),
 	} );
 }
