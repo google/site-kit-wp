@@ -533,7 +533,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Block_Support::has_block_support() ) {
+		if ( Block_Support::has_block_support() && $this->is_connected() ) {
 			$assets[] = new Script(
 				'blocks-reader-revenue-manager-block-editor-plugin',
 				array(

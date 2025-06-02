@@ -32,11 +32,11 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
-import ErrorText from '../ErrorText';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import ErrorNotice from '../ErrorNotice';
 import Notice from '../Notice';
 
 export default function WPConsentAPIRequirements() {
@@ -162,11 +162,9 @@ export default function WPConsentAPIRequirements() {
 											{ wpConsentPlugin.installed && (
 												<Fragment>
 													{ !! apiInstallResponse?.error && (
-														<ErrorText
-															message={
-																apiInstallResponse
-																	?.error
-																	?.message
+														<ErrorNotice
+															error={
+																apiInstallResponse?.error
 															}
 														/>
 													) }
@@ -201,8 +199,8 @@ export default function WPConsentAPIRequirements() {
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
 													{ apiInstallHasError && (
-														<ErrorText
-															message={
+														<ErrorNotice
+															error={
 																apiInstallHasError
 															}
 														/>
