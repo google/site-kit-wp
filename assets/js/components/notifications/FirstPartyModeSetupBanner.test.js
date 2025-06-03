@@ -275,7 +275,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			document.querySelector(
 				'.googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
 			).textContent
-		).toContain( 'Error: Test Error' );
+		).toContain( 'Test Error' );
 	} );
 
 	it( 'should set FPM_SHOW_SETUP_SUCCESS_NOTIFICATION to true and invalidate the notifications queue resolution when the CTA button is clicked', async () => {
