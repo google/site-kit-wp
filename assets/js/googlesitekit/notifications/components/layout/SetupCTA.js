@@ -108,7 +108,7 @@ export default function SetupCTA( {
 					<Row>
 						<Cell size={ 12 }>
 							<Banner
-								className="googlesitekit-banner__setup-cta"
+								className="googlesitekit-banner--setup-cta"
 								title={ title }
 								description={ description }
 								errorText={ errorText }

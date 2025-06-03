@@ -54,6 +54,7 @@ import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
 	availableAudiences as audiencesFixture,
 	properties as propertiesFixture,
@@ -134,7 +135,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

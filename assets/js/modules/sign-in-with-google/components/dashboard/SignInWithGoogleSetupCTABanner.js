@@ -33,6 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
@@ -41,7 +42,7 @@ import BannerSVGMobile from '@/svg/graphics/banner-sign-in-with-google-setup-cta
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'sign-in-with-google'
+			MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 		);
 	} );
 
@@ -50,7 +51,9 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 		triggerSurvey( 'view_siwg_setup_cta' );
 	} );
 
-	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
+	const onSetupActivate = useActivateModuleCallback(
+		MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+	);
 
 	return (
 		<Notification>
@@ -71,7 +74,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 				description={ sprintf(
 					/* translators: %s: Sign in with Google service name */
 					__(
-						'Provide your site visitors with a simple, secure, and personalised experience by adding a %s button to your login page.',
+						'Provide your site visitors with a simple, secure, and personalized experience by adding a %s button to your login page.',
 						'google-site-kit'
 					),
 					_x(

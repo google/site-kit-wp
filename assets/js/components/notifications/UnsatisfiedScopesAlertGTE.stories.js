@@ -26,6 +26,7 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'gathering-data-notification'
@@ -46,7 +47,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

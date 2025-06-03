@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/constants';
 import { getInsufficientPermissionsErrorDescription } from './insufficient-permissions-error-description';
 
 describe( 'getInsufficientPermissionsErrorDescription', () => {
@@ -38,7 +40,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			[
 				'when the module only have a `slug` property',
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 				},
 			],
 			[
@@ -92,7 +94,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 	describe( 'search console error', () => {
 		const searchConsole = {
-			slug: 'search-console',
+			slug: MODULE_SLUG_SEARCH_CONSOLE,
 			name: 'Search Console',
 		};
 
@@ -118,7 +120,7 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 	describe( 'google analytics error', () => {
 		const analytics = {
-			slug: 'analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
 			name: 'Analytics',
 		};
 

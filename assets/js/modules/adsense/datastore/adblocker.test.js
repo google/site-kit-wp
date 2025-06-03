@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -70,7 +71,7 @@ describe( 'modules/adsense adblocker', () => {
 			it( 'returns correct message if ad blocker is active and module is not connected', () => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: false,
 					},
@@ -88,7 +89,7 @@ describe( 'modules/adsense adblocker', () => {
 			it( 'returns correct message if ad blocker is active and module is connected', () => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},

@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
@@ -39,7 +40,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../../audience-segmentation/settings/SettingsCardVisitorGroups/SetupSuccess';
+import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { WEEK_IN_SECONDS } from '../../../../../util';
@@ -48,6 +49,9 @@ import AudienceErrorModal from '../../audience-segmentation/dashboard/AudienceEr
 import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+import whenActive from '@/js/util/when-active';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -206,4 +210,7 @@ AudienceSegmentationSetupCTABanner.propTypes = {
 	Notification: PropTypes.elementType,
 };
 
-export default AudienceSegmentationSetupCTABanner;
+export default compose(
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
+	withWidgetComponentProps( 'audienceSegmentationSetupCTA' )
+)( AudienceSegmentationSetupCTABanner );
