@@ -71,7 +71,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 				description={ sprintf(
 					/* translators: %s: Sign in with Google service name */
 					__(
-						'Provide your site visitors with a simple, secure, and personalised experience by adding a %s button to your login page.',
+						'Provide your site visitors with a simple, secure, and personalized experience by adding a %s button to your login page.',
 						'google-site-kit'
 					),
 					_x(
