@@ -39,6 +39,7 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 import * as scrollUtils from '../../../../../util/scroll';
 import * as tracking from '../../../../../util/tracking';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -71,7 +72,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 				setupComplete: true,

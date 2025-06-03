@@ -38,6 +38,7 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/c
 import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();
@@ -48,7 +49,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	);
 
 	const Icon = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
+		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )

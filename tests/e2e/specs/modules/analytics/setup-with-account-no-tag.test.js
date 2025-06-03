@@ -114,12 +114,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/conversion-events'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/key-events'
 					)
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( fixtures.conversionEvents ),
+					body: JSON.stringify( fixtures.keyEvents ),
 				} );
 			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
 				request.respond( {

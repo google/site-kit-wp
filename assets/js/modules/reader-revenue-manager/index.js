@@ -29,7 +29,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	PUBLICATION_ONBOARDING_STATES,
 } from './datastore/constants';
@@ -54,6 +53,7 @@ import {
 	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
@@ -67,7 +67,7 @@ import RRMIntroductoryOverlayNotification, {
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'reader-revenue-manager', {
+	modules.registerModule( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -145,10 +145,10 @@ export const NOTIFICATIONS = {
 				// of the getDismissedPrompts() resolver.
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				resolveSelect( CORE_MODULES ).isModuleConnected(
-					READER_REVENUE_MANAGER_MODULE_SLUG
+					MODULE_SLUG_READER_REVENUE_MANAGER
 				),
 				resolveSelect( CORE_MODULES ).canActivateModule(
-					READER_REVENUE_MANAGER_MODULE_SLUG
+					MODULE_SLUG_READER_REVENUE_MANAGER
 				),
 			] );
 
@@ -160,11 +160,11 @@ export const NOTIFICATIONS = {
 
 			const isRRMModuleConnected = select(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			const canActivateRRMModule = select(
 				CORE_MODULES
-			).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if (
 				isLegacyDismissed === false &&
@@ -186,7 +186,7 @@ export const NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
 				return false;
@@ -202,7 +202,7 @@ export const NOTIFICATIONS = {
 
 			if (
 				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+				slug === MODULE_SLUG_READER_REVENUE_MANAGER &&
 				publicationOnboardingState !== undefined
 			) {
 				return true;
@@ -252,7 +252,7 @@ export const NOTIFICATIONS = {
 		checkRequirements: async ( { resolveSelect, dispatch } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
 				return false;
@@ -271,7 +271,7 @@ export const NOTIFICATIONS = {
 			const slug = getQueryArg( location.href, 'slug' );
 			const showingSuccessNotification =
 				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+				slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 			// Show the overlay if the publication onboarding state is complete, and if either
 			// setup has just been completed but there is no paymentOption selected, or if the
@@ -310,7 +310,7 @@ export const NOTIFICATIONS = {
 		checkRequirements: async ( { resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
 				return false;
@@ -325,7 +325,7 @@ export const NOTIFICATIONS = {
 			const slug = getQueryArg( location.href, 'slug' );
 			const showingSuccessNotification =
 				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+				slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 			if (
 				publicationOnboardingState ===

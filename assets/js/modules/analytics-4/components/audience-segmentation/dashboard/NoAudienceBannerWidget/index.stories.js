@@ -27,6 +27,7 @@ import {
 } from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
@@ -106,7 +107,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 				provideModuleRegistrations( registry );
