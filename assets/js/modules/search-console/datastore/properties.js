@@ -23,13 +23,14 @@ import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_SEARCH_CONSOLE } from './constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../constants';
 
 const fetchGetMatchedPropertiesStore = createFetchStore( {
 	baseName: 'getMatchedProperties',
 	controlCallback: () =>
 		get(
 			'modules',
-			'search-console',
+			MODULE_SLUG_SEARCH_CONSOLE,
 			'matched-sites',
 			{},
 			{ useCache: true }

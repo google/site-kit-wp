@@ -26,6 +26,14 @@ import {
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/constants';
+import { MODULE_SLUG_ADS } from './ads/constants';
+import { MODULE_SLUG_ADSENSE } from './adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/constants';
+import { MODULE_SLUG_TAGMANAGER } from './tagmanager/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './sign-in-with-google/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from './search-console/constants';
 
 describe( 'Module Features', () => {
 	let registry;
@@ -38,14 +46,14 @@ describe( 'Module Features', () => {
 
 	it.each( [
 		[
-			'ads',
+			MODULE_SLUG_ADS,
 			[
 				'Tagging necessary for your ads campaigns to work will be disabled',
 				'Conversion tracking for your ads campaigns will be disabled',
 			],
 		],
 		[
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			[
 				'Intelligent, automatic ad placement will be disabled',
 				'You will miss out on revenue from ads placed on your site',
@@ -53,25 +61,25 @@ describe( 'Module Features', () => {
 			],
 		],
 		[
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			[
 				'Your site will no longer send data to Google Analytics',
 				'Analytics reports in Site Kit will be disabled',
 			],
 		],
 		[
-			'pagespeed-insights',
+			MODULE_SLUG_PAGESPEED_INSIGHTS,
 			[
 				'Website performance reports for mobile and desktop will be disabled',
 			],
 		],
 		[
-			'reader-revenue-manager',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			[ 'Reader Revenue Manager publication tracking will be disabled' ],
 		],
-		[ 'search-console', [] ],
+		[ MODULE_SLUG_SEARCH_CONSOLE, [] ],
 		[
-			'sign-in-with-google',
+			MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 			[
 				'Users will no longer be able to sign in to your WordPress site using their Google Accounts',
 				'Users will not be able to create an account on your site using their Google Account (if account creation is enabled)',
@@ -79,7 +87,7 @@ describe( 'Module Features', () => {
 			],
 		],
 		[
-			'tagmanager',
+			MODULE_SLUG_TAGMANAGER,
 			[ 'You will not be able to create tags without updating code' ],
 		],
 	] )(

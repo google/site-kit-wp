@@ -41,6 +41,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
@@ -239,6 +240,6 @@ AudienceSegmentationSetupCTAWidget.propTypes = {
 };
 
 export default compose(
-	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
 	withWidgetComponentProps( 'audienceSegmentationSetupCTA' )
 )( AudienceSegmentationSetupCTAWidget );
