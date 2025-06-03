@@ -123,7 +123,7 @@
 	}
 
 	// Setting the margin top on each button so that when they stack on mobile the spacing is consistent.
-	.googlesitekit-notice__action > button {
+	.googlesitekit-notice__action > .mdc-button {
 		margin-right: 10px;
 		margin-top: 20px;
 	}
