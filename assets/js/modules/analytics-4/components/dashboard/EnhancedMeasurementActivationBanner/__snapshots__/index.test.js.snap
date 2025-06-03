@@ -3,70 +3,117 @@
 exports[`EnhancedMeasurementActivationBanner should render the in progress step when enhanced measurement is being enabled after the user returns from the OAuth flow 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner"
     id="enhanced-measurement-notification"
   >
     <div
-      class="mdc-layout-grid"
+      class="mdc-linear-progress googlesitekit-banner__progress-bar mdc-linear-progress--indeterminate"
+      role="progressbar"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="mdc-linear-progress__buffering-dots"
+      />
+      <div
+        class="mdc-linear-progress__buffer"
+      />
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+      <div
+        class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
+      >
+        <span
+          class="mdc-linear-progress__bar-inner"
+        />
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget-context googlesitekit-widget-context--with-progress-bar"
+    >
+      <div
+        class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+          class="mdc-layout-grid__inner"
         >
-          <h3
-            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-          >
-            Setup in progress
-          </h3>
           <div
-            class="googlesitekit-publisher-win__desc"
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
           >
-            <p>
-              <span>
-                Enhanced measurement is being enabled.
-              </span>
-               
-              <a
-                aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link"
-                href="https://support.google.com/analytics/answer/9216061?hl=en-US"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <span
-                  class="googlesitekit-cta-link__contents"
-                >
-                  Learn more
-                </span>
-                <span
-                  class="googlesitekit-icon-wrapper"
-                  style="margin-left: 5px;"
-                >
-                  <svg />
-                </span>
-              </a>
-            </p>
-          </div>
-          <div
-            class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
-            role="progressbar"
-            style="width: 20px; height: 20px;"
-          >
-            <svg
-              class="MuiCircularProgress-svg"
-              viewBox="22 22 44 44"
+            <div
+              class="googlesitekit-banner googlesitekit-banner--setup-cta"
             >
-              <circle
-                class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
-                cx="44"
-                cy="44"
-                fill="none"
-                r="20.2"
-                stroke-width="3.6"
+              <div
+                class="googlesitekit-banner__content"
+              >
+                <p
+                  class="googlesitekit-banner__title"
+                >
+                  Understand how visitors interact with your content
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
+                >
+                  Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                   
+                  <a
+                    aria-label="Learn more (opens in a new tab)"
+                    class="googlesitekit-cta-link"
+                    href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Learn more
+                    </span>
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-left: 5px;"
+                    >
+                      <svg />
+                    </span>
+                  </a>
+                </div>
+                <p
+                  class="googlesitekit-banner__help-text"
+                >
+                  You can always add/edit this in the Site Kit Settings
+                </p>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button googlesitekit-banner__cta mdc-button--raised"
+                    disabled=""
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Enable now
+                    </span>
+                  </button>
+                  <button
+                    class="mdc-button mdc-button--tertiary"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Maybe later
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
               />
-            </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -78,84 +125,91 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
 exports[`EnhancedMeasurementActivationBanner should render the setup step when enhanced measurement is initially false and the banner is not dismissed 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
     id="enhanced-measurement-notification"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-widget-context"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+          class="mdc-layout-grid__inner"
         >
-          <h3
-            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-          >
-            Understand how visitors interact with your content
-          </h3>
           <div
-            class="googlesitekit-publisher-win__desc"
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
           >
-            <p>
-              <span>
-                Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
-              </span>
-               
-              <a
-                aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link"
-                href="https://support.google.com/analytics/answer/9216061?hl=en-US"
-                rel="noopener noreferrer"
-                target="_blank"
+            <div
+              class="googlesitekit-banner googlesitekit-banner--setup-cta"
+            >
+              <div
+                class="googlesitekit-banner__content"
               >
-                <span
-                  class="googlesitekit-cta-link__contents"
+                <p
+                  class="googlesitekit-banner__title"
                 >
-                  Learn more
-                </span>
-                <span
-                  class="googlesitekit-icon-wrapper"
-                  style="margin-left: 5px;"
+                  Understand how visitors interact with your content
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
                 >
-                  <svg />
-                </span>
-              </a>
-            </p>
-          </div>
-          <div
-            class="googlesitekit-publisher-win__actions"
-          >
-            <button
-              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-              target="_self"
-            >
-              <span
-                class="mdc-button__label"
-              >
-                Enable now
-              </span>
-            </button>
-            <button
-              class="mdc-button mdc-button--tertiary"
-              target="_self"
-            >
-              <span
-                class="mdc-button__label"
-              >
-                Maybe later
-              </span>
-            </button>
-          </div>
-          <div
-            class="googlesitekit-publisher-win__footer"
-          >
-            <p
-              class="googlesitekit-enhanced-measurement-setup-banner__footer-notice"
-            >
-              You can always add/edit this in the Site Kit Settings
-            </p>
+                  Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                   
+                  <a
+                    aria-label="Learn more (opens in a new tab)"
+                    class="googlesitekit-cta-link"
+                    href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Learn more
+                    </span>
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-left: 5px;"
+                    >
+                      <svg />
+                    </span>
+                  </a>
+                </div>
+                <p
+                  class="googlesitekit-banner__help-text"
+                >
+                  You can always add/edit this in the Site Kit Settings
+                </p>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button googlesitekit-banner__cta mdc-button--raised"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Enable now
+                    </span>
+                  </button>
+                  <button
+                    class="mdc-button mdc-button--tertiary"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Maybe later
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -167,7 +221,6 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
 exports[`EnhancedMeasurementActivationBanner should render the success step when the the setup form is successfully submitted 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win googlesitekit-enhanced-measurement-success-banner"
     id="enhanced-measurement-notification"
   >
     <div
@@ -177,52 +230,64 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
         >
-          <h3
-            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-          >
-            You successfully enabled enhanced measurement for your site
-          </h3>
           <div
-            class="googlesitekit-publisher-win__desc"
+            class="googlesitekit-notice googlesitekit-notice--success"
           >
-            <p>
-              <span>
-                Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement.
-              </span>
-               
-              <a
-                aria-label="Learn more (opens in a new tab)"
-                class="googlesitekit-cta-link"
-                href="https://support.google.com/analytics/answer/9216061?hl=en-US"
-                rel="noopener noreferrer"
-                target="_blank"
+            <div
+              class="googlesitekit-notice__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-notice__content"
+            >
+              <p
+                class="googlesitekit-notice__title"
+              >
+                You successfully enabled enhanced measurement for your site
+              </p>
+              <p
+                class="googlesitekit-notice__description"
+              >
+                Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement. 
+                <a
+                  aria-label="Learn more (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
+                </a>
+              </p>
+            </div>
+            <div
+              class="googlesitekit-notice__action"
+            >
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
               >
                 <span
-                  class="googlesitekit-cta-link__contents"
+                  class="mdc-button__label"
                 >
-                  Learn more
+                  Got it
                 </span>
-                <span
-                  class="googlesitekit-icon-wrapper"
-                  style="margin-left: 5px;"
-                >
-                  <svg />
-                </span>
-              </a>
-            </p>
+              </button>
+            </div>
           </div>
-          <button
-            class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-            target="_self"
-          >
-            <span
-              class="mdc-button__label"
-            >
-              OK, Got it
-            </span>
-          </button>
         </div>
       </div>
     </div>
