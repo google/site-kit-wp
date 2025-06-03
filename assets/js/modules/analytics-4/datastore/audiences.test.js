@@ -1879,6 +1879,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
