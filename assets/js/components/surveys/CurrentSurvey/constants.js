@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager overlay notification styles.
+ * CurrentSurvey component constants.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,9 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
-
-	.googlesitekit-reader-revenue-manager-overlay-notification {
-
-		.mdc-button--raised {
-			font-weight: 500;
-			gap: 0 6px;
-		}
-
-		@media (min-width: $bp-tablet) {
-			max-width: 348px;
-		}
-	}
-}
+export const SURVEY_QUESTION_TYPE = {
+	MULTI_SELECT: 'multi_select',
+	OPEN_TEXT: 'open_text',
+	RATING: 'rating',
+	SINGLE_SELECT: 'single_select',
+};

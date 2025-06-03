@@ -215,7 +215,7 @@ class Google_Proxy {
 	/**
 	 * Sanitizes the given base URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
 	 * @param string $url Base URL to sanitize.
 	 * @return string Sanitized base URL.
