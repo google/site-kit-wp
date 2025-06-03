@@ -36,11 +36,11 @@ import Link from '../../../../components/Link';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import {
 	ProductIDSelect,
 	PublicationOnboardingStateNotice,
@@ -122,7 +122,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 	return (
 		<form onSubmit={ submitForm }>
 			<StoreErrorNotices
-				moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+				moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">

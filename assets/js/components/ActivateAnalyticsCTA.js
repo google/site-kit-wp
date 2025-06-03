@@ -34,23 +34,26 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../hooks/useDebounce';
 
 export default function ActivateAnalyticsCTA( { children } ) {
-	const activateModuleCallback = useActivateModuleCallback( 'analytics-4' );
+	const activateModuleCallback = useActivateModuleCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
 	const completeModuleActivationCallback =
-		useCompleteModuleActivationCallback( 'analytics-4' );
+		useCompleteModuleActivationCallback( MODULE_SLUG_ANALYTICS_4 );
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const analyticsModuleAvailable = useSelect( ( select ) => {
 		const { isModuleAvailable } = select( CORE_MODULES );
 		return (
-			isModuleAvailable( 'analytics-4' ) &&
+			isModuleAvailable( MODULE_SLUG_ANALYTICS_4 ) &&
 			!! select( MODULES_ANALYTICS_4 )
 		);
 	} );
@@ -77,7 +80,7 @@ export default function ActivateAnalyticsCTA( { children } ) {
 		}
 
 		return select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			true
 		);
 	} );

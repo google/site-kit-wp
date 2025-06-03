@@ -34,10 +34,8 @@ import PublicationApprovedOverlayNotification, {
 } from './PublicationApprovedOverlayNotification';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { NOTIFICATIONS } from '../..';
@@ -69,7 +67,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},
@@ -195,7 +193,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 					paymentOption: '',
 					publicationOnboardingStateChanged: false,
 				} );
-			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ READER_REVENUE_MANAGER_MODULE_SLUG }`;
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -207,7 +205,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 		it( 'is not active when the RRM module is not connected', async () => {
 			provideModules( registry, [
 				{
-					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					slug: MODULES_READER_REVENUE_MANAGER,
 					active: false,
 					connected: false,
 				},
@@ -236,7 +234,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 					paymentOption: '',
 					publicationOnboardingStateChanged: true,
 				} );
-			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ READER_REVENUE_MANAGER_MODULE_SLUG }`;
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
 
 			const isActive = await notification.checkRequirements(
 				registry,
@@ -254,7 +252,7 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 					paymentOption: 'validPaymentOption',
 					publicationOnboardingStateChanged: false,
 				} );
-			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ READER_REVENUE_MANAGER_MODULE_SLUG }`;
+			global.location.href = `http://example.com/wp-admin/admin.php?notification=authentication_success&slug=${ MODULE_SLUG_READER_REVENUE_MANAGER }`;
 
 			const isActive = await notification.checkRequirements(
 				registry,

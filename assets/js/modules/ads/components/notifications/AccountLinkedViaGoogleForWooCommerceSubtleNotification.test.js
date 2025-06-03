@@ -29,12 +29,13 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../../features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
+import { enabledFeatures } from '../../../../features';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 
 const NOTIFICATION_ID = 'account-linked-via-google-for-woocommerce';
@@ -99,7 +100,9 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		await waitForRegistry();
 
 		expect(
-			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+			registry
+				.select( CORE_MODULES )
+				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
 		).toBe( true );
 
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
@@ -129,7 +132,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return false if the WooCommerce or Google for WooCommerce plugins are not activated', async () => {
 			provideModules( registry, [
 				{
-					slug: 'ads',
+					slug: MODULE_SLUG_ADS,
 					active: true,
 					connected: false,
 				},
@@ -157,7 +160,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return true if the WooCommerce and Google for WooCommerce plugins are active and Ads account ins linked', async () => {
 			provideModules( registry, [
 				{
-					slug: 'ads',
+					slug: MODULE_SLUG_ADS,
 					active: true,
 					connected: false,
 				},
@@ -185,7 +188,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 		it( 'should return false if the Ads module is connected', async () => {
 			provideModules( registry, [
 				{
-					slug: 'ads',
+					slug: MODULE_SLUG_ADS,
 					active: true,
 					connected: true,
 				},
