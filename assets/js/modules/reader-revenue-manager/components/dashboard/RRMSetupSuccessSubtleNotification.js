@@ -74,7 +74,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: MODULE_SLUG_READER_REVENUE_MANAGER,
+			path: 'reader-revenue-manager',
 			query: {
 				publication: publicationID,
 			},
