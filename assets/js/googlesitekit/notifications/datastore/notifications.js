@@ -472,11 +472,11 @@ export const controls = {
 				// Get the `isNotificationDismissed` selector to check if a
 				// notification is dismissed.
 				const { isNotificationDismissed } =
-					registry.resolveSelect( CORE_NOTIFICATIONS );
+					registry.select( CORE_NOTIFICATIONS );
 
 				let potentialNotifications = Object.values( notifications )
-					.filter( async ( notification ) => {
-						const isDismissed = await isNotificationDismissed(
+					.filter( ( notification ) => {
+						const isDismissed = isNotificationDismissed(
 							notification.id
 						);
 
