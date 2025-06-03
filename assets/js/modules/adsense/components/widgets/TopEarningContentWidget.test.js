@@ -39,7 +39,9 @@ import {
 import TopEarningContentWidget from './TopEarningContentWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -60,7 +62,10 @@ describe( 'TopEarningContentWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4', 'adsense' ) );
+		provideModules(
+			registry,
+			withConnected( MODULE_SLUG_ANALYTICS_4, MODULE_SLUG_ADSENSE )
+		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
 		registry.dispatch( MODULES_ADSENSE ).setAccountID( adSenseAccountID );
 	} );

@@ -50,7 +50,10 @@ import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from '../../../constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+} from '../../../constants';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =
@@ -104,7 +107,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -349,7 +352,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 				.dispatch( CORE_MODULES )
 				.receiveCheckModuleAccess(
 					{ access: false },
-					{ slug: 'analytics-4' }
+					{ slug: MODULE_SLUG_ANALYTICS_4 }
 				);
 
 			const isActive = await notification.checkRequirements(

@@ -26,6 +26,7 @@ import {
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
@@ -59,7 +60,7 @@ export default {
 				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

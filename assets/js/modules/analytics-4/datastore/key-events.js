@@ -22,13 +22,14 @@
 import { get } from 'googlesitekit-api';
 import { commonActions, combineStores } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 const fetchGetKeyEventsStore = createFetchStore( {
 	baseName: 'getKeyEvents',
 	controlCallback: () => {
-		return get( 'modules', 'analytics-4', 'key-events', {} );
+		return get( 'modules', MODULE_SLUG_ANALYTICS_4, 'key-events', {} );
 	},
 	reducerCallback: createReducer( ( state, keyEvents ) => {
 		state.keyEvents = keyEvents;

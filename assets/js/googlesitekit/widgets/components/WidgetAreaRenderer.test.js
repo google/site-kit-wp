@@ -48,6 +48,8 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../datastore/user/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const createTestRegistryWithArea = (
 	areaName,
@@ -147,13 +149,13 @@ describe( 'WidgetAreaRenderer', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
-				modules: 'search-console',
+				modules: MODULE_SLUG_SEARCH_CONSOLE,
 				slug: 'one',
 				width: WIDGET_WIDTHS.FULL,
 			},
 			{
 				Component: WidgetComponent,
-				modules: 'search-console',
+				modules: MODULE_SLUG_SEARCH_CONSOLE,
 				slug: 'two',
 				width: WIDGET_WIDTHS.FULL,
 			},
@@ -161,7 +163,7 @@ describe( 'WidgetAreaRenderer', () => {
 				Component() {
 					return <div>AdSense is here</div>;
 				},
-				modules: 'adsense',
+				modules: MODULE_SLUG_ADSENSE,
 				slug: 'three',
 				width: WIDGET_WIDTHS.FULL,
 			},
@@ -206,13 +208,13 @@ describe( 'WidgetAreaRenderer', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
-				modules: 'search-console',
+				modules: MODULE_SLUG_SEARCH_CONSOLE,
 				slug: 'one',
 				width: WIDGET_WIDTHS.FULL,
 			},
 			{
 				Component: WidgetComponent,
-				modules: 'search-console',
+				modules: MODULE_SLUG_SEARCH_CONSOLE,
 				slug: 'two',
 				width: WIDGET_WIDTHS.FULL,
 			},
@@ -220,7 +222,7 @@ describe( 'WidgetAreaRenderer', () => {
 				Component() {
 					return <div>AdSense is here</div>;
 				},
-				modules: 'adsense',
+				modules: MODULE_SLUG_ADSENSE,
 				slug: 'three',
 				width: WIDGET_WIDTHS.FULL,
 			},
@@ -747,7 +749,7 @@ describe( 'WidgetAreaRenderer', () => {
 	it( 'should combine multiple widgets in RecoverableModules state with the same metadata into a single widget', async () => {
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				recoverable: true,
 			},
 		] );
@@ -761,12 +763,12 @@ describe( 'WidgetAreaRenderer', () => {
 			{
 				Component: WidgetComponent,
 				slug: 'one',
-				modules: [ 'search-console' ],
+				modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 			},
 			{
 				Component: WidgetComponent,
 				slug: 'two',
-				modules: [ 'search-console' ],
+				modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 			},
 		] );
 
@@ -818,7 +820,7 @@ describe( 'WidgetAreaRenderer', () => {
 			createWidgets( registry, areaName, [
 				{
 					Component: WidgetComponentErrored,
-					modules: 'search-console',
+					modules: MODULE_SLUG_SEARCH_CONSOLE,
 					slug: 'one',
 					width: WIDGET_WIDTHS.FULL,
 				},
@@ -845,13 +847,13 @@ describe( 'WidgetAreaRenderer', () => {
 			createWidgets( registry, areaName, [
 				{
 					Component: WidgetComponent,
-					modules: 'search-console',
+					modules: MODULE_SLUG_SEARCH_CONSOLE,
 					slug: 'one',
 					width: WIDGET_WIDTHS.FULL,
 				},
 				{
 					Component: WidgetComponentErrored,
-					modules: 'search-console',
+					modules: MODULE_SLUG_SEARCH_CONSOLE,
 					slug: 'two',
 					width: WIDGET_WIDTHS.FULL,
 				},
@@ -859,7 +861,7 @@ describe( 'WidgetAreaRenderer', () => {
 					Component() {
 						return <div>AdSense is here</div>;
 					},
-					modules: 'adsense',
+					modules: MODULE_SLUG_ADSENSE,
 					slug: 'three',
 					width: WIDGET_WIDTHS.FULL,
 				},
@@ -891,7 +893,7 @@ describe( 'WidgetAreaRenderer', () => {
 			createWidgets( registry, areaName, [
 				{
 					Component: WidgetComponentErrored,
-					modules: 'search-console',
+					modules: MODULE_SLUG_SEARCH_CONSOLE,
 					slug: 'one',
 					width: WIDGET_WIDTHS.FULL,
 				},

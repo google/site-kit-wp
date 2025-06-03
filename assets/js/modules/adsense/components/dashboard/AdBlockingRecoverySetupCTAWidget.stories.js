@@ -33,6 +33,7 @@ import {
 } from '../../../../hooks/useBreakpoint';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -76,7 +77,7 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 

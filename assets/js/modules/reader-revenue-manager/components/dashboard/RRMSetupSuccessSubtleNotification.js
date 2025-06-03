@@ -38,10 +38,10 @@ import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '../../../../components/Notice/constants';
@@ -143,7 +143,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const showingSuccessNotification =
 		notification === 'authentication_success' &&
-		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+		slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 	// On successful module setup, if the payment option is not set,
 	// the "Publication approved" Overlay Notification will be triggered
