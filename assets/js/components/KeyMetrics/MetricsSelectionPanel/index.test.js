@@ -67,8 +67,9 @@ import {
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;
@@ -371,7 +372,7 @@ describe( 'MetricsSelectionPanel', () => {
 					connected: true,
 				},
 				{
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 					active: false,
 					connected: false,
 				},
@@ -385,7 +386,7 @@ describe( 'MetricsSelectionPanel', () => {
 					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 				[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-					modules: [ 'adsense' ],
+					modules: [ MODULE_SLUG_ADSENSE ],
 				},
 			} );
 

@@ -35,6 +35,7 @@ import {
 } from './index';
 import { DATA_LAYER } from '../../util/tracking/constants';
 import { enableTracking } from '../../util/tracking';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
@@ -830,9 +831,9 @@ describe( 'googlesitekit.api', () => {
 				createCacheKey( 'core', MODULE_SLUG_SEARCH_CONSOLE, 'users' )
 			).toEqual( 'core::search-console::users' );
 
-			expect( createCacheKey( 'core', 'adsense', 'accounts' ) ).toEqual(
-				'core::adsense::accounts'
-			);
+			expect(
+				createCacheKey( 'core', MODULE_SLUG_ADSENSE, 'accounts' )
+			).toEqual( 'core::adsense::accounts' );
 		} );
 
 		it( 'should create a cache key with query params when provided', () => {

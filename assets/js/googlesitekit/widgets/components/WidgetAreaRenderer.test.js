@@ -49,6 +49,7 @@ import {
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../datastore/user/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const createTestRegistryWithArea = (
 	areaName,
@@ -162,7 +163,7 @@ describe( 'WidgetAreaRenderer', () => {
 				Component() {
 					return <div>AdSense is here</div>;
 				},
-				modules: 'adsense',
+				modules: MODULE_SLUG_ADSENSE,
 				slug: 'three',
 				width: WIDGET_WIDTHS.FULL,
 			},
@@ -221,7 +222,7 @@ describe( 'WidgetAreaRenderer', () => {
 				Component() {
 					return <div>AdSense is here</div>;
 				},
-				modules: 'adsense',
+				modules: MODULE_SLUG_ADSENSE,
 				slug: 'three',
 				width: WIDGET_WIDTHS.FULL,
 			},
@@ -860,7 +861,7 @@ describe( 'WidgetAreaRenderer', () => {
 					Component() {
 						return <div>AdSense is here</div>;
 					},
-					modules: 'adsense',
+					modules: MODULE_SLUG_ADSENSE,
 					slug: 'three',
 					width: WIDGET_WIDTHS.FULL,
 				},

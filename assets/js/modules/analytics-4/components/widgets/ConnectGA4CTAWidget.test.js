@@ -29,6 +29,7 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	CORE_USER,
 } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
@@ -77,7 +78,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			},
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-				modules: [ 'adsense' ],
+				modules: [ MODULE_SLUG_ADSENSE ],
 			},
 			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
 				modules: [ MODULE_SLUG_SEARCH_CONSOLE ],

@@ -40,6 +40,7 @@ import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import * as tracking from '../../../../../util/tracking';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 import SetupMain from './SetupMain';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -60,7 +61,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 			},
 		] );
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {

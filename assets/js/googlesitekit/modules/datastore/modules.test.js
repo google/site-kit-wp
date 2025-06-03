@@ -43,6 +43,7 @@ import FIXTURES, { withActive } from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { CORE_USER } from '../../datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
@@ -1627,7 +1628,7 @@ describe( 'core/modules modules', () => {
 				],
 				[
 					'false if a module is active but not connected',
-					'adsense',
+					MODULE_SLUG_ADSENSE,
 					false,
 				],
 				[

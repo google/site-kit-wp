@@ -38,6 +38,7 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -93,7 +94,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 				shareable: true,
@@ -134,7 +135,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	it( 'does not render when Analytics module is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
@@ -161,7 +162,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	it( 'does not render when AdSense module is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: false,
 			},

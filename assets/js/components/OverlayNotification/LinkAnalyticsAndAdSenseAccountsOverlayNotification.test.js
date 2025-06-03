@@ -31,6 +31,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -53,7 +54,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
@@ -72,7 +73,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	it( 'does not render when Analytics module is not connected', () => {
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
@@ -97,7 +98,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	it( 'does not render when AdSense module is not connected', () => {
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: false,
 			},

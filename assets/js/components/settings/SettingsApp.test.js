@@ -40,6 +40,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/tracking'
@@ -98,7 +99,7 @@ describe( 'SettingsApp', () => {
 				connected: true,
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
