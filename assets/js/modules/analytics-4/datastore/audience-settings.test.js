@@ -201,6 +201,10 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 
 			it( 'should return undefined if availableAudiences is not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
