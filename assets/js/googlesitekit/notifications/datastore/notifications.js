@@ -179,7 +179,7 @@ export const actions = {
 			// after initial page load, such as Setup Success notifications.
 			if ( ! viewContexts?.length ) {
 				const { isNotificationDismissed } =
-					registry.resolveSelect( CORE_NOTIFICATIONS );
+					registry.select( CORE_NOTIFICATIONS );
 
 				const notification = {
 					id,
@@ -194,9 +194,18 @@ export const actions = {
 					featureFlag,
 				};
 
-				const isDismissed = yield commonActions.await(
-					isNotificationDismissed( notification.id )
+				yield commonActions.await(
+					// Wait for all dismissed items to be available before checking
+					// for dismissed status.
+					Promise.all( [
+						registry.resolveSelect( CORE_USER ).getDismissedItems(),
+						registry
+							.resolveSelect( CORE_USER )
+							.getDismissedPrompts(),
+					] )
 				);
+
+				const isDismissed = isNotificationDismissed( notification.id );
 
 				// Check if the notification should be added to the queue
 				// before inserting it.
@@ -627,10 +636,22 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case QUEUE_NOTIFICATION: {
-			const { groupID } = payload.notification;
+			const { groupID, id } = payload.notification;
 			state.queuedNotifications[ groupID ] =
 				state.queuedNotifications[ groupID ] || [];
+
+			// If the notification is already in the queue, we don't need to
+			// add it again.
+			if (
+				state.queuedNotifications[ groupID ].some(
+					( notification ) => notification.id === id
+				)
+			) {
+				break;
+			}
+
 			state.queuedNotifications[ groupID ].push( payload.notification );
+
 			break;
 		}
 

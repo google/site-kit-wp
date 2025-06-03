@@ -42,7 +42,9 @@ import { DAY_IN_SECONDS } from '../../util';
 import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-first-party-mode-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-first-party-mode-setup-cta-mobile.svg?url';
-import FirstPartyModeSetupSuccessSubtleNotification from './FirstPartyModeSetupSuccessSubtleNotification';
+import FirstPartyModeSetupSuccessSubtleNotification, {
+	FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION,
+} from './FirstPartyModeSetupSuccessSubtleNotification';
 
 export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
@@ -79,14 +81,14 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			return;
 		}
 
-		registerNotification( 'setup-success-notification-fpm', {
+		dismissNotification( id );
+
+		registerNotification( FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION, {
 			Component: FirstPartyModeSetupSuccessSubtleNotification,
 			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
 			isDismissible: false,
 			featureFlag: 'firstPartyMode',
 		} );
-
-		dismissNotification( id );
 	};
 
 	const ctaError = useSelect( ( select ) => {
