@@ -355,6 +355,10 @@
 			grid-template-columns: auto;
 			grid-template-rows: auto;
 
+			.googlesitekit-widget-context {
+				padding: 0;
+			}
+
 			.mdc-layout-grid__inner {
 
 				@media (min-width: $bp-tablet) {
