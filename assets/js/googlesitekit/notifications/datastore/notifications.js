@@ -179,7 +179,7 @@ export const actions = {
 			// after initial page load, such as Setup Success notifications.
 			if ( ! viewContexts?.length ) {
 				const { isNotificationDismissed } =
-					registry.select( CORE_NOTIFICATIONS );
+					registry.resolveSelect( CORE_NOTIFICATIONS );
 
 				const notification = {
 					id,
@@ -194,12 +194,16 @@ export const actions = {
 					featureFlag,
 				};
 
+				const isDismissed = yield commonActions.await(
+					isNotificationDismissed( notification.id )
+				);
+
 				// Check if the notification should be added to the queue
 				// before inserting it.
 				if (
 					! shouldNotificationBeAddedToQueue( notification, {
 						groupID,
-						isNotificationDismissed,
+						isDismissed,
 					} )
 				) {
 					return;
@@ -441,8 +445,6 @@ export const controls = {
 		( registry ) =>
 			async ( { payload } ) => {
 				const { viewContext, groupID } = payload;
-				const { isNotificationDismissed } =
-					registry.select( CORE_NOTIFICATIONS );
 				const notifications = registry
 					.select( CORE_NOTIFICATIONS )
 					.getNotifications();
@@ -458,12 +460,23 @@ export const controls = {
 					.select( CORE_NOTIFICATIONS )
 					.getSeenNotifications();
 
+				// Get the `isNotificationDismissed` selector to check if a
+				// notification is dismissed.
+				const { isNotificationDismissed } =
+					registry.resolveSelect( CORE_NOTIFICATIONS );
+
 				let potentialNotifications = Object.values( notifications )
-					.filter( ( notification ) => {
+					.filter( async ( notification ) => {
+						const isDismissed = await isNotificationDismissed(
+							notification.id
+						);
+
 						return shouldNotificationBeAddedToQueue( notification, {
 							groupID,
 							viewContext,
-							isNotificationDismissed,
+							// Because all dismissed items are already
+							// resolved, this won't return undefined.
+							isDismissed,
 						} );
 					} )
 					.map( ( { checkRequirements, ...notification } ) => {

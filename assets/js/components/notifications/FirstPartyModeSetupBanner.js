@@ -62,7 +62,8 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const { dismissNotification, registerNotification } =
+		useDispatch( CORE_NOTIFICATIONS );
 
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
@@ -84,6 +85,8 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			isDismissible: false,
 			featureFlag: 'firstPartyMode',
 		} );
+
+		dismissNotification( id );
 	};
 
 	const ctaError = useSelect( ( select ) => {

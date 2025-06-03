@@ -25,20 +25,24 @@ import { isFeatureEnabled } from '../../../features';
  *
  * @since n.e.x.t
  *
- * @param {Object}   notification                   Notification object.
- * @param {Object}   params                         Parameters.
- * @param {string}   params.groupID                 Group ID to check against the notification's groupID.
- * @param {Function} params.isNotificationDismissed Function to check if a notification is dismissed.
- * @param {string}   params.viewContext             View context to check against the notification's viewContexts (if present).
+ * @param {Object}  notification                Notification object.
+ * @param {Object}  params                      Parameters.
+ * @param {string}  params.groupID              Group ID to check against the notification's groupID.
+ * @param {boolean} params.isDismissed          Whether the notification is already dismissed, if it's dismissible.
+ * @param {string}  params.viewContext          View context to check against the notification's viewContexts (if present).
+ * @param {Array}   params._enabledFeatureFlags Feature flags object to check against the notification's `featureFlag`. Used for testing purposes.
  * @return {boolean} Returns true if the notification should be added to the queue, false otherwise.
  */
 export function shouldNotificationBeAddedToQueue(
 	notification,
-	{ groupID, viewContext, isNotificationDismissed = () => false } = {}
+	{ groupID, viewContext, isDismissed, _enabledFeatureFlags } = {}
 ) {
 	if (
 		notification?.featureFlag &&
-		! isFeatureEnabled( notification.featureFlag )
+		! isFeatureEnabled(
+			notification.featureFlag,
+			_enabledFeatureFlags ? new Set( _enabledFeatureFlags ) : undefined
+		)
 	) {
 		return false;
 	}
@@ -55,10 +59,7 @@ export function shouldNotificationBeAddedToQueue(
 		return false;
 	}
 
-	if (
-		notification.isDismissible &&
-		isNotificationDismissed( notification.id ) !== false
-	) {
+	if ( notification.isDismissible && isDismissed ) {
 		return false;
 	}
 
