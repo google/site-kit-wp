@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupCTAWidget component.
+ * AudienceSegmentationSetupCTABanner component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -24,15 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import whenActive from '../../../../../util/when-active';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -41,35 +40,24 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { WEEK_IN_SECONDS } from '../../../../../util';
 import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
-import AudienceErrorModal from './AudienceErrorModal';
-import NotificationWithSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
-import ActionsCTALinkDismiss from '../../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import BannerGraphicsSVGDesktop from '../../../../../../svg/graphics/audience-segmentation-setup-desktop.svg';
-import BannerGraphicsSVGTablet from '../../../../../../svg/graphics/audience-segmentation-setup-tablet.svg';
-import BannerGraphicsSVGMobile from '../../../../../../svg/graphics/audience-segmentation-setup-mobile.svg';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
+import AudienceErrorModal from '../../audience-segmentation/dashboard/AudienceErrorModal';
+import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+import whenActive from '@/js/util/when-active';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
 
-const breakpointSVGMap = {
-	[ BREAKPOINT_SMALL ]: BannerGraphicsSVGMobile,
-	[ BREAKPOINT_TABLET ]: BannerGraphicsSVGTablet,
-};
-function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
+function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 	const viewContext = useViewContext();
-	const breakpoint = useBreakpoint();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
 	const { invalidateResolution, dismissNotification } =
@@ -159,60 +147,43 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	return (
 		<Fragment>
 			<Notification { ...gaTrackingProps }>
-				<NotificationWithSVG
-					id={ id }
+				<SetupCTA
+					notificationID={ id }
 					title={ __(
 						'Learn how different types of visitors interact with your site',
 						'google-site-kit'
 					) }
-					description={
-						<p>
-							{ __(
-								'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like “new“ and “returning“. To set up these new groups, Site Kit needs to update your Google Analytics property.',
-								'google-site-kit'
-							) }
-						</p>
-					}
-					actions={
-						<ActionsCTALinkDismiss
-							id={ id }
-							className="googlesitekit-setup-cta-banner__actions-wrapper"
-							ctaLabel={
-								isSaving
-									? __( 'Enabling groups', 'google-site-kit' )
-									: __( 'Enable groups', 'google-site-kit' )
-							}
-							onCTAClick={ onEnableGroups }
-							isSaving={ isSaving }
-							dismissOnCTAClick={ false }
-							dismissLabel={
-								isDismissalFinal
-									? __(
-											'Don’t show again',
-											'google-site-kit'
-									  )
-									: __( 'Maybe later', 'google-site-kit' )
-							}
-							onDismiss={ showTooltip }
-							ctaDismissOptions={ {
-								skipHidingFromQueue: true,
-							} }
-							dismissExpires={
-								isDismissalFinal ? 0 : 2 * WEEK_IN_SECONDS
-							}
-							{ ...gaTrackingProps }
-						/>
-					}
-					SVG={
-						breakpointSVGMap[ breakpoint ] ??
-						BannerGraphicsSVGDesktop
-					}
-					primaryCellSizes={ {
-						lg: 7,
-						md: 8,
+					description={ __(
+						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
+						'google-site-kit'
+					) }
+					ctaButton={ {
+						label: isSaving
+							? __( 'Enabling groups', 'google-site-kit' )
+							: __( 'Enable groups', 'google-site-kit' ),
+						onClick: onEnableGroups,
+						disabled: isSaving,
 					} }
-					SVGCellSizes={ {
-						lg: 5,
+					dismissButton={ {
+						label: isDismissalFinal
+							? __( 'Don’t show again', 'google-site-kit' )
+							: __( 'Maybe later', 'google-site-kit' ),
+						onClick: showTooltip,
+						disabled: isSaving,
+					} }
+					dismissOptions={ {
+						skipHidingFromQueue: true,
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					} }
+					svg={ {
+						desktop: BannerSVGDesktop,
+						mobile: BannerSVGMobile,
+						verticalPosition: 'bottom',
+					} }
+					gaTrackingEventArgs={ {
+						category: trackEventCategory,
 					} }
 				/>
 			</Notification>
@@ -234,7 +205,7 @@ function AudienceSegmentationSetupCTAWidget( { id, Notification } ) {
 	);
 }
 
-AudienceSegmentationSetupCTAWidget.propTypes = {
+AudienceSegmentationSetupCTABanner.propTypes = {
 	id: PropTypes.string,
 	Notification: PropTypes.elementType,
 };
@@ -242,4 +213,4 @@ AudienceSegmentationSetupCTAWidget.propTypes = {
 export default compose(
 	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
 	withWidgetComponentProps( 'audienceSegmentationSetupCTA' )
-)( AudienceSegmentationSetupCTAWidget );
+)( AudienceSegmentationSetupCTABanner );

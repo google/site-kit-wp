@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupCTAWidget component tests.
+ * AudienceSegmentationSetupCTABanner component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -61,9 +61,9 @@ import {
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
 import * as tracking from '../../../../../util/tracking';
 import { getAnalytics4MockResponse } from '../../../utils/data-mock';
-import AudienceSegmentationSetupCTAWidget, {
+import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './AudienceSegmentationSetupCTAWidget';
+} from './AudienceSegmentationSetupCTABanner';
 import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
@@ -72,6 +72,7 @@ import {
 	dismissedPromptsEndpoint,
 	dismissPromptEndpoint,
 } from '../../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-item-endpoints';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -81,7 +82,7 @@ jest.mock( 'react-use', () => ( {
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'AudienceSegmentationSetupCTAWidget', () => {
+describe( 'AudienceSegmentationSetupCTABanner', () => {
 	let registry;
 
 	const notification =
@@ -92,7 +93,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 	const AudienceSegmentationSetupCTAComponent =
 		withNotificationComponentProps(
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-		)( AudienceSegmentationSetupCTAWidget );
+		)( AudienceSegmentationSetupCTABanner );
 
 	const audienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
@@ -623,6 +624,7 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			muteFetch( reportEndpoint );
 			muteFetch( expirableItemEndpoint );
+			muteFetch( dismissItemEndpoint );
 
 			const { getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAComponent />,
@@ -650,7 +652,9 @@ describe( 'AudienceSegmentationSetupCTAWidget', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-setup-cta-dashboard',
-				'confirm_notification'
+				'confirm_notification',
+				undefined,
+				undefined
 			);
 		} );
 
